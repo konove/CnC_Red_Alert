@@ -323,7 +323,7 @@ class FootClass : public TechnoClass {
         BaseAttackTimer(0),
         FormationSpeed(SPEED_FOOT),
         FormationMaxSpeed(game::MPH_IMMOBILE),
-        HeadToCoord(0) {
+        HeadToCoord() {
     base::At(Path, 0) = game::FACING_NONE;
   }
 
@@ -345,15 +345,15 @@ class FootClass : public TechnoClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] COORDINATE Sort_Y() const override;
-  [[nodiscard]] virtual COORDINATE Likely_Coord() const;
+  [[nodiscard]] Coordinate Sort_Y() const override;
+  [[nodiscard]] virtual Coordinate Likely_Coord() const;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  [[nodiscard]] COORDINATE Head_To_Coord() const { return HeadToCoord; }
-  virtual bool Start_Driver(COORDINATE& headto);
+  [[nodiscard]] Coordinate Head_To_Coord() const { return HeadToCoord; }
+  virtual bool Start_Driver(Coordinate& headto);
   virtual bool Stop_Driver();
   void Assign_Destination(TARGET target) override;
   [[nodiscard]] bool Is_Allowed_To_Leave_Map() const;
@@ -362,7 +362,7 @@ class FootClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
 
@@ -445,7 +445,7 @@ class FootClass : public TechnoClass {
   **	is reached, then the next location in the path list becomes the
   **	next HeadTo coordinate.
   */
-  COORDINATE HeadToCoord;
+  Coordinate HeadToCoord;
 };
 
 extern template void FootClass::Serialize<ArchiveWriter>(ArchiveWriter&);

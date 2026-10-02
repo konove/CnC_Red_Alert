@@ -55,7 +55,7 @@ class AbstractClass {
 
   // Object position. Center point for vehicles, upper-left corner for
   // buildings.
-  COORDINATE Coord;
+  Coordinate Coord;
 
   int Height;  // Above-ground height in leptons.
 
@@ -65,7 +65,8 @@ class AbstractClass {
   AbstractClass(const RTTIType rtti, const int id)
       : RTTI(rtti),
         ID(id),
-        Coord(0xFFFFFFFFL),  // Sentinel: no position assigned.
+        Coord(Coordinate::FromPacked(
+            0xFFFFFFFFU)),  // Sentinel: no position assigned.
         Height(0) {}
 
   // Saved-game support for the base part; derived classes call it first.
@@ -80,7 +81,11 @@ class AbstractClass {
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   // IsActive starts true because each heap type's operator new sets it
   // before a normal constructor runs, and the shell must not disagree.
-  AbstractClass() : RTTI(RTTI_NONE), ID(-1), Coord(0xFFFFFFFFL), Height(0) {}
+  AbstractClass()
+      : RTTI(RTTI_NONE),
+        ID(-1),
+        Coord(Coordinate::FromPacked(0xFFFFFFFFU)),
+        Height(0) {}
 
  public:
   virtual ~AbstractClass();
@@ -94,13 +99,13 @@ class AbstractClass {
   [[nodiscard]] TARGET As_Target() const { return Build_Target(RTTI, ID); }
   [[nodiscard]] RTTIType What_Am_I() const { return RTTI; }
 
-  [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
-  [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
+  [[nodiscard]] virtual Coordinate Center_Coord() const { return Coord; }
+  [[nodiscard]] virtual Coordinate Target_Coord() const { return Coord; }
 
   game::DirType Direction(const AbstractClass* object) const {
     return ra::Direction(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] game::DirType Direction(const COORDINATE coord) const {
+  [[nodiscard]] game::DirType Direction(const Coordinate coord) const {
     return ra::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] game::DirType Direction(TARGET target) const;
@@ -111,7 +116,7 @@ class AbstractClass {
   // Returns distance in leptons to the target. For buildings, subtracts
   // the building's average radius so range checks measure to the edge.
   [[nodiscard]] int Distance(TARGET target) const;
-  [[nodiscard]] int Distance(const COORDINATE coord) const {
+  [[nodiscard]] int Distance(const Coordinate coord) const {
     return ra::Distance(Center_Coord(), coord);
   }
   int Distance(const AbstractClass* object) const {

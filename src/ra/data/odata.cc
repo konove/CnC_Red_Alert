@@ -74,7 +74,6 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -936,8 +935,8 @@ OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE OverlayTypeClass::Coord_Fixup(COORDINATE coord) const {
-  return Coord_Whole(coord);
+Coordinate OverlayTypeClass::Coord_Fixup(Coordinate coord) const {
+  return coord.Whole();
 }
 
 }  // namespace ra

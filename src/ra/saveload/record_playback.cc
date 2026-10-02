@@ -60,7 +60,7 @@ void ResetRecordedEvents() {
 void Do_Record_Playback() {
   int count = 0;
   TARGET tgt = 0;
-  COORDINATE coord = 0;
+  Coordinate coord{};
   uint32_t sum = 0;
   uint32_t ltgt = 0;
 

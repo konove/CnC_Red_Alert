@@ -3,6 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_CORE_COORDINATE_H_
 #define CNC_RED_ALERT_RA_CORE_COORDINATE_H_
 
+#include <compare>
 #include <cstdint>
 #include <type_traits>
 
@@ -37,40 +38,50 @@ class Coordinate {
   }
 
   // Returns the packed word, as saved, sent and logged.
-  constexpr uint32_t packed() const noexcept { return packed_; }
+  [[nodiscard]] constexpr uint32_t packed() const noexcept { return packed_; }
 
   // Returns the X lepton component, in 0..65535.
-  constexpr int x() const noexcept { return static_cast<uint16_t>(packed_); }
+  [[nodiscard]] constexpr int x() const noexcept {
+    return static_cast<uint16_t>(packed_);
+  }
 
   // Returns the Y lepton component, in 0..65535.
-  constexpr int y() const noexcept {
+  [[nodiscard]] constexpr int y() const noexcept {
     return static_cast<uint16_t>(packed_ >> 16U);
   }
 
   // Returns the X cell component: the X word's high byte.
-  constexpr int cell_x() const noexcept { return x() >> 8; }
+  [[nodiscard]] constexpr int cell_x() const noexcept {
+    return static_cast<int>((packed_ >> 8U) & 0xFFU);
+  }
 
   // Returns the Y cell component: the Y word's high byte.
-  constexpr int cell_y() const noexcept { return y() >> 8; }
+  [[nodiscard]] constexpr int cell_y() const noexcept {
+    return static_cast<int>(packed_ >> 24U);
+  }
 
   // Returns the X position within its cell, 0 at the cell's left edge.
-  constexpr int sub_x() const noexcept { return x() & 0xFF; }
+  [[nodiscard]] constexpr int sub_x() const noexcept {
+    return static_cast<int>(packed_ & 0xFFU);
+  }
 
   // Returns the Y position within its cell, 0 at the cell's top edge.
-  constexpr int sub_y() const noexcept { return y() & 0xFF; }
+  [[nodiscard]] constexpr int sub_y() const noexcept {
+    return static_cast<int>((packed_ >> 16U) & 0xFFU);
+  }
 
   // Returns the center of the cell this coordinate lies in.
-  constexpr Coordinate Snapped() const noexcept {
+  [[nodiscard]] constexpr Coordinate Snapped() const noexcept {
     return FromPacked((packed_ & kWholeMask) | kCenterFraction);
   }
 
   // Returns the upper left corner of the cell this coordinate lies in.
-  constexpr Coordinate Whole() const noexcept {
+  [[nodiscard]] constexpr Coordinate Whole() const noexcept {
     return FromPacked(packed_ & kWholeMask);
   }
 
   // Returns only the position within the cell, with both cell components 0.
-  constexpr Coordinate Fraction() const noexcept {
+  [[nodiscard]] constexpr Coordinate Fraction() const noexcept {
     return FromPacked(packed_ & ~kWholeMask);
   }
 
@@ -96,6 +107,13 @@ class Coordinate {
 
   // Coordinates are equal when their packed words are.
   friend constexpr bool operator==(Coordinate, Coordinate) noexcept = default;
+
+  // Orders by the packed word: by Y, then by X. The display sorts objects
+  // back to front by this order (ObjectClass::Sort_Y()).
+  friend constexpr std::strong_ordering operator<=>(Coordinate a,
+                                                    Coordinate b) noexcept {
+    return a.packed_ <=> b.packed_;
+  }
 
   // Saves and loads the packed word, 4 bytes little-endian.
   template <class Archive>

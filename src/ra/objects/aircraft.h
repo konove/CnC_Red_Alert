@@ -152,12 +152,12 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
 
   /*
@@ -205,7 +205,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void Enter_Idle_Mode(bool initial = false) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
-  void Scatter(COORDINATE threat, bool forced = false,
+  void Scatter(Coordinate threat, bool forced = false,
                bool nokidding = false) override;
 
   /*

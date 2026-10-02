@@ -87,7 +87,7 @@ class MapClass : public GScreenClass {
   bool Base_Region(CELL cell, HousesType& house, ZoneType& zone) const;
   [[nodiscard]] CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
                                      MZoneType check = MZONE_NORMAL) const;
-  [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
+  [[nodiscard]] ObjectClass* Close_Object(Coordinate coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
   static int Cell_Region(CELL cell);
   static int Cell_Threat(CELL cell, HousesType house);
@@ -137,10 +137,10 @@ class MapClass : public GScreenClass {
   int64_t TotalValue = 0;
 
   // Resolves a coordinate or cell ID through the checked cell array.
-  CellClass& at(COORDINATE coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  CellClass& at(Coordinate coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(cells_, Coord_Cell(coord));
   }
-  CellClass& operator[](COORDINATE coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  CellClass& operator[](Coordinate coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(coord);
   }
   CellClass& at(CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -149,11 +149,11 @@ class MapClass : public GScreenClass {
   CellClass& operator[](CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(cell);
   }
-  [[nodiscard]] const CellClass& at(COORDINATE coord) const
+  [[nodiscard]] const CellClass& at(Coordinate coord) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(cells_, Coord_Cell(coord));
   }
-  const CellClass& operator[](COORDINATE coord) const
+  const CellClass& operator[](Coordinate coord) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(coord);
   }
@@ -217,7 +217,7 @@ class MapClass : public GScreenClass {
   static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };
 
-int Coord_Spillage_Number(COORDINATE coord, int maxsize);
+int Coord_Spillage_Number(Coordinate coord, int maxsize);
 
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MapClass::Serialize<ArchiveReader>(ArchiveReader&);

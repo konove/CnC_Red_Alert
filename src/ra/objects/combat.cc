@@ -188,7 +188,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
  *JLB : Source is a pointer. * 06/18/1996 JLB : Strength could be negative for
  *healing effects.                          *
  *=============================================================================================*/
-void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
+void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
                       WarheadType warhead) {
   ObjectClass* object = nullptr;  // Working object pointer.
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
@@ -449,7 +449,7 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-void Wide_Area_Damage(COORDINATE coord, int radius, int rawdamage,
+void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
                       TechnoClass* source, WarheadType warhead) {
   // The radius was a 16-bit lepton word; an exploding unit's strength times
   // the explosion spread still wraps the way it always did.
@@ -479,8 +479,8 @@ void Wide_Area_Damage(COORDINATE coord, int radius, int rawdamage,
       }
 
       const int dist_from_center =
-          Distance(XY_Coord(x + cell_radius, y + cell_radius),
-                   XY_Coord(cell_radius, cell_radius));
+          Distance(Coordinate::FromLeptons(x + cell_radius, y + cell_radius),
+                   Coordinate::FromLeptons(cell_radius, cell_radius));
       const int damage =
           rawdamage * Fixed(cell_radius, dist_from_center).Invert();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);

@@ -167,7 +167,7 @@ class UnitClass final : public DriveClass {
 
   bool Goto_Clear_Spot();
   bool Try_To_Deploy();
-  void Scatter(COORDINATE threat, bool forced = false,
+  void Scatter(Coordinate threat, bool forced = false,
                bool nokidding = false) override;
 
   bool Tiberium_Check(CELL& center, int x, int y);
@@ -202,13 +202,13 @@ class UnitClass final : public DriveClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
   bool Limbo() override;
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
 
   /*
@@ -240,7 +240,7 @@ class UnitClass final : public DriveClass {
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  bool Start_Driver(COORDINATE& headto) override;
+  bool Start_Driver(Coordinate& headto) override;
 
   /*
   **	AI.

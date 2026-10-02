@@ -1182,7 +1182,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
 int TeamClass::Recruit(int typeindex) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
-  COORDINATE center = As_Coord(Zone);
+  Coordinate center = As_Coord(Zone);
 
   if (Class->Origin != -1) {
     center = Cell_Coord(base::At(TheScenario().Waypoint, Class->Origin));
@@ -1536,8 +1536,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
         /*
         **	Accumulate X and Y components of qualified team members.
         */
-        x += Coord_X(team_member->Coord);
-        y += Coord_Y(team_member->Coord);
+        x += team_member->Coord.x();
+        y += team_member->Coord.y();
         quantity++;
 
         /*
@@ -1561,7 +1561,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     if (quantity) {
       x /= quantity;
       y /= quantity;
-      const COORDINATE coord = XY_Coord(x, y);
+      const Coordinate coord = Coordinate::FromLeptons(x, y);
       center = ra::As_Target(coord);
 
       /*

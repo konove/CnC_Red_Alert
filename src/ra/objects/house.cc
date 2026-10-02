@@ -902,7 +902,7 @@ void HouseClass::AI() {
       }
 
       if (!moving) {
-        techno->Scatter(0, true, true);
+        techno->Scatter(Coordinate{}, true, true);
       }
 
       /*
@@ -2453,7 +2453,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
-                                     COORDINATE where) {
+                                     Coordinate where) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   BuildingClass* launchsite = nullptr;
@@ -2487,7 +2487,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
               static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(cell) - 15, 1);
-            const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
+            const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
             if (!bullet->Unlimbo(start, game::DIR_S)) {
               base::DeletePooled(bullet);
             }
@@ -2594,8 +2594,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_IRON_CURTAIN:
       if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(
-            Lepton_To_Pixel(Coord_XLepton(where)),
-            Lepton_To_Pixel(Coord_YLepton(where)));
+            Lepton_To_Pixel(where.sub_x()), Lepton_To_Pixel(where.sub_y()));
         if (tech) {
           switch (tech->What_Am_I()) {
             case RTTI_UNIT:
@@ -2656,8 +2655,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_CHRONOSPHERE:
       if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(
-            Lepton_To_Pixel(Coord_XLepton(where)),
-            Lepton_To_Pixel(Coord_YLepton(where)));
+            Lepton_To_Pixel(where.sub_x()), Lepton_To_Pixel(where.sub_y()));
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||
@@ -4152,7 +4150,7 @@ BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
  *                                                                                             *
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
+Coordinate HouseClass::Find_Build_Location(BuildingClass* building) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   base::EnumArray<ZoneType, int> zonerating = {};
@@ -4261,7 +4259,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
     }
   }
 
-  return 0;
+  return Coordinate{};
 }
 
 /***********************************************************************************************
@@ -4287,7 +4285,7 @@ void HouseClass::Recalc_Center() {
   **	First presume that there is no base. If there is a base, then these
   *values will be *	properly filled in below.
   */
-  Center = 0;
+  Center = Coordinate{};
   Radius = 0;
   for (const ZoneType zone : magic_enum::enum_values<ZoneType>()) {
     ZoneInfo.at(zone).AirDefense = 0;
@@ -4317,8 +4315,8 @@ void HouseClass::Recalc_Center() {
         */
         const int weight = (b->Class->Cost_Of() / 1000) + 1;
         for (int i = 0; i < weight; i++) {
-          x += Coord_X(b->Center_Coord());
-          y += Coord_Y(b->Center_Coord());
+          x += b->Center_Coord().x();
+          y += b->Center_Coord().y();
           count++;
         }
       }
@@ -4335,7 +4333,7 @@ void HouseClass::Recalc_Center() {
       x /= count;
       y /= count;
 
-      Center = XY_Coord(x, y);
+      Center = Coordinate::FromLeptons(x, y);
     }
 
     /*
@@ -6554,10 +6552,10 @@ void HouseClass::Active_Add(const TechnoClass* techno) {
  *                                                                                             *
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
-ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
+ZoneType HouseClass::Which_Zone(Coordinate coord) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  if (coord == 0) {
+  if (!coord) {
     return ZONE_NONE;
   }
 
@@ -6833,7 +6831,7 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
  *                                                                                             *
  * HISTORY: * 10/12/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
+TARGET HouseClass::Find_Juicy_Target(Coordinate coord) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const UnitClass* best = nullptr;
@@ -7699,7 +7697,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
  * HISTORY: * 11/04/1996 JLB : Created. *
  *=============================================================================================*/
 CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
-  COORDINATE coord = 0;
+  Coordinate coord{};
   int maxdist = 0;
   switch (zone) {
     case ZONE_CORE:
@@ -7707,9 +7705,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_NORTH:
-      maxdist = std::min(
-          Radius * 3,
-          Coord_Y(Center) - Cell_To_Lepton(TheMap().MapCellY) - CELL_LEPTON_H);
+      maxdist =
+          std::min(Radius * 3, Center.y() - Cell_To_Lepton(TheMap().MapCellY) -
+                                   CELL_LEPTON_H);
       if (maxdist < 0) {
         break;
       }
@@ -7724,7 +7722,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_EAST:
       maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellX +
                                                     TheMap().MapCellWidth) -
-                                         Coord_X(Center) - CELL_LEPTON_W);
+                                         Center.x() - CELL_LEPTON_W);
       if (maxdist < 0) {
         break;
       }
@@ -7737,7 +7735,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_SOUTH:
       maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellY +
                                                     TheMap().MapCellHeight) -
-                                         Coord_Y(Center) - CELL_LEPTON_H);
+                                         Center.y() - CELL_LEPTON_H);
       if (maxdist < 0) {
         break;
       }
@@ -7748,9 +7746,9 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       break;
 
     case ZONE_WEST:
-      maxdist = std::min(
-          Radius * 3,
-          Coord_X(Center) - Cell_To_Lepton(TheMap().MapCellX) - CELL_LEPTON_W);
+      maxdist =
+          std::min(Radius * 3, Center.x() - Cell_To_Lepton(TheMap().MapCellX) -
+                                   CELL_LEPTON_W);
       if (maxdist < 0) {
         break;
       }
@@ -7769,7 +7767,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   *cell *	number.
   */
   CELL cell = 0;
-  if (coord == 0 || !TheMap().In_Radar(Coord_Cell(coord))) {
+  if (!coord || !TheMap().In_Radar(Coord_Cell(coord))) {
     if (zone == ZONE_CORE) {
       /*
       **	Finding a cell within the core failed, so just pick the center

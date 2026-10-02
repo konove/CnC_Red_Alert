@@ -55,7 +55,7 @@ namespace ra {
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
-** contains a type of building to build, and the COORDINATE to build it at.
+** contains a type of building to build, and the cell to build it at.
 */
 class BaseNodeClass {
  public:

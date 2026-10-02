@@ -64,7 +64,7 @@ class DisplayClass : public MapClass {
   **	upper left hand corner. These should not be altered directly. Use
   **	the Set_Tactical_Position function instead.
   */
-  COORDINATE TacticalCoord{0};
+  Coordinate TacticalCoord{};
 
   /*
   **	The dimensions (in cells) of the visible window onto the game map. This
@@ -144,10 +144,10 @@ class DisplayClass : public MapClass {
   // Has the player's units (and allied buildings, if allies reveal) that are
   // within their sight range plus `distance` leptons of `center` look around.
   // `distance` keeps its low 16 bits.
-  static void Constrained_Look(COORDINATE center, int distance);
+  static void Constrained_Look(Coordinate center, int distance);
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow();
-  void Center_Map(COORDINATE center = 0L);
+  void Center_Map(Coordinate center = {});
   virtual bool Map_Cell(CELL cell, HouseClass* house);
   [[nodiscard]] virtual CELL Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
@@ -184,12 +184,12 @@ class DisplayClass : public MapClass {
   /*
   **	Tactical map only functionality.
   */
-  virtual void Set_Tactical_Position(COORDINATE coord);
+  virtual void Set_Tactical_Position(Coordinate coord);
   void Refresh_Band();
-  void Select_These(COORDINATE coord1, COORDINATE coord2);
-  [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
-  bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
-  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) const;
+  void Select_These(Coordinate coord1, Coordinate coord2);
+  [[nodiscard]] Coordinate Pixel_To_Coord(int x, int y) const;
+  bool Coord_To_Pixel(Coordinate coord, int& x, int& y) const;
+  bool Push_Onto_TacMap(Coordinate& source, Coordinate& dest) const;
   static void Remove(ObjectClass* object, LayerType layer);
   static void Submit(ObjectClass* object, LayerType layer);
   [[nodiscard]] CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,
@@ -207,8 +207,8 @@ class DisplayClass : public MapClass {
   [[nodiscard]] int Cell_Shadow(CELL cell) const;
   std::span<const int16_t> Text_Overlap_List(const char* text, int x,
                                              int y) const;
-  [[nodiscard]] static bool Is_Spot_Free(COORDINATE coord);
-  [[nodiscard]] static COORDINATE Closest_Free_Spot(COORDINATE coord,
+  [[nodiscard]] static bool Is_Spot_Free(Coordinate coord);
+  [[nodiscard]] static Coordinate Closest_Free_Spot(Coordinate coord,
                                                     bool any = false);
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
@@ -247,7 +247,7 @@ class DisplayClass : public MapClass {
   **	This is the coordinate that the tactical map should be in at next
   *available opportunity.
   */
-  COORDINATE DesiredTacticalCoord{0};
+  Coordinate DesiredTacticalCoord{};
 
   // If something in the tactical map is to be redrawn, this flag is set to
   // true.

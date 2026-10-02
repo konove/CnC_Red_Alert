@@ -97,7 +97,7 @@ class RadarClass : public DisplayClass {
   void Draw_It(PixelView& view, bool forced = false) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
-  void Set_Tactical_Position(COORDINATE coord) override;
+  void Set_Tactical_Position(Coordinate coord) override;
   void Zoom_Mode(CELL cell);
   int Click_In_Radar(int& x, int& y, bool change = false) const;
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) const;
@@ -108,7 +108,7 @@ class RadarClass : public DisplayClass {
   bool Radar_Activate(int control);
   void Plot_Radar_Pixel(PixelView& view, CELL cell);
   void Radar_Pixel(CELL cell);
-  void Coord_To_Radar_Pixel(COORDINATE coord, int& x, int& y);
+  void Coord_To_Radar_Pixel(Coordinate coord, int& x, int& y);
   void Cursor_Cell(PixelView& view, CELL cell, bool value);
   void Mark_Radar(PixelView& view, int x1, int y1, int x2, int y2, bool value,
                   int barlen);

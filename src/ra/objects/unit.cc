@@ -363,11 +363,11 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Sort_Y() const {
+Coordinate UnitClass::Sort_Y() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  return Coord_Add(Coord, 0x00800000L);
+  return Coord + Coordinate::FromLeptons(0, 0x80);
 }
 
 /***********************************************************************************************
@@ -934,7 +934,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool UnitClass::Unlimbo(Coordinate coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -1078,7 +1078,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
           if (i->Unlimbo(Coord, game::DIR_N)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
-            i->Scatter(0, true);
+            i->Scatter(Coordinate{}, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
             } else {
@@ -1105,7 +1105,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
         *not a sure *	thing.
         */
         if (object->Is_Infantry() && object->Unlimbo(Coord, game::DIR_N)) {
-          object->Scatter(0, true);
+          object->Scatter(Coordinate{}, true);
           if (select) {
             object->Select();
           }
@@ -1139,8 +1139,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached) {
       if (*this != UNIT_ANT1 && *this != UNIT_ANT2 && *this != UNIT_ANT3) {
-        auto* anim = base::NewPooled<AnimClass>(
-            ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+        auto* anim =
+            base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + XYP_Coord(0, -8));
         if (anim) {
           anim->Attach_To(this);
         }
@@ -1340,7 +1340,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
 
   if (IsToScatter) {
     IsToScatter = false;
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
   }
 
   /*
@@ -1474,7 +1474,7 @@ bool UnitClass::Goto_Clear_Spot() {
   ** to see if that brings us to a better spot.
   */
   if (!Target_Legal(NavCom) && !House->IsHuman) {
-    Scatter(0);
+    Scatter(Coordinate{});
   }
 
   return false;
@@ -1702,7 +1702,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
         case RadioMessageType::RADIO_NEED_REPAIR:
         case RadioMessageType::RADIO_ON_DEPOT:
         default:
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
           break;
       }
     }
@@ -1738,11 +1738,11 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
       */
       if (TheMap().at(Coord).Cell_Building() != nullptr &&
           !Target_Legal(NavCom)) {
-        Scatter(0, true, true);
+        Scatter(Coordinate{}, true, true);
       } else {
         if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
           if (!Target_Legal(NavCom)) {
-            Scatter(0, true);
+            Scatter(Coordinate{}, true);
           } else {
             /*
             **	Special case hack to allow automatic transition to loading
@@ -1766,7 +1766,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
               **	the pad for another harvester.
               */
               if (!Target_Legal(NavCom)) {
-                Scatter(0, true);
+                Scatter(Coordinate{}, true);
               }
             }
           }
@@ -1868,7 +1868,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
       ** down) then ignore the mine.
       */
       if (*this != UNIT_MINELAYER || bldng->House != House) {
-        const COORDINATE blcoord = bldng->Center_Coord();
+        const Coordinate blcoord = bldng->Center_Coord();
 
         base::NewPooled<AnimClass>(ANIM_MINE_EXP1, blcoord);
         //				new
@@ -3441,7 +3441,7 @@ void UnitClass::Init() { TheObjectHeaps().unit().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Start_Driver(COORDINATE& headto) {
+bool UnitClass::Start_Driver(Coordinate& headto) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -4461,7 +4461,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
         /*
         **	Scattering is controlled by the game difficulty level.
         */
-        cellptr->Incoming(0, true);
+        cellptr->Incoming(Coordinate{}, true);
       }
     } else {
       ObjectClass* object = cellptr->Cell_Occupier();
@@ -4734,7 +4734,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
           const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
-          const COORDINATE coord = Cell_Coord(cell);
+          const Coordinate coord = Cell_Coord(cell);
 
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -4937,7 +4937,7 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
  *                                                                                             *
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
+void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   DCHECK(IsActive);
 
   if (Mission == MISSION_SLEEP || Mission == MISSION_STICKY ||
@@ -4962,7 +4962,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
     return;
   }
 
-  if (threat == 0) {
+  if (!threat) {
     Assign_Destination(
         ra::As_Target(TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
   } else {

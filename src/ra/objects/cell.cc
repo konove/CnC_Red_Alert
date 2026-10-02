@@ -80,7 +80,7 @@
  *   CellClass::Reserve_Cell -- Marks a cell as being occupied by the specified
  *unit ID.       * CellClass::Shimmer -- Causes all objects in the cell to
  *shimmer.                          * CellClass::Spot_Index -- returns cell
- *sub-coord index for given COORDINATE                *
+ *sub-coord index for given Coordinate                *
  *   CellClass::Spread_Tiberium -- Spread Tiberium from this cell to an adjacent
  *cell.         * CellClass::Tiberium_Adjust -- Adjust the look of the Tiberium
  *for smooth.                 * CellClass::Wall_Update -- Updates the imagery
@@ -245,7 +245,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   *cell. This is *	actually the lower significant bits (leptons) of a
   *regular coordinate value.
   */
-  COORDINATE const click = XY_Coord(
+  const Coordinate click = Coordinate::FromLeptons(
       Pixel_To_Lepton(x),
       Pixel_To_Lepton(y));  // Coordinate of click relative to cell corner.
 
@@ -253,7 +253,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
     ObjectClass* object = Cell_Occupier();
     while (object) {
       if (object->Is_Techno()) {
-        const COORDINATE coord = Coord_Fraction(object->Center_Coord());
+        const Coordinate coord = object->Center_Coord().Fraction();
         const int32_t dist = Distance(coord, click);
         if (!close || dist < distance) {
           close = dynamic_cast<TechnoClass*>(object);
@@ -1353,7 +1353,7 @@ void CellClass::Wall_Update() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE CellClass::Cell_Coord() const {
+Coordinate CellClass::Cell_Coord() const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   return ra::Cell_Coord(Cell_Number());
@@ -1467,9 +1467,9 @@ bool CellClass::Reduce_Wall(int damage) {
 }
 
 /***********************************************************************************************
- * CellClass::Spot_Index -- returns cell sub-coord index for given COORDINATE *
+ * CellClass::Spot_Index -- returns cell sub-coord index for given Coordinate *
  *                                                                                             *
- * INPUT: * coord      COORDINATE to compute index for *
+ * INPUT: * coord      Coordinate to compute index for *
  *                                                                                             *
  * OUTPUT: * index into StoppingCoord that's closest to this coord *
  *                                                                                             *
@@ -1478,15 +1478,14 @@ bool CellClass::Reduce_Wall(int damage) {
  * HISTORY: * 11/21/1994 BR : Created. * 12/10/1994 JLB : Uses alternate
  *sub-position algorithm.                                   *
  *=============================================================================================*/
-int CellClass::Spot_Index(COORDINATE coord) {
-  const COORDINATE rel =
-      Coord_Fraction(coord);  // Sub coordinate value within cell.
+int CellClass::Spot_Index(Coordinate coord) {
+  const Coordinate rel = coord.Fraction();  // Sub coordinate value within cell.
 
   /*
   **	If the coordinate is close enough to the center of the cell, then return
   **	the center position index.
   */
-  if (Distance(rel, 0x00800080L) < 60) {
+  if (Distance(rel, CellCenterFraction()) < 60) {
     return 0;
   }
 
@@ -1497,10 +1496,10 @@ int CellClass::Spot_Index(COORDINATE coord) {
   *organized *	from left to right, top to bottom.
   */
   int index = 0;
-  if (Coord_X(rel) > 0x80) {
+  if (rel.x() > 0x80) {
     index += 1;
   }
-  if (Coord_Y(rel) > 0x80) {
+  if (rel.y() > 0x80) {
     index += 2;
   }
   return index + 1;
@@ -1510,7 +1509,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  * CellClass::Closest_Free_Spot -- returns free spot closest to given coord *
  *                                                                                             *
  * Similar to the CellClass::Free_Spot; this routine finds the spot in * the
- *cell closest to the given coordinate, and returns the COORDINATE of * that
+ *cell closest to the given coordinate, and returns the Coordinate of * that
  *spot if it's available, nullptr if it's not. *
  *                                                                                             *
  * INPUT: * coord   coordinate to check (only sub cell position examined) *
@@ -1518,7 +1517,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *          any   -- If only the closest spot is desired regardless of whether
  *it is free or   * not, then this parameter will be true. *
  *                                                                                             *
- * OUTPUT: * COORDINATE of free spot, nullptr if none. The coordinate return
+ * OUTPUT: * Coordinate of free spot, nullptr if none. The coordinate return
  * value does not alter the cell * coordinate data portions of the coordinate
  * passed in. Only the lower sub-cell   * data is altered. *
  *                                                                                             *
@@ -1528,7 +1527,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *stopping positions.                                * 12/21/1994 JLB : Adds a
  *mix-up factor if center location is occupied.                     *
  *=============================================================================================*/
-COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
+Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const int spot_index = Spot_Index(coord);
@@ -1553,13 +1552,13 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
       {3, 4, 1, 2},
       {4, 1, 2, 3},
   };
-  coord = Coord_Whole(coord);
+  coord = coord.Whole();
 
   /*
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
   if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
-    return 0;
+    return Coordinate{};
   }
 
   /*
@@ -1567,7 +1566,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return Coord_Add(coord, base::At(StoppingCoordAbs, spot_index));
+    return coord + base::At(StoppingCoordAbs, spot_index);
   }
 
   /*
@@ -1585,14 +1584,14 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     const int pos = base::At(sequence, base::ToSize(index));
 
     if (Is_Spot_Free(pos)) {
-      return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
+      return coord + base::At(StoppingCoordAbs, pos);
     }
   }
 
   /*
   **	No free spot could be found so return a nullptr coordinate.
   */
-  return 0x00000000L;
+  return Coordinate{};
 }
 
 /***********************************************************************************************
@@ -1646,7 +1645,7 @@ int CellClass::Clear_Icon() const {
  *=============================================================================================*/
 // Not const: scatters the units in the cell.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
+void CellClass::Incoming(Coordinate threat, bool forced, bool nokidding) {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = nullptr;
@@ -1854,7 +1853,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     bool force_mcv = false;
     int force_money = 0;
     int damage = 0;
-    COORDINATE coord = 0;
+    Coordinate coord{};
 
     /*
     **	Determine the total number of shares for all the crate powerups. This is
@@ -2305,7 +2304,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           object->Take_Damage(d, 0, WARHEAD_HE, nullptr, true);
         }
         for (int index = 0; index < 5; index++) {
-          const COORDINATE frag_coord =
+          const Coordinate frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
           base::NewPooled<AnimClass>(ANIM_FBALL1, frag_coord);
           damage = TheRules().crate_data().at(powerup);
@@ -2317,7 +2316,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	A napalm blast is triggered.
       */
       case CRATE_NAPALM:
-        coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
+        coord = Coordinate::Midpoint(Cell_Coord(), object->Center_Coord());
         base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
         if (object != nullptr) {
           int d = TheRules().crate_data().at(powerup);

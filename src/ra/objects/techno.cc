@@ -604,7 +604,7 @@ bool TechnoClass::Is_Allowed_To_Recloak() const { return true; }
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TechnoClass::Fire_Coord(int which) const {
+Coordinate TechnoClass::Fire_Coord(int which) const {
   DCHECK(IsActive);
 
   const game::DirType dir = Turret_Facing();
@@ -620,7 +620,7 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
     lateral = tclass->SecondaryLateral;
   }
 
-  COORDINATE coord =
+  Coordinate coord =
       Coord_Move(Center_Coord(), game::DIR_N,
                  static_cast<uint16_t>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
@@ -1288,7 +1288,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
   DCHECK(IsActive);
 
   if (RadioClass::Unlimbo(coord, dir)) {
@@ -1395,7 +1395,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
  *                                                                                             *
  * HISTORY: * 03/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::In_Range(COORDINATE coord, int which) const {
+bool TechnoClass::In_Range(Coordinate coord, int which) const {
   DCHECK(IsActive);
 
   return IsLocked &&
@@ -1573,7 +1573,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	If the object is not within the desired zone, then ignore it, but only
   *if *	zone checking is desired.
   */
-  const COORDINATE objectcoord = object->Center_Coord();
+  const Coordinate objectcoord = object->Center_Coord();
   if (zone != -1 &&
       std::cmp_not_equal(
           TheMap().at(objectcoord).Zones.at(Techno_Type_Class()->MZone),
@@ -2731,7 +2731,7 @@ void TechnoClass::Cloaking_AI() {
               *possible so *	that it will be much harder to locate.
               */
               if (What_Am_I() == RTTI_UNIT && !House->IsHuman) {
-                Scatter(0, true);
+                Scatter(Coordinate{}, true);
               }
               break;
             case game::VisualType::VISUAL_NORMAL:
@@ -3117,20 +3117,20 @@ int TechnoClass::Rearm_Delay(bool second, int which) const {
  *facing conversion and distance routines.                   *
  *=============================================================================================*/
 bool TechnoClass::Electric_Zap(TARGET target, int which,
-                               COORDINATE source_coord,
+                               Coordinate source_coord,
                                std::span<const unsigned char> remap) {
   int x = 0;
   int y = 0;
   int x1 = 0;
   int y1 = 0;
-  COORDINATE source = 0;
+  Coordinate source{};
 
-  if (source_coord != 0) {
+  if (source_coord) {
     source = source_coord;
   } else {
     source = Fire_Coord(which);
   }
-  COORDINATE dest = As_Coord(target);
+  Coordinate dest = As_Coord(target);
   if (What_Am_I() == RTTI_BUILDING) {
     dynamic_cast<BuildingClass*>(this)->IsCharging = false;
   }
@@ -3245,7 +3245,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   DCHECK(IsActive);
 
   game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
-  COORDINATE target_coord = 0;  // Coordinate of the target.
+  Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
       which == 0 ? tclass.PrimaryWeapon : tclass.SecondaryWeapon;
@@ -3280,7 +3280,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Get the location where the projectile should appear.
   */
-  COORDINATE fire_coord = Fire_Coord(which);  // Coordinate of firing position.
+  Coordinate fire_coord = Fire_Coord(which);  // Coordinate of firing position.
 
   /*
   **	If the projectile is a homing type (such as a missile), then it will

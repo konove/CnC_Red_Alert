@@ -49,6 +49,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/core/coordinate.h"  // IWYU pragma: export
 #include "ra/core/jshell.h"
 
 namespace ra {
@@ -245,12 +246,13 @@ inline constexpr char kConfigFileName[] = "REDALERT.INI";
 **	All larger elements are build upon these.
 */
 
-// Set in either half of a COORDINATE when it points off the map.
+// Set in either word of a Coordinate's packed() when it points off the map.
 inline constexpr uint32_t kHighCoordMask = 0x80008000;
 
-// A map coordinate with cell resolution. Declared here rather than alongside
-// COORDINATE below so that the map dimensions can carry it: a loop walking the
-// map then has a counter no narrower than its own bound.
+// A map coordinate with cell resolution, the cheaper index into the map than
+// a lepton-resolution Coordinate (ra/core/coordinate.h). Declared here so that
+// the map dimensions can carry it: a loop walking the map then has a counter
+// no narrower than its own bound.
 using CELL = int16_t;
 
 // Size of the map in cells. The brace initialization fails to compile if the
@@ -264,11 +266,6 @@ inline constexpr int16_t kRefreshEol = 32767;
 
 // This number flags that sidebar needs refreshing.
 inline constexpr int16_t kRefreshSidebar = 32766;
-
-// A map position with lepton resolution: the X lepton word in the low 16
-// bits, the Y word in the high 16. CELL (declared above with the map
-// dimensions) is the cheaper cell-resolution index into the map.
-using COORDINATE = uint32_t;
 
 using WAYPOINT = int;
 

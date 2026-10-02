@@ -202,7 +202,7 @@ void DriveClass::Response_Attack() {
  *Moved to DriveClass so that ships will scatter too.                      *
  *   08/02/1996 JLB : Added the "nokidding" parameter. *
  *=============================================================================================*/
-void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
+void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   DCHECK(IsActive);
 
   /*
@@ -219,7 +219,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       (!Target_Legal(TarCom) || forced || Random_Pick(1, 4) == 1)) {
     game::FacingType toface = game::FACING_NONE;
 
-    if (threat != 0) {
+    if (threat) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
       toface = toface + static_cast<game::FacingType>(Random_Pick(0, 2) - 1);
     } else {
@@ -366,7 +366,7 @@ bool DriveClass::Teleport_To(CELL cell) {
   }
 
   Stop_Driver();
-  Force_Track(-1, 0);
+  Force_Track(-1, Coordinate{});
   PrimaryFacing.Set_Current(PrimaryFacing.Desired());
   Transmit_Message(RADIO_OVER_OUT);
   Assign_Destination(kTargetNone);
@@ -410,12 +410,12 @@ bool DriveClass::Teleport_To(CELL cell) {
  *                                                                                             *
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Force_Track(int track, COORDINATE coord) {
+void DriveClass::Force_Track(int track, Coordinate coord) {
   DCHECK(IsActive);
 
   TrackNumber = track;
   TrackIndex = 0;
-  if (coord != 0) {
+  if (coord) {
     Start_Driver(coord);
   }
 }
@@ -459,14 +459,14 @@ DriveClass::DriveClass(RTTIType rtti, int id, HousesType house)
  * HISTORY: * 03/14/1994 JLB : Created. * 07/13/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, game::DirType& dir) {
+Coordinate DriveClass::Smooth_Turn(Coordinate adj, game::DirType& dir) {
   DCHECK(IsActive);
 
   game::DirType workdir = dir;
   const TrackControlType flags = base::At(TrackControl, TrackNumber).Flag;
 
-  int x = Coord_X(adj);
-  int y = Coord_Y(adj);
+  int x = adj.x();
+  int y = adj.y();
 
   if (base::Any(flags & F_T)) {
     const int temp = x;
@@ -487,7 +487,8 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, game::DirType& dir) {
 
   dir = workdir;
 
-  return XY_Coord(Coord_X(Head_To_Coord()) + x, Coord_Y(Head_To_Coord()) + y);
+  return Coordinate::FromLeptons(Head_To_Coord().x() + x,
+                                 Head_To_Coord().y() + y);
 }
 
 /***********************************************************************************************
@@ -648,7 +649,7 @@ bool DriveClass::While_Moving() {
 
       actual -= PIXEL_LEPTON_W;
 
-      COORDINATE const offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
+      const Coordinate offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {
         game::DirType dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, dir);
@@ -683,7 +684,7 @@ bool DriveClass::While_Moving() {
                   .data();  // Proposed jump-to track.
           if (newtrack->Track &&
               base::At(RawTracks, newtrack->Track - 1).Entry) {
-            COORDINATE c = Head_To_Coord();
+            Coordinate c = Head_To_Coord();
             const int oldspeed = Speed;
 
             c = Adjacent_Cell(c, nextface);
@@ -725,7 +726,7 @@ bool DriveClass::While_Moving() {
 
               case game::MOVE_TEMP:
                 if (!House->IsHuman) {
-                  TheMap().at(c).Incoming(0, true, true);
+                  TheMap().at(c).Incoming(Coordinate{}, true, true);
                 }
                 break;
               case game::MoveType::MOVE_MOVING_BLOCK:
@@ -918,7 +919,7 @@ bool DriveClass::Start_Of_Move() {
                 Assign_Destination(kTargetNone);
                 return false;
               }
-              cellptr->Incoming(0, true, false);
+              cellptr->Incoming(Coordinate{}, true, false);
             }
           }
         }
@@ -984,7 +985,7 @@ bool DriveClass::Start_Of_Move() {
             Assign_Destination(kTargetNone);
             return false;
           }
-          cellptr->Incoming(0, true, false);
+          cellptr->Incoming(Coordinate{}, true, false);
         }
       }
     }
@@ -996,7 +997,7 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	Determine the coordinate of the next cell to move into.
   */
-  COORDINATE dest = Adjacent_Cell(Coord, facing);  // Destination coordinate.
+  Coordinate dest = Adjacent_Cell(Coord, facing);  // Destination coordinate.
   const game::DirType dir =
       game::Facing_Dir(facing);  // Desired actual facing toward destination.
 
@@ -1038,7 +1039,7 @@ bool DriveClass::Start_Of_Move() {
     *it to *	get out of the way.
     */
     if (cando == game::MOVE_TEMP) {
-      TheMap().at(destcell).Incoming(0, true, true);
+      TheMap().at(destcell).Incoming(Coordinate{}, true, true);
     }
 
     /*
@@ -1115,7 +1116,7 @@ bool DriveClass::Start_Of_Move() {
   if (cando != game::MOVE_OK) {
     base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
     TrackNumber = -1;
-    dest = 0;
+    dest = Coordinate{};
   } else {
     Overrun_Square(Coord_Cell(dest), true);
 
@@ -1165,7 +1166,7 @@ bool DriveClass::Start_Of_Move() {
         *it to *	get out of the way.
         */
         if (cando == game::MOVE_TEMP) {
-          TheMap().at(destcell).Incoming(0, true, true);
+          TheMap().at(destcell).Incoming(Coordinate{}, true, true);
         }
 
         /*
@@ -1177,7 +1178,7 @@ bool DriveClass::Start_Of_Move() {
 
         base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
-        dest = 0;
+        dest = Coordinate{};
         if (cando == game::MOVE_DESTROYABLE) {
           if (TheMap().at(destcell).Cell_Object()) {
             if (!House->Is_Ally(TheMap().at(destcell).Cell_Object())) {
@@ -1376,7 +1377,7 @@ void DriveClass::Lay_Track() { DCHECK(IsActive); }
  *                                                                                             *
  * HISTORY: * 07/30/1995 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
+void DriveClass::Mark_Track(Coordinate headto, MarkType type) {
   DCHECK(IsActive);
 
   const bool value = type != MARK_UP;
@@ -1396,7 +1397,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
           game::DirType dir = base::At(ptr, base::ToSize(cellidx)).Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
-            const COORDINATE offset =
+            const Coordinate offset =
                 Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, dir);
             TheMap().at(offset).Flag.Occupy.Vehicle = value;
           }
@@ -1448,449 +1449,471 @@ bool DriveClass::Ok_To_Move(game::DirType /*unused*/) {
 **	Track 12= drive out of refinery
 */
 const DriveClass::TrackType DriveClass::Track1[24] = {
-    {0x00F50000L, static_cast<game::DirType>(0)},
-    {0x00EA0000L, static_cast<game::DirType>(0)},
-    {0x00DF0000L, static_cast<game::DirType>(0)},
-    {0x00D40000L, static_cast<game::DirType>(0)},
-    {0x00C90000L, static_cast<game::DirType>(0)},
-    {0x00BE0000L, static_cast<game::DirType>(0)},
-    {0x00B30000L, static_cast<game::DirType>(0)},
-    {0x00A80000L, static_cast<game::DirType>(0)},
-    {0x009D0000L, static_cast<game::DirType>(0)},
-    {0x00920000L, static_cast<game::DirType>(0)},
-    {0x00870000L, static_cast<game::DirType>(0)},
-    {0x007C0000L, static_cast<game::DirType>(0)},  // Track jump check here.
-    {0x00710000L, static_cast<game::DirType>(0)},
-    {0x00660000L, static_cast<game::DirType>(0)},
-    {0x005B0000L, static_cast<game::DirType>(0)},
-    {0x00500000L, static_cast<game::DirType>(0)},
-    {0x00450000L, static_cast<game::DirType>(0)},
-    {0x003A0000L, static_cast<game::DirType>(0)},
-    {0x002F0000L, static_cast<game::DirType>(0)},
-    {0x00240000L, static_cast<game::DirType>(0)},
-    {0x00190000L, static_cast<game::DirType>(0)},
-    {0x000E0000L, static_cast<game::DirType>(0)},
-    {0x00030000L, static_cast<game::DirType>(0)},
-    {0x00000000L, static_cast<game::DirType>(0)}};
+    {Coordinate::FromLeptons(0x0000, 0x00F5), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00EA), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00DF), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00D4), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00C9), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00BE), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00B3), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x00A8), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x009D), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0092), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0087), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x007C),
+     static_cast<game::DirType>(0)},  // Track jump check here.
+    {Coordinate::FromLeptons(0x0000, 0x0071), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0066), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x005B), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0050), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0045), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x003A), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x002F), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0024), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0019), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x000E), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0000, 0x0003), static_cast<game::DirType>(0)},
+    {Coordinate{}, static_cast<game::DirType>(0)}};
 
 const DriveClass::TrackType DriveClass::Track2[] = {
-    {0x00F8FF08L, static_cast<game::DirType>(32)},
-    {0x00F0FF10L, static_cast<game::DirType>(32)},
-    {0x00E8FF18L, static_cast<game::DirType>(32)},
-    {0x00E0FF20L, static_cast<game::DirType>(32)},
-    {0x00D8FF28L, static_cast<game::DirType>(32)},
-    {0x00D0FF30L, static_cast<game::DirType>(32)},
-    {0x00C8FF38L, static_cast<game::DirType>(32)},
-    {0x00C0FF40L, static_cast<game::DirType>(32)},
-    {0x00B8FF48L, static_cast<game::DirType>(32)},
-    {0x00B0FF50L, static_cast<game::DirType>(32)},
-    {0x00A8FF58L, static_cast<game::DirType>(32)},
-    {0x00A0FF60L, static_cast<game::DirType>(32)},
-    {0x0098FF68L, static_cast<game::DirType>(32)},
-    {0x0090FF70L, static_cast<game::DirType>(32)},
-    {0x0088FF78L, static_cast<game::DirType>(32)},
-    {0x0080FF80L, static_cast<game::DirType>(32)},  // Track jump check here.
-    {0x0078FF88L, static_cast<game::DirType>(32)},
-    {0x0070FF90L, static_cast<game::DirType>(32)},
-    {0x0068FF98L, static_cast<game::DirType>(32)},
-    {0x0060FFA0L, static_cast<game::DirType>(32)},
-    {0x0058FFA8L, static_cast<game::DirType>(32)},
-    {0x0050FFB0L, static_cast<game::DirType>(32)},
-    {0x0048FFB8L, static_cast<game::DirType>(32)},
-    {0x0040FFC0L, static_cast<game::DirType>(32)},
-    {0x0038FFC8L, static_cast<game::DirType>(32)},
-    {0x0030FFD0L, static_cast<game::DirType>(32)},
-    {0x0028FFD8L, static_cast<game::DirType>(32)},
-    {0x0020FFE0L, static_cast<game::DirType>(32)},
-    {0x0018FFE8L, static_cast<game::DirType>(32)},
-    {0x0010FFF0L, static_cast<game::DirType>(32)},
-    {0x0008FFF8L, static_cast<game::DirType>(32)},
-    {0x00000000L, static_cast<game::DirType>(32)}};
+    {Coordinate::FromLeptons(0xFF08, 0x00F8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF10, 0x00F0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF18, 0x00E8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF20, 0x00E0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF28, 0x00D8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF30, 0x00D0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF38, 0x00C8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF40, 0x00C0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF48, 0x00B8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF50, 0x00B0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF58, 0x00A8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF60, 0x00A0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF68, 0x0098), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF70, 0x0090), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF78, 0x0088), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF80, 0x0080),
+     static_cast<game::DirType>(32)},  // Track jump check here.
+    {Coordinate::FromLeptons(0xFF88, 0x0078), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF90, 0x0070), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF98, 0x0068), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFA0, 0x0060), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFA8, 0x0058), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFB0, 0x0050), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFB8, 0x0048), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFC0, 0x0040), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFC8, 0x0038), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFD0, 0x0030), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFD8, 0x0028), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFE0, 0x0020), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFE8, 0x0018), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF0, 0x0010), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF8, 0x0008), static_cast<game::DirType>(32)},
+    {Coordinate{}, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track3[] = {
-    {0x01F5FF00L, static_cast<game::DirType>(0)},
-    {0x01EAFF00L, static_cast<game::DirType>(0)},
-    {0x01DFFF00L, static_cast<game::DirType>(0)},
-    {0x01D4FF00L, static_cast<game::DirType>(0)},
-    {0x01C9FF00L, static_cast<game::DirType>(0)},
-    {0x01BEFF00L, static_cast<game::DirType>(0)},
-    {0x01B3FF00L, static_cast<game::DirType>(0)},
-    {0x01A8FF00L, static_cast<game::DirType>(0)},
-    {0x019DFF00L, static_cast<game::DirType>(0)},
-    {0x0192FF00L, static_cast<game::DirType>(0)},
-    {0x0187FF00L, static_cast<game::DirType>(0)},
-    {0x0180FF00L, static_cast<game::DirType>(0)},
-    {0x0175FF00L, static_cast<game::DirType>(0)},  // Jump entry point here.
-    {0x016BFF00L, static_cast<game::DirType>(0)},
-    {0x0160FF02L, static_cast<game::DirType>(1)},
-    {0x0155FF04L, static_cast<game::DirType>(3)},
-    {0x014CFF06L, static_cast<game::DirType>(4)},
-    {0x0141FF08L, static_cast<game::DirType>(5)},
-    {0x0137FF0BL, static_cast<game::DirType>(7)},
-    {0x012EFF0FL, static_cast<game::DirType>(8)},
-    {0x0124FF13L, static_cast<game::DirType>(9)},
-    {0x011AFF17L, static_cast<game::DirType>(11)},
-    {0x0110FF1BL, static_cast<game::DirType>(12)},
-    {0x0107FF1FL,
+    {Coordinate::FromLeptons(0xFF00, 0x01F5), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01EA), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01DF), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01D4), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01C9), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01BE), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01B3), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x01A8), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x019D), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x0192), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x0187), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x0180), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x0175),
+     static_cast<game::DirType>(0)},  // Jump entry point here.
+    {Coordinate::FromLeptons(0xFF00, 0x016B), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF02, 0x0160), static_cast<game::DirType>(1)},
+    {Coordinate::FromLeptons(0xFF04, 0x0155), static_cast<game::DirType>(3)},
+    {Coordinate::FromLeptons(0xFF06, 0x014C), static_cast<game::DirType>(4)},
+    {Coordinate::FromLeptons(0xFF08, 0x0141), static_cast<game::DirType>(5)},
+    {Coordinate::FromLeptons(0xFF0B, 0x0137), static_cast<game::DirType>(7)},
+    {Coordinate::FromLeptons(0xFF0F, 0x012E), static_cast<game::DirType>(8)},
+    {Coordinate::FromLeptons(0xFF13, 0x0124), static_cast<game::DirType>(9)},
+    {Coordinate::FromLeptons(0xFF17, 0x011A), static_cast<game::DirType>(11)},
+    {Coordinate::FromLeptons(0xFF1B, 0x0110), static_cast<game::DirType>(12)},
+    {Coordinate::FromLeptons(0xFF1F, 0x0107),
      static_cast<game::DirType>(13)},  // Center cell processing here.
-    {0x00FCFF24L, static_cast<game::DirType>(15)},
-    {0x00F3FF28L, static_cast<game::DirType>(16)},
-    {0x00ECFF2CL, static_cast<game::DirType>(17)},
-    {0x00E0FF32L, static_cast<game::DirType>(19)},
-    {0x00D7FF36L, static_cast<game::DirType>(20)},
-    {0x00CFFF3DL, static_cast<game::DirType>(21)},
-    {0x00C6FF42L, static_cast<game::DirType>(23)},
-    {0x00BAFF49L, static_cast<game::DirType>(24)},
-    {0x00B0FF4DL, static_cast<game::DirType>(25)},
-    {0x00A8FF58L, static_cast<game::DirType>(27)},
-    {0x00A0FF60L, static_cast<game::DirType>(28)},
-    {0x0098FF68L, static_cast<game::DirType>(29)},
-    {0x0090FF70L, static_cast<game::DirType>(31)},
-    {0x0088FF78L, static_cast<game::DirType>(32)},
-    {0x0080FF80L, static_cast<game::DirType>(32)},  // Track jump check here.
-    {0x0078FF88L, static_cast<game::DirType>(32)},
-    {0x0070FF90L, static_cast<game::DirType>(32)},
-    {0x0068FF98L, static_cast<game::DirType>(32)},
-    {0x0060FFA0L, static_cast<game::DirType>(32)},
-    {0x0058FFA8L, static_cast<game::DirType>(32)},
-    {0x0050FFB0L, static_cast<game::DirType>(32)},
-    {0x0048FFB8L, static_cast<game::DirType>(32)},
-    {0x0040FFC0L, static_cast<game::DirType>(32)},
-    {0x0038FFC8L, static_cast<game::DirType>(32)},
-    {0x0030FFD0L, static_cast<game::DirType>(32)},
-    {0x0028FFD8L, static_cast<game::DirType>(32)},
-    {0x0020FFE0L, static_cast<game::DirType>(32)},
-    {0x0018FFE8L, static_cast<game::DirType>(32)},
-    {0x0010FFF0L, static_cast<game::DirType>(32)},
-    {0x0008FFF8L, static_cast<game::DirType>(32)},
-    {0x00000000L, static_cast<game::DirType>(32)}};
+    {Coordinate::FromLeptons(0xFF24, 0x00FC), static_cast<game::DirType>(15)},
+    {Coordinate::FromLeptons(0xFF28, 0x00F3), static_cast<game::DirType>(16)},
+    {Coordinate::FromLeptons(0xFF2C, 0x00EC), static_cast<game::DirType>(17)},
+    {Coordinate::FromLeptons(0xFF32, 0x00E0), static_cast<game::DirType>(19)},
+    {Coordinate::FromLeptons(0xFF36, 0x00D7), static_cast<game::DirType>(20)},
+    {Coordinate::FromLeptons(0xFF3D, 0x00CF), static_cast<game::DirType>(21)},
+    {Coordinate::FromLeptons(0xFF42, 0x00C6), static_cast<game::DirType>(23)},
+    {Coordinate::FromLeptons(0xFF49, 0x00BA), static_cast<game::DirType>(24)},
+    {Coordinate::FromLeptons(0xFF4D, 0x00B0), static_cast<game::DirType>(25)},
+    {Coordinate::FromLeptons(0xFF58, 0x00A8), static_cast<game::DirType>(27)},
+    {Coordinate::FromLeptons(0xFF60, 0x00A0), static_cast<game::DirType>(28)},
+    {Coordinate::FromLeptons(0xFF68, 0x0098), static_cast<game::DirType>(29)},
+    {Coordinate::FromLeptons(0xFF70, 0x0090), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFF78, 0x0088), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF80, 0x0080),
+     static_cast<game::DirType>(32)},  // Track jump check here.
+    {Coordinate::FromLeptons(0xFF88, 0x0078), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF90, 0x0070), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF98, 0x0068), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFA0, 0x0060), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFA8, 0x0058), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFB0, 0x0050), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFB8, 0x0048), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFC0, 0x0040), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFC8, 0x0038), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFD0, 0x0030), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFD8, 0x0028), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFE0, 0x0020), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFE8, 0x0018), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF0, 0x0010), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF8, 0x0008), static_cast<game::DirType>(32)},
+    {Coordinate{}, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track4[] = {
-    {0x00F5FF00L, static_cast<game::DirType>(0)},
-    {0x00EBFF00L, static_cast<game::DirType>(0)},
-    {0x00E0FF00L, static_cast<game::DirType>(0)},
-    {0x00D5FF00L, static_cast<game::DirType>(0)},
-    {0x00CBFF01L, static_cast<game::DirType>(0)},
-    {0x00C0FF03L, static_cast<game::DirType>(0)},
-    {0x00B5FF05L, static_cast<game::DirType>(1)},
-    {0x00ABFF07L, static_cast<game::DirType>(1)},
-    {0x00A0FF0AL, static_cast<game::DirType>(2)},
-    {0x0095FF0DL, static_cast<game::DirType>(3)},
-    {0x008BFF10L, static_cast<game::DirType>(4)},
-    {0x0080FF14L, static_cast<game::DirType>(5)},  // Track entry here.
-    {0x0075FF18L, static_cast<game::DirType>(8)},
-    {0x006DFF1CL, static_cast<game::DirType>(12)},
-    {0x0063FF22L, static_cast<game::DirType>(16)},
-    {0x005AFF25L, static_cast<game::DirType>(20)},
-    {0x0052FF2BL, static_cast<game::DirType>(23)},
-    {0x0048FF32L, static_cast<game::DirType>(27)},
-    {0x0040FF37L, static_cast<game::DirType>(32)},
-    {0x0038FF3DL, static_cast<game::DirType>(36)},
-    {0x0030FF46L, static_cast<game::DirType>(39)},
-    {0x002BFF4FL, static_cast<game::DirType>(43)},
-    {0x0024FF58L, static_cast<game::DirType>(47)},
-    {0x0020FF60L, static_cast<game::DirType>(51)},
-    {0x001BFF6DL, static_cast<game::DirType>(54)},
-    {0x0017FF79L, static_cast<game::DirType>(57)},
-    {0x0014FF82L, static_cast<game::DirType>(60)},  // Track jump here.
-    {0x0011FF8FL, static_cast<game::DirType>(62)},
-    {0x000DFF98L, static_cast<game::DirType>(63)},
-    {0x0009FFA2L, static_cast<game::DirType>(64)},
-    {0x0006FFACL, static_cast<game::DirType>(64)},
-    {0x0004FFB5L, static_cast<game::DirType>(66)},
-    {0x0003FFC0L, static_cast<game::DirType>(64)},
-    {0x0002FFCBL, static_cast<game::DirType>(64)},
-    {0x0001FFD5L, static_cast<game::DirType>(64)},
-    {0x0000FFE0L, static_cast<game::DirType>(64)},
-    {0x0000FFEBL, static_cast<game::DirType>(64)},
-    {0x0000FFF5L, static_cast<game::DirType>(64)},
-    {0x00000000L, static_cast<game::DirType>(64)}};
+    {Coordinate::FromLeptons(0xFF00, 0x00F5), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x00EB), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x00E0), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF00, 0x00D5), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF01, 0x00CB), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF03, 0x00C0), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFF05, 0x00B5), static_cast<game::DirType>(1)},
+    {Coordinate::FromLeptons(0xFF07, 0x00AB), static_cast<game::DirType>(1)},
+    {Coordinate::FromLeptons(0xFF0A, 0x00A0), static_cast<game::DirType>(2)},
+    {Coordinate::FromLeptons(0xFF0D, 0x0095), static_cast<game::DirType>(3)},
+    {Coordinate::FromLeptons(0xFF10, 0x008B), static_cast<game::DirType>(4)},
+    {Coordinate::FromLeptons(0xFF14, 0x0080),
+     static_cast<game::DirType>(5)},  // Track entry here.
+    {Coordinate::FromLeptons(0xFF18, 0x0075), static_cast<game::DirType>(8)},
+    {Coordinate::FromLeptons(0xFF1C, 0x006D), static_cast<game::DirType>(12)},
+    {Coordinate::FromLeptons(0xFF22, 0x0063), static_cast<game::DirType>(16)},
+    {Coordinate::FromLeptons(0xFF25, 0x005A), static_cast<game::DirType>(20)},
+    {Coordinate::FromLeptons(0xFF2B, 0x0052), static_cast<game::DirType>(23)},
+    {Coordinate::FromLeptons(0xFF32, 0x0048), static_cast<game::DirType>(27)},
+    {Coordinate::FromLeptons(0xFF37, 0x0040), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFF3D, 0x0038), static_cast<game::DirType>(36)},
+    {Coordinate::FromLeptons(0xFF46, 0x0030), static_cast<game::DirType>(39)},
+    {Coordinate::FromLeptons(0xFF4F, 0x002B), static_cast<game::DirType>(43)},
+    {Coordinate::FromLeptons(0xFF58, 0x0024), static_cast<game::DirType>(47)},
+    {Coordinate::FromLeptons(0xFF60, 0x0020), static_cast<game::DirType>(51)},
+    {Coordinate::FromLeptons(0xFF6D, 0x001B), static_cast<game::DirType>(54)},
+    {Coordinate::FromLeptons(0xFF79, 0x0017), static_cast<game::DirType>(57)},
+    {Coordinate::FromLeptons(0xFF82, 0x0014),
+     static_cast<game::DirType>(60)},  // Track jump here.
+    {Coordinate::FromLeptons(0xFF8F, 0x0011), static_cast<game::DirType>(62)},
+    {Coordinate::FromLeptons(0xFF98, 0x000D), static_cast<game::DirType>(63)},
+    {Coordinate::FromLeptons(0xFFA2, 0x0009), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFAC, 0x0006), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFB5, 0x0004), static_cast<game::DirType>(66)},
+    {Coordinate::FromLeptons(0xFFC0, 0x0003), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFCB, 0x0002), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFD5, 0x0001), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFE0, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFEB, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFF5, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate{}, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track5[] = {
-    {0xFFF8FE08L, static_cast<game::DirType>(32)},
-    {0xFFF0FE10L, static_cast<game::DirType>(32)},
-    {0xFFE8FE18L, static_cast<game::DirType>(32)},
-    {0xFFE0FE20L, static_cast<game::DirType>(32)},
-    {0xFFD8FE28L, static_cast<game::DirType>(32)},
-    {0xFFD0FE30L, static_cast<game::DirType>(32)},
-    {0xFFC8FE38L, static_cast<game::DirType>(32)},
-    {0xFFC0FE40L, static_cast<game::DirType>(32)},
-    {0xFFB8FE48L, static_cast<game::DirType>(32)},
-    {0xFFB0FE50L, static_cast<game::DirType>(32)},
-    {0xFFA8FE58L, static_cast<game::DirType>(32)},
-    {0xFFA0FE60L, static_cast<game::DirType>(32)},
-    {0xFF98FE68L, static_cast<game::DirType>(32)},
-    {0xFF90FE70L, static_cast<game::DirType>(32)},
-    {0xFF88FE78L, static_cast<game::DirType>(32)},
-    {0xFF80FE80L, static_cast<game::DirType>(32)},  // Track entry here.
-    {0xFF78FE88L, static_cast<game::DirType>(32)},
-    {0xFF71FE90L, static_cast<game::DirType>(32)},
-    {0xFF6AFE97L, static_cast<game::DirType>(32)},
-    {0xFF62FE9FL, static_cast<game::DirType>(32)},
-    {0xFF5AFEA8L, static_cast<game::DirType>(32)},
-    {0xFF53FEB0L, static_cast<game::DirType>(35)},
-    {0xFF4BFEB7L, static_cast<game::DirType>(38)},
-    {0xFF44FEBEL, static_cast<game::DirType>(41)},
-    {0xFF3EFEC4L, static_cast<game::DirType>(44)},
-    {0xFF39FECEL, static_cast<game::DirType>(47)},
-    {0xFF34FED8L, static_cast<game::DirType>(50)},
-    {0xFF30FEE0L, static_cast<game::DirType>(53)},
-    {0xFF2DFEEBL, static_cast<game::DirType>(56)},
-    {0xFF2CFEF5L, static_cast<game::DirType>(59)},
-    {0xFF2BFF00L, static_cast<game::DirType>(62)},
-    {0xFF2CFF0BL, static_cast<game::DirType>(66)},
-    {0xFF2DFF15L, static_cast<game::DirType>(69)},
-    {0xFF30FF1FL, static_cast<game::DirType>(72)},
-    {0xFF34FF28L, static_cast<game::DirType>(75)},
-    {0xFF39FF30L, static_cast<game::DirType>(78)},
-    {0xFF3EFF3AL, static_cast<game::DirType>(81)},
-    {0xFF44FF44L, static_cast<game::DirType>(84)},
-    {0xFF4BFF4BL, static_cast<game::DirType>(87)},
-    {0xFF53FF50L, static_cast<game::DirType>(90)},
-    {0xFF5AFF58L, static_cast<game::DirType>(93)},
-    {0xFF62FF60L, static_cast<game::DirType>(96)},
-    {0xFF6AFF68L, static_cast<game::DirType>(96)},
-    {0xFF71FF70L, static_cast<game::DirType>(96)},
-    {0xFF78FF78L, static_cast<game::DirType>(96)},
-    {0xFF80FF80L, static_cast<game::DirType>(96)},  // Track jump check here.
-    {0xFF88FF88L, static_cast<game::DirType>(96)},
-    {0xFF90FF90L, static_cast<game::DirType>(96)},
-    {0xFF98FF98L, static_cast<game::DirType>(96)},
-    {0xFFA0FFA0L, static_cast<game::DirType>(96)},
-    {0xFFA8FFA8L, static_cast<game::DirType>(96)},
-    {0xFFB0FFB0L, static_cast<game::DirType>(96)},
-    {0xFFB8FFB8L, static_cast<game::DirType>(96)},
-    {0xFFC0FFC0L, static_cast<game::DirType>(96)},
-    {0xFFC8FFC8L, static_cast<game::DirType>(96)},
-    {0xFFD0FFD0L, static_cast<game::DirType>(96)},
-    {0xFFD8FFD8L, static_cast<game::DirType>(96)},
-    {0xFFE0FFE0L, static_cast<game::DirType>(96)},
-    {0xFFE8FFE8L, static_cast<game::DirType>(96)},
-    {0xFFF0FFF0L, static_cast<game::DirType>(96)},
-    {0xFFF8FFF8L, static_cast<game::DirType>(96)},
-    {0x00000000L, static_cast<game::DirType>(96)}};
+    {Coordinate::FromLeptons(0xFE08, 0xFFF8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE10, 0xFFF0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE18, 0xFFE8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE20, 0xFFE0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE28, 0xFFD8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE30, 0xFFD0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE38, 0xFFC8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE40, 0xFFC0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE48, 0xFFB8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE50, 0xFFB0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE58, 0xFFA8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE60, 0xFFA0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE68, 0xFF98), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE70, 0xFF90), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE78, 0xFF88), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE80, 0xFF80),
+     static_cast<game::DirType>(32)},  // Track entry here.
+    {Coordinate::FromLeptons(0xFE88, 0xFF78), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE90, 0xFF71), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE97, 0xFF6A), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE9F, 0xFF62), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEA8, 0xFF5A), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEB0, 0xFF53), static_cast<game::DirType>(35)},
+    {Coordinate::FromLeptons(0xFEB7, 0xFF4B), static_cast<game::DirType>(38)},
+    {Coordinate::FromLeptons(0xFEBE, 0xFF44), static_cast<game::DirType>(41)},
+    {Coordinate::FromLeptons(0xFEC4, 0xFF3E), static_cast<game::DirType>(44)},
+    {Coordinate::FromLeptons(0xFECE, 0xFF39), static_cast<game::DirType>(47)},
+    {Coordinate::FromLeptons(0xFED8, 0xFF34), static_cast<game::DirType>(50)},
+    {Coordinate::FromLeptons(0xFEE0, 0xFF30), static_cast<game::DirType>(53)},
+    {Coordinate::FromLeptons(0xFEEB, 0xFF2D), static_cast<game::DirType>(56)},
+    {Coordinate::FromLeptons(0xFEF5, 0xFF2C), static_cast<game::DirType>(59)},
+    {Coordinate::FromLeptons(0xFF00, 0xFF2B), static_cast<game::DirType>(62)},
+    {Coordinate::FromLeptons(0xFF0B, 0xFF2C), static_cast<game::DirType>(66)},
+    {Coordinate::FromLeptons(0xFF15, 0xFF2D), static_cast<game::DirType>(69)},
+    {Coordinate::FromLeptons(0xFF1F, 0xFF30), static_cast<game::DirType>(72)},
+    {Coordinate::FromLeptons(0xFF28, 0xFF34), static_cast<game::DirType>(75)},
+    {Coordinate::FromLeptons(0xFF30, 0xFF39), static_cast<game::DirType>(78)},
+    {Coordinate::FromLeptons(0xFF3A, 0xFF3E), static_cast<game::DirType>(81)},
+    {Coordinate::FromLeptons(0xFF44, 0xFF44), static_cast<game::DirType>(84)},
+    {Coordinate::FromLeptons(0xFF4B, 0xFF4B), static_cast<game::DirType>(87)},
+    {Coordinate::FromLeptons(0xFF50, 0xFF53), static_cast<game::DirType>(90)},
+    {Coordinate::FromLeptons(0xFF58, 0xFF5A), static_cast<game::DirType>(93)},
+    {Coordinate::FromLeptons(0xFF60, 0xFF62), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF68, 0xFF6A), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF70, 0xFF71), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF78, 0xFF78), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF80, 0xFF80),
+     static_cast<game::DirType>(96)},  // Track jump check here.
+    {Coordinate::FromLeptons(0xFF88, 0xFF88), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF90, 0xFF90), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFF98, 0xFF98), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFA0, 0xFFA0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFA8, 0xFFA8), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFB0, 0xFFB0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFB8, 0xFFB8), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFC0, 0xFFC0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFC8, 0xFFC8), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFD0, 0xFFD0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFD8, 0xFFD8), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFE0, 0xFFE0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFE8, 0xFFE8), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFF0, 0xFFF0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFF8, 0xFFF8), static_cast<game::DirType>(96)},
+    {Coordinate{}, static_cast<game::DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track6[] = {
-    {0x0100FE00L, static_cast<game::DirType>(32)},
-    {0x00F8FE08L, static_cast<game::DirType>(32)},
-    {0x00F0FE10L, static_cast<game::DirType>(32)},
-    {0x00E8FE18L, static_cast<game::DirType>(32)},
-    {0x00E0FE20L, static_cast<game::DirType>(32)},
-    {0x00D8FE28L, static_cast<game::DirType>(32)},
-    {0x00D0FE30L, static_cast<game::DirType>(32)},
-    {0x00C8FE38L, static_cast<game::DirType>(32)},
-    {0x00C0FE40L, static_cast<game::DirType>(32)},
-    {0x00B8FE48L, static_cast<game::DirType>(32)},
-    {0x00B0FE50L, static_cast<game::DirType>(32)},
-    {0x00A8FE58L, static_cast<game::DirType>(32)},
-    {0x00A0FE60L, static_cast<game::DirType>(32)},
-    {0x0098FE68L, static_cast<game::DirType>(32)},
-    {0x0090FE70L, static_cast<game::DirType>(32)},
-    {0x0088FE78L, static_cast<game::DirType>(32)},
-    {0x0080FE80L, static_cast<game::DirType>(32)},  // Jump entry point here.
-    {0x0078FE88L, static_cast<game::DirType>(32)},
-    {0x0070FE90L, static_cast<game::DirType>(32)},
-    {0x0068FE98L, static_cast<game::DirType>(32)},
-    {0x0060FEA0L, static_cast<game::DirType>(32)},
-    {0x0058FEA8L, static_cast<game::DirType>(32)},
-    {0x0055FEAEL, static_cast<game::DirType>(32)},
-    {0x004EFEB8L, static_cast<game::DirType>(35)},
-    {0x0048FEC0L, static_cast<game::DirType>(37)},
-    {0x0042FEC9L, static_cast<game::DirType>(40)},
-    {0x003BFED2L, static_cast<game::DirType>(43)},
-    {0x0037FEDAL, static_cast<game::DirType>(45)},
-    {0x0032FEE3L, static_cast<game::DirType>(48)},
-    {0x002BFEEBL, static_cast<game::DirType>(51)},
-    {0x0026FEF5L, static_cast<game::DirType>(53)},
-    {0x0022FEFEL, static_cast<game::DirType>(56)},
-    {0x001CFF08L, static_cast<game::DirType>(59)},
-    {0x0019FF12L, static_cast<game::DirType>(61)},
-    {0x0015FF1BL, static_cast<game::DirType>(64)},
-    {0x0011FF26L, static_cast<game::DirType>(64)},
-    {0x000EFF30L, static_cast<game::DirType>(64)},
-    {0x000BFF39L, static_cast<game::DirType>(64)},
-    {0x0009FF43L, static_cast<game::DirType>(64)},
-    {0x0007FF4EL, static_cast<game::DirType>(64)},
-    {0x0005FF57L, static_cast<game::DirType>(64)},
-    {0x0003FF62L, static_cast<game::DirType>(64)},
-    {0x0001FF6DL, static_cast<game::DirType>(64)},
-    {0x0000FF77L, static_cast<game::DirType>(64)},
-    {0x0000FF80L, static_cast<game::DirType>(64)},  // Track jump check here.
-    {0x0000FF8BL, static_cast<game::DirType>(64)},
-    {0x0000FF95L, static_cast<game::DirType>(64)},
-    {0x0000FFA0L, static_cast<game::DirType>(64)},
-    {0x0000FFABL, static_cast<game::DirType>(64)},
-    {0x0000FFB5L, static_cast<game::DirType>(64)},
-    {0x0000FFC0L, static_cast<game::DirType>(64)},
-    {0x0000FFCBL, static_cast<game::DirType>(64)},
-    {0x0000FFD5L, static_cast<game::DirType>(64)},
-    {0x0000FFE0L, static_cast<game::DirType>(64)},
-    {0x0000FFEBL, static_cast<game::DirType>(64)},
-    {0x0000FFF5L, static_cast<game::DirType>(64)},
-    {0x00000000L, static_cast<game::DirType>(64)}};
+    {Coordinate::FromLeptons(0xFE00, 0x0100), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE08, 0x00F8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE10, 0x00F0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE18, 0x00E8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE20, 0x00E0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE28, 0x00D8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE30, 0x00D0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE38, 0x00C8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE40, 0x00C0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE48, 0x00B8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE50, 0x00B0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE58, 0x00A8), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE60, 0x00A0), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE68, 0x0098), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE70, 0x0090), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE78, 0x0088), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE80, 0x0080),
+     static_cast<game::DirType>(32)},  // Jump entry point here.
+    {Coordinate::FromLeptons(0xFE88, 0x0078), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE90, 0x0070), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFE98, 0x0068), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEA0, 0x0060), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEA8, 0x0058), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEAE, 0x0055), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFEB8, 0x004E), static_cast<game::DirType>(35)},
+    {Coordinate::FromLeptons(0xFEC0, 0x0048), static_cast<game::DirType>(37)},
+    {Coordinate::FromLeptons(0xFEC9, 0x0042), static_cast<game::DirType>(40)},
+    {Coordinate::FromLeptons(0xFED2, 0x003B), static_cast<game::DirType>(43)},
+    {Coordinate::FromLeptons(0xFEDA, 0x0037), static_cast<game::DirType>(45)},
+    {Coordinate::FromLeptons(0xFEE3, 0x0032), static_cast<game::DirType>(48)},
+    {Coordinate::FromLeptons(0xFEEB, 0x002B), static_cast<game::DirType>(51)},
+    {Coordinate::FromLeptons(0xFEF5, 0x0026), static_cast<game::DirType>(53)},
+    {Coordinate::FromLeptons(0xFEFE, 0x0022), static_cast<game::DirType>(56)},
+    {Coordinate::FromLeptons(0xFF08, 0x001C), static_cast<game::DirType>(59)},
+    {Coordinate::FromLeptons(0xFF12, 0x0019), static_cast<game::DirType>(61)},
+    {Coordinate::FromLeptons(0xFF1B, 0x0015), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF26, 0x0011), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF30, 0x000E), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF39, 0x000B), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF43, 0x0009), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF4E, 0x0007), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF57, 0x0005), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF62, 0x0003), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF6D, 0x0001), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF77, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF80, 0x0000),
+     static_cast<game::DirType>(64)},  // Track jump check here.
+    {Coordinate::FromLeptons(0xFF8B, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFF95, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFA0, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFAB, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFB5, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFC0, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFCB, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFD5, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFE0, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFEB, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFF5, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate{}, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track7[] = {
-    {0x0006FFFFL, static_cast<game::DirType>(0)},
-    {0x000CFFFEL, static_cast<game::DirType>(4)},
-    {0x0011FFFCL, static_cast<game::DirType>(8)},
-    {0x0018FFFAL, static_cast<game::DirType>(12)},
-    {0x001FFFF6L, static_cast<game::DirType>(16)},
-    {0x0024FFF3L, static_cast<game::DirType>(19)},
-    {0x002BFFF0L, static_cast<game::DirType>(22)},
-    {0x0030FFFDL, static_cast<game::DirType>(23)},
-    {0x0035FFEBL, static_cast<game::DirType>(24)},
-    {0x0038FFE8L, static_cast<game::DirType>(25)},
-    {0x003CFFE6L, static_cast<game::DirType>(26)},
-    {0x0040FFE3L, static_cast<game::DirType>(27)},
-    {0x0043FFE0L, static_cast<game::DirType>(28)},
-    {0x0046FFDDL, static_cast<game::DirType>(29)},
-    {0x0043FFDFL, static_cast<game::DirType>(30)},
-    {0x0040FFE1L, static_cast<game::DirType>(30)},
-    {0x003CFFE3L, static_cast<game::DirType>(30)},
-    {0x0038FFE5L, static_cast<game::DirType>(30)},
-    {0x0035FFE7L, static_cast<game::DirType>(31)},
-    {0x0030FFE9L, static_cast<game::DirType>(31)},
-    {0x002BFFEBL, static_cast<game::DirType>(31)},
-    {0x0024FFEDL, static_cast<game::DirType>(31)},
-    {0x001FFFF1L, static_cast<game::DirType>(31)},
-    {0x0018FFF4L, static_cast<game::DirType>(32)},
-    {0x0011FFF7L, static_cast<game::DirType>(32)},
-    {0x000CFFFAL, static_cast<game::DirType>(32)},
-    {0x0006FFFDL, static_cast<game::DirType>(32)},
-    {0x00000000L, static_cast<game::DirType>(32)}};
+    {Coordinate::FromLeptons(0xFFFF, 0x0006), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0xFFFE, 0x000C), static_cast<game::DirType>(4)},
+    {Coordinate::FromLeptons(0xFFFC, 0x0011), static_cast<game::DirType>(8)},
+    {Coordinate::FromLeptons(0xFFFA, 0x0018), static_cast<game::DirType>(12)},
+    {Coordinate::FromLeptons(0xFFF6, 0x001F), static_cast<game::DirType>(16)},
+    {Coordinate::FromLeptons(0xFFF3, 0x0024), static_cast<game::DirType>(19)},
+    {Coordinate::FromLeptons(0xFFF0, 0x002B), static_cast<game::DirType>(22)},
+    {Coordinate::FromLeptons(0xFFFD, 0x0030), static_cast<game::DirType>(23)},
+    {Coordinate::FromLeptons(0xFFEB, 0x0035), static_cast<game::DirType>(24)},
+    {Coordinate::FromLeptons(0xFFE8, 0x0038), static_cast<game::DirType>(25)},
+    {Coordinate::FromLeptons(0xFFE6, 0x003C), static_cast<game::DirType>(26)},
+    {Coordinate::FromLeptons(0xFFE3, 0x0040), static_cast<game::DirType>(27)},
+    {Coordinate::FromLeptons(0xFFE0, 0x0043), static_cast<game::DirType>(28)},
+    {Coordinate::FromLeptons(0xFFDD, 0x0046), static_cast<game::DirType>(29)},
+    {Coordinate::FromLeptons(0xFFDF, 0x0043), static_cast<game::DirType>(30)},
+    {Coordinate::FromLeptons(0xFFE1, 0x0040), static_cast<game::DirType>(30)},
+    {Coordinate::FromLeptons(0xFFE3, 0x003C), static_cast<game::DirType>(30)},
+    {Coordinate::FromLeptons(0xFFE5, 0x0038), static_cast<game::DirType>(30)},
+    {Coordinate::FromLeptons(0xFFE7, 0x0035), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFFE9, 0x0030), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFFEB, 0x002B), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFFED, 0x0024), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFFF1, 0x001F), static_cast<game::DirType>(31)},
+    {Coordinate::FromLeptons(0xFFF4, 0x0018), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF7, 0x0011), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFFA, 0x000C), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFFD, 0x0006), static_cast<game::DirType>(32)},
+    {Coordinate{}, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track8[] = {
-    {0x0003FFFCL, static_cast<game::DirType>(32)},
-    {0x0006FFF7L, static_cast<game::DirType>(36)},
-    {0x000AFFF1L, static_cast<game::DirType>(40)},
-    {0x000CFFEBL, static_cast<game::DirType>(44)},
-    {0x000DFFE4L, static_cast<game::DirType>(46)},
-    {0x000EFFDCL, static_cast<game::DirType>(48)},
-    {0x000FFFD5L, static_cast<game::DirType>(50)},
-    {0x0010FFD0L, static_cast<game::DirType>(52)},
-    {0x0011FFC9L, static_cast<game::DirType>(54)},
-    {0x0012FFC2L, static_cast<game::DirType>(56)},
-    {0x0011FFC0L, static_cast<game::DirType>(58)},
-    {0x0010FFC2L, static_cast<game::DirType>(60)},
-    {0x000EFFC9L, static_cast<game::DirType>(62)},
-    {0x000CFFCFL, static_cast<game::DirType>(64)},
-    {0x000AFFD5L, static_cast<game::DirType>(64)},
-    {0x0008FFDAL, static_cast<game::DirType>(64)},
-    {0x0006FFE2L, static_cast<game::DirType>(64)},
-    {0x0004FFE9L, static_cast<game::DirType>(64)},
-    {0x0002FFEFL, static_cast<game::DirType>(64)},
-    {0x0001FFF5L, static_cast<game::DirType>(64)},
-    {0x0000FFF9L, static_cast<game::DirType>(64)},
-    {0x00000000L, static_cast<game::DirType>(64)}};
+    {Coordinate::FromLeptons(0xFFFC, 0x0003), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFF7, 0x0006), static_cast<game::DirType>(36)},
+    {Coordinate::FromLeptons(0xFFF1, 0x000A), static_cast<game::DirType>(40)},
+    {Coordinate::FromLeptons(0xFFEB, 0x000C), static_cast<game::DirType>(44)},
+    {Coordinate::FromLeptons(0xFFE4, 0x000D), static_cast<game::DirType>(46)},
+    {Coordinate::FromLeptons(0xFFDC, 0x000E), static_cast<game::DirType>(48)},
+    {Coordinate::FromLeptons(0xFFD5, 0x000F), static_cast<game::DirType>(50)},
+    {Coordinate::FromLeptons(0xFFD0, 0x0010), static_cast<game::DirType>(52)},
+    {Coordinate::FromLeptons(0xFFC9, 0x0011), static_cast<game::DirType>(54)},
+    {Coordinate::FromLeptons(0xFFC2, 0x0012), static_cast<game::DirType>(56)},
+    {Coordinate::FromLeptons(0xFFC0, 0x0011), static_cast<game::DirType>(58)},
+    {Coordinate::FromLeptons(0xFFC2, 0x0010), static_cast<game::DirType>(60)},
+    {Coordinate::FromLeptons(0xFFC9, 0x000E), static_cast<game::DirType>(62)},
+    {Coordinate::FromLeptons(0xFFCF, 0x000C), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFD5, 0x000A), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFDA, 0x0008), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFE2, 0x0006), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFE9, 0x0004), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFEF, 0x0002), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFF5, 0x0001), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0xFFF9, 0x0000), static_cast<game::DirType>(64)},
+    {Coordinate{}, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track9[] = {
-    {0xFFF50002L, static_cast<game::DirType>(0)},
-    {0xFFEB0004L, static_cast<game::DirType>(2)},
-    {0xFFE00006L, static_cast<game::DirType>(4)},
-    {0xFFD50009L, static_cast<game::DirType>(6)},
-    {0xFFCE000CL, static_cast<game::DirType>(9)},
-    {0xFFC8000FL, static_cast<game::DirType>(11)},
-    {0xFFC00012L, static_cast<game::DirType>(13)},
-    {0xFFB80015L, static_cast<game::DirType>(16)},
-    {0xFFC00012L, static_cast<game::DirType>(18)},
-    {0xFFC8000EL, static_cast<game::DirType>(20)},
-    {0xFFCE000AL, static_cast<game::DirType>(22)},
-    {0xFFD50004L, static_cast<game::DirType>(24)},
-    {0xFFDE0000L, static_cast<game::DirType>(26)},
-    {0xFFE9FFF8L, static_cast<game::DirType>(28)},
-    {0xFFEEFFF2L, static_cast<game::DirType>(30)},
-    {0xFFF5FFEBL, static_cast<game::DirType>(32)},
-    {0xFFFDFFE1L, static_cast<game::DirType>(34)},
-    {0x0002FFD8L, static_cast<game::DirType>(36)},
-    {0x0007FFD2L, static_cast<game::DirType>(39)},
-    {0x000BFFCBL, static_cast<game::DirType>(41)},
-    {0x0010FFC5L, static_cast<game::DirType>(43)},
-    {0x0013FFBEL, static_cast<game::DirType>(45)},
-    {0x0015FFB7L, static_cast<game::DirType>(48)},
-    {0x0013FFBEL, static_cast<game::DirType>(50)},
-    {0x0011FFC5L, static_cast<game::DirType>(52)},
-    {0x000BFFCCL, static_cast<game::DirType>(54)},
-    {0x0008FFD4L, static_cast<game::DirType>(56)},
-    {0x0005FFDFL, static_cast<game::DirType>(58)},
-    {0x0003FFEBL, static_cast<game::DirType>(62)},
-    {0x0001FFF5L, static_cast<game::DirType>(64)},
-    {0x00000000L, static_cast<game::DirType>(64)}};
+    {Coordinate::FromLeptons(0x0002, 0xFFF5), static_cast<game::DirType>(0)},
+    {Coordinate::FromLeptons(0x0004, 0xFFEB), static_cast<game::DirType>(2)},
+    {Coordinate::FromLeptons(0x0006, 0xFFE0), static_cast<game::DirType>(4)},
+    {Coordinate::FromLeptons(0x0009, 0xFFD5), static_cast<game::DirType>(6)},
+    {Coordinate::FromLeptons(0x000C, 0xFFCE), static_cast<game::DirType>(9)},
+    {Coordinate::FromLeptons(0x000F, 0xFFC8), static_cast<game::DirType>(11)},
+    {Coordinate::FromLeptons(0x0012, 0xFFC0), static_cast<game::DirType>(13)},
+    {Coordinate::FromLeptons(0x0015, 0xFFB8), static_cast<game::DirType>(16)},
+    {Coordinate::FromLeptons(0x0012, 0xFFC0), static_cast<game::DirType>(18)},
+    {Coordinate::FromLeptons(0x000E, 0xFFC8), static_cast<game::DirType>(20)},
+    {Coordinate::FromLeptons(0x000A, 0xFFCE), static_cast<game::DirType>(22)},
+    {Coordinate::FromLeptons(0x0004, 0xFFD5), static_cast<game::DirType>(24)},
+    {Coordinate::FromLeptons(0x0000, 0xFFDE), static_cast<game::DirType>(26)},
+    {Coordinate::FromLeptons(0xFFF8, 0xFFE9), static_cast<game::DirType>(28)},
+    {Coordinate::FromLeptons(0xFFF2, 0xFFEE), static_cast<game::DirType>(30)},
+    {Coordinate::FromLeptons(0xFFEB, 0xFFF5), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0xFFE1, 0xFFFD), static_cast<game::DirType>(34)},
+    {Coordinate::FromLeptons(0xFFD8, 0x0002), static_cast<game::DirType>(36)},
+    {Coordinate::FromLeptons(0xFFD2, 0x0007), static_cast<game::DirType>(39)},
+    {Coordinate::FromLeptons(0xFFCB, 0x000B), static_cast<game::DirType>(41)},
+    {Coordinate::FromLeptons(0xFFC5, 0x0010), static_cast<game::DirType>(43)},
+    {Coordinate::FromLeptons(0xFFBE, 0x0013), static_cast<game::DirType>(45)},
+    {Coordinate::FromLeptons(0xFFB7, 0x0015), static_cast<game::DirType>(48)},
+    {Coordinate::FromLeptons(0xFFBE, 0x0013), static_cast<game::DirType>(50)},
+    {Coordinate::FromLeptons(0xFFC5, 0x0011), static_cast<game::DirType>(52)},
+    {Coordinate::FromLeptons(0xFFCC, 0x000B), static_cast<game::DirType>(54)},
+    {Coordinate::FromLeptons(0xFFD4, 0x0008), static_cast<game::DirType>(56)},
+    {Coordinate::FromLeptons(0xFFDF, 0x0005), static_cast<game::DirType>(58)},
+    {Coordinate::FromLeptons(0xFFEB, 0x0003), static_cast<game::DirType>(62)},
+    {Coordinate::FromLeptons(0xFFF5, 0x0001), static_cast<game::DirType>(64)},
+    {Coordinate{}, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track10[] = {
-    {0xFFF6000BL, static_cast<game::DirType>(32)},
-    {0xFFF00015L, static_cast<game::DirType>(37)},
-    {0xFFEB0020L, static_cast<game::DirType>(42)},
-    {0xFFE9002BL, static_cast<game::DirType>(47)},
-    {0xFFE50032L, static_cast<game::DirType>(52)},
-    {0xFFE30038L, static_cast<game::DirType>(57)},
-    {0xFFE00040L, static_cast<game::DirType>(60)},
-    {0xFFE20038L, static_cast<game::DirType>(62)},
-    {0xFFE40032L, static_cast<game::DirType>(64)},
-    {0xFFE5002AL, static_cast<game::DirType>(68)},
-    {0xFFE6001EL, static_cast<game::DirType>(70)},
-    {0xFFE70015L, static_cast<game::DirType>(72)},
-    {0xFFE8000BL, static_cast<game::DirType>(74)},
-    {0xFFE90000L, static_cast<game::DirType>(76)},
-    {0xFFE8FFF5L, static_cast<game::DirType>(78)},
-    {0xFFE7FFEBL, static_cast<game::DirType>(80)},
-    {0xFFE6FFE0L, static_cast<game::DirType>(82)},
-    {0xFFE5FFD5L, static_cast<game::DirType>(84)},
-    {0xFFE4FFCEL, static_cast<game::DirType>(86)},
-    {0xFFE2FFC5L, static_cast<game::DirType>(88)},
-    {0xFFE0FFC0L, static_cast<game::DirType>(90)},
-    {0xFFE3FFC5L, static_cast<game::DirType>(92)},
-    {0xFFE5FFCEL, static_cast<game::DirType>(94)},
-    {0xFFE9FFD5L, static_cast<game::DirType>(95)},
-    {0xFFEBFFE0L, static_cast<game::DirType>(96)},
-    {0xFFF0FFEBL, static_cast<game::DirType>(96)},
-    {0xFFF6FFF5L, static_cast<game::DirType>(96)},
-    {0x00000000L, static_cast<game::DirType>(96)}};
+    {Coordinate::FromLeptons(0x000B, 0xFFF6), static_cast<game::DirType>(32)},
+    {Coordinate::FromLeptons(0x0015, 0xFFF0), static_cast<game::DirType>(37)},
+    {Coordinate::FromLeptons(0x0020, 0xFFEB), static_cast<game::DirType>(42)},
+    {Coordinate::FromLeptons(0x002B, 0xFFE9), static_cast<game::DirType>(47)},
+    {Coordinate::FromLeptons(0x0032, 0xFFE5), static_cast<game::DirType>(52)},
+    {Coordinate::FromLeptons(0x0038, 0xFFE3), static_cast<game::DirType>(57)},
+    {Coordinate::FromLeptons(0x0040, 0xFFE0), static_cast<game::DirType>(60)},
+    {Coordinate::FromLeptons(0x0038, 0xFFE2), static_cast<game::DirType>(62)},
+    {Coordinate::FromLeptons(0x0032, 0xFFE4), static_cast<game::DirType>(64)},
+    {Coordinate::FromLeptons(0x002A, 0xFFE5), static_cast<game::DirType>(68)},
+    {Coordinate::FromLeptons(0x001E, 0xFFE6), static_cast<game::DirType>(70)},
+    {Coordinate::FromLeptons(0x0015, 0xFFE7), static_cast<game::DirType>(72)},
+    {Coordinate::FromLeptons(0x000B, 0xFFE8), static_cast<game::DirType>(74)},
+    {Coordinate::FromLeptons(0x0000, 0xFFE9), static_cast<game::DirType>(76)},
+    {Coordinate::FromLeptons(0xFFF5, 0xFFE8), static_cast<game::DirType>(78)},
+    {Coordinate::FromLeptons(0xFFEB, 0xFFE7), static_cast<game::DirType>(80)},
+    {Coordinate::FromLeptons(0xFFE0, 0xFFE6), static_cast<game::DirType>(82)},
+    {Coordinate::FromLeptons(0xFFD5, 0xFFE5), static_cast<game::DirType>(84)},
+    {Coordinate::FromLeptons(0xFFCE, 0xFFE4), static_cast<game::DirType>(86)},
+    {Coordinate::FromLeptons(0xFFC5, 0xFFE2), static_cast<game::DirType>(88)},
+    {Coordinate::FromLeptons(0xFFC0, 0xFFE0), static_cast<game::DirType>(90)},
+    {Coordinate::FromLeptons(0xFFC5, 0xFFE3), static_cast<game::DirType>(92)},
+    {Coordinate::FromLeptons(0xFFCE, 0xFFE5), static_cast<game::DirType>(94)},
+    {Coordinate::FromLeptons(0xFFD5, 0xFFE9), static_cast<game::DirType>(95)},
+    {Coordinate::FromLeptons(0xFFE0, 0xFFEB), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFEB, 0xFFF0), static_cast<game::DirType>(96)},
+    {Coordinate::FromLeptons(0xFFF5, 0xFFF6), static_cast<game::DirType>(96)},
+    {Coordinate{}, static_cast<game::DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track11[] = {
-    {0x01000000L, game::DIR_SW},    {0x00F30008L, game::DIR_SW},
-    {0x00E50010L, game::DIR_SW_X1}, {0x00D60018L, game::DIR_SW_X1},
-    {0x00C80020L, game::DIR_SW_X1}, {0x00B90028L, game::DIR_SW_X1},
-    {0x00AB0030L, game::DIR_SW_X2}, {0x009C0038L, game::DIR_SW_X2},
-    {0x008D0040L, game::DIR_SW_X2}, {0x007F0048L, game::DIR_SW_X2},
-    {0x00710050L, game::DIR_SW_X2}, {0x00640058L, game::DIR_SW_X2},
-    {0x00550060L, game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0000, 0x0100), game::DIR_SW},
+    {Coordinate::FromLeptons(0x0008, 0x00F3), game::DIR_SW},
+    {Coordinate::FromLeptons(0x0010, 0x00E5), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0018, 0x00D6), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0020, 0x00C8), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0028, 0x00B9), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0030, 0x00AB), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0038, 0x009C), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0040, 0x008D), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0048, 0x007F), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0050, 0x0071), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0058, 0x0064), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0060, 0x0055), game::DIR_SW_X2},
 
-    {0x00000000L, game::DIR_SW_X2}};
+    {Coordinate{}, game::DIR_SW_X2}};
 
 const DriveClass::TrackType DriveClass::Track12[] = {
-    {0xFF550060L, game::DIR_SW_X2}, {0xFF640058L, game::DIR_SW_X2},
-    {0xFF710050L, game::DIR_SW_X2}, {0xFF7F0048L, game::DIR_SW_X2},
-    {0xFF8D0040L, game::DIR_SW_X2}, {0xFF9C0038L, game::DIR_SW_X2},
-    {0xFFAB0030L, game::DIR_SW_X2}, {0xFFB90028L, game::DIR_SW_X1},
-    {0xFFC80020L, game::DIR_SW_X1}, {0xFFD60018L, game::DIR_SW_X1},
-    {0xFFE50010L, game::DIR_SW_X1}, {0xFFF30008L, game::DIR_SW},
+    {Coordinate::FromLeptons(0x0060, 0xFF55), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0058, 0xFF64), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0050, 0xFF71), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0048, 0xFF7F), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0040, 0xFF8D), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0038, 0xFF9C), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0030, 0xFFAB), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0028, 0xFFB9), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0020, 0xFFC8), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0018, 0xFFD6), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0010, 0xFFE5), game::DIR_SW_X1},
+    {Coordinate::FromLeptons(0x0008, 0xFFF3), game::DIR_SW},
 
-    {0x00000000L, game::DIR_SW}};
+    {Coordinate{}, game::DIR_SW}};
 
 /*
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
-    {XYP_COORD(0, -35), game::DIR_S}, {XYP_COORD(0, -34), game::DIR_S},
-    {XYP_COORD(0, -33), game::DIR_S}, {XYP_COORD(0, -32), game::DIR_S},
-    {XYP_COORD(0, -31), game::DIR_S}, {XYP_COORD(0, -30), game::DIR_S},
-    {XYP_COORD(0, -29), game::DIR_S}, {XYP_COORD(0, -28), game::DIR_S},
-    {XYP_COORD(0, -27), game::DIR_S}, {XYP_COORD(0, -26), game::DIR_S},
-    {XYP_COORD(0, -25), game::DIR_S}, {XYP_COORD(0, -24), game::DIR_S},
-    {XYP_COORD(0, -23), game::DIR_S}, {XYP_COORD(0, -22), game::DIR_S},
-    {XYP_COORD(0, -21), game::DIR_S}, {XYP_COORD(0, -20), game::DIR_S},
-    {XYP_COORD(0, -19), game::DIR_S}, {XYP_COORD(0, -18), game::DIR_S},
-    {XYP_COORD(0, -17), game::DIR_S}, {XYP_COORD(0, -16), game::DIR_S},
-    {XYP_COORD(0, -15), game::DIR_S}, {XYP_COORD(0, -14), game::DIR_S},
-    {XYP_COORD(0, -13), game::DIR_S}, {XYP_COORD(0, -12), game::DIR_S},
-    {XYP_COORD(0, -11), game::DIR_S}, {XYP_COORD(0, -10), game::DIR_S},
-    {XYP_COORD(0, -9), game::DIR_S},  {XYP_COORD(0, -8), game::DIR_S},
-    {XYP_COORD(0, -7), game::DIR_S},  {XYP_COORD(0, -6), game::DIR_S},
-    {XYP_COORD(0, -5), game::DIR_S},  {XYP_COORD(0, -4), game::DIR_S},
-    {XYP_COORD(0, -3), game::DIR_S},  {XYP_COORD(0, -2), game::DIR_S},
-    {XYP_COORD(0, -1), game::DIR_S},
+    {XYP_Coord(0, -35), game::DIR_S}, {XYP_Coord(0, -34), game::DIR_S},
+    {XYP_Coord(0, -33), game::DIR_S}, {XYP_Coord(0, -32), game::DIR_S},
+    {XYP_Coord(0, -31), game::DIR_S}, {XYP_Coord(0, -30), game::DIR_S},
+    {XYP_Coord(0, -29), game::DIR_S}, {XYP_Coord(0, -28), game::DIR_S},
+    {XYP_Coord(0, -27), game::DIR_S}, {XYP_Coord(0, -26), game::DIR_S},
+    {XYP_Coord(0, -25), game::DIR_S}, {XYP_Coord(0, -24), game::DIR_S},
+    {XYP_Coord(0, -23), game::DIR_S}, {XYP_Coord(0, -22), game::DIR_S},
+    {XYP_Coord(0, -21), game::DIR_S}, {XYP_Coord(0, -20), game::DIR_S},
+    {XYP_Coord(0, -19), game::DIR_S}, {XYP_Coord(0, -18), game::DIR_S},
+    {XYP_Coord(0, -17), game::DIR_S}, {XYP_Coord(0, -16), game::DIR_S},
+    {XYP_Coord(0, -15), game::DIR_S}, {XYP_Coord(0, -14), game::DIR_S},
+    {XYP_Coord(0, -13), game::DIR_S}, {XYP_Coord(0, -12), game::DIR_S},
+    {XYP_Coord(0, -11), game::DIR_S}, {XYP_Coord(0, -10), game::DIR_S},
+    {XYP_Coord(0, -9), game::DIR_S},  {XYP_Coord(0, -8), game::DIR_S},
+    {XYP_Coord(0, -7), game::DIR_S},  {XYP_Coord(0, -6), game::DIR_S},
+    {XYP_Coord(0, -5), game::DIR_S},  {XYP_Coord(0, -4), game::DIR_S},
+    {XYP_Coord(0, -3), game::DIR_S},  {XYP_Coord(0, -2), game::DIR_S},
+    {XYP_Coord(0, -1), game::DIR_S},
 
-    {0x00000000L, game::DIR_S}};
+    {Coordinate{}, game::DIR_S}};
 
 /*
 **	There are a limited basic number of tracks that a vehicle can follow.

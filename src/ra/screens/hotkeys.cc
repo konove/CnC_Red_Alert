@@ -73,8 +73,10 @@ using enum engine::window::KeyNumber;
 static void Handle_View(const int view, const int action) {
   if (static_cast<unsigned>(view) < std::ssize(TheScenario().Views)) {
     if (action == 0) {
-      TheMap().Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
-          base::At(TheScenario().Views, view) - (MAP_CELL_W * 8) - 10))));
+      TheMap().Set_Tactical_Position(
+          Cell_Coord(static_cast<CELL>(base::At(TheScenario().Views, view) -
+                                       (MAP_CELL_W * 8) - 10))
+              .Whole());
 
       // Win95 scrolling logic cant handle just jumps in screen position so
       // redraw the lot.
@@ -303,7 +305,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     if (std::ssize(TheWorld().current_object())) {
       TheMap().Center_Map();
     } else {
-      if (ThePlayer()->Center != 0) {
+      if (ThePlayer()->Center) {
         TheMap().Center_Map(ThePlayer()->Center);
       }
     }
@@ -349,8 +351,9 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     // The corners are leptons relative to the tactical view, so 0 is its top
     // left and the size below is its full extent -- a drag select of everything
     // on screen.
-    TheMap().Select_These(0x00000000, XY_Coord(TheMap().TacLeptonWidth,
-                                               TheMap().TacLeptonHeight));
+    TheMap().Select_These(Coordinate{},
+                          Coordinate::FromLeptons(TheMap().TacLeptonWidth,
+                                                  TheMap().TacLeptonHeight));
     input = KN_NONE;
   }
 

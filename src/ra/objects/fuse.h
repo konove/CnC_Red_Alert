@@ -66,10 +66,10 @@ class FuseClass {
   FuseClass(FuseClass&&) = delete;
   FuseClass& operator=(FuseClass&&) = delete;
 
-  void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
+  void Arm_Fuse(Coordinate location, Coordinate target, int time = 0xFF,
                 int arming = 0);
-  bool Fuse_Checkup(COORDINATE newlocation);
-  [[nodiscard]] COORDINATE Fuse_Target() const;
+  bool Fuse_Checkup(Coordinate newlocation);
+  [[nodiscard]] Coordinate Fuse_Target() const;
 
   /*
   **	Fuses can detonate if enough time has elapsed. This value counts
@@ -89,7 +89,7 @@ class FuseClass {
   **	This is the designated impact point of the projectile. The fuse
   **	will trip when the closest point to this location has been reached.
   */
-  COORDINATE HeadTo = 0;
+  Coordinate HeadTo{};
 
   /*
   **	This is the running proximity value to the impact point. This value
@@ -99,7 +99,7 @@ class FuseClass {
   int16_t Proximity = 0;
 };
 
-inline COORDINATE FuseClass::Fuse_Target() const { return HeadTo; }
+inline Coordinate FuseClass::Fuse_Target() const { return HeadTo; }
 
 }  // namespace ra
 

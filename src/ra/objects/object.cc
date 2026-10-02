@@ -269,7 +269,7 @@ const char* ObjectClass::Name() const { return Class_Of().Name(); }
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Exit_Coord() const { return Center_Coord(); }
+Coordinate ObjectClass::Exit_Coord() const { return Center_Coord(); }
 
 /***********************************************************************************************
  * ObjectClass::AI -- Handles generic object AI processing. *
@@ -531,10 +531,10 @@ bool ObjectClass::Can_Player_Move() const {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Target_Coord() const {
+Coordinate ObjectClass::Target_Coord() const {
   DCHECK(IsActive);
 
-  return Coord_Add(XY_Coord(0, -Height), Center_Coord());
+  return Coordinate::FromLeptons(0, -Height) + Center_Coord();
   //	return(Center_Coord());
 }
 
@@ -554,7 +554,7 @@ COORDINATE ObjectClass::Target_Coord() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Center_Coord() const {
+Coordinate ObjectClass::Center_Coord() const {
   DCHECK(IsActive);
 
   return Coord;
@@ -575,7 +575,7 @@ COORDINATE ObjectClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Render_Coord() const {
+Coordinate ObjectClass::Render_Coord() const {
   DCHECK(IsActive);
 
   return Center_Coord();
@@ -598,7 +598,7 @@ COORDINATE ObjectClass::Render_Coord() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Docking_Coord() const {
+Coordinate ObjectClass::Docking_Coord() const {
   DCHECK(IsActive);
 
   return Center_Coord();
@@ -622,7 +622,7 @@ COORDINATE ObjectClass::Docking_Coord() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Sort_Y() const {
+Coordinate ObjectClass::Sort_Y() const {
   DCHECK(IsActive);
 
   return Coord;
@@ -647,7 +647,7 @@ COORDINATE ObjectClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const {
+Coordinate ObjectClass::Fire_Coord(int /*unused*/) const {
   DCHECK(IsActive);
 
   return Coord;
@@ -838,7 +838,7 @@ void ObjectClass::Clicked_As_Target(int /*unused*/) { DCHECK(IsActive); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
+bool ObjectClass::In_Range(Coordinate /*unused*/, int /*unused*/) const {
   DCHECK(IsActive);
 
   return false;
@@ -884,7 +884,7 @@ int ObjectClass::Weapon_Range(int /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/,
+void ObjectClass::Scatter(Coordinate /*unused*/, bool /*unused*/,
                           bool /*unused*/) {
   DCHECK(IsActive);
 }
@@ -1036,7 +1036,7 @@ void ObjectClass::Move(game::FacingType facing) {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
-  COORDINATE const coord = Adjacent_Cell(Coord, facing);
+  const Coordinate coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Coord_Cell(coord)) == game::MOVE_OK) {
     Coord = coord;
   }
@@ -1175,7 +1175,7 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
 
   int x = 0;
   int y = 0;
-  const COORDINATE coord = Render_Coord();
+  const Coordinate coord = Render_Coord();
 
   if (TheDebugState().map_editor_active() || TheDebugState().unshroud() ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
@@ -1303,7 +1303,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
+bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
@@ -1743,7 +1743,7 @@ bool ObjectClass::Revealed(HouseClass* house) {
  *                                                                                             *
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Paradrop(COORDINATE coord) {
+bool ObjectClass::Paradrop(Coordinate coord) {
   DCHECK(IsActive);
 
   Height = kFlightLevel;

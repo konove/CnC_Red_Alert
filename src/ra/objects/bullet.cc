@@ -167,7 +167,7 @@ BulletClass::~BulletClass() {
       auto* dog = dynamic_cast<InfantryClass*>(Payback);
       if (dog) {
         bool unlimbo = false;
-        COORDINATE newcoord = Coord;
+        Coordinate newcoord = Coord;
 
         /*
         **	Ensure that the coordinate, that the dog is to appear at, is
@@ -326,7 +326,7 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
       index++;
     }
 
-    const COORDINATE coord =
+    const Coordinate coord =
         Coord_Move(Coord, game::DIR_N, static_cast<uint16_t>(Height));
     const CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
@@ -417,7 +417,7 @@ void BulletClass::AI() {
   **	Move the projectile forward according to its speed
   **	and direction.
   */
-  COORDINATE coord = Coord;
+  Coordinate coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
       if (absl::EqualsIgnoreCase(Class->GraphicName, "FB1")) {
@@ -693,7 +693,7 @@ void BulletClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
@@ -708,7 +708,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   if (ObjectClass::Unlimbo(coord)) {
     MapEditClass::Remove(this, In_Which_Layer());
 
-    COORDINATE tcoord = As_Coord(TarCom);
+    Coordinate tcoord = As_Coord(TarCom);
 
     /*
     **	Homing projectiles (missiles) do NOT override facing. They just fire in
@@ -849,11 +849,11 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BulletClass::Target_Coord() const {
+Coordinate BulletClass::Target_Coord() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
-  return Coord_Add(XY_Coord(0, -Height), Coord);
+  return Coordinate::FromLeptons(0, -Height) + Coord;
 }
 
 /***********************************************************************************************
@@ -874,7 +874,7 @@ COORDINATE BulletClass::Target_Coord() const {
  *                                                                                             *
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BulletClass::Sort_Y() const {
+Coordinate BulletClass::Sort_Y() const {
   DCHECK(IsActive);
 
   return Coord_Move(Coord, game::DIR_S, CELL_LEPTON_H / 2);
@@ -921,7 +921,7 @@ LayerType BulletClass::In_Which_Layer() const {
  *                                                                                             *
  * HISTORY: * 10/10/1996 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
+bool BulletClass::Is_Forced_To_Explode(Coordinate& coord) const {
   coord = Coord;
   const CellClass* cellptr = &TheMap().at(coord);
 
@@ -939,8 +939,9 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   **	travel in anything but water.
   */
   if (Class->IsSubSurface) {
-    const int d = ra::Distance(Coord_Fraction(coord),
-                             XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
+    const int d = ra::Distance(
+        coord.Fraction(),
+        Coordinate::FromLeptons(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
     if (cellptr->Land_Type() != LAND_WATER ||
         (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
          cellptr->Cell_Techno() != Payback)) {
@@ -957,7 +958,7 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
       **	torpedo to explode on top of that bridge cell.
       */
       if (cellptr->Is_Bridge_Here()) {
-        coord = Coord_Snap(coord);
+        coord = coord.Snapped();
       }
 
       return true;

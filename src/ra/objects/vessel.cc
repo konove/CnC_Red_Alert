@@ -974,8 +974,8 @@ game::ResultType VesselClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached &&
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
-      auto* anim = base::NewPooled<AnimClass>(
-          ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+      auto* anim =
+          base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + XYP_Coord(0, -8));
       if (anim != nullptr) {
         anim->Attach_To(this);
       }
@@ -1053,7 +1053,7 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       ** there's only water squares between us and the target.
       */
       const ObjectClass* obj = As_Object(target);
-      COORDINATE coord = Center_Coord();
+      Coordinate coord = Center_Coord();
       if (obj != nullptr) {
         int totaldist = ra::Distance(coord, obj->Center_Coord());
         while (totaldist > CELL_LEPTON_W) {
@@ -1147,11 +1147,12 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE VesselClass::Fire_Coord(int which) const {
+Coordinate VesselClass::Fire_Coord(int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  COORDINATE coord = Center_Coord();
+  // One return of the named coordinate, so it is never copied (-Wnrvo).
+  Coordinate coord = Center_Coord();
 
   if (*this == VESSEL_CA) {
     if (IsSecondShot) {
@@ -1161,17 +1162,14 @@ COORDINATE VesselClass::Fire_Coord(int which) const {
     }
     coord = Coord_Move(coord, game::DIR_N, 0x0030);
     coord = Coord_Move(coord, Turret_Facing(), 0x0040);
-    return coord;
-  }
-
-  if (*this == VESSEL_PT) {
+  } else if (*this == VESSEL_PT) {
     coord = Coord_Move(coord, PrimaryFacing, 0x0080);
     coord = Coord_Move(coord, game::DIR_N, 0x0020);
     coord = Coord_Move(coord, Turret_Facing(), 0x0010);
-    return coord;
+  } else {
+    coord = DriveClass::Fire_Coord(which);
   }
-
-  return DriveClass::Fire_Coord(which);
+  return coord;
 }
 
 /***********************************************************************************************
@@ -1795,7 +1793,7 @@ int VesselClass::Mission_Unload() {
                    magic_enum::enum_values<game::FacingType>()) {
                 CellClass* cellptr = &TheMap().at(Coord).Adjacent_Cell(face);
                 if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
-                  cellptr->Incoming(0, true);
+                  cellptr->Incoming(Coordinate{}, true);
                 }
               }
 
@@ -1992,7 +1990,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
           const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
-          const COORDINATE coord = Cell_Coord(cell);
+          const Coordinate coord = Cell_Coord(cell);
 
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -2099,7 +2097,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-bool VesselClass::Start_Driver(COORDINATE& headto) {
+bool VesselClass::Start_Driver(Coordinate& headto) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 

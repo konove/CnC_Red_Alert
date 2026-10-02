@@ -108,13 +108,13 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   */
   static void Init();
 
-  bool Is_Forced_To_Explode(COORDINATE& coord) const;
+  bool Is_Forced_To_Explode(Coordinate& coord) const;
   void Bullet_Explodes(bool forced);
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] LayerType In_Which_Layer() const override;
-  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
@@ -130,7 +130,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
       bool /*redraw*/ = false) const override {
     return Occupy_List(false);
   }
-  [[nodiscard]] COORDINATE Target_Coord() const override;
+  [[nodiscard]] Coordinate Target_Coord() const override;
 
   /*
   **	File I/O.

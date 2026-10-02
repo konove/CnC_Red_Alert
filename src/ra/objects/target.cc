@@ -557,13 +557,13 @@ CELL As_Cell(TARGET target) { return Coord_Cell(As_Coord(target)); }
  *                                                                                             *
  * INPUT:   target   -- The target value to convert. *
  *                                                                                             *
- * OUTPUT:  Returns with the target expressed as a COORDINATE value. *
+ * OUTPUT:  Returns with the target expressed as a Coordinate value. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. * 11/16/1994 JLB : Simplified. *
  *=============================================================================================*/
-COORDINATE As_Coord(TARGET target) {
+Coordinate As_Coord(TARGET target) {
   if (Target_Legal(target)) {
     /*
     **	Cell target values are handled as a special case. The value of the
@@ -574,7 +574,7 @@ COORDINATE As_Coord(TARGET target) {
 
       const int x = static_cast<int>((v & 0x0FFFU) * 16) + 0x0008;
       const int y = static_cast<int>(((v >> 12U) & 0x0FFFU) * 16) + 0x0008;
-      return XY_Coord(x, y);
+      return Coordinate::FromLeptons(x, y);
     }
 
     /*
@@ -592,7 +592,7 @@ COORDINATE As_Coord(TARGET target) {
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return 0x00000000L;
+  return Coordinate{};
 }
 
 /***********************************************************************************************
@@ -611,7 +611,7 @@ COORDINATE As_Coord(TARGET target) {
  *                                                                                             *
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE As_Movement_Coord(TARGET target) {
+Coordinate As_Movement_Coord(TARGET target) {
   if (Target_Legal(target)) {
     /*
     **	Cell target values are handled as a special case. The value of the
@@ -635,7 +635,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return 0x00000000L;
+  return Coordinate{};
 }
 
 /***********************************************************************************************
@@ -946,9 +946,9 @@ TARGET As_Target(CELL cell) {
  *                                                                                             *
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
-TARGET As_Target(COORDINATE coord) {
-  const auto x = static_cast<uint32_t>(Coord_X(coord) / 16);
-  const auto y = static_cast<uint32_t>(Coord_Y(coord) / 16);
+TARGET As_Target(Coordinate coord) {
+  const auto x = static_cast<uint32_t>(coord.x() / 16);
+  const auto y = static_cast<uint32_t>(coord.y() / 16);
 
   return Build_Target(RTTI_CELL, static_cast<int>(y << 12U | x));
 }

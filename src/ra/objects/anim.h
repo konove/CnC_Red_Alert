@@ -70,7 +70,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   AnimTypeClass* Class = nullptr;
 
  public:
-  AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0,
+  AnimClass(AnimType animnum, Coordinate coord, int timedelay = 0,
             int loop = 1);
   ~AnimClass() override;
   AnimClass(const AnimClass&) = delete;
@@ -98,13 +98,13 @@ class AnimClass final : public ObjectClass, public StageClass {
   void Make_Invisible() { IsInvisible = true; }
   static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
 
-  [[nodiscard]] static bool Can_Place_Here(COORDINATE /*unused*/) {
+  [[nodiscard]] static bool Can_Place_Here(Coordinate /*unused*/) {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(PixelView& view, bool forced) override;  // const;
-  [[nodiscard]] COORDINATE Center_Coord() const override;
-  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] Coordinate Center_Coord() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;

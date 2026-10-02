@@ -154,7 +154,7 @@ class EventClass {
     struct {
       AnimType What;     // The animation to create.
       HousesType Owner;  // The owner of the animation (when it matters).
-      COORDINATE Where;  // The location to place the animation.
+      Coordinate Where;  // The location to place the animation.
     } Anim;
     struct {
       int Value;  // general-purpose data
@@ -198,7 +198,7 @@ class EventClass {
       CELL Cell;
       // Where in Cell it was placed, as a sub-cell coordinate: the weapons
       // that act on one unit take the one nearest this spot.
-      COORDINATE Where;
+      Coordinate Where;
     } Special;
 
     /*
@@ -271,8 +271,8 @@ class EventClass {
   EventClass(EventType type, RTTIType object, CELL cell);
   // A special weapon `id` placed at `where`, a sub-cell coordinate within
   // `cell`.
-  EventClass(EventType type, int id, CELL cell, COORDINATE where);
-  EventClass(AnimType anim, HousesType owner, COORDINATE coord);
+  EventClass(EventType type, int id, CELL cell, Coordinate where);
+  EventClass(AnimType anim, HousesType owner, Coordinate coord);
   EventClass(void* ptr, uint32_t size);
   EventClass(EventType type, std::span<std::byte> payload);
 

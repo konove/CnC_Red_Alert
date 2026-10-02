@@ -43,7 +43,7 @@
 
 namespace ra {
 
-std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
+std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
                                              const Rect& rect,
                                              const bool no_center) {
   if (!rect.Is_Valid()) {
@@ -52,8 +52,8 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   }
 
   const CELL origin_cell = Coord_Cell(coord);
-  const int x = Coord_X(coord);
-  const int y = Coord_Y(coord);
+  const int x = coord.x();
+  const int y = coord.y();
 
   // Convert the rect from coord-relative to absolute world leptons. Each edge
   // is a 16-bit lepton word, so a rect reaching past the world's left or top
@@ -96,41 +96,41 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   return offsets;
 }
 
-COORDINATE Coord_Move(const COORDINATE start, const game::DirType facing,
+Coordinate Coord_Move(const Coordinate start, const game::DirType facing,
                       const uint16_t distance) {
-  auto x = static_cast<int16_t>(Coord_X(start));
-  auto y = static_cast<int16_t>(Coord_Y(start));
+  auto x = static_cast<int16_t>(start.x());
+  auto y = static_cast<int16_t>(start.y());
   base::MovePoint(x, y, static_cast<uint8_t>(facing),
                   static_cast<int16_t>(distance));
-  return XY_Coord(x, y);
+  return Coordinate::FromLeptons(x, y);
 }
 
-COORDINATE Coord_Scatter(const COORDINATE coord, const int distance,
+Coordinate Coord_Scatter(const Coordinate coord, const int distance,
                          const bool lock) {
-  COORDINATE result =
+  Coordinate result =
       Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
                  static_cast<uint16_t>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.
-  if (result & kHighCoordMask) {
+  if (result.packed() & kHighCoordMask) {
     result = coord;
   }
 
   if (lock) {
-    result = Coord_Snap(result);
+    result = result.Snapped();
   }
 
   return result;
 }
 
 // "Dragon Strike" approximation: max + min/2. Fast and avoids sqrt.
-int Distance(const COORDINATE coord1, const COORDINATE coord2) {
-  int diff1 = Coord_Y(coord1) - Coord_Y(coord2);
+int Distance(const Coordinate coord1, const Coordinate coord2) {
+  int diff1 = coord1.y() - coord2.y();
   if (diff1 < 0) {
     diff1 = -diff1;
   }
 
-  int diff2 = Coord_X(coord1) - Coord_X(coord2);
+  int diff2 = coord1.x() - coord2.x();
   if (diff2 < 0) {
     diff2 = -diff2;
   }
@@ -145,7 +145,7 @@ int Distance(const TARGET target1, const TARGET target2) {
   return Distance(As_Coord(target1), As_Coord(target2));
 }
 
-std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
+std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
                                              int maxsize) {
   static const int16_t kFacingOffsets
       [static_cast<int>(magic_enum::enum_count<game::FacingType>()) + 1][5] = {
@@ -192,8 +192,8 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   if (maxsize > ICON_PIXEL_W) {
     maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
 
-    x = ICON_PIXEL_W * Coord_XLepton(coord) / ICON_LEPTON_W;
-    y = ICON_PIXEL_H * Coord_YLepton(coord) / ICON_LEPTON_H;
+    x = ICON_PIXEL_W * coord.sub_x() / ICON_LEPTON_W;
+    y = ICON_PIXEL_H * coord.sub_y() / ICON_LEPTON_H;
     const int left = x - maxsize;
     const int right = x + maxsize;
     const int top = y - maxsize;
@@ -232,8 +232,8 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   const int spill_threshold =
       base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
 
-  x = Coord_XLepton(coord) - 0x0080;
-  y = Coord_YLepton(coord) - 0x0080;
+  x = coord.sub_x() - 0x0080;
+  y = coord.sub_y() - 0x0080;
   // The north/south and east/west bits are set with "else if" so that opposing
   // pairs can never both be set. That keeps index away from the -1 entries in
   // kSpillToFacing, which stand for combinations that cannot occur.

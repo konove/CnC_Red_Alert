@@ -207,7 +207,7 @@ static const BuildingTypeClass ClassBarrel(
     TXT_BARREL,         // NAME:			Short name of the structure.
     "BARL",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -237,7 +237,7 @@ static const BuildingTypeClass ClassBarrel3(
     TXT_BARREL,         // NAME:			Short name of the structure.
     "BRL3",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -267,7 +267,7 @@ static const BuildingTypeClass ClassAVMine(
     TXT_AVMINE,         // NAME:			Short name of the structure.
     "MINV",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -297,7 +297,7 @@ static const BuildingTypeClass ClassAPMine(
     TXT_APMINE,         // NAME:			Short name of the structure.
     "MINP",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -327,7 +327,7 @@ static const BuildingTypeClass ClassIronCurtain(
     TXT_IRON_CURTAIN,  // NAME:			Short name of the structure.
     "IRON",            // NAME:			Short name of the structure.
     game::FACING_S,    // Foundation direction from center of building.
-    XYP_COORD(0, 0),   // Exit point for produced units.
+    XYP_Coord(0, 0),   // Exit point for produced units.
     REMAP_ALTERNATE,   // Sidebar remap logic.
     0x0000,            //	Vertical offset.
     0x0000,            // Primary weapon offset along turret centerline.
@@ -357,7 +357,7 @@ static const BuildingTypeClass ClassForwardCom(
     TXT_FORWARD_COM,  // NAME:			Short name of the structure.
     "FCOM",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -388,7 +388,7 @@ static const BuildingTypeClass ClassAdvancedTech(
                         // structure.
     "ATEK",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -418,7 +418,7 @@ static const BuildingTypeClass ClassChronosphere(
     TXT_CHRONOSPHERE,   // NAME:			Short name of the structure.
     "PDOX",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -449,11 +449,11 @@ static const BuildingTypeClass ClassWeapon(
                          // structure.
     "WEAP",              // NAME:			Short name of the structure.
     game::FACING_NONE,   // Foundation direction from center of building.
-    XY_Coord(CELL_LEPTON_W + (CELL_LEPTON_W / 2),
-             CELL_LEPTON_H),  // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    Coordinate::FromLeptons(CELL_LEPTON_W + (CELL_LEPTON_W / 2),
+                            CELL_LEPTON_H),  // Exit point for produced units.
+    REMAP_ALTERNATE,                         // Sidebar remap logic.
+    0x0000,                                  //	Vertical offset.
+    0x0000,          // Primary weapon offset along turret centerline.
     0x0000,          // Primary weapon lateral offset along turret centerline.
     false,           // Is this building a fake (decoy?)
     false,           // Animation rate is regulated for constant speed?
@@ -480,7 +480,7 @@ static const BuildingTypeClass ClassShipYard(
     TXT_SHIP_YARD,      // NAME:			Short name of the structure.
     "SYRD",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+    XYP_Coord(22 + (CELL_PIXEL_W / 2),
               (CELL_PIXEL_H * 2) -
                   (CELL_PIXEL_H / 2)),  // Exit point for produced units.
     REMAP_ALTERNATE,                    // Sidebar remap logic.
@@ -512,7 +512,7 @@ static const BuildingTypeClass ClassSubPen(
     TXT_SUB_PEN,        // NAME:			Short name of the structure.
     "SPEN",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+    XYP_Coord(22 + (CELL_PIXEL_W / 2),
               (CELL_PIXEL_H * 2) -
                   (CELL_PIXEL_H / 2)),  // Exit point for produced units.
     REMAP_ALTERNATE,                    // Sidebar remap logic.
@@ -544,7 +544,7 @@ static const BuildingTypeClass ClassPillbox(
     TXT_PILLBOX,        // NAME:			Short name of the structure.
     "PBOX",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0010,             //	Vertical offset.
     0x0040,             // Primary weapon offset along turret centerline.
@@ -574,7 +574,7 @@ static const BuildingTypeClass ClassCamoPillbox(
     TXT_CAMOPILLBOX,    // NAME:			Short name of the structure.
     "HBOX",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0010,             //	Vertical offset.
     0x0040,             // Primary weapon offset along turret centerline.
@@ -604,7 +604,7 @@ static const BuildingTypeClass ClassTesla(
     TXT_TESLA,        // NAME:			Short name of the structure.
     "TSLA",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x00C8,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -634,7 +634,7 @@ static const BuildingTypeClass ClassTurret(
     TXT_TURRET,         // NAME:			Short name of the structure.
     "GUN",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0030,             //	Vertical offset.
     0x0080,             // Primary weapon offset along turret centerline.
@@ -665,7 +665,7 @@ static const BuildingTypeClass ClassAAGun(
     TXT_AAGUN,        // NAME:			Short name of the structure.
     "AGUN",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -695,7 +695,7 @@ static const BuildingTypeClass ClassFlameTurret(
     TXT_FLAME_TURRET,   // NAME:			Short name of the structure.
     "FTUR",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -725,7 +725,7 @@ static const BuildingTypeClass ClassConst(
     TXT_CONST_YARD,     // NAME:			Short name of the structure.
     "FACT",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -755,7 +755,7 @@ static const BuildingTypeClass ClassFakeConst(
     TXT_FAKE_CONST,     // NAME:			Short name of the structure.
     "FACF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -785,7 +785,7 @@ static const BuildingTypeClass ClassFakeWeapon(
     TXT_FAKE_WEAP,      // NAME:			Short name of the structure.
     "WEAF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(10 + (CELL_PIXEL_W / 2),
+    XYP_Coord(10 + (CELL_PIXEL_W / 2),
               (CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2) -
                   21),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
@@ -817,7 +817,7 @@ static const BuildingTypeClass ClassRefinery(
     TXT_REFINERY,       // NAME:			Short name of the structure.
     "PROC",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -847,7 +847,7 @@ static const BuildingTypeClass ClassStorage(
     TXT_STORAGE,        // NAME:			Short name of the structure.
     "SILO",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -877,7 +877,7 @@ static const BuildingTypeClass ClassHelipad(
     TXT_HELIPAD,        // NAME:			Short name of the structure.
     "HPAD",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -907,7 +907,7 @@ static const BuildingTypeClass ClassCommand(
     TXT_COMMAND,        // NAME:			Short name of the structure.
     "DOME",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -938,7 +938,7 @@ static const BuildingTypeClass ClassGapGenerator(
                         // structure.
     "GAP",              // NAME:			Short name of the structure.
     game::FACING_S,     // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -968,7 +968,7 @@ static const BuildingTypeClass ClassSAM(
     TXT_SAM,            // NAME:			Short name of the structure.
     "SAM",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0030,             //	Vertical offset.
     0x0080,             // Primary weapon offset along turret centerline.
@@ -998,7 +998,7 @@ static const BuildingTypeClass ClassMissileSilo(
     TXT_MSLO,           // NAME:			Short name of the structure.
     "MSLO",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1028,7 +1028,7 @@ static const BuildingTypeClass ClassAirStrip(
     TXT_AIRSTRIP,     // NAME:			Short name of the structure.
     "AFLD",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1058,7 +1058,7 @@ static const BuildingTypeClass ClassPower(
     TXT_POWER,        // NAME:			Short name of the structure.
     "POWR",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1089,7 +1089,7 @@ static const BuildingTypeClass ClassAdvancedPower(
                          // structure.
     "APWR",              // NAME:			Short name of the structure.
     game::FACING_S,      // Foundation direction from center of building.
-    XYP_COORD(0, 0),     // Exit point for produced units.
+    XYP_Coord(0, 0),     // Exit point for produced units.
     REMAP_ALTERNATE,     // Sidebar remap logic.
     0x0000,              //	Vertical offset.
     0x0000,              // Primary weapon offset along turret centerline.
@@ -1119,7 +1119,7 @@ static const BuildingTypeClass ClassSovietTech(
     TXT_SOVIET_TECH,  // NAME:			Short name of the structure.
     "STEK",           // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1149,7 +1149,7 @@ static const BuildingTypeClass ClassHospital(
     TXT_HOSPITAL,       // NAME:			Short name of the structure.
     "HOSP",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1179,7 +1179,7 @@ static const BuildingTypeClass ClassBioLab(
     TXT_BIO_LAB,        // NAME:			Short name of the structure.
     "BIO",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1209,9 +1209,9 @@ static const BuildingTypeClass ClassBarracks(
     TXT_BARRACKS,       // NAME:			Short name of the structure.
     "BARR",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-                        //	XYP_COORD(24,47), // Exit
+                        //	XYP_Coord(24,47), // Exit
                         // point for produced units.
-    XYP_COORD(18, 47),  // Exit point for produced units.
+    XYP_Coord(18, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1241,7 +1241,7 @@ static const BuildingTypeClass ClassTent(
     TXT_BARRACKS,       // NAME:			Short name of the structure.
     "TENT",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(24, 47),  // Exit point for produced units.
+    XYP_Coord(24, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1271,7 +1271,7 @@ static const BuildingTypeClass ClassKennel(
     TXT_KENNEL,         // NAME:			Short name of the structure.
     "KENN",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(8, 16),   // Exit point for produced units.
+    XYP_Coord(8, 16),   // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1303,7 +1303,7 @@ static const BuildingTypeClass ClassFakeShipYard(
     TXT_FAKE_YARD,      // NAME:			Short name of the structure.
     "SYRF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+    XYP_Coord(22 + (CELL_PIXEL_W / 2),
               (CELL_PIXEL_H * 2) -
                   (CELL_PIXEL_H / 2)),  // Exit point for produced units.
     REMAP_ALTERNATE,                    // Sidebar remap logic.
@@ -1335,7 +1335,7 @@ static const BuildingTypeClass ClassFakeSubPen(
     TXT_FAKE_PEN,       // NAME:			Short name of the structure.
     "SPEF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(22 + (CELL_PIXEL_W / 2),
+    XYP_Coord(22 + (CELL_PIXEL_W / 2),
               (CELL_PIXEL_H * 2) -
                   (CELL_PIXEL_H / 2)),  // Exit point for produced units.
     REMAP_ALTERNATE,                    // Sidebar remap logic.
@@ -1367,7 +1367,7 @@ static const BuildingTypeClass ClassFakeCommand(
     TXT_FAKE_RADAR,     // NAME:			Short name of the structure.
     "DOMF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1397,7 +1397,7 @@ static const BuildingTypeClass ClassRepair(
     TXT_FIX_IT,         // NAME:			Short name of the structure.
     "FIX",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1427,7 +1427,7 @@ static const BuildingTypeClass ClassV01(
     TXT_CIV1,         // NAME:			Short name of the structure.
     "V01",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1457,7 +1457,7 @@ static const BuildingTypeClass ClassV02(
     TXT_CIV2,         // NAME:			Short name of the structure.
     "V02",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1487,7 +1487,7 @@ static const BuildingTypeClass ClassV03(
     TXT_CIV3,         // NAME:			Short name of the structure.
     "V03",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1517,7 +1517,7 @@ static const BuildingTypeClass ClassV04(
     TXT_CIV4,         // NAME:			Short name of the structure.
     "V04",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -1547,7 +1547,7 @@ static const BuildingTypeClass ClassV05(
     TXT_CIV5,           // NAME:			Short name of the structure.
     "V05",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1577,7 +1577,7 @@ static const BuildingTypeClass ClassV06(
     TXT_CIV6,           // NAME:			Short name of the structure.
     "V06",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1607,7 +1607,7 @@ static const BuildingTypeClass ClassV07(
     TXT_CIV7,           // NAME:			Short name of the structure.
     "V07",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1637,7 +1637,7 @@ static const BuildingTypeClass ClassV08(
     TXT_CIV8,           // NAME:			Short name of the structure.
     "V08",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1667,7 +1667,7 @@ static const BuildingTypeClass ClassV09(
     TXT_CIV9,           // NAME:			Short name of the structure.
     "V09",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1697,7 +1697,7 @@ static const BuildingTypeClass ClassV10(
     TXT_CIV10,          // NAME:			Short name of the structure.
     "V10",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1727,7 +1727,7 @@ static const BuildingTypeClass ClassV11(
     TXT_CIV11,          // NAME:			Short name of the structure.
     "V11",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1757,7 +1757,7 @@ static const BuildingTypeClass ClassV12(
     TXT_CIV12,          // NAME:			Short name of the structure.
     "V12",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1787,7 +1787,7 @@ static const BuildingTypeClass ClassV13(
     TXT_CIV13,          // NAME:			Short name of the structure.
     "V13",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1817,7 +1817,7 @@ static const BuildingTypeClass ClassV14(
     TXT_CIV14,          // NAME:			Short name of the structure.
     "V14",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1847,7 +1847,7 @@ static const BuildingTypeClass ClassV15(
     TXT_CIV15,          // NAME:			Short name of the structure.
     "V15",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1877,7 +1877,7 @@ static const BuildingTypeClass ClassV16(
     TXT_CIV16,          // NAME:			Short name of the structure.
     "V16",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1907,7 +1907,7 @@ static const BuildingTypeClass ClassV17(
     TXT_CIV17,          // NAME:			Short name of the structure.
     "V17",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1937,7 +1937,7 @@ static const BuildingTypeClass ClassV18(
     TXT_CIV18,          // NAME:			Short name of the structure.
     "V18",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1967,7 +1967,7 @@ static const BuildingTypeClass ClassV19(
     TXT_PUMP,           // NAME:			Short name of the structure.
     "V19",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -1997,7 +1997,7 @@ static const BuildingTypeClass ClassV20(
     TXT_CIV20,        // NAME:			Short name of the structure.
     "V20",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -2027,7 +2027,7 @@ static const BuildingTypeClass ClassV21(
     TXT_CIV21,          // NAME:			Short name of the structure.
     "V21",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2057,7 +2057,7 @@ static const BuildingTypeClass ClassV22(
     TXT_CIV22,          // NAME:			Short name of the structure.
     "V22",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2087,7 +2087,7 @@ static const BuildingTypeClass ClassV23(
     TXT_CIV23,          // NAME:			Short name of the structure.
     "V23",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2117,7 +2117,7 @@ static const BuildingTypeClass ClassV24(
     TXT_CIV24,        // NAME:			Short name of the structure.
     "V24",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -2147,7 +2147,7 @@ static const BuildingTypeClass ClassV25(
     TXT_CIV25,        // NAME:			Short name of the structure.
     "V25",            // NAME:			Short name of the structure.
     game::FACING_S,   // Foundation direction from center of building.
-    XYP_COORD(0, 0),  // Exit point for produced units.
+    XYP_Coord(0, 0),  // Exit point for produced units.
     REMAP_ALTERNATE,  // Sidebar remap logic.
     0x0000,           //	Vertical offset.
     0x0000,           // Primary weapon offset along turret centerline.
@@ -2177,7 +2177,7 @@ static const BuildingTypeClass ClassV26(
     TXT_CIV26,          // NAME:			Short name of the structure.
     "V26",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2207,7 +2207,7 @@ static const BuildingTypeClass ClassV27(
     TXT_CIV27,          // NAME:			Short name of the structure.
     "V27",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2237,7 +2237,7 @@ static const BuildingTypeClass ClassV28(
     TXT_CIV28,          // NAME:			Short name of the structure.
     "V28",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2267,7 +2267,7 @@ static const BuildingTypeClass ClassV29(
     TXT_CIV29,          // NAME:			Short name of the structure.
     "V29",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2297,7 +2297,7 @@ static const BuildingTypeClass ClassV30(
     TXT_CIV30,          // NAME:			Short name of the structure.
     "V30",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2327,7 +2327,7 @@ static const BuildingTypeClass ClassV31(
     TXT_CIV31,          // NAME:			Short name of the structure.
     "V31",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2357,7 +2357,7 @@ static const BuildingTypeClass ClassV32(
     TXT_CIV32,          // NAME:			Short name of the structure.
     "V32",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2387,7 +2387,7 @@ static const BuildingTypeClass ClassV33(
     TXT_CIV33,          // NAME:			Short name of the structure.
     "V33",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2417,7 +2417,7 @@ static const BuildingTypeClass ClassV34(
     TXT_CIV34,          // NAME:			Short name of the structure.
     "V34",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2447,7 +2447,7 @@ static const BuildingTypeClass ClassV35(
     TXT_CIV35,          // NAME:			Short name of the structure.
     "V35",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2477,7 +2477,7 @@ static const BuildingTypeClass ClassV36(
     TXT_CIV36,          // NAME:			Short name of the structure.
     "V36",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2506,7 +2506,7 @@ static const BuildingTypeClass ClassV37(
     TXT_CIV37,          // NAME:			Short name of the structure.
     "V37",              // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2535,7 +2535,7 @@ static const BuildingTypeClass ClassMission(
     TXT_CIVMISS,        // NAME:			Short name of the structure.
     "MISS",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2566,7 +2566,7 @@ static const BuildingTypeClass Sandbag(
     TXT_SANDBAG_WALL,   // NAME:			Short name of the structure.
     "SBAG",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2596,7 +2596,7 @@ static const BuildingTypeClass Cyclone(
     TXT_CYCLONE_WALL,   // NAME:			Short name of the structure.
     "CYCL",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2626,7 +2626,7 @@ static const BuildingTypeClass Brick(
     TXT_BRICK_WALL,     // NAME:			Short name of the structure.
     "BRIK",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2657,7 +2657,7 @@ static const BuildingTypeClass Barbwire(
                         // structure.
     "BARB",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2687,7 +2687,7 @@ static const BuildingTypeClass Wood(
     TXT_WOOD_WALL,      // NAME:			Short name of the structure.
     "WOOD",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2716,7 +2716,7 @@ static const BuildingTypeClass Fence(
     TXT_FENCE,          // NAME:			Short name of the structure.
     "FENC",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_NONE,         // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2746,7 +2746,7 @@ static const BuildingTypeClass ClassQueen(
     TXT_NONE,           // NAME:			Short name of the structure.
     "QUEE",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(24, 47),  // Exit point for produced units.
+    XYP_Coord(24, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2775,7 +2775,7 @@ static const BuildingTypeClass ClassLarva1(
     TXT_NONE,           // NAME:			Short name of the structure.
     "LAR1",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2804,7 +2804,7 @@ static const BuildingTypeClass ClassLarva2(
     TXT_NONE,           // NAME:			Short name of the structure.
     "LAR2",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_COORD(0, 0),    // Exit point for produced units.
+    XYP_Coord(0, 0),    // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
     0x0000,             // Primary weapon offset along turret centerline.
@@ -2846,7 +2846,7 @@ std::span<const std::byte> BuildingTypeClass::WarFactoryOverlay;
  *=============================================================================================*/
 BuildingTypeClass::BuildingTypeClass(
     StructType type, int name, const char* ininame, game::FacingType foundation,
-    COORDINATE exitpoint, RemapType remap, int verticaloffset,
+    Coordinate exitpoint, RemapType remap, int verticaloffset,
     int primaryoffset, int primarylateral, bool is_fake, bool is_regulated,
     bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
     bool is_selectable, bool is_legal_target, bool is_insignificant,
@@ -3720,7 +3720,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
           again = true;
           if (occupier->House->Is_Ally(house) && occupier->Is_Foot() &&
               !Target_Legal(dynamic_cast<FootClass*>(occupier)->NavCom)) {
-            TheMap().at(newcell).Incoming(0, true);
+            TheMap().at(newcell).Incoming(Coordinate{}, true);
           } else {
             //						Base_Is_Attacked(occupier);
           }
@@ -3787,8 +3787,8 @@ bool BuildingTypeClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
-  return Coord_Whole(coord);
+Coordinate BuildingTypeClass::Coord_Fixup(Coordinate coord) const {
+  return coord.Whole();
 }
 
 /***********************************************************************************************

@@ -738,7 +738,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     ini.Get_String("SyncBug", "Coord", "0", buf, 80);
-    TrapCoord = base::ParseHexOr<uint32_t>(buf, 0);
+    TrapCoord = Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
     TrapTarget = static_cast<TARGET>(base::ParseHexOr<uint32_t>(buf, 0));

@@ -448,13 +448,13 @@ bool TerrainClass::Catch_Fire() {
   DCHECK(IsActive);
 
   if (!IsCrumbling && !IsOnFire && Class->Armor == game::ARMOR_WOOD) {
-    auto* anim = base::NewPooled<AnimClass>(ANIM_BURN_BIG,
-                                            Coord_Add(Sort_Y(), 0xFFB00000L));
+    auto* anim = base::NewPooled<AnimClass>(
+        ANIM_BURN_BIG, Sort_Y() + Coordinate::FromLeptons(0, -0x50));
     if (anim) {
       anim->Attach_To(this);
     }
-    anim = base::NewPooled<AnimClass>(ANIM_BURN_MED,
-                                      Coord_Add(Sort_Y(), 0xFF200000L), 15);
+    anim = base::NewPooled<AnimClass>(
+        ANIM_BURN_MED, Sort_Y() + Coordinate::FromLeptons(0, -0xE0), 15);
     if (anim) {
       anim->Attach_To(this);
     }
@@ -490,8 +490,7 @@ void TerrainClass::Fire_Out() {
       Detach_All();
       Mark();
       Start_To_Crumble();
-      base::NewPooled<AnimClass>(ANIM_SMOKE_M,
-                                 Coord_Add(Coord, Class->CenterBase));
+      base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + Class->CenterBase);
     }
   }
 }
@@ -562,7 +561,7 @@ void TerrainClass::AI() {
  * HISTORY: * 11/02/1994 JLB : Created. * 11/16/1994 JLB : Checks for theater
  *legality.                                             *
  *=============================================================================================*/
-bool TerrainClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool TerrainClass::Unlimbo(Coordinate coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
@@ -637,11 +636,11 @@ bool TerrainClass::Limbo() {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TerrainClass::Center_Coord() const {
+Coordinate TerrainClass::Center_Coord() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
-  return Coord_Add(Coord, Class->CenterBase);
+  return Coord + Class->CenterBase;
 }
 
 /***********************************************************************************************
@@ -708,8 +707,8 @@ std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
  *                                                                                             *
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TerrainClass::Target_Coord() const {
-  return Coord_Add(XY_Coord(0, -Height), Sort_Y());
+Coordinate TerrainClass::Target_Coord() const {
+  return Coordinate::FromLeptons(0, -Height) + Sort_Y();
 }
 
 /***********************************************************************************************

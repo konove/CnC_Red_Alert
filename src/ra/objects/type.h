@@ -113,7 +113,7 @@ class AbstractTypeClass {
 
   // Adjusts a placement coordinate for this type. Derived classes override
   // to snap to cell boundaries or apply other type-specific rules.
-  [[nodiscard]] virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
+  [[nodiscard]] virtual Coordinate Coord_Fixup(Coordinate coord) const;
 
   // Returns the text string index for this type's display name, checking
   // the NameOverride table for scenario-specific replacements first.
@@ -709,7 +709,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *placed on the map. *	Typically, this is located next to a door. The unit will
   *then travel on to a clear *	terrain area and enter normal game processing.
   */
-  COORDINATE ExitCoordinate;
+  Coordinate ExitCoordinate;
 
   /*
   **	When determine which cell to head toward when exiting a building, use
@@ -773,7 +773,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   */
   BuildingTypeClass(
       StructType type, int name, const char* ininame,
-      game::FacingType foundation, COORDINATE exitpoint, RemapType remap,
+      game::FacingType foundation, Coordinate exitpoint, RemapType remap,
       int verticaloffset, int primaryoffset, int primarylateral, bool is_fake,
       bool is_regulated, bool is_nominal, bool is_wall, bool is_simpledamage,
       bool is_stealthy, bool is_selectable, bool is_legal_target,
@@ -808,7 +808,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   bool Read_INI(CCINIClass& ini) override;
   bool Flush_For_Placement(CELL cell, HouseClass* house) const;
   [[nodiscard]] int Cost_Of() const override;
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   [[nodiscard]] int Max_Pips() const override;
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
@@ -1530,7 +1530,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   **	position of the terrain object lies. For trees, this would be the base
   *of *	the trunk. This is used for sorting purposes.
   */
-  COORDINATE CenterBase;
+  Coordinate CenterBase;
 
   /*
   **	This is the bitfield control that tells which theater this terrain
@@ -1546,7 +1546,7 @@ class TerrainTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------------
   TerrainTypeClass(
-      TerrainType terrain, uint32_t theater, COORDINATE centerbase,
+      TerrainType terrain, uint32_t theater, Coordinate centerbase,
       bool is_immune, bool is_water, const char* ininame, int fullname,
       std::span<const int16_t> occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -1565,7 +1565,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell, HousesType house) const override;
@@ -1625,7 +1625,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,
@@ -1919,7 +1919,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(CELL cell,

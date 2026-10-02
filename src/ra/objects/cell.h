@@ -241,10 +241,10 @@ class CellClass {
   [[nodiscard]] static RTTIType What_Am_I() { return RTTI_CELL; }
   [[nodiscard]] BuildingClass* Cell_Building() const;
   [[nodiscard]] CELL Cell_Number() const { return ID; }
-  [[nodiscard]] COORDINATE Cell_Coord() const;
-  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+  [[nodiscard]] Coordinate Cell_Coord() const;
+  [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;
-  [[nodiscard]] COORDINATE Free_Spot() const {
+  [[nodiscard]] Coordinate Free_Spot() const {
     return Closest_Free_Spot(Cell_Coord());
   }
   // Returns the cell adjacent to this one in direction `face`, or this cell
@@ -276,7 +276,7 @@ class CellClass {
   }
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] int Clear_Icon() const;
-  static int Spot_Index(COORDINATE coord);
+  static int Spot_Index(Coordinate coord);
 
   /*
   **	Object placement and removal flag operations.
@@ -318,7 +318,7 @@ class CellClass {
   void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
   bool Reduce_Wall(int damage);
-  void Incoming(COORDINATE threat = 0, bool forced = false,
+  void Incoming(Coordinate threat = {}, bool forced = false,
                 bool nokidding = false);
   void Adjust_Threat(HousesType house, int threat_value);
 

@@ -159,7 +159,7 @@ ChronalVortexClass::~ChronalVortexClass() = default;
  *                                                                                             *
  * HISTORY: * 8/29/96 4:27PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Appear(COORDINATE coordinate) {
+void ChronalVortexClass::Appear(Coordinate coordinate) {
   if (Active) {
     return;
   }
@@ -167,8 +167,8 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   /*
   ** Adjust the given coordinate so the vortex appears in a central position
   */
-  int x = Lepton_To_Pixel(Coord_X(coordinate));
-  int y = Lepton_To_Pixel(Coord_Y(coordinate));
+  int x = Lepton_To_Pixel(coordinate.x());
+  int y = Lepton_To_Pixel(coordinate.y());
 
   x -= 32;
   y -= 32;
@@ -176,7 +176,7 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   const int lx = Pixel_To_Lepton(x);
   const int ly = Pixel_To_Lepton(y);
 
-  Position = XY_Coord(lx, ly);
+  Position = Coordinate::FromLeptons(lx, ly);
 
   /*
   ** Initialise the vortex variables.
@@ -458,10 +458,10 @@ void ChronalVortexClass::Movement() {
   */
   // Each component is a 16-bit lepton word: drifting past the world's left or
   // top edge wraps to a huge position, as it always has.
-  const int x = static_cast<uint16_t>(Coord_X(Position) + XDir);
-  const int y = static_cast<uint16_t>(Coord_Y(Position) + YDir);
+  const int x = static_cast<uint16_t>(Position.x() + XDir);
+  const int y = static_cast<uint16_t>(Position.y() + YDir);
 
-  Position = XY_Coord(x, y);
+  Position = Coordinate::FromLeptons(x, y);
 
   /*
   ** Reverse the direction of the vortex if its drifting off the map.
@@ -581,8 +581,8 @@ void ChronalVortexClass::Attack() {
   /*
   ** Calculate the position of the center of the vortex.
   */
-  int x = Lepton_To_Pixel(Coord_X(Position));
-  int y = Lepton_To_Pixel(Coord_Y(Position));
+  int x = Lepton_To_Pixel(Position.x());
+  int y = Lepton_To_Pixel(Position.y());
 
   x += 32;
   y += 12;
@@ -590,7 +590,7 @@ void ChronalVortexClass::Attack() {
   const int lx = Pixel_To_Lepton(x);
   const int ly = Pixel_To_Lepton(y);
 
-  const COORDINATE here = XY_Coord(lx, ly);
+  const Coordinate here = Coordinate::FromLeptons(lx, ly);
 
   /*
   ** Scan through the ground layer objects and see who we should attack
@@ -668,8 +668,8 @@ void ChronalVortexClass::Zap_Target() {
     /*
     ** Get the center of the vortex.
     */
-    int x = Lepton_To_Pixel(Coord_X(Position));
-    int y = Lepton_To_Pixel(Coord_Y(Position));
+    int x = Lepton_To_Pixel(Position.x());
+    int y = Lepton_To_Pixel(Position.y());
 
     x += 32;
     y += 12;
@@ -677,7 +677,7 @@ void ChronalVortexClass::Zap_Target() {
     const int lx = Pixel_To_Lepton(x);
     const int ly = Pixel_To_Lepton(y);
 
-    const COORDINATE here = XY_Coord(lx, ly);
+    const Coordinate here = Coordinate::FromLeptons(lx, ly);
 
     /*
     ** Create a temporary techno object se we can access the lightning ability
@@ -819,8 +819,8 @@ void ChronalVortexClass::Render(PixelView& view) {
       *if we build
       ** the image from the hidpage.
       */
-      const CELL xc = Coord_XCell(Position);
-      const CELL yc = Coord_YCell(Position);
+      const auto xc = static_cast<CELL>(Position.cell_x());
+      const auto yc = static_cast<CELL>(Position.cell_y());
       const TemplateTypeClass* ttype = nullptr;
       int icon = 0;  // The icon number to use from the template set.
 
@@ -853,7 +853,7 @@ void ChronalVortexClass::Render(PixelView& view) {
         for (int x = 0; x < 4; x++) {
           CELL const cell = XY_Cell(xc + x, yc + y);
           if (cell != -1) {
-            // cellptr = &Map[ Coord_Whole (Cell_Coord(cell)) ];
+            // cellptr = &Map[ Cell_Coord(cell).Whole() ];
             CellClass* cellptr = &TheMap().at(cell);
 
             /*
@@ -921,26 +921,26 @@ void ChronalVortexClass::Render(PixelView& view) {
       ** Render the vortex over the cells we just rendered to our buffer
       */
       Coordinate_Remap(&RenderBuffer.view(),
-                       Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
-                       Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
-                       64, base::UnsignedBytes(lut_ptr));
+                       Lepton_To_Pixel(Position.Fraction().x()),
+                       Lepton_To_Pixel(Position.Fraction().y()), 64, 64,
+                       base::UnsignedBytes(lut_ptr));
 
       /*
       ** Calculate the pixel position of our fresh block of cells on the
       *tactical map so *	we can blit it to the hid page.
       */
-      // Coord_Whole(Position);
-      const COORDINATE render_pos =
-          XY_Coord(xc * CELL_LEPTON_W, yc * CELL_LEPTON_H);
+      // Position.Whole();
+      const Coordinate render_pos =
+          Coordinate::FromLeptons(xc * CELL_LEPTON_W, yc * CELL_LEPTON_H);
 
       const int xtac =
-          Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TheMap().TacticalCoord)));
-      int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(render_pos)));
+          Pixel_To_Lepton(Lepton_To_Pixel(TheMap().TacticalCoord.x()));
+      int xoff = Pixel_To_Lepton(Lepton_To_Pixel(render_pos.x()));
       xoff -= xtac;
 
       const int ytac =
-          Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TheMap().TacticalCoord)));
-      int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(render_pos)));
+          Pixel_To_Lepton(Lepton_To_Pixel(TheMap().TacticalCoord.y()));
+      int yoff = Pixel_To_Lepton(Lepton_To_Pixel(render_pos.y()));
       yoff -= ytac;
 
       /*
@@ -977,8 +977,8 @@ void ChronalVortexClass::Render(PixelView& view) {
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ChronalVortexClass::Set_Redraw() {
   if (Active) {
-    const CELL xc = Coord_XCell(Position);
-    const CELL yc = Coord_YCell(Position);
+    const auto xc = static_cast<CELL>(Position.cell_x());
+    const auto yc = static_cast<CELL>(Position.cell_y());
 
     for (int y = std::max(0, yc - 1); y < yc + 4; y++) {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {

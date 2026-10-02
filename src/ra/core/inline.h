@@ -40,19 +40,7 @@
  *Convert a cell distance into a lepton distance.                         *
  *   Cell_X -- Fetch the X cell component from the cell value. * Cell_Y -- Fetch
  *the Y cell component from the cell value specified.                       *
- *   Coord_Add -- Adds coordinates together. * Coord_Fraction -- Discards all
- *but the sub-cell components of the coordinate.             * Coord_Mid --
- *Finds the midpoint between two coordinates.                                  *
- *   Coord_Snap -- Coerce coordinate to refer to center of a cell. * Coord_Sub
- *-- Subtracts one coordinate from another. * Coord_Whole -- Discards the
- *sub-cell components of the coordinate.                        * Coord_X --
- *Fetches the X lepton component from a coordinate value. * Coord_XCell -- Fetch
- *the X cell component from a coordinate value.                        *
- *   Coord_XLepton -- Fetch the X sub-cell lepton component from the coordinate.
- ** Coord_Y -- Fetch the Y lepton component from the coordinate value. *
- *   Coord_YCell -- Fetch the Y cell component from a coordinate. *
- *   Coord_YLepton -- Fetches the Y lepton sub-cell component from the
- *coordinate.             * Dir_Facing -- Convert a DirType into a FacingType
+ *   Dir_Facing -- Convert a DirType into a FacingType
  *value.                                  * Dir_To_16 -- Convert a facing to a
  *0..15 value.                                           * Dir_To_32 -- Convert
  *a DirType into a 0..31 value.                                        *
@@ -71,11 +59,9 @@
  *   Sim_Percent_Chance -- Calculates a percentage chance event for local
  *events.              * Sim_Random_Pick -- Picks a random number that will not
  *affect the game.                   * Text_String -- Convert a text number into
- *a text pointer.                                 * XYP_COORD -- Convert pixel
- *components into a coordinate value.                            * XYP_Coord --
+ *a text pointer.                                 * XYP_Coord --
  *Combine pixel values into a coordinate.                                      *
- *   XY_Cell -- Create a cell from X and Y cell components. * XY_Coord --
- *Convert X Y lepton components into a COORD. *
+ *   XY_Cell -- Create a cell from X and Y cell components. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -112,26 +98,6 @@ inline RandomClass& LocalRandom() {
 }
 
 /***********************************************************************************************
- * XYP_COORD -- Convert pixel components into a coordinate value. *
- *                                                                                             *
- *    This routine will take the specified pixel components and convert and
- *combine them into  * a coordinate value. *
- *                                                                                             *
- * INPUT:   x,y   -- The X and Y pixel components to coerce into a coordinate
- *value.           *
- *                                                                                             *
- * OUTPUT:  Returns with the coordinate value that matches the pixel values
- *specified.         *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/21/1996 JLB : Created. *
- *=============================================================================================*/
-inline COORDINATE XYP_COORD(int x, int y) noexcept {
-  return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
-}
-
-/***********************************************************************************************
  * XYP_Coord -- Combine pixel values into a coordinate. *
  *                                                                                             *
  *    This will convert X and Y pixel values into a coordinate. Primarily this
@@ -150,8 +116,8 @@ inline COORDINATE XYP_COORD(int x, int y) noexcept {
  *                                                                                             *
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE XYP_Coord(int x, int y) {
-  return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
+inline Coordinate XYP_Coord(int x, int y) noexcept {
+  return Coordinate::FromLeptons(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 
 /***********************************************************************************************
@@ -171,9 +137,9 @@ inline COORDINATE XYP_Coord(int x, int y) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline game::DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                 Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
+                                 coord2.y());
 }
 
 /***********************************************************************************************
@@ -194,9 +160,9 @@ inline game::DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline game::DirType Direction(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                 Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
+                                 coord2.y());
 }
 
 /***********************************************************************************************
@@ -216,9 +182,8 @@ inline game::DirType Direction(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline game::DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
-                               Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing8(coord1.x(), coord1.y(), coord2.x(), coord2.y());
 }
 
 /***********************************************************************************************
@@ -238,9 +203,9 @@ inline game::DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE Adjacent_Cell(COORDINATE coord, game::FacingType dir) {
-  return Coord_Snap(Coord_Add(
-      AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))), coord));
+inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
+  return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)
+      .Snapped();
 }
 
 /***********************************************************************************************
@@ -260,7 +225,7 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, game::FacingType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE Adjacent_Cell(COORDINATE coord, game::DirType dir) {
+inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
   return Adjacent_Cell(coord, game::Dir_Facing(dir));
 }
 
@@ -282,7 +247,7 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, game::DirType dir) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
-  // Wrapped like the COORDINATE overload above, so that FACING_NONE (-1) does
+  // Wrapped like the Coordinate overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
   return static_cast<CELL>(
       cell + AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));

@@ -1113,7 +1113,7 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = base::NewPooled<InfantryClass>(Type, house);
   if (i != nullptr) {
-    const COORDINATE coord =
+    const Coordinate coord =
         TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, game::DIR_E);

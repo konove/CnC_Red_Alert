@@ -1,9 +1,10 @@
 // The bit layouts of Red Alert's packed map and target words: CELL (7-bit X
-// and Y), the lepton word (cell byte over sub-cell byte), COORDINATE (X lepton
-// word low, Y lepton word high) and TARGET (8-bit RTTI kind over a 24-bit
-// value), with the lepton/pixel conversions that share the 16-bit lepton word.
-// A lepton (256 to a cell) is a plain int everywhere else; these helpers
-// wrap it to the 16-bit word.
+// and Y), the lepton word (cell byte over sub-cell byte) and TARGET (8-bit
+// RTTI kind over a 24-bit value), with the lepton/pixel conversions that share
+// the 16-bit lepton word and the conversions between CELL and Coordinate
+// (ra/core/coordinate.h, which holds the coordinate's own layout). A lepton
+// (256 to a cell) is a plain int everywhere else; these helpers wrap it to the
+// 16-bit word.
 
 #ifndef CNC_RED_ALERT_RA_CORE_PACKED_H_
 #define CNC_RED_ALERT_RA_CORE_PACKED_H_
@@ -11,6 +12,7 @@
 #include <cstdint>
 
 #include "game/core/display_constants.h"
+#include "ra/core/coordinate.h"
 #include "ra/core/defines.h"
 
 namespace ra {
@@ -24,26 +26,9 @@ inline constexpr unsigned kTargetMantissaBits = 24;
 inline constexpr uint32_t kTargetMantissaMask =
     (uint32_t{1} << kTargetMantissaBits) - 1;
 
-// Combines X and Y lepton components into a coordinate. Each keeps its low 16
-// bits, so a negative component becomes its two's complement word.
-constexpr COORDINATE XY_Coord(int x, int y) noexcept {
-  return (COORDINATE{static_cast<uint16_t>(y)} << 16U) |
-         static_cast<uint16_t>(x);
-}
-
 // Returns the sub-cell coordinate of a cell's center.
-constexpr COORDINATE CellCenterFraction() noexcept {
-  return XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_H / 2);
-}
-
-// Returns the X lepton component of a coordinate, in 0..65535.
-constexpr int Coord_X(COORDINATE coord) noexcept {
-  return static_cast<uint16_t>(coord);
-}
-
-// Returns the Y lepton component of a coordinate, in 0..65535.
-constexpr int Coord_Y(COORDINATE coord) noexcept {
-  return static_cast<uint16_t>(coord >> 16U);
+constexpr Coordinate CellCenterFraction() noexcept {
+  return Coordinate::FromLeptons(CELL_LEPTON_W / 2, CELL_LEPTON_H / 2);
 }
 
 // Returns the cell byte of a lepton word: whole cells. The lepton keeps its
@@ -62,16 +47,6 @@ constexpr int Lepton_Fraction(int lepton) noexcept {
 constexpr int Make_Lepton(int cell, int fraction) noexcept {
   return static_cast<int>(((static_cast<unsigned>(cell) & 0xFFU) << 8U) |
                           (static_cast<unsigned>(fraction) & 0xFFU));
-}
-
-// Returns the X cell component of a coordinate.
-constexpr CELL Coord_XCell(COORDINATE coord) noexcept {
-  return static_cast<CELL>(Lepton_Cell(Coord_X(coord)));
-}
-
-// Returns the Y cell component of a coordinate.
-constexpr CELL Coord_YCell(COORDINATE coord) noexcept {
-  return static_cast<CELL>(Lepton_Cell(Coord_Y(coord)));
 }
 
 // Combines X and Y cell components into a cell. Each keeps its low 7 bits, so
@@ -123,59 +98,16 @@ constexpr int Cell_Y(CELL cell) noexcept {
       kCellMask);
 }
 
-// Returns the X position within its cell, 0 at the cell's left edge.
-constexpr int Coord_XLepton(COORDINATE coord) noexcept {
-  return Lepton_Fraction(Coord_X(coord));
-}
-
-// Returns the Y position within its cell, 0 at the cell's top edge.
-constexpr int Coord_YLepton(COORDINATE coord) noexcept {
-  return Lepton_Fraction(Coord_Y(coord));
-}
-
-// Returns the cell a coordinate lies in.
-constexpr CELL Coord_Cell(COORDINATE coord) noexcept {
-  return XY_Cell(Coord_XCell(coord), Coord_YCell(coord));
+// Returns the cell a coordinate lies in. Each cell byte keeps its low 7 bits,
+// so an X cell byte of 128 (off the map) wraps to column 0.
+constexpr CELL Coord_Cell(Coordinate coord) noexcept {
+  return XY_Cell(coord.cell_x(), coord.cell_y());
 }
 
 // Returns the coordinate of a cell's center.
-constexpr COORDINATE Cell_Coord(CELL cell) noexcept {
-  return XY_Coord(Make_Lepton(Cell_X(cell), CELL_LEPTON_W / 2),
-                  Make_Lepton(Cell_Y(cell), CELL_LEPTON_H / 2));
-}
-
-// Moves a coordinate to the center of its cell.
-constexpr COORDINATE Coord_Snap(COORDINATE coord) noexcept {
-  return XY_Coord(Make_Lepton(Lepton_Cell(Coord_X(coord)), CELL_LEPTON_W / 2),
-                  Make_Lepton(Lepton_Cell(Coord_Y(coord)), CELL_LEPTON_H / 2));
-}
-
-// Keeps only the position within the cell, dropping the cell components.
-constexpr COORDINATE Coord_Fraction(COORDINATE coord) noexcept {
-  return coord & 0x00FF00FFU;
-}
-
-// Moves a coordinate to the upper left corner of its cell.
-constexpr COORDINATE Coord_Whole(COORDINATE coord) noexcept {
-  return coord & 0xFF00FF00U;
-}
-
-// Adds two coordinates component by component; each component wraps at 16
-// bits, so a coordinate can carry a negative offset.
-constexpr COORDINATE Coord_Add(COORDINATE a, COORDINATE b) noexcept {
-  return XY_Coord(Coord_X(a) + Coord_X(b), Coord_Y(a) + Coord_Y(b));
-}
-
-// Subtracts coord2 from coord1 component by component, wrapping at 16 bits.
-constexpr COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) noexcept {
-  return XY_Coord(Coord_X(coord1) - Coord_X(coord2),
-                  Coord_Y(coord1) - Coord_Y(coord2));
-}
-
-// Returns the midpoint of two coordinates, averaging the unsigned components.
-constexpr COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) noexcept {
-  return XY_Coord((Coord_X(coord1) + Coord_X(coord2)) / 2,
-                  (Coord_Y(coord1) + Coord_Y(coord2)) / 2);
+constexpr Coordinate Cell_Coord(CELL cell) noexcept {
+  return Coordinate::FromLeptons(Make_Lepton(Cell_X(cell), CELL_LEPTON_W / 2),
+                                 Make_Lepton(Cell_Y(cell), CELL_LEPTON_H / 2));
 }
 
 // Packs an RTTI kind and a value into a target. The value keeps its low 24

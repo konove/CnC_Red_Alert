@@ -182,18 +182,18 @@ void Shorten_Attached_Anims(const ObjectClass* obj) {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/15/1994 JLB : Handles flat anims
  *(infantry decay anims).                               *
  *=============================================================================================*/
-COORDINATE AnimClass::Sort_Y() const {
+Coordinate AnimClass::Sort_Y() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
-    return Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L);
+    return As_Object(xObject)->Sort_Y() + Coordinate::FromLeptons(0, 1);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return Coord_Add(Center_Coord(), XYP_COORD(0, -24));
+    return Center_Coord() + XYP_Coord(0, -24);
   }
   if (Class->IsGroundLayer || *this == ANIM_LZ_SMOKE) {
-    return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
+    return Center_Coord() + XYP_Coord(0, 14);
   }
   return Coord;
 }
@@ -217,12 +217,12 @@ COORDINATE AnimClass::Sort_Y() const {
  * HISTORY: * 09/19/1994 JLB : Created. * 02/02/1996 JLB : Coordinate based on
  *visual center of object.                             *
  *=============================================================================================*/
-COORDINATE AnimClass::Center_Coord() const {
+Coordinate AnimClass::Center_Coord() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
-    return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
+    return Coord + As_Object(xObject)->Target_Coord();
   }
   return Coord;
 }
@@ -490,7 +490,7 @@ void AnimClass::operator delete(void* ptr) {
  * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed
  *affect parameter.                                        *
  *=============================================================================================*/
-AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
+AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
                      int loop)
     : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().SlotIndexOf(this)),
       Class(TheTypeHeaps().anim().ActiveAt(static_cast<int>(animnum))),
@@ -590,7 +590,7 @@ AnimClass::~AnimClass() {
         to->IsAnimAttached = false;
         to->Mark(MARK_OVERLAP_DOWN);
       }
-      Coord = Coord_Add(to->Center_Coord(), Coord);
+      Coord = to->Center_Coord() + Coord;
       xObject = kTargetNone;
     }
 
@@ -802,7 +802,7 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   MapEditClass::Remove(this, In_Which_Layer());
   xObject = obj->As_Target();
   MapEditClass::Submit(this, In_Which_Layer());
-  Coord = Coord_Sub(Coord, obj->Target_Coord());
+  Coord = Coord - obj->Target_Coord();
 }
 
 /***********************************************************************************************

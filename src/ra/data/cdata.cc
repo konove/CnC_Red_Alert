@@ -72,7 +72,6 @@
 #include "ra/assets/window_rect.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
@@ -2213,8 +2212,8 @@ TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
   return *TheTypeHeaps().tmplate().ActiveAt(static_cast<int>(type));
 }
 
-COORDINATE TemplateTypeClass::Coord_Fixup(COORDINATE coord) const {
-  return Coord_Whole(coord);
+Coordinate TemplateTypeClass::Coord_Fixup(Coordinate coord) const {
+  return coord.Whole();
 }
 
 }  // namespace ra

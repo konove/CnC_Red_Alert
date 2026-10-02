@@ -89,6 +89,14 @@ TEST(CoordinateTest, MidpointAveragesUnsignedComponents) {
             Coordinate::FromLeptons(0, 0x200));
 }
 
+// The order is the packed word's: Y first, then X.
+TEST(CoordinateTest, OrdersByPackedWord) {
+  EXPECT_LT(Coordinate::FromLeptons(0xFFFF, 1), Coordinate::FromLeptons(0, 2));
+  EXPECT_LT(Coordinate::FromLeptons(1, 2), Coordinate::FromLeptons(2, 2));
+  EXPECT_GT(Coordinate::FromLeptons(0, 0x8000), Coordinate::FromLeptons(0, 1));
+  EXPECT_LE(kSample, kSample);
+}
+
 TEST(CoordinateTest, ExplicitBoolIsNonZero) {
   EXPECT_FALSE(static_cast<bool>(Coordinate{}));
   EXPECT_TRUE(static_cast<bool>(Coordinate::FromLeptons(1, 0)));

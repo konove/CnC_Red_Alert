@@ -77,7 +77,7 @@ class ChronalVortexClass {
   /*
   ** Makes the vortex appear at the specified coordinate.
   */
-  void Appear(COORDINATE coordinate);
+  void Appear(Coordinate coordinate);
 
   /*
   ** Makes the vortex go away.
@@ -169,7 +169,7 @@ class ChronalVortexClass {
   /*
   ** Position of the top left of the vortex
   */
-  COORDINATE Position = 0;
+  Coordinate Position{};
 
   /*
   ** Direction of rotation

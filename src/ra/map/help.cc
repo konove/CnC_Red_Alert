@@ -406,7 +406,7 @@ void HelpClass::Set_Cost(int cost) { Cost = cost; }
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Set_Tactical_Position(COORDINATE coord) {
+void HelpClass::Set_Tactical_Position(Coordinate coord) {
   if (TacticalCoord != coord) {
     Help_Text(TXT_NONE);
   }

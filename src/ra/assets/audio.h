@@ -72,7 +72,7 @@ void StopSpeaking();
 // it plays quieter the further it is from the centre of the view; on screen,
 // or with a zero `coord`, it plays at full volume. `variation` and `house` are
 // as for PlaySoundEffect().
-void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation = 1,
+void PlaySoundEffectAt(VocType voc, Coordinate coord, int variation = 1,
                        HousesType house = HOUSE_NONE);
 
 // Returns true while EVA is speaking or has a voice queued, for callers that

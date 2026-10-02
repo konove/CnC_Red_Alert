@@ -554,7 +554,7 @@ class HouseClass {
   **	This records information about the location and size of
   **	the base.
   */
-  COORDINATE Center = 0;  // Center of the base.
+  Coordinate Center{};    // Center of the base.
   int Radius = 0;         // Average building distance from center (leptons).
   struct ZoneInfoStruct {
     int AirDefense;
@@ -688,10 +688,10 @@ class HouseClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
-  [[nodiscard]] TARGET Find_Juicy_Target(COORDINATE coord) const;
+  [[nodiscard]] TARGET Find_Juicy_Target(Coordinate coord) const;
   CELL Where_To_Go(const FootClass* object) const;
   [[nodiscard]] CELL Zone_Cell(ZoneType zone) const;
-  [[nodiscard]] ZoneType Which_Zone(COORDINATE coord) const;
+  [[nodiscard]] ZoneType Which_Zone(Coordinate coord) const;
   ZoneType Which_Zone(const ObjectClass* object) const;
   [[nodiscard]] ZoneType Which_Zone(CELL cell) const;
   CELL Find_Cell_In_Zone(const TechnoClass* techno, ZoneType zone) const;
@@ -704,12 +704,12 @@ class HouseClass {
   // Fires special weapon `id` at `cell`. `where` is the sub-cell coordinate
   // it was aimed at; the Iron Curtain and the Chronosphere take the unit
   // nearest it.
-  bool Place_Special_Blast(SpecialWeaponType id, CELL cell, COORDINATE where);
+  bool Place_Special_Blast(SpecialWeaponType id, CELL cell, Coordinate where);
   bool Flag_Attach(CELL cell, bool set_home = false);
   bool Flag_Attach(UnitClass* object, bool set_home = false);
   bool Flag_Remove(TARGET target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
-  COORDINATE Find_Build_Location(BuildingClass* building) const;
+  Coordinate Find_Build_Location(BuildingClass* building) const;
   [[nodiscard]] BuildingClass* Find_Building(StructType type,
                                              ZoneType zone = ZONE_NONE) const;
   [[nodiscard]] const char* Name() const { return Class->Name(); }

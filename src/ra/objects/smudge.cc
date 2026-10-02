@@ -137,10 +137,10 @@ void SmudgeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
+SmudgeClass::SmudgeClass(SmudgeType type, Coordinate pos, HousesType house)
     : ObjectClass(RTTI_SMUDGE, TheObjectHeaps().smudge().SlotIndexOf(this)),
       Class(TheTypeHeaps().smudge().ActiveAt(static_cast<int>(type))) {
-  if (pos != ~0U) {
+  if (pos != Coordinate::FromPacked(0xFFFFFFFFU)) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
       delete this;

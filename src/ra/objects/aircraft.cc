@@ -356,7 +356,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool AircraftClass::Unlimbo(Coordinate coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 
@@ -644,7 +644,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
         auto* air = base::NewPooled<AircraftClass>(
             classid, inhouse);  // Working unit pointer.
         if (air) {
-          COORDINATE coord = 0;
+          Coordinate coord{};
           int strength = 0;
           game::DirType dir = game::DIR_N;
 
@@ -662,7 +662,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           if (token) {
             coord = Cell_Coord(base::ParseIntegerOr<CELL>(token, 0));
           } else {
-            coord = 0xFFFFFFFFL;
+            coord = Coordinate::FromPacked(0xFFFFFFFFU);
           }
 
           token = tokens.Next();
@@ -1378,11 +1378,11 @@ bool AircraftClass::Is_LZ_Clear(TARGET target) const {
  *                                                                                             *
  * HISTORY: * 11/02/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Sort_Y() const {
+Coordinate AircraftClass::Sort_Y() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 
-  return Coord_Add(Coord, 0x00800000L);
+  return Coord + Coordinate::FromLeptons(0, 0x80);
 }
 
 /***********************************************************************************************
@@ -2145,7 +2145,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, TARGET dest) {
     slowdown = false;
   }
 
-  COORDINATE coord = 0;
+  Coordinate coord{};
   if (Is_Target_Building(dest)) {
     coord = As_Building(dest)->Docking_Coord();
   } else {
@@ -2711,7 +2711,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
 
   if (Target_Legal(oldlz) &&
       (!Is_LZ_Clear(oldlz) || !Cell_Seems_Ok(As_Cell(oldlz)))) {
-    const COORDINATE coord = As_Coord(oldlz);
+    const Coordinate coord = As_Coord(oldlz);
 
     /*
     **	Scan outward in a series of concentric rings up to certain distance
@@ -2802,7 +2802,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           Assign_Mission(MISSION_MOVE);
         }
       } else {
-        Scatter(0, true);
+        Scatter(Coordinate{}, true);
       }
       break;
 
@@ -3193,7 +3193,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
   if (Target_Legal(target)) {
     const int range = Weapon_Range(0);
-    const COORDINATE tcoord = As_Coord(target);
+    const Coordinate tcoord = As_Coord(target);
     CELL bestcell = 0;
     CELL best2cell = 0;
     int bestval = -1;
@@ -3202,7 +3202,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     /*
     **	Try to get closer to a target that is moving.
     */
-    COORDINATE altcoord = 0;
+    Coordinate altcoord{};
     if (Is_Target_Object(target) && As_Object(target)->Is_Foot()) {
       const TARGET alttarg =
           dynamic_cast<FootClass*>(As_Object(target))->NavCom;
@@ -3213,7 +3213,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const COORDINATE newcoord = Coord_Move(tcoord, game::AsDirection(face),
+        const Coordinate newcoord = Coord_Move(tcoord, game::AsDirection(face),
                                                static_cast<uint16_t>(r));
         const CELL newcell = Coord_Cell(newcoord);
 
@@ -3222,7 +3222,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
              TheMap().at(newcell).IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
           int dist = 0;
-          if (altcoord != 0) {
+          if (altcoord) {
             dist = ra::Distance(newcoord, altcoord);
           } else {
             dist = Distance(newcoord);
@@ -3757,7 +3757,7 @@ AircraftClass::~AircraftClass() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Scatter(COORDINATE /*unused*/, bool /*forced*/,
+void AircraftClass::Scatter(Coordinate /*unused*/, bool /*forced*/,
                             bool /*nokidding*/) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
@@ -3906,7 +3906,7 @@ int AircraftClass::Mission_Guard() {
   *around *	and looking for a free helipad.
   */
   if (Height == 0 && !In_Radio_Contact()) {
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
 
@@ -3957,7 +3957,7 @@ int AircraftClass::Mission_Guard_Area() {
   }
 
   if (Height == 0 && !In_Radio_Contact()) {
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
 
@@ -4177,7 +4177,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
              As_Techno(NavCom) == Contact_With_Whom()) &&
             (In_Radio_Contact() &&
              Transmit_Message(RADIO_IM_IN) != RADIO_ROGER)) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
       }
       Mark(MARK_DOWN);

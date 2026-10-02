@@ -306,7 +306,8 @@ EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : Even
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
+EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -464,7 +465,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int id, CELL cell, COORDINATE where)
+EventClass::EventClass(EventType type, int id, CELL cell, Coordinate where)
     : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
@@ -890,7 +891,7 @@ void EventClass::Execute() {
       if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
         dynamic_cast<FootClass*>(techno)->IsScattering = true;
-        techno->Scatter(0, true, false);
+        techno->Scatter(Coordinate{}, true, false);
       }
       break;
 

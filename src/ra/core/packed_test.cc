@@ -1,5 +1,7 @@
-// Pins the packed CELL, lepton, COORDINATE and TARGET encodings, including the
-// truncation the original bit-fields performed on out-of-range components.
+// Pins the packed CELL, lepton and TARGET encodings and the CELL/Coordinate
+// conversions, including the truncation the original bit-fields performed on
+// out-of-range components. Coordinate's own layout is pinned by
+// coordinate_test.cc.
 
 #include "ra/core/packed.h"
 
@@ -12,7 +14,7 @@
 namespace ra {
 namespace {
 
-constexpr COORDINATE kSample = 0x12345678;
+constexpr Coordinate kSample = Coordinate::FromPacked(0x12345678);
 
 // The packers are usable in constant expressions.
 static_assert(XY_Cell(5, 3) == 389);
@@ -25,10 +27,6 @@ using NoexceptFn = R(Args...) noexcept;
 
 // Leptons are plain ints at the interface; the 16-bit word exists only inside
 // the packers, which wrap what they are given.
-static_assert(
-    std::is_same_v<decltype(XY_Coord), NoexceptFn<COORDINATE, int, int>>);
-static_assert(std::is_same_v<decltype(Coord_X), NoexceptFn<int, COORDINATE>>);
-static_assert(std::is_same_v<decltype(Coord_Y), NoexceptFn<int, COORDINATE>>);
 static_assert(std::is_same_v<decltype(Lepton_Cell), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Lepton_Fraction), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Make_Lepton), NoexceptFn<int, int, int>>);
@@ -55,36 +53,15 @@ TEST(PackedTest, SentinelCellsReadAsFullComponents) {
   EXPECT_EQ(Cell_Y(kRefreshEol), 127);
 }
 
-TEST(PackedTest, CoordinateComponents) {
-  EXPECT_EQ(Coord_X(kSample), 0x5678);
-  EXPECT_EQ(Coord_Y(kSample), 0x1234);
-  EXPECT_EQ(Coord_XCell(kSample), 0x56);
-  EXPECT_EQ(Coord_YCell(kSample), 0x12);
-  EXPECT_EQ(Coord_XLepton(kSample), 0x78);
-  EXPECT_EQ(Coord_YLepton(kSample), 0x34);
-  EXPECT_EQ(XY_Coord(0x5678, 0x1234), kSample);
-}
-
-TEST(PackedTest, CoordinateRounding) {
-  EXPECT_EQ(Coord_Snap(kSample), 0x12805680U);
-  EXPECT_EQ(Coord_Fraction(kSample), 0x00340078U);
-  EXPECT_EQ(Coord_Whole(kSample), 0x12005600U);
-  EXPECT_EQ(CellCenterFraction(), 0x00800080U);
+TEST(PackedTest, CellCenterFraction) {
+  EXPECT_EQ(CellCenterFraction().packed(), 0x00800080U);
 }
 
 TEST(PackedTest, CellCoordinateRoundTrip) {
-  EXPECT_EQ(Cell_Coord(XY_Cell(5, 3)), 0x03800580U);
+  EXPECT_EQ(Cell_Coord(XY_Cell(5, 3)).packed(), 0x03800580U);
   EXPECT_EQ(Coord_Cell(kSample), XY_Cell(0x56, 0x12));
   // An X cell byte of 128 is off the map and wraps to column 0.
-  EXPECT_EQ(Coord_Cell(0x00008000U), XY_Cell(0, 0));
-}
-
-TEST(PackedTest, CoordinateArithmeticWrapsPerComponent) {
-  EXPECT_EQ(Coord_Add(XY_Coord(0xFFFF, 1), XY_Coord(2, 0xFFFF)),
-            XY_Coord(1, 0));
-  EXPECT_EQ(Coord_Sub(XY_Coord(1, 0), XY_Coord(2, 0)), XY_Coord(0xFFFF, 0));
-  EXPECT_EQ(Coord_Mid(XY_Coord(0xFFFF, 0), XY_Coord(1, 0)),
-            XY_Coord(0x8000, 0));
+  EXPECT_EQ(Coord_Cell(Coordinate::FromPacked(0x00008000U)), XY_Cell(0, 0));
 }
 
 TEST(PackedTest, LeptonCellConversions) {
@@ -93,17 +70,6 @@ TEST(PackedTest, LeptonCellConversions) {
   EXPECT_EQ(Lepton_To_Cell(0x017F), 1);
   EXPECT_EQ(Lepton_To_Cell(0x0180), 2);
   EXPECT_EQ(Lepton_To_Cell(0xFF80), 256);
-}
-
-// Leptons are 16-bit words wherever they are packed: out-of-range components
-// wrap on the way in, and every component read back is in 0..65535.
-TEST(PackedTest, CoordinateComponentsWrapAtSixteenBits) {
-  EXPECT_EQ(XY_Coord(-1, 0x10000), XY_Coord(0xFFFF, 0));
-  EXPECT_EQ(XY_Coord(0x12345, -0x10000), XY_Coord(0x2345, 0));
-  EXPECT_EQ(Coord_X(0xFFFFFFFFU), 0xFFFF);
-  EXPECT_EQ(Coord_Y(0xFFFFFFFFU), 0xFFFF);
-  EXPECT_GE(Coord_X(0xFFFFFFFFU), 0);
-  EXPECT_GE(Coord_Y(0xFFFFFFFFU), 0);
 }
 
 TEST(PackedTest, LeptonBytesWrapAtSixteenBits) {

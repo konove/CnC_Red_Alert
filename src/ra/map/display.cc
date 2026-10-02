@@ -73,7 +73,7 @@
  *Performs any special one time initializations.                  *
  *   DisplayClass::Passes_Proximity_Check -- Determines if building placement is
  *near friendly sq* DisplayClass::Pixel_To_Coord -- converts screen coord to
- *COORDINATE                       * DisplayClass::Prev_Object -- Searches for
+ *Coordinate                       * DisplayClass::Prev_Object -- Searches for
  *the previous object on the map.                 * DisplayClass::Read_INI --
  *Reads map control data from INI file.                           *
  *   DisplayClass::Redraw_Icons -- Draws all terrain icons necessary. *
@@ -642,15 +642,15 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  int xx = Coord_X(TacticalCoord) - (MapCellX * CELL_LEPTON_W);
-  int yy = Coord_Y(TacticalCoord) - (MapCellY * CELL_LEPTON_H);
+  int xx = TacticalCoord.x() - (MapCellX * CELL_LEPTON_W);
+  int yy = TacticalCoord.y() - (MapCellY * CELL_LEPTON_H);
 
   ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
               MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
 
   if (reposition) {
-    Set_Tactical_Position(XY_Coord(xx + (MapCellX * CELL_LEPTON_W),
-                                   yy + (MapCellY * CELL_LEPTON_H)));
+    Set_Tactical_Position(Coordinate::FromLeptons(
+        xx + (MapCellX * CELL_LEPTON_W), yy + (MapCellY * CELL_LEPTON_H)));
   }
 
   TacPixelX = x;
@@ -947,13 +947,13 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
   int y = static_cast<CELL>(Cell_Y(static_cast<CELL>(pos + ZoneOffset)));
 
-  x = std::max<int>(x, Coord_XCell(TacticalCoord));
-  y = std::max<int>(y, Coord_YCell(TacticalCoord));
-  if (x + w >= Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth)) {
-    x = Coord_XCell(TacticalCoord) + Lepton_To_Cell(TacLeptonWidth) - w;
+  x = std::max<int>(x, TacticalCoord.cell_x());
+  y = std::max<int>(y, TacticalCoord.cell_y());
+  if (x + w >= TacticalCoord.cell_x() + Lepton_To_Cell(TacLeptonWidth)) {
+    x = TacticalCoord.cell_x() + Lepton_To_Cell(TacLeptonWidth) - w;
   }
-  if (y + h >= Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight)) {
-    y = Coord_YCell(TacticalCoord) + Lepton_To_Cell(TacLeptonHeight) - h;
+  if (y + h >= TacticalCoord.cell_y() + Lepton_To_Cell(TacLeptonHeight)) {
+    y = TacticalCoord.cell_y() + Lepton_To_Cell(TacLeptonHeight) - h;
   }
   pos = static_cast<CELL>(XY_Cell(x, y) - ZoneOffset);
 
@@ -1211,10 +1211,10 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) const {
   y = Pixel_To_Lepton(y);
 
   if (std::cmp_less(x, TacLeptonWidth) && std::cmp_less(y, TacLeptonHeight)) {
-    const COORDINATE tcoord =
-        XY_Coord(Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord))),
-                 Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord))));
-    return Coord_Cell(Coord_Add(tcoord, XY_Coord(x, y)));
+    const Coordinate tcoord = Coordinate::FromLeptons(
+        Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.x())),
+        Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.y())));
+    return Coord_Cell(tcoord + Coordinate::FromLeptons(x, y));
   }
   return -1;
 }
@@ -1253,7 +1253,7 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
   }
   const game::FacingType crude = game::Dir_Facing(facing);
 
-  if (Coord_X(TacticalCoord) == Cell_To_Lepton(MapCellX) &&
+  if (TacticalCoord.x() == Cell_To_Lepton(MapCellX) &&
       crude != game::FACING_W) {
     if (crude == game::FACING_SW) {
       facing = game::DIR_S;
@@ -1262,7 +1262,7 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
       facing = game::DIR_N;
     }
   }
-  if (Coord_Y(TacticalCoord) == Cell_To_Lepton(MapCellY) &&
+  if (TacticalCoord.y() == Cell_To_Lepton(MapCellY) &&
       crude != game::FACING_N) {
     if (crude == game::FACING_NW) {
       facing = game::DIR_W;
@@ -1271,7 +1271,7 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
       facing = game::DIR_E;
     }
   }
-  if (Coord_X(TacticalCoord) + TacLeptonWidth ==
+  if (TacticalCoord.x() + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
       crude != game::FACING_E) {
     if (crude == game::FACING_NE) {
@@ -1281,7 +1281,7 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
       facing = game::DIR_S;
     }
   }
-  if (Coord_Y(TacticalCoord) + TacLeptonHeight ==
+  if (TacticalCoord.y() + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
       crude != game::FACING_S) {
     if (crude == game::FACING_SE) {
@@ -1295,15 +1295,15 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
   /*
   **	Determine the coordinate that it wants to scroll to.
   */
-  COORDINATE coord =
+  Coordinate coord =
       Coord_Move(TacticalCoord, facing, static_cast<uint16_t>(distance));
 
   /*
   **	Clip the new coordinate to the edges of the game world.
   */
-  int xx = static_cast<int>(static_cast<int16_t>(Coord_X(coord))) -
+  int xx = static_cast<int>(static_cast<int16_t>(coord.x())) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellX));
-  int yy = static_cast<int>(static_cast<int16_t>(Coord_Y(coord))) -
+  int yy = static_cast<int>(static_cast<int16_t>(coord.y())) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellY));
   bool shifted =
       ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
@@ -1316,8 +1316,8 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
     yy = 0;
     shifted = true;
   }
-  coord =
-      XY_Coord(xx + Cell_To_Lepton(MapCellX), yy + Cell_To_Lepton(MapCellY));
+  coord = Coordinate::FromLeptons(xx + Cell_To_Lepton(MapCellX),
+                                  yy + Cell_To_Lepton(MapCellY));
 
   /*
   **	If the desired scroll was bound by the edge of the map, then adjust the
@@ -1618,16 +1618,16 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
  *   08/09/1995 JLB : Uses new coordinate system. *
  *=============================================================================================*/
 #define EDGE_ZONE (CELL_LEPTON_W * 2)
-bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
+bool DisplayClass::Coord_To_Pixel(Coordinate coord, int& x, int& y) const {
   if (coord) {
-    const int xtac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TacticalCoord)));
-    int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(coord)));
+    const int xtac = Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.x()));
+    int xoff = Pixel_To_Lepton(Lepton_To_Pixel(coord.x()));
 
     xoff = xoff + EDGE_ZONE - xtac;
     if (static_cast<unsigned>(xoff) <=
         static_cast<unsigned>(TacLeptonWidth + (EDGE_ZONE * 2))) {
-      const int ytac = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TacticalCoord)));
-      int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(coord)));
+      const int ytac = Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.y()));
+      int yoff = Pixel_To_Lepton(Lepton_To_Pixel(coord.y()));
 
       yoff = yoff + EDGE_ZONE - ytac;
       if (static_cast<unsigned>(yoff) <=
@@ -1658,20 +1658,20 @@ bool DisplayClass::Coord_To_Pixel(COORDINATE coord, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 03/27/1995 BWG : Created. *
  *=============================================================================================*/
-bool DisplayClass::Push_Onto_TacMap(COORDINATE& source,
-                                    COORDINATE& dest) const {
+bool DisplayClass::Push_Onto_TacMap(Coordinate& source,
+                                    Coordinate& dest) const {
   if (!source || !dest) {
     return false;
   }
 
-  int x1 = Coord_X(source);
-  int y1 = Coord_Y(source);
-  int x2 = Coord_X(dest);
-  int y2 = Coord_Y(dest);
-  const int left = Coord_X(TacticalCoord);
-  const int right = Coord_X(TacticalCoord) + TacLeptonWidth;
-  const int top = Coord_Y(TacticalCoord);
-  const int bottom = Coord_Y(TacticalCoord) + TacLeptonHeight;
+  int x1 = source.x();
+  int y1 = source.y();
+  int x2 = dest.x();
+  int y2 = dest.y();
+  const int left = TacticalCoord.x();
+  const int right = TacticalCoord.x() + TacLeptonWidth;
+  const int top = TacticalCoord.y();
+  const int bottom = TacticalCoord.y() + TacLeptonHeight;
 
   if (x1 < left && x2 < left) {
     return false;
@@ -1691,8 +1691,8 @@ bool DisplayClass::Push_Onto_TacMap(COORDINATE& source,
   y1 = Bound(y1, top, bottom);
   y2 = Bound(y2, top, bottom);
 
-  source = XY_Coord(x1, y1);
-  dest = XY_Coord(x2, y2);
+  source = Coordinate::FromLeptons(x1, y1);
+  dest = Coordinate::FromLeptons(x2, y2);
   return true;
 }
 
@@ -1736,10 +1736,10 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   TheWorld().chronal_vortex().Set_Redraw();
 
   if (DesiredTacticalCoord != TacticalCoord) {
-    const bool moved = Lepton_To_Pixel(Coord_X(DesiredTacticalCoord)) !=
-                           Lepton_To_Pixel(Coord_X(TacticalCoord)) ||
-                       Lepton_To_Pixel(Coord_Y(DesiredTacticalCoord)) !=
-                           Lepton_To_Pixel(Coord_Y(TacticalCoord));
+    const bool moved = Lepton_To_Pixel(DesiredTacticalCoord.x()) !=
+                           Lepton_To_Pixel(TacticalCoord.x()) ||
+                       Lepton_To_Pixel(DesiredTacticalCoord.y()) !=
+                           Lepton_To_Pixel(TacticalCoord.y());
     TheWorld().scenario_init()++;
     Set_Tactical_Position(DesiredTacticalCoord);
     TheWorld().scenario_init()--;
@@ -1844,13 +1844,13 @@ void DisplayClass::RenderObjects(PixelView& view) {
  *=============================================================================================*/
 void DisplayClass::Redraw_Icons(PixelView& view) {
   IsShadowPresent = false;
-  for (int y = -Coord_YLepton(TacticalCoord);
-       std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
-    for (int x = -Coord_XLepton(TacticalCoord);
-         std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
-      COORDINATE coord = Coord_Add(TacticalCoord, XY_Coord(x, y));
+  for (int y = -TacticalCoord.sub_y(); std::cmp_less_equal(y, TacLeptonHeight);
+       y += CELL_LEPTON_H) {
+    for (int x = -TacticalCoord.sub_x(); std::cmp_less_equal(x, TacLeptonWidth);
+         x += CELL_LEPTON_W) {
+      Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
       const CELL cell = Coord_Cell(coord);
-      coord = Coord_Whole(Cell_Coord(cell));
+      coord = Cell_Coord(cell).Whole();
 
       /*
       **	Only cells flagged to be redraw are examined.
@@ -1901,13 +1901,13 @@ void DisplayClass::Redraw_Icons(PixelView& view) {
  *=============================================================================================*/
 void DisplayClass::Redraw_Shadow(PixelView& view) {
   if (IsShadowPresent) {
-    for (int y = -Coord_YLepton(TacticalCoord);
+    for (int y = -TacticalCoord.sub_y();
          std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
-      for (int x = -Coord_XLepton(TacticalCoord);
+      for (int x = -TacticalCoord.sub_x();
            std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
-        COORDINATE coord = Coord_Add(TacticalCoord, XY_Coord(x, y));
+        Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
         const CELL cell = Coord_Cell(coord);
-        coord = Coord_Whole(Cell_Coord(cell));
+        coord = Cell_Coord(cell).Whole();
 
         /*
         **	Only cells flagged to be redrawn are examined.
@@ -2043,11 +2043,11 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
 }
 
 /***********************************************************************************************
- * DisplayClass::Pixel_To_Coord -- converts screen coord to COORDINATE *
+ * DisplayClass::Pixel_To_Coord -- converts screen coord to Coordinate *
  *                                                                                             *
  * INPUT: * x,y      pixel coordinates to convert *
  *                                                                                             *
- * OUTPUT: * COORDINATE of pixel *
+ * OUTPUT: * Coordinate of pixel *
  *                                                                                             *
  * WARNINGS: * none. *
  *                                                                                             *
@@ -2055,7 +2055,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
  *variables in display class.                           * 12/10/1994 JLB : Uses
  *union to speed building coordinate value.                           *
  *=============================================================================================*/
-COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
+Coordinate DisplayClass::Pixel_To_Coord(int x, int y) const {
   /*
   **	Normalize the pixel coordinates to be relative to the upper left corner
   **	of the tactical map. The coordinates are expressed in leptons.
@@ -2070,9 +2070,9 @@ COORDINATE DisplayClass::Pixel_To_Coord(int x, int y) const {
   *coordinate *	value. If not, then just return with nullptr.
   */
   if (std::cmp_less(x, TacLeptonWidth) && std::cmp_less(y, TacLeptonHeight)) {
-    return Coord_Add(TacticalCoord, XY_Coord(x, y));
+    return TacticalCoord + Coordinate::FromLeptons(x, y);
   }
-  return 0;
+  return Coordinate{};
 }
 
 /***********************************************************************************************
@@ -2340,16 +2340,16 @@ bool DisplayClass::Good_Reinforcement_Cell(CELL outcell, CELL incell,
  *=============================================================================================*/
 // Not const: changes which objects are selected.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
-  const COORDINATE tcoord =
+void DisplayClass::Select_These(Coordinate coord1, Coordinate coord2) {
+  const Coordinate tcoord =
       TacticalCoord;  // Cell_Coord(TacticalCell) & 0xFF00FF00L;
 
-  coord1 = Coord_Add(tcoord, coord1);
-  coord2 = Coord_Add(tcoord, coord2);
-  int x1 = Coord_X(coord1);
-  int x2 = Coord_X(coord2);
-  int y1 = Coord_Y(coord1);
-  int y2 = Coord_Y(coord2);
+  coord1 = tcoord + coord1;
+  coord2 = tcoord + coord2;
+  int x1 = coord1.x();
+  int x2 = coord2.x();
+  int y1 = coord1.y();
+  int y2 = coord2.y();
 
   /*
   **	Ensure that coordinate number one represents the upper left corner
@@ -2374,9 +2374,9 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   TheGameState().allow_voice() = true;
   for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(index);
-    const COORDINATE ocoord = obj->Center_Coord();
-    const int x = Coord_X(ocoord);
-    const int y = Coord_Y(ocoord);
+    const Coordinate ocoord = obj->Center_Coord();
+    const int x = ocoord.x();
+    const int y = ocoord.y();
 
     /*
     **	Only try to select objects that are owned by the player, are allowed to
@@ -2397,9 +2397,9 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   for (int air_index = 0; air_index < TheObjectHeaps().aircraft().Count();
        air_index++) {
     AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(air_index);
-    const COORDINATE ocoord = aircraft->Center_Coord();
-    const int x = Coord_X(ocoord);
-    const int y = Coord_Y(ocoord);
+    const Coordinate ocoord = aircraft->Center_Coord();
+    const int x = ocoord.x();
+    const int y = ocoord.y();
 
     /*
     **	Only try to select objects that are owned by the player, are allowed to
@@ -2525,7 +2525,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
   const bool edge = y == 0 || x == 0 ||
                     x == TheScreen().visible_view().width() - 1 ||
                     y == TheScreen().visible_view().height() - 1;
-  const COORDINATE coord = TheMap().Pixel_To_Coord(x, y);
+  const Coordinate coord = TheMap().Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {
     const bool shadow =
@@ -3423,10 +3423,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         // Where in the cell the player aimed, for the weapons that act on the
         // unit nearest it. A click on the radar has no such spot, so it aims
         // at the cell's center.
-        const COORDINATE where =
-            wsmall
-                ? CellCenterFraction()
-                : Coord_Fraction(Pixel_To_Coord(x + TacPixelX, y + TacPixelY));
+        const Coordinate where =
+            wsmall ? CellCenterFraction()
+                   : Pixel_To_Coord(x + TacPixelX, y + TacPixelY).Fraction();
         if (action == ACTION_NUKE_BOMB) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
@@ -3569,17 +3568,17 @@ void DisplayClass::Mouse_Left_Held(int x, int y) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
+void DisplayClass::Set_Tactical_Position(Coordinate coord) {
   /*
   **	Bound the desired location to fit the legal map edges.
   */
-  int xx = Coord_X(coord) - Cell_To_Lepton(MapCellX);
-  int yy = Coord_Y(coord) - Cell_To_Lepton(MapCellY);
+  int xx = coord.x() - Cell_To_Lepton(MapCellX);
+  int yy = coord.y() - Cell_To_Lepton(MapCellY);
 
   ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
               Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
-  coord =
-      XY_Coord(xx + Cell_To_Lepton(MapCellX), yy + Cell_To_Lepton(MapCellY));
+  coord = Coordinate::FromLeptons(xx + Cell_To_Lepton(MapCellX),
+                                  yy + Cell_To_Lepton(MapCellY));
 
   if (TheWorld().scenario_init()) {
     TacticalCoord = coord;
@@ -3619,8 +3618,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     const InfantryClass* infp = TheObjectHeaps().infantry().ActiveAt(i);
     if (!infp->IsInLimbo && infp->IsOwnedByPlayer) {
-      x += static_cast<int32_t>(Coord_XCell(infp->Coord));
-      y += static_cast<int32_t>(Coord_YCell(infp->Coord));
+      x += infp->Coord.cell_x();
+      y += infp->Coord.cell_y();
       num++;
     }
   }
@@ -3628,8 +3627,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     const UnitClass* unitp = TheObjectHeaps().unit().ActiveAt(i);
     if (!unitp->IsInLimbo && unitp->IsOwnedByPlayer) {
-      x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
-      y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
+      x += unitp->Coord.cell_x();
+      y += unitp->Coord.cell_y();
       num++;
     }
   }
@@ -3637,8 +3636,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     const BuildingClass* bldgp = TheObjectHeaps().building().ActiveAt(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
-      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;
+      x += bldgp->Coord.cell_x() * 16;
+      y += bldgp->Coord.cell_y() * 16;
       num += 16;
     }
   }
@@ -3646,8 +3645,8 @@ void DisplayClass::Compute_Start_Pos() {
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
     const VesselClass* bldgp = TheObjectHeaps().vessel().ActiveAt(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
-      x += static_cast<int32_t>(Coord_XCell(bldgp->Coord));
-      y += static_cast<int32_t>(Coord_YCell(bldgp->Coord));
+      x += bldgp->Coord.cell_x();
+      y += bldgp->Coord.cell_y();
       num++;
     }
   }
@@ -3681,8 +3680,10 @@ void DisplayClass::Compute_Start_Pos() {
           base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
               XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
-  TheMap().Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
-      base::At(TheScenario().Views, 0) - (MAP_CELL_W * 8) - 10))));
+  TheMap().Set_Tactical_Position(
+      Cell_Coord(static_cast<CELL>(base::At(TheScenario().Views, 0) -
+                                   (MAP_CELL_W * 8) - 10))
+          .Whole());
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -3796,14 +3797,14 @@ bool DisplayClass::In_View(CELL cell) const {
     return false;
   }
 
-  const COORDINATE coord = Coord_Whole(Cell_Coord(cell));
-  const COORDINATE tcoord = Coord_Whole(TacticalCoord);
+  const Coordinate coord = Cell_Coord(cell).Whole();
+  const Coordinate tcoord = TacticalCoord.Whole();
 
-  if (static_cast<unsigned>(Coord_X(coord) - Coord_X(tcoord)) >
+  if (static_cast<unsigned>(coord.x() - tcoord.x()) >
       static_cast<unsigned>(TacLeptonWidth + CELL_LEPTON_W - 1)) {
     return false;
   }
-  if (static_cast<unsigned>(Coord_Y(coord) - Coord_Y(tcoord)) >
+  if (static_cast<unsigned>(coord.y() - tcoord.y()) >
       static_cast<unsigned>(TacLeptonHeight + CELL_LEPTON_H - 1)) {
     return false;
   }
@@ -3831,9 +3832,9 @@ bool DisplayClass::In_View(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) {
-  if (coord & kHighCoordMask) {
-    return 0x00800080;
+Coordinate DisplayClass::Closest_Free_Spot(Coordinate coord, bool any) {
+  if (coord.packed() & kHighCoordMask) {
+    return CellCenterFraction();
   }
   return TheMap().at(coord).Closest_Free_Spot(coord, any);
 }
@@ -3856,8 +3857,8 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-bool DisplayClass::Is_Spot_Free(COORDINATE coord) {
-  if (coord & kHighCoordMask) {
+bool DisplayClass::Is_Spot_Free(Coordinate coord) {
+  if (coord.packed() & kHighCoordMask) {
     return true;
   }
   return TheMap().at(coord).Is_Spot_Free(CellClass::Spot_Index(coord));
@@ -3882,7 +3883,7 @@ bool DisplayClass::Is_Spot_Free(COORDINATE coord) {
  * HISTORY: * 08/22/1995 JLB : Created. * 09/16/1996 JLB : Takes coordinate to
  *center about (as override).                          *
  *=============================================================================================*/
-void DisplayClass::Center_Map(COORDINATE center) {
+void DisplayClass::Center_Map(Coordinate center) {
   int x = 0;
   //	unsigned x = 0;
   int y = 0;
@@ -3892,11 +3893,11 @@ void DisplayClass::Center_Map(COORDINATE center) {
   if (std::ssize(TheWorld().current_object())) {
     for (int index = 0; index < std::ssize(TheWorld().current_object());
          index++) {
-      const COORDINATE coord =
+      const Coordinate coord =
           base::At(TheWorld().current_object(), index)->Center_Coord();
 
-      x += Coord_X(coord);
-      y += Coord_Y(coord);
+      x += coord.x();
+      y += coord.y();
     }
 
     x = static_cast<int>(x / std::ssize(TheWorld().current_object()));
@@ -3904,9 +3905,9 @@ void DisplayClass::Center_Map(COORDINATE center) {
     centerit = true;
   }
 
-  if (center != 0L) {
-    x = Coord_X(center);
-    y = Coord_Y(center);
+  if (center) {
+    x = center.x();
+    y = center.y();
     centerit = true;
   }
 
@@ -3917,7 +3918,7 @@ void DisplayClass::Center_Map(COORDINATE center) {
     y = y - (TacLeptonHeight / 2);
     y = std::max<int>(y, Cell_To_Lepton(MapCellY));
 
-    Set_Tactical_Position(XY_Coord(x, y));
+    Set_Tactical_Position(Coordinate::FromLeptons(x, y));
   }
 }
 
@@ -4270,7 +4271,7 @@ void DisplayClass::All_To_Look(bool units_only) {
   }
 }
 
-void DisplayClass::Constrained_Look(COORDINATE center, int distance) {
+void DisplayClass::Constrained_Look(Coordinate center, int distance) {
   // The distance was a 16-bit lepton word; a scenario's oversized gap radius
   // still wraps the way it always did.
   const int range = static_cast<uint16_t>(distance);

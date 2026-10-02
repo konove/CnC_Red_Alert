@@ -17,7 +17,7 @@ AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
   base::SafeCopy(IniName, ini);
 }
 
-COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {
+Coordinate AbstractTypeClass::Coord_Fixup(const Coordinate coord) const {
   return coord;
 }
 

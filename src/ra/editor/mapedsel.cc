@@ -232,8 +232,8 @@ void MapEditClass::Select_Next() {
       Coord_Cell(base::At(TheWorld().current_object(), 0)->Coord);
   const int cell_x = Cell_X(obj_cell);       // cell-x of next object
   const int cell_y = Cell_Y(obj_cell);       // cell-y of next object
-  int tcell_x = Coord_XCell(TacticalCoord);  // cell-x of TacticalCell
-  int tcell_y = Coord_YCell(TacticalCoord);  // cell-y of TacticalCell
+  int tcell_x = TacticalCoord.cell_x();      // cell-x of TacticalCell
+  int tcell_y = TacticalCoord.cell_y();      // cell-y of TacticalCell
 
   /*
   **	If object is off-screen, move map
@@ -255,8 +255,8 @@ void MapEditClass::Select_Next() {
   }
 
   TheWorld().scenario_init()++;
-  Set_Tactical_Position(
-      XY_Coord(Cell_To_Lepton(tcell_x), Cell_To_Lepton(tcell_y)));
+  Set_Tactical_Position(Coordinate::FromLeptons(Cell_To_Lepton(tcell_x),
+                                                Cell_To_Lepton(tcell_y)));
   TheWorld().scenario_init()--;
 
   /*
@@ -487,7 +487,7 @@ void MapEditClass::Grab_Object() {
  *   11/07/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Move_Grabbed_Object() {
-  COORDINATE new_coord = 0;
+  Coordinate new_coord{};
   int retval = -1;
 
   /*
@@ -510,7 +510,7 @@ int MapEditClass::Move_Grabbed_Object() {
       dynamic_cast<InfantryClass*>(GrabbedObject)
           ->Clear_Occupy_Bit(GrabbedObject->Coord);
     } else {
-      new_coord = 0;
+      new_coord = Coordinate{};
     }
 
   } else {
@@ -521,17 +521,17 @@ int MapEditClass::Move_Grabbed_Object() {
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {
-      new_coord = Coord_Whole(new_coord);
+      new_coord = new_coord.Whole();
     }
 
     /*
     **	Try to place object at new coordinate
     */
     if (GrabbedObject->Can_Enter_Cell(Coord_Cell(new_coord)) != game::MOVE_OK) {
-      new_coord = 0;
+      new_coord = Coordinate{};
     }
   }
-  if (new_coord != 0) {
+  if (new_coord) {
     /*
     ** If this object is part of the AI's Base list, change the coordinate
     ** in the Base's Node list.

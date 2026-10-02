@@ -446,7 +446,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	When infantry gets hit, it gets scared.
   */
   if (res != game::RESULT_DESTROYED) {
-    const COORDINATE source_coord = source ? source->Coord : 0;
+    const Coordinate source_coord = source ? source->Coord : Coordinate{};
 
     /*
     **	If an engineer is damaged and it is just sitting there, then tell it
@@ -730,7 +730,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       if (!Target_Legal(NavCom)) {
         Enter_Idle_Mode();
         if (TheMap().at(Coord).Cell_Building()) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
       }
     }
@@ -817,7 +817,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       **	in order to make room for more.
       */
       if ((cellptr->Flag.Composite & 0x01F) == 0x01F) {
-        cellptr->Incoming(0, true, true);
+        cellptr->Incoming(Coordinate{}, true, true);
         //				cellptr->Incoming(0, true);
       }
     }
@@ -840,7 +840,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       /*
       ** Show the animation and get rid of the land mine
       */
-      const COORDINATE blcoord = bldng->Center_Coord();
+      const Coordinate blcoord = bldng->Center_Coord();
       base::NewPooled<AnimClass>(Combat_Anim(TheRules().APMineDamage,
                                              WARHEAD_HE, cellptr->Land_Type()),
                                  blcoord);
@@ -1683,7 +1683,7 @@ bool InfantryClass::Random_Animate() {
     *shout!"
     */
     if (Class->IsFraidyCat && !House->IsHuman && Fear > FEAR_ANXIOUS) {
-      Scatter(0, true);
+      Scatter(Coordinate{}, true);
       return true;
     }
 
@@ -1742,7 +1742,7 @@ bool InfantryClass::Random_Animate() {
             game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
         break;
 
@@ -1787,7 +1787,7 @@ bool InfantryClass::Random_Animate() {
  *infantry always scatter.                                   * 08/02/1996 JLB :
  *Added the nokidding parameter                                            *
  *=============================================================================================*/
-void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
+void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -1837,11 +1837,11 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
       toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
     } else {
-      const COORDINATE coord = Coord_Fraction(Center_Coord());
+      const Coordinate coord = Center_Coord().Fraction();
 
-      if (coord != 0x00800080L) {
-        toface = game::Dir_Facing(game::Desired_Facing8(
-            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+      if (coord != CellCenterFraction()) {
+        toface = game::Dir_Facing(
+            game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
       } else {
         toface = game::Dir_Facing(PrimaryFacing.Current());
       }
@@ -2048,11 +2048,11 @@ bool InfantryClass::Stop_Driver() {
  *closest spot possible.                                  * 05/15/1995 JLB :
  *Uses closest spot if moving onto transport.                              *
  *=============================================================================================*/
-bool InfantryClass::Start_Driver(COORDINATE& headto) {
+bool InfantryClass::Start_Driver(Coordinate& headto) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
-  const COORDINATE old = headto;
+  const Coordinate old = headto;
 
   /*
   **	Convert the head to coordinate to a legal sub-position location.
@@ -2176,7 +2176,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
+bool InfantryClass::Unlimbo(Coordinate coord, game::DirType facing) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -2185,7 +2185,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
   */
   coord = TheMap().at(coord).Closest_Free_Spot(coord,
                                                TheWorld().scenario_init() != 0);
-  if (coord == 0) {
+  if (!coord) {
     return false;
   }
 
@@ -3333,15 +3333,14 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           **	4th token: cell #.
           */
           const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
-          COORDINATE coord = Cell_Coord(cell);
+          Coordinate coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
           const int sub =
               std::clamp(base::ParseIntegerOr<int>(tokens.Next(","), 0), 0, 4);
-          coord =
-              Coord_Add(Coord_Whole(coord), base::At(StoppingCoordAbs, sub));
+          coord = coord.Whole() + base::At(StoppingCoordAbs, sub);
 
           /*
           **	Fetch the mission and facing.
@@ -3502,7 +3501,7 @@ void InfantryClass::Fear_AI() {
   */
   if (Class->IsFraidyCat && Fear > FEAR_ANXIOUS && !IsFalling && !IsDriving &&
       !Target_Legal(NavCom)) {
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
   }
 }
 
@@ -3745,16 +3744,16 @@ bool InfantryClass::Doing_AI() {
             base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
                 .Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
-            base::NewPooled<AnimClass>(
-                ANIM_CORPSE1, Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
+            base::NewPooled<AnimClass>(ANIM_CORPSE1,
+                                       Center_Coord() + XYP_Coord(-2, 4));
           }
           if (Doing == DO_GRENADE_DEATH && !Class->IsDog && Height == 0) {
-            base::NewPooled<AnimClass>(
-                ANIM_CORPSE1, Coord_Add(Center_Coord(), XYP_Coord(-10, 3)));
+            base::NewPooled<AnimClass>(ANIM_CORPSE1,
+                                       Center_Coord() + XYP_Coord(-10, 3));
           }
           if (Doing == DO_EXPLOSION_DEATH && !Class->IsDog && Height == 0) {
-            base::NewPooled<AnimClass>(
-                ANIM_CORPSE3, Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
+            base::NewPooled<AnimClass>(ANIM_CORPSE3,
+                                       Center_Coord() + XYP_Coord(-2, 4));
           }
           if (Doing == DO_EXPLOSION2_DEATH && !Class->IsDog && Height == 0) {
             base::NewPooled<AnimClass>(ANIM_CORPSE2, Center_Coord());
@@ -3926,7 +3925,7 @@ void InfantryClass::Movement_AI() {
         **	Determine the coordinate to head to based on the infantry's
         **	current location and the next location in the path.
         */
-        COORDINATE acoord = Adjacent_Cell(Coord, base::At(Path, 0));
+        Coordinate acoord = Adjacent_Cell(Coord, base::At(Path, 0));
         const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {
@@ -4194,7 +4193,7 @@ bool InfantryClass::Is_Ready_To_Random_Animate() const {
  *                                                                                             *
  * HISTORY: * 10/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Paradrop(COORDINATE coord) {
+bool InfantryClass::Paradrop(Coordinate coord) {
   if (FootClass::Paradrop(coord)) {
     if (House->IsHuman) {
       Assign_Mission(MISSION_GUARD);

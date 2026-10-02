@@ -102,7 +102,7 @@ inline bool Is_Target_Object(TARGET a) {
 }
 
 TARGET As_Target(CELL cell);
-TARGET As_Target(COORDINATE coord);
+TARGET As_Target(Coordinate coord);
 
 /*
 ** Must not have a constructor since Watcom cannot handle a class that has a
@@ -204,13 +204,13 @@ class TargetClass : public xTargetClass {
 };
 
 const TechnoTypeClass* As_TechnoType(TARGET target);
-COORDINATE As_Movement_Coord(TARGET target);
+Coordinate As_Movement_Coord(TARGET target);
 AircraftClass* As_Aircraft(TARGET target);
 AnimClass* As_Animation(TARGET target);
 BuildingClass* As_Building(TARGET target);
 BulletClass* As_Bullet(TARGET target);
 CELL As_Cell(TARGET target);
-COORDINATE As_Coord(TARGET target);
+Coordinate As_Coord(TARGET target);
 InfantryClass* As_Infantry(TARGET target);
 TeamClass* As_Team(TARGET target);
 TeamTypeClass* As_TeamType(TARGET target);

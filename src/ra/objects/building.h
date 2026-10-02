@@ -293,11 +293,11 @@ class BuildingClass : public TechnoClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] COORDINATE Target_Coord() const override;
-  [[nodiscard]] COORDINATE Docking_Coord() const override;
-  [[nodiscard]] COORDINATE Center_Coord() const override;
-  [[nodiscard]] COORDINATE Sort_Y() const override;
-  [[nodiscard]] COORDINATE Exit_Coord() const override;
+  [[nodiscard]] Coordinate Target_Coord() const override;
+  [[nodiscard]] Coordinate Docking_Coord() const override;
+  [[nodiscard]] Coordinate Center_Coord() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
+  [[nodiscard]] Coordinate Exit_Coord() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -309,7 +309,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
 
@@ -389,7 +389,7 @@ class BuildingClass : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const base::EnumArray<game::BSizeType, COORDINATE> CenterOffset;
+  static const base::EnumArray<game::BSizeType, Coordinate> CenterOffset;
 };
 
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);

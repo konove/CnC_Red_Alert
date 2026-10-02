@@ -170,8 +170,8 @@ class InfantryClass final : public FootClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE coord, game::DirType facing) override;
-  bool Paradrop(COORDINATE coord) override;
+  bool Unlimbo(Coordinate coord, game::DirType facing) override;
+  bool Paradrop(Coordinate coord) override;
   bool Limbo() override;
   void Detach(TARGET target, bool all) override;
 
@@ -207,11 +207,11 @@ class InfantryClass final : public FootClass {
   [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
                                              int which) const override;
   void Assign_Target(TARGET /*target*/) override;
-  void Set_Occupy_Bit(COORDINATE coord) {
+  void Set_Occupy_Bit(Coordinate coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
   }
   void Set_Occupy_Bit(CELL cell, int spot_index);
-  void Clear_Occupy_Bit(COORDINATE coord) {
+  void Clear_Occupy_Bit(Coordinate coord) {
     Clear_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
   }
   void Clear_Occupy_Bit(CELL cell, int spot_index);
@@ -221,7 +221,7 @@ class InfantryClass final : public FootClass {
   **	occupation flags and driver instructions.
   */
   bool Stop_Driver() override;
-  bool Start_Driver(COORDINATE& headto) override;
+  bool Start_Driver(Coordinate& headto) override;
 
   /*
   **	AI.
@@ -262,7 +262,7 @@ class InfantryClass final : public FootClass {
       game::FacingType /*from*/ = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Enter_Idle_Mode(bool initial = false) override;
-  void Scatter(COORDINATE threat, bool forced = false,
+  void Scatter(Coordinate threat, bool forced = false,
                bool nokidding = false) override;
 
   /*

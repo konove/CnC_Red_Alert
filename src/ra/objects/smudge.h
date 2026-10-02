@@ -82,8 +82,9 @@ class SmudgeClass : public ObjectClass {
     return ptr;
   }
   void operator delete(void* ptr);
-  explicit SmudgeClass(SmudgeType type, COORDINATE pos = 0xFFFFFFFFUL,
-              HousesType house = HOUSE_NONE);
+  explicit SmudgeClass(SmudgeType type,
+                       Coordinate pos = Coordinate::FromPacked(0xFFFFFFFFU),
+                       HousesType house = HOUSE_NONE);
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator SmudgeType() const { return Class->Type; }

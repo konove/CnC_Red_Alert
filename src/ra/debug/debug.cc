@@ -162,7 +162,7 @@ void Debug_Key(unsigned input) {
 
       case KN_GRAVE: {
         const WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
-        const COORDINATE coord =
+        const Coordinate coord =
             TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         const int damage = 1000;
         base::NewPooled<AnimClass>(
@@ -284,9 +284,9 @@ void Debug_Key(unsigned input) {
             weapon = ttype.PrimaryWeapon->Range;
           }
           PixelView& view = TheScreen().visible_view();
-          const COORDINATE center =
+          const Coordinate center =
               base::At(TheWorld().current_object(), 0)->Center_Coord();
-          const COORDINATE center2 =
+          const Coordinate center2 =
               base::At(TheWorld().current_object(), 0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {

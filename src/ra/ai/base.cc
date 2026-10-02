@@ -318,7 +318,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
  *                                                                                             *
- * INI entry format: * BLDG=COORDINATE * BLDG=COORDINATE *
+ * INI entry format: * BLDG=CELL * BLDG=CELL *
  *        ... *
  *                                                                                             *
  * INPUT: * buffer      pointer to loaded INI file *

@@ -15,21 +15,20 @@ namespace ra {
 // Returns a list of cell offsets that a dirty rectangle overlaps, relative to
 // the cell containing `coord`. The list is kRefreshEol-terminated. If
 // `no_center` is true, the center cell (offset 0) is excluded.
-std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, const Rect& rect,
+std::span<const int16_t> Coord_Spillage_List(Coordinate coord, const Rect& rect,
                                              bool no_center = true);
 
 // Moves `start` by `distance` leptons in the given `facing` direction.
-COORDINATE Coord_Move(COORDINATE start, game::DirType facing,
+Coordinate Coord_Move(Coordinate start, game::DirType facing,
                       uint16_t distance);
 
 // Returns a random coordinate within `distance` pixels of `coord`. If `lock`
 // is true, the result is snapped to the nearest cell center.
-COORDINATE Coord_Scatter(COORDINATE coord, int distance,
-                         bool lock = false);
+Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock = false);
 
-game::DirType Direction(COORDINATE coord1, COORDINATE coord2);
-game::DirType Direction256(COORDINATE coord1, COORDINATE coord2);
-game::DirType Direction8(COORDINATE coord1, COORDINATE coord2);
+game::DirType Direction(Coordinate coord1, Coordinate coord2);
+game::DirType Direction256(Coordinate coord1, Coordinate coord2);
+game::DirType Direction8(Coordinate coord1, Coordinate coord2);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
 inline game::DirType Direction(CELL cell1, CELL cell2) {
@@ -39,7 +38,7 @@ inline game::DirType Direction(CELL cell1, CELL cell2) {
 
 // Returns the lepton distance between two coordinates using the "Dragon
 // Strike" approximation: max(dx,dy) + min(dx,dy)/2.
-int Distance(COORDINATE coord1, COORDINATE coord2);
+int Distance(Coordinate coord1, Coordinate coord2);
 
 // Returns the lepton distance between two targets. Both targets must be valid.
 int Distance(TARGET target1, TARGET target2);
@@ -47,7 +46,7 @@ int Distance(TARGET target1, TARGET target2);
 // Returns a kRefreshEol-terminated list of cell offsets that an object of
 // `maxsize` pixels overlaps. Limited to maxsize <= 48 for the lookup path;
 // larger objects use a manually computed or prebuilt 5x5 table.
-std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize);
+std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize);
 
 // Rescales a value from an old range to a new range with rounding.
 // Maps: (value / old_base) * new_base

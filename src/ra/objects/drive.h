@@ -126,7 +126,7 @@ class DriveClass : public FootClass {
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
-  void Scatter(COORDINATE threat, bool forced = false,
+  void Scatter(Coordinate threat, bool forced = false,
                bool nokidding = false) override;
   bool Limbo() override;
   void Do_Turn(game::DirType dir);
@@ -135,10 +135,10 @@ class DriveClass : public FootClass {
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(game::DirType /*unused*/);
   void AI() override;
-  void Force_Track(int track, COORDINATE coord);
+  void Force_Track(int track, Coordinate coord);
   bool Stop_Driver() override;
 
-  void Mark_Track(COORDINATE headto, MarkType type);
+  void Mark_Track(Coordinate headto, MarkType type);
 
   /**********************************************************************
   **	These enumerations are used as working constants that exist only
@@ -173,7 +173,7 @@ class DriveClass : public FootClass {
   };
 
   struct TrackType {
-    COORDINATE Offset;  // Offset to origin coordinate.
+    Coordinate Offset;     // Offset to origin coordinate.
     game::DirType Facing;  // Facing (primary track).
   };
 
@@ -206,7 +206,7 @@ class DriveClass : public FootClass {
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();
-  COORDINATE Smooth_Turn(COORDINATE adj, game::DirType& dir);
+  Coordinate Smooth_Turn(Coordinate adj, game::DirType& dir);
 
   static const TurnTrackType TrackControl[67];
   static const RawTrackType RawTracks[13];

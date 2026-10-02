@@ -339,7 +339,7 @@ class TechnoClass : public RadioClass,
   ActionType What_Action(ObjectClass* object) override;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
-  [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
+  [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
                                          CELL& moveto) const;
   [[nodiscard]] virtual game::DirType Fire_Direction() const;
@@ -382,7 +382,7 @@ class TechnoClass : public RadioClass,
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  [[nodiscard]] bool In_Range(COORDINATE coord, int which = 0) const override;
+  [[nodiscard]] bool In_Range(Coordinate coord, int which = 0) const override;
   [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
@@ -408,7 +408,7 @@ class TechnoClass : public RadioClass,
                        int zone = -1) const;
   [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
   virtual bool Electric_Zap(TARGET target, int which,
-                            COORDINATE source_coord = 0L,
+                            Coordinate source_coord = {},
                             std::span<const unsigned char> remap = {});
 
   /*
@@ -468,7 +468,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   void Detach(TARGET target, bool all) override;
 

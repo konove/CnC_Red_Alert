@@ -3955,7 +3955,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     auto* infp = TheObjectHeaps().infantry().ActiveAt(i);
     Add_CRC(&GameCRC, static_cast<uint32_t>(
-                          static_cast<int>(infp->Coord) +
+                          static_cast<int>(infp->Coord.packed()) +
                           static_cast<int>(infp->PrimaryFacing.Current())));
     Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
@@ -3968,7 +3968,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     auto* unitp = TheObjectHeaps().unit().ActiveAt(i);
     Add_CRC(&GameCRC, static_cast<uint32_t>(
-                          static_cast<int>(unitp->Coord) +
+                          static_cast<int>(unitp->Coord.packed()) +
                           static_cast<int>(unitp->PrimaryFacing.Current()) +
                           static_cast<int>(unitp->SecondaryFacing.Current())));
   }
@@ -3979,7 +3979,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
     auto* vessp = TheObjectHeaps().vessel().ActiveAt(i);
     Add_CRC(&GameCRC, static_cast<uint32_t>(
-                          static_cast<int>(vessp->Coord) +
+                          static_cast<int>(vessp->Coord.packed()) +
                           static_cast<int>(vessp->PrimaryFacing.Current())));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Speed + vessp->NavCom));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
@@ -3993,7 +3993,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     auto* bldgp = TheObjectHeaps().building().ActiveAt(i);
     Add_CRC(&GameCRC, static_cast<uint32_t>(
-                          static_cast<int>(bldgp->Coord) +
+                          static_cast<int>(bldgp->Coord.packed()) +
                           static_cast<int>(bldgp->PrimaryFacing.Current())));
   }
 
@@ -4014,7 +4014,7 @@ static void Compute_Game_CRC() {
     for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
       objp = MouseClass::Layer.at(layer).at(j);
       Add_CRC(&GameCRC,
-              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+              static_cast<uint32_t>(static_cast<int>(objp->Coord.packed()) +
                                     static_cast<int>(objp->What_Am_I())));
     }
   }
@@ -4025,7 +4025,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheWorld().logic().Count(); i++) {
     objp = TheWorld().logic().at(i);
     Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+            static_cast<uint32_t>(static_cast<int>(objp->Coord.packed()) +
                                   static_cast<int>(objp->What_Am_I())));
   }
 
@@ -4139,7 +4139,7 @@ static void Print_CRCs(const EventClass* ev) {
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
-                      static_cast<int>(infp->Coord) +
+                      static_cast<int>(infp->Coord.packed()) +
                       static_cast<int>(infp->PrimaryFacing.Current())));
           Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
           Add_CRC(&GameCRC,
@@ -4148,7 +4148,7 @@ static void Print_CRCs(const EventClass* ev) {
           absl::FPrintF(fp,
                         "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
                         "Speed:%d NavCom:%x\n",
-                        infp->Coord,
+                        infp->Coord.packed(),
                         static_cast<int>(infp->PrimaryFacing.Current()),
                         infp->Get_Mission(), infp->Class->Type,
                         static_cast<unsigned int>(infp->As_Target()),
@@ -4172,14 +4172,15 @@ static void Print_CRCs(const EventClass* ev) {
         if (unitp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
-                      static_cast<int>(unitp->Coord) +
+                      static_cast<int>(unitp->Coord.packed()) +
                       static_cast<int>(unitp->PrimaryFacing.Current()) +
                       static_cast<int>(unitp->SecondaryFacing.Current())));
           absl::FPrintF(
               fp,
               "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
               "Tgt:%x\n",
-              unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+              unitp->Coord.packed(),
+              static_cast<int>(unitp->PrimaryFacing.Current()),
               static_cast<int>(unitp->SecondaryFacing.Current()),
               unitp->Get_Mission(), unitp->Class->Type,
               static_cast<unsigned int>(unitp->As_Target()));
@@ -4202,7 +4203,7 @@ static void Print_CRCs(const EventClass* ev) {
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
-                      static_cast<int>(vesselp->Coord) +
+                      static_cast<int>(vesselp->Coord.packed()) +
                       static_cast<int>(vesselp->PrimaryFacing.Current())));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Speed +
                                                   vesselp->NavCom));
@@ -4214,7 +4215,7 @@ static void Print_CRCs(const EventClass* ev) {
               fp,
               "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
               "Tgt:%x\n",
-              vesselp->Coord,
+              vesselp->Coord.packed(),
               static_cast<int>(vesselp->PrimaryFacing.Current()),
               vesselp->Get_Mission(), vesselp->Strength, vesselp->Class->Type,
               static_cast<unsigned int>(vesselp->As_Target()));
@@ -4238,11 +4239,12 @@ static void Print_CRCs(const EventClass* ev) {
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
-                      static_cast<int>(bldgp->Coord) +
+                      static_cast<int>(bldgp->Coord.packed()) +
                       static_cast<int>(bldgp->PrimaryFacing.Current())));
           absl::FPrintF(
               fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
-              bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing.Current()),
+              bldgp->Coord.packed(),
+              static_cast<int>(bldgp->PrimaryFacing.Current()),
               bldgp->Get_Mission(), bldgp->Class->Type,
               static_cast<unsigned int>(bldgp->As_Target()));
         }
@@ -4270,9 +4272,9 @@ static void Print_CRCs(const EventClass* ev) {
     for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
       objp = MouseClass::Layer.at(layer).at(j);
       Add_CRC(&GameCRC,
-              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+              static_cast<uint32_t>(static_cast<int>(objp->Coord.packed()) +
                                     static_cast<int>(objp->What_Am_I())));
-      absl::FPrintF(fp, "Object %d: %x ", j, objp->Coord);
+      absl::FPrintF(fp, "Object %d: %x ", j, objp->Coord.packed());
 
       if (objp->What_Am_I() == RTTI_AIRCRAFT) {
         absl::FPrintF(fp, "Aircraft  (Type:%d) ",
@@ -4338,9 +4340,9 @@ static void Print_CRCs(const EventClass* ev) {
   for (int i = 0; i < TheWorld().logic().Count(); i++) {
     objp = TheWorld().logic().at(i);
     Add_CRC(&GameCRC,
-            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+            static_cast<uint32_t>(static_cast<int>(objp->Coord.packed()) +
                                   static_cast<int>(objp->What_Am_I())));
-    absl::FPrintF(fp, "Object %d: %x ", i, objp->Coord);
+    absl::FPrintF(fp, "Object %d: %x ", i, objp->Coord.packed());
 
     if (objp->What_Am_I() == RTTI_AIRCRAFT) {
       absl::FPrintF(

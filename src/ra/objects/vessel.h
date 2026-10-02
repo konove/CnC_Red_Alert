@@ -130,12 +130,12 @@ class VesselClass : public DriveClass {
     }
     return PrimaryFacing.Current();
   }
-  bool Start_Driver(COORDINATE& headto) override;
+  bool Start_Driver(Coordinate& headto) override;
   int Mission_Retreat() override;
   int Mission_Unload() override;
   void LST_Open_Door();
   void LST_Close_Door();
-  [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
+  [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType from = game::FACING_NONE) const override;
   void Draw_It(PixelView& view, int x, int y,
