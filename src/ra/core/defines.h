@@ -51,6 +51,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/coordinate.h"  // IWYU pragma: export
 #include "ra/core/jshell.h"
+#include "ra/core/rtti.h"  // IWYU pragma: export
 
 namespace ra {
 
@@ -180,47 +181,6 @@ enum class VQType : int8_t {
   VQ_ANTINTRO
 };
 using enum VQType;
-
-/**********************************************************************
-**	These enumerations are used to implement RTTI. The target system
-**	uses these and thus there can be no more RTTI types than can fit
-**	in the exponent of a target value.
-*/
-enum class RTTIType {
-  RTTI_NONE = 0,
-  RTTI_AIRCRAFT,
-  RTTI_AIRCRAFTTYPE,
-  RTTI_ANIM,
-  RTTI_ANIMTYPE,
-  RTTI_BUILDING,
-  RTTI_BUILDINGTYPE,
-  RTTI_BULLET,
-  RTTI_BULLETTYPE,
-  RTTI_CELL,
-  RTTI_FACTORY,
-  RTTI_HOUSE,
-  RTTI_HOUSETYPE,
-  RTTI_INFANTRY,
-  RTTI_INFANTRYTYPE,
-  RTTI_OVERLAY,
-  RTTI_OVERLAYTYPE,
-  RTTI_SMUDGE,
-  RTTI_SMUDGETYPE,
-  RTTI_SPECIAL,
-  RTTI_TEAM,
-  RTTI_TEAMTYPE,
-  RTTI_TEMPLATE,
-  RTTI_TEMPLATETYPE,
-  RTTI_TERRAIN,
-  RTTI_TERRAINTYPE,
-  RTTI_TRIGGER,
-  RTTI_TRIGGERTYPE,
-  RTTI_UNIT,
-  RTTI_UNITTYPE,
-  RTTI_VESSEL,
-  RTTI_VESSELTYPE
-};
-using enum RTTIType;
 
 // These are the difficulty settings of the game.
 enum class DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };

@@ -75,6 +75,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/map/world.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/aircraft.h"
@@ -1042,6 +1043,356 @@ TriggerTypeClass* As_TriggerType(TARGET target) {
     return TheObjectHeaps().trigger_type().Slot(Target_Value(target));
   }
   return nullptr;
+}
+
+Target Target::Of(const AbstractClass* object) {
+  return object != nullptr ? Make(object->RTTI, object->ID) : Target{};
+}
+
+Target Target::Of(const AbstractTypeClass* type) {
+  return type != nullptr ? Make(type->RTTI, type->ID) : Target{};
+}
+
+Target Target::Of(const CellClass* cell) {
+  return cell != nullptr ? FromCellIndex(cell->ID) : Target{};
+}
+
+ObjectClass* Target::AsObject() const {
+  const int val = value();
+  ObjectClass* object = nullptr;
+  switch (kind()) {
+    case RTTI_INFANTRY:
+      object = TheObjectHeaps().infantry().Slot(val);
+      break;
+
+    case RTTI_UNIT:
+      object = TheObjectHeaps().unit().Slot(val);
+      break;
+
+    case RTTI_VESSEL:
+      object = TheObjectHeaps().vessel().Slot(val);
+      break;
+
+    case RTTI_BUILDING:
+      object = TheObjectHeaps().building().Slot(val);
+      break;
+
+    case RTTI_AIRCRAFT:
+      object = TheObjectHeaps().aircraft().Slot(val);
+      break;
+
+    case RTTI_TERRAIN:
+      object = TheObjectHeaps().terrain().Slot(val);
+      break;
+
+    case RTTI_BULLET:
+      object = TheObjectHeaps().bullet().Slot(val);
+      break;
+
+    case RTTI_ANIM:
+      object = TheObjectHeaps().anim().Slot(val);
+      break;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
+  }
+
+  // A network event can name an object that died between the frame it was
+  // sent and the frame it runs; the slot then holds an inactive object,
+  // which must not come back as a pointer.
+  if (object != nullptr && !object->IsActive) {
+    object = nullptr;
+  }
+
+  return object;
+}
+
+TechnoClass* Target::AsTechno() const {
+  ObjectClass* object = AsObject();
+  if (object != nullptr && object->Is_Techno()) {
+    return dynamic_cast<TechnoClass*>(object);
+  }
+  return nullptr;
+}
+
+ObjectClass* Target::AsObjectInSlot() const {
+  const int val = value();
+  switch (kind()) {
+    case RTTI_TERRAIN:
+      return TheObjectHeaps().terrain().Slot(val);
+
+    case RTTI_SMUDGE:
+      return TheObjectHeaps().smudge().Slot(val);
+
+    case RTTI_OVERLAY:
+      return TheObjectHeaps().overlay().Slot(val);
+
+    case RTTI_BULLET:
+      return TheObjectHeaps().bullet().Slot(val);
+
+    case RTTI_ANIM:
+      return TheObjectHeaps().anim().Slot(val);
+
+    case RTTI_UNIT:
+      return TheObjectHeaps().unit().Slot(val);
+
+    case RTTI_VESSEL:
+      return TheObjectHeaps().vessel().Slot(val);
+
+    case RTTI_BUILDING:
+      return TheObjectHeaps().building().Slot(val);
+
+    case RTTI_INFANTRY:
+      return TheObjectHeaps().infantry().Slot(val);
+
+    case RTTI_AIRCRAFT:
+      return TheObjectHeaps().aircraft().Slot(val);
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
+  }
+  return nullptr;
+}
+
+TechnoClass* Target::AsTechnoInSlot() const {
+  const int val = value();
+  switch (kind()) {
+    case RTTI_UNIT:
+      return TheObjectHeaps().unit().Slot(val);
+
+    case RTTI_VESSEL:
+      return TheObjectHeaps().vessel().Slot(val);
+
+    case RTTI_BUILDING:
+      return TheObjectHeaps().building().Slot(val);
+
+    case RTTI_INFANTRY:
+      return TheObjectHeaps().infantry().Slot(val);
+
+    case RTTI_AIRCRAFT:
+      return TheObjectHeaps().aircraft().Slot(val);
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
+  }
+  return nullptr;
+}
+
+AircraftClass* Target::AsAircraft() const {
+  return kind() == RTTI_AIRCRAFT ? TheObjectHeaps().aircraft().Slot(value())
+                                 : nullptr;
+}
+
+AnimClass* Target::AsAnimation() const {
+  return kind() == RTTI_ANIM ? TheObjectHeaps().anim().Slot(value()) : nullptr;
+}
+
+BuildingClass* Target::AsBuilding() const {
+  return kind() == RTTI_BUILDING ? TheObjectHeaps().building().Slot(value())
+                                 : nullptr;
+}
+
+BulletClass* Target::AsBullet() const {
+  return kind() == RTTI_BULLET ? TheObjectHeaps().bullet().Slot(value())
+                               : nullptr;
+}
+
+InfantryClass* Target::AsInfantry() const {
+  return kind() == RTTI_INFANTRY ? TheObjectHeaps().infantry().Slot(value())
+                                 : nullptr;
+}
+
+TeamClass* Target::AsTeam() const {
+  return kind() == RTTI_TEAM ? TheObjectHeaps().team().Slot(value()) : nullptr;
+}
+
+TeamTypeClass* Target::AsTeamType() const {
+  return kind() == RTTI_TEAMTYPE ? TheObjectHeaps().team_type().Slot(value())
+                                 : nullptr;
+}
+
+TriggerClass* Target::AsTrigger() const {
+  return kind() == RTTI_TRIGGER ? TheObjectHeaps().trigger().Slot(value())
+                                : nullptr;
+}
+
+TriggerTypeClass* Target::AsTriggerType() const {
+  return kind() == RTTI_TRIGGERTYPE
+             ? TheObjectHeaps().trigger_type().Slot(value())
+             : nullptr;
+}
+
+UnitClass* Target::AsUnit() const {
+  return kind() == RTTI_UNIT ? TheObjectHeaps().unit().Slot(value()) : nullptr;
+}
+
+VesselClass* Target::AsVessel() const {
+  return kind() == RTTI_VESSEL ? TheObjectHeaps().vessel().Slot(value())
+                               : nullptr;
+}
+
+const TechnoTypeClass* Target::AsTechnoType() const {
+  const int val = value();
+  switch (kind()) {
+    case RTTI_INFANTRYTYPE:
+      return &InfantryTypeClass::As_Reference(static_cast<InfantryType>(val));
+
+    case RTTI_UNITTYPE:
+      return &UnitTypeClass::As_Reference(static_cast<UnitType>(val));
+
+    case RTTI_VESSELTYPE:
+      return &VesselTypeClass::As_Reference(static_cast<VesselType>(val));
+
+    case RTTI_AIRCRAFTTYPE:
+      return &AircraftTypeClass::As_Reference(static_cast<AircraftType>(val));
+
+    case RTTI_BUILDINGTYPE:
+      return &BuildingTypeClass::As_Reference(static_cast<StructType>(val));
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFT:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDING:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRY:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNIT:
+    case RTTIType::RTTI_VESSEL:
+    default:
+      break;
+  }
+  return nullptr;
+}
+
+// The original comments call a cell target's value "the cell index number",
+// but this reads the sub-cell encoding, as the code always has.
+Coordinate Target::AsCoordinate() const {
+  if (!*this) {
+    return Coordinate{};
+  }
+  if (kind() == RTTI_CELL) {
+    const auto v = static_cast<uint32_t>(value());
+    const uint32_t x = (v & kSubCellAxisMask) * kLeptonsPerUnit;
+    const uint32_t y =
+        ((v >> kSubCellAxisBits) & kSubCellAxisMask) * kLeptonsPerUnit;
+    return Coordinate::FromLeptons(static_cast<int>(x + (kLeptonsPerUnit / 2)),
+                                   static_cast<int>(y + (kLeptonsPerUnit / 2)));
+  }
+  const ObjectClass* object = AsObject();
+  if (object != nullptr) {
+    DCHECK(object->IsActive);
+    return object->Target_Coord();
+  }
+  return Coordinate{};
+}
+
+CELL Target::AsCell() const { return Coord_Cell(AsCoordinate()); }
+
+// Reads a cell target as a cell index, where AsCoordinate() reads the
+// sub-cell encoding; see the class comment.
+Coordinate Target::AsMovementCoordinate() const {
+  if (!*this) {
+    return Coordinate{};
+  }
+  if (kind() == RTTI_CELL) {
+    return Cell_Coord(cell_index());
+  }
+  const ObjectClass* object = AsObject();
+  if (object != nullptr) {
+    return object->Docking_Coord();
+  }
+  return Coordinate{};
 }
 
 }  // namespace ra
