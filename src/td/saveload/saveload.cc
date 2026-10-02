@@ -59,7 +59,6 @@
 #include "engine/stream/stream_source.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/base.h"
@@ -394,7 +393,7 @@ bool Load_Game(int id) {
   for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
     TriggerClass* trig = TheObjectHeaps().trigger().Ptr(j);
     if (trig->House != HOUSE_NONE) {
-      TheWorld().house_triggers().at(trig->House).Add(trig);
+      TheWorld().house_triggers().at(trig->House).push_back(trig);
     }
   }
 

@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <string_view>
@@ -83,7 +84,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
@@ -3466,8 +3466,8 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Init scenario description list box
   ........................................................................*/
-  for (i = 0; i < TheSession().scenarios().Count(); i++) {
-    char* const scenario = TheSession().scenarios().at(i);
+  for (i = 0; i < std::ssize(TheSession().scenarios()); i++) {
+    char* const scenario = base::At(TheSession().scenarios(), i);
     std::ranges::transform(base::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
@@ -4172,8 +4172,8 @@ int Com_Scenario_Dialog() {
       SendPacket.House = TheSession().house();
       SendPacket.Color = static_cast<unsigned char>(TheSession().color_index());
 
-      SendPacket.Scenario = static_cast<unsigned char>(
-          TheSession().scenario_files().at(TheSession().scenario_index()));
+      SendPacket.Scenario = static_cast<unsigned char>(base::At(
+          TheSession().scenario_files(), TheSession().scenario_index()));
 
       SendPacket.Credits = static_cast<unsigned int>(TheSession().credits());
       SendPacket.IsBases = static_cast<unsigned int>(TheSession().bases());
@@ -4476,7 +4476,7 @@ int Com_Scenario_Dialog() {
     Get the scenario filename
     .....................................................................*/
     TheWorld().scenario() =
-        TheSession().scenario_files().at(TheSession().scenario_index());
+        base::At(TheSession().scenario_files(), TheSession().scenario_index());
 
     /*.....................................................................
     Send all players the GO packet.
@@ -4956,9 +4956,9 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().scenario_index() != -1) {
-              absl::SNPrintF(
-                  txt, sizeof(txt), "%s",
-                  TheSession().scenarios().at(TheSession().scenario_index()));
+              absl::SNPrintF(txt, sizeof(txt), "%s",
+                             base::At(TheSession().scenarios(),
+                                      TheSession().scenario_index()));
 
               Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, kCcGreen,
                                kTBlack,
@@ -5536,9 +5536,9 @@ int Com_Show_Scenario_Dialog() {
             it at -1.
             ...............................................................*/
             TheSession().scenario_index() = -1;
-            for (i = 0; i < TheSession().scenario_files().Count(); i++) {
+            for (i = 0; i < std::ssize(TheSession().scenario_files()); i++) {
               if (std::cmp_equal(ReceivePacket.Scenario,
-                                 TheSession().scenario_files().at(i))) {
+                                 base::At(TheSession().scenario_files(), i))) {
                 TheSession().scenario_index() = i;
               }
             }
@@ -5717,7 +5717,7 @@ int Com_Show_Scenario_Dialog() {
     Get the scenario filename
     .....................................................................*/
     TheWorld().scenario() =
-        TheSession().scenario_files().at(TheSession().scenario_index());
+        base::At(TheSession().scenario_files(), TheSession().scenario_index());
 
     starttime = engine::platform::SystemTicks();
     while (TheNetwork().null_modem().Num_Send() &&

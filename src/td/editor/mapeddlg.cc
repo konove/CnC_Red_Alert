@@ -77,7 +77,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/input.h"
@@ -3156,7 +3155,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
-  game::DynamicVectorClass<char*> trignames;      // list of INI trigger names
+  std::vector<char*> trignames;                   // list of INI trigger names
   char buf[128];                            // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3255,7 +3254,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ** Add the name to our internal name list
     */
-    trignames.Add(tbuffer);
+    trignames.push_back(tbuffer);
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -3372,7 +3371,7 @@ int MapEditClass::Import_Triggers() {
         trigger->Fill_In(tbuffer, buf);
 
         if (trigger->House != HOUSE_NONE) {
-          TheWorld().house_triggers().at(trigger->House).Add(trigger);
+          TheWorld().house_triggers().at(trigger->House).push_back(trigger);
         }
       }
 
@@ -3385,7 +3384,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Clean up memory
   ........................................................................*/
-  trignames.Clear();
+  trignames.clear();
   triggerlist.Clear();
 
   if (cancel) {
@@ -3470,7 +3469,7 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
-  game::DynamicVectorClass<char*> teamnames;  // list of INI team names
+  std::vector<char*> teamnames;          // list of INI team names
   char buf[128];                        // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3571,7 +3570,7 @@ int MapEditClass::Import_Teams() {
     /*
     ** Add the name to our internal name list
     */
-    teamnames.Add(tbuffer);
+    teamnames.push_back(tbuffer);
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -3696,7 +3695,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Clean up memory
   ........................................................................*/
-  teamnames.Clear();
+  teamnames.clear();
   teamlist.Clear();
 
   if (cancel) {

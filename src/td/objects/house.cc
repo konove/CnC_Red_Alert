@@ -129,6 +129,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <string>
@@ -150,7 +151,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
@@ -417,7 +417,7 @@ HouseClass::HouseClass(HousesType house)
   FlagHome = 0;
   FlagLocation = kTargetNone;
   HarvestedCredits = 0;
-  TheWorld().house_triggers().at(house).Clear();
+  TheWorld().house_triggers().at(house).clear();
   IGaveUp = false;
   InfantryFactories = 0;
   InfantryFactory = -1;
@@ -820,7 +820,7 @@ void HouseClass::Init() {
   TheObjectHeaps().house().Destroy_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    TheWorld().house_triggers().at(index).Clear();
+    TheWorld().house_triggers().at(index).clear();
   }
 }
 
@@ -1306,8 +1306,10 @@ void HouseClass::AI() {
   }
 
   for (int index = 0;
-       index < TheWorld().house_triggers().at(Class->House).Count(); index++) {
-    TriggerClass* t = TheWorld().house_triggers().at(Class->House).at(index);
+       index < std::ssize(TheWorld().house_triggers().at(Class->House));
+       index++) {
+    TriggerClass* t =
+        base::At(TheWorld().house_triggers().at(Class->House), index);
 
     /*
     **	Check for just built the building trigger event.
@@ -1500,12 +1502,9 @@ void HouseClass::Attacked() {
     **	now.
     */
     for (int index = 0;
-         index < TheWorld().house_triggers().at(Class->House).Count();
+         index < std::ssize(TheWorld().house_triggers().at(Class->House));
          index++) {
-      TheWorld()
-          .house_triggers()
-          .at(Class->House)
-          .at(index)
+      base::At(TheWorld().house_triggers().at(Class->House), index)
           ->Spring(EVENT_ATTACKED, Class->House);
     }
   }

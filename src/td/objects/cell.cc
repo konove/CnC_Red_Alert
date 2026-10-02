@@ -100,7 +100,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1640,7 +1639,7 @@ bool CellClass::Reduce_Wall(int damage) {
 TriggerClass* CellClass::Get_Trigger() const {
   Validate();
   if (IsTrigger) {
-    return TheWorld().cell_triggers().at(Cell_Number());
+    return base::At(TheWorld().cell_triggers(), Cell_Number());
   }
   return nullptr;
 }

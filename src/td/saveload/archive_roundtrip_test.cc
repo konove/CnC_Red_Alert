@@ -7,6 +7,7 @@
 #include <span>
 #include <vector>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/numeric.h"
@@ -102,13 +103,13 @@ class TdArchiveRoundTripTest : public testing::Test {
     TheObjectHeaps().factory().Set_Heap(8);
     TheObjectHeaps().team().Set_Heap(8);
     TheMap().Resize(MAP_CELL_TOTAL);
-    TheWorld().cell_triggers().Resize(MAP_CELL_TOTAL);
+    TheWorld().cell_triggers().resize(MAP_CELL_TOTAL);
     TheMap().Init_Cells();
     ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GOOD);
   }
   static void TearDownTestSuite() {
     TheMap().Init_Cells();
-    TheWorld().cell_triggers().Clear();
+    TheWorld().cell_triggers().clear();
     while (TheObjectHeaps().unit().Count() != 0) {
       base::DeletePooled(TheObjectHeaps().unit().Ptr(0));
     }
@@ -227,10 +228,10 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   cell.OccupierPtr = unit;
   cell.Overlappers[2] = unit;
   cell.Flag.Composite = 2;
-  TheWorld().cell_triggers().at(100) = trigger;
+  base::At(TheWorld().cell_triggers(), 100) = trigger;
   const auto bytes = Save(cell);
   cell.Reset();
-  TheWorld().cell_triggers().at(100) = nullptr;
+  base::At(TheWorld().cell_triggers(), 100) = nullptr;
   ASSERT_TRUE(Restore(cell, bytes));
   EXPECT_TRUE(cell.IsMapped && cell.IsVisible && cell.IsTrigger && cell.IsFlagged);
   EXPECT_TRUE(cell.IsPlot && cell.IsCursorHere && cell.IsWaypoint && cell.IsRadarCursor);
@@ -241,7 +242,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   EXPECT_EQ(cell.Overlappers[0], nullptr);
   EXPECT_EQ(cell.Overlappers[1], nullptr);
   EXPECT_EQ(cell.Overlappers[2], unit);
-  EXPECT_EQ(TheWorld().cell_triggers().at(100), trigger);
+  EXPECT_EQ(base::At(TheWorld().cell_triggers(), 100), trigger);
   EXPECT_EQ(Save(cell), bytes);
 }
 

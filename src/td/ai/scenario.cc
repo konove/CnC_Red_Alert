@@ -54,6 +54,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -67,7 +68,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/heap.h"
 #include "game/core/interpal.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/special.h"
@@ -341,7 +341,7 @@ void Clear_Scenario() {
 
   TheWorld().base().Init();
 
-  TheWorld().current_object().Clear();
+  TheWorld().current_object().clear();
 }
 
 /***********************************************************************************************
@@ -558,11 +558,11 @@ void Do_Win() {
     /*
     **	Remove the building from the prebuild list.
     */
-    for (int index = 0; index < TheWorld().base().Nodes.Count(); index++) {
+    for (int index = 0; index < std::ssize(TheWorld().base().Nodes); index++) {
       const BaseNodeClass* node = TheWorld().base().Get_Node(index);
 
       if (node && node->Type == TheWorld().sabotaged_type()) {
-        TheWorld().base().Nodes.Delete(index);
+        TheWorld().base().Nodes.erase(TheWorld().base().Nodes.begin() + index);
         break;
       }
     }

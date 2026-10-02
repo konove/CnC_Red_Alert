@@ -43,8 +43,10 @@
 
 #include <span>
 #include <string>
+#include <vector>
 
-#include "game/core/vector_dynamic.h"
+#include "absl/base/attributes.h"
+#include "base/array.h"
 #include "td/core/defines.h"
 #include "td/objects/building.h"
 
@@ -87,7 +89,7 @@ class BaseClass {
   /**********************************************************************
   ** Initialization
   */
-  void Init() { Nodes.Clear(); }
+  void Init() { Nodes.clear(); }
 
   /**********************************************************************
   ** The standard suite of load/save support routines
@@ -116,20 +118,23 @@ class BaseClass {
   /**********************************************************************
   ** Returns a pointer to the requested node.
   */
-  BaseNodeClass* Get_Node(BuildingClass* obj);
-  BaseNodeClass* Get_Node(int index) { return &Nodes.at(index); }
+  BaseNodeClass* Get_Node(BuildingClass* obj) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return &base::At(Nodes, index);
+  }
 
   /**********************************************************************
   ** Returns a pointer to the next "hole" in the Nodes list.
   */
-  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE);
+  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /**********************************************************************
   ** This is the list of "nodes" that define the base.  Portions of this
   ** list can be pre-built by simply saving those buildings in the INI
   ** along with non-base buildings, so Is_Built will return true for them.
   */
-  game::DynamicVectorClass<BaseNodeClass> Nodes;
+  std::vector<BaseNodeClass> Nodes;
 
   /**********************************************************************
   ** This is the house this base belongs to.

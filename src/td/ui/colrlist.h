@@ -43,10 +43,10 @@
 
 #include <cstddef>
 #include <span>
+#include <vector>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
 #include "td/ui/list.h"
 
@@ -90,7 +90,7 @@ class ColorListClass : public ListClass {
   /*
   **	This is the list of colors for each item.
   */
-  game::DynamicVectorClass<char> Colors;
+  std::vector<char> Colors;
 
  protected:
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,

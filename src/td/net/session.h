@@ -6,11 +6,11 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/stream/byte_stream.h"
-#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
 #include "td/ui/msglist.h"
 
@@ -87,11 +87,10 @@ class SessionClass {
 
   // The multiplayer scenarios offered in the dialog, by description and by
   // file number, and which row of the list is selected.
-  game::DynamicVectorClass<char*>& scenarios() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<char*>& scenarios() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return scenarios_;
   }
-  game::DynamicVectorClass<int>& scenario_files()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<int>& scenario_files() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return scenario_files_;
   }
   int& scenario_index() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -218,8 +217,8 @@ class SessionClass {
       kCcBlueGrey,   // Blue
   };
 
-  game::DynamicVectorClass<char*> scenarios_;
-  game::DynamicVectorClass<int> scenario_files_;
+  std::vector<char*> scenarios_;
+  std::vector<int> scenario_files_;
   int scenario_index_ = 0;
 
   int bases_ = 0;

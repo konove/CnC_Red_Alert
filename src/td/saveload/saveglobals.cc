@@ -1,6 +1,9 @@
 // Field-wise TD AI base and layer records.
 #include <cstdint>
+#include <iterator>
 
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/stream/archive.h"
 #include "td/ai/base.h"
 #include "td/core/defines.h"
@@ -12,7 +15,7 @@ namespace td {
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("BASE"));
-  auto count = static_cast<int32_t>(Nodes.Count());
+  auto count = static_cast<int32_t>(std::ssize(Nodes));
   ar(House, count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || House < HOUSE_NONE || House >= HOUSE_COUNT ||
@@ -20,12 +23,13 @@ void BaseClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved base house or count");
       return;
     }
-    Nodes.Clear();
+    Nodes.clear();
+    Nodes.reserve(base::ToSize(count));
   }
   for (int32_t i = 0; i < count; ++i) {
     BaseNodeClass node;
     if constexpr (!Archive::kIsReading) {
-      node = Nodes.at(i);
+      node = base::At(Nodes, i);
     }
     ar(node.Type, node.Coord);
     if constexpr (Archive::kIsReading) {
@@ -33,10 +37,7 @@ void BaseClass::Serialize(Archive& ar) {
         ar.Fail("invalid saved base building type");
         return;
       }
-      if (!Nodes.Add(node)) {
-        ar.Fail("cannot allocate saved base node");
-        return;
-      }
+      Nodes.push_back(node);
     }
   }
 }
@@ -46,7 +47,7 @@ template void BaseClass::Serialize(ArchiveReader&);
 template <class Archive>
 void LayerClass::Serialize(Archive& ar) {
   ar.Section(FourCC("LAYR"));
-  SerializeObjectList(ar, *this);
+  SerializeObjectList(ar, objects_);
 }
 template void LayerClass::Serialize(ArchiveWriter&);
 template void LayerClass::Serialize(ArchiveReader&);

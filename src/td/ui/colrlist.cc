@@ -67,10 +67,10 @@
 #include <cstddef>
 #include <span>
 
+#include "base/array.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/data/text.h"
@@ -101,7 +101,7 @@ ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-ColorListClass::~ColorListClass() { Colors.Clear(); }
+ColorListClass::~ColorListClass() { Colors.clear(); }
 
 /***************************************************************************
  * ColorListClass::Add_Item -- Adds an item to the list                    *
@@ -124,7 +124,7 @@ int ColorListClass::Add_Item(const char* text, char color) {
   if (text == nullptr) {
     return Count() - 1;
   }
-  Colors.Add(color);
+  Colors.push_back(color);
   return ListClass::Add_Item(text);
 }
 
@@ -166,7 +166,7 @@ int ColorListClass::Add_Item(int text, char color) {
  *=========================================================================*/
 void ColorListClass::Remove_Item(int index) {
   if (index >= 0 && index < Count()) {
-    Colors.Delete(index);
+    Colors.erase(Colors.begin() + index);
     ListClass::Remove_Item(index);
   }
 }
@@ -218,8 +218,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   ** Draw a non-selected item in its color
   */
   if (!selected) {
-    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
-                            kTBlack, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                            base::At(Colors, index), kTBlack, TextFlags, width,
+                            Tabs);
     return;
   }
 
@@ -227,7 +228,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   ** For selected items, choose the right color & style:
   */
   if (SelectColor == -1) {
-    color = static_cast<unsigned char>(Colors.at(index));
+    color = static_cast<unsigned char>(base::At(Colors, index));
   } else {
     color = SelectColor;
   }
@@ -237,8 +238,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NONE:
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
-                              kTBlack, TextFlags, width, Tabs);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                              base::At(Colors, index), kTBlack, TextFlags,
+                              width, Tabs);
       break;
 
     /*
@@ -261,8 +263,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_BOX:
       view.DrawRect(x, y, x + width - 2, y + LineHeight - 2,
                     static_cast<unsigned char>(color));
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
-                              kTBlack, TextFlags, width, Tabs);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                              base::At(Colors, index), kTBlack, TextFlags,
+                              width, Tabs);
       break;
 
     /*
@@ -272,14 +275,15 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
                       static_cast<unsigned char>(SelectColor));
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
-                                kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
-                                Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                                base::At(Colors, index), kTBlack,
+                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
                       static_cast<unsigned char>(SelectColor));
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
-                                kTBlack, TextFlags, width, Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                                base::At(Colors, index), kTBlack, TextFlags,
+                                width, Tabs);
       }
       break;
 
@@ -289,14 +293,14 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_INVERT:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                      static_cast<unsigned char>(Colors.at(index)));
+                      static_cast<unsigned char>(base::At(Colors, index)));
         // Black text on the transparent color; the names only look swapped.
         // NOLINTNEXTLINE(readability-suspicious-call-argument)
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kBlack, kTBlack,
                                 TextFlags, width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
-                      static_cast<unsigned char>(Colors.at(index)));
+                      static_cast<unsigned char>(base::At(Colors, index)));
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kLtGrey, kTBlack,
                                 TextFlags, width, Tabs);
       }

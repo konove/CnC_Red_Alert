@@ -76,7 +76,6 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/tile.h"
 #include "engine/platform/platform.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
@@ -449,7 +448,7 @@ void MapClass::One_Time() {
   /*
   **	Init the CellTriggers array to the required size.
   */
-  TheWorld().cell_triggers().Resize(MAP_CELL_TOTAL);
+  TheWorld().cell_triggers().resize(MAP_CELL_TOTAL);
 }
 
 /***********************************************************************************************

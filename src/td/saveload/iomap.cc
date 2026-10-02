@@ -84,7 +84,7 @@ void CellClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell attributes");
     }
   }
-  auto& trigger = TheWorld().cell_triggers().at(Cell_Number());
+  auto& trigger = base::At(TheWorld().cell_triggers(), Cell_Number());
   if (IsTrigger) {
     ar(TriggerPtr(trigger));
     if constexpr (Archive::kIsReading) {
@@ -327,7 +327,7 @@ void MouseClass::Serialize(Archive& ar) {
     // Init_Cells clears TotalValue, so it must precede the member reads.
     Init_Cells();
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      TheWorld().cell_triggers().at(cell) = nullptr;
+      base::At(TheWorld().cell_triggers(), cell) = nullptr;
     }
   }
   SidebarClass::Serialize(ar);

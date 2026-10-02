@@ -3,9 +3,11 @@
 #include <bitset>
 #include <concepts>
 #include <cstdint>
+#include <vector>
 
+#include "base/array.h"
+#include "base/numeric.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
@@ -312,16 +314,16 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
 }
 
 template <class Archive>
-void SerializeObjectList(Archive& ar,
-                         game::DynamicVectorClass<ObjectClass*>& objects) {
-  auto count = static_cast<int32_t>(objects.Count());
+void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects) {
+  auto count = static_cast<int32_t>(objects.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > 65536) {
       ar.Fail("invalid saved object list count");
       return;
     }
-    objects.Clear();
+    objects.clear();
+    objects.reserve(base::ToSize(count));
   }
   // set() runs only in the reading instantiation; misc-const-correctness
   // checks the writer, which discards that `if constexpr` branch.
@@ -331,7 +333,7 @@ void SerializeObjectList(Archive& ar,
     ObjectClass* object = nullptr;
     TARGET target = kTargetNone;
     if constexpr (!Archive::kIsReading) {
-      object = objects.at(i);
+      object = base::At(objects, i);
       if (object != nullptr && object->IsActive) {
         target = object->As_Target();
       }
@@ -351,16 +353,11 @@ void SerializeObjectList(Archive& ar,
         return;
       }
       seen.set(target);
-      if (!objects.Add(object)) {
-        ar.Fail("cannot allocate saved object list");
-        return;
-      }
+      objects.push_back(object);
     }
   }
 }
-template void SerializeObjectList(ArchiveWriter&,
-                                  game::DynamicVectorClass<ObjectClass*>&);
-template void SerializeObjectList(ArchiveReader&,
-                                  game::DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveWriter&, std::vector<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&, std::vector<ObjectClass*>&);
 
 }  // namespace td

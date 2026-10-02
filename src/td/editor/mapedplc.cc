@@ -57,6 +57,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <span>
 
 #include "base/array.h"
@@ -67,7 +68,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
@@ -1191,7 +1191,7 @@ int MapEditClass::Place_Object() {
     if (BaseBuilding && PendingObject->What_Am_I() == RTTI_BUILDINGTYPE) {
       node.Type = dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type;
       node.Coord = PendingObjectPtr->Coord;
-      TheWorld().base().Nodes.Add(node);
+      TheWorld().base().Nodes.push_back(node);
     }
 
     PendingObjectPtr = nullptr;
@@ -1863,7 +1863,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
     */
     if (CurTrigger->Event <= EVENT_OBJECTFIRST) {
       TheMap().at(cell).IsTrigger = true;
-      TheWorld().cell_triggers().at(cell) = CurTrigger;
+      base::At(TheWorld().cell_triggers(), cell) = CurTrigger;
     }
   }
 
@@ -1965,7 +1965,7 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < TheWorld().base().Nodes.Count(); i++) {
+  for (int i = 0; i < std::ssize(TheWorld().base().Nodes); i++) {
     if (TheWorld().base().Is_Built(i)) {
       obj = TheWorld().base().Get_Building(i);
       base::DeletePooled(obj);
@@ -1976,7 +1976,7 @@ void MapEditClass::Build_Base_To(int percent) {
   ** Compute number of buildings to build
   */
   const int num_buildings =
-      (static_cast<int>(TheWorld().base().Nodes.Count()) * percent) / 100;
+      (static_cast<int>(std::ssize(TheWorld().base().Nodes)) * percent) / 100;
 
   /*
   ** Build the base to the desired amount
@@ -1985,14 +1985,14 @@ void MapEditClass::Build_Base_To(int percent) {
     /*
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
-    const BuildingTypeClass* objtype =
-        &BuildingTypeClass::As_Reference(TheWorld().base().Nodes.at(i).Type);
+    const BuildingTypeClass* objtype = &BuildingTypeClass::As_Reference(
+        base::At(TheWorld().base().Nodes, i).Type);
     obj = dynamic_cast<BuildingClass*>(objtype->Create_One_Of(
         HouseClass::As_Pointer(TheWorld().base().House)));
     /*
     ** If unlimbo fails, error out
     */
-    if (!obj->Unlimbo(TheWorld().base().Nodes.at(i).Coord)) {
+    if (!obj->Unlimbo(base::At(TheWorld().base().Nodes, i).Coord)) {
       base::DeletePooled(obj);
       CCMessageBox().Process("Unable to build base!");
       return;

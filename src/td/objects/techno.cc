@@ -169,6 +169,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <utility>
 
@@ -184,7 +185,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
@@ -2382,7 +2382,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     **	object cannot do anything special with itself, then just return with
     **	the no action flag.
     */
-    if (object == this && TheWorld().current_object().Count() == 1 &&
+    if (object == this && std::ssize(TheWorld().current_object()) == 1 &&
         House == ThePlayer()) {
       return ACTION_SELF;
     }

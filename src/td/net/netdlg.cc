@@ -128,6 +128,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <string_view>
@@ -153,7 +154,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
@@ -1197,9 +1197,9 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_SCENARIO_COLON);
           if (TheSession().scenario_index() != -1) {
-            absl::SNPrintF(
-                txt, sizeof(txt), "%s %s", p,
-                TheSession().scenarios().at(TheSession().scenario_index()));
+            absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
+                           base::At(TheSession().scenarios(),
+                                    TheSession().scenario_index()));
 
             Fancy_Text_Print(
                 view, txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
@@ -1933,8 +1933,8 @@ static int Net_Join_Dialog() {
       /*..................................................................
       Get the scenario number
       ..................................................................*/
-      TheWorld().scenario() =
-          TheSession().scenario_files().at(TheSession().scenario_index());
+      TheWorld().scenario() = base::At(TheSession().scenario_files(),
+                                       TheSession().scenario_index());
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID
@@ -2485,7 +2485,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         TheNetwork().players().at(base::ToSize(i))->Player.Color =
             static_cast<unsigned char>(
                 TheNetwork().global_packet().PlayerInfo.Color);
-        playerlist->Colors.at(i) = static_cast<char>(
+        base::At(playerlist->Colors, i) = static_cast<char>(
             base::At(TheSession().text_colors(),
                      TheNetwork().global_packet().PlayerInfo.Color));
         found = 1;
@@ -2637,9 +2637,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
             TheNetwork().global_packet().ScenarioInfo.Scenario;
       } else {
         TheSession().scenario_index() = -1;
-        for (i = 0; i < TheSession().scenario_files().Count(); i++) {
+        for (i = 0; i < std::ssize(TheSession().scenario_files()); i++) {
           if (std::cmp_equal(TheNetwork().global_packet().ScenarioInfo.Scenario,
-                             TheSession().scenario_files().at(i))) {
+                             base::At(TheSession().scenario_files(), i))) {
             TheSession().scenario_index() = i;
           }
         }
@@ -3163,8 +3163,8 @@ static int Net_New_Dialog() {
   /*........................................................................
   Init scenario description list box
   ........................................................................*/
-  for (i = 0; i < TheSession().scenarios().Count(); i++) {
-    char* const scenario = TheSession().scenarios().at(i);
+  for (i = 0; i < std::ssize(TheSession().scenarios()); i++) {
+    char* const scenario = base::At(TheSession().scenarios(), i);
     std::ranges::transform(base::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
@@ -3829,8 +3829,8 @@ static int Net_New_Dialog() {
 
         TheNetwork().global_packet().Command = NET_GAME_OPTIONS;
         TheNetwork().global_packet().ScenarioInfo.Scenario =
-            static_cast<unsigned char>(TheSession().scenario_files().at(
-                TheSession().scenario_index()));
+            static_cast<unsigned char>(base::At(TheSession().scenario_files(),
+                                                TheSession().scenario_index()));
         TheNetwork().global_packet().ScenarioInfo.Credits =
             static_cast<unsigned int>(TheSession().credits());
         TheNetwork().global_packet().ScenarioInfo.IsBases =
@@ -3904,7 +3904,7 @@ static int Net_New_Dialog() {
     Get the scenario filename
     .....................................................................*/
     TheWorld().scenario() =
-        TheSession().scenario_files().at(TheSession().scenario_index());
+        base::At(TheSession().scenario_files(), TheSession().scenario_index());
 
     /*.....................................................................
     Compute frame delay value for packet transmissions:

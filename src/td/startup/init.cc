@@ -1573,20 +1573,20 @@ bool Select_Game(bool fade) {
       TheWorld().score().CHarvested = 10;
       TheWorld().score().ElapsedTime = static_cast<int64_t>(uint64_t{1} << 40);
       TheWorld().base().House = HOUSE_GOOD;
-      TheWorld().base().Nodes.Clear();
+      TheWorld().base().Nodes.clear();
       BaseNodeClass node;
       node.Type = STRUCT_POWER;
       node.Coord = Cell_Coord(1000);
-      TheWorld().base().Nodes.Add(node);
+      TheWorld().base().Nodes.push_back(node);
       node.Type = STRUCT_REFINERY;
       node.Coord = Cell_Coord(1200);
-      TheWorld().base().Nodes.Add(node);
-      TheWorld().current_object().Clear();
+      TheWorld().base().Nodes.push_back(node);
+      TheWorld().current_object().clear();
       if (TheObjectHeaps().unit().Count() < 2) {
         return false;
       }
-      TheWorld().current_object().Add(TheObjectHeaps().unit().Ptr(1));
-      TheWorld().current_object().Add(TheObjectHeaps().unit().Ptr(0));
+      TheWorld().current_object().push_back(TheObjectHeaps().unit().Ptr(1));
+      TheWorld().current_object().push_back(TheObjectHeaps().unit().Ptr(0));
       base::At(TheWorld().waypoint(), 20) = 1234;
       TheWorld().carry_over_money() = 13579;
       TheWorld().carry_over_percent() = 42;
@@ -1621,8 +1621,8 @@ bool Select_Game(bool fade) {
       }
       trigger->AttachCount = 2;
       TheMap().at(11).IsTrigger = TheMap().at(12).IsTrigger = true;
-      TheWorld().cell_triggers().at(11) = TheWorld().cell_triggers().at(12) =
-          trigger;
+      base::At(TheWorld().cell_triggers(), 11) =
+          base::At(TheWorld().cell_triggers(), 12) = trigger;
       TheMap().at(13).OccupierPtr = TheObjectHeaps().unit().Ptr(0);
       base::At(TheMap().at(14).Overlappers, 2) = TheObjectHeaps().unit().Ptr(0);
       TheMap().at(15).Flag.Composite = 2;

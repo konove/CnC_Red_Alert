@@ -66,6 +66,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <span>
 #include <string>
 
@@ -73,7 +74,6 @@
 #include "base/array.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
-#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/data/profile.h"
@@ -117,7 +117,7 @@ bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
  *=============================================================================================*/
 bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
-BaseClass::~BaseClass() { Nodes.Clear(); }
+BaseClass::~BaseClass() { Nodes.clear(); }
 
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
@@ -192,7 +192,7 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Add this node to the Base's list
     */
-    Nodes.Add(node);
+    Nodes.push_back(node);
   }
 }
 
@@ -225,17 +225,18 @@ void BaseClass::Write_INI(std::string& buffer) {
   **	they must be read in the same order they were created, so "000" must be
   **	read first, etc.
   */
-  WWWritePrivateProfileInt(INI_Name(), "Count", static_cast<int>(Nodes.Count()),
-                           buffer);
+  WWWritePrivateProfileInt(INI_Name(), "Count",
+                           static_cast<int>(std::ssize(Nodes)), buffer);
 
   /*
   **	Write each entry into the INI
   */
-  for (int i = 0; i < Nodes.Count(); i++) {
+  for (int i = 0; i < std::ssize(Nodes); i++) {
     absl::SNPrintF(uname, sizeof(uname), "%03d", i);
-    absl::SNPrintF(buf, sizeof(buf), "%s,%d",
-                   BuildingTypeClass::As_Reference(Nodes.at(i).Type).IniName,
-                   static_cast<int>(Nodes.at(i).Coord));
+    absl::SNPrintF(
+        buf, sizeof(buf), "%s,%d",
+        BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
+        static_cast<int>(base::At(Nodes, i).Coord));
 
     WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
   }
@@ -273,7 +274,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  const CELL cell = Coord_Cell(Nodes.at(index).Coord);
+  const CELL cell = Coord_Cell(base::At(Nodes, index).Coord);
 
   base::At(obj, 0) = TheMap().at(cell).Cell_Building();
   base::At(obj, 1) = base::At(TheMap().at(cell).Overlappers, 0);
@@ -282,9 +283,10 @@ BuildingClass* BaseClass::Get_Building(int index) {
 
   BuildingClass* bldg = nullptr;
   for (auto& i : obj) {
-    if (i && i->Coord == Nodes.at(index).Coord &&
+    if (i && i->Coord == base::At(Nodes, index).Coord &&
         i->What_Am_I() == RTTI_BUILDING &&
-        dynamic_cast<BuildingClass*>(i)->Class->Type == Nodes.at(index).Type) {
+        dynamic_cast<BuildingClass*>(i)->Class->Type ==
+            base::At(Nodes, index).Type) {
       bldg = dynamic_cast<BuildingClass*>(i);
       break;
     }
@@ -319,10 +321,10 @@ bool BaseClass::Is_Node(BuildingClass* obj) { return Get_Node(obj) != nullptr; }
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(BuildingClass* obj) {
-  for (int i = 0; i < Nodes.Count(); i++) {
-    if (obj->Class->Type == Nodes.at(i).Type &&
-        obj->Coord == Nodes.at(i).Coord) {
-      return &Nodes.at(i);
+  for (int i = 0; i < std::ssize(Nodes); i++) {
+    if (obj->Class->Type == base::At(Nodes, i).Type &&
+        obj->Coord == base::At(Nodes, i).Coord) {
+      return &base::At(Nodes, i);
     }
   }
   return nullptr;
@@ -349,21 +351,21 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
   ** Loop through all node entries, returning a pointer to the first
   ** un-built one that matches the requested type.
   */
-  for (int i = 0; i < Nodes.Count(); i++) {
+  for (int i = 0; i < std::ssize(Nodes); i++) {
     /*
     ** For STRUCT_NONE, return the first hole found
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return &Nodes.at(i);
+        return &base::At(Nodes, i);
       }
 
     } else {
       /*
       ** For a "real" building type, return the first hold for that type
       */
-      if (Nodes.at(i).Type == type && !Is_Built(i)) {
-        return &Nodes.at(i);
+      if (base::At(Nodes, i).Type == type && !Is_Built(i)) {
+        return &base::At(Nodes, i);
       }
     }
   }

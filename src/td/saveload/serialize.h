@@ -4,23 +4,20 @@
 #define CNC_RED_ALERT_TD_SAVELOAD_SERIALIZE_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "engine/stream/archive.h"
 #include "td/core/defines.h"
-
-namespace game {
-template <class T>
-class DynamicVectorClass;
-}  // namespace game
 
 namespace td {
 
 class ObjectClass;
 // Ordered active object references, loaded only after all object heaps.
 template <class Archive>
-void SerializeObjectList(Archive& ar,
-                         game::DynamicVectorClass<ObjectClass*>& objects);
+// Appending invalidates the elements, not the vector the reference names.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
+void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects);
 
 // Resolves an object TARGET by kind and heap bounds without dereferencing the
 // slot. A later heap may not have constructed the referenced object yet.
@@ -166,9 +163,9 @@ template <class T>
 TypePtr(const T*&) -> TypePtr<T>;
 
 extern template void SerializeObjectList<ArchiveWriter>(
-    ArchiveWriter&, game::DynamicVectorClass<ObjectClass*>&);
+    ArchiveWriter&, std::vector<ObjectClass*>&);
 extern template void SerializeObjectList<ArchiveReader>(
-    ArchiveReader&, game::DynamicVectorClass<ObjectClass*>&);
+    ArchiveReader&, std::vector<ObjectClass*>&);
 
 class TechnoClass;
 class RadioClass;

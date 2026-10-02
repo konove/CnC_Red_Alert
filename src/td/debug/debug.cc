@@ -44,8 +44,10 @@
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
+#include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/pooled.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
@@ -54,7 +56,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/ui/input.h"
 #include "td/ai/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
@@ -264,8 +265,8 @@ void Debug_Key(unsigned input) {
 #endif
 
       case KN_R:
-        if (TheWorld().current_object().Count()) {
-          dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
+        if (std::ssize(TheWorld().current_object())) {
+          dynamic_cast<TechnoClass*>(base::At(TheWorld().current_object(), 0))
               ->IsCloakable = true;
         }
         break;
@@ -284,10 +285,10 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_DELETE:
-        if (TheWorld().current_object().Count()) {
+        if (std::ssize(TheWorld().current_object())) {
           TheMap().Recalc();
           // CurrentObject[0]->Detach_All();
-          base::DeletePooled(TheWorld().current_object().at(0));
+          base::DeletePooled(base::At(TheWorld().current_object(), 0));
         }
         break;
 
@@ -298,19 +299,21 @@ void Debug_Key(unsigned input) {
         break;
 
       case Shift(KN_DELETE):
-        if (TheWorld().current_object().Count()) {
+        if (std::ssize(TheWorld().current_object())) {
           TheMap().Recalc();
           int damage = 50;
-          TheWorld().current_object().at(0)->Take_Damage(damage, 0, WARHEAD_SA);
+          base::At(TheWorld().current_object(), 0)
+              ->Take_Damage(damage, 0, WARHEAD_SA);
         }
         break;
 
       case KN_INSERT:
-        if (TheWorld().current_object().Count()) {
+        if (std::ssize(TheWorld().current_object())) {
           TheMap().PendingObject =
-              &TheWorld().current_object().at(0)->Class_Of();
+              &base::At(TheWorld().current_object(), 0)->Class_Of();
           if (TheMap().PendingObject) {
-            TheMap().PendingHouse = TheWorld().current_object().at(0)->Owner();
+            TheMap().PendingHouse =
+                base::At(TheWorld().current_object(), 0)->Owner();
             TheMap().PendingObjectPtr = TheMap().PendingObject->Create_One_Of(
                 HouseClass::As_Pointer(TheMap().PendingHouse));
             if (TheMap().PendingObjectPtr) {
@@ -379,10 +382,10 @@ void Debug_Key(unsigned input) {
       *red circle is for *	fire range.
       */
       case KN_F7:
-        if (TheWorld().current_object().Count() &&
-            TheWorld().current_object().at(0)->Is_Techno()) {
+        if (std::ssize(TheWorld().current_object()) &&
+            base::At(TheWorld().current_object(), 0)->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
-              TheWorld().current_object().at(0)->Class_Of());
+              base::At(TheWorld().current_object(), 0)->Class_Of());
           const int sight = ttype.SightRange * 256;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {
@@ -390,9 +393,9 @@ void Debug_Key(unsigned input) {
           }
           PixelView& view = TheScreen().visible_view();
           const COORDINATE center =
-              TheWorld().current_object().at(0)->Center_Coord();
+              base::At(TheWorld().current_object(), 0)->Center_Coord();
           const COORDINATE center2 =
-              TheWorld().current_object().at(0)->Fire_Coord(0);
+              base::At(TheWorld().current_object(), 0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x = 0;

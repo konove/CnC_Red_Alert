@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
@@ -79,7 +80,6 @@
 #include "engine/net/ipxmgr.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/input.h"
@@ -907,8 +907,8 @@ void Read_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the scenario description lists
   ------------------------------------------------------------------------*/
-  TheSession().scenarios().Clear();
-  TheSession().scenario_files().Clear();
+  TheSession().scenarios().clear();
+  TheSession().scenario_files().clear();
 
   /*------------------------------------------------------------------------
   Loop through all possible scenario numbers; if a file is available, add
@@ -920,7 +920,7 @@ void Read_Scenario_Descriptions() {
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
 
     if (GameFileExists(fname)) {
-      TheSession().scenario_files().Add(i);
+      TheSession().scenario_files().push_back(i);
     }
   }
 
@@ -928,13 +928,13 @@ void Read_Scenario_Descriptions() {
   Now, for every file in the FileNum list, read in the INI file, and extract
   its description.
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < TheSession().scenario_files().Count(); i++) {
+  for (int i = 0; i < std::ssize(TheSession().scenario_files()); i++) {
     /*.....................................................................
     Create filename and read the file.
     .....................................................................*/
     Set_Scenario_Name(TheWorld().scenario_name(),
-                      TheSession().scenario_files().at(i), SCEN_PLAYER_MPLAYER,
-                      game::SCEN_DIR_EAST, SCEN_VAR_A);
+                      base::At(TheSession().scenario_files(), i),
+                      SCEN_PLAYER_MPLAYER, game::SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
 
@@ -945,7 +945,7 @@ void Read_Scenario_Descriptions() {
                               std::span(base::At(mplayer_descriptions, i))
                                   .first(static_cast<std::size_t>(40)),
                               ini.c_str());
-    TheSession().scenarios().Add(base::At(mplayer_descriptions, i));
+    TheSession().scenarios().push_back(base::At(mplayer_descriptions, i));
   }
 }
 
@@ -965,8 +965,8 @@ void Free_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the scenario descriptions & filenames
   ------------------------------------------------------------------------*/
-  TheSession().scenarios().Clear();
-  TheSession().scenario_files().Clear();
+  TheSession().scenarios().clear();
+  TheSession().scenario_files().clear();
 
   /*------------------------------------------------------------------------
   Clear the initstring entries

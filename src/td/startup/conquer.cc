@@ -72,6 +72,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
@@ -114,7 +115,6 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/interpal.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/ui/input.h"
 #include "td/ai/base.h"
@@ -638,7 +638,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	objects are selected, then fall into the home case.
     */
     case KN_HOME:
-      if (TheWorld().current_object().Count()) {
+      if (std::ssize(TheWorld().current_object())) {
         TheMap().Center_Map();
         TheMap().Flag_To_Redraw(true);
         break;
@@ -689,13 +689,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     */
     case KN_N:
       if (action) {
-        obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
-                                            ? TheWorld().current_object().at(0)
-                                            : nullptr);
+        obj = MapEditClass::Prev_Object(
+            std::ssize(TheWorld().current_object())
+                ? base::At(TheWorld().current_object(), 0)
+                : nullptr);
       } else {
-        obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
-                                            ? TheWorld().current_object().at(0)
-                                            : nullptr);
+        obj = MapEditClass::Next_Object(
+            std::ssize(TheWorld().current_object())
+                ? base::At(TheWorld().current_object(), 0)
+                : nullptr);
       }
       if (obj) {
         Unselect_All();
@@ -721,12 +723,14 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     case KN_A:
       if ((TheSession().type() != GAME_NORMAL ||
            TheDebugState().developer_mode()) &&
-          (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
-          (TheWorld().current_object().at(0)->Owner() !=
+          (std::ssize(TheWorld().current_object()) &&
+           !ThePlayer()->IsDefeated) &&
+          (base::At(TheWorld().current_object(), 0)->Owner() !=
            ThePlayer()->Class->House)) {
-        TheNetwork().out_list().Add(EventClass(
-            EventClass::ALLY,
-            static_cast<int>(TheWorld().current_object().at(0)->Owner())));
+        TheNetwork().out_list().Add(
+            EventClass(EventClass::ALLY,
+                       static_cast<int>(
+                           base::At(TheWorld().current_object(), 0)->Owner())));
       }
 
       break;
@@ -763,9 +767,9 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	All selected units will go into idle mode.
     */
     case KN_S:
-      if (TheWorld().current_object().Count()) {
-        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
-          const ObjectClass* tech = TheWorld().current_object().at(j);
+      if (std::ssize(TheWorld().current_object())) {
+        for (int j = 0; j < std::ssize(TheWorld().current_object()); j++) {
+          const ObjectClass* tech = base::At(TheWorld().current_object(), j);
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -781,9 +785,9 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	All selected units will attempt to scatter.
     */
     case KN_X:
-      if (TheWorld().current_object().Count()) {
-        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
-          const ObjectClass* tech = TheWorld().current_object().at(j);
+      if (std::ssize(TheWorld().current_object())) {
+        for (int j = 0; j < std::ssize(TheWorld().current_object()); j++) {
+          const ObjectClass* tech = base::At(TheWorld().current_object(), j);
 
           if (tech && tech->Can_Player_Move()) {
             TheNetwork().out_list().Add(
@@ -797,9 +801,9 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	All selected units will attempt to go into guard area mode.
     */
     case KN_G:
-      if (TheWorld().current_object().Count()) {
-        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
-          const ObjectClass* tech = TheWorld().current_object().at(j);
+      if (std::ssize(TheWorld().current_object())) {
+        for (int j = 0; j < std::ssize(TheWorld().current_object()); j++) {
+          const ObjectClass* tech = base::At(TheWorld().current_object(), j);
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             TheNetwork().out_list().Add(
@@ -2194,8 +2198,8 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void Unselect_All() {
-  while (TheWorld().current_object().Count()) {
-    TheWorld().current_object().at(0)->Unselect();
+  while (std::ssize(TheWorld().current_object())) {
+    base::At(TheWorld().current_object(), 0)->Unselect();
   }
 }
 
@@ -2672,15 +2676,15 @@ void Handle_Team(int team, int action) {
       **	If a non team member is currently selected, then deselect all
       *objects *	before selecting this team.
       */
-      if (TheWorld().current_object().Count()) {
-        switch (TheWorld().current_object().at(0)->What_Am_I()) {
+      if (std::ssize(TheWorld().current_object())) {
+        switch (base::At(TheWorld().current_object(), 0)->What_Am_I()) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
-            if (std::cmp_not_equal(
-                    dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
-                        ->Group,
-                    team)) {
+            if (std::cmp_not_equal(dynamic_cast<FootClass*>(
+                                       base::At(TheWorld().current_object(), 0))
+                                       ->Group,
+                                   team)) {
               Unselect_All();
             }
             break;
@@ -3130,7 +3134,7 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
-    count = static_cast<int>(TheWorld().current_object().Count());
+    count = static_cast<int>(std::ssize(TheWorld().current_object()));
     record->WriteObject(count);
 
     /*.....................................................................
@@ -3138,8 +3142,8 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt =
-          static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
+      ltgt = static_cast<uint32_t>(
+          base::At(TheWorld().current_object(), i)->As_Target());
       sum += ltgt;
     }
     record->WriteObject(sum);
@@ -3148,7 +3152,7 @@ static void Do_Record_Playback() {
     Save all selected objects.
     .....................................................................*/
     for (int i = 0; i < count; i++) {
-      tgt = TheWorld().current_object().at(i)->As_Target();
+      tgt = base::At(TheWorld().current_object(), i)->As_Target();
       record->WriteObject(tgt);
     }
 
@@ -3176,9 +3180,9 @@ static void Do_Record_Playback() {
       Compute a CRC of the current object-selection list.
       ..................................................................*/
       sum = 0;
-      for (int i = 0; i < TheWorld().current_object().Count(); i++) {
+      for (int i = 0; i < std::ssize(TheWorld().current_object()); i++) {
         ltgt = static_cast<uint32_t>(
-            TheWorld().current_object().at(i)->As_Target());
+            base::At(TheWorld().current_object(), i)->As_Target());
         sum += ltgt;
       }
 

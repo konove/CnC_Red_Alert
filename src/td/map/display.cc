@@ -125,7 +125,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
@@ -1195,11 +1194,12 @@ void DisplayClass::Read_INI(char* buffer) {
       /*
       **	Assign trigger pointer using trigger name.
       */
-      TheWorld().cell_triggers().at(cell) = TriggerClass::As_Pointer(buf);
-      if (TheWorld().cell_triggers().at(cell)) {
+      base::At(TheWorld().cell_triggers(), cell) =
+          TriggerClass::As_Pointer(buf);
+      if (base::At(TheWorld().cell_triggers(), cell)) {
         (*this).at(cell).IsTrigger = true;
-        if (TheWorld().cell_triggers().at(cell)) {
-          TheWorld().cell_triggers().at(cell)->AttachCount++;
+        if (base::At(TheWorld().cell_triggers(), cell)) {
+          base::At(TheWorld().cell_triggers(), cell)->AttachCount++;
         }
       }
     }
@@ -1261,7 +1261,7 @@ void DisplayClass::Write_INI(std::string& buffer) {
       /*
       **	Get cell trigger pointer.
       */
-      const TriggerClass* trig = TheWorld().cell_triggers().at(cell);
+      const TriggerClass* trig = base::At(TheWorld().cell_triggers(), cell);
 
       /*
       **	Generate entry name.
@@ -2017,7 +2017,7 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
   if (!object) {
     foundmatch = true;
   }
-  for (unsigned uindex = 0; uindex < Layer.at(LAYER_GROUND).Count(); uindex++) {
+  for (int uindex = 0; uindex < Layer.at(LAYER_GROUND).Count(); uindex++) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
@@ -2066,8 +2066,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
   if (!object) {
     foundmatch = true;
   }
-  for (base::ssize uindex = Layer.at(LAYER_GROUND).Count() - 1; uindex >= 0;
-       uindex--) {
+  for (int uindex = Layer.at(LAYER_GROUND).Count() - 1; uindex >= 0; uindex--) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
@@ -2599,11 +2598,11 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     **	If there is a currently selected object, then the action to perform if
     **	the left mouse button were clicked must be determined.
     */
-    if (TheWorld().current_object().Count()) {
+    if (std::ssize(TheWorld().current_object())) {
       if (object) {
-        action = TheWorld().current_object().at(0)->What_Action(object);
+        action = base::At(TheWorld().current_object(), 0)->What_Action(object);
       } else {
-        action = TheWorld().current_object().at(0)->What_Action(cell);
+        action = base::At(TheWorld().current_object(), 0)->What_Action(cell);
       }
     } else {
       if (object && object->Class_Of().IsSelectable) {
@@ -2830,8 +2829,9 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
         break;
 
       case ACTION_NOMOVE:
-        if (TheWorld().current_object().Count() &&
-            TheWorld().current_object().at(0)->What_Am_I() == RTTI_AIRCRAFT) {
+        if (std::ssize(TheWorld().current_object()) &&
+            base::At(TheWorld().current_object(), 0)->What_Am_I() ==
+                RTTI_AIRCRAFT) {
           Set_Default_Mouse(MOUSE_NO_MOVE, wwsmall);
           break;
         }
@@ -3069,7 +3069,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
 
       Set_Default_Mouse(MOUSE_NORMAL, wwsmall);
 #ifdef NEVER
-      if (TheWorld().current_object().Count()) {
+      if (std::ssize(TheWorld().current_object())) {
         if (TheWorld().current_object()[0]->Can_Player_Fire()) {
           Set_Default_Mouse(MOUSE_CAN_ATTACK, wwsmall);
         } else {
@@ -3090,8 +3090,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       **	Toggle the select state of the object.
       */
       if (action == ACTION_TOGGLE_SELECT) {
-        if (!object || !TheWorld().current_object().Count() ||
-            TheWorld().current_object().at(0)->Owner() !=
+        if (!object || !std::ssize(TheWorld().current_object()) ||
+            base::At(TheWorld().current_object(), 0)->Owner() !=
                 ThePlayer()->Class->House) {
           action = ACTION_SELECT;
         } else {
@@ -3135,9 +3135,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *occurs.
         */
         TheGameState().allow_voice() = true;
-        for (int index = 0; index < TheWorld().current_object().Count();
+        for (int index = 0; index < std::ssize(TheWorld().current_object());
              index++) {
-          ObjectClass* tobject = TheWorld().current_object().at(index);
+          ObjectClass* tobject = base::At(TheWorld().current_object(), index);
           if (object) {
             tobject->Active_Click_With(tobject->What_Action(object), object);
           } else {
@@ -3595,19 +3595,20 @@ bool DisplayClass::Is_Spot_Free(COORDINATE coord) const {
  * HISTORY: * 08/22/1995 JLB : Created. *
  *=============================================================================================*/
 void DisplayClass::Center_Map() {
-  if (TheWorld().current_object().Count()) {
+  if (std::ssize(TheWorld().current_object())) {
     int x = 0;
     int y = 0;
 
-    for (int index = 0; index < TheWorld().current_object().Count(); index++) {
+    for (int index = 0; index < std::ssize(TheWorld().current_object());
+         index++) {
       const COORDINATE coord =
-          TheWorld().current_object().at(index)->Center_Coord();
+          base::At(TheWorld().current_object(), index)->Center_Coord();
 
       x += Coord_X(coord);
       y += Coord_Y(coord);
     }
 
-    const int count = static_cast<int>(TheWorld().current_object().Count());
+    const int count = static_cast<int>(std::ssize(TheWorld().current_object()));
     x /= count;
     y /= count;
     Set_Tactical_Position(

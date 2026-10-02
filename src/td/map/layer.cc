@@ -43,119 +43,52 @@
 
 #include "td/map/layer.h"
 
+#include <algorithm>
+#include <utility>
+
+#include "base/algorithm.h"
+#include "base/array.h"
 #include "td/objects/object.h"
 
 namespace td {
 
 LayerClass::~LayerClass() = default;
 
-/***********************************************************************************************
- * LayerClass::Submit -- Adds an object to a layer list. *
- *                                                                                             *
- *    This routine is used to add an object to the layer list. If the list is
- *full, then the   * object is not added. *
- *                                                                                             *
- * INPUT:   object   -- Pointer to the object to add. *
- *                                                                                             *
- * OUTPUT:  bool; Was the object added successfully? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/31/1994 JLB : Created. * 05/31/1994 JLB : Allows sorted insert.
- ** 01/02/1995 JLB : Fixed to work with EMSListOf template. *
- *=============================================================================================*/
+int LayerClass::ID(const ObjectClass* object) const {
+  return static_cast<int>(base::IndexOf(objects_, object));
+}
+
+bool LayerClass::Delete(const ObjectClass* object) {
+  return base::EraseFirst(objects_, object);
+}
+
 bool LayerClass::Submit(ObjectClass* object, bool sort) {
-  /*
-  **	Add the object to the layer. Either at the end (if "sort" is false) or
-  *at the *	appropriately sorted position.
-  */
   if (sort) {
     return Sorted_Add(object);
   }
-  return Add(object);
+  objects_.push_back(object);
+  return true;
 }
 
-/***********************************************************************************************
- * LayerClass::Sort -- Handles sorting the objects in the layer. *
- *                                                                                             *
- *    This routine is used if the layer objects must be sorted and sorting is to
- *occur now.    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Don't call this routine too often since it does take a bit of
- *time to           * execute. It is a single pass binary sort and thus isn't
- *horribly slow,          * but it does take some time. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. * 03/10/1995 JLB : Uses comparison
- *operator.                                                *
- *=============================================================================================*/
+// One pass only: the layer is re-sorted a little every frame rather than
+// fully, so draw order settles over several frames.
 void LayerClass::Sort() {
   for (int index = 0; index < Count() - 1; index++) {
-    if (*(*this).at(index + 1) < *(*this).at(index)) {
-      ObjectClass* temp = (*this).at(index + 1);
-      (*this).at(index + 1) = (*this).at(index);
-      (*this).at(index) = temp;
+    ObjectClass*& here = base::At(objects_, index);
+    ObjectClass*& next = base::At(objects_, index + 1);
+    if (*next < *here) {
+      std::swap(here, next);
     }
   }
 }
 
-/***********************************************************************************************
- * DynamicVectorClass<T>::Sorted_Add -- Adds object in sorted order to vector. *
- *                                                                                             *
- *    Use this routine to add an object to the vector but it will be inserted in
- *sorted        * order. This depends on the ">" operator being defined for the
- *vector object.             *
- *                                                                                             *
- * INPUT:   object   -- Reference to the object that will be added to the
- *vector.              *
- *                                                                                             *
- * OUTPUT:  bool; Was the object added to the vector successfully? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/10/1995 JLB : Created. *
- *=============================================================================================*/
+// A linear search, not std::upper_bound: Sort() leaves the layer only
+// partly sorted, and inserting anywhere else would change draw order.
 bool LayerClass::Sorted_Add(ObjectClass* const object) {
-  if (ActiveCount >= Length()) {
-    if ((IsAllocated || !VectorMax) && GrowthStep > 0) {
-      if (!Resize(Length() + GrowthStep)) {
-        /*
-        **	Failure to increase the size of the vector is an error
-        *condition. *	Return with the error flag.
-        */
-        return false;
-      }
-    } else {
-      /*
-      **	Increasing the size of this vector is not allowed! Bail this
-      **	routine with the error code.
-      */
-      return false;
-    }
-  }
-
-  /*
-  **	There is room for the new object now. Add it to the right sorted
-  *position.
-  */
-  int index = 0;
-  for (index = 0; index < ActiveCount; index++) {
-    if (*(*this).at(index) > *object) {
-      break;
-    }
-  }
-
-  /*
-  **	Make room if the insertion spot is not at the end of the vector.
-  */
-  for (int i = static_cast<int>(ActiveCount - 1); i >= index; i--) {
-    (*this).at(i + 1) = (*this).at(i);
-  }
-  (*this).at(index) = object;
-  ActiveCount++;
+  const auto later = std::ranges::find_if(
+      objects_,
+      [object](const ObjectClass* other) { return *other > *object; });
+  objects_.insert(later, object);
   return true;
 }
 

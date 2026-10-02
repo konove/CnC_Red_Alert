@@ -111,7 +111,9 @@ void LogicClass::AI() {
     **	If the object was destroyed in the process of performing its AI, then
     **	adjust the index so that no object gets skipped.
     */
-    if (obj != (*this).at(index)) {
+    // When the last object removes itself, `index` is past the end; the
+    // loop is over either way, so do not read there.
+    if (index >= Count() || obj != (*this).at(index)) {
       //		if (!obj->IsActive) {
       index--;
     }

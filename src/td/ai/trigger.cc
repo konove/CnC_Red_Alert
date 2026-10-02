@@ -76,13 +76,13 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/platform/timer.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "td/ai/reinf.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
@@ -1009,9 +1009,9 @@ bool TriggerClass::Remove() {
   */
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
     if (TheMap().at(cell).IsTrigger &&
-        (TheWorld().cell_triggers().at(cell) == this)) {
+        (base::At(TheWorld().cell_triggers(), cell) == this)) {
       TheMap().at(cell).IsTrigger = false;
-      TheWorld().cell_triggers().at(cell) = nullptr;
+      base::At(TheWorld().cell_triggers(), cell) = nullptr;
     }
   }
 
@@ -1045,7 +1045,7 @@ bool TriggerClass::Remove() {
   **	be on the safe side.
   */
   for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-    TheWorld().house_triggers().at(h).Delete(this);
+    base::EraseFirst(TheWorld().house_triggers().at(h), this);
   }
 
   delete this;
@@ -1138,7 +1138,7 @@ void TriggerClass::Read_INI(char* buffer) {
       if (trigger->Action == ACTION_ALLOWWIN) {
         HouseClass::As_Pointer(trigger->House)->Blockage++;
       }
-      TheWorld().house_triggers().at(trigger->House).Add(trigger);
+      TheWorld().house_triggers().at(trigger->House).push_back(trigger);
       trigger->AttachCount++;
     }
 
