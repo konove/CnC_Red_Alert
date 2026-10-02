@@ -1,10 +1,13 @@
 // Tests the object pool: allocation order, slot reuse, the diagnostics, and
-// saving and loading a heap.
+// saving and loading a heap, including the ways a saved stream can be
+// malformed.
 
 #include "game/core/heap.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <memory>
 #include <span>
 #include <string>
@@ -13,8 +16,9 @@
 #include "absl/base/attributes.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
+#include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -42,18 +46,6 @@ struct Gadget : Widget {
 };
 static_assert(!Serializable<Gadget>);
 
-// Collects everything written to it, so a test can inspect the saved bytes.
-class RecordingSink : public ByteSink {
- public:
-  bool Write(std::span<const std::byte> data) override {
-    for (const std::byte byte : data) {
-      bytes.push_back(std::to_integer<uint8_t>(byte));
-    }
-    return true;
-  }
-  std::vector<uint8_t> bytes;
-};
-
 // Constructs a Widget in the heap's next slot and records its slot index the
 // way game objects do.
 Widget* Allocate(ObjectHeap<Widget>& heap, int32_t value) {
@@ -63,25 +55,37 @@ Widget* Allocate(ObjectHeap<Widget>& heap, int32_t value) {
   return widget;
 }
 
-std::vector<uint8_t> Save(ObjectHeap<Widget>& heap) {
-  RecordingSink sink;
+std::vector<std::byte> Save(ObjectHeap<Widget>& heap) {
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
   ArchiveWriter writer(sink);
   EXPECT_TRUE(heap.Save(writer));
-  return sink.bytes;
+  return bytes;
+}
+
+// The bytes of `values`, each written as a little-endian int32.
+std::vector<std::byte> Int32s(std::initializer_list<int32_t> values) {
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
+  ArchiveWriter writer(sink);
+  for (int32_t value : values) {
+    writer(value);
+  }
+  return bytes;
 }
 
 // Loads `bytes` into `heap` and returns the reader's error, empty on success.
 // Also checks that Load's result agrees with the reader.
 std::string LoadError(ObjectHeap<Widget>& heap,
-                      const std::vector<uint8_t>& bytes) {
-  SpanSource source(std::as_bytes(std::span(bytes)));
+                      std::span<const std::byte> bytes) {
+  SpanSource source(bytes);
   ArchiveReader reader(source);
   const bool loaded = heap.Load(reader);
   EXPECT_EQ(loaded, reader.ok());
   return std::string(reader.error());
 }
 
-bool Load(ObjectHeap<Widget>& heap, const std::vector<uint8_t>& bytes) {
+bool Load(ObjectHeap<Widget>& heap, std::span<const std::byte> bytes) {
   return LoadError(heap, bytes).empty();
 }
 
@@ -224,7 +228,7 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   source.Free(b);  // leaves slots 0 and 2 active
   ASSERT_EQ(source.Count(), 2);
 
-  const std::vector<uint8_t> bytes = Save(source);
+  const std::vector<std::byte> bytes = Save(source);
   // count + 2 x (index + ID + value + flag)
   EXPECT_EQ(bytes.size(), 4U + (2 * (4 + 4 + 4 + 1)));
 
@@ -239,12 +243,14 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   EXPECT_TRUE(loaded.ActiveAt(1)->flag);
   EXPECT_EQ(loaded.ActiveAt(1)->ID, loaded.SlotIndexOf(loaded.ActiveAt(1)));
   EXPECT_EQ(loaded.FreeCount(), 6);
+  // The hole the save left is the next slot handed out.
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.Allocate()), 1);
 }
 
 TEST(HeapSerializeTest, EmptyHeapRoundTrips) {
   ObjectHeap<Widget> source;
   source.Reset(4);
-  const std::vector<uint8_t> bytes = Save(source);
+  const std::vector<std::byte> bytes = Save(source);
   EXPECT_EQ(bytes.size(), 4U);
 
   ObjectHeap<Widget> loaded;
@@ -257,7 +263,7 @@ TEST(HeapSerializeTest, TruncatedStreamFails) {
   ObjectHeap<Widget> source;
   source.Reset(4);
   Allocate(source, 1);
-  std::vector<uint8_t> bytes = Save(source);
+  std::vector<std::byte> bytes = Save(source);
   bytes.resize(bytes.size() - 1);
 
   ObjectHeap<Widget> loaded;
@@ -271,11 +277,36 @@ TEST(HeapSerializeTest, CountBeyondCapacityFails) {
   for (int i = 0; i < 6; i++) {
     Allocate(source, i);
   }
-  const std::vector<uint8_t> bytes = Save(source);
+  const std::vector<std::byte> bytes = Save(source);
 
   ObjectHeap<Widget> smaller;
   smaller.Reset(4);
   EXPECT_EQ(LoadError(smaller, bytes), "invalid saved heap count");
+}
+
+TEST(HeapSerializeTest, NegativeCountFails) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(4);
+  EXPECT_EQ(LoadError(heap, Int32s({-1})), "invalid saved heap count");
+}
+
+TEST(HeapSerializeTest, TruncatedCountFails) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(4);
+  const std::vector<std::byte> count = Int32s({1});
+  EXPECT_NE(LoadError(heap, std::span(count).first(3)), "");
+  EXPECT_EQ(heap.Count(), 0);
+}
+
+TEST(HeapSerializeTest, SaveReportsASinkThatFills) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(2);
+  Allocate(heap, 1);
+  // Room for the count and the slot index, not for the object's fields.
+  std::array<std::byte, 8> bytes{};
+  SpanSink sink(bytes);
+  ArchiveWriter writer(sink);
+  EXPECT_FALSE(heap.Save(writer));
 }
 
 TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
@@ -283,8 +314,9 @@ TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
   source.Reset(8);
   const Widget* widget = Allocate(source, 1);
   EXPECT_EQ(source.SlotIndexOf(widget), 0);
-  std::vector<uint8_t> bytes = Save(source);
-  bytes.at(4) = 0x7F;  // slot index low byte: 127 is past an 8-slot heap
+  std::vector<std::byte> bytes = Save(source);
+  bytes.at(4) =
+      std::byte{0x7F};  // slot index low byte: 127 is past an 8-slot heap
 
   ObjectHeap<Widget> loaded;
   loaded.Reset(8);
@@ -297,15 +329,43 @@ TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   source.Reset(8);
   Allocate(source, 1);
   Allocate(source, 2);
-  std::vector<uint8_t> bytes = Save(source);
+  std::vector<std::byte> bytes = Save(source);
   // Past the count and the first 13-byte record: the second object's slot
   // index, 1 -> 0.
-  bytes.at(4 + 13) = 0;
+  bytes.at(4 + 13) = std::byte{0};
 
   ObjectHeap<Widget> loaded;
   loaded.Reset(8);
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 1);
+}
+
+// Freeing an object hands its slot straight back to the next allocation, so a
+// pointer read after Free addresses whatever was allocated next rather than a
+// dead block. That is what makes reading a projectile pointer after a failed
+// unlimbo a live-object read instead of a harmless one.
+TEST(HeapTest, FreedSlotIsHandedToTheNextAllocation) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(2);
+  Widget* first = Allocate(heap, 4242);
+  heap.Free(first);
+
+  const Widget* second = Allocate(heap, -7);
+
+  EXPECT_EQ(second, first);
+  EXPECT_EQ(first->value, -7);
+}
+
+TEST(HeapTest, IsAllocatedRejectsHolesAndOutOfRangeSlots) {
+  ObjectHeap<Widget> heap;
+  heap.Reset(3);
+  Widget* widget = Allocate(heap, 1);
+  EXPECT_TRUE(heap.IsAllocated(0));
+  EXPECT_FALSE(heap.IsAllocated(1));
+  EXPECT_FALSE(heap.IsAllocated(-1));
+  EXPECT_FALSE(heap.IsAllocated(3));
+  heap.Free(widget);
+  EXPECT_FALSE(heap.IsAllocated(0));
 }
 
 // Counts how many times its destructor has run.
