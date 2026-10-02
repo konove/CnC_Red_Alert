@@ -120,7 +120,8 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     */
     TabClass::Draw_Credits_Tab(view);
     Fancy_Text_Print(view, "%ld", xx, 0, 11, kTBlack,
-                     TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
+                     FontType::kGreen12Gradient, TPF_CENTER | TPF_USE_GRAD_PAL,
+                     Current);
 
     IsToRedraw = false;
     IsAudible = false;

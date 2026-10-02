@@ -685,7 +685,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
           *screen edit box.
           */
           const int width =
-              StringPixelWidth(TextFontStyle(EditLabel->Style), EditBuf.data());
+              StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
+                                             StyleOf(EditLabel->Style)),
+                               EditBuf.data());
           if (width >= Width) {
             --EditCurPos;
             base::At(EditBuf, base::ToSize(EditCurPos)) = 0;

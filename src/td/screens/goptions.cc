@@ -317,8 +317,8 @@ void GameOptionsClass::Process() {
               WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
               ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
                                                     : (24 * resfactor)),
-          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
-          TheGameState().version_text());
+          kGrey, kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
+          ScenarioName, TheGameState().version_text());
 #else
       Fancy_Text_Print(
           view, "%s\rV.%d%s",
@@ -334,7 +334,7 @@ void GameOptionsClass::Process() {
                        kWindowHeight) -
               (TheSession().type() == GAME_NORMAL ? 32 * resfactor
                                                   : 24 * resfactor),
-          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
+          kGrey, kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
           TheWorld().scenario_name(), Version_Number(),
           TheGameState().version_text());
 #endif
@@ -673,12 +673,13 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   **	Draw the caption.
   */
   if (text != TXT_NONE) {
-    Fancy_Text_Print(
-        view, text, (w / 2) + x, (5 * factor) + y, kCcGreen, kTBlack,
-        TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    Fancy_Text_Print(view, text, (w / 2) + x, (5 * factor) + y, kCcGreen,
+                     kTBlack, FontType::k6PointGradient,
+                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-    const FontStyle font = TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
-                                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    const FontStyle font =
+        TextFontStyle(FontType::k6PointGradient,
+                      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     const int length = StringPixelWidth(font, Text_String(text));
     view.DrawLine(x + (w / 2) - (length / 2),
                   y + FontLineHeight(font) + (5 * factor),

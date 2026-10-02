@@ -890,7 +890,7 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
         if (TheDebugState().map_editor_active() && Trigger) {
           Fancy_Text_Print(view, Trigger->Get_Name(),
                            x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
-                           TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+                           FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
         }
       }
 

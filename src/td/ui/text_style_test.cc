@@ -27,7 +27,7 @@ namespace {
 
 struct NamedFont {
   std::string_view name;
-  TextPrintType font;  // Task 5 turns this into a FontType.
+  FontType font;
 };
 
 struct NamedFlags {
@@ -36,16 +36,15 @@ struct NamedFlags {
 };
 
 constexpr NamedFont kFonts[] = {
-    {"LASTPOINT", TPF_LASTPOINT},
-    {"6POINT", TPF_6POINT},
-    {"8POINT", TPF_8POINT},
-    {"3POINT", TPF_3POINT},
-    {"LED", TPF_LED},
-    {"VCR", TPF_VCR},
-    {"6PT_GRAD", TPF_6PT_GRAD},
-    {"MAP", TPF_MAP},
-    {"GREEN12", TPF_GREEN12},
-    {"GREEN12_GRAD", TPF_GREEN12_GRAD},
+    {"6POINT", FontType::k6Point},
+    {"8POINT", FontType::k8Point},
+    {"3POINT", FontType::k3Point},
+    {"LED", FontType::kLed},
+    {"VCR", FontType::kVcr},
+    {"6PT_GRAD", FontType::k6PointGradient},
+    {"MAP", FontType::kMap},
+    {"GREEN12", FontType::kGreen12},
+    {"GREEN12_GRAD", FontType::kGreen12Gradient},
 };
 
 constexpr NamedFlags kShadows[] = {
@@ -123,7 +122,7 @@ class TextStyleTest : public testing::Test {
               const TextPrintType flags =
                   shadow.flags | color.flags | justify.flags;
               const TextStyle style =
-                  TextStyleFor(font.font | flags, fore, kBack);
+                  TextStyleFor(font.font, flags, fore, kBack);
               absl::StrAppend(&table, font.name, " fore", fore, " ",
                               shadow.name, " ", color.name, " ", justify.name,
                               " -> ", Describe(style), "\n");
@@ -140,26 +139,30 @@ class TextStyleTest : public testing::Test {
   base::Installed<Assets>::Scope assets_scope_{assets_};
 };
 
-// Captured from 1f60381e, before the split. If a later task changes it, the
-// split changed what some text draws with: diff the printed table against
-// the one this commit prints.
-constexpr uint64_t kGoldenFingerprint = 0x780934A45B2F86E3;
+// The table of 1f60381e, before the split, less its rows for a print with no
+// font, which the split leaves no way to ask for; the other 2,430 rows are
+// byte for byte the same (docs/TEXT_PRINT_SPLIT_PLAN.md, Task 5). If this
+// changes, some text draws differently: diff the printed table against the
+// one this commit prints.
+constexpr uint64_t kGoldenFingerprint = 0xAA5A97411D67096;
 
 TEST_F(TextStyleTest, EveryFontAndFlagDrawsAsBeforeTheSplit) {
   const std::string table = Table();
   EXPECT_EQ(Fingerprint(table), kGoldenFingerprint) << table;
 }
 
-TEST_F(TextStyleTest, NoFontSelectsTheEightPointFont) {
-  const TextStyle style = TextStyleFor(TPF_NOSHADOW, 5, kBack);
-  EXPECT_EQ(FontName(style.font_style.font.data()), "k8Point");
-}
-
 TEST_F(TextStyleTest, ThreePointFontDropsTheShadowsItHasNoRoomFor) {
   const TextStyle style =
-      TextStyleFor(TPF_3POINT | TPF_FULLSHADOW | TPF_CENTER, 5, kBack);
+      TextStyleFor(FontType::k3Point, TPF_FULLSHADOW | TPF_CENTER, 5, kBack);
   EXPECT_FALSE(base::Any(style.flag & TPF_FULLSHADOW));
   EXPECT_TRUE(base::Any(style.flag & TPF_CENTER));
+}
+
+TEST(FontOfTest, MapsTheLegacyFontBits) {
+  EXPECT_EQ(FontOf(TPF_LASTPOINT | TPF_CENTER), FontType::k8Point);
+  EXPECT_EQ(FontOf(TPF_GREEN12_GRAD | TPF_CENTER), FontType::kGreen12Gradient);
+  EXPECT_EQ(StyleOf(TPF_6PT_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL),
+            TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 
 }  // namespace

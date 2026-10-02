@@ -526,7 +526,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
 
   if (text) {
     // The one caller is the help text, printed in this font.
-    const FontStyle font = TextFontStyle(TPF_MAP | TPF_NOSHADOW);
+    const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     std::span<int16_t> ptr(_list);
     int len = StringPixelWidth(font, text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);

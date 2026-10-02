@@ -239,7 +239,8 @@ void VisualControlsClass::Process() {
         Fancy_Text_Print(
             view, base::At(_titles, i), slider_x - 16,
             text_y + (i * slider_y_spacing), kCcGreen, kTBlack,
-            TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
+            FontType::k6PointGradient,
+            TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
       optionsbtn.Draw_All(view);

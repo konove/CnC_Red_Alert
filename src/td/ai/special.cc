@@ -206,7 +206,8 @@ void Special_Dialog() {
       for (const auto& _option : _options) {
         Fancy_Text_Print(view, _option.Description, _option.Button->X + 10,
                          _option.Button->Y, kCcGreen, kTBlack,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                         FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
       game::TheMouse().Show();

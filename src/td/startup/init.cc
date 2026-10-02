@@ -828,22 +828,22 @@ bool Select_Game(bool fade) {
           Fancy_Text_Print(
               view, "V.%d%s", TheScreen().visible_view().width() - 1,
               TheScreen().visible_view().height() - 10, kGrey, kTBlack,
-              TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+              FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
               TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print(view, "DEMO V%s",
-                           TheScreen().visible_view().width() - 1,
-                           TheScreen().visible_view().height() - 10, kGrey,
-                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           TheGameState().version_text());
+          Fancy_Text_Print(
+              view, "DEMO V%s", TheScreen().visible_view().width() - 1,
+              TheScreen().visible_view().height() - 10, kGrey, kTBlack,
+              FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
+              TheGameState().version_text());
 #else
-          Fancy_Text_Print(view, "V.%d%s",
-                           TheScreen().visible_view().width() - 1,
-                           TheScreen().visible_view().height() - 10, kGrey,
-                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           Version_Number(), TheGameState().version_text());
+          Fancy_Text_Print(
+              view, "V.%d%s", TheScreen().visible_view().width() - 1,
+              TheScreen().visible_view().height() - 10, kGrey, kTBlack,
+              FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+              TheGameState().version_text());
 #endif
         }
         display = false;

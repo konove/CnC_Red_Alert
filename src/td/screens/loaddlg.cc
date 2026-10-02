@@ -328,10 +328,10 @@ bool LoadOptionsClass::Process() {
       Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
       if (Style == SAVE) {
-        Fancy_Text_Print(
-            view, TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h,
-            kCcGreen, kTBlack,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
+        Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
+                         d_edit_y - d_txt8_h, kCcGreen, kTBlack,
+                         FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }
 
       /*

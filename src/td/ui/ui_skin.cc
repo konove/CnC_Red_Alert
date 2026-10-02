@@ -28,11 +28,11 @@ void UiSkin::Draw_Shape(PixelView& view, std::span<const std::byte> shapes,
 const char* UiSkin::Text_String(const int id) { return td::Text_String(id); }
 
 int UiSkin::Text_Width(const PrintFlags flags, const char* text) {
-  return StringPixelWidth(TextFontStyle(flags), text);
+  return StringPixelWidth(TextFontStyle(FontOf(flags), StyleOf(flags)), text);
 }
 
 int UiSkin::Text_Height(const PrintFlags flags) {
-  return FontLineHeight(TextFontStyle(flags));
+  return FontLineHeight(TextFontStyle(FontOf(flags), StyleOf(flags)));
 }
 
 void UiSkin::Draw_Button_Box(PixelView& view, const int x, const int y,
@@ -66,8 +66,8 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
       return pressed || on ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
                            : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
-    Fancy_Text_Print(view, text, x, y, kCcGreen, kTBlack,
-                     flags | state | TPF_CENTER);
+    Fancy_Text_Print(view, text, x, y, kCcGreen, kTBlack, FontOf(flags),
+                     StyleOf(flags) | state | TPF_CENTER);
     return;
   }
   int color = kWhite;
@@ -76,8 +76,8 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
   } else if (pressed) {
     color = base::Any(flags & TPF_NOSHADOW) ? kGrey : kLtGrey;
   }
-  Fancy_Text_Print(view, text, x, y, on ? kRed : color, kTBlack,
-                   flags | TPF_CENTER);
+  Fancy_Text_Print(view, text, x, y, on ? kRed : color, kTBlack, FontOf(flags),
+                   StyleOf(flags) | TPF_CENTER);
 }
 
 int UiSkin::Scale(const int amount, const int numerator,
@@ -97,7 +97,9 @@ unsigned char UiSkin::Gauge_Fill_Color() {
   return static_cast<unsigned char>(kCcBrightGreen);
 }
 
-FontStyle UiSkin::Font(const PrintFlags flags) { return TextFontStyle(flags); }
+FontStyle UiSkin::Font(const PrintFlags flags) {
+  return TextFontStyle(FontOf(flags), StyleOf(flags));
+}
 
 UiSkin::PrintFlags UiSkin::Edit_Flags(const PrintFlags flags) { return flags; }
 
@@ -114,30 +116,33 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
                             const int max_length) {
   // Conquer_Clip_Text_Print() selects the font of `flags`; the colour flags
   // added below do not change it.
-  const FontStyle font = TextFontStyle(flags);
+  const FontStyle font = TextFontStyle(FontOf(flags), StyleOf(flags));
   if (font.font.data().data() ==
       TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType state =
         focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
     Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack,
-                            flags | state, width - 2);
+                            FontOf(flags | state), StyleOf(flags | state),
+                            width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
             width - 2) {
       Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
-                              y + 1, color, kTBlack, flags | state);
+                              y + 1, color, kTBlack, FontOf(flags | state),
+                              StyleOf(flags | state));
     }
   } else {
     Conquer_Clip_Text_Print(view, text, x + 1, y + 1, focused ? kBlue : kWhite,
-                            kTBlack, flags, width - 2);
+                            kTBlack, FontOf(flags), StyleOf(flags), width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
             width - 2) {
       Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
-                              y + 1, kBlue, kTBlack, flags);
+                              y + 1, kBlue, kTBlack, FontOf(flags),
+                              StyleOf(flags));
     }
   }
 }
@@ -159,23 +164,26 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
     } else if (!base::Any(state & TPF_USE_GRAD_PAL)) {
       state = state | TPF_MEDIUM_COLOR;
     }
-    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, kTBlack, state, width,
-                            tabs);
+    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, kTBlack, FontOf(state),
+                            StyleOf(state), width, tabs);
   } else {
     Conquer_Clip_Text_Print(view, text, x, y, selected ? kBlue : kWhite,
-                            kTBlack, flags, width, tabs);
+                            kTBlack, FontOf(flags), StyleOf(flags), width,
+                            tabs);
   }
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const PrintFlags style) {
-  Fancy_Text_Print(view, "%s", x, y, color, kTBlack, style, text);
+  Fancy_Text_Print(view, "%s", x, y, color, kTBlack, FontOf(style),
+                   StyleOf(style), text);
 }
 
 void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
                            const int y, TextColor color, const PrintFlags style,
                            const int width) {
-  Conquer_Clip_Text_Print(view, text, x, y, color, kTBlack, style, width);
+  Conquer_Clip_Text_Print(view, text, x, y, color, kTBlack, FontOf(style),
+                          StyleOf(style), width);
 }
 
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,

@@ -323,7 +323,7 @@ void SidebarClass::Init_IO() {
     /*
     ** Set the button widths based on the string that goes in them.
     */
-    const FontStyle font = TextFontStyle(TPF_6POINT | TPF_NOSHADOW);
+    const FontStyle font = TextFontStyle(FontType::k6Point, TPF_NOSHADOW);
     int maxwidth = StringPixelWidth(font, Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(
         maxwidth, StringPixelWidth(font, Text_String(TXT_BUTTON_SELL)) + 8);

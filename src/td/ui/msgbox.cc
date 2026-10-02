@@ -132,7 +132,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   int bwidth = 0;   // button width
   int bheight = 0;  // button height
   int numbuttons = 0;
@@ -254,8 +254,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Draw the caption.
     */
     Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                     kCcGreen, kTBlack,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                     kCcGreen, kTBlack, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
 #endif
@@ -296,8 +296,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           **	Draw the caption.
           */
           Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                           kCcGreen, kTBlack,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                           kCcGreen, kTBlack, FontType::k6PointGradient,
+                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
         }
 #endif

@@ -1861,11 +1861,11 @@ void RadarClass::Draw_Names(PixelView& view) const {
   int y = RadY + RadOffY;
 
   Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, kLtGrey, kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   kLtGrey, kTBlack,
-                   TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+                   kLtGrey, kTBlack, FontType::k6PointGradient,
+                   TPF_RIGHT | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
 
   y += (6 * factor) + 1;
 
@@ -1893,7 +1893,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
     } else {
       color = base::At(TheSession().text_colors(), c_idx);
     }
-    const TextPrintType style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
+    const TextPrintType style = TPF_NOSHADOW | TPF_USE_GRAD_PAL;
 
     /*
     **	Initialize our message
@@ -1930,7 +1930,8 @@ void RadarClass::Draw_Names(PixelView& view) const {
         base::At(txt, 9) = '.';
         base::At(txt, 10) = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kBlack, style);
+      Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kBlack,
+                       FontType::k6PointGradient, style);
 
       int kills = 0;
       for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
@@ -1939,7 +1940,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
       }
       absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
       Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                       kBlack, style | TPF_RIGHT);
+                       kBlack, FontType::k6PointGradient, style | TPF_RIGHT);
 
       y += (6 * factor) + 1;
     }

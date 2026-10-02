@@ -300,7 +300,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   base::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, buffer, view.height(), width, height);
 
   width = std::max(width, 50 * factor);
@@ -322,7 +322,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
-                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                   kTBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   game::TheMouse().Show();
 
@@ -602,7 +603,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, buffer, view.height(), width, height);
 
   const int text_width = width;
@@ -651,7 +652,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   Fancy_Text_Print(view, buffer, (view.width() / 2) - (text_width / 2),
                    y + (25 * factor), kCcGreen, kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -832,7 +833,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     base::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, text_buffer, view.height(), width, height);
 
   int text_width = width;
@@ -901,10 +902,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         */
         Draw_Caption(view, TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(view, text_buffer,
-                         (view.width() / 2) - (text_width / 2),
-                         y + (25 * factor), kCcGreen, kTBlack,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        Fancy_Text_Print(
+            view, text_buffer, (view.width() / 2) - (text_width / 2),
+            y + (25 * factor), kCcGreen, kTBlack, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Commands->Draw_All(view);
       }

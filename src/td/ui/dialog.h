@@ -22,7 +22,8 @@ int Format_Window_String(const FontStyle& font, std::span<char> string,
 extern void Dialog_Box(PixelView& view, int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,
                              int y, int fore, int back = kTBlack,
-                             TextPrintType flag = TPF_8POINT | TPF_DROPSHADOW,
+                             FontType font = FontType::k8Point,
+                             TextPrintType flag = TPF_DROPSHADOW,
                              int width = -1, std::span<const int> tabs = {});
 void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
               bool filled);
@@ -31,48 +32,55 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // A text that is not a format for `args` prints verbatim (see
 // base::FormatRuntime); a nullptr text only applies the flags.
 void Fancy_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
-                      int back, TextPrintType flag,
+                      int back, FontType font, TextPrintType flag,
                       absl::Span<const absl::FormatArg> args = {});
 // Same, with the text looked up by string-table number; TXT_NONE only applies
 // the flags.
 void Fancy_Text_Print(PixelView& view, int text, int x, int y, int fore,
-                      int back, TextPrintType flag,
+                      int back, FontType font, TextPrintType flag,
                       absl::Span<const absl::FormatArg> args = {});
 template <typename... Args>
   requires(sizeof...(Args) > 0)
 void Fancy_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
-                      int back, TextPrintType flag, const Args&... args) {
+                      int back, FontType font, TextPrintType flag,
+                      const Args&... args) {
   const auto packed = base::MakeFormatArgs(args...);
-  Fancy_Text_Print(view, text, x, y, fore, back, flag,
+  Fancy_Text_Print(view, text, x, y, fore, back, font, flag,
                    absl::MakeConstSpan(packed));
 }
 template <typename... Args>
   requires(sizeof...(Args) > 0)
 void Fancy_Text_Print(PixelView& view, int text, int x, int y, int fore,
-                      int back, TextPrintType flag, const Args&... args) {
+                      int back, FontType font, TextPrintType flag,
+                      const Args&... args) {
   const auto packed = base::MakeFormatArgs(args...);
-  Fancy_Text_Print(view, text, x, y, fore, back, flag,
+  Fancy_Text_Print(view, text, x, y, fore, back, font, flag,
                    absl::MakeConstSpan(packed));
 }
 // What a text print draws with: its adjusted flags, colour and font.
 struct TextStyle {
-  TextPrintType flag{};  // The flags after the chosen font's own fixups.
+  TextPrintType flag{};  // The style flags after the font's own fixups.
   int forecolor = 0;     // Palette index the glyphs print in.
   FontStyle font_style;  // The font, spacing and glyph palette.
 };
 
-// Returns the font and spacing `flag` selects by its point size and shadow,
-// with the identity palette: all that measuring text needs. A flag without a
-// point size (TPF_LASTPOINT) selects the 8-point font.
-FontStyle TextFontStyle(TextPrintType flag);
+// Returns the font and spacing `font` and the shadow in `flags` select, with
+// the identity palette: all that measuring text needs.
+FontStyle TextFontStyle(FontType font, TextPrintType flags);
 
-// Returns the style a print with `flag` in the colours `fore` and `back` uses:
-// TextFontStyle() plus the glyph palette.
-TextStyle TextStyleFor(TextPrintType flag, int fore = kTBlack,
+// Returns the style a print in `font` with `flags` in the colours `fore` and
+// `back` uses: TextFontStyle() plus the glyph palette.
+TextStyle TextStyleFor(FontType font, TextPrintType flags, int fore = kTBlack,
                        int back = kTBlack);
 
+// Transitional, deleted by docs/TEXT_PRINT_SPLIT_PLAN.md Task 8: the font a
+// combined TextPrintType selects (none selects the 8-point font) and its flags
+// without the font bits.
+FontType FontOf(TextPrintType combined);
+TextPrintType StyleOf(TextPrintType combined);
+
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
-                       int fore, int back, TextPrintType flag);
+                       int fore, int back, FontType font, TextPrintType flag);
 
 }  // namespace td
 

@@ -794,15 +794,16 @@ PathType* FootClass::Find_Path(Cell dest,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "   Left", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(view, "   Left", 0, 92, kWhite, kBlack,
+                           FontType::k6Point, TPF_NONE);
           Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
-                           TPF_6POINT);
+                           FontType::k6Point, TPF_NONE);
           if (left) {
-            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
-                             pleft.Length);
+            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack,
+                             FontType::k6Point, TPF_NONE, pleft.Length);
           } else {
             Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
-                             TPF_6POINT);
+                             FontType::k6Point, TPF_NONE);
           }
         }
 
@@ -826,15 +827,16 @@ PathType* FootClass::Find_Path(Cell dest,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "  Right", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(view, "  Right", 0, 92, kWhite, kBlack,
+                           FontType::k6Point, TPF_NONE);
           Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
-                           TPF_6POINT);
+                           FontType::k6Point, TPF_NONE);
           if (right) {
-            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
-                             pright.Length);
+            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack,
+                             FontType::k6Point, TPF_NONE, pright.Length);
           } else {
             Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
-                             TPF_6POINT);
+                             FontType::k6Point, TPF_NONE);
           }
         }
 
@@ -1594,7 +1596,8 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
   PixelView& view = TheScreen().visible_view();
 
   TheScreen().visible_page().view().Clear();
-  Fancy_Text_Print(view, txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
+  Fancy_Text_Print(view, txt, 160, 0, kWhite, kBlack, FontType::k8Point,
+                   TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;

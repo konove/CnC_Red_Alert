@@ -944,11 +944,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                   TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                   TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-    Fancy_Text_Print(
-        view, "%d\r%2X%c\r%02X.%02X",
-        TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
-        kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell.index(),
-        Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
+    Fancy_Text_Print(view, "%d\r%2X%c\r%02X.%02X",
+                     TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1),
+                     TheMap().TacPixelY + y, kWhite, kTBlack, FontType::k6Point,
+                     TPF_NOSHADOW | TPF_CENTER, cell.index(), Flag.Composite,
+                     Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -1063,7 +1063,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
             trig = Get_Trigger();
             Fancy_Text_Print(view, trig->Get_Name(), x + TheMap().TacPixelX,
                              y + TheMap().TacPixelY, kPink, kTBlack,
-                             TPF_NOSHADOW | TPF_6POINT);
+                             FontType::k6Point, TPF_NOSHADOW);
           }
 
           /*
@@ -1077,19 +1077,21 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                 Fancy_Text_Print(
                     view, waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
                     TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3, kYellow,
-                    kTBlack, TPF_NOSHADOW | TPF_6POINT | TPF_CENTER);
+                    kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_CENTER);
                 break;
               }
             }
             if (base::At(TheWorld().waypoint(), kWayptHome) == Cell_Number()) {
               Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
-                               kWhite, kTBlack, TPF_NOSHADOW | TPF_6POINT);
+                               kWhite, kTBlack, FontType::k6Point,
+                               TPF_NOSHADOW);
             }
             if (base::At(TheWorld().waypoint(), kWayptReinf) == Cell_Number()) {
               Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
-                               kWhite, kTBlack, TPF_NOSHADOW | TPF_6POINT);
+                               kWhite, kTBlack, FontType::k6Point,
+                               TPF_NOSHADOW);
             }
           }
         }

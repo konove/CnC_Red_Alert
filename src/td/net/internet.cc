@@ -442,8 +442,8 @@ bool Do_The_Internet_Menu_Thang() {
   // than the shared string table.
   char buffer[80 * 3];
   base::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
-                       view.height(), width, height);
+  Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
+                       buffer, view.height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -533,7 +533,8 @@ bool Do_The_Internet_Menu_Thang() {
 
       Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
                        d_dialog_y + (25 * factor), kCcGreen, kTBlack,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                       FontType::k6PointGradient,
+                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       // cancelbtn.Zap();
       // buttons = &cancelbtn;

@@ -155,11 +155,11 @@ static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     game::TheMouse().Hide();
-    Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc, FontType::k8Point,
+                     TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
-    Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc, FontType::k8Point,
+                     TPF_DROPSHADOW);
     game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
@@ -252,10 +252,10 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
-                   TPF_8POINT | TPF_DROPSHADOW);
+  Fancy_Text_Print(view, 0, 0, 0, kTBlack, kTBlack, FontType::k8Point,
+                   TPF_DROPSHADOW);
   const int font_height =
-      FontMaxHeight(TextFontStyle(TPF_8POINT | TPF_DROPSHADOW));
+      FontMaxHeight(TextFontStyle(FontType::k8Point, TPF_DROPSHADOW));
   game::TheMouse().Hide();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
@@ -264,7 +264,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
         view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
         text_index == selected_entry && MenuUpdate ? menu.highlight_color
                                                    : menu.normal_color,
-        kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+        kTBlack, FontType::k8Point, TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   game::TheMouse().Show();
@@ -292,7 +292,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   int newitem = item = menu.selected % (maxitem + 1); /* find selected */
   int select = -1;                                    /* no selection made		*/
   // The font the menu items print in.
-  const FontStyle font = TextFontStyle(TPF_8POINT | TPF_DROPSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k8Point, TPF_DROPSHADOW);
   const int menuskip =
       FontMaxHeight(font) + MenuSkip;                 /* calc new font height	*/
   const int halfskip = MenuSkip / 2;                  /* adjustment for menus	*/
@@ -410,11 +410,11 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+                     normcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+                     litcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -475,7 +475,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  const FontStyle font = TextFontStyle(TPF_8POINT | TPF_DROPSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k8Point, TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, StringPixelWidth(font, text));
@@ -855,12 +855,12 @@ int Main_Menu(int timeout) {
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text(),
                          FOREIGN_VERSION_NUMBER);
 #endif
@@ -874,12 +874,12 @@ int Main_Menu(int timeout) {
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text());
 #endif
       }

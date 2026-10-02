@@ -129,12 +129,12 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
     }
 
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
-                            flags, width, Tabs);
+                            FontOf(flags), StyleOf(flags), width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            selected ? kBlue : kWhite, kTBlack, TextFlags,
-                            width, Tabs);
+                            selected ? kBlue : kWhite, kTBlack,
+                            FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
   }
 }
 

@@ -94,7 +94,7 @@ bool ConfirmationClass::Process(const char* string) {
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   base::SafeCopy(buffer, string);
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
@@ -173,8 +173,8 @@ bool ConfirmationClass::Process(const char* string) {
       Dialog_Box(view, x, y, width, height);
       Draw_Caption(view, TXT_CONFIRMATION, x, y, width);
       Fancy_Text_Print(view, buffer, x + (20 * factor), y + (30 * factor),
-                       kCcGreen, kTBlack,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                       kCcGreen, kTBlack, FontType::k6PointGradient,
+                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.
