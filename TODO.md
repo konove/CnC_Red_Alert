@@ -184,6 +184,16 @@
   - The two differ only when X is within `n` leptons of 0x10000, which no on-map coordinate is, so
     the change is safe in play but alters the off-map results; do it in its own commit
 
+## Features
+
+- Decide whether the sidebar strips should sort their buildables in both games
+  - Today both list items in the order they became available. TD had a disabled `qsort` in
+    `SidebarClass::StripClass::Add()` (`td/map/sidebar.cc`, deleted as dead code) that put buildings
+    first, then walls by cost, then units and aircraft by RTTI, each group by the scenario it first
+    appears in; RA never sorted
+  - If wanted, write it fresh as a `std::ranges::stable_sort` with a projection in `Add()`, so items
+    that tie keep their arrival order
+
 ## Refactoring
 
 - Migrate legacy integer types to fixed-width types per Google C++ Style Guide

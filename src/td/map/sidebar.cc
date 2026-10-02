@@ -83,8 +83,7 @@
  *   SidebarClass::StripClass::SelectClass::SelectClass -- Default constructor.
  ** SidebarClass::StripClass::StripClass -- Default constructor for the side
  *strip class.     * SidebarClass::Which_Column -- Determines which column a
- *given type should appear.         * sortfunc -- Utility routine that handles
- *'qsort' the strip buttons.                       *
+ *given type should appear.         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -1274,81 +1273,6 @@ void SidebarClass::StripClass::Deactivate() {
   }
 }
 
-#ifdef NEVER
-/***********************************************************************************************
- * sortfunc -- Utility routine that handles 'qsort' the strip buttons. *
- *                                                                                             *
- *    This routine is called by qsort() in order to sort the sidebar buttons.
- *This sorting     * forces the sidebar buttons to always occur in the order
- *that they can be built in,       * rather than the order that they were added
- *to the sidebar list.                          *
- *                                                                                             *
- * INPUT:   ptr1  -- Pointer to the first sidebar class object. *
- *                                                                                             *
- *          ptr2  -- Pointer to the second sidebar class object. *
- *                                                                                             *
- * OUTPUT:  Returns <0 if the first object can be produced before the second. It
- *returns       * >0 if the reverse is true. It returns exactly 0 if the
- *production scneario for     * both objects is the same. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/18/1995 JLB : Created. *
- *=============================================================================================*/
-static int sortfunc(const void* ptr1, const void* ptr2) {
-  SidebarClass::StripClass::BuildType* b1 =
-      (SidebarClass::StripClass::BuildType*)ptr1;
-  SidebarClass::StripClass::BuildType* b2 =
-      (SidebarClass::StripClass::BuildType*)ptr2;
-
-  const TechnoTypeClass* p1 =
-      Fetch_Techno_Type(b1->BuildableType, b1->BuildableID);
-  const TechnoTypeClass* p2 =
-      Fetch_Techno_Type(b2->BuildableType, b2->BuildableID);
-
-  int i1 = 0;
-  int i2 = 0;
-
-  if (p1) {
-    i1 = p1->What_Am_I() * 2;
-  }
-  if (p2) {
-    i2 = p2->What_Am_I() * 2;
-  }
-
-  /*
-  **	Walls should be sorted after the regular buildings.
-  */
-  if (p1 && p1->What_Am_I() == RTTI_BUILDINGTYPE &&
-      ((BuildingTypeClass* const)p1)->IsWall) {
-    i1++;
-  }
-  if (p2 && p2->What_Am_I() == RTTI_BUILDINGTYPE &&
-      ((BuildingTypeClass* const)p2)->IsWall) {
-    i2++;
-  }
-
-  /*
-  **	If the object types are identical, then sort by scenario available.
-  */
-  if (i1 == i2) {
-    /*
-    **	In the case of walls (can tell if there is an odd value), then sort
-    **	by cost.
-    */
-    if (i1 & 0x01) {
-      i1 = p1->Cost;
-      i2 = p2->Cost;
-    } else {
-      i1 = p1->Scenario;
-      i2 = p2->Scenario;
-    }
-  }
-
-  return (i1 - i2);
-}
-#endif
-
 /***********************************************************************************************
  * SidebarClass::StripClass::Add -- Add an object to the side strip. *
  *                                                                                             *
@@ -1380,11 +1304,6 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
     base::At(Buildables, BuildableCount).BuildableID = id;
     BuildableCount++;
     IsToRedraw = true;
-#ifdef OBSOLETE
-    if (TheSession().type() == GAME_NORMAL) {
-      qsort(&Buildables[0], BuildableCount, sizeof(Buildables[0]), sortfunc);
-    }
-#endif
     return true;
   }
   return false;
