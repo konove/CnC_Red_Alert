@@ -95,7 +95,6 @@
 #include "ra/ai/region.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

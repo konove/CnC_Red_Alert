@@ -44,7 +44,6 @@
 #include <cstdint>
 
 #include "base/pooled.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

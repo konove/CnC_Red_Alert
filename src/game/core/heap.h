@@ -44,14 +44,13 @@ namespace game {
 // buildings, triggers, ...) allocates them here through its operator new.
 //
 // The slot index is game state, not an allocation detail: TARGET values and
-// CCPtr name an object by it, and a saved game puts every object back into
-// the slot it came from. The in-use list keeps allocation order, which is the
-// order the game iterates objects in, so removing one keeps the others in
-// order. Multiplayer games stay in sync only if that order is the same on
-// every machine.
+// saved pointers (HeapSlotPtr) name an object by it, and a saved game puts
+// every object back into the slot it came from. The in-use list keeps
+// allocation order, which is the order the game iterates objects in, so
+// removing one keeps the others in order. Multiplayer games stay in sync only
+// if that order is the same on every machine.
 //
-// Nothing is virtual: CCPtr reaches a heap through a FixedIHeapClass*, but
-// only for its slots, and nothing derives from it except the typed
+// Nothing is virtual: nothing derives from it except the typed
 // TFixedIHeapClass below.
 //
 // Example:

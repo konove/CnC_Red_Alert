@@ -58,7 +58,6 @@
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/assets/audio.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"

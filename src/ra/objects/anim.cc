@@ -78,7 +78,6 @@
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

@@ -135,7 +135,6 @@
 #include "ra/ai/trigtype.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

@@ -69,7 +69,6 @@
 #include "game/core/heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"

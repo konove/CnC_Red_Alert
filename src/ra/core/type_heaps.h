@@ -18,14 +18,11 @@ namespace ra {
 // saved game reads the rules again. Game owns the one TypeHeaps;
 // everything else reaches it through TheTypeHeaps().
 //
-// Constructing one binds the matching CCPtr<T>::Heap pointers, so a CCPtr to
-// a type class only resolves while a TypeHeaps is installed.
-//
 // Example:
 //   return TheTypeHeaps().building().Alloc();
 class TypeHeaps {
  public:
-  TypeHeaps();
+  TypeHeaps() = default;
   ~TypeHeaps();
 
   TypeHeaps(const TypeHeaps&) = delete;

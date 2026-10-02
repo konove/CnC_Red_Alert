@@ -72,7 +72,6 @@
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.

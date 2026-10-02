@@ -76,7 +76,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

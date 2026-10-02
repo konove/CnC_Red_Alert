@@ -133,7 +133,6 @@
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/assets/palettes.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

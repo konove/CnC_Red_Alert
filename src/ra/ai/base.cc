@@ -65,7 +65,6 @@
 #include "base/types.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"

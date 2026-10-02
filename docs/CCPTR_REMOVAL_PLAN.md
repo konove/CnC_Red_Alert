@@ -2,7 +2,11 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: in progress.** Steps 1–5 done; step 5 still wants its by-hand editor check.
+**Status: complete (2026-10-01)** except step 5's by-hand check of the scenario editor's lists.
+`CCPtr` is gone. The 25 members it covered are plain pointers, saved through `game::HeapSlotPtr` in
+the same encoding, so saves cross-load between the pre-plan binary and this one in both directions
+and the checked-in fixture still loads. Headless logic logs match the pre-plan binary, and the deep
+analyzer is clean over every Red Alert source. See Progress for the commits.
 
 ## Context
 
@@ -202,14 +206,17 @@ The 4 members in the third group.
 
 ### Step 6: delete CCPtr
 
-- [ ] Delete `ra/core/ccptr.h` and `ra/core/ccptr.cc` (the CMake globs pick it up).
-- [ ] Remove the `Heap` definitions and `BindHeap` calls from `core/object_heaps.cc` and
-      `core/type_heaps.cc`. If those constructors end up empty, default them.
-- [ ] Remove the leftover `#include "ra/core/ccptr.h"` lines, which `misc-include-cleaner` flags.
-      Headers that got `game/core/heap.h` only through `ccptr.h` include it directly.
-- [ ] Update the comments that name `CCPtr`: `game/core/heap.h:47`, `:53`, `core/object_heaps.h:35`,
-      `core/type_heaps.h:21`, and the file comments of `object_heaps.cc` and `type_heaps.cc`. The
-      mentions in older plan docs and `CLANG_TIDY_PRIORITIES.md` are history and stay.
+- [x] Delete `ra/core/ccptr.h` and `ra/core/ccptr.cc` (the CMake globs pick it up).
+- [x] Remove the `Heap` definitions and `BindHeap` calls from `core/object_heaps.cc` and
+      `core/type_heaps.cc`. Both constructors were left empty and are now `= default` in the
+      headers. `misc-include-cleaner` then dropped the 17 object and type headers those two files
+      had included only to name the `CCPtr` specializations.
+- [x] Remove the leftover `#include "ra/core/ccptr.h"` lines (42 files). Steps 2–4 had already given
+      the headers that needed `game/core/heap.h` a direct include.
+- [x] Update the comments that name `CCPtr`: `game/core/heap.h`, `core/object_heaps.h`,
+      `core/type_heaps.h`, and the file comments of `object_heaps.cc` and `type_heaps.cc`.
+      `heap_slot_ptr.h` and its test still mention `CCPtr`, as the reason the encoding cannot
+      change. The mentions in older plan docs and `CLANG_TIDY_PRIORITIES.md` are history and stay.
 
 ## Verification
 
@@ -252,3 +259,4 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 | 3    | 4f6e08e4, 219794e1 | Saved object pointers, and the null-check fixes first. Deep analyzer over all 191 RA sources clean. SCU05EA line-identical; SCG10EA aircraft only (204 lines; old-vs-old reaches 472). Smoke, `--load-fixture` and both cross-loads pass. |
 | 4    | (this commit)      | INI-parsed pointers and the unfilled-slot check. SCU05EA line-identical, SCG10EA aircraft only (154 lines). Smoke, `--load-fixture` and both cross-loads pass.                                                                            |
 | 5    | (this commit)      | Editor lists. Builds and passes the strict checks; the editor dialogs are not yet checked by hand.                                                                                                                                        |
+| 6    | (this commit)      | `CCPtr` deleted with its 27 heap bindings. Strict clean; SCU05EA logic log line-identical; smoke and `--load-fixture` pass.                                                                                                               |

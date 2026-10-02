@@ -34,7 +34,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

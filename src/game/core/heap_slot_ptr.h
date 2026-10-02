@@ -19,7 +19,8 @@ namespace game {
 // right once that heap has loaded. A loaded index outside the heap records an
 // error on the reader and reads as nullptr. T may be const.
 //
-// This is the encoding Red Alert's CCPtr wrote, so saves stay compatible.
+// Red Alert's former CCPtr wrote the same encoding, so saves from before its
+// removal still load.
 //
 // Example:
 //   template <class Archive>

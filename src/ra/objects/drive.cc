@@ -78,7 +78,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

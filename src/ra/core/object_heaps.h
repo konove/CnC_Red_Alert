@@ -32,15 +32,14 @@ namespace ra {
 // that belong to the scenario. Unlike TypeHeaps, everything here is part of
 // the scenario and is saved: the save file walks each heap in turn.
 //
-// Constructing one binds the matching CCPtr<T>::Heap pointers, so a CCPtr to
-// a game object only resolves while an ObjectHeaps is installed. Game owns
-// the one instance; everything else reaches it through TheObjectHeaps().
+// Game owns the one instance; everything else reaches it through
+// TheObjectHeaps().
 //
 // Example:
 //   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) ...
 class ObjectHeaps {
  public:
-  ObjectHeaps();
+  ObjectHeaps() = default;
   ~ObjectHeaps();
 
   ObjectHeaps(const ObjectHeaps&) = delete;

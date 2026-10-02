@@ -21,7 +21,6 @@
 #include <algorithm>
 
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/objects/building.h"

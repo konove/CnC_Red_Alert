@@ -63,7 +63,6 @@
 #include "game/sim/utracker.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"

@@ -71,7 +71,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/assets/theme.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

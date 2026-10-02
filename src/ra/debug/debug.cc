@@ -53,7 +53,6 @@
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/screen.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

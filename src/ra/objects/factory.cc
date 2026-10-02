@@ -65,7 +65,6 @@
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "game/core/heap.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"

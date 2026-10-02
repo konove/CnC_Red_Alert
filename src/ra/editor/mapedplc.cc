@@ -80,7 +80,6 @@
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/assets/screen.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

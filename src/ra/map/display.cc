@@ -153,7 +153,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/const.h"
 #include "ra/core/coord.h"

@@ -1,57 +1,10 @@
-// How TypeHeaps binds the CCPtr heap pointers and tears the heaps down.
+// How TypeHeaps tears the heaps down.
 
 #include "ra/core/type_heaps.h"
 
 #include "game/core/heap.h"
-#include "ra/core/ccptr.h"
-#include "ra/objects/type.h"
 
 namespace ra {
-
-// The storage for each type's heap pointer. TypeHeaps binds them; they are
-// null outside its lifetime.
-template <>
-game::FixedIHeapClass* CCPtr<HouseTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<BulletTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<AnimTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<UnitTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<VesselTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap = nullptr;
-template <>
-game::FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap = nullptr;
-
-TypeHeaps::TypeHeaps() {
-  // A CCPtr<T> finds its object by index in the heap this points at. There
-  // is one heap per type for the life of the process, so binding them here
-  // is what the static initializers in globals.cc used to do.
-  CCPtr<HouseTypeClass>::BindHeap(&house_);
-  CCPtr<BuildingTypeClass>::BindHeap(&building_);
-  CCPtr<AircraftTypeClass>::BindHeap(&aircraft_);
-  CCPtr<InfantryTypeClass>::BindHeap(&infantry_);
-  CCPtr<BulletTypeClass>::BindHeap(&bullet_);
-  CCPtr<AnimTypeClass>::BindHeap(&anim_);
-  CCPtr<UnitTypeClass>::BindHeap(&unit_);
-  CCPtr<VesselTypeClass>::BindHeap(&vessel_);
-  CCPtr<TemplateTypeClass>::BindHeap(&template_);
-  CCPtr<TerrainTypeClass>::BindHeap(&terrain_);
-  CCPtr<OverlayTypeClass>::BindHeap(&overlay_);
-  CCPtr<SmudgeTypeClass>::BindHeap(&smudge_);
-}
 
 TypeHeaps::~TypeHeaps() {
   // The heaps free their buffers without running element destructors, so
@@ -69,19 +22,6 @@ TypeHeaps::~TypeHeaps() {
   terrain_.Destroy_All();
   overlay_.Destroy_All();
   smudge_.Destroy_All();
-
-  CCPtr<HouseTypeClass>::BindHeap(nullptr);
-  CCPtr<BuildingTypeClass>::BindHeap(nullptr);
-  CCPtr<AircraftTypeClass>::BindHeap(nullptr);
-  CCPtr<InfantryTypeClass>::BindHeap(nullptr);
-  CCPtr<BulletTypeClass>::BindHeap(nullptr);
-  CCPtr<AnimTypeClass>::BindHeap(nullptr);
-  CCPtr<UnitTypeClass>::BindHeap(nullptr);
-  CCPtr<VesselTypeClass>::BindHeap(nullptr);
-  CCPtr<TemplateTypeClass>::BindHeap(nullptr);
-  CCPtr<TerrainTypeClass>::BindHeap(nullptr);
-  CCPtr<OverlayTypeClass>::BindHeap(nullptr);
-  CCPtr<SmudgeTypeClass>::BindHeap(nullptr);
 }
 
 }  // namespace ra
