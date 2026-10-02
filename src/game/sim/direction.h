@@ -47,6 +47,7 @@
 
 #include <cstdint>
 
+#include "base/enum_step.h"  // IWYU pragma: export
 namespace game {
 
 // The eight cells around a cell, clockwise from north. Used when moving
@@ -169,5 +170,9 @@ constexpr int Dir_Diff(const DirType dir1, const DirType dir2) {
 }
 
 }  // namespace game
+
+// The path finder and the facing scans walk the facings in order.
+template <>
+inline constexpr bool base::kIsSteppableEnum<game::FacingType> = true;
 
 #endif  // CNC_RED_ALERT_GAME_SIM_DIRECTION_H_

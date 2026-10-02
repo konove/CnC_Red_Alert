@@ -23,6 +23,8 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_ENUMS_H_
 #define CNC_RED_ALERT_GAME_SIM_ENUMS_H_
 
+#include "base/enum_step.h"  // IWYU pragma: export
+
 namespace game {
 
 /**********************************************************************
@@ -192,5 +194,9 @@ enum class VisualType {
 using enum VisualType;
 
 }  // namespace game
+
+// The path finder retries with ever more permissive move types.
+template <>
+inline constexpr bool base::kIsSteppableEnum<game::MoveType> = true;
 
 #endif  // CNC_RED_ALERT_GAME_SIM_ENUMS_H_
