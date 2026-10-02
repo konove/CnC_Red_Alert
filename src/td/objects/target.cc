@@ -25,7 +25,7 @@
  *                                                                                             *
  *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : target.cpp *
+ *                    File Name : TARGET.CPP *
  *                                                                                             *
  *                   Programmer : Joe L. Bostic *
  *                                                                                             *

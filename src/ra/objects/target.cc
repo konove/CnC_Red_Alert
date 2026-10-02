@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/target.cpp 1     3/03/97 10:25a Joe_bostic $ */
+/* $Header: /CounterStrike/TARGET.CPP 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
@@ -24,7 +24,7 @@
  *                                                                                             *
  *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : target.cpp *
+ *                    File Name : TARGET.CPP *
  *                                                                                             *
  *                   Programmer : Joe L. Bostic *
  *                                                                                             *

@@ -66,10 +66,8 @@ class DisplayClass : public MapClass {
   */
   Coordinate TacticalCoord{};
 
-  /*
-  **	The dimensions (in cells) of the visible window onto the game map. This
-  *tactical *	map is how the player interacts and views the game world.
-  */
+  // The dimensions, in leptons, of the visible window onto the game map: the
+  // tactical map, through which the player sees and works the game world.
   int TacLeptonWidth{0};
   int TacLeptonHeight{0};
 

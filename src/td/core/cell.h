@@ -72,7 +72,7 @@ class Cell {
   }
 
   // Returns the word, sign-extended: the map index, or a negative sentinel.
-  // Saves, INI files and the editor's text carry this number; the
+  // Saves, INI files, network events and the editor carry this number; the
   // multiplayer CRC and the per-frame log do not.
   [[nodiscard]] constexpr int index() const noexcept { return value_; }
 

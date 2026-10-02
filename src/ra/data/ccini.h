@@ -118,6 +118,8 @@ class CCINIClass : public INIClass {
                      game::ArmorType value);
   bool Put_BulletType(const char* section, const char* entry, BulletType value);
   bool Put_HousesType(const char* section, const char* entry, HousesType value);
+  // Writes `value`, in leptons, as the cell count Get_Lepton() reads (128 is
+  // stored as ".5"). It keeps its low 16 bits. Returns whether it was stored.
   bool Put_Lepton(const char* section, const char* entry, int value);
   bool Put_MPHType(const char* section, const char* entry, game::MPHType value);
   bool Put_VQType(const char* section, const char* entry, VQType value);
