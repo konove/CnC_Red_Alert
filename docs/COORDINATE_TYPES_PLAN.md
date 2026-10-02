@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit                                                                 |
-| ---------- | ------ | ---------------------------------------------------------------------- |
-| A1         | Done   | f0498c21                                                               |
-| A2         | Done   | 6be50192                                                               |
-| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done   | f7d220ed                                                               |
-| B2 RA / TD |        |                                                                        |
-| B3 RA / TD |        |                                                                        |
-| B4 RA / TD |        |                                                                        |
+| Step       | Status  | Commit                                                                 |
+| ---------- | ------- | ---------------------------------------------------------------------- |
+| A1         | Done    | f0498c21                                                               |
+| A2         | Done    | 6be50192                                                               |
+| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done    | f7d220ed                                                               |
+| B2 RA / TD | RA done | RA: 6b8676be, 9ede4443                                                 |
+| B3 RA / TD |         |                                                                        |
+| B4 RA / TD |         |                                                                        |
 
 Part A notes:
 
@@ -638,3 +638,25 @@ Stage B1 notes:
   ("Decide whether Red Alert's lepton distances should still wrap at 16 bits").
 - `xcheck.sh` changes into a temp dir before running the candidate, so pass it an absolute path
   (`"$PWD/build/src/ra/rasdl"`); a relative one gives "FAIL: empty log".
+
+Stage B2 (RA) notes:
+
+- `ra::Coordinate` lives in `ra/core/coordinate.h`, exported by `defines.h`; it depends only on
+  standard headers. `cell_x()`/`cell_y()` return `int` (the old `Coord_XCell` returned `CELL`), so
+  the two `ChronalVortexClass` sites that stored them in a `CELL` cast explicitly.
+- `Coord_Cell(Coordinate)`, `Cell_Coord(CELL)` and `CellCenterFraction()` stay free functions in
+  `packed.h` for B4; `packed_test.cc` keeps their golden values, `coordinate_test.cc` holds the
+  rest.
+- `operator<=>` orders by `packed()` (Y, then X): `ObjectClass::operator<`/`>` compare `Sort_Y()`,
+  and that is the order the integers had.
+- Two "empty" coordinates exist and both are kept: `Coordinate{}` (zero, "no coordinate", tested as
+  `!coord`) and the pre-existing `FromPacked(0xFFFFFFFFU)` "no position" sentinel of
+  `AbstractClass::Coord`, `SmudgeClass`'s default position and the aircraft INI reader.
+- Integer offsets became `FromLeptons(x, y)`: hex words in the drive-track tables (checked
+  value-identical, 441 entries), signed values where the offset is a direction (`AdjacentCoord`, the
+  terrain fire offsets). The multiplayer CRC and its dump (`queue.cc`) and the per-frame log
+  (`conquer.cc`) read `packed()`; the SyncBug `Coord` INI value is read with `FromPacked`.
+- `BuildingClass::Target_Coord()` and `VesselClass::Fire_Coord()` now return one named result or
+  only prvalues (`-Wnrvo` fires for a class type where it did not for `uint32_t`).
+- `DisplayClass::Closest_Free_Spot()` answers an off-map coordinate with `CellCenterFraction()`, the
+  center of cell (0, 0); that is the original behaviour, kept.
