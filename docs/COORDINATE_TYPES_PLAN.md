@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit                                                                 |
-| ---------- | ------ | ---------------------------------------------------------------------- |
-| A1         | Done   | f0498c21                                                               |
-| A2         | Done   | 6be50192                                                               |
-| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done   | f7d220ed                                                               |
-| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
-| B3 RA / TD | Done   | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                         |
-| B4 RA / TD |        |                                                                        |
+| Step       | Status  | Commit                                                                 |
+| ---------- | ------- | ---------------------------------------------------------------------- |
+| A1         | Done    | f0498c21                                                               |
+| A2         | Done    | 6be50192                                                               |
+| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done    | f7d220ed                                                               |
+| B2 RA / TD | Done    | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
+| B3 RA / TD | Done    | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                         |
+| B4 RA / TD | RA done | RA: c5d9f5b0, ae075469, 76248993, e1bcab3a                             |
 
 Part A notes:
 
@@ -770,3 +770,41 @@ Stage B3 (TD) notes:
 - For B4: `Target::FromCellIndex()` takes and `AsCell()` returns `CELL`, now declared in
   `td/core/cell.h`; `FromCellIndex()` sign-extends a negative cell into the whole word, which a
   `Cell` sentinel must keep.
+
+Stage B4 (RA) notes:
+
+- `ra::Cell` lives in `ra/core/cell.h` (only `coordinate.h` and standard headers), exported by
+  `defines.h` and included by `target.h`, which no longer needs `packed.h`. It wraps the signed
+  16-bit word: `FromXY` (was `XY_Cell`, 7 bits per axis), `FromIndex` (a map index or sentinel,
+  keeping its low 16 bits), `None()` (-1), `Containing(coord)` (was `Coord_Cell`), `Center()` (was
+  `Cell_Coord`), `index()`, `x()`, `y()`, `is_none()` (any negative index), `Offset(delta)` (wraps
+  at 16 bits) and a defaulted `<=>` on the signed index. `Cell{}` is cell 0, not "no cell".
+  `packed.h` keeps the lepton word, its pixel conversions and `CellCenterFraction()`; the cell
+  golden values moved to `cell_test.cc` (same `ra_packed_test` target).
+- `MAP_CELL_W/H/TOTAL` are `inline constexpr int` (c5d9f5b0), with a `static_assert` that
+  `MAP_CELL_TOTAL` fits `int16_t`.
+- `Adjacent_Cell(Cell, dir)` stays a free function beside its `Coordinate` overloads; `AdjacentCell`
+  is an `int` offset table. `MapClass::at()`/`operator[]` take only `Cell` or `Coordinate`;
+  whole-map loops count an `int` and take `Cell::FromIndex(index)`.
+- Deltas stay integers: the `kRefreshEol` lists, `GrabOffset` (now `int16_t`), `Check_Point()`'s
+  offsets, the vortex's `int16_t` cell components and `RadarClass::RadarCell` (already `int`).
+- Raw numbers go through `index()`/`FromIndex()`: INI waypoints, cell triggers, base nodes and the
+  object writers' `%d`/`%u`, the SyncBug `Cell`, save-file bounds checks, the overlap bitmaps and
+  `CellRedraw`. The INI readers still parse `int16_t`, so an out-of-range number falls back to 0. No
+  cell reaches the multiplayer CRC or the per-frame log.
+- `0` as "no cell" (exit cells, `FlagHome`, `Find_Cell_In_Zone`, ...) became `Cell{}` and
+  `index() != 0` tests; `-1` became `Cell::None()`, and every old `== -1` compares with `None()`
+  rather than `is_none()`.
+- The PLACE event is still built from the int `cell.index() + ZoneOffset`, so it keeps going through
+  `EventClass(type, RTTIType, int id)` and keeps its packet bytes (in `TODO.md`, with the
+  `Destroy_Bridge_At()` detach loop that adds `y * w + x` to a cell already moved down a row).
+- `CellClass::Cell_Coord()` is renamed `Center_Coord()`. `Target::Of(const CellClass*)` and
+  `Of(const AbstractTypeClass*)` are deleted (76248993); `EventClass` is `static_assert`ed trivially
+  copyable.
+- `Set_Cursor_Pos()` and `Calculated_Cell()` were restructured for `-Wnrvo` (one named return, or a
+  prvalue), with the same values.
+- `grep -rnw CELL src/ra` finds only EA's `$Header`/`File Name` lines naming `CELL.CPP`/`CELL.H`.
+- For TD (B4b): TD's `CELL` alias is in `td/core/cell.h`; mirror the same members with 6 bits per
+  axis. Check TD for the same traps: members named `Cell`, a `CellClass::Cell_Coord()`, an int PLACE
+  argument picking an `int` `EventClass` overload, `Destroy_Bridge_At()`'s `tdata`, and the EA
+  header lines.
