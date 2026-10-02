@@ -510,4 +510,109 @@ Coordinate As_Movement_Coord(TARGET target) {
   return {};
 }
 
+ObjectClass* Target::AsObject() const {
+  const int val = value();
+  ObjectClass* object = nullptr;
+
+  switch (kind()) {
+    case KIND_INFANTRY:
+      object = TheObjectHeaps().infantry().Slot(val);
+      break;
+
+    case KIND_UNIT:
+      object = TheObjectHeaps().unit().Slot(val);
+      break;
+
+    case KIND_BUILDING:
+      object = TheObjectHeaps().building().Slot(val);
+      break;
+
+    case KIND_AIRCRAFT:
+      object = TheObjectHeaps().aircraft().Slot(val);
+      break;
+
+    case KIND_TERRAIN:
+      object = TheObjectHeaps().terrain().Slot(val);
+      break;
+
+    case KIND_BULLET:
+      object = TheObjectHeaps().bullet().Slot(val);
+      break;
+
+    case KIND_ANIMATION:
+      object = TheObjectHeaps().anim().Slot(val);
+      break;
+
+    case KindType::KIND_NONE:
+    case KindType::KIND_CELL:
+    case KindType::KIND_TEMPLATE:
+    case KindType::KIND_TRIGGER:
+    case KindType::KIND_TEAM:
+    case KindType::KIND_TEAMTYPE:
+    default:
+      break;
+  }
+
+  // A target can outlive its object: in a network game the object may be
+  // destroyed between sending an event and receiving it. A dead slot is no
+  // object.
+  if (object != nullptr && !object->IsActive) {
+    object = nullptr;
+  }
+
+  return object;
+}
+
+TechnoClass* Target::AsTechno() const {
+  ObjectClass* obj = AsObject();
+  if (obj && obj->Is_Techno()) {
+    return dynamic_cast<TechnoClass*>(obj);
+  }
+  return nullptr;
+}
+
+AircraftClass* Target::AsAircraft() const {
+  return kind() == KIND_AIRCRAFT ? TheObjectHeaps().aircraft().Slot(value())
+                                 : nullptr;
+}
+
+BuildingClass* Target::AsBuilding() const {
+  return kind() == KIND_BUILDING ? TheObjectHeaps().building().Slot(value())
+                                 : nullptr;
+}
+
+UnitClass* Target::AsUnit() const {
+  return kind() == KIND_UNIT ? TheObjectHeaps().unit().Slot(value()) : nullptr;
+}
+
+CELL Target::AsCell() const { return Coord_Cell(AsCoordinate()); }
+
+Coordinate Target::AsCoordinate() const {
+  if (*this) {
+    // A cell target's value is the cell index.
+    if (kind() == KIND_CELL) {
+      return Cell_Coord(static_cast<CELL>(value()));
+    }
+    const ObjectClass* obj = AsObject();
+    if (obj) {
+      return obj->Target_Coord();
+    }
+  }
+  return {};
+}
+
+Coordinate Target::AsMovementCoordinate() const {
+  if (*this) {
+    // A cell target's value is the cell index.
+    if (kind() == KIND_CELL) {
+      return Cell_Coord(static_cast<CELL>(value()));
+    }
+    const ObjectClass* obj = AsObject();
+    if (obj) {
+      return obj->Docking_Coord();
+    }
+  }
+  return {};
+}
+
 }  // namespace td

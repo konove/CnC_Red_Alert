@@ -52,7 +52,9 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "td/ai/special.h"
+#include "td/core/cell.h"        // IWYU pragma: export
 #include "td/core/coordinate.h"  // IWYU pragma: export
+#include "td/core/target.h"      // IWYU pragma: export
 
 namespace td {
 
@@ -219,11 +221,6 @@ number of meta-cells will be a subset of the cell width.
 #define MAP_CELL_X_MASK (~(~0 << MAP_CELL_MAX_X_BITS))
 // #define	MAP_CELL_Y_MASK			((~(~0 << MAP_CELL_MAX_Y_BITS))
 // << MAP_CELL_MAX_Y_BITS)
-
-// A map coordinate with cell resolution. Declared here rather than alongside
-// TARGET below so that the map dimensions can carry it: a loop walking the
-// map then has a counter no narrower than its own bound.
-using CELL = int16_t;
 
 // Size of the map in cells. The brace initialization fails to compile if the
 // map ever outgrows a CELL.

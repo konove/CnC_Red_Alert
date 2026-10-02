@@ -46,28 +46,6 @@
 
 namespace td {
 
-/**************************************************************************
-** When a unit proceeds with carrying out its mission, it can have several
-**	intermediate goals. Each goal (or target if you will) can be one of the
-**	following kinds.
-*/
-enum class KindType {
-  KIND_NONE,
-  KIND_CELL,
-  KIND_UNIT,
-  KIND_INFANTRY,
-  KIND_BUILDING,
-  KIND_TERRAIN,
-  KIND_AIRCRAFT,
-  KIND_TEMPLATE,
-  KIND_BULLET,
-  KIND_ANIMATION,
-  KIND_TRIGGER,
-  KIND_TEAM,
-  KIND_TEAMTYPE
-};
-using enum KindType;
-
 #define TARGET_MANTISSA 12  // Bits of value precision.
 inline constexpr unsigned kTargetMantissaMask = (1U << TARGET_MANTISSA) - 1;
 
