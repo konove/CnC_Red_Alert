@@ -253,9 +253,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   }
   bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
-  // TODO: always returns true, so a sink that fails partway reads as a
-  // successful save until the caller next checks writer.ok(); Load reports
-  // the same failure on the reader.
+  // Returns writer.ok(): false once the sink has failed.
   bool Save(ArchiveWriter& writer) const
     requires Serializable<T>;
   // Reads what Save wrote back into the same slots of an empty heap sized
@@ -309,7 +307,7 @@ bool TFixedIHeapClass<T>::Save(ArchiveWriter& writer) const
     writer(idx);
     Ptr(i)->Serialize(writer);
   }
-  return true;
+  return writer.ok();
 }
 
 template <class T>

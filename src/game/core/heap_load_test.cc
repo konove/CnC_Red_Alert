@@ -122,6 +122,17 @@ TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
   EXPECT_EQ(heap.Count(), 0);
 }
 
+TEST(HeapLoadTest, SaveReportsASinkThatFills) {
+  TFixedIHeapClass<FieldObject> heap;
+  heap.Set_Heap(2);
+  std::construct_at(heap.Alloc());
+  // Room for the count and the slot index, not for the object's fields.
+  std::array<uint8_t, 8> bytes{};
+  SpanSink sink(std::as_writable_bytes(std::span(bytes)));
+  ArchiveWriter writer(sink);
+  EXPECT_FALSE(heap.Save(writer));
+}
+
 TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
   TFixedIHeapClass<FieldObject> source;
   source.Set_Heap(2);
