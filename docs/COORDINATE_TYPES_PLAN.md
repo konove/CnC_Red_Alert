@@ -595,12 +595,24 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit |
-| ---------- | ------ | ------ |
-| A1         |        |        |
-| A2         |        |        |
-| A3         |        |        |
-| B1         |        |        |
-| B2 RA / TD |        |        |
-| B3 RA / TD |        |        |
-| B4 RA / TD |        |        |
+| Step       | Status | Commit                                                                    |
+| ---------- | ------ | ------------------------------------------------------------------------- |
+| A1         | Done   | f0498c21                                                                  |
+| A2         | Done   | 6be50192                                                                  |
+| A3         | Done   | this commit, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         |        |                                                                           |
+| B2 RA / TD |        |                                                                           |
+| B3 RA / TD |        |                                                                           |
+| B4 RA / TD |        |                                                                           |
+
+Part A notes:
+
+- `inline.h`, `coord.h` and `target.h` include `packed.h` with `// IWYU pragma: export`, so their
+  callers did not change; Part B touches every caller anyway.
+- The golden tests pin existing behaviour and passed against the unions; a mutated cell mask
+  (`0xFF`) fails 4 of the 10, which is the proof they can fail.
+- `XYP_Coord()` in `inline.h` also read through `COORD_COMPOSITE` and was rewritten in A2.
+- `kCellBits` and `kTargetMantissaBits` are `unsigned` for `bugprone-signed-bitwise`;
+  `kTargetExponentBits` is gone.
+- `TargetClass()` leaves value bits `0xFFFFFF` (not `kTargetNone`), while a null pointer gives
+  `kTargetNone`; `target_test.cc` pins both.

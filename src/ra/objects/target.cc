@@ -92,38 +92,23 @@
 
 namespace ra {
 
-TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = target; }
+TargetClass::TargetClass(TARGET target) : xTargetClass() { Target = target; }
 
 TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
-  if (ptr != nullptr) {
-    Target.Sub.Exponent = static_cast<unsigned>(ptr->RTTI);
-    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
-  } else {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
-  }
+  Target = ptr != nullptr ? Build_Target(ptr->RTTI, ptr->ID) : kTargetNone;
 }
 
 TargetClass::TargetClass(const AbstractTypeClass* ptr) : xTargetClass() {
-  if (ptr != nullptr) {
-    Target.Sub.Exponent = static_cast<unsigned>(ptr->RTTI);
-    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
-  } else {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
-  }
+  Target = ptr != nullptr ? Build_Target(ptr->RTTI, ptr->ID) : kTargetNone;
 }
 
 TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
-  if (ptr != nullptr) {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_CELL);
-    Target.Sub.Mantissa = static_cast<unsigned>(ptr->ID);
-  } else {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
-  }
+  Target = ptr != nullptr ? Build_Target(RTTI_CELL, ptr->ID) : kTargetNone;
 }
 
 CellClass* xTargetClass::As_Cell() const {
-  if (Target.Sub.Exponent == static_cast<unsigned>(RTTI_CELL)) {
-    return &TheMap().at(static_cast<CELL>(Target.Sub.Mantissa));
+  if (Target_Kind(Target) == RTTI_CELL) {
+    return &TheMap().at(static_cast<CELL>(Target_Value(Target)));
   }
   return nullptr;
 }

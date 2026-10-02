@@ -17,6 +17,7 @@ inline constexpr unsigned kCellBits = 7;
 inline constexpr unsigned kCellMask = (1U << kCellBits) - 1;
 
 // A target's value fills the low 24 bits, its RTTI kind the 8 above.
+inline constexpr unsigned kTargetMantissaBits = 24;
 inline constexpr uint32_t kTargetMantissaMask =
     (uint32_t{1} << kTargetMantissaBits) - 1;
 

@@ -40,9 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_TARGET_H_
 #define CNC_RED_ALERT_RA_OBJECTS_TARGET_H_
 
-#include <cstdint>
+#include <type_traits>
 
-#include "base/numeric.h"
 #include "ra/core/defines.h"
 #include "ra/core/packed.h"  // IWYU pragma: export
 #include "ra/data/ccini.h"
@@ -104,8 +103,6 @@ inline bool Is_Target_Object(TARGET a) {
 
 TARGET As_Target(CELL cell);
 TARGET As_Target(COORDINATE coord);
-// inline TARGET As_Target(CELL cell) {return (TARGET)(((unsigned)RTTI_CELL <<
-// kTargetMantissaBits) | cell);}
 
 /*
 ** Must not have a constructor since Watcom cannot handle a class that has a
@@ -116,35 +113,34 @@ TARGET As_Target(COORDINATE coord);
 */
 class xTargetClass {
  protected:
-  TARGET_COMPOSITE Target;
+  TARGET Target;
 
  public:
   // conversion operator to RTTIType
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator RTTIType() const {
-    return static_cast<RTTIType>(Target.Sub.Exponent);
-  }
+  operator RTTIType() const { return Target_Kind(Target); }
 
   // comparison operator
-  int operator==(const xTargetClass& tgt) const {
-    return tgt.Target.Target == Target.Target ? 1 : 0;
+  bool operator==(const xTargetClass& tgt) const {
+    return tgt.Target == Target;
   }
 
   // conversion operator to regular TARGET type
-  [[nodiscard]] TARGET As_TARGET() const { return Target.Target; }
+  [[nodiscard]] TARGET As_TARGET() const { return Target; }
 
-  [[nodiscard]] unsigned Value() const { return Target.Sub.Mantissa; }
-
-  void Invalidate() {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_NONE);
-    Target.Sub.Mantissa = base::Bit<uint32_t>(kTargetMantissaBits) - 1;
+  [[nodiscard]] unsigned Value() const {
+    return static_cast<unsigned>(Target_Value(Target));
   }
+
+  // Leaves the target invalid with every value bit set, which is distinct
+  // from kTargetNone.
+  void Invalidate() { Target = Build_Target(RTTI_NONE, -1); }
   [[nodiscard]] bool Is_Valid() const {
-    return Target.Sub.Exponent != static_cast<unsigned>(RTTI_NONE);
+    return Target_Kind(Target) != RTTI_NONE;
   }
 
-  [[nodiscard]] TARGET As_Target() const { return Target.Target; }
+  [[nodiscard]] TARGET As_Target() const { return Target; }
   [[nodiscard]] AbstractTypeClass* As_TypeClass() const;
   [[nodiscard]] AbstractClass* As_Abstract() const;
   [[nodiscard]] TechnoClass* As_Techno() const;
@@ -167,6 +163,11 @@ class xTargetClass {
   [[nodiscard]] VesselClass* As_Vessel() const;
 };
 
+// EventClass holds xTargetClass in a union and sends it as raw bytes.
+static_assert(sizeof(xTargetClass) == sizeof(TARGET));
+static_assert(std::is_trivially_default_constructible_v<xTargetClass>);
+static_assert(std::is_trivially_copyable_v<xTargetClass>);
+
 /*
 **	This class only serves as a wrapper to the xTargetClass. This class must
 *not define any members except *	for the constructors. This is because
@@ -181,14 +182,12 @@ class TargetClass : public xTargetClass {
  public:
   TargetClass() : xTargetClass() { Invalidate(); }
   TargetClass(RTTIType rtti, int id) : xTargetClass() {
-    Target.Sub.Exponent = static_cast<unsigned>(rtti);
-    Target.Sub.Mantissa = static_cast<unsigned>(id);
+    Target = Build_Target(rtti, id);
   }
   // targets convert from every addressable thing by design.
   // NOLINTNEXTLINE(*-explicit-constructor)
   TargetClass(CELL cell) : xTargetClass() {
-    Target.Sub.Exponent = static_cast<unsigned>(RTTI_CELL);
-    Target.Sub.Mantissa = static_cast<unsigned>(cell);
+    Target = Build_Target(RTTI_CELL, cell);
   }
   // targets convert from every addressable thing by design.
   // NOLINTNEXTLINE(*-explicit-constructor)

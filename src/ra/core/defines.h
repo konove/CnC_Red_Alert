@@ -265,66 +265,22 @@ inline constexpr int16_t kRefreshEol = 32767;
 // This number flags that sidebar needs refreshing.
 inline constexpr int16_t kRefreshSidebar = 32766;
 
-/****************************************************************************
-**	These are custom C&C specific types. The CELL (declared above, with the
-**	map dimensions) is used for map coordinates with cell resolution. The
-**	COORDINATE type is used for map coordinates that have a lepton
-**	resolution. CELL is more efficient when indexing into the map and when
-**	size is critical. COORDINATE is more efficient when dealing with
-**	accuracy and object movement.
-*/
+// A distance or position along one axis, in leptons (256 to a cell). The
+// high byte is the cell and the low byte the position within it; the
+// helpers in ra/core/packed.h take the two apart.
 using LEPTON = uint16_t;
-union LEPTON_COMPOSITE {
-  LEPTON Raw;
-  struct {
-    unsigned char Lepton;
-    unsigned char Cell;
-  } Sub;
-};
 
+// A map position with lepton resolution: the X lepton word in the low 16
+// bits, the Y word in the high 16. CELL (declared above with the map
+// dimensions) is the cheaper cell-resolution index into the map.
 using COORDINATE = uint32_t;
-union COORD_COMPOSITE {
-  COORDINATE Coord;
-  struct {
-    LEPTON_COMPOSITE X;
-    LEPTON_COMPOSITE Y;
-  } Sub;
-};
-
-union CELL_COMPOSITE {
-  CELL Cell;
-  // uint16_t bit-fields keep the union the size of a CELL, which is what
-  // lets std::bit_cast convert between the two.
-  struct {
-    uint16_t X : 7;
-    uint16_t Y : 7;
-  } Sub;
-};
-
-// The composites are std::bit_cast views of their packed words.
-static_assert(sizeof(LEPTON_COMPOSITE) == sizeof(LEPTON));
-static_assert(sizeof(COORD_COMPOSITE) == sizeof(COORDINATE));
-static_assert(sizeof(CELL_COMPOSITE) == sizeof(CELL));
 
 using WAYPOINT = int;
 
-/**********************************************************************
-**	This is the target composit information. Notice that with an RTTI_NONE
-**	and an index value of 0, the target value returned is identical with
-**	kTargetNone. This is by design and is necessary.
-*/
+// A reference to any game object, cell or coordinate: the RTTI kind in the
+// high 8 bits over a 24-bit value (ra/core/packed.h). RTTI_NONE with value 0
+// is kTargetNone, by design.
 using TARGET = int32_t;
-
-inline constexpr unsigned kTargetMantissaBits = 24;  // Bits of value precision.
-inline constexpr int kTargetExponentBits = 8;
-union TARGET_COMPOSITE {
-  TARGET Target;
-  struct {
-    unsigned Mantissa : kTargetMantissaBits;
-    unsigned Exponent : kTargetExponentBits;
-  } Sub;
-};
-static_assert(sizeof(TARGET_COMPOSITE) == sizeof(TARGET));
 
 inline constexpr TARGET kTargetNone{};
 
