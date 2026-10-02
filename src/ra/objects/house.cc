@@ -2426,7 +2426,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
 
   if (bestptr) {
     const Cell cell = Cell::Containing(bestptr->Center_Coord());
-    Place_Special_Blast(id, cell, CellCenterFraction());
+    Place_Special_Blast(id, cell, Coordinate::CellCenterOffset());
   }
 }
 

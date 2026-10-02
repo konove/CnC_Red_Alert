@@ -63,11 +63,7 @@ class AbstractClass {
   bool IsActive : 1 = true;
 
   AbstractClass(const RTTIType rtti, const int id)
-      : RTTI(rtti),
-        ID(id),
-        Coord(Coordinate::FromPacked(
-            0xFFFFFFFFU)),  // Sentinel: no position assigned.
-        Height(0) {}
+      : RTTI(rtti), ID(id), Coord(Coordinate::NoPosition()), Height(0) {}
 
   // Saved-game support for the base part; derived classes call it first.
   template <class Archive>
@@ -82,10 +78,7 @@ class AbstractClass {
   // IsActive starts true because each heap type's operator new sets it
   // before a normal constructor runs, and the shell must not disagree.
   AbstractClass()
-      : RTTI(RTTI_NONE),
-        ID(-1),
-        Coord(Coordinate::FromPacked(0xFFFFFFFFU)),
-        Height(0) {}
+      : RTTI(RTTI_NONE), ID(-1), Coord(Coordinate::NoPosition()), Height(0) {}
 
  public:
   virtual ~AbstractClass();

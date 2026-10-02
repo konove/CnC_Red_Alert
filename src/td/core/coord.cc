@@ -261,7 +261,7 @@ Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock) {
       Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
                  static_cast<uint16_t>(distance));
 
-  if ((newcoord.packed() & 0xC000C000U) != 0) {
+  if ((newcoord.packed() & kHighCoordMask) != 0) {
     newcoord = coord;
   }
 

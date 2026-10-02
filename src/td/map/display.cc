@@ -3574,14 +3574,14 @@ bool DisplayClass::In_View(Cell cell) const {
 }
 
 Coordinate DisplayClass::Closest_Free_Spot(Coordinate coord, bool any) const {
-  if ((coord.packed() & 0xC000C000U) != 0) {
-    return Coordinate::FromLeptons(0x80, 0x80);
+  if ((coord.packed() & kHighCoordMask) != 0) {
+    return Coordinate::CellCenterOffset();
   }
   return (*this).at(Cell::Containing(coord)).Closest_Free_Spot(coord, any);
 }
 
 bool DisplayClass::Is_Spot_Free(Coordinate coord) const {
-  if ((coord.packed() & 0xC000C000U) != 0) {
+  if ((coord.packed() & kHighCoordMask) != 0) {
     return true;
   }
   return (*this)

@@ -1838,7 +1838,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     } else {
       const Coordinate coord = Center_Coord().Fraction();
 
-      if (coord != CellCenterFraction()) {
+      if (coord != Coordinate::CellCenterOffset()) {
         toface = game::Dir_Facing(
             game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
       } else {

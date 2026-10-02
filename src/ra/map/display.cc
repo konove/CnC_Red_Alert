@@ -3417,7 +3417,7 @@ void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,
         // unit nearest it. A click on the radar has no such spot, so it aims
         // at the cell's center.
         const Coordinate where =
-            wsmall ? CellCenterFraction()
+            wsmall ? Coordinate::CellCenterOffset()
                    : Pixel_To_Coord(x + TacPixelX, y + TacPixelY).Fraction();
         if (action == ACTION_NUKE_BOMB) {
           TheNetwork().out_list().Add(
@@ -3827,7 +3827,7 @@ bool DisplayClass::In_View(Cell cell) const {
  *=============================================================================================*/
 Coordinate DisplayClass::Closest_Free_Spot(Coordinate coord, bool any) {
   if (coord.packed() & kHighCoordMask) {
-    return CellCenterFraction();
+    return Coordinate::CellCenterOffset();
   }
   return TheMap().at(coord).Closest_Free_Spot(coord, any);
 }

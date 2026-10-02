@@ -1,7 +1,6 @@
 #ifndef CNC_RED_ALERT_TD_CORE_INLINE_H_
 #define CNC_RED_ALERT_TD_CORE_INLINE_H_
 
-#include <concepts>
 #include <cstdint>
 
 #include "base/array.h"
@@ -11,35 +10,6 @@
 #include "td/core/defines.h"
 
 namespace td {
-
-// Extracts the lower 16 bits (low word) from an integer.
-template <std::integral T>
-[[nodiscard]] constexpr uint16_t LowWord(T value) {
-  return static_cast<uint16_t>(value);
-}
-
-// Extracts the upper 16 bits (high word) from a 32-bit integer view.
-//
-// Note: This casts the input to uint32_t before shifting, mirroring the
-// original macro's behavior of discarding bits > 32.
-template <std::integral T>
-[[nodiscard]] constexpr uint16_t HighWord(T value) {
-  return static_cast<uint16_t>(static_cast<uint32_t>(value) >> 16);
-}
-
-// Combines two 16-bit words into a 32-bit integer.
-//
-// Replacement for: MAKE_LONG(a, b)
-// WARNING: The original macro defined the order as (High, Low), which is
-// opposite to the standard Windows MAKELONG(Low, High).
-//
-// We explicitly name parameters 'high' and 'low' to prevent confusion.
-[[nodiscard]] constexpr int32_t MakeLong(uint16_t high, uint16_t low) {
-  // Use unsigned math for the shift to prevent Undefined Behavior,
-  // then cast back to the legacy int32_t type.
-  return static_cast<int32_t>(static_cast<uint32_t>(high) << 16 |
-                              static_cast<uint32_t>(low));
-}
 
 /*
 **	Inline miscellaneous functions.

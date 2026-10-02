@@ -210,6 +210,10 @@ using enum RTTIType;
 **	All larger elements are build upon these.
 */
 
+// Set in either word of a Coordinate's packed() when it points off the map:
+// the top two bits of each 16-bit lepton word, X or Y cell 64 or more.
+inline constexpr uint32_t kHighCoordMask = 0xC000C000U;
+
 /*
 Size of the map in cells. The width of the map must be a power of two.
 This

@@ -26,29 +26,29 @@ class TdAdjacentCellTest : public testing::Test {
   }
   static void TearDownTestSuite() { TheMap().Free_Cells(); }
 
-  static const CellClass& Cell(int x, int y) {
+  static const CellClass& CellAt(int x, int y) {
     return TheMap().at(Cell::FromXY(x, y));
   }
 };
 
 TEST_F(TdAdjacentCellTest, InteriorCellReturnsEachNeighbour) {
-  const CellClass& center = Cell(10, 10);
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_N), &Cell(10, 9));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_NE), &Cell(11, 9));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_E), &Cell(11, 10));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_SE), &Cell(11, 11));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_S), &Cell(10, 11));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_SW), &Cell(9, 11));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_W), &Cell(9, 10));
-  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_NW), &Cell(9, 9));
+  const CellClass& center = CellAt(10, 10);
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_N), &CellAt(10, 9));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_NE), &CellAt(11, 9));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_E), &CellAt(11, 10));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_SE), &CellAt(11, 11));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_S), &CellAt(10, 11));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_SW), &CellAt(9, 11));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_W), &CellAt(9, 10));
+  EXPECT_EQ(&center.Adjacent_Cell(game::FACING_NW), &CellAt(9, 9));
 }
 
 TEST_F(TdAdjacentCellTest, StepOffTopOfArrayReturnsSelf) {
-  const CellClass& top = Cell(5, 0);
+  const CellClass& top = CellAt(5, 0);
   EXPECT_EQ(&top.Adjacent_Cell(game::FACING_N), &top);
   EXPECT_EQ(&top.Adjacent_Cell(game::FACING_NE), &top);
   EXPECT_EQ(&top.Adjacent_Cell(game::FACING_NW), &top);
-  EXPECT_EQ(&top.Adjacent_Cell(game::FACING_S), &Cell(5, 1));
+  EXPECT_EQ(&top.Adjacent_Cell(game::FACING_S), &CellAt(5, 1));
 }
 
 TEST_F(TdAdjacentCellTest, StepOffBottomOfArrayReturnsSelf) {
@@ -62,13 +62,13 @@ TEST_F(TdAdjacentCellTest, StepOffBottomOfArrayReturnsSelf) {
 }
 
 TEST_F(TdAdjacentCellTest, FirstCellStepWestReturnsSelf) {
-  const CellClass& first = Cell(0, 0);
+  const CellClass& first = CellAt(0, 0);
   EXPECT_EQ(&first.Adjacent_Cell(game::FACING_W), &first);
-  EXPECT_EQ(&first.Adjacent_Cell(game::FACING_E), &Cell(1, 0));
+  EXPECT_EQ(&first.Adjacent_Cell(game::FACING_E), &CellAt(1, 0));
 }
 
 TEST_F(TdAdjacentCellTest, InvalidFacingReturnsSelf) {
-  const CellClass& center = Cell(10, 10);
+  const CellClass& center = CellAt(10, 10);
   EXPECT_EQ(&center.Adjacent_Cell(game::FACING_NONE), &center);
   // One past FACING_NW, the value the old FACING_COUNT sentinel held.
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)

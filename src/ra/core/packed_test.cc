@@ -30,10 +30,6 @@ static_assert(std::is_same_v<decltype(Lepton_To_Cell), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Lepton_To_Pixel), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Pixel_To_Lepton), NoexceptFn<int, int>>);
 
-TEST(PackedTest, CellCenterFraction) {
-  EXPECT_EQ(CellCenterFraction().packed(), 0x00800080U);
-}
-
 TEST(PackedTest, LeptonCellConversions) {
   EXPECT_EQ(Cell_To_Lepton(3), 0x0300);
   EXPECT_EQ(Cell_To_Lepton(300), 0x2C00);

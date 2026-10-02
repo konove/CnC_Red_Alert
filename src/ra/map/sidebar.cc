@@ -119,9 +119,7 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/text_ids.h"
@@ -2022,7 +2020,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         } else {
           TheNetwork().out_list().Add(EventClass(
               EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE),
-              Cell{}, CellCenterFraction()));
+              Cell{}, Coordinate::CellCenterOffset()));
         }
       } else {
         ThePlayer()->SuperWeapon.at(spc).Impatient_Click();

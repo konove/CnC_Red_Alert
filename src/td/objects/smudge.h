@@ -75,7 +75,7 @@ class SmudgeClass : public ObjectClass {
   }
   void operator delete(void* ptr);
   explicit SmudgeClass(SmudgeType type,
-                       Coordinate pos = Coordinate::FromPacked(0xFFFFFFFFU),
+                       Coordinate pos = Coordinate::NoPosition(),
                        HousesType house = HOUSE_NONE);
   SmudgeClass() { IsActive = true; }
   // objects compare directly against their type ID.

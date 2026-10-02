@@ -340,7 +340,7 @@ std::span<const std::byte> ObjectTypeClass::Get_Cameo_Data() const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass::ObjectClass() {
-  Coord = Coordinate::FromPacked(0xFFFFFFFFU);  // Some bogus illegal value.
+  Coord = Coordinate::NoPosition();  // Some bogus illegal value.
 }
 
 /***********************************************************************************************

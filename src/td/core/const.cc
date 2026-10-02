@@ -59,7 +59,7 @@ const base::EnumArray<SourceType, const char*, kSourceCount> SourceName = {
 *infantry *	are allowed to stop at other than the center of the cell.
 */
 const Coordinate StoppingCoordAbs[5] = {
-    Coordinate::FromLeptons(0x80, 0x80),  // center
+    Coordinate::CellCenterOffset(),       // center
     Coordinate::FromLeptons(0x40, 0x40),  // upper left
     Coordinate::FromLeptons(0xC0, 0x40),  // upper right
     Coordinate::FromLeptons(0x40, 0xC0),  // lower left

@@ -663,7 +663,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
             coord = Cell::FromIndex(base::ParseIntegerOr<int16_t>(token, 0))
                         .Center();
           } else {
-            coord = Coordinate::FromPacked(0xFFFFFFFFU);
+            coord = Coordinate::NoPosition();
           }
 
           token = tokens.Next();

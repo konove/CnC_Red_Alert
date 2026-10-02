@@ -11,14 +11,8 @@
 #include <cstdint>
 
 #include "game/core/display_constants.h"
-#include "ra/core/coordinate.h"
 
 namespace ra {
-
-// Returns the sub-cell coordinate of a cell's center.
-constexpr Coordinate CellCenterFraction() noexcept {
-  return Coordinate::FromLeptons(CELL_LEPTON_W / 2, CELL_LEPTON_H / 2);
-}
 
 // Returns the cell byte of a lepton word: whole cells. The lepton keeps its
 // low 16 bits, so -1 is the word 0xFFFF.

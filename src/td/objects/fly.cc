@@ -108,7 +108,7 @@ ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
       **	If the new coordinate is off the edge of the world, then report
       **	this.
       */
-      if ((newcoord.packed() & 0xC000C000U) !=
+      if ((newcoord.packed() & kHighCoordMask) !=
           0 /*|| !Map.In_Radar(Cell::Containing(newcoord))*/) {
         coord = old;
         return IMPACT_EDGE;

@@ -22,7 +22,8 @@ namespace td {
 // offset. Midpoint() still averages the unsigned words, as TD always did.
 //
 // Coordinate{} is the zero coordinate, which the game uses as "no
-// coordinate"; test for it with `!coord`.
+// coordinate"; test for it with `!coord`. NoPosition() is a second, older
+// sentinel with every bit set.
 //
 // Example:
 //   const Coordinate center = Coordinate::FromLeptons(0x0580, 0x0380);
@@ -41,6 +42,22 @@ class Coordinate {
     Coordinate coord{};
     coord.packed_ = packed;
     return coord;
+  }
+
+  // Returns the offset of a cell's center from its upper left corner: half a
+  // cell, 0x80 leptons, on each axis (packed 0x00800080). As a position it
+  // is the center of cell (0, 0).
+  static constexpr Coordinate CellCenterOffset() noexcept {
+    return FromLeptons(0x80, 0x80);
+  }
+
+  // Returns the "no position" sentinel, every bit set (0xFFFFFFFF, off the
+  // map): for example where an object starts before it is placed, and the
+  // default position that tells SmudgeClass's constructor not to place
+  // itself. It is distinct from Coordinate{}, the zero coordinate, and unlike
+  // it is true as a bool.
+  static constexpr Coordinate NoPosition() noexcept {
+    return FromPacked(0xFFFFFFFFU);
   }
 
   // Returns the packed word, as saved, sent and logged.
@@ -78,7 +95,7 @@ class Coordinate {
 
   // Returns the center of the cell this coordinate lies in.
   [[nodiscard]] constexpr Coordinate Snapped() const noexcept {
-    return FromPacked((packed_ & kWholeMask) | kCenterFraction);
+    return FromPacked((packed_ & kWholeMask) | CellCenterOffset().packed());
   }
 
   // Returns the upper left corner of the cell this coordinate lies in.
@@ -131,8 +148,6 @@ class Coordinate {
  private:
   // The cell bytes of both words.
   static constexpr uint32_t kWholeMask = 0xFF00FF00U;
-  // The sub-cell position of a cell's center, half a cell on each axis.
-  static constexpr uint32_t kCenterFraction = 0x00800080U;
 
   // The X and Y lepton words, unsigned.
   [[nodiscard]] constexpr int XWord() const noexcept {

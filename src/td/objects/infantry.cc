@@ -2130,7 +2130,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced) {
     } else {
       const Coordinate coord = Coord.Fraction();
 
-      if (coord != Coordinate::FromLeptons(0x80, 0x80)) {
+      if (coord != Coordinate::CellCenterOffset()) {
         toface = game::Dir_Facing(
             game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
       } else {

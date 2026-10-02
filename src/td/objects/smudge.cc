@@ -171,7 +171,7 @@ void SmudgeClass::operator delete(void* ptr) {
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, Coordinate pos, HousesType house)
     : Class(&SmudgeTypeClass::As_Reference(type)) {
-  if (pos != Coordinate::FromPacked(0xFFFFFFFFU)) {
+  if (pos != Coordinate::NoPosition()) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
       delete this;

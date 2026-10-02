@@ -1660,7 +1660,7 @@ int CellClass::Spot_Index(Coordinate coord) {
   **	If the coordinate is close enough to the center of the cell, then return
   **	the center position index.
   */
-  if (Distance(rel, Coordinate::FromLeptons(0x80, 0x80)) < 60) {
+  if (Distance(rel, Coordinate::CellCenterOffset()) < 60) {
     return 0;
   }
 

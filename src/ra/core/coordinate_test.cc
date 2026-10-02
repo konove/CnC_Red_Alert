@@ -40,6 +40,17 @@ TEST(CoordinateTest, DefaultIsZero) {
   EXPECT_EQ(Coordinate{}, Coordinate::FromLeptons(0, 0));
 }
 
+TEST(CoordinateTest, CellCenterOffsetIsHalfACellOnEachAxis) {
+  EXPECT_EQ(Coordinate::CellCenterOffset().packed(), 0x00800080U);
+  EXPECT_EQ(Coordinate::CellCenterOffset(), Coordinate{}.Snapped());
+}
+
+TEST(CoordinateTest, NoPositionHasEveryBitSet) {
+  EXPECT_EQ(Coordinate::NoPosition().packed(), 0xFFFFFFFFU);
+  EXPECT_NE(Coordinate::NoPosition(), Coordinate{});
+  EXPECT_TRUE(static_cast<bool>(Coordinate::NoPosition()));
+}
+
 TEST(CoordinateTest, Components) {
   EXPECT_EQ(kSample.packed(), 0x12345678U);
   EXPECT_EQ(kSample.x(), 0x5678);

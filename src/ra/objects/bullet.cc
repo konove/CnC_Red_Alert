@@ -941,9 +941,8 @@ bool BulletClass::Is_Forced_To_Explode(Coordinate& coord) const {
   **	travel in anything but water.
   */
   if (Class->IsSubSurface) {
-    const int d = ra::Distance(
-        coord.Fraction(),
-        Coordinate::FromLeptons(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
+    const int d =
+        ra::Distance(coord.Fraction(), Coordinate::CellCenterOffset());
     if (cellptr->Land_Type() != LAND_WATER ||
         (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
          cellptr->Cell_Techno() != Payback)) {
