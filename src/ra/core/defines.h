@@ -211,12 +211,12 @@ inline constexpr char kConfigFileName[] = "REDALERT.INI";
 // Set in either word of a Coordinate's packed() when it points off the map.
 inline constexpr uint32_t kHighCoordMask = 0x80008000;
 
-// Size of the map in cells, as CELLs (ra/core/packed.h) so that a loop
-// walking the map has a counter no narrower than its own bound. The brace
-// initialization fails to compile if the map ever outgrows a CELL.
-inline constexpr CELL MAP_CELL_W{128};
-inline constexpr CELL MAP_CELL_H{128};
-inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
+// Size of the map in cells: a width, a height and a count, not cells.
+inline constexpr int MAP_CELL_W = 128;
+inline constexpr int MAP_CELL_H = 128;
+inline constexpr int MAP_CELL_TOTAL = MAP_CELL_W * MAP_CELL_H;
+// Every cell index must fit the 16-bit cell word (ra/core/packed.h).
+static_assert(MAP_CELL_TOTAL <= INT16_MAX);
 
 // This number ends a refresh/occupy offset list.
 inline constexpr int16_t kRefreshEol = 32767;
