@@ -49,10 +49,12 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ai/teamtype.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
+
+class ArchiveReader;
+class ArchiveWriter;
 
 namespace ra {
 
@@ -116,10 +118,10 @@ NeedType Action_Needs(TActionType action);
 struct TActionClass {
   TActionType Action{TACTION_NONE};  // Action to perform.
 
-  CCPtr<TeamTypeClass> Team;  // Team type pointer for this action (if needed).
+  TeamTypeClass* Team = nullptr;  // Team type for this action (if needed).
 
-  CCPtr<TriggerTypeClass>
-      Trigger;  // Trigger type pointer for this action (if needed).
+  // Trigger type for this action (if needed).
+  TriggerTypeClass* Trigger = nullptr;
 
   union {
     ThemeType Theme;            // Musical theme.
@@ -145,11 +147,10 @@ struct TActionClass {
 
   void Detach(TARGET target);
 
-  // Saved-game support. The union travels through its widest member.
+  // Saved-game support; defined in ioobj.cc. The union travels through its
+  // widest member.
   template <class Archive>
-  void Serialize(Archive& ar) {
-    ar(Action, Team, Trigger, Data.Value);
-  }
+  void Serialize(Archive& ar);
   // Reads the action fields from the trigger entry `tokens` is parsing.
   void Read_INI(base::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
@@ -200,6 +201,9 @@ class ActionChoiceClass {
 extern base::EnumArray<TActionType, ActionChoiceClass,
                        static_cast<int>(TACTION_COUNT)>
     ActionChoices;
+
+extern template void TActionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TActionClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

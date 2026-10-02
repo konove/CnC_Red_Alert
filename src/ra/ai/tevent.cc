@@ -672,7 +672,8 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
     default:
       Event =
           static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team = TheObjectHeaps().team_type().SlotAt(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
 

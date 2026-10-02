@@ -585,22 +585,22 @@ bool TriggerTypeClass::Edit() {
     ttype4list.Add_Item(TheObjectHeaps().team_type().Ptr(index)->IniName);
   }
 
-  if (Event1.Team.Is_Valid()) {
+  if (Event1.Team != nullptr) {
     ttype1list.Set_Selected_Index(Event1.Team->IniName);
   } else {
     ttype1list.Set_Selected_Index(0);
   }
-  if (Event2.Team.Is_Valid()) {
+  if (Event2.Team != nullptr) {
     ttype2list.Set_Selected_Index(Event2.Team->IniName);
   } else {
     ttype2list.Set_Selected_Index(0);
   }
-  if (Action1.Team.Is_Valid()) {
+  if (Action1.Team != nullptr) {
     ttype3list.Set_Selected_Index(Action1.Team->IniName);
   } else {
     ttype3list.Set_Selected_Index(0);
   }
-  if (Action2.Team.Is_Valid()) {
+  if (Action2.Team != nullptr) {
     ttype4list.Set_Selected_Index(Action2.Team->IniName);
   } else {
     ttype4list.Set_Selected_Index(0);
@@ -626,12 +626,12 @@ bool TriggerTypeClass::Edit() {
     trtype2list.Add_Item(TheObjectHeaps().trigger_type().Ptr(index)->IniName);
   }
 
-  if (Action1.Trigger.Is_Valid()) {
+  if (Action1.Trigger != nullptr) {
     trtype1list.Set_Selected_Index(Action1.Trigger->IniName);
   } else {
     trtype1list.Set_Selected_Index(0);
   }
-  if (Action2.Trigger.Is_Valid()) {
+  if (Action2.Trigger != nullptr) {
     trtype2list.Set_Selected_Index(Action2.Trigger->IniName);
   } else {
     trtype2list.Set_Selected_Index(0);

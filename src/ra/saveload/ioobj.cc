@@ -40,8 +40,10 @@
 #include "game/core/heap_slot_ptr.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
+#include "ra/ai/taction.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
+#include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/core/object_heaps.h"
@@ -95,8 +97,8 @@ void TeamTypeClass::Serialize(Archive& ar) {
   bool is_transient = IsTransient;
   ar(is_active, is_round_about, is_suicide, is_autocreate, is_prebuilt,
      is_reinforcable, is_transient, RecruitPriority, InitNum, MaxAllowed, Fear,
-     House, Trigger, Origin, Number, MissionCount, MissionList, ClassCount,
-     Members);
+     House, game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger_type()), Origin,
+     Number, MissionCount, MissionList, ClassCount, Members);
   IsActive = is_active;
   IsRoundAbout = is_round_about;
   IsSuicide = is_suicide;
@@ -156,6 +158,23 @@ void TriggerClass::Serialize(Archive& ar) {
 }
 template void TriggerClass::Serialize(ArchiveWriter&);
 template void TriggerClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TEventClass::Serialize(Archive& ar) {
+  ar(Event, game::HeapSlotPtr(Team, TheObjectHeaps().team_type()), Data.Value);
+}
+
+template void TEventClass::Serialize(ArchiveWriter&);
+template void TEventClass::Serialize(ArchiveReader&);
+
+template <class Archive>
+void TActionClass::Serialize(Archive& ar) {
+  ar(Action, game::HeapSlotPtr(Team, TheObjectHeaps().team_type()),
+     game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger_type()), Data.Value);
+}
+
+template void TActionClass::Serialize(ArchiveWriter&);
+template void TActionClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TriggerTypeClass::Serialize(Archive& ar) {

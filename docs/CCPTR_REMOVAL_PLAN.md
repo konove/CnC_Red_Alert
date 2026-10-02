@@ -2,7 +2,7 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: in progress.** Steps 1–3 done.
+**Status: in progress.** Steps 1–4 done.
 
 ## Context
 
@@ -170,15 +170,26 @@ The 10 members in the second group of the table.
 
 The 4 members in the third group.
 
-- [ ] Change the types as in step 3.
-- [ ] Replace each `X.Set_Raw(n)` with `X = TheObjectHeaps().<kind>().SlotAt(n)`.
-- [ ] After `TriggerTypeClass::Read_INI` in `Read_Scenario_INI`, walk the team types and trigger
-      types. Any reference whose slot holds no live object (`Logical_ID(ptr) < 0`) is reset to
-      `nullptr` with a `DLOG(WARNING)`. This is a deliberate change: before, such a reference read a
-      zeroed slot. It should never fire on the shipped scenarios. Confirm that with the logic logs,
-      and if it does fire, record which scenario here.
-- [ ] Serialize `TEventClass::Team`, `TActionClass::Team`/`Trigger` and `TeamTypeClass::Trigger`
-      with `HeapSlotPtr` (`saveload.cc`'s trigger/team-type paths).
+- [x] Change the types as in step 3.
+- [x] Replace each `X.Set_Raw(n)` with `X = TheObjectHeaps().<kind>().SlotAt(n)`.
+- [x] `DropUnfilledTypeReferences()` in `ai/scenario.cc` runs right after
+      `TriggerTypeClass::Read_INI`. It clears any team- or trigger-type reference whose slot holds
+      no object (`!Is_Allocated(ID(ptr))`), with a `DLOG(WARNING)` naming the type and the field. It
+      never fires on the shipped scenarios:
+  - Built with the warning as `LOG`, 37 of the 42 campaign scenarios loaded through
+    `-NEWGAME<name> -QUITFRAME2` without it. The other five (SCG03EA, SCG03EB, SCG07EA, SCG10EB,
+    SCG13EA) and the 24 multiplayer maps never reach frame 1 under `-NEWGAME`, and the pre-plan
+    binary behaves the same way, so that limit is older than this plan.
+  - A static check covers all 66: every shipped scenario is `NewINIFormat=3`, and none of the 12,250
+    team and trigger indices in its `[TeamTypes]` and `[Trigs]` sections lies outside `[-1, count)`.
+    Unused references are written as -1.
+- [x] Serialize `TEventClass::Team`, `TActionClass::Team`/`Trigger` (in `ioobj.cc`) and
+      `TeamTypeClass::Trigger` with `game::HeapSlotPtr`. The two structs serialized inline in their
+      headers, which cannot reach `TheObjectHeaps()` without an include cycle (`object_heaps.h`
+      includes `trigtype.h`, which includes them). Their `Serialize` now lives in `ioobj.cc` beside
+      `TriggerTypeClass::Serialize`, its only caller, with `extern template` declarations in the
+      headers.
+- [x] 12 more `Is_Valid()` calls became null comparisons.
 
 ### Step 5: editor lists
 
@@ -231,8 +242,9 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 
 ## Progress
 
-| Step | Commit                  | Notes                                                                                                                                                                                                                                     |
-| ---- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | d8309a79                | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`.                                                                                                                                                           |
-| 2    | 21376614                | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass.                                                                    |
-| 3    | 4f6e08e4, (this commit) | Saved object pointers, and the null-check fixes first. Deep analyzer over all 191 RA sources clean. SCU05EA line-identical; SCG10EA aircraft only (204 lines; old-vs-old reaches 472). Smoke, `--load-fixture` and both cross-loads pass. |
+| Step | Commit             | Notes                                                                                                                                                                                                                                     |
+| ---- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | d8309a79           | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`.                                                                                                                                                           |
+| 2    | 21376614           | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass.                                                                    |
+| 3    | 4f6e08e4, 219794e1 | Saved object pointers, and the null-check fixes first. Deep analyzer over all 191 RA sources clean. SCU05EA line-identical; SCG10EA aircraft only (204 lines; old-vs-old reaches 472). Smoke, `--load-fixture` and both cross-loads pass. |
+| 4    | (this commit)      | INI-parsed pointers and the unfilled-slot check. SCU05EA line-identical, SCG10EA aircraft only (154 lines). Smoke, `--load-fixture` and both cross-loads pass.                                                                            |

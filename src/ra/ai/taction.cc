@@ -317,8 +317,10 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
     default: {
       Action =
           static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team = TheObjectHeaps().team_type().SlotAt(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger = TheObjectHeaps().trigger_type().SlotAt(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
     }
@@ -330,7 +332,7 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
 
       const char* ptr = tokens.Next();
       Team = TeamTypeClass::From_Name(ptr);
-      DCHECK(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
+      DCHECK(Action_Needs(Action) != NEED_TEAM || Team != nullptr);
 
       /*
       **	Since triggers refer to other triggers, only record a copy of
@@ -626,7 +628,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     *destroyed.
     */
     case TACTION_DESTROY_TRIGGER:
-      if (Trigger.Is_Valid()) {
+      if (Trigger != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
           if (TheObjectHeaps().trigger().Ptr(index)->Class == Trigger) {
@@ -644,7 +646,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	will create a trigger of that type and then force it to be sprung.
     */
     case TACTION_FORCE_TRIGGER:
-      if (Trigger.Is_Valid()) {
+      if (Trigger != nullptr) {
         Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, 0, true);
       }
       break;

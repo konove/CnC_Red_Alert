@@ -53,10 +53,12 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/ai/teamtype.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/object.h"
+
+class ArchiveReader;
+class ArchiveWriter;
 
 namespace ra {
 
@@ -151,7 +153,7 @@ struct TEventClass {
   **	union because Watcom compiler won't allow a class that has a
   **	constructor to be declared in a union.
   */
-  CCPtr<TeamTypeClass> Team;
+  TeamTypeClass* Team = nullptr;
 
   union {
     StructType Structure;   // Used for structure type checking.
@@ -165,11 +167,10 @@ struct TEventClass {
   TEventClass() : Event(TEVENT_NONE) { Data.Value = 0; }
   explicit TEventClass(TEventType event) : Event(event) { Data.Value = 0; }
 
-  // Saved-game support. The union travels through its widest member.
+  // Saved-game support; defined in ioobj.cc. The union travels through its
+  // widest member.
   template <class Archive>
-  void Serialize(Archive& ar) {
-    ar(Event, Team, Data.Value);
-  }
+  void Serialize(Archive& ar);
 
   void Reset(TDEventClass& td) const;
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
@@ -237,6 +238,9 @@ class EventChoiceClass {
 extern base::EnumArray<TEventType, EventChoiceClass,
                        static_cast<int>(TEVENT_COUNT)>
     EventChoices;
+
+extern template void TEventClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TEventClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

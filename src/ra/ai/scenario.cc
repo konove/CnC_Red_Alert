@@ -1852,6 +1852,54 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
   }
 }
 
+namespace {
+
+// Clears `ref` when it names a slot of `heap` that holds no object. `owner`
+// and `field` say where it was read from, for the log.
+template <class T>
+void DropIfUnfilled(T*& ref, game::TFixedIHeapClass<T>& heap,
+                    std::string_view owner, std::string_view field) {
+  if (ref == nullptr) {
+    return;
+  }
+  const int slot = heap.ID(ref);
+  if (!heap.Is_Allocated(slot)) {
+    DLOG(WARNING) << owner << ": " << field << " names slot " << slot
+                  << ", which the scenario never filled";
+    ref = nullptr;
+  }
+}
+
+// Scenario INI files name team and trigger types by slot index, and each
+// reference is set to its slot while parsing, before the type in it may have
+// been read. Once every type is read, a reference to a slot that is still
+// empty would read a zeroed object, so it is dropped instead.
+void DropUnfilledTypeReferences() {
+  auto& team_types = TheObjectHeaps().team_type();
+  auto& trigger_types = TheObjectHeaps().trigger_type();
+  for (int i = 0; i < team_types.Count(); i++) {
+    TeamTypeClass& team_type = *team_types.Ptr(i);
+    DropIfUnfilled(team_type.Trigger, trigger_types, team_type.Name(),
+                   "trigger");
+  }
+  for (int i = 0; i < trigger_types.Count(); i++) {
+    TriggerTypeClass& trigger_type = *trigger_types.Ptr(i);
+    for (TEventClass* event : {&trigger_type.Event1, &trigger_type.Event2}) {
+      DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
+                     "event team");
+    }
+    for (TActionClass* action :
+         {&trigger_type.Action1, &trigger_type.Action2}) {
+      DropIfUnfilled(action->Team, team_types, trigger_type.Name(),
+                     "action team");
+      DropIfUnfilled(action->Trigger, trigger_types, trigger_type.Name(),
+                     "action trigger");
+    }
+  }
+}
+
+}  // namespace
+
 /***********************************************************************************************
  * Read_Scenario_INI -- Read specified scenario INI file. *
  *                                                                                             *
@@ -2152,6 +2200,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	objects can be initialized.
   */
   TriggerTypeClass::Read_INI(ini);
+  DropUnfilledTypeReferences();
   ServiceRealTime();
 
   /*

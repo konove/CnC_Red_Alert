@@ -802,7 +802,7 @@ bool TeamTypeClass::Edit() {
        index++) {
     triggerbtn.Add_Item(TheObjectHeaps().trigger_type().Ptr(index)->IniName);
   }
-  if (Trigger.Is_Valid()) {
+  if (Trigger != nullptr) {
     triggerbtn.Set_Selected_Index(Trigger->Name());
   } else {
     triggerbtn.Set_Selected_Index(0);
@@ -1727,7 +1727,7 @@ const char* TeamMissionClass::Description(int index) const {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamTypeClass::Detach(TARGET target, bool /*unused*/) {
-  if (Is_Target_TriggerType(target) && Trigger.Is_Valid() &&
+  if (Is_Target_TriggerType(target) && Trigger != nullptr &&
       Trigger == As_TriggerType(target)) {
     Trigger = nullptr;
   }
@@ -1839,7 +1839,8 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
 
   switch (TheWorld().new_ini_format()) {
     default:
-      Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger = TheObjectHeaps().trigger_type().SlotAt(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
 
     case 0:
@@ -1934,7 +1935,8 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+    Trigger = TheObjectHeaps().trigger_type().SlotAt(
+        base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
 

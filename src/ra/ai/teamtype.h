@@ -46,7 +46,6 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/house.h"
@@ -278,7 +277,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Trigger to assign to each object as it joins this team.
   */
-  CCPtr<TriggerTypeClass> Trigger;
+  TriggerTypeClass* Trigger = nullptr;
 
   /*
   **	This is the waypoint origin to use when creating this team or

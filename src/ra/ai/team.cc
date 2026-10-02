@@ -1,20 +1,20 @@
 /*
-**	Command & Conquer Red Alert(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ **	Command & Conquer Red Alert(tm)
+ **	Copyright 2025 Electronic Arts Inc.
+ **
+ **	This program is free software: you can redistribute it and/or modify
+ **	it under the terms of the GNU General Public License as published by
+ **	the Free Software Foundation, either version 3 of the License, or
+ **	(at your option) any later version.
+ **
+ **	This program is distributed in the hope that it will be useful,
+ **	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ **	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ **	GNU General Public License for more details.
+ **
+ **	You should have received a copy of the GNU General Public License
+ **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /* $Header: /CounterStrike/TEAM.CPP 1     3/03/97 10:25a Joe_bostic $ */
 /***********************************************************************************************
@@ -345,7 +345,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
   **	If there is a trigger tightly associated with this team, then
   **	create an instance of that trigger and attach it to the team.
   */
-  if (Class->Trigger.Is_Valid()) {
+  if (Class->Trigger != nullptr) {
     Trigger = base::NewPooled<TriggerClass>(Class->Trigger);
   }
 }
@@ -1572,7 +1572,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       if (closest->Can_Enter_Cell(As_Cell(center)) != game::MOVE_OK) {
         //				if (Class->Origin != -1) {
         //					center =
-        //ra::As_Target(Scen.Waypoint[Class->Origin]);
+        // ra::As_Target(Scen.Waypoint[Class->Origin]);
         //:} else {
         center = ra::As_Target(Coord_Cell(closest->Center_Coord()));
         //				}
@@ -1801,7 +1801,7 @@ bool TeamClass::Coordinate_Regroup() {
         if (!Target_Legal(unit->NavCom)) {
           // TCTCTC
           //				if (!Target_Legal(unit->NavCom) ||
-          //ra::Distance(unit->NavCom, Zone) > Rule.StrayDistance) {
+          // ra::Distance(unit->NavCom, Zone) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(Zone);
 
@@ -2106,7 +2106,7 @@ bool TeamClass::Lagging_Units() {
         // TCTCTC
         if (!Target_Legal(unit->NavCom)) {
           //				if (!Target_Legal(unit->NavCom) ||
-          //ra::Distance(unit->NavCom, ClosestMember) > Rule.StrayDistance) {
+          // ra::Distance(unit->NavCom, ClosestMember) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(ClosestMember);
         }
