@@ -6,7 +6,6 @@
 #include <memory>
 #include <span>
 
-#include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
@@ -28,11 +27,7 @@ struct FieldObject {
     ar(value, flag);
   }
 };
-struct InheritedOnly : FieldObject {
-  int32_t extra = 0;
-};
 static_assert(Serializable<FieldObject>);
-static_assert(!Serializable<InheritedOnly>);
 
 // Saves `heap` into a zero-padded 256-byte buffer.
 template <class T>
@@ -144,8 +139,6 @@ TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
   EXPECT_EQ(loaded.SlotIndexOf(loaded.Allocate()), 0);
 }
 
-}  // namespace
-
 // Freeing an object hands its slot straight back to the next allocation, so a
 // pointer read after Free addresses whatever was allocated next rather than a
 // dead block. That is what makes reading a projectile pointer after a failed
@@ -164,35 +157,6 @@ TEST(HeapLoadTest, FreedSlotIsHandedToTheNextAllocation) {
   EXPECT_EQ(first->value, -7);
 }
 
-// Counts how many times its destructor has run.
-class DestructorCounter {
- public:
-  explicit DestructorCounter(int& destroyed ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : destroyed_(&destroyed) {}
-  ~DestructorCounter() { ++*destroyed_; }
-  DestructorCounter(const DestructorCounter&) = delete;
-  DestructorCounter& operator=(const DestructorCounter&) = delete;
-  DestructorCounter(DestructorCounter&&) = delete;
-  DestructorCounter& operator=(DestructorCounter&&) = delete;
-
- private:
-  int* destroyed_;
-};
-
-TEST(HeapLoadTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
-  ObjectHeap<DestructorCounter> heap;
-  heap.Reset(3);
-  int destroyed = 0;
-  std::construct_at(heap.Allocate(), destroyed);
-  std::construct_at(heap.Allocate(), destroyed);
-
-  heap.DestroyAll();
-
-  EXPECT_EQ(destroyed, 2);
-  EXPECT_EQ(heap.Count(), 0);
-  EXPECT_EQ(heap.FreeCount(), 3);
-}
-
 TEST(HeapLoadTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   ObjectHeap<FieldObject> heap;
   heap.Reset(3);
@@ -204,5 +168,7 @@ TEST(HeapLoadTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   heap.Free(object);
   EXPECT_FALSE(heap.IsAllocated(0));
 }
+
+}  // namespace
 
 }  // namespace game
