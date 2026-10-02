@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status  | Commit                                                                 |
-| ---------- | ------- | ---------------------------------------------------------------------- |
-| A1         | Done    | f0498c21                                                               |
-| A2         | Done    | 6be50192                                                               |
-| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done    | f7d220ed                                                               |
-| B2 RA / TD | Done    | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
-| B3 RA / TD | Done    | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                         |
-| B4 RA / TD | RA done | RA: c5d9f5b0, ae075469, 76248993, e1bcab3a                             |
+| Step       | Status | Commit                                                                       |
+| ---------- | ------ | ---------------------------------------------------------------------------- |
+| A1         | Done   | f0498c21                                                                     |
+| A2         | Done   | 6be50192                                                                     |
+| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused       |
+| B1         | Done   | f7d220ed                                                                     |
+| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                               |
+| B3 RA / TD | Done   | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                               |
+| B4 RA / TD | Done   | RA: c5d9f5b0, ae075469, 76248993, e1bcab3a; TD: 778ab311, bac355dc, d1c5e58d |
 
 Part A notes:
 
@@ -808,3 +808,33 @@ Stage B4 (RA) notes:
   axis. Check TD for the same traps: members named `Cell`, a `CellClass::Cell_Coord()`, an int PLACE
   argument picking an `int` `EventClass` overload, `Destroy_Bridge_At()`'s `tdata`, and the EA
   header lines.
+
+Stage B4 (TD) notes:
+
+- `td::Cell` replaces the alias in `td/core/cell.h` (only `coordinate.h` and standard headers),
+  exported by `defines.h`, with RA's member names. Each member reproduces TD's own helper, not RA's:
+  `FromXY` (was `XY_Cell`) ORs Y over X unmasked, so `FromXY(64, 0)` is cell (0, 1) and
+  `FromXY(-1, y)` is `None()`; `y()` (was `Cell_Y`) is every bit above X of the sign-extended word,
+  so `None().y()` is 67108863; `Containing` (was `Coord_Cell`) ORs the whole 8-bit X cell byte;
+  `Center` (was `Cell_Coord`) computes in unsigned, so a sentinel's huge row wraps instead of
+  overflowing (`None().Center()` is 0xFF803F80). `cell_test.cc` (in `td_coord_inline_test`) holds
+  every golden value `coord_inline_test.cc` had for the helpers; a throwaway test compared the class
+  with the helpers over every int16 index before they were deleted.
+- `MAP_CELL_W/H/TOTAL` are `inline constexpr int` (778ab311), with the same `static_assert` as RA.
+- Same decisions as RA: `Adjacent_Cell(Cell, dir)` stays free over an `int` `AdjacentCell`;
+  `GScreenClass::at()`/`operator[]` take only `Cell`; whole-map loops count an `int`; deltas stay
+  integers (refresh/occupy lists, `GrabOffset` now `int16_t`, the bullet's spillage list, which was
+  a `CELL` array, now `int16_t`); `-1` is `None()`, `0` is `Cell{}` with `index() != 0` tests; raw
+  numbers (INI, `%d`/`%u`, overlap bitmaps, the cell-trigger table, save bounds) go through
+  `index()`/`FromIndex()`. No cell reaches TD's multiplayer CRC or the per-frame log.
+- TD-only trap: `static_cast<CELL>(Cell_Y(c))` truncated the unmasked row to 16 bits (radar and
+  cursor code); those sites keep `static_cast<int16_t>(c.y())`. `x()` is always 0..63.
+- The PLACE event keeps its `int` argument (`cell.index() + ZoneOffset`) and so its packet bytes;
+  `EventClass`'s union members named `Cell` are declared `td::Cell`. `CellClass::Cell_Coord()` is
+  `Center_Coord()`. TD has no `Destroy_Bridge_At()`. `Set_Cursor_Pos()` and `Calculated_Cell()` were
+  restructured for `-Wnrvo` with the same values.
+- Latent bugs kept (in `TODO.md`): `TechnoClass::Nearby_Location()` adds `FromXY(x, -radius)`, which
+  is just `x` for a negative `x`; `y()`/`Center()` of a sentinel give rows of millions.
+- `grep -rnw CELL src/td` finds only EA's `File Name` lines (`CELL.H`, `CELL.CPP`) and the
+  `Validate_Error("CELL")` label. `grep -rn 'using \(CELL\|LEPTON\|COORDINATE\|TARGET\) =' src` is
+  empty: Part B is done.
