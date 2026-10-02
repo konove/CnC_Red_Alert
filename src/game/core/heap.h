@@ -53,7 +53,8 @@ namespace game {
 class ObjectHeapBase {
  public:
   // `slot_size` is the size of one slot in bytes, and must be positive.
-  explicit ObjectHeapBase(const base::ssize slot_size) : slot_size_(slot_size) {
+  explicit ObjectHeapBase(const base::ssize slot_size) noexcept
+      : slot_size_(slot_size) {
     CHECK_GT(slot_size, 0);
   }
   ~ObjectHeapBase() = default;
@@ -200,7 +201,7 @@ class ObjectHeap : private ObjectHeapBase {
   static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
                 "the slots come from operator new, which aligns no more");
 
-  ObjectHeap() : ObjectHeapBase(base::ssize{sizeof(T)}) {}
+  ObjectHeap() noexcept : ObjectHeapBase(base::ssize{sizeof(T)}) {}
   ~ObjectHeap() = default;
   ObjectHeap(const ObjectHeap&) = delete;
   ObjectHeap& operator=(const ObjectHeap&) = delete;
