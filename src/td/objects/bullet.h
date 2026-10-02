@@ -113,14 +113,14 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   */
   static void Init();
 
-  virtual void Assign_Target(TARGET target) { TarCom = target; }
+  virtual void Assign_Target(Target target) { TarCom = target; }
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
@@ -129,7 +129,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override {
     return Occupy_List();
   }
-  [[nodiscard]] TARGET As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
 
   /*
   **	File I/O.
@@ -174,7 +174,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	This is the target of the projectile. It is especially significant for
   *those projectiles *	that home in on a target.
   */
-  TARGET TarCom = kTargetNone;
+  Target TarCom = Target{};
 
   /*
   ** Is this missle allowed to come in from out of bounds?

@@ -118,7 +118,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	Combat related.
   */
-  [[nodiscard]] TARGET As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
 
   /*
   **	File I/O.

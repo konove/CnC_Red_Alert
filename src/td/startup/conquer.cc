@@ -163,7 +163,6 @@
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 #include "td/saveload/saveload.h"
@@ -1816,7 +1815,7 @@ bool Main_Loop() {
       LOG(INFO) << "frame " << game::CurrentFrame() << " unit "
                 << unit->Class->IniName << " coord " << unit->Coord.packed()
                 << " mission " << static_cast<int>(unit->Mission) << " navcom "
-                << unit->NavCom;
+                << unit->NavCom.packed();
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); ++index) {
       const InfantryClass* infantry =
@@ -1825,7 +1824,7 @@ bool Main_Loop() {
                 << TheObjectHeaps().infantry().SlotIndexOf(infantry)
                 << " coord " << infantry->Coord.packed() << " mission "
                 << static_cast<int>(infantry->Mission) << " navcom "
-                << infantry->NavCom;
+                << infantry->NavCom.packed();
     }
     // Compare every serialized field of migrated objects in smoke runs.
     const auto log_heap = [](auto& heap, const char* kind) {
@@ -3120,7 +3119,7 @@ void Validate_Error(const char* name) {
  *=============================================================================================*/
 static void Do_Record_Playback() {
   int count = 0;
-  TARGET tgt = 0;
+  Target tgt{};
   Coordinate coord{};
   uint32_t sum = 0;
   uint32_t sum2 = 0;
@@ -3149,8 +3148,7 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt = static_cast<uint32_t>(
-          base::At(TheWorld().current_object(), i)->As_Target());
+      ltgt = base::At(TheWorld().current_object(), i)->As_Target().packed();
       sum += ltgt;
     }
     record->WriteObject(sum);
@@ -3188,8 +3186,7 @@ static void Do_Record_Playback() {
       ..................................................................*/
       sum = 0;
       for (int i = 0; i < std::ssize(TheWorld().current_object()); i++) {
-        ltgt = static_cast<uint32_t>(
-            base::At(TheWorld().current_object(), i)->As_Target());
+        ltgt = base::At(TheWorld().current_object(), i)->As_Target().packed();
         sum += ltgt;
       }
 
@@ -3206,7 +3203,7 @@ static void Do_Record_Playback() {
 
       for (int i = 0; i < count; i++) {
         if (record->ReadObject(tgt)) {
-          ObjectClass* obj = As_Object(tgt);
+          ObjectClass* obj = tgt.AsObject();
           if (obj && sum2 != sum) {
             obj->Select();
             TheGameState().allow_voice() = false;

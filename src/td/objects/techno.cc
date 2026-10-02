@@ -219,7 +219,6 @@
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
 #include "td/objects/stage.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 #include "td/startup/conquer.h"
@@ -479,8 +478,8 @@ TechnoClass::TechnoClass()
       IsSecondShot(true),
       House(nullptr),
       Cloak(game::UNCLOAKED),
-      TarCom(kTargetNone),
-      SuspendedTarCom(kTargetNone),
+      TarCom(Target{}),
+      SuspendedTarCom(Target{}),
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
@@ -651,7 +650,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     */
     case RADIO_ATTACK_THIS:
       if (Techno_Type_Class()->Primary != WEAPON_NONE) {
-        Assign_Target(static_cast<TARGET>(param));
+        Assign_Target(Target::FromPacked(static_cast<uint16_t>(param)));
         Assign_Mission(MISSION_ATTACK);
         return RADIO_ROGER;
       }
@@ -809,8 +808,8 @@ TechnoClass::TechnoClass(HousesType house)
       IsSecondShot(false),
       House(HouseClass::As_Pointer(house)),
       Cloak(game::UNCLOAKED),
-      TarCom(kTargetNone),
-      SuspendedTarCom(kTargetNone),
+      TarCom(Target{}),
+      SuspendedTarCom(Target{}),
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
@@ -1048,15 +1047,15 @@ bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::In_Range(TARGET target, int which) const {
-  if (IsLocked && Target_Legal(target)) {
+bool TechnoClass::In_Range(Target target, int which) const {
+  if (IsLocked && target) {
     int range = Weapon_Range(which);
-    const BuildingClass* building = As_Building(target);
+    const BuildingClass* building = target.AsBuilding();
     if (building) {
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
-    if (td::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
+    if (td::Distance(Fire_Coord(which), target.AsCoordinate()) <= range) {
       return true;
     }
   }
@@ -1458,7 +1457,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
  * HISTORY: * 11/14/1994 JLB : Created. * 06/20/1995 JLB : Greatly optimized
  *scan method.                                           *
  *=============================================================================================*/
-TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
+Target TechnoClass::Greatest_Threat(ThreatType method) const {
   const ObjectClass* bestobject = nullptr;
   int bestval = -1;
 
@@ -1663,7 +1662,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
   if (bestobject) {
     return bestobject->As_Target();
   }
-  return kTargetNone;
+  return Target{};
 }
 
 /***********************************************************************************************
@@ -1910,15 +1909,15 @@ bool TechnoClass::Select() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType TechnoClass::Can_Fire(Target target, int which) const {
   /*
   **	Don't allow firing if the target is illegal.
   */
-  if (!Target_Legal(target)) {
+  if (!target) {
     return game::FIRE_ILLEGAL;
   }
 
-  ObjectClass* object = As_Object(target);
+  ObjectClass* object = target.AsObject();
 
   /*
   **	If the object is completely cloaked, then you can't fire on it.
@@ -1995,8 +1994,8 @@ game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Stun() {
-  Assign_Target(kTargetNone);
-  Assign_Destination(kTargetNone);
+  Assign_Target(Target{});
+  Assign_Destination(Target{});
   Transmit_Message(RADIO_OVER_OUT);
   Detach_All();
   Unselect();
@@ -2017,27 +2016,27 @@ void TechnoClass::Stun() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Target(TARGET target) {
+void TechnoClass::Assign_Target(Target target) {
   if (target == TarCom) {
     return;
   }
 
-  if (!Target_Legal(target)) {
-    target = kTargetNone;
+  if (!target) {
+    target = Target{};
   } else {
     /*
     **	Prevent targeting of self.
     */
     if (target == As_Target()) {
-      target = td::As_Target(Coord_Cell(Coord));
+      target = Target::FromCellIndex(Coord_Cell(Coord));
     } else {
       /*
       **	Make sure that the target is not already dead.
       */
-      const ObjectClass* object = As_Object(target);
+      const ObjectClass* object = target.AsObject();
       if (object &&
           (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
-        target = kTargetNone;
+        target = Target{};
       }
     }
   }
@@ -2093,7 +2092,7 @@ int TechnoClass::Rearm_Delay(bool second) const {
  * HISTORY: * 12/26/1994 JLB : Created. * 07/03/1995 JLB : Moving platforms fire
  *inaccurate projectiles.                            *
  *=============================================================================================*/
-BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
+BulletClass* TechnoClass::Fire_At(Target target, int which) {
   game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
   Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
@@ -2105,18 +2104,18 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   **	Perform a quick legality check to see if firing can occur.
   */
   if (TheDebugState().map_editor_active() || weapon->Fires == BULLET_NONE ||
-      !Target_Legal(target)) {
+      !target) {
     return nullptr;
   }
 
   /*
   **	Fetch the target coordinate for the target specified.
   */
-  ObjectClass* object = As_Object(target);
+  ObjectClass* object = target.AsObject();
   if (object) {
     target_coord = object->Target_Coord();
   } else {
-    target_coord = As_Coord(target);
+    target_coord = target.AsCoordinate();
   }
 
   /*
@@ -2307,7 +2306,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       if (TheSession().type() == GAME_NORMAL) {
         TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
       } else {
-        const ObjectClass* obj = As_Object(target);
+        const ObjectClass* obj = target.AsObject();
         if (obj) {
           const HousesType tgt_owner = obj->Owner();
 
@@ -2345,8 +2344,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
-                                        TARGET destination) {
+void TechnoClass::Player_Assign_Mission(MissionType mission, Target target,
+                                        Target destination) {
   if (TheGameState().allow_voice()) {
     if (mission == MISSION_ATTACK) {
       Response_Attack();
@@ -2499,7 +2498,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
     if ((!optr ||
          (optr->IsWall && (whead->IsWallDestroyer ||
                            (whead->IsWoodDestroyer && optr->IsWooden)))) &&
-        (Can_Player_Move() || In_Range(td::As_Target(cell), 0))) {
+        (Can_Player_Move() || In_Range(Target::FromCellIndex(cell), 0))) {
       return ACTION_ATTACK;
     }
   }
@@ -2659,8 +2658,8 @@ int TechnoClass::Weapon_Range(int which) const {
  *                                                                         *
  *                                                                         *
  * INPUT:      MissionType mission - the mission we want to overide        *
- *               TARGET      tarcom  - the new target we want to overide   *
- *               TARGET      navcom  - the new navigation point to overide *
+ *               Target      tarcom  - the new target we want to overide   *
+ *               Target      navcom  - the new navigation point to overide *
  *                                                                         *
  * OUTPUT:      none                                                       *
  *                                                                         *
@@ -2670,8 +2669,8 @@ int TechnoClass::Weapon_Range(int which) const {
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
-                                   TARGET navcom) {
+void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
+                                   Target navcom) {
   SuspendedTarCom = TarCom;
   RadioClass::Override_Mission(mission, tarcom, navcom);
   Assign_Target(tarcom);
@@ -3339,12 +3338,12 @@ std::span<const unsigned char> TechnoClass::Remap_Table() {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Detach(TARGET target, bool all) {
+void TechnoClass::Detach(Target target, bool all) {
   RadioClass::Detach(target, all);
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
     SuspendedMission = MISSION_NONE;
-    SuspendedTarCom = kTargetNone;
+    SuspendedTarCom = Target{};
   }
 
   /*
@@ -3352,7 +3351,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
   **	computer must be cleared.
   */
   if (TarCom == target) {
-    Assign_Target(kTargetNone);
+    Assign_Target(Target{});
     Restore_Mission();
   }
 
@@ -3939,23 +3938,22 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom) &&
-      (base::Any(threat & THREAT_RANGE) && !In_Range(TarCom))) {
-    Assign_Target(kTargetNone);
+  if (TarCom && (base::Any(threat & THREAT_RANGE) && !In_Range(TarCom))) {
+    Assign_Target(Target{});
   }
 
   /*
   **	If there is no target, then try to find one and assign it as
   **	the target for this unit.
   */
-  if (!Target_Legal(TarCom)) {
+  if (!TarCom) {
     Assign_Target(Greatest_Threat(threat));
   }
 
   /*
   **	Return with answer to question: Does this unit have a target?
   */
-  return Target_Legal(TarCom);
+  return static_cast<bool>(TarCom);
 }
 
 /***********************************************************************************************
@@ -4010,7 +4008,7 @@ void TechnoClass::Random_Animate() {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Destination(TARGET /*unused*/) {}
+void TechnoClass::Assign_Destination(Target /*unused*/) {}
 
 /***********************************************************************************************
  * TechnoClass::Scatter -- Causes the object to scatter to an adjacent cell. *

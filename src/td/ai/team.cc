@@ -86,7 +86,6 @@
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -200,7 +199,7 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
  * HISTORY:                                                                *
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
-void TeamClass::Assign_Mission_Target(TARGET new_target) {
+void TeamClass::Assign_Mission_Target(td::Target new_target) {
   Validate();
   /*
   ** First go through and find anyone who is currently targetting
@@ -223,7 +222,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
       ** clear it, so that it will be reset by whatever happens next.
       */
       if (nav) {
-        unit->Assign_Destination(kTargetNone);
+        unit->Assign_Destination(td::Target{});
       }
 
       /*
@@ -231,7 +230,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
       ** clear it, so that it will be reset by whatever happens next.
       */
       if (tar) {
-        unit->Assign_Target(kTargetNone);
+        unit->Assign_Target(td::Target{});
       }
     }
     unit = unit->Member;
@@ -243,7 +242,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   ** there is an overide, allow the team to keep fighting the overide but
   ** make sure they pick up on the new mission when they are ready.
   */
-  if (Target == MissionTarget || !Target_Legal(Target)) {
+  if (Target == MissionTarget || !Target) {
     MissionTarget = Target = new_target;
   } else {
     MissionTarget = new_target;
@@ -390,7 +389,7 @@ void TeamClass::AI() {
       }
 
       // Should calculate a regroup location.
-      Target = td::As_Target(dest);
+      Target = td::Target::FromCellIndex(dest);
       Coordinate_Move();
       return;
     }
@@ -472,21 +471,22 @@ void TeamClass::AI() {
           base::Suffix(Class->MissionList, CurrentMission).data();
 
       TimeOut.Set(mission->Argument * (kTicksPerMinute / 10));
-      Target = kTargetNone;
+      Target = td::Target{};
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              td::As_Target(static_cast<CELL>(mission->Argument)));
+              td::Target::FromCellIndex(static_cast<CELL>(mission->Argument)));
           break;
 
         case TMISSION_MOVE:
         case TMISSION_UNLOAD:
-          Assign_Mission_Target(
-              td::As_Target(base::At(TheWorld().waypoint(), mission->Argument)));
+          Assign_Mission_Target(td::Target::FromCellIndex(
+              base::At(TheWorld().waypoint(), mission->Argument)));
           break;
 
         case TMISSION_ATTACKTARCOM:
-          Assign_Mission_Target(static_cast<TARGET>(mission->Argument));
+          Assign_Mission_Target(
+              td::Target::FromPacked(static_cast<uint16_t>(mission->Argument)));
           break;
 
         case TeamMissionType::TMISSION_NONE:
@@ -500,7 +500,7 @@ void TeamClass::AI() {
         case TeamMissionType::TMISSION_LOOP:
         case TeamMissionType::TMISSION_COUNT:
         default:
-          Assign_Mission_Target(kTargetNone);
+          Assign_Mission_Target(td::Target{});
           break;
       }
     } else {
@@ -518,7 +518,7 @@ void TeamClass::AI() {
     ** has not, then the current target needs to be reset to the mission
     ** target.
     */
-    if (!Target_Legal(Target)) {
+    if (!Target) {
       Target = MissionTarget;
     }
 
@@ -531,9 +531,9 @@ void TeamClass::AI() {
         base::Suffix(Class->MissionList, CurrentMission).data();
     switch (mission->Mission) {
       case TMISSION_ATTACKBASE:
-        if (!Target_Legal(MissionTarget)) {
+        if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_BUILDINGS));
-          if (!Target_Legal(MissionTarget)) {
+          if (!MissionTarget) {
             IsNextMission = true;
           }
         }
@@ -541,10 +541,10 @@ void TeamClass::AI() {
         break;
 
       case TMISSION_ATTACKUNITS:
-        if (!Target_Legal(MissionTarget)) {
+        if (!MissionTarget) {
           Assign_Mission_Target(
               Member->Greatest_Threat(THREAT_VEHICLES | THREAT_INFANTRY));
-          if (!Target_Legal(MissionTarget)) {
+          if (!MissionTarget) {
             IsNextMission = true;
           }
         }
@@ -552,9 +552,9 @@ void TeamClass::AI() {
         break;
 
       case TMISSION_ATTACKCIVILIANS:
-        if (!Target_Legal(MissionTarget)) {
+        if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_CIVILIANS));
-          if (!Target_Legal(MissionTarget)) {
+          if (!MissionTarget) {
             IsNextMission = true;
           }
         }
@@ -563,9 +563,9 @@ void TeamClass::AI() {
 
       case TMISSION_ATTACKTARCOM:
       case TMISSION_RAMPAGE:
-        if (!Target_Legal(MissionTarget)) {
+        if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_NORMAL));
-          if (!Target_Legal(MissionTarget)) {
+          if (!MissionTarget) {
             IsNextMission = true;
           }
         }
@@ -978,7 +978,7 @@ int TeamClass::Recruit(int typeindex) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Detach(TARGET target, bool /*unused*/) {
+void TeamClass::Detach(td::Target target, bool /*unused*/) {
   Validate();
 
   /*
@@ -987,10 +987,10 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
   **	where they may.
   */
   if (Target == target) {
-    Target = kTargetNone;
+    Target = td::Target{};
   }
   if (MissionTarget == target) {
-    MissionTarget = kTargetNone;
+    MissionTarget = td::Target{};
   }
 }
 
@@ -1008,9 +1008,9 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  *                                                                                             *
  * HISTORY: * 06/14/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET TeamClass::As_Target() const {
+td::Target TeamClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEAM, TheObjectHeaps().team().SlotIndexOf(this));
+  return td::Target::Make(KIND_TEAM, TheObjectHeaps().team().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -1098,8 +1098,8 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
         *well. There is *	no point in endlessly shuffling between targets
         *that have firepower.
         */
-        if (Target_Legal(Target)) {
-          const TechnoClass* techno = As_Techno(Target);
+        if (Target) {
+          const TechnoClass* techno = Target.AsTechno();
 
           if ((techno &&
                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
@@ -1130,11 +1130,11 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
  *=============================================================================================*/
 void TeamClass::Coordinate_Attack() {
   Validate();
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     Target = MissionTarget;
   }
 
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     IsNextMission = true;
 
   } else {
@@ -1146,8 +1146,8 @@ void TeamClass::Coordinate_Attack() {
         if (unit->Mission != MISSION_ATTACK && unit->Mission != MISSION_ENTER &&
             unit->Mission != MISSION_CAPTURE) {
           unit->Assign_Mission(MISSION_ATTACK);
-          unit->Assign_Target(kTargetNone);
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Target(td::Target{});
+          unit->Assign_Destination(td::Target{});
         }
 
         if (unit->TarCom != Target) {
@@ -1188,12 +1188,11 @@ bool TeamClass::Coordinate_Regroup() {
 
     if (unit->IsInitiated && !unit->IsInLimbo) {
       if (unit->Distance(Center) > STRAY_DISTANCE &&
-          (unit->Mission != MISSION_GUARD_AREA ||
-           !Target_Legal(unit->TarCom))) {
-        if (unit->Mission != MISSION_MOVE || !Target_Legal(unit->NavCom) ||
-            td::Distance(As_Cell(unit->NavCom), Center) > STRAY_DISTANCE) {
+          (unit->Mission != MISSION_GUARD_AREA || !unit->TarCom)) {
+        if (unit->Mission != MISSION_MOVE || !unit->NavCom ||
+            td::Distance(unit->NavCom.AsCell(), Center) > STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
-          unit->Assign_Destination(td::As_Target(Center));
+          unit->Assign_Destination(td::Target::FromCellIndex(Center));
         }
         retval = false;
       } else {
@@ -1209,7 +1208,7 @@ bool TeamClass::Coordinate_Regroup() {
         */
         if (unit->Mission != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Destination(td::Target{});
         }
       }
     }
@@ -1238,11 +1237,11 @@ void TeamClass::Coordinate_Move() {
   FootClass* unit = Member;
   bool finished = true;
 
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     Target = MissionTarget;
   }
 
-  if (Target_Legal(Target)) {
+  if (Target) {
     if (!Lagging_Units()) {
       while (unit) {
         Coordinate_Conscript(unit);
@@ -1266,8 +1265,7 @@ void TeamClass::Coordinate_Move() {
               }
               finished = false;
             } else {
-              if (unit->Mission == MISSION_MOVE &&
-                  !Target_Legal(unit->NavCom)) {
+              if (unit->Mission == MISSION_MOVE && !unit->NavCom) {
                 unit->Enter_Idle_Mode();
               }
             }
@@ -1325,11 +1323,11 @@ bool TeamClass::Lagging_Units() {
       ** first unit.
       */
       if (unit->Distance(ObjectiveCenter) > STRAY_DISTANCE) {
-        if (unit->Mission != MISSION_MOVE || !Target_Legal(unit->NavCom) ||
-            td::Distance(As_Cell(unit->NavCom), ObjectiveCenter) >
+        if (unit->Mission != MISSION_MOVE || !unit->NavCom ||
+            td::Distance(unit->NavCom.AsCell(), ObjectiveCenter) >
                 STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
-          unit->Assign_Destination(td::As_Target(ObjectiveCenter));
+          unit->Assign_Destination(td::Target::FromCellIndex(ObjectiveCenter));
         }
         lag = true;
       } else {
@@ -1338,7 +1336,7 @@ bool TeamClass::Lagging_Units() {
         ** position until all lagging units catch up.
         */
         unit->Assign_Mission(MISSION_GUARD);
-        unit->Assign_Destination(kTargetNone);
+        unit->Assign_Destination(td::Target{});
       }
     }
     unit = unit->Member;
@@ -1423,10 +1421,10 @@ void TeamClass::Coordinate_Conscript(FootClass* unit) {
   Validate();
   if (unit && !unit->IsInitiated && !unit->IsInLimbo) {
     if (unit->Distance(Center) > STRAY_DISTANCE) {
-      if (!Target_Legal(unit->NavCom)) {
+      if (!unit->NavCom) {
         unit->Assign_Mission(MISSION_MOVE);
-        unit->Assign_Target(kTargetNone);
-        unit->Assign_Destination(td::As_Target(Center));
+        unit->Assign_Target(td::Target{});
+        unit->Assign_Destination(td::Target::FromCellIndex(Center));
       }
     } else {
       /*

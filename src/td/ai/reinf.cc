@@ -64,7 +64,6 @@
 #include "td/objects/cell.h"
 #include "td/objects/foot.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/unit.h"
 
@@ -282,7 +281,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       object->IsALoaner = true;
       if (object->Unlimbo(Cell_Coord(cell), game::DIR_W)) {
         object->Assign_Mission(MISSION_GUARD);
-        object->Assign_Destination(As_Target(
+        object->Assign_Destination(Target::FromCellIndex(
             XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
       } else {
         base::DeletePooled(team);
@@ -330,7 +329,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
             } else {
               object->Assign_Mission(MISSION_MOVE);
               object->Assign_Destination(
-                  As_Target(Adjacent_Cell(newcell, eface)));
+                  Target::FromCellIndex(Adjacent_Cell(newcell, eface)));
             }
             object->Commence();
           }
@@ -425,8 +424,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
               } else {
                 thisone->Assign_Mission(MISSION_MOVE);
               }
-              thisone->Assign_Destination(
-                  As_Target(TheMap().Calculated_Cell(source, teamtype->House)));
+              thisone->Assign_Destination(Target::FromCellIndex(
+                  TheMap().Calculated_Cell(source, teamtype->House)));
             }
             thisone->Commence();
           }
@@ -464,7 +463,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
             object->IsLocked = false;
             object->Assign_Mission(MISSION_UNLOAD);
             object->Commence();
-            object->Assign_Destination(As_Target(cell));
+            object->Assign_Destination(Target::FromCellIndex(cell));
           }
         } else {
           base::DeletePooled(team);
@@ -645,8 +644,8 @@ bool Create_Special_Reinforcement(const HouseClass* house,
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, TARGET tarcom,
-                             TARGET navcom) {
+                             MissionType mission, Target tarcom,
+                             Target navcom) {
   /*
   ** Get a pointer to the class of the object that we are going to create.
   */
@@ -717,14 +716,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       /*
       ** If a navcom was specified then set it.
       */
-      if (navcom != kTargetNone) {
+      if (navcom != Target{}) {
         obj->Assign_Destination(navcom);
       }
 
       /*
       ** If a tarcom was specified then set it.
       */
-      if (tarcom != kTargetNone) {
+      if (tarcom != Target{}) {
         obj->Assign_Target(tarcom);
       }
 

@@ -45,13 +45,14 @@
 #include "base/enum_array.h"
 #include "td/core/defines.h"
 #include "td/objects/house.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace td {
+
+class TeamClass;
 
 /*
 ********************************** Defines **********************************
@@ -159,7 +160,7 @@ class TeamTypeClass : public AbstractTypeClass {
                                                  uint64_t utypes,
                                                  uint64_t itypes, bool alerted);
 
-  [[nodiscard]] TARGET As_Target() const;
+  [[nodiscard]] Target As_Target() const;
 
   /*
   **	Overloaded operators

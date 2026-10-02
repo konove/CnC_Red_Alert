@@ -55,11 +55,11 @@
 
 namespace td {
 
-bool Queue_Target(TARGET whom, TARGET target);
-bool Queue_Destination(TARGET whom, TARGET target);
-bool Queue_Mission(TARGET whom, MissionType mission);
-bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
-                   TARGET destination);
+bool Queue_Target(Target whom, Target target);
+bool Queue_Destination(Target whom, Target target);
+bool Queue_Mission(Target whom, MissionType mission);
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination);
 bool Queue_Options();
 bool Queue_Exit();
 void Queue_AI();

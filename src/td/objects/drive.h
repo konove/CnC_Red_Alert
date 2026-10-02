@@ -124,7 +124,7 @@ class DriveClass : public FootClass {
   void Approach_Target() override;
   const ObjectTypeClass& Class_Of() const override;
   virtual void Overrun_Square(CELL cell, bool threaten = true);
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
   void Per_Cell_Process(bool center) override;
   virtual bool Ok_To_Move(game::DirType /*unused*/);
   void Fixup_Path(PathType* path) override;

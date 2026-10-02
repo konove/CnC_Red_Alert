@@ -166,7 +166,7 @@ class BuildingClass final : public TechnoClass {
   /*
   **	This is the saboteur responsible for this building's destruction.
   */
-  TARGET WhomToRepay = kTargetNone;
+  Target WhomToRepay = Target{};
 
   /*
   **	This is a record of the last strength of the building. Every so often,
@@ -204,7 +204,7 @@ class BuildingClass final : public TechnoClass {
   */
   static void Init();
 
-  TARGET Target_Scan();
+  Target Target_Scan();
   [[nodiscard]] const BuildingTypeClass::AnimControlType* Fetch_Anim_Control()
       const {
     return &Class->Anims.at(BState);
@@ -242,7 +242,7 @@ class BuildingClass final : public TechnoClass {
   /*
   **	Object entry and exit from the game system.
   */
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
   void Detach_All(bool all = true) override;
   void Grand_Opening(bool captured = false);
   void Update_Buildables();
@@ -276,12 +276,12 @@ class BuildingClass final : public TechnoClass {
   **	Combat related.
   */
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET /*target*/,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target /*target*/,
                                              int which) const override;
-  [[nodiscard]] TARGET Greatest_Threat(ThreatType threat) const override;
+  [[nodiscard]] Target Greatest_Threat(ThreatType threat) const override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
-  [[nodiscard]] TARGET As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
   bool Captured(HouseClass* newowner) override;
 
   /*
@@ -294,7 +294,7 @@ class BuildingClass final : public TechnoClass {
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
-  void Assign_Target(TARGET target) override;
+  void Assign_Target(Target target) override;
   bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass* techno, CELL cell);
 
@@ -318,7 +318,7 @@ class BuildingClass final : public TechnoClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  BulletClass* Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(Target target, int which) override;
 
   /*
   **	Dee-buggin' support.
@@ -328,7 +328,7 @@ class BuildingClass final : public TechnoClass {
   int Validate() const;
 
  private:
-  void Drop_Debris(TARGET source = kTargetNone);
+  void Drop_Debris(Target source = Target{});
 
   static const base::EnumArray<game::BSizeType, Coordinate> CenterOffset;
 };

@@ -136,7 +136,6 @@
 #include "td/objects/infantry.h"
 #include "td/objects/overlay.h"
 #include "td/objects/smudge.h"
-#include "td/objects/target.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
@@ -1705,7 +1704,7 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-MOBILETEST: could not launch aircraft";
         return false;
       }
-      plane->Assign_Destination(td::As_Target(
+      plane->Assign_Destination(Target::FromCellIndex(
           Coord_Cell(Coordinate::FromPacked(plane->Coord.packed() + 0x800))));
       plane->Assign_Mission(MISSION_MOVE);
       plane->Set_Speed(123);
@@ -1818,7 +1817,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       missile->Payback = owner;
-      missile->Assign_Target(td::As_Target(Coord_Cell(destination)));
+      missile->Assign_Target(Target::FromCellIndex(Coord_Cell(destination)));
       if (!missile->Unlimbo(owner->Coord, game::DIR_E)) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;

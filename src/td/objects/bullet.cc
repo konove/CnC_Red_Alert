@@ -84,7 +84,6 @@
 #include "td/objects/combat.h"
 #include "td/objects/fly.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -359,9 +358,8 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (game::CurrentFrame() % 2 != 0 && Class->IsHoming &&
-      Target_Legal(TarCom)) {
-    PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
+  if (game::CurrentFrame() % 2 != 0 && Class->IsHoming && TarCom) {
+    PrimaryFacing.Set_Desired(Direction256(Coord, TarCom.AsCoordinate()));
   }
 
   /*
@@ -420,7 +418,7 @@ void BulletClass::AI() {
       **	Bullets are generaly more effective when they are fired at
       *aircraft.
       */
-      if (Class->IsAntiAircraft && As_Aircraft(TarCom) &&
+      if (Class->IsAntiAircraft && TarCom.AsAircraft() &&
           Distance(TarCom) < 0x0080) {
         forced = true;
 
@@ -460,8 +458,8 @@ void BulletClass::AI() {
         /*
         **	Non-aircraft targets apply damage to the ground.
         */
-        if (!Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->In_Which_Layer() == LAYER_GROUND) {
+        if (TarCom.kind() != KIND_AIRCRAFT ||
+            TarCom.AsAircraft()->In_Which_Layer() == LAYER_GROUND) {
           Explosion_Damage(Coord, Strength, Payback, Class->Warhead);
         } else {
           /*
@@ -469,7 +467,7 @@ void BulletClass::AI() {
           *missile *	damage affects the aircraft target.
           */
           if (Distance(TarCom) < 0x0080) {
-            AircraftClass* object = As_Aircraft(TarCom);
+            AircraftClass* object = TarCom.AsAircraft();
 
             int str = Strength;
             if (object) {
@@ -613,16 +611,16 @@ void BulletClass::Init() { TheObjectHeaps().bullet().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Detach(TARGET target, bool all) {
+void BulletClass::Detach(Target target, bool all) {
   Validate();
-  const ObjectClass* obj = As_Object(target);
+  const ObjectClass* obj = target.AsObject();
 
   if (obj == Payback) {
     Payback = nullptr;
   }
 
   if (all && target == TarCom) {
-    TarCom = kTargetNone;
+    TarCom = Target{};
   }
 }
 
@@ -653,7 +651,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
   *This allows a bullet *	to be setup prior to being launched.
   */
   if (ObjectClass::Unlimbo(coord)) {
-    Coordinate tcoord = As_Coord(TarCom);
+    Coordinate tcoord = TarCom.AsCoordinate();
 
     /*
     **	Homing projectiles (missiles) do NOT override facing. They just fire in
@@ -670,7 +668,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     *are fired at infantry. Indirect *	fire is inherently inaccurate.
     */
     if (IsInaccurate || Class->IsInaccurate ||
-        ((Is_Target_Cell(TarCom) || Is_Target_Infantry(TarCom)) &&
+        ((TarCom.kind() == KIND_CELL || TarCom.kind() == KIND_INFANTRY) &&
          (Class->Warhead == WARHEAD_AP || Class->IsFueled))) {
       /*
       **	Inaccuracy for low velocity or homing projectiles manifests
@@ -756,7 +754,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             As_Aircraft(TarCom) != nullptr ? 0 : Class->Arming);
+             TarCom.AsAircraft() != nullptr ? 0 : Class->Arming);
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine
@@ -801,9 +799,9 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET BulletClass::As_Target() const {
+Target BulletClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this));
+  return Target::Make(KIND_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this));
 }
 
 }  // namespace td

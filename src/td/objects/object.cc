@@ -147,7 +147,6 @@
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
 #include "td/objects/radio.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -571,7 +570,7 @@ bool ObjectClass::In_Range(Coordinate /*unused*/, int /*unused*/) const {
   return false;
 }
 int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; }
-TARGET ObjectClass::As_Target() const { return kTargetNone; }
+Target ObjectClass::As_Target() const { return Target{}; }
 void ObjectClass::Scatter(Coordinate /*unused*/, bool /*unused*/) {}
 bool ObjectClass::Catch_Fire() { return false; }
 
@@ -1147,8 +1146,8 @@ void ObjectClass::Detach_All(bool all) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
-  if (Target_Legal(target)) {
+void ObjectClass::Detach_This_From_All(Target target, bool all) {
+  if (target) {
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
       TheObjectHeaps().team().ActiveAt(index)->Detach(target, all);
     }

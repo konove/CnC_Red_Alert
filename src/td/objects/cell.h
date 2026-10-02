@@ -50,7 +50,6 @@
 #include "td/objects/building.h"
 #include "td/objects/foot.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/terrain.h"
 #include "td/objects/unit.h"
@@ -59,6 +58,8 @@ class ArchiveReader;
 class ArchiveWriter;
 
 namespace td {
+
+class InfantryClass;
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -220,7 +221,9 @@ class CellClass {
     return Closest_Free_Spot(Cell_Coord());
   }
   [[nodiscard]] bool Is_Generally_Clear() const;
-  [[nodiscard]] TARGET As_Target() const { return td::As_Target(Cell_Number()); }
+  [[nodiscard]] Target As_Target() const {
+    return Target::FromCellIndex(Cell_Number());
+  }
   [[nodiscard]] BuildingClass* Cell_Building() const;
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.

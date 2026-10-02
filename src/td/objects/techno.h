@@ -180,8 +180,8 @@ class TechnoClass : public RadioClass,
   *If this *	is a vehicle with a turret, then it may differ from its movement
   *destination.
   */
-  TARGET TarCom;
-  TARGET SuspendedTarCom;
+  Target TarCom;
+  Target SuspendedTarCom;
 
   /*
   **	This is the visible facing for the unit or building.
@@ -259,8 +259,8 @@ class TechnoClass : public RadioClass,
   virtual void Response_Move();
   virtual void Response_Attack();
   virtual void Player_Assign_Mission(MissionType mission,
-                                     TARGET target = kTargetNone,
-                                     TARGET destination = kTargetNone);
+                                     Target target = Target{},
+                                     Target destination = Target{});
 
   /*
   **	Combat related.
@@ -272,18 +272,18 @@ class TechnoClass : public RadioClass,
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
   [[nodiscard]] bool In_Range(Coordinate coord, int which = 0) const override;
-  [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
+  [[nodiscard]] virtual bool In_Range(Target target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  [[nodiscard]] virtual game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] virtual game::FireErrorType Can_Fire(Target target,
                                                      int which = 0) const;
-  [[nodiscard]] virtual TARGET Greatest_Threat(ThreatType method) const;
-  virtual void Assign_Target(TARGET target);
-  void Override_Mission(MissionType mission, TARGET tarcom,
-                        TARGET navcom) override;
+  [[nodiscard]] virtual Target Greatest_Threat(ThreatType method) const;
+  virtual void Assign_Target(Target target);
+  void Override_Mission(MissionType mission, Target tarcom,
+                        Target navcom) override;
   bool Restore_Mission() override;
-  virtual BulletClass* Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(Target target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
@@ -330,7 +330,7 @@ class TechnoClass : public RadioClass,
   **	Movement and animation.
   */
   virtual void Random_Animate();
-  virtual void Assign_Destination(TARGET target);
+  virtual void Assign_Destination(Target target);
   void Scatter(Coordinate source = {}, bool forced = false) override;
   virtual void Per_Cell_Process(bool /*unused*/);
   virtual void Enter_Idle_Mode(bool initial = false);
@@ -340,7 +340,7 @@ class TechnoClass : public RadioClass,
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	Facing translation tables that fix the flaw with 3D studio when

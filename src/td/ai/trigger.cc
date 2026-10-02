@@ -101,7 +101,6 @@
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
 #include "td/objects/super.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
@@ -1436,15 +1435,15 @@ const char* TriggerClass::Name_From_Action(ActionType action) {
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  TARGET value *
+ * OUTPUT:  Target value *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TriggerClass::As_Target() const {
+Target TriggerClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TRIGGER,
+  return Target::Make(KIND_TRIGGER,
                       TheObjectHeaps().trigger().SlotIndexOf(this));
 }
 

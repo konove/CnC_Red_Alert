@@ -111,12 +111,21 @@
     corner, unforced; stage B2 (TD) kept that as `Scatter(Coordinate::FromPacked(1))`
   - `Scatter(Coordinate{}, true)` would scatter in a random direction and change play, so it needs
     its own commit and an xcheck reference update
-- Restore Red Alert's `BuildingClass::Fire_Direction()` for buildings without a turret
+- Restore both games' `BuildingClass::Fire_Direction()` for buildings without a turret
   - The original returned `Direction(TarCom)`, the direction toward the target; `48924849` turned it
     into `AsDirection(TarCom)`, the low byte of the target word (the target's heap index), and stage
-    B3 (RA) kept that as `game::AsDirection(TarCom.packed())` (`ra/objects/building.cc`)
+    B3 kept that as `game::AsDirection(TarCom.packed())` in `ra/objects/building.cc` and
+    `td/objects/building.cc`
   - Fix: `return Direction(TarCom);`; it changes which way a defense without a turret fires, so it
-    needs its own commit and an xcheck reference update
+    needs its own commit and an xcheck reference update per game
+- Decide whether Tiberian Dawn's `Target::Make()` should mask its value to 12 bits
+  - `Make()` (was `Build_Target()`) ORs the whole value over the kind (`td/core/target.h`), so a
+    cell of -1 becomes the word 0xFFFF: kind 15, which names nothing, yet true as a bool. A team
+    mission `TMISSION_MOVE` or `TMISSION_UNLOAD` whose waypoint is unset (`init.cc` fills the
+    waypoints with -1) sends its units to that word (`td/ai/team.cc`, `TeamClass::AI()`), as does a
+    `TMISSION_MOVECELL` argument outside 0..4095; the original did the same
+  - Masking would turn -1 into cell 4095 and change play, so it needs its own commit and an xcheck
+    reference update
 - Decide which RTTI_CELL encoding Red Alert's cell targets should use
   - `Target::FromCellIndex()` stores the cell number, `FromCell()`/`FromCoordinate()` a 12-bit
     sub-cell spot (`ra/core/target.h`), and nothing in the word says which; `AsCell()` and

@@ -32,20 +32,19 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/objects/building.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 
 namespace td {
 
 AbstractClass::~AbstractClass() = default;
 
-game::DirType AbstractClass::Direction(TARGET target) const {
-  return td::Direction(Center_Coord(), As_Coord(target));
+game::DirType AbstractClass::Direction(Target target) const {
+  return td::Direction(Center_Coord(), target.AsCoordinate());
 }
 
-int AbstractClass::Distance(const TARGET target) const {
-  const BuildingClass* obj = As_Building(target);
-  int dist = Distance(As_Coord(target));
+int AbstractClass::Distance(const Target target) const {
+  const BuildingClass* obj = target.AsBuilding();
+  int dist = Distance(target.AsCoordinate());
 
   // For buildings, adjust by average radius to get distance to edge.
   if (obj) {

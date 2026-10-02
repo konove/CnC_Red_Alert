@@ -80,7 +80,6 @@
 #include "td/objects/smudge.h"
 #include "td/objects/stage.h"
 #include "td/objects/tarcom.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"

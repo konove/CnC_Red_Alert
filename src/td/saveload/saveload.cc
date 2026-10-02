@@ -87,7 +87,6 @@
 #include "td/objects/object.h"
 #include "td/objects/overlay.h"
 #include "td/objects/smudge.h"
-#include "td/objects/target.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"
 #include "td/objects/unit.h"

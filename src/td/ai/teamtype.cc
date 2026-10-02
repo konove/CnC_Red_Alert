@@ -81,7 +81,6 @@
 #include "td/data/profile.h"
 #include "td/map/world.h"
 #include "td/objects/house.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
@@ -851,9 +850,9 @@ TeamClass* TeamTypeClass::Create_One_Of() const {
   return nullptr;
 }
 
-TARGET TeamTypeClass::As_Target() const {
+Target TeamTypeClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEAMTYPE,
+  return Target::Make(KIND_TEAMTYPE,
                       TheObjectHeaps().team_type().SlotIndexOf(this));
 }
 

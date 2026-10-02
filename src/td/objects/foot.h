@@ -49,13 +49,14 @@
 #include "td/core/defines.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace td {
+
+class TeamClass;
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
@@ -151,15 +152,15 @@ class FootClass : public TechnoClass {
   *also used by harvesters so that they know *	where to head back to after
   *unloading.
   */
-  TARGET ArchiveTarget;
+  Target ArchiveTarget;
 
   /*
   **
   **	This is the desired destination of the unit. The unit will attempt to
   *head *	toward this target (avoiding intervening obstacles).
   */
-  TARGET NavCom;
-  TARGET SuspendedNavCom;
+  Target NavCom;
+  Target SuspendedNavCom;
 
   /*
   **	This points to the team that "owns" this object. This pointer is used to
@@ -245,7 +246,7 @@ class FootClass : public TechnoClass {
   Coordinate Head_To_Coord() const { return HeadToCoord; }
   virtual bool Start_Driver(Coordinate& headto);
   virtual bool Stop_Driver();
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -275,8 +276,8 @@ class FootClass : public TechnoClass {
   */
   void Sell_Back(int control) override;
   virtual int Offload_Tiberium_Bail();
-  TARGET Greatest_Threat(ThreatType method) const override;
-  void Detach(TARGET target, bool all) override;
+  Target Greatest_Threat(ThreatType method) const override;
+  void Detach(Target target, bool all) override;
   void Detach_All(bool all = true) override;
   void Assign_Mission(MissionType order) override;
   int Mission_Enter() override;
@@ -299,8 +300,8 @@ class FootClass : public TechnoClass {
       CELL /*unused*/,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
-  void Override_Mission(MissionType mission, TARGET tarcom,
-                        TARGET navcom) override;
+  void Override_Mission(MissionType mission, Target tarcom,
+                        Target navcom) override;
   bool Restore_Mission() override;
 
   /*
@@ -308,7 +309,7 @@ class FootClass : public TechnoClass {
   */
 
   CELL Safety_Point(CELL src, CELL dst, int start, int max) const;
-  int Rescue_Mission(TARGET tarcom);
+  int Rescue_Mission(Target tarcom);
 
  private:
   int Passable_Cell(CELL cell, game::FacingType face, int threat,

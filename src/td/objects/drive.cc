@@ -100,7 +100,6 @@
 #include "td/objects/house.h"
 #include "td/objects/object.h"
 #include "td/objects/overlay.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -233,14 +232,14 @@ void DriveClass::Approach_Target() {
   /*
   **	Only if there is a legal target should the approach check occur.
   */
-  if (!House->IsHuman && Target_Legal(TarCom) && !Target_Legal(NavCom)) {
+  if (!House->IsHuman && TarCom && !NavCom) {
     /*
     **	Special case:
     **	If this is for a unit that can crush infantry, and the target is
     **	infantry, AND the infantry is pretty darn close, then just try
     **	to drive over the infantry instead of firing on it.
     */
-    const TechnoClass* target = As_Techno(TarCom);
+    const TechnoClass* target = TarCom.AsTechno();
     if (Class->Primary != WEAPON_FLAME_TONGUE && Class->IsCrusher &&
         Distance(TarCom) < 0x0180 && target && target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
@@ -375,7 +374,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
 void DriveClass::Exit_Map() {
   CELL cell = 0;  // Map exit cell number.
 
-  if (*this == UNIT_HOVER && !Target_Legal(NavCom)) {
+  if (*this == UNIT_HOVER && !NavCom) {
     /*
     **	Scan a swath of cells from current position to the edge of the map and
     *if *	there is any blocking object, just wait so to try again later.
@@ -401,7 +400,7 @@ void DriveClass::Exit_Map() {
     cell = XY_Cell(Cell_X(Coord_Cell(Coord)),
                    TheMap().MapCellY + TheMap().MapCellHeight);
     IsReturning = true;
-    Assign_Destination(td::As_Target(cell));
+    Assign_Destination(Target::FromCellIndex(cell));
   }
 }
 
@@ -474,7 +473,7 @@ Coordinate DriveClass::Smooth_Turn(Coordinate adj, game::DirType* dir) {
  * HISTORY: * 09/07/1992 JLB : Created. * 04/15/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void DriveClass::Assign_Destination(TARGET target) {
+void DriveClass::Assign_Destination(Target target) {
   /*
   **	Abort early if there is anything wrong with the parameters
   **	or the unit already is assigned the specified destination.
@@ -490,8 +489,8 @@ void DriveClass::Assign_Destination(TARGET target) {
   ** When in move mode, a map position may really indicate
   **	a unit to guard.
   */
-  if (Is_Target_Cell(target)) {
-    cell = As_Cell(target);
+  if (target.kind() == KIND_CELL) {
+    cell = target.AsCell();
 
     tunit = TheMap()[cell].Cell_Unit();
     if (tunit) {
@@ -515,7 +514,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   *procedure *	when the harvester is full and an empty refinery is selected as
   *a target.
   */
-  BuildingClass* b = As_Building(target);
+  BuildingClass* b = target.AsBuilding();
 
   /*
   **	Transport vehicles must tell all passengers that are about to load, that
@@ -536,7 +535,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   */
   if (b && *b == STRUCT_REPAIR) {
     if (b->In_Radio_Contact()) {
-      target = 0;
+      target = Target{};
     } else {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -799,9 +798,9 @@ void DriveClass::Per_Cell_Process(bool center) {
   **	Check to see if it has reached its destination. If so, then clear the
   *NavCom *	regardless of the remaining path list.
   */
-  if (center && As_Cell(NavCom) == cell) {
+  if (center && NavCom.AsCell() == cell) {
     IsTurretLockedDown = false;
-    NavCom = kTargetNone;
+    NavCom = Target{};
     base::At(Path, 0) = game::FACING_NONE;
   }
 
@@ -851,7 +850,7 @@ bool DriveClass::Start_Of_Move() {
   game::FacingType facing =
       base::At(Path, 0);  // Direction movement will commence.
 
-  if (!Target_Legal(NavCom) && facing == game::FACING_NONE) {
+  if (!NavCom && facing == game::FACING_NONE) {
     IsTurretLockedDown = false;
     Stop_Driver();
     if (Mission == MISSION_MOVE) {
@@ -879,11 +878,11 @@ bool DriveClass::Start_Of_Move() {
   **	range to the unit is less than the precalculated path steps.
   */
   if (facing != game::FACING_NONE &&
-      (Is_Target_Unit(NavCom) || Is_Target_Infantry(NavCom))) {
+      (NavCom.kind() == KIND_UNIT || NavCom.kind() == KIND_INFANTRY)) {
     const int dist = Lepton_To_Cell(Distance(NavCom));
 
     //			if (dist > CELL_LEPTON_W ||
-    //				!As_Techno(NavCom)->Techno_Type_Class()->IsCrushable
+    //				!NavCom.AsTechno()->Techno_Type_Class()->IsCrushable
     //|| 				!Class->IsCrusher) {
 
     if (dist < kConquerPathMax) {
@@ -909,7 +908,7 @@ bool DriveClass::Start_Of_Move() {
     if (!Basic_Path()) {
       if (Distance(NavCom) < 0x0280 &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
-        Assign_Destination(kTargetNone);
+        Assign_Destination(Target{});
       } else {
         /*
         **	If a basic path could be found, but the immediate move
@@ -933,7 +932,7 @@ bool DriveClass::Start_Of_Move() {
         if (TryTryAgain) {
           TryTryAgain--;
         } else {
-          Assign_Destination(kTargetNone);
+          Assign_Destination(Target{});
           if (IsNewNavCom) {
             Sound_Effect(VOC_SCOLD);
           }
@@ -1016,7 +1015,7 @@ bool DriveClass::Start_Of_Move() {
   if (cando != game::MOVE_OK) {
     if (Mission == MISSION_MOVE && House->IsHuman &&
         Distance(NavCom) < 0x0200) {
-      Assign_Destination(kTargetNone);
+      Assign_Destination(Target{});
     }
 
     /*
@@ -1051,13 +1050,14 @@ bool DriveClass::Start_Of_Move() {
         if (!House->Is_Ally(TheMap().at(destcell).Cell_Object())) {
           Override_Mission(MISSION_ATTACK,
                            TheMap().at(destcell).Cell_Object()->As_Target(),
-                           kTargetNone);
+                           Target{});
         }
       } else {
         if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                 .IsWall) {
-          Override_Mission(MISSION_ATTACK, td::As_Target(destcell), kTargetNone);
+          Override_Mission(MISSION_ATTACK, Target::FromCellIndex(destcell),
+                           Target{});
         }
       }
     } else {
@@ -1170,14 +1170,14 @@ bool DriveClass::Start_Of_Move() {
             if (!House->Is_Ally(TheMap().at(destcell).Cell_Object())) {
               Override_Mission(MISSION_ATTACK,
                                TheMap().at(destcell).Cell_Object()->As_Target(),
-                               kTargetNone);
+                               Target{});
             }
           } else {
             if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
                 OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                     .IsWall) {
-              Override_Mission(MISSION_ATTACK, td::As_Target(destcell),
-                               kTargetNone);
+              Override_Mission(MISSION_ATTACK, Target::FromCellIndex(destcell),
+                               Target{});
             }
           }
           IsNewNavCom = false;
@@ -1248,7 +1248,7 @@ void DriveClass::AI() {
       return;
     }
     if (TrackNumber == -1 &&
-        (Target_Legal(NavCom) || base::At(Path, 0) != game::FACING_NONE)) {
+        (NavCom || base::At(Path, 0) != game::FACING_NONE)) {
       Start_Of_Move();
       While_Moving();
       if (!IsActive) {
@@ -1280,8 +1280,8 @@ void DriveClass::AI() {
       **	is a navigation target or a remaining path,
       **	then start on a new track.
       */
-      if (Mission != MISSION_GUARD || NavCom != kTargetNone) {
-        if (Target_Legal(NavCom) || base::At(Path, 0) != game::FACING_NONE) {
+      if (Mission != MISSION_GUARD || NavCom != Target{}) {
+        if (NavCom || base::At(Path, 0) != game::FACING_NONE) {
           Start_Of_Move();
           While_Moving();
           if (!IsActive) {

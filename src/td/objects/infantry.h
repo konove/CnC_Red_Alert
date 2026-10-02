@@ -161,7 +161,7 @@ class InfantryClass final : public FootClass {
   */
   static void Init();
 
-  void Assign_Destination(TARGET /*target*/) override;
+  void Assign_Destination(Target /*target*/) override;
 
   /*
   **	Query functions.
@@ -181,7 +181,7 @@ class InfantryClass final : public FootClass {
   */
   bool Unlimbo(Coordinate coord, game::DirType facing) override;
   bool Limbo() override;
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -206,12 +206,12 @@ class InfantryClass final : public FootClass {
   ActionType What_Action(ObjectClass* object) override;
   ActionType What_Action(CELL cell) const override;
   void Assign_Mission(MissionType order) override;
-  BulletClass* Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(Target target, int which) override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
-  TARGET As_Target() const override;
-  game::FireErrorType Can_Fire(TARGET target, int which) const override;
-  void Assign_Target(TARGET /*target*/) override;
+  Target As_Target() const override;
+  game::FireErrorType Can_Fire(Target target, int which) const override;
+  void Assign_Target(Target /*target*/) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   int Rearm_Delay(bool second) const override;
@@ -235,7 +235,7 @@ class InfantryClass final : public FootClass {
   **	AI.
   */
   void AI() override;
-  TARGET Greatest_Threat(ThreatType threat) const override;
+  Target Greatest_Threat(ThreatType threat) const override;
   int Mission_Attack() override;
 
   /*

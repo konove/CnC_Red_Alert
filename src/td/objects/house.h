@@ -58,13 +58,14 @@
 #include "td/core/jshell.h"
 #include "td/objects/object.h"
 #include "td/objects/super.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace td {
+
+class TeamTypeClass;
 
 /****************************************************************************
 **	Player control structure. Each player (computer or human) has one of
@@ -362,7 +363,7 @@ class HouseClass {
   **	This target value specifies where the flag is located. It might be a
   *cell *	or it might be an object.
   */
-  TARGET FlagLocation = kTargetNone;
+  Target FlagLocation = Target{};
 
   /*
   ** This is the flag-home-cell for this house.  This is where we must bring
@@ -432,7 +433,7 @@ class HouseClass {
   bool Place_Special_Blast(SpecialWeaponType id, CELL cell);
   bool Flag_Attach(CELL cell, bool set_home = false);
   bool Flag_Attach(UnitClass* object, bool set_home = false);
-  bool Flag_Remove(TARGET target, bool set_home = false);
+  bool Flag_Remove(Target target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
 
   void Sell_Wall(CELL cell);

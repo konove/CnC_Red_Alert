@@ -108,7 +108,6 @@
 #include "td/objects/anim.h"
 #include "td/objects/cell.h"
 #include "td/objects/combat.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
@@ -250,9 +249,9 @@ game::ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TerrainClass::As_Target() const {
+Target TerrainClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TERRAIN,
+  return Target::Make(KIND_TERRAIN,
                       TheObjectHeaps().terrain().SlotIndexOf(this));
 }
 

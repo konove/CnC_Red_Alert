@@ -1412,15 +1412,6 @@ using enum RadioMessageType;
 inline constexpr int kRadioCount = static_cast<int>(RADIO_COUNT);
 
 /****************************************************************************
-**	These are custom C&C specific types. The CELL (declared above, with the
-**	map dimensions) is used for map coordinates with cell resolution.
-**	Coordinate (td/core/coordinate.h) is used for map coordinates that have
-**	a lepton resolution.
-*/
-using TARGET = uint16_t;
-inline constexpr TARGET kTargetNone{};
-
-/****************************************************************************
 **	Selected units have a special selected unit box around them. These are
 *the *	defines for the two types of selected unit boxes. One is for infantry
 *and *	the other is for regular units.

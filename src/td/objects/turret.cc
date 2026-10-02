@@ -64,8 +64,8 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
+#include "td/objects/bullet.h"
 #include "td/objects/drive.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 
 namespace td {
@@ -164,8 +164,8 @@ void TurretClass::AI() {
         */
         IsRotating = SecondaryFacing.Is_Rotating();
       } else {
-        if (!IsTurretLockedDown && !Target_Legal(TarCom)) {
-          if (!Target_Legal(NavCom)) {
+        if (!IsTurretLockedDown && !TarCom) {
+          if (!NavCom) {
             SecondaryFacing.Set_Desired(PrimaryFacing.Current());
           } else {
             SecondaryFacing.Set_Desired(Direction(NavCom));
@@ -195,7 +195,7 @@ void TurretClass::AI() {
  *                                                                                             *
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass* TurretClass::Fire_At(TARGET target, int which) {
+BulletClass* TurretClass::Fire_At(Target target, int which) {
   BulletClass* bullet = nullptr;
 
   if (Can_Fire(target, which) == game::FIRE_OK) {
@@ -233,7 +233,7 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 04/26/1994 JLB : Created. * 06/01/1994 JLB : Returns reason why it
  *can't fire.                                        *
  *=============================================================================================*/
-game::FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType TurretClass::Can_Fire(Target target, int which) const {
   int diff = 0;
   const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
 
@@ -244,8 +244,7 @@ game::FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     /*
     **	If this unit cannot fire while moving, then bail.
     */
-    if ((!Class->IsTurretEquipped || Class->IsLockTurret) &&
-        Target_Legal(NavCom)) {
+    if ((!Class->IsTurretEquipped || Class->IsLockTurret) && NavCom) {
       return game::FIRE_MOVING;
     }
 

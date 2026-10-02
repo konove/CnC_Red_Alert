@@ -21,7 +21,6 @@
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"
@@ -60,12 +59,13 @@ bool KindFits(KindType kind) {
 
 }  // namespace
 
-ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_only) {
-  if (target == kTargetNone) {
+ObjectClass* ResolveSavedObject(Target target, ArchiveReader& ar,
+                                bool active_only) {
+  if (target == Target{}) {
     return nullptr;
   }
-  const int index = Target_Value(target);
-  switch (Target_Kind(target)) {
+  const int index = target.value();
+  switch (target.kind()) {
     case KIND_INFANTRY:
       return Slot(TheObjectHeaps().infantry(), index, ar, active_only);
     case KIND_UNIT:
@@ -95,20 +95,20 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_on
 
 template <class T>
 void ObjectPtr<T>::Serialize(ArchiveWriter& ar) {
-  TARGET target =
-      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
+  Target target =
+      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : Target{};
   ar(target);
 }
 
 template <class T>
 void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (!ar.ok() || target == kTargetNone) {
+  if (!ar.ok() || target == Target{}) {
     return;
   }
-  if (!KindFits<T>(Target_Kind(target))) {
+  if (!KindFits<T>(target.kind())) {
     ar.Fail("saved target has the wrong kind for its field");
     return;
   }
@@ -147,25 +147,25 @@ INSTANTIATE_TYPE_PTR(SmudgeTypeClass);
 
 template <class T>
 void TeamTypePtr<T>::Serialize(ArchiveWriter& ar) {
-  TARGET target =
-      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
+  Target target =
+      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : Target{};
   ar(target);
 }
 
 template <class T>
 void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (!ar.ok() || target == kTargetNone) {
+  if (!ar.ok() || target == Target{}) {
     return;
   }
-  if (Target_Kind(target) != KIND_TEAMTYPE ||
-      Target_Value(target) >= TheObjectHeaps().team_type().Capacity()) {
+  if (target.kind() != KIND_TEAMTYPE ||
+      target.value() >= TheObjectHeaps().team_type().Capacity()) {
     ar.Fail("invalid saved team type target");
     return;
   }
-  ref_ = TheObjectHeaps().team_type().Slot(Target_Value(target));
+  ref_ = TheObjectHeaps().team_type().Slot(target.value());
 }
 
 template class TeamTypePtr<TeamTypeClass>;
@@ -191,28 +191,28 @@ void HousePtr::Serialize(ArchiveReader& ar) {
 }
 
 void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   if (ref_ != nullptr) {
     switch (ref_->What_Am_I()) {
       case RTTI_INFANTRYTYPE:
-        target = Build_Target(
+        target = Target::Make(
             KIND_INFANTRY,
             static_cast<int>(
                 dynamic_cast<const InfantryTypeClass*>(ref_)->Type));
         break;
       case RTTI_UNITTYPE:
-        target = Build_Target(
+        target = Target::Make(
             KIND_UNIT,
             static_cast<int>(dynamic_cast<const UnitTypeClass*>(ref_)->Type));
         break;
       case RTTI_AIRCRAFTTYPE:
-        target = Build_Target(
+        target = Target::Make(
             KIND_AIRCRAFT,
             static_cast<int>(
                 dynamic_cast<const AircraftTypeClass*>(ref_)->Type));
         break;
       case RTTI_BUILDINGTYPE:
-        target = Build_Target(
+        target = Target::Make(
             KIND_BUILDING,
             static_cast<int>(
                 dynamic_cast<const BuildingTypeClass*>(ref_)->Type));
@@ -245,14 +245,14 @@ void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
   ar(target);
 }
 void TechnoTypePtr::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (!ar.ok() || target == kTargetNone) {
+  if (!ar.ok() || target == Target{}) {
     return;
   }
-  const auto index = Target_Value(target);
-  switch (Target_Kind(target)) {
+  const auto index = target.value();
+  switch (target.kind()) {
     case KIND_INFANTRY:
       if (index < kInfantryCount) {
         ref_ =
@@ -295,23 +295,23 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
 }
 
 void TriggerPtr::Serialize(ArchiveWriter& ar) {
-  TARGET target =
-      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : kTargetNone;
+  Target target =
+      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : Target{};
   ar(target);
 }
 void TriggerPtr::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (!ar.ok() || target == kTargetNone) {
+  if (!ar.ok() || target == Target{}) {
     return;
   }
-  if (Target_Kind(target) != KIND_TRIGGER ||
-      Target_Value(target) >= TheObjectHeaps().trigger().Capacity()) {
+  if (target.kind() != KIND_TRIGGER ||
+      target.value() >= TheObjectHeaps().trigger().Capacity()) {
     ar.Fail("invalid saved trigger target");
     return;
   }
-  ref_ = TheObjectHeaps().trigger().Slot(Target_Value(target));
+  ref_ = TheObjectHeaps().trigger().Slot(target.value());
 }
 
 template <class Archive>
@@ -332,7 +332,7 @@ void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects) {
   std::bitset<65536> seen;
   for (int32_t i = 0; i < count; ++i) {
     ObjectClass* object = nullptr;
-    TARGET target = kTargetNone;
+    Target target = Target{};
     if constexpr (!Archive::kIsReading) {
       object = base::At(objects, i);
       if (object != nullptr && object->IsActive) {
@@ -349,11 +349,11 @@ void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects) {
         ar.Fail("invalid saved object list reference");
         return;
       }
-      if (seen.test(target)) {
+      if (seen.test(target.packed())) {
         ar.Fail("duplicate saved object list reference");
         return;
       }
-      seen.set(target);
+      seen.set(target.packed());
       objects.push_back(object);
     }
   }

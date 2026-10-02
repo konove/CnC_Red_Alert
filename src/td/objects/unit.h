@@ -158,7 +158,7 @@ class UnitClass final : public TarComClass {
   Coordinate Target_Coord() const override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
-  TARGET As_Target() const override;
+  Target As_Target() const override;
   void Stun() override;
 
   /*
@@ -182,7 +182,7 @@ class UnitClass final : public TarComClass {
   int Mission_Harvest() override;
   int Mission_Hunt() override;
   int Mission_Move() override;
-  game::FireErrorType Can_Fire(TARGET /*target*/, int which) const override;
+  game::FireErrorType Can_Fire(Target /*target*/, int which) const override;
 
   /*
   **	Scenario and debug support.

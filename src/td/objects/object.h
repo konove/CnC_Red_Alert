@@ -191,9 +191,9 @@ class ObjectClass : public AbstractClass {
   virtual bool Limbo();
   virtual bool Unlimbo(Coordinate /*coord*/,
                        game::DirType facing = game::DIR_N);
-  virtual void Detach(TARGET /*unused*/, bool /*unused*/) {}
+  virtual void Detach(Target /*unused*/, bool /*unused*/) {}
   virtual void Detach_All(bool all = true);
-  static void Detach_This_From_All(TARGET target, bool all = true);
+  static void Detach_This_From_All(Target target, bool all = true);
   virtual void Record_The_Kill(TechnoClass* /*unused*/);
 
   /*
@@ -235,7 +235,7 @@ class ObjectClass : public AbstractClass {
   virtual game::ResultType Take_Damage(int& damage, int distance,
                                        WarheadType warhead,
                                        TechnoClass* source = nullptr);
-  [[nodiscard]] virtual TARGET As_Target() const;
+  [[nodiscard]] virtual Target As_Target() const;
   virtual void Scatter(Coordinate /*unused*/, bool /*unused*/ = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();

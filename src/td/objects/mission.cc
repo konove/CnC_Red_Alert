@@ -360,8 +360,8 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:      MissionType mission - the mission we want to overide * TARGET
- *tarcom  - the new target we want to overide                       * TARGET
+ * INPUT:      MissionType mission - the mission we want to overide * Target
+ *tarcom  - the new target we want to overide                       * Target
  *navcom  - the new navigation point to overide                     *
  *                                                                                             *
  * OUTPUT:      none *
@@ -371,8 +371,8 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *                                                                                             *
  * HISTORY: * 04/28/1995 PWG : Created. *
  *=============================================================================================*/
-void MissionClass::Override_Mission(MissionType mission, TARGET /*unused*/,
-                                    TARGET /*unused*/) {
+void MissionClass::Override_Mission(MissionType mission, Target /*unused*/,
+                                    Target /*unused*/) {
   if (MissionQueue != MISSION_NONE) {
     SuspendedMission = MissionQueue;
   } else {

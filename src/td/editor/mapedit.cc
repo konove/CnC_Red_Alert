@@ -102,7 +102,6 @@
 #include "td/objects/cell.h"
 #include "td/objects/house.h"
 #include "td/objects/mission.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -1066,7 +1065,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               TheWorld().current_cell() ==
                   HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(
-                As_Target(TheWorld().current_cell()), true);
+                Target::FromCellIndex(TheWorld().current_cell()), true);
           }
         }
 
@@ -1458,8 +1457,9 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     const char* label =
         Text_String(base::At(TheWorld().current_object(), 0)->Full_Name());
     const char* tptr = label;
-    absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   base::At(TheWorld().current_object(), 0)->As_Target());
+    absl::SNPrintF(
+        buf, sizeof(buf), "%s (%d)", tptr,
+        base::At(TheWorld().current_object(), 0)->As_Target().packed());
 
     /*
     ......................... print the label ..........................

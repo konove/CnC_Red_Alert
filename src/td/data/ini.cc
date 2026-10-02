@@ -1186,7 +1186,7 @@ static void Create_Units() {
 
         if (obj) {
           hptr->FlagHome = 0;
-          hptr->FlagLocation = 0;
+          hptr->FlagLocation = Target{};
           if (TheSpecial().IsCaptureTheFlag) {
             hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
           }
@@ -1212,7 +1212,7 @@ static void Create_Units() {
           }
 
           hptr->FlagHome = 0;  // turn house's flag off
-          hptr->FlagLocation = 0;
+          hptr->FlagLocation = Target{};
         }
       }
     } else {
@@ -1225,7 +1225,7 @@ static void Create_Units() {
         obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
         obj->Unlimbo(Cell_Coord(centroid), game::DIR_N);
         hptr->FlagHome = 0;  // turn house's flag off
-        hptr->FlagLocation = 0;
+        hptr->FlagLocation = Target{};
       }
     }
 

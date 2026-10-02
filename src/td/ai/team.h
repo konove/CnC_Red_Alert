@@ -160,8 +160,8 @@ class TeamClass : public AbstractClass {
   *but *	for the case of teams with a movement mission, it might
   *represent a *	destination cell.
   */
-  TARGET MissionTarget = kTargetNone;
-  TARGET Target = kTargetNone;
+  td::Target MissionTarget = td::Target{};
+  td::Target Target = td::Target{};
 
   /*
   **	This is the total number of members in this team.
@@ -201,7 +201,7 @@ class TeamClass : public AbstractClass {
   static void Init();
   static void Suspend_Teams(int priority);
 
-  [[nodiscard]] TARGET As_Target() const;
+  [[nodiscard]] td::Target As_Target() const;
 
   /*
   **	File I/O.
@@ -215,12 +215,12 @@ class TeamClass : public AbstractClass {
     IsUnderStrength = false;
   }
   bool Remove(FootClass* /*obj*/, int typeindex = -1);
-  void Detach(TARGET target, bool all);
+  void Detach(td::Target target, bool all);
   void AI() override;
   void Took_Damage(FootClass* obj, game::ResultType result,
                    TechnoClass* source);
   bool Add(FootClass* /*obj*/, int typeindex = -1);
-  void Assign_Mission_Target(TARGET new_target);
+  void Assign_Mission_Target(td::Target new_target);
 
   /*
   **	Dee-buggin' support.

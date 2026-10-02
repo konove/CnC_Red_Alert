@@ -201,7 +201,6 @@
 #include "td/objects/overlay.h"
 #include "td/objects/radio.h"
 #include "td/objects/smudge.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -527,14 +526,15 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
 
       if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
         if (*this == STRUCT_HELIPAD) {
-          param = As_Target();
+          param = As_Target().packed();
         } else {
           if (*this == STRUCT_REPAIR) {
             Transmit_Message(RADIO_TETHER);
-            param = td::As_Target(Coord_Cell(Center_Coord()));
+            param = Target::FromCellIndex(Coord_Cell(Center_Coord())).packed();
           } else {
-            param = td::As_Target(
-                Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_SW)));
+            param = Target::FromCellIndex(
+                        Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_SW)))
+                        .packed();
           }
         }
 
@@ -1049,7 +1049,7 @@ bool BuildingClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 04/16/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
+BulletClass* BuildingClass::Fire_At(Target target, int which) {
   Validate();
   const WeaponTypeClass* weapon =
       which == 0 ? &Weapons.at(Class->Primary) : &Weapons.at(Class->Secondary);
@@ -1085,7 +1085,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
           int x1 = 0;
           int y1 = 0;
           Coordinate source = Fire_Coord(which);
-          Coordinate dest = As_Coord(target);
+          Coordinate dest = target.AsCoordinate();
           IsCharging = false;
           IsCharged = false;
           Set_Stage(0);
@@ -1107,7 +1107,8 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             TheMap().Flag_To_Redraw(true);
           }
           base::NewPooled<SmudgeClass>(
-              Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), As_Coord(target));
+              Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+              target.AsCoordinate());
         } else {
           base::NewPooled<AnimClass>(ANIM_MUZZLE_FLASH, Fire_Coord(which));
         }
@@ -1316,7 +1317,7 @@ void BuildingClass::AI() {
   **	Obelisk charging logic.
   */
   if (*this == STRUCT_OBELISK && BState != game::BSTATE_CONSTRUCTION) {
-    if (Target_Legal(TarCom) && House->Power_Fraction() >= 0x0100) {
+    if (TarCom && House->Power_Fraction() >= 0x0100) {
       if (!IsCharged) {
         if (IsCharging) {
           if (stagechange) {
@@ -1486,7 +1487,7 @@ void BuildingClass::AI() {
   if (IsGoingToBlow && CountDown.IsFinished()) {
     TheWorld().sabotaged_type() = Class->Type;
     int damage = 5000;
-    Take_Damage(damage, 0, WARHEAD_FIRE, As_Techno(WhomToRepay));
+    Take_Damage(damage, 0, WARHEAD_FIRE, WhomToRepay.AsTechno());
     Mark(MARK_CHANGE);
   }
 
@@ -1974,8 +1975,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
       **	return fire if they are able and allowed.
       */
       if (*this != STRUCT_SAM && !House->Is_Ally(source) &&
-          Class->Primary != WEAPON_NONE &&
-          (!Target_Legal(TarCom) || !In_Range(TarCom))) {
+          Class->Primary != WEAPON_NONE && (!TarCom || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
             (!House->IsHuman || TheSpecial().IsSmartDefense)) {
           Assign_Target(source->As_Target());
@@ -2162,7 +2162,7 @@ BuildingClass::~BuildingClass() {
  *normal infantry survivor possibility.                    * 07/16/1995 JLB :
  *Survival rate depends on if captured or sabotaged.                       *
  *=============================================================================================*/
-void BuildingClass::Drop_Debris(TARGET source) {
+void BuildingClass::Drop_Debris(Target source) {
   Validate();
 
   /*
@@ -2195,7 +2195,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   CELL const cell = Coord_Cell(Coord);
   std::span<const int16_t> offset = Occupy_List();
   int odds = 2;
-  if (Target_Legal(WhomToRepay)) {
+  if (WhomToRepay) {
     odds -= 1;
   }
   if (IsCaptured) {
@@ -2221,7 +2221,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(Coordinate{}, true);
-            if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
+            if (source != Target{} && !House->Is_Ally(source.AsObject())) {
               i->Assign_Mission(MISSION_ATTACK);
               i->Assign_Target(source);
             } else {
@@ -2316,7 +2316,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
 void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
   Validate();
   if (action == ACTION_ATTACK) {
-    Player_Assign_Mission(MISSION_ATTACK, td::As_Target(cell));
+    Player_Assign_Mission(MISSION_ATTACK, Target::FromCellIndex(cell));
   }
 }
 
@@ -2337,10 +2337,10 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
  * HISTORY: * 05/28/1994 JLB : Created. * 11/02/1994 JLB : Checks for range
  *before assigning target.                                *
  *=============================================================================================*/
-void BuildingClass::Assign_Target(TARGET target) {
+void BuildingClass::Assign_Target(Target target) {
   Validate();
   if (*this != STRUCT_SAM && !In_Range(target, 0)) {
-    target = kTargetNone;
+    target = Target{};
   }
 
   TechnoClass::Assign_Target(target);
@@ -2437,7 +2437,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
         TheWorld().scenario_init()++;
         if (air->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
-          air->Assign_Destination(td::As_Target(Nearby_Location(air)));
+          air->Assign_Destination(Target::FromCellIndex(Nearby_Location(air)));
           air->Assign_Mission(MISSION_MOVE);
           TheWorld().scenario_init()--;
           return 2;
@@ -2542,7 +2542,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_AIRSTRIP:
           if (Create_Special_Reinforcement(
                   House, &AircraftTypeClass::As_Reference(AIRCRAFT_CARGO),
-                  ttype, TMISSION_UNLOAD, As_Target())) {
+                  ttype, TMISSION_UNLOAD, As_Target().packed())) {
             base::DeletePooled(base);
             return 2;
           }
@@ -2552,7 +2552,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           TheWorld().scenario_init()++;
           if (base->Unlimbo(Coord + Class->ExitPoint, game::DIR_SW)) {
             //						base->Assign_Mission(MISSION_MOVE);
-            //						base->Assign_Destination(td::As_Target(As_Cell(Coord)+MAP_CELL_W*2));
+            //						base->Assign_Destination(Target::FromCellIndex(Coord_Cell(Coord)+MAP_CELL_W*2));
             base->Mark(MARK_UP);
             base->Coord = Coord + Class->ExitPoint;
             base->Mark(MARK_DOWN);
@@ -2595,7 +2595,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheWorld().scenario_init()++;
             if (base->Unlimbo(start, dir)) {
               base->Assign_Mission(MISSION_MOVE);
-              base->Assign_Destination(td::As_Target(cell));
+              base->Assign_Destination(Target::FromCellIndex(cell));
 
               /*
               **	Establish radio contact so unload coordination can
@@ -3036,8 +3036,9 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
     case STRUCT_GTOWER:
     case STRUCT_ATOWER:
       coord = Coord_Move(coord, game::DIR_N, 0x0030);
-      if (Target_Legal(TarCom)) {
-        coord = Coord_Move(coord, td::Direction(coord, As_Coord(TarCom)), 0x0040);
+      if (TarCom) {
+        coord = Coord_Move(coord, td::Direction(coord, TarCom.AsCoordinate()),
+                           0x0040);
       }
       break;
     case STRUCT_OBELISK:
@@ -3073,7 +3074,7 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET BuildingClass::Greatest_Threat(ThreatType threat) const {
+Target BuildingClass::Greatest_Threat(ThreatType threat) const {
   Validate();
   if (*this != STRUCT_SAM) {
     threat = threat |
@@ -3638,9 +3639,9 @@ void BuildingClass::Write_INI(std::string& buffer) {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET BuildingClass::As_Target() const {
+Target BuildingClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_BUILDING,
+  return Target::Make(KIND_BUILDING,
                       TheObjectHeaps().building().SlotIndexOf(this));
 }
 
@@ -3694,7 +3695,7 @@ Coordinate BuildingClass::Docking_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-game::FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
   Validate();
   const game::FireErrorType canfire = TechnoClass::Can_Fire(target, which);
 
@@ -4110,7 +4111,7 @@ int BuildingClass::Mission_Guard() {
     /*
     **	If there is no target available, then search for one.
     */
-    if (!Target_Legal(TarCom)) {
+    if (!TarCom) {
       const ThreatType threat = THREAT_NORMAL;
       Assign_Target(Greatest_Threat(threat));
     }
@@ -4118,7 +4119,7 @@ int BuildingClass::Mission_Guard() {
     /*
     **	There is a valid target. Switch into attack mode right away.
     */
-    if (Target_Legal(TarCom)) {
+    if (TarCom) {
       Assign_Mission(MISSION_ATTACK);
       return 1;
     }
@@ -4421,7 +4422,7 @@ int BuildingClass::Mission_Attack() {
       */
       case kSamUnderground:
         IsReadyToCommence = true;
-        if (Target_Legal(TarCom)) {
+        if (TarCom) {
           Set_Rate(2);
           Set_Stage(0);
           Status = kSamRising;
@@ -4438,7 +4439,7 @@ int BuildingClass::Mission_Attack() {
         if (Fetch_Stage() == 15) {
           Set_Rate(0);
           PrimaryFacing = game::DIR_N;
-          if (!Target_Legal(TarCom)) {
+          if (!TarCom) {
             Status = kSamLowering;
           } else {
             Status = kSamReady;
@@ -4451,9 +4452,9 @@ int BuildingClass::Mission_Attack() {
       *rotate *	to face the current TarCom of the launcher.
       */
       case kSamReady:
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
+            TarCom.AsAircraft()->Altitude == 0) {
+          Assign_Target(Target{});
           Status = kSamLocking;
           return kTicksPerSecond;
         }
@@ -4471,15 +4472,15 @@ int BuildingClass::Mission_Attack() {
       **	The launcher is in the process of firing.
       */
       case kSamFiring:
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
+            TarCom.AsAircraft()->Altitude == 0) {
+          Assign_Target(Target{});
           Status = kSamLocking;
         } else {
           const game::FireErrorType error = Can_Fire(TarCom, 0);
           if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
               error == game::FIRE_RANGE) {
-            Assign_Target(kTargetNone);
+            Assign_Target(Target{});
             Status = kSamLocking;
           } else {
             if (error == game::FIRE_FACING) {
@@ -4496,9 +4497,9 @@ int BuildingClass::Mission_Attack() {
         return 1;
 
       case kSamReady2:
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
+            TarCom.AsAircraft()->Altitude == 0) {
+          Assign_Target(Target{});
           Status = kSamLocking;
           return kTicksPerSecond;
         }
@@ -4513,15 +4514,15 @@ int BuildingClass::Mission_Attack() {
         return 1;
 
       case kSamFiring2:
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Altitude == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
+            TarCom.AsAircraft()->Altitude == 0) {
+          Assign_Target(Target{});
           Status = kSamLocking;
         } else {
           const game::FireErrorType error = Can_Fire(TarCom, 0);
           if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
               error == game::FIRE_RANGE) {
-            Assign_Target(kTargetNone);
+            Assign_Target(Target{});
             Status = kSamLocking;
           } else {
             if (error == game::FIRE_FACING) {
@@ -4578,7 +4579,7 @@ int BuildingClass::Mission_Attack() {
       case game::FIRE_CANT:
       case game::FIRE_RANGE:
       case game::FIRE_AMMO:
-        Assign_Target(kTargetNone);
+        Assign_Target(Target{});
         Assign_Mission(MISSION_GUARD);
         Commence();
         break;
@@ -4910,7 +4911,7 @@ int BuildingClass::Mission_Missile() {
         if (bullet) {
           const Coordinate launch =
               Coord_Move(Center_Coord(), game::AsDirection(1), 0x1A0);
-          bullet->Assign_Target(kTargetNone);
+          bullet->Assign_Target(Target{});
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(launch, game::DIR_N)) {
@@ -4943,7 +4944,7 @@ int BuildingClass::Mission_Missile() {
           //						Theme.Queue_Song(THEME_NONE);
           const Coordinate start =
               Cell_Coord(XY_Cell(Cell_X(House->NukeDest), 1));
-          bullet->Assign_Target(td::As_Target(House->NukeDest));
+          bullet->Assign_Target(Target::FromCellIndex(House->NukeDest));
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(start, game::DIR_S)) {
@@ -5151,7 +5152,7 @@ game::DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return game::AsDirection(TarCom);
+  return game::AsDirection(TarCom.packed());
 }
 
 /***********************************************************************************************
@@ -5288,11 +5289,11 @@ int BuildingClass::Power_Output() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Detach(TARGET target, bool all) {
+void BuildingClass::Detach(Target target, bool all) {
   Validate();
   TechnoClass::Detach(target, all);
   if (target == WhomToRepay) {
-    WhomToRepay = kTargetNone;
+    WhomToRepay = Target{};
   }
 }
 

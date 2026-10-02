@@ -19,11 +19,12 @@ template <class Archive>
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects);
 
-// Resolves an object TARGET by kind and heap bounds without dereferencing the
+// Resolves an object Target by kind and heap bounds without dereferencing the
 // slot. A later heap may not have constructed the referenced object yet.
-ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_only = false);
+ObjectClass* ResolveSavedObject(Target target, ArchiveReader& ar,
+                                bool active_only = false);
 
-// Saves active objects as TARGETs, null/inactive objects as kTargetNone.
+// Saves active objects as their Target, null/inactive objects as Target{}.
 // Readers reject kinds that cannot be stored in T*. Defined for ObjectClass,
 // TechnoClass and FootClass; the reference must outlive the proxy.
 template <class T>
@@ -56,7 +57,7 @@ class TriggerPtr {
 class TeamTypeClass;
 
 // A team definition lives in a heap, rather than a static type table. Preserve
-// its TARGET and validate kind/bounds before returning an unconstructed slot.
+// its Target and validate kind/bounds before returning an unconstructed slot.
 template <class T>
 class TeamTypePtr {
  public:

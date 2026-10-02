@@ -193,7 +193,7 @@ class TriggerClass {
   /*
   **	Utility routines
   */
-  [[nodiscard]] TARGET As_Target() const;
+  [[nodiscard]] Target As_Target() const;
   static bool Event_Need_Object(EventType event);
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);

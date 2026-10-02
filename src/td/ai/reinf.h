@@ -15,7 +15,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
                                   TeamMissionType mission = TMISSION_NONE,
                                   int argument = 0);
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, TARGET tarcom, TARGET navcom);
+                             MissionType mission, Target tarcom, Target navcom);
 
 }  // namespace td
 

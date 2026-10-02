@@ -80,7 +80,6 @@
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/objects/cell.h"
-#include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
@@ -233,9 +232,9 @@ void TemplateClass::Write_INI(std::string& buffer) {
  *                                                                                             *
  * HISTORY: * 09/25/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TemplateClass::As_Target() const {
+Target TemplateClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEMPLATE,
+  return Target::Make(KIND_TEMPLATE,
                       TheObjectHeaps().tmplate().SlotIndexOf(this));
 }
 

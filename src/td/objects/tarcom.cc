@@ -61,7 +61,6 @@
 #include "td/assets/audio.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/objects/target.h"
 #include "td/objects/turret.h"
 #include "td/objects/type.h"
 
@@ -118,7 +117,7 @@ void TarComClass::AI() {
 
       case game::FIRE_FACING:
         if (Class->IsLockTurret) {
-          if (!Target_Legal(NavCom) && !IsDriving) {
+          if (!NavCom && !IsDriving) {
             PrimaryFacing.Set_Desired(Direction(TarCom));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
           }
@@ -130,7 +129,7 @@ void TarComClass::AI() {
             SecondaryFacing.Set_Desired(Direction(TarCom));
           }
           //					SecondaryFacing.Set_Desired(Direction256(Center_Coord(),
-          // As_Coord(TarCom)));
+          // TarCom.AsCoordinate()));
         }
         break;
 
@@ -151,7 +150,7 @@ void TarComClass::AI() {
     }
   }
 
-  if (Target_Legal(TarCom) && !IsRotating) {
+  if (TarCom && !IsRotating) {
     const game::DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
@@ -164,9 +163,8 @@ void TarComClass::AI() {
       *Wheeled vehicles never rotate to face the *	target, since they
       *aren't maneuverable enough.
       */
-      if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) &&
-          !Target_Legal(NavCom) && !IsDriving &&
-          PrimaryFacing.Difference(dir)) {
+      if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) && !NavCom &&
+          !IsDriving && PrimaryFacing.Difference(dir)) {
         if (*this == UNIT_FTANK) {
           PrimaryFacing.Set_Desired(game::Facing_Dir(game::Dir_Facing(dir)));
         } else {

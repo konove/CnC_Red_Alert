@@ -196,7 +196,6 @@
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
 #include "td/objects/super.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -415,7 +414,7 @@ HouseClass::HouseClass(HousesType house)
   Drain = 0;
   Edge = SOURCE_NORTH;
   FlagHome = 0;
-  FlagLocation = kTargetNone;
+  FlagLocation = Target{};
   HarvestedCredits = 0;
   TheWorld().house_triggers().at(house).clear();
   IGaveUp = false;
@@ -968,7 +967,7 @@ void HouseClass::AI() {
         */
         if ((techno->What_Am_I() == RTTI_INFANTRY ||
              techno->What_Am_I() == RTTI_UNIT) &&
-            Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+            dynamic_cast<FootClass*>(techno)->NavCom) {
           moving = true;
         }
 
@@ -1107,12 +1106,12 @@ void HouseClass::AI() {
   **	If there is a flag associated with this house, then mark it to be
   **	redrawn.
   */
-  if (Target_Legal(FlagLocation)) {
-    UnitClass* unit = As_Unit(FlagLocation);
+  if (FlagLocation) {
+    UnitClass* unit = FlagLocation.AsUnit();
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      const CELL cell = As_Cell(FlagLocation);
+      const CELL cell = FlagLocation.AsCell();
       TheMap().at(cell).Redraw_Objects();
     }
   }
@@ -1935,10 +1934,9 @@ void HouseClass::Make_Ally(HousesType house) {
         ObjectClass* object = TheWorld().logic().at(index);
 
         if (object && !object->IsInLimbo && object->Owner() == Class->House) {
-          const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
-          if ((Target_Legal(target) && As_Techno(target)) &&
-              Is_Ally(As_Techno(target))) {
-            dynamic_cast<TechnoClass*>(object)->TarCom = kTargetNone;
+          const Target target = dynamic_cast<TechnoClass*>(object)->TarCom;
+          if ((target && target.AsTechno()) && Is_Ally(target.AsTechno())) {
+            dynamic_cast<TechnoClass*>(object)->TarCom = Target{};
           }
         }
       }
@@ -2567,7 +2565,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
           if (bullet) {
             const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
-            bullet->Assign_Target(As_Target(cell));
+            bullet->Assign_Target(Target::FromCellIndex(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
             if (!bullet->Unlimbo(start, game::DIR_S)) {
@@ -2596,7 +2594,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           strike = Bound(TheSession().unit_count() / 5, 1, 3);
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
-                                 As_Target(cell), kTargetNone);
+                                 Target::FromCellIndex(cell), Target{});
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = 0;
         }
@@ -3590,30 +3588,30 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
+bool HouseClass::Flag_Remove(Target target, bool set_home) {
   Validate();
   bool rc = false;
 
-  if (Target_Legal(target)) {
+  if (target) {
     /*
     **	Remove the flag from a unit
     */
-    UnitClass* object = As_Unit(target);
+    UnitClass* object = target.AsUnit();
     if (object) {
       rc = object->Flag_Remove();
       if (rc && FlagLocation == target) {
-        FlagLocation = kTargetNone;
+        FlagLocation = Target{};
       }
 
     } else {
       /*
       **	Remove the flag from a cell
       */
-      const CELL cell = As_Cell(target);
+      const CELL cell = target.AsCell();
       if (TheMap().In_Radar(cell)) {
         rc = TheMap().at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
-          FlagLocation = kTargetNone;
+          FlagLocation = Target{};
         }
       }
     }
@@ -3738,7 +3736,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	mark that cell as this house's flag home cell.
     */
     if (rc) {
-      FlagLocation = As_Target(newcell);
+      FlagLocation = Target::FromCellIndex(newcell);
 
       if (set_home || FlagHome == 0) {
         TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
@@ -3821,7 +3819,7 @@ void HouseClass::MPlayer_Defeated() {
       Flag_Remove(FlagLocation, true);
     } else {
       if (FlagHome) {
-        Flag_Remove(As_Target(FlagHome), true);
+        Flag_Remove(Target::FromCellIndex(FlagHome), true);
       }
     }
   }
@@ -4509,7 +4507,7 @@ void HouseClass::Sell_Wall(CELL cell) {
         TheMap().at(cell).Wall_Update();
         TheMap().at(cell).Recalc_Attributes();
         TheMap().at(cell).Redraw_Objects();
-        ObjectClass::Detach_This_From_All(As_Target(cell), true);
+        ObjectClass::Detach_This_From_All(Target::FromCellIndex(cell), true);
       }
     }
   }

@@ -59,8 +59,8 @@ TEST(TargetTest, MakePacksKindOverValue) {
   EXPECT_EQ(Target::Make(KIND_TEAMTYPE, 0xFFF).packed(), 0xCFFF);
 }
 
-// Make() ORs the whole value over the kind, as Build_Target did: a value of
-// 4096 or more, or a negative one, changes the kind.
+// Make() ORs the whole value over the kind, as the original packer did: a value
+// of 4096 or more, or a negative one, changes the kind.
 TEST(TargetTest, MakeDoesNotMaskTheValue) {
   const Target overflow = Target::Make(KIND_UNIT, 4096);
   EXPECT_EQ(overflow.packed(), 0x3000);

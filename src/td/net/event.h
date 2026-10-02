@@ -43,6 +43,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <type_traits>
 
 #include "base/buffer.h"
 #include "base/enum_array.h"
@@ -136,7 +137,7 @@ class EventClass {
       SpecialClass Data;  // The special option flags.
     } Options;
     struct {
-      TARGET Whom;  // The object to apply the event to.
+      td::Target Whom;  // The object to apply the event to.
     } Target;
     struct {
       AnimType What;     // The animation to create.
@@ -147,22 +148,22 @@ class EventClass {
       int Value;  // general-purpose data
     } General;
     struct {
-      TARGET Whom;          // Whom to apply mission to.
+      td::Target Whom;      // Whom to apply mission to.
       MissionType Mission;  // What mission to apply.
-      TARGET Target;        // Target to assign.
-      TARGET Destination;   // Destination to assign.
+      td::Target Target;    // Target to assign.
+      td::Target Destination;  // Destination to assign.
     } MegaMission;
     struct {
-      TARGET Whom;          // Whom to apply mission to.
+      td::Target Whom;      // Whom to apply mission to.
       MissionType Mission;  // What mission to apply.
     } Mission;
     struct {
-      TARGET Whom;   // Whom to apply movement change to.
-      TARGET Where;  // Where to set NavCom to.
+      td::Target Whom;   // Whom to apply movement change to.
+      td::Target Where;  // Where to set NavCom to.
     } NavCom;
     struct {
-      TARGET Whom;    // Whom to apply attack change to.
-      TARGET Target;  // What to set TarCom to.
+      td::Target Whom;    // Whom to apply attack change to.
+      td::Target Target;  // What to set TarCom to.
     } TarCom;
     struct {
       RTTIType Type;
@@ -222,13 +223,14 @@ class EventClass {
     base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass));
   }
   explicit EventClass(SpecialClass data);
-  EventClass(EventType type, TARGET target);
+  EventClass(EventType type, td::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);
-  EventClass(EventType type, TARGET src, TARGET dest);
-  //		EventClass(TARGET src, MissionType mission);
-  EventClass(TARGET src, MissionType mission, TARGET target = kTargetNone,
-             TARGET destination = kTargetNone);
+  EventClass(EventType type, td::Target src, td::Target dest);
+  //		EventClass(td::Target src, MissionType mission);
+  EventClass(td::Target src, MissionType mission,
+             td::Target target = td::Target{},
+             td::Target destination = td::Target{});
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, CELL cell);
   EventClass(EventType type, int id, CELL cell);
@@ -245,6 +247,7 @@ class EventClass {
 
 // Events cross the wire as raw bytes, so their size is part of the protocol.
 static_assert(sizeof(EventClass) == 24);
+static_assert(std::is_trivially_copyable_v<EventClass>);
 
 }  // namespace td
 

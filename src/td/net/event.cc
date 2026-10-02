@@ -81,7 +81,6 @@
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/screens/goptions.h"
@@ -177,7 +176,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TARGET target) : EventClass() {
+EventClass::EventClass(EventType type, Target target) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -244,7 +243,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
+EventClass::EventClass(EventType type, Target src, Target dest) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -300,8 +299,9 @@ EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(TARGET src, MissionType mission, TARGET target,
-                       TARGET destination) : EventClass() {
+EventClass::EventClass(Target src, MissionType mission, Target target,
+                       Target destination)
+    : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -486,7 +486,7 @@ void EventClass::Execute() {
     */
     case REPAIR:
       CCDebugString("C&C95 - Repair packet received\n");
-      techno = As_Techno(Data.Target.Whom);
+      techno = Data.Target.Whom.AsTechno();
       if (techno && techno->IsActive) {
         techno->Repair(-1);
       }
@@ -498,14 +498,14 @@ void EventClass::Execute() {
     */
     case SELL:
       CCDebugString("C&C95 - Sell packet received\n");
-      techno = As_Techno(Data.Target.Whom);
+      techno = Data.Target.Whom.AsTechno();
       if (techno && techno->IsActive &&
           techno->House == TheObjectHeaps().house().Slot(ID)) {
         techno->Sell_Back(-1);
       } else {
-        if (Is_Target_Cell(Data.Target.Whom)) {
+        if (Data.Target.Whom.kind() == KIND_CELL) {
           TheObjectHeaps().house().Slot(ID)->Sell_Wall(
-              As_Cell(Data.Target.Whom));
+              Data.Target.Whom.AsCell());
         }
       }
       break;
@@ -571,7 +571,7 @@ void EventClass::Execute() {
     */
     case PRIMARY: {
       CCDebugString("C&C95 - Primary building packet received\n");
-      BuildingClass* building = As_Building(Data.Target.Whom);
+      BuildingClass* building = Data.Target.Whom.AsBuilding();
       if (building && building->IsActive) {
         building->Toggle_Primary();
       }
@@ -583,16 +583,16 @@ void EventClass::Execute() {
     **	and NavCom to the values specified.
     */
     case MEGAMISSION:
-      techno = As_Techno(Data.MegaMission.Whom);
+      techno = Data.MegaMission.Whom.AsTechno();
       if (techno && techno->IsActive) {
         /*
         **	Fetch a pointer to the object of the mission.
         */
         ObjectClass* object = nullptr;
-        if (Target_Legal(Data.MegaMission.Target)) {
-          object = As_Object(Data.MegaMission.Target);
+        if (Data.MegaMission.Target) {
+          object = Data.MegaMission.Target.AsObject();
         } else {
-          object = As_Object(Data.MegaMission.Destination);
+          object = Data.MegaMission.Destination.AsObject();
         }
 
         /*
@@ -650,14 +650,14 @@ void EventClass::Execute() {
         *new location.
         */
         if (Data.MegaMission.Mission == MISSION_GUARD_AREA &&
-            //					Target_Legal(Data.MegaMission.Target)
+            //					Data.MegaMission.Target
             //&&
             (techno->What_Am_I() == RTTI_INFANTRY ||
              techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_AIRCRAFT)) {
           dynamic_cast<FootClass*>(techno)->ArchiveTarget =
               Data.MegaMission.Target;
-          techno->Assign_Target(kTargetNone);
+          techno->Assign_Target(Target{});
           techno->Assign_Destination(Data.MegaMission.Target);
         } else {
           techno->Assign_Target(Data.MegaMission.Target);
@@ -679,11 +679,11 @@ void EventClass::Execute() {
     **	Request that the unit/infantry/aircraft go into idle mode.
     */
     case IDLE:
-      techno = As_Techno(Data.Target.Whom);
+      techno = Data.Target.Whom.AsTechno();
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
-        techno->Assign_Destination(kTargetNone);
-        techno->Assign_Target(kTargetNone);
+        techno->Assign_Destination(Target{});
+        techno->Assign_Target(Target{});
         techno->Enter_Idle_Mode();
       }
       break;
@@ -693,7 +693,7 @@ void EventClass::Execute() {
     *location.
     */
     case SCATTER:
-      techno = As_Techno(Data.Target.Whom);
+      techno = Data.Target.Whom.AsTechno();
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
         techno->Scatter(Coordinate{}, true);

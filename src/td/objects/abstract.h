@@ -104,11 +104,11 @@ class AbstractClass {
   [[nodiscard]] game::DirType Direction(Coordinate coord) const {
     return td::Direction(Center_Coord(), coord);
   }
-  [[nodiscard]] game::DirType Direction(TARGET target) const;
+  [[nodiscard]] game::DirType Direction(Target target) const;
   [[nodiscard]] game::DirType Direction(CELL cell) const {
     return td::Direction(Coord_Cell(Center_Coord()), cell);
   }
-  [[nodiscard]] int Distance(TARGET target) const;
+  [[nodiscard]] int Distance(Target target) const;
   [[nodiscard]] int Distance(Coordinate coord) const {
     return td::Distance(Center_Coord(), coord);
   }

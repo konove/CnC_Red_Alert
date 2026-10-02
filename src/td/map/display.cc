@@ -155,7 +155,6 @@
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -3193,7 +3192,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
                 EventClass(EventClass::SELL, object->As_Target()));
           } else {
             TheNetwork().out_list().Add(
-                EventClass(EventClass::SELL, As_Target(cell)));
+                EventClass(EventClass::SELL, Target::FromCellIndex(cell)));
           }
         }
         if (action == ACTION_ION) {

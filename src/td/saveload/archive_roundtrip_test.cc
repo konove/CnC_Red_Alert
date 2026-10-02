@@ -34,7 +34,6 @@
 #include "td/objects/cell.h"
 #include "td/objects/factory.h"
 #include "td/objects/house.h"
-#include "td/objects/target.h"
 #include "td/objects/unit.h"
 #include "td/startup/game_state.h"
 
@@ -168,22 +167,29 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     e.Type = EventClass::GAMESPEED;
     e.Data.General.Value = 3;
   }, EventClass::GAMESPEED, 3);
-  check([](EventClass& e) {
-    e.Type = EventClass::IDLE;
-    e.Data.Target.Whom = TARGET{123};
-  }, EventClass::IDLE, TARGET{123});
-  check([](EventClass& e) {
-    e.Type = EventClass::IDLE;
-    e.Data.NavCom.Whom = TARGET{123};
-    e.Data.NavCom.Where = TARGET{456};
-  }, EventClass::IDLE, TARGET{123}, TARGET{456});
-  check([](EventClass& e) {
-    e.Type = EventClass::MEGAMISSION;
-    e.Data.MegaMission.Whom = TARGET{123};
-    e.Data.MegaMission.Mission = MISSION_MOVE;
-    e.Data.MegaMission.Target = TARGET{456};
-    e.Data.MegaMission.Destination = TARGET{789};
-  }, TARGET{123}, MISSION_MOVE, TARGET{456}, TARGET{789});
+  check(
+      [](EventClass& e) {
+        e.Type = EventClass::IDLE;
+        e.Data.Target.Whom = Target::FromPacked(123);
+      },
+      EventClass::IDLE, Target::FromPacked(123));
+  check(
+      [](EventClass& e) {
+        e.Type = EventClass::IDLE;
+        e.Data.NavCom.Whom = Target::FromPacked(123);
+        e.Data.NavCom.Where = Target::FromPacked(456);
+      },
+      EventClass::IDLE, Target::FromPacked(123), Target::FromPacked(456));
+  check(
+      [](EventClass& e) {
+        e.Type = EventClass::MEGAMISSION;
+        e.Data.MegaMission.Whom = Target::FromPacked(123);
+        e.Data.MegaMission.Mission = MISSION_MOVE;
+        e.Data.MegaMission.Target = Target::FromPacked(456);
+        e.Data.MegaMission.Destination = Target::FromPacked(789);
+      },
+      Target::FromPacked(123), MISSION_MOVE, Target::FromPacked(456),
+      Target::FromPacked(789));
   check([](EventClass& e) {
     e.Type = EventClass::PRODUCE;
     e.Data.Specific.Type = RTTI_UNITTYPE;
@@ -319,7 +325,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
   unit->Coord = Cell_Coord(1000);
   unit->Strength = 123;
-  unit->NavCom = As_Target(CELL{1200});
+  unit->NavCom = Target::FromCellIndex(CELL{1200});
   unit->Flagged = HOUSE_BAD;
   unit->Reload.Set(87);
   unit->Path[0] = game::FACING_E;

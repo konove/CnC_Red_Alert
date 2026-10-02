@@ -92,7 +92,6 @@
 #include "td/objects/combat.h"
 #include "td/objects/object.h"
 #include "td/objects/smudge.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -1405,9 +1404,9 @@ void AnimClass::Middle() {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET AnimClass::As_Target() const {
+Target AnimClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_ANIMATION,
+  return Target::Make(KIND_ANIMATION,
                       TheObjectHeaps().anim().SlotIndexOf(this));
 }
 
@@ -1457,7 +1456,7 @@ Coordinate AnimClass::Adjust_Coord(Coordinate coord) {
  * HISTORY: * 06/30/1995 JLB : Created. * 07/02/1995 JLB : Detach is a precursor
  *to animation destruction.                          *
  *=============================================================================================*/
-void AnimClass::Detach(TARGET target, bool all) {
+void AnimClass::Detach(Target target, bool all) {
   Validate();
   if (Object && Object->As_Target() == target && all) {
     MapEditClass::Remove(this, In_Which_Layer());

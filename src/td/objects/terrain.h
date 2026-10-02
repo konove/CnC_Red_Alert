@@ -144,7 +144,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   bool Catch_Fire() override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source) override;
-  [[nodiscard]] TARGET As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
 
   /*
   **	AI.

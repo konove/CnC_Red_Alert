@@ -96,15 +96,15 @@ class AircraftClass : public FootClass, public FlyClass {
   game::DirType Desired_Load_Dir(ObjectClass* object,
                                  CELL& moveto) const override;
   int Pip_Count() const override;
-  TARGET Good_Fire_Location(TARGET target) const;
+  Target Good_Fire_Location(Target target) const;
   bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
   game::DirType Pose_Dir() const;
-  TARGET Good_LZ() const;
+  Target Good_LZ() const;
   game::DirType Fire_Direction() const override;
 
   // Landing zone support functionality.
-  bool Is_LZ_Clear(TARGET target) const;
-  TARGET New_LZ(TARGET oldlz) const;
+  bool Is_LZ_Clear(Target target) const;
+  Target New_LZ(Target oldlz) const;
 
   // Coordinate inquiry functions. These are used for both display and
   Coordinate Sort_Y() const override;
@@ -130,8 +130,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
-  void Player_Assign_Mission(MissionType mission, TARGET target = kTargetNone,
-                             TARGET destination = kTargetNone) override;
+  void Player_Assign_Mission(MissionType mission, Target target = Target{},
+                             Target destination = Target{}) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
@@ -139,8 +139,8 @@ class AircraftClass : public FootClass, public FlyClass {
   // Combat related.
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source) override;
-  BulletClass* Fire_At(TARGET target, int which) override;
-  TARGET As_Target() const override;
+  BulletClass* Fire_At(Target target, int which) override;
+  Target As_Target() const override;
 
   /*
   **	AI.

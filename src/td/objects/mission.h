@@ -120,8 +120,8 @@ class MissionClass : public ObjectClass {
 
   static const char* Mission_Name(MissionType mission);
   static MissionType Mission_From_Name(const char* name);
-  virtual void Override_Mission(MissionType mission, TARGET /*unused*/,
-                                TARGET /*unused*/);
+  virtual void Override_Mission(MissionType mission, Target /*unused*/,
+                                Target /*unused*/);
   virtual bool Restore_Mission();
 
   /*

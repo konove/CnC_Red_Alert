@@ -129,7 +129,6 @@
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
 #include "td/objects/super.h"
-#include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
@@ -759,7 +758,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   for (int index = 0; index < std::ssize(Overlappers);
        index++) {
     // Deleted objects can leave stale overlap entries outside the redraw area.
-    // Reclaim them just as the archive's null inactive TARGET does on load.
+    // Reclaim them just as the archive's null inactive Target does on load.
     if (base::At(Overlappers, index) != nullptr &&
         !base::At(Overlappers, index)->IsActive) {
       base::At(Overlappers, index) = nullptr;
@@ -1486,29 +1485,29 @@ void CellClass::Wall_Update() {
       if (newcell.Overlay == OVERLAY_BRICK_WALL && newcell.OverlayData == 48) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
-                                          true);
+        ObjectClass::Detach_This_From_All(
+            Target::FromCellIndex(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_SANDBAG_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
-                                          true);
+        ObjectClass::Detach_This_From_All(
+            Target::FromCellIndex(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_CYCLONE_WALL &&
           newcell.OverlayData == 32) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
-                                          true);
+        ObjectClass::Detach_This_From_All(
+            Target::FromCellIndex(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_BARBWIRE_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
-                                          true);
+        ObjectClass::Detach_This_From_All(
+            Target::FromCellIndex(newcell.Cell_Number()), true);
       }
 
       newcell.Recalc_Attributes();

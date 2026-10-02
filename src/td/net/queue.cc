@@ -278,8 +278,8 @@ static void Dump_Packet_Too_Late_Stuff(const EventClass* event);
  * HISTORY:                                                                *
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
-bool Queue_Mission(TARGET whom, MissionType mission, TARGET target,
-                   TARGET destination) {
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination) {
   return TheNetwork().out_list().Add(
       EventClass(whom, mission, target, destination));
 
@@ -520,7 +520,7 @@ static void Queue_AI_Normal() {
  * relevant to each type of event.  For instance, if 100 infantry guys 	* are
  * told to move to the same location, the command itself & the 		*
  * location will be included in the 1st movement command only; after
- *	* that, there will be a rep count then 99 infantry TARGET numbers,
+ *	* that, there will be a rep count then 99 infantry target numbers,
  *	* identifying all the infantry told to move.
  **
  * - The protocol also only sends packets out every 'n' frames.  This cuts *

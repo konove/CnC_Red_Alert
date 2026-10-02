@@ -107,8 +107,8 @@ class AnimClass final : public ObjectClass, private StageClass {
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void AI() override;
-  [[nodiscard]] TARGET As_Target() const override;
-  void Detach(TARGET target, bool all) override;
+  [[nodiscard]] Target As_Target() const override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	File I/O.
