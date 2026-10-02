@@ -85,6 +85,16 @@
     branches do it once after the loop. Compare with the original source and TD's `Recruit()`
     (`td/ai/team.cc`), which is structured differently, before moving the block
   - Found while converting `CCPtr` (`docs/CCPTR_REMOVAL_PLAN.md`, step 2)
+- Check that Red Alert's scenario INI numbers team and trigger types the same way both ways
+  - The writers emit a type's position in its heap's in-use list (`PositionOf()`), the readers
+    resolve the number as a slot index (`SlotOrNull()`): `ra/ai/tevent.cc` (~651 write, ~674 read),
+    `ra/ai/taction.cc` (~293, ~319), `ra/ai/teamtype.cc` (~2007, ~1841 and ~1937). They agree only
+    while the type heaps have no holes, which holds after a fresh INI load; a type deleted in the
+    scenario editor leaves one. The original game had the same pairing. Either write `SlotIndexOf()`
+    or check that the editor saves its types in slot order
+- Check the heap `Save()` results in Red Alert's save game
+  - `ra/saveload/saveload.cc` (~281-340) ignores every `ObjectHeap<T>::Save()` result, which is
+    `writer.ok()` since `90064ddd`; Tiberian Dawn's `saveload.cc` stops at the first false
 
 ## Refactoring
 
@@ -266,10 +276,6 @@
 - Stop `LayerClass::Delete(const ObjectClass*)` accepting a literal 0
   - `layer.Delete(0)` would compile as `Delete(nullptr)` now the index overload is gone; a deleted
     `Delete(int)` overload in `ra/map/layer.h` and `td/map/layer.h` would reject it
-- Rename the object pool to Google style with `/rename-google-style`
-  - `FixedIHeapClass`/`TFixedIHeapClass` (`game/core/heap.h`) keep their legacy names, as do
-    `Set_Heap`, `Ptr`, `Raw_Ptr`, `Active_Ptr`, `Logical_ID` and the PascalCase members; e.g.
-    `ObjectPool`. Left out of `docs/GAME_CONTAINERS_PLAN.md` to keep its diff mechanical
 - Move `LayerClass` to `game/`
   - `ra/map/layer.*` and `td/map/layer.*` are identical apart from headers, and since
     `docs/GAME_CONTAINERS_PLAN.md` the class holds a `std::vector<ObjectClass*>` instead of
@@ -291,6 +297,28 @@
     (`td/saveload/serialize.h`), which save type enums and resolve through `As_Reference`. Neither
     format can change without breaking saves, so sharing means one proxy per encoding in `game/`,
     alongside `docs/GAME_NAMESPACES_PLAN.md`
+- Decide on the object heap's names (`game/core/object_heap.h`, `e58d9c9d..8b332893`)
+  - `ObjectHeap`/`ObjectHeapBase` keep the tree's word "heap" (`TheObjectHeaps()`, `TypeHeaps`,
+    `HeapSlotPtr`); `ObjectPool` was the alternative
+  - `SlotIndexOf()` replaced `ID()`, but `OwnedVector`, `LayerClass` and `MapClass` still call the
+    same idea `ID()`; rename them to match, or accept the difference
+  - `ActiveAt(position)` reads the in-use list; `Active()` or `ObjectAt()` were the alternatives
+- Make `ObjectHeap<T>::Save()` const
+  - It is non-const only because each object's `Serialize()` is one template for reading and
+    writing; a const writing path means const-correct `Serialize()` in the ~117 files that define
+    one
+- Consider keeping slot indices instead of pointers in `ObjectHeapBase`'s in-use list
+  - The pointer list makes `Free()` and `PositionOf()` linear searches, and lets the list disagree
+    with the in-use flags, which `CheckBookkeeping()` then has to detect. Indices (or an intrusive
+    order list) would make that state unrepresentable, at the cost of arithmetic in `ActiveAt()`,
+    which every per-frame object loop calls in both games; measure before changing it
+- Delete Tiberian Dawn's `#ifdef NEVER` `As_Terrain()` in `td/objects/target.cc` (~349-355)
+  - It would not compile: it takes the address of the `void*` a heap subscript used to return
+- Fix the `DLOG` lines in `td/startup/init.cc` (~195-211) that name `Units.Set_Heap` and friends
+  - Both the globals and `Set_Heap()` are gone; the heaps are `TheObjectHeaps().unit()` and
+    `Reset()`
+- Consider renaming `ra/core/heap_instances.cc` to `object_heap_instances.cc`
+  - It holds the explicit `ObjectHeap<T>` instantiations; its name predates the class name
 
 ## Testing
 
@@ -303,7 +331,7 @@
     and truncated data, zero and overlong runs, and each scale
 - Replace the tests' private `RecordingSink` copies with `VectorSink`
   (`engine/stream/vector_sink.h`)
-  - `engine/stream/archive_test.cc`, `ra/core/heap_test.cc`, `engine/crypto/pk_stream_test.cc`,
+  - `engine/stream/archive_test.cc`, `engine/crypto/pk_stream_test.cc`,
     `engine/crypto/blowfish_stream_test.cc`, and `engine/codec/stream_golden_test.cc`,
     `codec_corrupt_test.cc`, `codec_state_test.cc`, `lcw_comp_test.cc`, `stream_error_test.cc`
   - `engine/file/mix_archive_test.cc:95` defines its own class named `VectorSink`
@@ -344,6 +372,11 @@
 
 ## Debugging
 
+- Count the in-use flags in `ObjectHeapBase::CheckBookkeeping()` (`game/core/object_heap.cc`)
+  - It checks that every listed pointer is a live slot, but not that every slot flagged in use is
+    listed: a flag set without its list entry, or a slot listed twice next to an unlisted one, goes
+    unreported by `-CHECKHEAPS`. Comparing `std::ranges::count(in_use_, true)` with `Count()` closes
+    it
 - Add a Dear ImGui debug overlay to replace the deleted monochrome debug screen
   - `engine/window` presents through `SDL_Renderer` (`engine/window/display.cc`), so the
     `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends drop in: feed `SDL_PollEvent` and draw
