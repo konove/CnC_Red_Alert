@@ -81,7 +81,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
@@ -2666,7 +2665,7 @@ int MapEditClass::Load_Scenario() {
     */
     game::ControlClass* commands = nullptr;  // the button list
 
-    TListClass<CCPtr<TriggerTypeClass> > triggerlist(
+    TListClass<TriggerTypeClass*> triggerlist(
         kTriggerList, kDListX, kDListY, kDListW, kDListH,
         TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
         MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -2686,14 +2685,13 @@ int MapEditClass::Load_Scenario() {
     **	Fill in the list box
     */
     for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
-      triggerlist.Add_Item(
-          CCPtr<TriggerTypeClass>(TheObjectHeaps().trigger_type().Ptr(i)));
+      triggerlist.Add_Item(TheObjectHeaps().trigger_type().Ptr(i));
     }
 
     PNBubble_Sort(triggerlist, triggerlist.Count());
 
     if (CurTrigger) {
-      triggerlist.Set_Selected_Index(CCPtr<TriggerTypeClass>(CurTrigger));
+      triggerlist.Set_Selected_Index(CurTrigger);
     } else {
       triggerlist.Set_Selected_Index(0);
     }
@@ -2705,9 +2703,6 @@ int MapEditClass::Load_Scenario() {
       CurTrigger = nullptr;
     } else {
       CurTrigger = triggerlist.Current_Item();
-      //		if (!CurTrigger) {
-      //			CurTrigger = &*triggerlist.Current_Item();
-      //		}
     }
 
     /*
@@ -2753,9 +2748,7 @@ int MapEditClass::Load_Scenario() {
       */
       switch (static_cast<int>(input)) {
         case engine::window::ButtonKey(kTriggerList):
-          CurTrigger = &*triggerlist.Current_Item();
-          //				CurTrigger = (TriggerTypeClass
-          //*)&*triggerlist.Current_Item();
+          CurTrigger = triggerlist.Current_Item();
           break;
 
         case engine::window::ButtonKey(kButtonEdit):

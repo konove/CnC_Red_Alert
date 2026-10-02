@@ -58,7 +58,6 @@
 #include "ra/ai/teamtype.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -259,10 +258,10 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   */
   game::GadgetClass* commands = nullptr;  // the button list
 
-  TListClass<CCPtr<TeamTypeClass> > teamlist(
-      kTeamList, kListX, kListY, kListW, kListH, TPF_EFNT | TPF_NOSHADOW,
-      MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  TListClass<TeamTypeClass*> teamlist(kTeamList, kListX, kListY, kListW, kListH,
+                                      TPF_EFNT | TPF_NOSHADOW,
+                                      MixArchive::RetrieveData("EBTN-UP.SHP"),
+                                      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kEditX, kEditY,
                           kEditW);
@@ -280,8 +279,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   **	Fill in team names
   */
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    teamlist.Add_Item(
-        CCPtr<TeamTypeClass>(TheObjectHeaps().team_type().Ptr(index)));
+    teamlist.Add_Item(TheObjectHeaps().team_type().Ptr(index));
   }
 
   PNBubble_Sort(teamlist, teamlist.Count());
@@ -291,7 +289,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   }
 
   if (CurTeam) {
-    teamlist.Set_Selected_Index(CCPtr<TeamTypeClass>(CurTeam));
+    teamlist.Set_Selected_Index(CurTeam);
     CurTeam = teamlist.Current_Item();
   } else {
     teamlist.Set_Selected_Index(0);

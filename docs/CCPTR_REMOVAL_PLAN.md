@@ -2,7 +2,7 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: in progress.** Steps 1–4 done.
+**Status: in progress.** Steps 1–5 done; step 5 still wants its by-hand editor check.
 
 ## Context
 
@@ -193,9 +193,12 @@ The 4 members in the third group.
 
 ### Step 5: editor lists
 
-- [ ] `TListClass<CCPtr<TeamTypeClass>>` becomes `TListClass<TeamTypeClass*>`, and the trigger-type
-      list likewise. Drop the `CCPtr<...>(...)` wraps at `mapedtm.cc:284`, `:294` and
-      `mapeddlg.cc:2690`, `:2696`.
+- [x] `TListClass<CCPtr<TeamTypeClass>>` becomes `TListClass<TeamTypeClass*>`, and the trigger-type
+      list likewise. The `CCPtr<...>(...)` wraps went, `CurTrigger = &*triggerlist.Current_Item()`
+      lost its `&*`, and the commented-out copies of that line went with it.
+- [ ] By hand, on a real display: open the scenario editor's team-type and trigger-type lists and
+      check that they are sorted by name, that the current entry is selected, and that edit and
+      delete work. Not done yet.
 
 ### Step 6: delete CCPtr
 
@@ -248,3 +251,4 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 | 2    | 21376614           | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass.                                                                    |
 | 3    | 4f6e08e4, 219794e1 | Saved object pointers, and the null-check fixes first. Deep analyzer over all 191 RA sources clean. SCU05EA line-identical; SCG10EA aircraft only (204 lines; old-vs-old reaches 472). Smoke, `--load-fixture` and both cross-loads pass. |
 | 4    | (this commit)      | INI-parsed pointers and the unfilled-slot check. SCU05EA line-identical, SCG10EA aircraft only (154 lines). Smoke, `--load-fixture` and both cross-loads pass.                                                                            |
+| 5    | (this commit)      | Editor lists. Builds and passes the strict checks; the editor dialogs are not yet checked by hand.                                                                                                                                        |
