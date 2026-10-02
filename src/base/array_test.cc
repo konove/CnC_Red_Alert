@@ -2,6 +2,7 @@
 
 #include "base/array.h"
 
+#include <array>
 #include <cstddef>
 #include <span>
 #include <vector>
@@ -85,6 +86,25 @@ TEST(ArrayDeathTest, SpanRejectsNegativeEndEmptyAndOversizedIndices) {
   EXPECT_DEATH((void)base::At(view.subspan(1, 0), 0), "Check failed");
   EXPECT_DEATH((void)base::At(view, static_cast<std::size_t>(-1)),
                "Check failed");
+  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+}
+
+constexpr std::array<int, 3> kStdValues = {3, 5, 8};
+static_assert(base::At(kStdValues, 2) == 8);
+
+TEST(ArrayTest, StdArrayAccessReturnsTheStoredElement) {
+  std::array<int, 3> values = {2, 4, 6};
+  base::At(values, 1) = 5;
+  EXPECT_EQ(values.at(1), 5);
+  const std::array<int, 3>& view = values;
+  EXPECT_EQ(&base::At(view, 2), &values.at(2));
+}
+
+TEST(ArrayDeathTest, StdArrayRejectsNegativeAndPastTheEndIndices) {
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH((void)base::At(kStdValues, -1), "Check failed");
+  EXPECT_DEATH((void)base::At(kStdValues, 3), "Check failed");
   // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 

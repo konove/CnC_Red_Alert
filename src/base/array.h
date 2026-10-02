@@ -1,9 +1,10 @@
-// Bounds-checked access to fixed arrays, spans and vectors without changing
-// storage.
+// Bounds-checked access to fixed arrays, spans and standard containers
+// without changing storage.
 
 #ifndef CNC_RED_ALERT_BASE_ARRAY_H_
 #define CNC_RED_ALERT_BASE_ARRAY_H_
 
+#include <array>
 #include <concepts>
 #include <cstddef>
 #include <span>
@@ -38,6 +39,22 @@ template <class T, std::size_t N>
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
 constexpr T& At(T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N],
                 std::integral auto index) {
+  return base::At(std::span(array), index);
+}
+
+// Returns an element of a std::array, like the C array overload above.
+template <class T, std::size_t N>
+// Clang 23 cannot trace the reference through libstdc++ span operations.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+constexpr T& At(std::array<T, N>& array ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                std::integral auto index) {
+  return base::At(std::span(array), index);
+}
+template <class T, std::size_t N>
+constexpr const T& At(
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+    const std::array<T, N>& array ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    std::integral auto index) {
   return base::At(std::span(array), index);
 }
 
