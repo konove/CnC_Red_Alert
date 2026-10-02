@@ -78,6 +78,14 @@
     but if the selection empties with the popups still showing the read now aborts instead of using
     a stale pointer
 
+- Check whether Red Alert's team recruiting adds vehicles and ships once per loop pass
+  - In `TeamClass::Recruit()` (`ra/ai/team.cc`), the `RTTI_UNIT` and `RTTI_VESSEL` branches run
+    `if (best) { Add(best); added++; ... }` inside the `for` loop over the heap, so the best
+    candidate so far is added, and `added` counted, on every later pass; the infantry and aircraft
+    branches do it once after the loop. Compare with the original source and TD's `Recruit()`
+    (`td/ai/team.cc`), which is structured differently, before moving the block
+  - Found while converting `CCPtr` (`docs/CCPTR_REMOVAL_PLAN.md`, step 2)
+
 ## Refactoring
 
 - Migrate legacy integer types to fixed-width types per Google C++ Style Guide
@@ -268,6 +276,22 @@
     inheriting a game-specific vector; it needs `ObjectClass`'s ordering operators, so it would be a
     template over the object type or take a comparator
 
+- Stop `AnimClass` writing into its type
+  - The first time an animation plays, `ra/objects/anim.cc` (~500, ~659, ~672, ~753) fills
+    `AnimTypeClass::Stages` and `LoopEnd` through `AnimClass::Class`, which is why that is the one
+    type pointer left non-const (`docs/CCPTR_REMOVAL_PLAN.md`). Compute them when the type loads its
+    image, or make them `mutable` as a lazy cache
+- Replace `TeamTypeClass::Number` with a count of live teams
+  - Red Alert keeps the number of live teams of a type on the type itself, bumped and dropped
+    through `TeamClass::Class` in the `TeamClass` constructor and destructor (`ra/ai/team.cc` ~295,
+    ~342); a count over `TheObjectHeaps().team()` would remove the write through the pointer
+- Decide whether the two games should share their save-game pointer proxies
+  - Red Alert saves heap pointers as slot indices through `game::HeapSlotPtr`
+    (`game/core/heap_slot_ptr.h`); Tiberian Dawn has its own `TypePtr`, `HousePtr` and `TeamTypePtr`
+    (`td/saveload/serialize.h`), which save type enums and resolve through `As_Reference`. Neither
+    format can change without breaking saves, so sharing means one proxy per encoding in `game/`,
+    alongside `docs/GAME_NAMESPACES_PLAN.md`
+
 ## Testing
 
 - Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
@@ -306,6 +330,17 @@
   - `Sort()` is one bubble pass and `Sorted_Add()` inserts before the first object that sorts after
     the new one; both decide draw and logic order, and only the 600-frame headless logic logs cover
     them now. Test a partly sorted layer: one `Sort()` pass, then where `Sorted_Add()` lands
+
+- Check Red Alert's scenario editor team-type and trigger-type lists on a real display
+  - They hold plain pointers since `6f1cc3a2` (`ra/editor/mapedtm.cc`, `ra/editor/mapeddlg.cc`);
+    check that both lists are sorted by name, the current entry is selected, and edit and delete
+    work. The last open item of `docs/CCPTR_REMOVAL_PLAN.md`
+- Find out why some Red Alert scenarios never reach frame 1 when started headless
+  - `rasdl -NOMOVIES -NEWGAME<name> -QUITFRAME2` under `SDL_VIDEODRIVER=dummy` hangs (killed by a 60
+    s timeout, no output) for SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM multiplayer
+    maps; the other 37 campaign scenarios run. The pre-plan binary (`2d6ef8ed`) does the same, so it
+    predates `docs/CCPTR_REMOVAL_PLAN.md`
+  - Until it is fixed, headless logic logs and save/load smoke tests cannot cover those scenarios
 
 ## Debugging
 
