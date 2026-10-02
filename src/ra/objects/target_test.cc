@@ -174,9 +174,6 @@ TEST(TargetTest, NoTargetDecodesToNothing) {
 
 TEST(TargetTest, NullPointersAreNoTarget) {
   EXPECT_EQ(Target::Of(static_cast<const AbstractClass*>(nullptr)), Target{});
-  EXPECT_EQ(Target::Of(static_cast<const AbstractTypeClass*>(nullptr)),
-            Target{});
-  EXPECT_EQ(Target::Of(static_cast<const CellClass*>(nullptr)), Target{});
 }
 
 TEST(TargetTest, OfAnObjectIsItsKindAndHeapIndex) {
@@ -185,9 +182,8 @@ TEST(TargetTest, OfAnObjectIsItsKindAndHeapIndex) {
   EXPECT_EQ(object.As_Target(), Target::Make(RTTI_UNIT, 7));
 }
 
-TEST(TargetTest, OfATypeIsItsKindAndIndex) {
+TEST(TargetTest, ATypeIsItsKindAndIndex) {
   const AbstractTypeClass type(RTTI_UNITTYPE, 3, 0, "TEST");
-  EXPECT_EQ(Target::Of(&type), Target::Make(RTTI_UNITTYPE, 3));
   EXPECT_EQ(type.As_Target(), Target::Make(RTTI_UNITTYPE, 3));
 }
 

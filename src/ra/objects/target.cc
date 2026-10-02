@@ -81,14 +81,6 @@ Target Target::Of(const AbstractClass* object) {
   return object != nullptr ? Make(object->RTTI, object->ID) : Target{};
 }
 
-Target Target::Of(const AbstractTypeClass* type) {
-  return type != nullptr ? Make(type->RTTI, type->ID) : Target{};
-}
-
-Target Target::Of(const CellClass* cell) {
-  return cell != nullptr ? FromCellIndex(cell->ID) : Target{};
-}
-
 ObjectClass* Target::AsObject() const {
   const int val = value();
   ObjectClass* object = nullptr;

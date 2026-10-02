@@ -15,12 +15,10 @@
 namespace ra {
 
 class AbstractClass;
-class AbstractTypeClass;
 class AircraftClass;
 class AnimClass;
 class BuildingClass;
 class BulletClass;
-class CellClass;
 class InfantryClass;
 class ObjectClass;
 class TeamClass;
@@ -43,8 +41,8 @@ class VesselClass;
 //
 // RTTI_CELL has two value encodings, and nothing in the word says which one a
 // target holds:
-//   - the cell index, the CELL itself (FromCellIndex(), Of(const CellClass*);
-//     read by cell_index() and AsMovementCoordinate());
+//   - the cell index, the CELL itself (FromCellIndex(); read by cell_index()
+//     and AsMovementCoordinate());
 //   - a sub-cell spot, 12 bits per axis in units of 16 leptons, Y over X
 //     (FromCell(), FromCoordinate(), CellClass::As_Target(); read by
 //     AsCoordinate() and AsCell()).
@@ -106,13 +104,6 @@ class Target {
   // The object's kind and heap index, or Target{} for nullptr. Equal to
   // object->As_Target() otherwise.
   static Target Of(const AbstractClass* object);
-
-  // The type's kind and index, or Target{} for nullptr.
-  static Target Of(const AbstractTypeClass* type);
-
-  // The cell index encoding of a map cell, or Target{} for nullptr. Unlike
-  // cell->As_Target(), which gives the sub-cell encoding.
-  static Target Of(const CellClass* cell);
 
   // Returns the packed word, as saved, sent, logged and CRC'd.
   [[nodiscard]] constexpr int32_t packed() const noexcept { return word_; }
