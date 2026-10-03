@@ -209,6 +209,14 @@
     an empty list if someone dials. The old reader had the same shape
   - `Build_Init_String_Listbox()` (`td/net/nulldlg.cc`) sorts the list in place while the stored
     indexes stay, so a saved `InitStringIndex` can name a different string afterwards
+- Decide what `Carryover::Recreate()` does with an object it cannot place
+  - `ra/ai/carryover.cc:154` (marked with a TODO): when `Unlimbo()` fails because the old cell is
+    off the new map or occupied, the object built by `base::NewPooled` stays in limbo and keeps its
+    pool slot for the rest of the scenario. The original did the same. Options: `base::DeletePooled`
+    it on failure (3 lines; changes pool occupancy, so later allocations and a multiplayer or
+    recorded game can diverge), or leave it and replace the TODO with a comment saying why
+  - Found in the carryover modernization (`9931845f`..`fe837a37`); Tiberian Dawn has no carryover
+    objects
 
 ## Features
 
@@ -682,6 +690,20 @@
     `std::string(token).c_str()`: `IconListClass::Add_Item_Detail()` (`ra/ui/iconlist`, virtual,
     stores the pointer), Tiberian Dawn's `NullModemClass::Send_Modem_Command()`, and the `name`
     parameter of the team and trigger `Fill_In()`, which feeds `Set_Name()`
+- Replace `Carryover`'s kind-plus-union with a `std::variant`
+  - `ra/ai/carryover.h:69` keeps `rtti_` and a union of `StructType`/`UnitType`/`InfantryType`/
+    `VesselType`. A `std::variant<std::monostate, StructType, UnitType, InfantryType, VesselType>`
+    with `std::visit` would drop `rtti_` and the three switches that each list all 28 `RTTIType`
+    values for `-Wswitch-enum`: the constructor and `Recreate()` in `ra/ai/carryover.cc` and
+    `Carryover::Serialize()` in `ra/saveload/saveglobals.cc:81`. `Serialize()` must keep writing the
+    `RTTIType` and then the type so the save format holds; check with `tools/ra_saveload_smoke.sh`.
+    About 150 lines; `docs/COORDINATE_TYPES_PLAN.md:90` lists the union as a candidate
+  - `strength_` (`ra/ai/carryover.h:82`) is an `int` saved as 4 bytes while `ObjectClass::Strength`
+    is `int16_t`, so `Recreate()` narrows it back with a cast. Making it `int16_t` changes the save
+    format (a `kSaveGameVersion` bump); do it with the variant or not at all
+  - The four loops that record the carryover objects in `ra/ai/scenario.cc:950-987` differ only in
+    the heap they walk; one helper templated on the heap would replace them (about 30 lines less)
+  - Left by the carryover modernization (`9931845f`..`fe837a37`)
 
 ## Testing
 
