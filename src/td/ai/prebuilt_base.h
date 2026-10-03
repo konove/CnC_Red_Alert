@@ -81,9 +81,9 @@ class PrebuiltBase {
   // the list is not cleared.
   void ReadIni(const engine::file::IniFile& ini);
 
-  // Replaces the [Base] section of the INI text in `ini_text` with this base's
+  // Replaces the [Base] section of the database `ini` with this base's
   // nodes. The owner is not written.
-  void WriteIni(std::string& ini_text) const;
+  void WriteIni(engine::file::IniFile& ini) const;
 
   // Returns the building that fills `node`: one of the node's type at the
   // node's coordinate, whichever house owns it. Returns nullptr if the node is

@@ -174,7 +174,6 @@
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/data/ini.h"
-#include "td/data/profile.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -1770,7 +1769,7 @@ void HouseClass::Read_INI(const engine::file::IniFile& ini) {
  *the INI file.    * It is used by the scenario editor when saving the scenario.
  **
  *                                                                                             *
- * INPUT:   buffer   -- INI file staging buffer. *
+ * INPUT:   ini   -- The INI database to write into. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -1778,19 +1777,16 @@ void HouseClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Write_INI(std::string& buffer) {
+void HouseClass::Write_INI(engine::file::IniFile& ini) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
     const HouseClass* p = As_Pointer(i);
 
     if (p) {
-      WWWritePrivateProfileInt(p->Class->IniName, "Credits",
-                               static_cast<int>(p->Credits / 100), buffer);
-      WWWritePrivateProfileString(p->Class->IniName, "Edge",
-                                  Name_From_Source(p->Edge), buffer);
-      WWWritePrivateProfileInt(p->Class->IniName, "MaxUnit", p->MaxUnit,
-                               buffer);
-      WWWritePrivateProfileInt(p->Class->IniName, "MaxBuilding", p->MaxBuilding,
-                               buffer);
+      ini.PutInt(p->Class->IniName, "Credits",
+                 static_cast<int>(p->Credits / 100));
+      ini.PutString(p->Class->IniName, "Edge", Name_From_Source(p->Edge));
+      ini.PutInt(p->Class->IniName, "MaxUnit", p->MaxUnit);
+      ini.PutInt(p->Class->IniName, "MaxBuilding", p->MaxBuilding);
 
       bool first = true;
       char sbuffer[100] = "";
@@ -1803,7 +1799,7 @@ void HouseClass::Write_INI(std::string& buffer) {
           first = false;
         }
       }
-      WWWritePrivateProfileString(p->Class->IniName, "Allies", sbuffer, buffer);
+      ini.PutString(p->Class->IniName, "Allies", sbuffer);
     }
   }
 }

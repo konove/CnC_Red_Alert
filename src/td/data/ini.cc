@@ -71,6 +71,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
+#include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
@@ -90,7 +91,6 @@
 #include "td/core/inline.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
-#include "td/data/profile.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -119,6 +119,29 @@ namespace td {
 // The most money a scenario lets the player carry over from the last one,
 // from its [Basic] CarryOverCap; negative means uncapped.
 static int carry_over_cap;
+
+namespace {
+
+// Fills `ini` from the text of the game file `name`. A file that does not
+// exist, or holds no section, leaves `ini` empty: the editor then starts the
+// scenario or the master list from scratch.
+void LoadIniFile(const char* name, engine::file::IniFile& ini) {
+  const std::optional<std::string> text = engine::file::ReadProfileFile(name);
+  if (text) {
+    SpanSource source(std::as_bytes(std::span(*text)));
+    ini.Load(source);
+  }
+}
+
+// Writes `ini` to the game file `name`, replacing it. A file that cannot be
+// opened or written is not reported, as the text writer it replaced did not.
+void SaveIniFile(const char* name, const engine::file::IniFile& ini) {
+  if (const auto stream = OpenGameFile(name, FileAccess::kWrite)) {
+    ini.Save(*stream);
+  }
+}
+
+}  // namespace
 
 /************************************* Prototypes
  * *********************************************/
@@ -700,58 +723,28 @@ void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
     char fname[engine::platform::kMaxFname +
                engine::platform::kMaxExt];  // full scenario name
-    HousesType house = HOUSE_NONE;
-
-    switch (TheWorld().scen_player()) {
-      case SCEN_PLAYER_GDI:
-        house = HOUSE_GOOD;
-        break;
-
-      case SCEN_PLAYER_NOD:
-        house = HOUSE_BAD;
-        break;
-
-      case SCEN_PLAYER_JP:
-        house = HOUSE_JP;
-        break;
-
-      case ScenarioPlayerType::SCEN_PLAYER_NONE:
-      case ScenarioPlayerType::SCEN_PLAYER_2PLAYER:
-      case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
-      case ScenarioPlayerType::SCEN_PLAYER_COUNT:
-      default:
-        house = HOUSE_MULTI1;
-        break;
-    }
 
     /*
-    **	Read the scenario file, or start a new one with a header comment.
+    **	Read the scenario file, if there is one, so the keys the editor does not
+    **	own survive; otherwise the database starts empty and the [Basic] values
+    **	below create the section.
     */
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-    std::string ini =
-        engine::file::ReadProfileFile(fname).value_or(absl::StrFormat(
-            "; Scenario %d control for house %s.\r\n", TheWorld().scenario(),
-            HouseTypeClass::As_Reference(house).IniName));
+    engine::file::IniFile ini;
+    LoadIniFile(fname, ini);
 
-    WWWritePrivateProfileString("Basic", "Intro", TheWorld().intro_movie(),
-                                ini);
-    WWWritePrivateProfileString("Basic", "Brief", TheWorld().brief_movie(),
-                                ini);
-    WWWritePrivateProfileString("Basic", "Win", TheWorld().win_movie(), ini);
-    WWWritePrivateProfileString("Basic", "Lose", TheWorld().lose_movie(), ini);
-    WWWritePrivateProfileString("Basic", "Action", TheWorld().action_movie(),
-                                ini);
-    WWWritePrivateProfileString("Basic", "Player", ThePlayer()->Class->IniName,
-                                ini);
-    WWWritePrivateProfileString(
-        "Basic", "Theme", ThemeClass::Base_Name(TheWorld().transit_theme()),
-        ini);
-    WWWritePrivateProfileInt("Basic", "BuildLevel", TheWorld().build_level(),
-                             ini);
-    WWWritePrivateProfileInt(
-        "Basic", "CarryOverMoney",
-        base::FixedToCardinal(100, TheWorld().carry_over_percent()), ini);
-    WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap, ini);
+    ini.PutString("Basic", "Intro", TheWorld().intro_movie());
+    ini.PutString("Basic", "Brief", TheWorld().brief_movie());
+    ini.PutString("Basic", "Win", TheWorld().win_movie());
+    ini.PutString("Basic", "Lose", TheWorld().lose_movie());
+    ini.PutString("Basic", "Action", TheWorld().action_movie());
+    ini.PutString("Basic", "Player", ThePlayer()->Class->IniName);
+    ini.PutString("Basic", "Theme",
+                  ThemeClass::Base_Name(TheWorld().transit_theme()));
+    ini.PutInt("Basic", "BuildLevel", TheWorld().build_level());
+    ini.PutInt("Basic", "CarryOverMoney",
+               base::FixedToCardinal(100, TheWorld().carry_over_percent()));
+    ini.PutInt("Basic", "carry_over_cap", carry_over_cap);
 
     TeamTypeClass::Write_INI(ini, true);
     TriggerClass::Write_INI(ini, true);
@@ -770,19 +763,19 @@ void Write_Scenario_Ini(const char* root) {
     /*
     **	Write the scenario data out to a file.
     */
-    engine::file::WriteProfileFile(fname, ini);
+    SaveIniFile(fname, ini);
 
     /*
     **	Now update the Master INI file, containing the master list of triggers &
     *teams
     */
-    ini = engine::file::ReadProfileFile("MASTER.INI")
-              .value_or("; Master Trigger & Team List.\r\n");
+    engine::file::IniFile master;
+    LoadIniFile("MASTER.INI", master);
 
-    TeamTypeClass::Write_INI(ini, false);
-    TriggerClass::Write_INI(ini, false);
+    TeamTypeClass::Write_INI(master, false);
+    TriggerClass::Write_INI(master, false);
 
-    engine::file::WriteProfileFile("MASTER.INI", ini);
+    SaveIniFile("MASTER.INI", master);
   }
 }
 

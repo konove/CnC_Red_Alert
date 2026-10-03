@@ -30,7 +30,6 @@
 #include "engine/file/ini_file.h"
 #include "td/core/coordinate.h"
 #include "td/core/defines.h"
-#include "td/data/profile.h"
 #include "td/map/world.h"
 #include "td/objects/building.h"
 #include "td/objects/cell.h"
@@ -98,13 +97,11 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   }
 }
 
-void PrebuiltBase::WriteIni(std::string& ini_text) const {
-  // Passing no entry deletes the whole section.
-  WWWritePrivateProfileString(kIniSection, nullptr, nullptr, ini_text);
+void PrebuiltBase::WriteIni(engine::file::IniFile& ini) const {
+  ini.Clear(kIniSection);
 
   // ReadIni() finds the entries by counting from "000" up to Count.
-  WWWritePrivateProfileInt(kIniSection, "Count",
-                           static_cast<int>(std::ssize(nodes_)), ini_text);
+  ini.PutInt(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));
 
   for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
     const auto& [type, coord] = base::At(nodes_, i);
@@ -113,8 +110,7 @@ void PrebuiltBase::WriteIni(std::string& ini_text) const {
         absl::StrFormat("%s,%d", BuildingTypeClass::As_Reference(type).IniName,
                         static_cast<int>(coord.packed()));
 
-    WWWritePrivateProfileString(kIniSection, entry.c_str(), value.c_str(),
-                                ini_text);
+    ini.PutString(kIniSection, entry, value);
   }
 }
 

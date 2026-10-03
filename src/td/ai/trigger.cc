@@ -70,7 +70,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -90,7 +89,6 @@
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
-#include "td/data/profile.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/objects/anim.h"
@@ -1208,7 +1206,7 @@ void TriggerClass::Fill_In(const char* name, char* entry) {
  *    INI entry format: * Triggername = Eventname, Actionname, Data, Housename,
  *TeamName, IsPersistant           *
  *                                                                                             *
- * INPUT: * buffer      buffer to hold the INI data *
+ * INPUT: * ini      The INI database to write into. *
  *                                                                                             *
  * OUTPUT: * none. *
  *                                                                                             *
@@ -1216,7 +1214,7 @@ void TriggerClass::Fill_In(const char* name, char* entry) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Write_INI(std::string& buffer, bool refresh) {
+void TriggerClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   char buf[128];
   const char* hname = nullptr;
   const char* tname = nullptr;
@@ -1225,7 +1223,7 @@ void TriggerClass::Write_INI(std::string& buffer, bool refresh) {
   **	First, clear out all existing trigger data from the INI file.
   */
   if (refresh) {
-    WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
+    ini.Clear(INI_Name());
   }
 
   /*
@@ -1256,7 +1254,7 @@ void TriggerClass::Write_INI(std::string& buffer, bool refresh) {
                    Name_From_Event(trigger->Event),
                    Name_From_Action(trigger->Action), trigger->Data, hname,
                    tname, trigger->IsPersistant);
-    WWWritePrivateProfileString(INI_Name(), trigger->Get_Name(), buf, buffer);
+    ini.PutString(INI_Name(), trigger->Get_Name(), buf);
   }
 }
 

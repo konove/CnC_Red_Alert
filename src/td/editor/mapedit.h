@@ -207,7 +207,7 @@ class MapEditClass : public MouseClass {
                   bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
   void Read_INI(const engine::file::IniFile& ini) override;
-  void Write_INI(std::string& buffer) override;
+  void Write_INI(engine::file::IniFile& ini) override;
   void Detach(ObjectClass* object) override;
   void Clear_List();
   bool Add_To_List(const ObjectTypeClass* object);

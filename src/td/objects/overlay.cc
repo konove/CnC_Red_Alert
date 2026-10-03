@@ -54,9 +54,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/pooled.h"
@@ -71,7 +69,6 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
-#include "td/data/profile.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
 #include "td/objects/cell.h"
@@ -385,7 +382,7 @@ void OverlayClass::Read_INI(const engine::file::IniFile& ini) {
  *    This is used to output the overlay data to a scenario INI file. Typically,
  *this is       * only used by the scenario editor. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the INI file staging buffer. *
+ * INPUT:   ini   -- The INI database to write into.            *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -393,23 +390,14 @@ void OverlayClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Write_INI(std::string& buffer) {
+void OverlayClass::Write_INI(engine::file::IniFile& ini) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  std::vector<char> key_storage(buffer.size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
-                            buffer.data());
-  while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
-  }
+  ini.Clear(INI_Name());
 
   /*
   **	Write the unit data out.
@@ -421,7 +409,7 @@ void OverlayClass::Write_INI(std::string& buffer) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s",
                      OverlayTypeClass::As_Reference(cellptr->Overlay).IniName);
-      WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

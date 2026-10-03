@@ -143,7 +143,6 @@
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/core/support.h"
-#include "td/data/profile.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/layer.h"
@@ -1201,7 +1200,7 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
  *    This routine is used to write the map control data into the INI * file.
  *The scenario editor uses this when creating the scenario * startup file. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to INI file data. *
+ * INPUT:   ini   -- The INI database to write into. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -1209,32 +1208,30 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Write_INI(std::string& buffer) {
+void DisplayClass::Write_INI(engine::file::IniFile& ini) {
   char entry[20];
 
   /*
   **	Save the map parameters.
   */
-  WWWritePrivateProfileString("MAP", "Theater", Theaters.at(Theater).Name,
-                              buffer);
-  WWWritePrivateProfileInt("MAP", "X", MapCellX, buffer);
-  WWWritePrivateProfileInt("MAP", "Y", MapCellY, buffer);
-  WWWritePrivateProfileInt("MAP", "Width", MapCellWidth, buffer);
-  WWWritePrivateProfileInt("MAP", "Height", MapCellHeight, buffer);
+  ini.PutString("MAP", "Theater", Theaters.at(Theater).Name);
+  ini.PutInt("MAP", "X", MapCellX);
+  ini.PutInt("MAP", "Y", MapCellY);
+  ini.PutInt("MAP", "Width", MapCellWidth);
+  ini.PutInt("MAP", "Height", MapCellHeight);
 
   /*
   **	Save the Waypoint entries.
   */
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(entry, sizeof(entry), "%d", i);
-    WWWritePrivateProfileInt(
-        "Waypoints", entry, base::At(TheWorld().waypoint(), i).index(), buffer);
+    ini.PutInt("Waypoints", entry, base::At(TheWorld().waypoint(), i).index());
   }
 
   /*
   **	Erase the CellTriggers section.
   */
-  WWWritePrivateProfileString("CellTriggers", nullptr, nullptr, buffer);
+  ini.Clear("CellTriggers");
 
   /*
   **	Save the cell's triggers.
@@ -1256,8 +1253,7 @@ void DisplayClass::Write_INI(std::string& buffer) {
       /*
       **	Save entry.
       */
-      WWWritePrivateProfileString("CellTriggers", entry, trig->Get_Name(),
-                                  buffer);
+      ini.PutString("CellTriggers", entry, trig->Get_Name());
     }
   }
 }

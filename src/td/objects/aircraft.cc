@@ -110,10 +110,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -143,7 +141,6 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
-#include "td/data/profile.h"
 #include "td/editor/mapedit.h"
 #include "td/map/mouse.h"
 #include "td/map/world.h"
@@ -567,7 +564,7 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
  *INI file      * buffer specified. It is typically used by the scenario editor.
  **
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the buffer that holds the INI file data. *
+ * INPUT:   ini   -- The INI database to write into.                        *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -575,23 +572,14 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Write_INI(std::string& buffer) {
+void AircraftClass::Write_INI(engine::file::IniFile& ini) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing unit data from the ini file.
   */
-  std::vector<char> key_storage(buffer.size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
-                            buffer.data());
-  while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
-  }
+  ini.Clear(INI_Name());
 
   /*
   **	Write the unit data out.
@@ -605,7 +593,7 @@ void AircraftClass::Write_INI(std::string& buffer) {
                      Cell::Containing(unit->Coord).index(),
                      unit->PrimaryFacing.Current(),
                      Mission_Name(unit->Mission));
-      WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

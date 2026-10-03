@@ -143,7 +143,7 @@ class DisplayClass : public MapClass {
   DisplayClass();
 
   virtual void Read_INI(const engine::file::IniFile& ini);
-  virtual void Write_INI(std::string& buffer);
+  virtual void Write_INI(engine::file::IniFile& ini);
 
   /*
   ** Initialization

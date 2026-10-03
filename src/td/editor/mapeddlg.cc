@@ -70,9 +70,11 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
@@ -91,7 +93,6 @@
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/data/ini.h"
-#include "td/data/profile.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/mplayer.h"
@@ -3122,7 +3123,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
-  std::vector<char*> trignames;                   // list of INI trigger names
+  std::vector<const char*> trignames;             // list of INI trigger names
   char buf[128];                            // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3158,16 +3159,14 @@ int MapEditClass::Import_Triggers() {
   if (!master) {
     return (-1);
   }
-  const char* inibuf = master->c_str();  // working INI buffer
+  engine::file::IniFile master_ini;  // the parsed MASTER.INI
+  SpanSource master_source(std::as_bytes(std::span(*master)));
+  master_ini.Load(master_source);
 
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  std::vector<char> key_storage(master->size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
-  WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr,
-                            key_cursor, inibuf);
+  const int entry_count = master_ini.EntryCount(TriggerClass::INI_Name());
 
   /*........................................................................
   For each entry in the INI section:
@@ -3176,11 +3175,12 @@ int MapEditClass::Import_Triggers() {
   - Add that string to the list box
   - Add a ptr to the INI entry name to our 'trignames' list
   ........................................................................*/
-  while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(
-        TriggerClass::INI_Name(), tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        inibuf);
+  for (int entry_index = 0; entry_index < entry_count; entry_index++) {
+    const char* tbuffer =
+        master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
+    master_ini.GetString(
+        TriggerClass::INI_Name(), tbuffer, "",
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
 
     /*
     ** Parse the INI entry
@@ -3221,9 +3221,6 @@ int MapEditClass::Import_Triggers() {
     ** Add the name to our internal name list
     */
     trignames.push_back(tbuffer);
-
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3317,19 +3314,17 @@ int MapEditClass::Import_Triggers() {
   that trigger for this scenario.
   ........................................................................*/
   if (!cancel) {
-    key_cursor = std::span(key_storage);
-    tbuffer = key_cursor.data();
-    int i = 0;
-    while (*tbuffer != '\0') {
+    for (int entry_index = 0; entry_index < entry_count; entry_index++) {
+      const char* tbuffer =
+          master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
       /*
       ** If this item is checked on the list, create a new trigger
       ** and fill it in.
       */
-      if (triggerlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(
-            TriggerClass::INI_Name(), tbuffer, nullptr,
-            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-            inibuf);
+      if (triggerlist.Is_Checked(entry_index)) {
+        master_ini.GetString(
+            TriggerClass::INI_Name(), tbuffer, "",
+            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
 
         auto* trigger =
             base::NewPooled<TriggerClass>();  // Working trigger pointer.
@@ -3339,10 +3334,6 @@ int MapEditClass::Import_Triggers() {
           TheWorld().house_triggers().at(trigger->House).push_back(trigger);
         }
       }
-
-      key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-      tbuffer = key_cursor.data();
-      i++;
     }
   }
 
@@ -3434,7 +3425,7 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
-  std::vector<char*> teamnames;          // list of INI team names
+  std::vector<const char*> teamnames;    // list of INI team names
   char buf[128];                        // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3471,15 +3462,13 @@ int MapEditClass::Import_Teams() {
   if (!master) {
     return (-1);
   }
-  const char* inibuf = master->c_str();  // working INI buffer
+  engine::file::IniFile master_ini;  // the parsed MASTER.INI
+  SpanSource master_source(std::as_bytes(std::span(*master)));
+  master_ini.Load(master_source);
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  std::vector<char> key_storage(master->size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of team IDs.
-  WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,
-                            key_cursor, inibuf);
+  const int entry_count = master_ini.EntryCount(TeamTypeClass::INI_Name());
 
   /*........................................................................
   For each entry in the INI section:
@@ -3488,11 +3477,12 @@ int MapEditClass::Import_Teams() {
   - Add that string to the list box
   - Add a ptr to the INI entry name to our 'teamnames' list
   ........................................................................*/
-  while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(
-        TeamTypeClass::INI_Name(), tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        inibuf);
+  for (int entry_index = 0; entry_index < entry_count; entry_index++) {
+    const char* tbuffer =
+        master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
+    master_ini.GetString(
+        TeamTypeClass::INI_Name(), tbuffer, "",
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
 
     /*
     ** Parse the INI entry
@@ -3535,9 +3525,6 @@ int MapEditClass::Import_Teams() {
     ** Add the name to our internal name list
     */
     teamnames.push_back(tbuffer);
-
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 
   /*
@@ -3631,27 +3618,21 @@ int MapEditClass::Import_Teams() {
   that team for this scenario.
   ........................................................................*/
   if (!cancel) {
-    key_cursor = std::span(key_storage);
-    tbuffer = key_cursor.data();
-    i = 0;
-    while (*tbuffer != '\0') {
+    for (int entry_index = 0; entry_index < entry_count; entry_index++) {
+      const char* tbuffer =
+          master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
       /*
       ** If this item is checked on the list, create a new team
       ** and fill it in.
       */
-      if (teamlist.Is_Checked(i)) {
-        WWGetPrivateProfileString(
-            TeamTypeClass::INI_Name(), tbuffer, nullptr,
-            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-            inibuf);
+      if (teamlist.Is_Checked(entry_index)) {
+        master_ini.GetString(
+            TeamTypeClass::INI_Name(), tbuffer, "",
+            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
 
         auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
         team->Fill_In(tbuffer, buf);
       }
-
-      key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-      tbuffer = key_cursor.data();
-      i++;
     }
   }
 

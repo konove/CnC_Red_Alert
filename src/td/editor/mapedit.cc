@@ -92,7 +92,6 @@
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/data/profile.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/map/mouse.h"
@@ -344,7 +343,7 @@ void MapEditClass::Read_INI(const engine::file::IniFile& ini) {
  * MapEditClass::Write_INI -- overloaded Read_INI function                 *
  *                                                                         *
  * INPUT:                                                                  *
- *      buffer      INI staging area                                       *
+ *      ini      The INI database to write into.                           *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -355,18 +354,18 @@ void MapEditClass::Read_INI(const engine::file::IniFile& ini) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Write_INI(std::string& buffer) {
+void MapEditClass::Write_INI(engine::file::IniFile& ini) {
   /*
   ----------------------- Invoke parent's Write_INI ------------------------
   */
-  MouseClass::Write_INI(buffer);
+  MouseClass::Write_INI(ini);
 
   /*
   ** Save the base's percent-built value; this must be saved into the BASIC
   ** section of the INI, since the Base section will be entirely erased
   ** by the Base's Write_INI routine.
   */
-  WWWritePrivateProfileInt("Basic", "Percent", BasePercent, buffer);
+  ini.PutInt("Basic", "Percent", BasePercent);
 }
 
 /***************************************************************************

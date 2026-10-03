@@ -135,7 +135,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   static void Read_INI(const engine::file::IniFile& ini);
   void Fill_In(const char* name, char* entry);
-  static void Write_INI(std::string& buffer, bool refresh);
+  static void Write_INI(engine::file::IniFile& ini, bool refresh);
   static void Read_Old_INI(const engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }
   // Field-wise saved-game support, defined in ioobj.cc.

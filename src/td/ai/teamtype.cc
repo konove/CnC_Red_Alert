@@ -58,7 +58,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -78,7 +77,6 @@
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
-#include "td/data/profile.h"
 #include "td/map/world.h"
 #include "td/objects/house.h"
 #include "td/objects/type.h"
@@ -397,7 +395,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
  *       MissionCount,Mission,Arg,Mission,Arg,Mission,Arg,...              *
  *                                                                         *
  * INPUT:                                                                  *
- *      buffer      buffer to store INI data in                            *
+ *      ini      The INI database to write into.                           *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -408,20 +406,20 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Write_INI(std::string& buffer, bool refresh) {
+void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   char buf[500];
   const char* hname = nullptr;
 
   /*------------------------------------------------------------------------
   First, clear out all existing teamtypes in the old-style format.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("Teams", nullptr, nullptr, buffer);
+  ini.Clear("Teams");
 
   /*------------------------------------------------------------------------
   Clear out all existing teamtype data from the INI file.
   ------------------------------------------------------------------------*/
   if (refresh) {
-    WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
+    ini.Clear(INI_Name());
   }
 
   /*------------------------------------------------------------------------
@@ -486,7 +484,7 @@ void TeamTypeClass::Write_INI(std::string& buffer, bool refresh) {
       base::SafeAppend(buf, ",0");
     }
 
-    WWWritePrivateProfileString(INI_Name(), team->IniName, buf, buffer);
+    ini.PutString(INI_Name(), team->IniName, buf);
   }
 }
 

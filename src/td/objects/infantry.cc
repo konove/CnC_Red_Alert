@@ -117,9 +117,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -150,7 +148,6 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
-#include "td/data/profile.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
@@ -3177,7 +3174,7 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
  *    INI entry format: * Housename, Typename, Strength, Cellnum,
  *CellSublocation, Missionname,                  * Facingnum, Triggername *
  *                                                                                             *
- * INPUT:   buffer   -- A pointer to the loaded INI file staging area. *
+ * INPUT:   ini   -- The INI database to write into.                   *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -3185,23 +3182,14 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Write_INI(std::string& buffer) {
+void InfantryClass::Write_INI(engine::file::IniFile& ini) {
   char uname[10];
   char buf[128];
 
   /*
   **	First, clear out all existing infantry data from the ini file.
   */
-  std::vector<char> key_storage(buffer.size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of infantry IDs.
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
-                            buffer.data());
-  while (*tbuffer != '\0') {
-    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
-  }
+  ini.Clear(INI_Name());
 
   /*
   **	Write the infantry data out.
@@ -3220,7 +3208,7 @@ void InfantryClass::Write_INI(std::string& buffer) {
                            : infantry->Mission),
           infantry->PrimaryFacing.Current(),
           infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
-      WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

@@ -501,7 +501,7 @@ class HouseClass {
   **	File I/O.
   */
   static void Read_INI(const engine::file::IniFile& ini);
-  static void Write_INI(std::string& buffer);
+  static void Write_INI(engine::file::IniFile& ini);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
   // Field-wise saved-game support, defined in ioobj.cc.
