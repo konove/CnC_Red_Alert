@@ -32,6 +32,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 class BuildingClass;
@@ -68,14 +72,14 @@ class PrebuiltBase {
   // Empties the node list. The owner stays: ReadIni() always sets it.
   void ClearNodes() { nodes_.clear(); }
 
-  // Appends the nodes of the [Base] section of the scenario INI text in
-  // `ini_text`, in the order the section numbers them. An entry is
+  // Appends the nodes of the [Base] section of the scenario INI database
+  // `ini`, in the order the section numbers them. An entry is
   // "NNN=TYPE,coordinate", NNN counting from 000 up to the section's Count; an
   // entry that is missing, names no building type or lies off the map is
   // skipped. The owner becomes the house opposing the [BASIC] Player: HOUSE_BAD
   // against GoodGuy, HOUSE_GOOD against anyone else. Call ClearNodes() first:
   // the list is not cleared.
-  void ReadIni(const char* ini_text);
+  void ReadIni(const engine::file::IniFile& ini);
 
   // Replaces the [Base] section of the INI text in `ini_text` with this base's
   // nodes. The owner is not written.

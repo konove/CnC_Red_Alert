@@ -427,7 +427,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the specific information for each of the house types.  This
   *creates *	the houses of different types.
   */
-  HouseClass::Read_INI(buffer);
+  HouseClass::Read_INI(scenario);
   Call_Back();
 
   /*
@@ -534,7 +534,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in the AI's base information.
   */
-  TheWorld().base().ReadIni(buffer);
+  TheWorld().base().ReadIni(scenario);
   Call_Back();
 
   /*

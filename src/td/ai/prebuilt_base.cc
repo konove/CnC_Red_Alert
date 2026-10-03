@@ -27,6 +27,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
+#include "engine/file/ini_file.h"
 #include "td/core/coordinate.h"
 #include "td/core/defines.h"
 #include "td/data/profile.h"
@@ -56,23 +57,21 @@ bool IsOnMap(const Coordinate coord) {
 
 }  // namespace
 
-void PrebuiltBase::ReadIni(const char* ini_text) {
+void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // The base belongs to whoever opposes the human player.
   char player[20];
-  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", player, ini_text);
+  ini.GetString("BASIC", "Player", "GoodGuy", player);
   house_ =
       HouseTypeClass::From_Name(player) == HOUSE_GOOD ? HOUSE_BAD : HOUSE_GOOD;
 
-  const int node_count =
-      WWGetPrivateProfileInt(kIniSection, "Count", 0, ini_text);
+  const int node_count = ini.GetInt(kIniSection, "Count", 0);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
     char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    WWGetPrivateProfileString(kIniSection, entry.c_str(), nullptr, value,
-                              ini_text);
+    ini.GetString(kIniSection, entry, "", value);
 
     base::Tokenizer tokens(value, ",");
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());

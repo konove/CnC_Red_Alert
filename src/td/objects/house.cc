@@ -147,6 +147,7 @@
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/timer.h"
@@ -1700,7 +1701,7 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
  *from the scenario INI file. Typical data includes starting * credits, maximum
  *unit count, etc.                                                        *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to loaded scenario INI file. *
+ * INPUT:   ini      -- The parsed scenario INI file. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -1708,23 +1709,21 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
-void HouseClass::Read_INI(char* buffer) {
+void HouseClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[128];
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     const char* hname = HouseTypeClass::As_Reference(index)
                             .IniName;  //	Pointer to house name.
-    int maxunit =
-        WWGetPrivateProfileInt(hname, "MaxUnit", kEachUnitMax, buffer);
+    int maxunit = ini.GetInt(hname, "MaxUnit", kEachUnitMax);
 
     maxunit = std::max(maxunit, 150);
 
-    int maxbuilding =
-        WWGetPrivateProfileInt(hname, "MaxBuilding", kEachBuildingMax, buffer);
+    int maxbuilding = ini.GetInt(hname, "MaxBuilding", kEachBuildingMax);
 
     maxbuilding = std::max(maxbuilding, 150);
 
-    const int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
+    const int credits = ini.GetInt(hname, "Credits", 0);
 
     auto* p =
         base::NewPooled<HouseClass>(index);  // Pointer to current player data.
@@ -1733,20 +1732,14 @@ void HouseClass::Read_INI(char* buffer) {
     p->MaxUnit = maxunit;
     p->Credits = static_cast<int64_t>(credits) * 100;
     p->InitialCredits = p->Credits;
-    WWGetPrivateProfileString(
-        hname, "Edge", "",
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    ini.GetString(hname, "Edge", "", buf);
     p->Edge = Source_From_Name(buf);
     if (p->Edge == SOURCE_NONE) {
       p->Edge = SOURCE_NORTH;
     }
 
     if (TheSession().type() == GAME_NORMAL) {
-      WWGetPrivateProfileString(
-          hname, "Allies", "",
-          std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-          buffer);
+      ini.GetString(hname, "Allies", "", buf);
       if (!std::string_view(buf).empty()) {
         base::Tokenizer tokens(buf, ", \t");
         const char* tok = tokens.Next();
