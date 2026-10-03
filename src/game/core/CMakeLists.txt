@@ -23,7 +23,7 @@ target_sources(game_core PUBLIC
 
 target_link_libraries(game_core
         PUBLIC base engine_stream absl::check absl::core_headers absl::log
-        PRIVATE engine_window absl::str_format absl::strings
+        PRIVATE absl::str_format absl::strings
 )
 
 # Tests

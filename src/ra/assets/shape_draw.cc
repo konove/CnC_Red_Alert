@@ -38,7 +38,6 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "game/core/game_clock.h"
-#include "game/core/interpal.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/map/display.h"

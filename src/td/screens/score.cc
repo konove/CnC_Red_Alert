@@ -803,7 +803,6 @@ void ScoreClass::Show() {
   int frame = 1;
   while (frame < anim.frame_count()) {
     anim.DrawFrame(show.page().view(), frame++);
-    ////////////////Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
     Call_Back_Delay(show, 2);
   }
   Call_Back();
@@ -1300,7 +1299,6 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     show.ShowPage();
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-    // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
     if (!game::TheKeyboard().Peek()) {
       Call_Back_Delay(show, 1);
@@ -1494,7 +1492,6 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
   Draw_InfantryMen();
   TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, BARGRAPH_X,
                                            CASUALTY_Y, 320 - BARGRAPH_X, 34);
-  // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff, NULL);
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
@@ -1702,7 +1699,6 @@ void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
   // ypos * 2, width * 2, 8 * 2);
 
   //	PseudoSeenBuff->Print(	destbuf, xpos, ypos, TBLACK, BLACK);
-  //	Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 }
 
 /***********************************************************************************************
@@ -2080,10 +2076,8 @@ void Call_Back_Delay(Presentation& show, int time) {
   do {
     Call_Back();
     // Animate_Score_Objs();
-    // Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
 
     // if (MouseHideCount()){
-    //	Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
     // BlitList.Update();
     //}else{
     Animate_Score_Objs();

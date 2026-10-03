@@ -196,8 +196,8 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
 game/        → The code both games share, in namespace game::, above the engine and below the games
                (docs/GAME_NAMESPACES_PLAN.md)
   core/      → OwnedVector, the object pools (ObjectHeapBase/ObjectHeap), QueueClass,
-               the frame clock, path-overlap bits, the 2x interpolation scaler, cell/pixel sizes
-               (target `game_core`) [depends: base, engine_stream, engine_window]
+               the frame clock, path-overlap bits, cell/pixel sizes (target `game_core`)
+               [depends: base, engine_stream]
   sim/       → Simulation helpers: the direction types (FacingType, DirType), FacingClass, the shared
                simulation enums (ArmorType, MoveType, BStateType, ...),
                UnitTrackerClass, CrewClass, FlasherClass, DoorClass<Stage> (target `game_sim`)

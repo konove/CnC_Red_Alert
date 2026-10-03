@@ -56,7 +56,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "game/core/interpal.h"
 #include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"

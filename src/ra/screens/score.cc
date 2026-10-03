@@ -61,9 +61,9 @@
 #include "engine/gfx/wsa_animation.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/interpal.h"
 #include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
@@ -1107,14 +1107,16 @@ void Multi_Score_Presentation() {
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.view().Clear();
   anim.DrawFrame(pseudoseenbuff.view(), 1);
-  game::Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
+  engine::window::TheDisplay().PresentScaledFrame(
+      pseudoseenbuff.bytes(), pseudoseenbuff.width(), pseudoseenbuff.height());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
     anim.DrawFrame(pseudoseenbuff.view(), frame++);
-    game::Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(),
-                               {});
+    engine::window::TheDisplay().PresentScaledFrame(pseudoseenbuff.bytes(),
+                                                    pseudoseenbuff.width(),
+                                                    pseudoseenbuff.height());
     TickScoreScreen(2);
   }
   anim.Close();

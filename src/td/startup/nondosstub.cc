@@ -36,7 +36,6 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/window/hardware_cursor.h"
-#include "game/core/interpal.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
 #include "td/editor/mapedit.h"
