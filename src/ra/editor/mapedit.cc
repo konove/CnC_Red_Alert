@@ -73,7 +73,6 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
@@ -1135,9 +1134,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               RTTI_BUILDING) {
             const auto* building = dynamic_cast<const BuildingClass*>(
                 base::At(TheWorld().current_object(), 0));
-            if (const BaseNode* node = TheWorld().base().FindNode(building)) {
-              base::EraseFirst(TheWorld().base().nodes(), *node);
-            }
+            TheWorld().base().RemoveNodeFor(*building);
           }
 
           /*

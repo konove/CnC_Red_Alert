@@ -1009,7 +1009,7 @@ int MapEditClass::Place_Object() {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
       // Cell::Containing(PendingObjectPtr->Coord);
-      TheWorld().base().nodes().emplace_back(
+      TheWorld().base().AddNode(
           dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
           Cell::Containing(PendingObjectPtr->Coord));
     }
@@ -1755,10 +1755,9 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < std::ssize(TheWorld().base().nodes()); i++) {
-    if (TheWorld().base().IsBuilt(i)) {
-      obj = TheWorld().base().FindBuilding(i);
-      base::DeletePooled(obj);
+  for (const BaseNode& node : TheWorld().base().nodes()) {
+    if (BuildingClass* building = PrebuiltBase::FindBuilding(node)) {
+      base::DeletePooled(building);
     }
   }
 

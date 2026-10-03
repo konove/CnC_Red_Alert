@@ -55,14 +55,13 @@ bool FillsNode(const BuildingClass& building, const BaseNode& node) {
          Cell::Containing(building.Coord) == node.cell;
 }
 
-}  // namespace
-
-bool PrebuiltBase::IsBuilt(int node_index) const {
-  return FindBuilding(node_index) != nullptr;
+bool IsOnMap(Cell cell) {
+  return cell.index() >= 0 && cell.index() < MAP_CELL_TOTAL;
 }
 
-BuildingClass* PrebuiltBase::FindBuilding(int node_index) const {
-  const BaseNode& node = base::At(nodes_, node_index);
+}  // namespace
+
+BuildingClass* PrebuiltBase::FindBuilding(const BaseNode& node) {
   const CellClass& map_cell = TheMap().at(node.cell);
 
   // A building occupies the cells of its foundation and only overlaps the
@@ -81,26 +80,40 @@ BuildingClass* PrebuiltBase::FindBuilding(int node_index) const {
   return nullptr;
 }
 
-bool PrebuiltBase::HasNodeFor(const BuildingClass* building) const {
-  return std::ranges::any_of(nodes_, [building](const BaseNode& node) {
-    return FillsNode(*building, node);
+bool PrebuiltBase::HasNodeFor(const BuildingClass& building) const {
+  return std::ranges::any_of(nodes_, [&building](const BaseNode& node) {
+    return FillsNode(building, node);
   });
 }
 
-BaseNode* PrebuiltBase::FindNode(const BuildingClass* building) {
+BaseNode* PrebuiltBase::FindNode(const BuildingClass& building) {
   for (BaseNode& node : nodes_) {
-    if (FillsNode(*building, node)) {
+    if (FillsNode(building, node)) {
       return &node;
     }
   }
   return nullptr;
 }
 
+void PrebuiltBase::AddNode(StructType type, Cell cell) {
+  nodes_.emplace_back(type, cell);
+}
+
+void PrebuiltBase::RemoveNodeFor(const BuildingClass& building) {
+  const auto node =
+      std::ranges::find_if(nodes_, [&building](const BaseNode& candidate) {
+        return FillsNode(building, candidate);
+      });
+  if (node != nodes_.end()) {
+    nodes_.erase(node);
+  }
+}
+
 const BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) const {
-  for (int i = 0; i < std::ssize(nodes_); i++) {
-    const BaseNode& node = base::At(nodes_, i);
+  for (const BaseNode& node : nodes_) {
     // STRUCT_NONE asks for the first hole of any type.
-    if ((type == STRUCT_NONE || node.type == type) && !IsBuilt(i)) {
+    if ((type == STRUCT_NONE || node.type == type) &&
+        FindBuilding(node) == nullptr) {
       return &node;
     }
   }
@@ -132,12 +145,11 @@ void PrebuiltBase::ReadIni(const CCINIClass& ini) {
     // A missing or malformed entry would leave a node no building can fill:
     // FindBuilding() indexes the map with its cell, and a save holding its
     // STRUCT_NONE type is rejected when loaded.
-    if (type == STRUCT_NONE || cell.index() < 0 ||
-        cell.index() >= MAP_CELL_TOTAL) {
+    if (type == STRUCT_NONE || !IsOnMap(cell)) {
       continue;
     }
 
-    nodes_.emplace_back(type, cell);
+    AddNode(type, cell);
   }
 }
 
@@ -181,7 +193,7 @@ void PrebuiltBase::Serialize(Archive& ar) {
       BaseNode node;
       ar(node.type, node.cell);
       if (!ar.ok() || !magic_enum::enum_contains(node.type) ||
-          node.cell.index() < 0 || node.cell.index() >= MAP_CELL_TOTAL) {
+          !IsOnMap(node.cell)) {
         ar.Fail("invalid base node");
         return;
       }

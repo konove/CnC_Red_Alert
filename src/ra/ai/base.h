@@ -82,23 +82,25 @@ class PrebuiltBase {
   // owner (HOUSE_NONE) leaves the section empty.
   void WriteIni(CCINIClass& ini) const;
 
-  // Returns whether the building of node `node_index` stands on the map.
-  [[nodiscard]] bool IsBuilt(int node_index) const;
+  // Returns the building that fills `node`: one of the node's type whose
+  // top-left cell is the node's cell, whichever house owns it. Returns nullptr
+  // if the node is a hole. The node's cell must be on the map.
+  [[nodiscard]] static BuildingClass* FindBuilding(const BaseNode& node);
 
-  // Returns the building that fills node `node_index`: one of the node's type
-  // whose top-left cell is the node's cell, whichever house owns it. Returns
-  // nullptr if the node is a hole. `node_index` must be a valid index into
-  // nodes().
-  [[nodiscard]] BuildingClass* FindBuilding(int node_index) const;
+  // Returns whether the base has a node for `building`: one with its type and
+  // top-left cell.
+  [[nodiscard]] bool HasNodeFor(const BuildingClass& building) const;
 
-  // Returns whether the base has a node for `building`, which must not be
-  // nullptr.
-  [[nodiscard]] bool HasNodeFor(const BuildingClass* building) const;
-
-  // Returns the first node with the type and top-left cell of `building`,
-  // which must not be nullptr, or nullptr if the base has none.
-  BaseNode* FindNode(const BuildingClass* building)
+  // Returns the first node for `building`, or nullptr if the base has none.
+  BaseNode* FindNode(const BuildingClass& building)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Appends a node for a building of `type` with its top-left corner on
+  // `cell`, which must be on the map.
+  void AddNode(StructType type, Cell cell);
+
+  // Removes the first node for `building`, if the base has one.
+  void RemoveNodeFor(const BuildingClass& building);
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
@@ -108,9 +110,6 @@ class PrebuiltBase {
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed is not removed; a destroyed building flagged for
   // rebuilding that has no node gets one appended (BuildingClass::Take_Damage).
-  std::vector<BaseNode>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return nodes_;
-  }
   [[nodiscard]] const std::vector<BaseNode>& nodes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
