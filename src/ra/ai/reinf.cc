@@ -34,7 +34,6 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * Create_Air_Reinforcement -- Creates air strike reinforcement *
- *   Create_Special_Reinforcement -- Ad hoc reinforcement handler. *
  *   Do_Reinforcements -- Create and place a reinforcement team. *
  *   _Consists_Only_Of_Infantry -- Determine if this group consists only of
  *infantry.          * _Create_Group -- Create a group given team specification.
@@ -49,7 +48,6 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/pooled.h"
-#include "base/strings/safe_string.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
@@ -582,87 +580,6 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 }
 
 /***********************************************************************************************
- * Create_Special_Reinforcement -- Ad hoc reinforcement handler. *
- *                                                                                             *
- *    Use this routine to bring on a reinforcement that hasn't been anticipated
- *by the trigger * system. An example of this would be replacement harvesters or
- *airfield ordered units.    * The appropriate transport is created (if
- *necessary) and a mission is assigned such that  * the object will legally
- *bring itself onto the playing field.                             *
- *                                                                                             *
- * INPUT:   house    -- The owner of this reinforcement. *
- *                                                                                             *
- *          type     -- The object to bring on. *
- *                                                                                             *
- *          another  -- This is reserved for the transport class in those cases
- *where the      * transport MUST be forced to a specific type. *
- *                                                                                             *
- *          mission  -- The mission to assign this reinforcement team. *
- *                                                                                             *
- *          argument -- Optional team mission argument (usually a waypoint). *
- *                                                                                             *
- * OUTPUT:  Was the special reinforcement created without error? *
- *                                                                                             *
- * WARNINGS:   This routine will fail if a team type cannot be created. *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
-bool Create_Special_Reinforcement(const HouseClass* house,
-                                  const TechnoTypeClass* type,
-                                  const TechnoTypeClass* another,
-                                  TeamMissionType mission, int argument) {
-  DCHECK(house != nullptr);
-  DCHECK(type != nullptr);
-
-  if (house && type) {
-    auto* team = base::NewPooled<TeamTypeClass>();
-
-    if (team) {
-      /*
-      **	If there is no overridden mission assign to this special
-      *reinforcement, then *	we must assign something. If not, the
-      *reinforcement will just sit at the edge *	of the map.
-      */
-      if (!another && mission == TMISSION_NONE) {
-        mission = TMISSION_MOVECELL;
-        argument = TheMap().Calculated_Cell(house->Control.Edge).index();
-      }
-
-      /*
-      **	Fill in the team characteristics.
-      */
-      base::SafeCopy(team->IniName, "TEMP");
-      team->IsReinforcable = false;
-      team->IsTransient = true;
-      team->ClassCount = 1;
-      team->Members[0].Class = type;
-      team->Members[0].Quantity = 1;
-      team->MissionCount = 1;
-      if (mission == TMISSION_NONE) {
-        team->MissionList[0].Mission = TMISSION_UNLOAD;
-        team->MissionList[0].Data.Value = ScenarioClass::kReinforcementWaypoint;
-      } else {
-        team->MissionList[0].Mission = mission;
-        team->MissionList[0].Data.Value = argument;
-      }
-      team->House = house->Class->House;
-      if (another) {
-        team->ClassCount++;
-        team->Members[1].Class = another;
-        team->Members[1].Quantity = 1;
-      }
-
-      const bool ok = Do_Reinforcements(team);
-      if (!ok) {
-        base::DeletePooled(team);
-      }
-      return ok;
-    }
-  }
-  return false;
-}
-
-/***********************************************************************************************
  * Create_Air_Reinforcement -- Creates air strike reinforcement *
  *                                                                                             *
  *    This routine is used to launch an airstrike. It will create the necessary
@@ -689,8 +606,8 @@ bool Create_Special_Reinforcement(const HouseClass* house,
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, Target tarcom, Target navcom,
-                             InfantryType passenger) {
+                             MissionType mission, Target tarcom,
+                             Target navcom) {
   DCHECK(house != nullptr);
   DCHECK(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
   DCHECK(number != 0);
@@ -701,13 +618,6 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   */
   const TechnoTypeClass* type =
       static_cast<TechnoTypeClass*>(&AircraftTypeClass::As_Reference(air));
-
-  /*
-  ** Abort the airstrike if Tanya is the passenger and she's dead.
-  */
-  if (passenger == INFANTRY_TANYA && TheWorld().is_tanya_dead()) {
-    number = 0;
-  }
 
   /*
   ** Loop through the number of objects we are supposed to create and
@@ -777,17 +687,6 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       */
       if (tarcom != Target{}) {
         obj->Assign_Target(tarcom);
-      }
-
-      /*
-      **	Assign generic passenger value here. This value is used to
-      *determine *	if this aircraft should drop parachute reinforcements.
-      */
-      if (obj->What_Am_I() == RTTI_AIRCRAFT) {
-        auto& aircraft = dynamic_cast<AircraftClass&>(*obj);
-        if (passenger != INFANTRY_NONE) {
-          aircraft.Passenger = passenger != INFANTRY_NONE;
-        }
       }
 
       /*

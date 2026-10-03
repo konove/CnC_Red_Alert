@@ -9,14 +9,8 @@
 namespace ra {
 
 bool Do_Reinforcements(TeamTypeClass* team);
-bool Create_Special_Reinforcement(const HouseClass* house,
-                                  const TechnoTypeClass* type,
-                                  const TechnoTypeClass* another,
-                                  TeamMissionType mission = TMISSION_NONE,
-                                  int argument = 0);
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, Target tarcom, Target navcom,
-                             InfantryType passenger = INFANTRY_NONE);
+                             MissionType mission, Target tarcom, Target navcom);
 
 }  // namespace ra
 
