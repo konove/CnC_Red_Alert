@@ -74,7 +74,7 @@
 #include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/reinf.h"
+#include "ra/ai/reinforcements.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"

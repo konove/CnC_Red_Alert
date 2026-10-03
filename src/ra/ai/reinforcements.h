@@ -1,8 +1,8 @@
 // Reinforcements: bringing a new team, or an air strike, onto the map while a
 // scenario runs.
 
-#ifndef CNC_RED_ALERT_RA_AI_REINF_H_
-#define CNC_RED_ALERT_RA_AI_REINF_H_
+#ifndef CNC_RED_ALERT_RA_AI_REINFORCEMENTS_H_
+#define CNC_RED_ALERT_RA_AI_REINFORCEMENTS_H_
 
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
@@ -40,4 +40,4 @@ int LaunchAirStrike(HouseClass* house, AircraftType aircraft_type, int count,
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_REINF_H_
+#endif  // CNC_RED_ALERT_RA_AI_REINFORCEMENTS_H_

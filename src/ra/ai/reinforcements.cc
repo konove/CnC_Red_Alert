@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/reinf.h"
+#include "ra/ai/reinforcements.h"
 
 #include "absl/log/check.h"
 #include "base/array.h"

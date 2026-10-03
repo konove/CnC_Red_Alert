@@ -1,7 +1,7 @@
 // Tests the air strike against a real Game with no game data: the type
 // objects and one house are built by hand.
 
-#include "ra/ai/reinf.h"
+#include "ra/ai/reinforcements.h"
 
 #include "base/pooled.h"
 #include "gtest/gtest.h"
