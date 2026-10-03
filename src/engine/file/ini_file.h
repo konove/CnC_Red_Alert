@@ -24,7 +24,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <cstdlib>
 #include <memory>
 #include <span>
 #include <string>
@@ -33,7 +32,6 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "base/fixed.h"
-#include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"
 #include "engine/crypto/sha.h"
 #include "engine/stream/byte_sink.h"
@@ -109,11 +107,11 @@ class IniFile {
   // True once the database holds at least one section.
   [[nodiscard]] bool is_loaded() const { return !sections_.empty(); }
 
-  [[nodiscard]] bool HasSection(std::string_view section) const {
+  [[nodiscard]] bool HasSection(const std::string_view section) const {
     return FindSection(section) != nullptr;
   }
-  [[nodiscard]] bool HasEntry(std::string_view section,
-                              std::string_view entry) const {
+  [[nodiscard]] bool HasEntry(const std::string_view section,
+                              const std::string_view entry) const {
     return FindEntry(section, entry) != nullptr;
   }
 

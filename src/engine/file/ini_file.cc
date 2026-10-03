@@ -94,18 +94,18 @@ std::string ReadLine(ByteSource& source, bool& eof) {
 }
 
 // True for a section header, "[name]".
-bool IsSectionLine(std::string_view line) {
+bool IsSectionLine(const std::string_view line) {
   return !line.empty() && line.front() == '[' && line.contains(']');
 }
 
 // Returns `line` up to its first ';', without trailing blanks.
-std::string_view StripComment(std::string_view line) {
+std::string_view StripComment(const std::string_view line) {
   return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));
 }
 
 }  // namespace
 
-uint32_t IniFile::NameId(std::string_view name) {
+uint32_t IniFile::NameId(const std::string_view name) {
   return CrcEngine::Compute(absl::AsciiStrToUpper(name));
 }
 
@@ -118,7 +118,7 @@ bool IniFile::Clear() {
   return true;
 }
 
-bool IniFile::Clear(std::string_view section) {
+bool IniFile::Clear(const std::string_view section) {
   digest_valid_ = false;
   if (const Section* found = FindSection(section)) {
     RemoveSections(found->id());
@@ -126,7 +126,8 @@ bool IniFile::Clear(std::string_view section) {
   return true;
 }
 
-bool IniFile::Clear(std::string_view section, std::string_view entry) {
+bool IniFile::Clear(const std::string_view section,
+                    const std::string_view entry) {
   digest_valid_ = false;
   if (Section* found = FindSection(section)) {
     if (const Entry* found_entry = found->FindEntry(entry)) {
@@ -244,32 +245,33 @@ void IniFile::WriteSections(ByteSink& sink) const {
   }
 }
 
-IniFile::Section* IniFile::FindSection(std::string_view section) const {
+IniFile::Section* IniFile::FindSection(const std::string_view section) const {
   const auto found = section_index_.find(NameId(section));
   return found == section_index_.end() ? nullptr : found->second;
 }
 
 int IniFile::SectionCount() const { return static_cast<int>(sections_.size()); }
 
-const char* IniFile::SectionName(int index) const {
+const char* IniFile::SectionName(const int index) const {
   if (index < 0 || index >= SectionCount()) {
     return nullptr;
   }
   return sections_.at(base::ToSize(index))->name.c_str();
 }
 
-int IniFile::EntryCount(std::string_view section) const {
+int IniFile::EntryCount(const std::string_view section) const {
   const Section* found = FindSection(section);
   return found == nullptr ? 0 : static_cast<int>(found->entries.size());
 }
 
-const IniFile::Entry* IniFile::FindEntry(std::string_view section,
-                                         std::string_view entry) const {
+const IniFile::Entry* IniFile::FindEntry(const std::string_view section,
+                                         const std::string_view entry) const {
   const Section* found = FindSection(section);
   return found == nullptr ? nullptr : found->FindEntry(entry);
 }
 
-const char* IniFile::EntryName(std::string_view section, int index) const {
+const char* IniFile::EntryName(const std::string_view section,
+                               const int index) const {
   const Section* found = FindSection(section);
   if (found == nullptr || index < 0 || index >= std::ssize(found->entries)) {
     return nullptr;
@@ -277,8 +279,8 @@ const char* IniFile::EntryName(std::string_view section, int index) const {
   return found->entries.at(base::ToSize(index))->name.c_str();
 }
 
-bool IniFile::PutBase64Block(std::string_view section,
-                             std::span<const std::byte> block) {
+bool IniFile::PutBase64Block(const std::string_view section,
+                             const std::span<const std::byte> block) {
   if (block.empty()) {
     return false;
   }
@@ -302,8 +304,8 @@ bool IniFile::PutBase64Block(std::string_view section,
 
 // The entries are fetched by name, as the original did, so a section with a
 // duplicated entry name decodes the first of them twice.
-int IniFile::GetBase64Block(std::string_view section,
-                            std::span<std::byte> block) const {
+int IniFile::GetBase64Block(const std::string_view section,
+                            const std::span<std::byte> block) const {
   SpanSink sink(block);
   Base64Sink decoder(Base64Mode::kDecode, sink);
 
@@ -317,7 +319,8 @@ int IniFile::GetBase64Block(std::string_view section,
   return static_cast<int>(sink.bytes_written());
 }
 
-bool IniFile::PutTextBlock(std::string_view section, std::string_view text) {
+bool IniFile::PutTextBlock(const std::string_view section,
+                           std::string_view text) {
   Clear(section);
 
   for (int line_number = 1; !text.empty(); ++line_number) {
@@ -348,7 +351,7 @@ bool IniFile::PutTextBlock(std::string_view section, std::string_view text) {
   return true;
 }
 
-int IniFile::GetTextBlock(std::string_view section,
+int IniFile::GetTextBlock(const std::string_view section,
                           std::span<char> buffer) const {
   if (buffer.empty()) {
     return 0;
@@ -373,8 +376,9 @@ int IniFile::GetTextBlock(std::string_view section,
   return total;
 }
 
-bool IniFile::PutInt(std::string_view section, std::string_view entry,
-                     int number, int format) {
+bool IniFile::PutInt(const std::string_view section,
+                     const std::string_view entry, const int number,
+                     const int format) {
   const auto bits = static_cast<unsigned int>(number);
   switch (format) {
     case 1:
@@ -386,22 +390,24 @@ bool IniFile::PutInt(std::string_view section, std::string_view entry,
   }
 }
 
-int IniFile::GetInt(std::string_view section, std::string_view entry,
-                    int default_value) const {
+int IniFile::GetInt(const std::string_view section,
+                    const std::string_view entry,
+                    const int default_value) const {
   const Entry* found = FindEntry(section, entry);
   return found == nullptr
              ? default_value
              : base::ParseIniIntegerOr(found->value, default_value);
 }
 
-bool IniFile::PutHex(std::string_view section, std::string_view entry,
-                     int number) {
+bool IniFile::PutHex(const std::string_view section,
+                     const std::string_view entry, const int number) {
   return PutString(section, entry,
                    absl::StrFormat("%X", static_cast<unsigned int>(number)));
 }
 
-int IniFile::GetHex(std::string_view section, std::string_view entry,
-                    int default_value) const {
+int IniFile::GetHex(const std::string_view section,
+                    const std::string_view entry,
+                    const int default_value) const {
   if (const Entry* found = FindEntry(section, entry)) {
     // All 32 bits are kept, so "FFFFFFFF" reads as -1.
     if (const auto value = base::ParseHex<uint32_t>(found->value)) {
@@ -411,8 +417,9 @@ int IniFile::GetHex(std::string_view section, std::string_view entry,
   return default_value;
 }
 
-bool IniFile::PutString(std::string_view section, std::string_view entry,
-                        std::string_view value) {
+bool IniFile::PutString(const std::string_view section,
+                        const std::string_view entry,
+                        const std::string_view value) {
   digest_valid_ = false;
   Section* found = FindSection(section);
   if (found == nullptr) {
@@ -435,16 +442,18 @@ bool IniFile::PutString(std::string_view section, std::string_view entry,
   return true;
 }
 
-std::string IniFile::GetString(std::string_view section, std::string_view entry,
-                               std::string_view default_value) const {
+std::string IniFile::GetString(const std::string_view section,
+                               const std::string_view entry,
+                               const std::string_view default_value) const {
   const Entry* found = FindEntry(section, entry);
   return std::string(absl::StripAsciiWhitespace(
       found == nullptr ? default_value : std::string_view(found->value)));
 }
 
-int IniFile::GetString(std::string_view section, std::string_view entry,
-                       std::string_view default_value,
-                       std::span<char> buffer) const {
+int IniFile::GetString(const std::string_view section,
+                       const std::string_view entry,
+                       const std::string_view default_value,
+                       const std::span<char> buffer) const {
   if (buffer.empty()) {
     return 0;
   }
@@ -459,13 +468,14 @@ int IniFile::GetString(std::string_view section, std::string_view entry,
   return static_cast<int>(std::string_view(buffer.data()).size());
 }
 
-bool IniFile::PutBool(std::string_view section, std::string_view entry,
-                      bool value) {
+bool IniFile::PutBool(const std::string_view section,
+                      const std::string_view entry, const bool value) {
   return PutString(section, entry, value ? "yes" : "no");
 }
 
-bool IniFile::GetBool(std::string_view section, std::string_view entry,
-                      bool default_value) const {
+bool IniFile::GetBool(const std::string_view section,
+                      const std::string_view entry,
+                      const bool default_value) const {
   if (const Entry* found = FindEntry(section, entry)) {
     switch (
         absl::ascii_toupper(static_cast<unsigned char>(found->value.front()))) {
@@ -486,7 +496,7 @@ bool IniFile::GetBool(std::string_view section, std::string_view entry,
 }
 
 const IniFile::Entry* IniFile::Section::FindEntry(
-    std::string_view entry_name) const {
+    const std::string_view entry_name) const {
   const auto found = entry_index.find(NameId(entry_name));
   return found == entry_index.end() ? nullptr : found->second;
 }
@@ -552,7 +562,7 @@ void IniFile::ComputeDigest() const {
 
 // The index slot goes first so no pointer to a destroyed entry is compared.
 // Names are matched by id, the same key the index looks them up by.
-void IniFile::Section::RemoveEntries(uint32_t entry_id) {
+void IniFile::Section::RemoveEntries(const uint32_t entry_id) {
   entry_index.erase(entry_id);
   std::erase_if(entries, [entry_id](const auto& owned) {
     return owned->id() == entry_id;
@@ -560,7 +570,7 @@ void IniFile::Section::RemoveEntries(uint32_t entry_id) {
 }
 
 // Same as Section::RemoveEntries, for sections.
-void IniFile::RemoveSections(uint32_t section_id) {
+void IniFile::RemoveSections(const uint32_t section_id) {
   section_index_.erase(section_id);
   std::erase_if(sections_, [section_id](const auto& owned) {
     return owned->id() == section_id;
@@ -580,7 +590,7 @@ bool IniFile::PutPublicKey(const PKey& key) {
   return true;
 }
 
-PKey IniFile::GetPublicKey(bool fast) const {
+PKey IniFile::GetPublicKey(const bool fast) const {
   PKey key;
   unsigned char encoded[512];
 
@@ -603,15 +613,16 @@ PKey IniFile::GetPublicKey(bool fast) const {
   return key;
 }
 
-Fixed IniFile::GetFixed(std::string_view section, std::string_view entry,
-                        Fixed default_value) const {
+Fixed IniFile::GetFixed(const std::string_view section,
+                        const std::string_view entry,
+                        const Fixed default_value) const {
   // A value that is only blanks counts as missing.
   const std::string text = GetString(section, entry, "");
   return text.empty() ? default_value : Fixed::FromString(text);
 }
 
-bool IniFile::PutFixed(std::string_view section, std::string_view entry,
-                       Fixed value) {
+bool IniFile::PutFixed(const std::string_view section,
+                       const std::string_view entry, const Fixed value) {
   return PutString(section, entry, value.ToString());
 }
 
