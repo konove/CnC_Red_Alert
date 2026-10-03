@@ -19,10 +19,8 @@
 #include "ra/ai/base.h"
 
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <iterator>
+#include <string>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -153,7 +151,6 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
 
 void BaseClass::Read_INI(CCINIClass& ini) {
   char buf[128];
-  char uname[10];
   BaseNodeClass node;  // node to add to list
 
   // The scenario names the owner under "Player"; the human player's house is
@@ -165,8 +162,8 @@ void BaseClass::Read_INI(CCINIClass& ini) {
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < count; i++) {
-    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
-    ini.Get_String(INI_Name(), uname, nullptr, buf, sizeof(buf));
+    const std::string entry = absl::StrFormat("%03d", i);
+    ini.Get_String(INI_Name(), entry.c_str(), nullptr, buf, sizeof(buf));
 
     base::Tokenizer tokens(buf, ",");
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
@@ -196,17 +193,13 @@ void BaseClass::Write_INI(CCINIClass& ini) {
     ini.Put_Int(INI_Name(), "Count", static_cast<int>(std::ssize(Nodes)));
 
     for (base::ssize i = 0; i < std::ssize(Nodes); i++) {
-      char buf[128];
-      char uname[10];
-
-      absl::SNPrintF(uname, sizeof(uname), "%03td", i);
-
-      absl::SNPrintF(
-          buf, sizeof(buf), "%s,%d",
+      const std::string entry = absl::StrFormat("%03td", i);
+      const std::string value = absl::StrFormat(
+          "%s,%d",
           BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
           base::At(Nodes, i).Cell.index());
 
-      ini.Put_String(INI_Name(), uname, buf);
+      ini.Put_String(INI_Name(), entry.c_str(), value.c_str());
     }
   }
 }
