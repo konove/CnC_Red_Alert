@@ -84,7 +84,7 @@ class BaseClass {
   // skipped. The owner becomes the house opposing the [BASIC] Player: HOUSE_BAD
   // against GoodGuy, HOUSE_GOOD against anyone else. Call Init() first: the
   // list is not cleared.
-  void Read_INI(char* buffer);
+  void Read_INI(const char* buffer);
 
   // Replaces the [Base] section of the INI text in `buffer` with this base's
   // nodes. The owner is not written.

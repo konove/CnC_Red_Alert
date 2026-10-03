@@ -18,9 +18,6 @@
 
 #include "td/ai/base.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <iterator>
 #include <span>
 #include <string>
@@ -51,16 +48,13 @@ bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
 BaseClass::~BaseClass() { Nodes.clear(); }
 
-void BaseClass::Read_INI(char* buffer) {
-  char buf[128];
-  char uname[10];
+void BaseClass::Read_INI(const char* buffer) {
   BaseNodeClass node;  // node to add to list
 
   // The base belongs to whoever opposes the human player.
-  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy",
-                            std::span(buf).first(static_cast<std::size_t>(20)),
-                            buffer);
-  if (HouseTypeClass::From_Name(buf) == HOUSE_GOOD) {
+  char player[20];
+  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", player, buffer);
+  if (HouseTypeClass::From_Name(player) == HOUSE_GOOD) {
     House = HOUSE_BAD;
   } else {
     House = HOUSE_GOOD;
@@ -71,13 +65,12 @@ void BaseClass::Read_INI(char* buffer) {
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < count; i++) {
-    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
-    WWGetPrivateProfileString(
-        INI_Name(), uname, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    char value[128];
+    const std::string entry = absl::StrFormat("%03d", i);
+    WWGetPrivateProfileString(INI_Name(), entry.c_str(), nullptr, value,
+                              buffer);
 
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(value, ",");
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.
@@ -106,9 +99,6 @@ void BaseClass::Read_INI(char* buffer) {
 }
 
 void BaseClass::Write_INI(std::string& buffer) {
-  char buf[128];
-  char uname[10];
-
   // Passing no entry deletes the whole section.
   WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
 
@@ -117,13 +107,14 @@ void BaseClass::Write_INI(std::string& buffer) {
                            static_cast<int>(std::ssize(Nodes)), buffer);
 
   for (int i = 0; i < std::ssize(Nodes); i++) {
-    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
-    absl::SNPrintF(
-        buf, sizeof(buf), "%s,%d",
+    const std::string entry = absl::StrFormat("%03d", i);
+    const std::string value = absl::StrFormat(
+        "%s,%d",
         BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
         static_cast<int>(base::At(Nodes, i).Coord.packed()));
 
-    WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+    WWWritePrivateProfileString(INI_Name(), entry.c_str(), value.c_str(),
+                                buffer);
   }
 }
 
