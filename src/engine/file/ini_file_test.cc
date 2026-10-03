@@ -175,6 +175,124 @@ TEST(IniFileTest, ClearingASectionRemovesItsDuplicates) {
   EXPECT_EQ(ini.GetInt("T", "M", 0), 5);
 }
 
+// Pairs of names the rotate-and-add checksum once used as the lookup key gave
+// one id: a name must be told from the other by its text.
+constexpr std::array<std::array<std::string_view, 2>, 2> kChecksumTwins = {
+    {{"gdi13", "hdi11"}, {"TEAM3", "UEAM1"}}};
+
+TEST(IniFileTest, EntriesWithChecksumTwinNamesReadTheirOwnValues) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    const auto ini =
+        Parse(absl::StrCat("[S]\n", first, "=one\n", second, "=two\n"));
+    EXPECT_EQ(ini->EntryCount("S"), 2);
+    EXPECT_EQ(ini->GetString("S", first, ""), "one") << first;
+    EXPECT_EQ(ini->GetString("S", second, ""), "two") << second;
+  }
+}
+
+TEST(IniFileTest, PutStringLeavesAnEntryWithAChecksumTwinName) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    IniFile ini;
+    ASSERT_TRUE(ini.PutString("S", first, "one"));
+    ASSERT_TRUE(ini.PutString("S", second, "two"));
+    EXPECT_EQ(ini.EntryCount("S"), 2) << first;
+    EXPECT_EQ(ini.GetString("S", first, ""), "one") << first;
+    EXPECT_EQ(ini.GetString("S", second, ""), "two") << second;
+    ASSERT_TRUE(ini.PutString("S", first, "three"));
+    EXPECT_EQ(ini.EntryCount("S"), 2) << first;
+    EXPECT_EQ(ini.GetString("S", first, ""), "three") << first;
+    EXPECT_EQ(ini.GetString("S", second, ""), "two") << second;
+  }
+}
+
+TEST(IniFileTest, ClearingAnEntryLeavesOneWithAChecksumTwinName) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    for (const bool clear_first : {true, false}) {
+      const auto ini =
+          Parse(absl::StrCat("[S]\n", first, "=one\n", second, "=two\n"));
+      const std::string_view cleared = clear_first ? first : second;
+      const std::string_view kept = clear_first ? second : first;
+      ASSERT_TRUE(ini->Clear("S", cleared));
+      EXPECT_FALSE(ini->HasEntry("S", cleared)) << cleared;
+      EXPECT_EQ(ini->EntryCount("S"), 1) << cleared;
+      EXPECT_EQ(ini->GetString("S", kept, ""), clear_first ? "two" : "one")
+          << cleared;
+    }
+  }
+}
+
+TEST(IniFileTest, SectionsWithChecksumTwinNamesReadTheirOwnValues) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    const auto ini =
+        Parse(absl::StrCat("[", first, "]\nK=one\n[", second, "]\nK=two\n"));
+    EXPECT_EQ(ini->GetString(first, "K", ""), "one") << first;
+    EXPECT_EQ(ini->GetString(second, "K", ""), "two") << second;
+  }
+}
+
+TEST(IniFileTest, PutStringLeavesASectionWithAChecksumTwinName) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    IniFile ini;
+    ASSERT_TRUE(ini.PutString(first, "K", "one"));
+    ASSERT_TRUE(ini.PutString(second, "K", "two"));
+    EXPECT_EQ(ini.SectionCount(), 2) << first;
+    EXPECT_EQ(ini.GetString(first, "K", ""), "one") << first;
+    EXPECT_EQ(ini.GetString(second, "K", ""), "two") << second;
+  }
+}
+
+TEST(IniFileTest, ClearingASectionLeavesOneWithAChecksumTwinName) {
+  for (const auto& [first, second] : kChecksumTwins) {
+    for (const bool clear_first : {true, false}) {
+      const auto ini =
+          Parse(absl::StrCat("[", first, "]\nK=one\n[", second, "]\nK=two\n"));
+      const std::string_view cleared = clear_first ? first : second;
+      const std::string_view kept = clear_first ? second : first;
+      ASSERT_TRUE(ini->Clear(cleared));
+      EXPECT_FALSE(ini->HasSection(cleared)) << cleared;
+      EXPECT_EQ(ini->SectionCount(), 1) << cleared;
+      EXPECT_EQ(ini->GetString(kept, "K", ""), clear_first ? "two" : "one")
+          << cleared;
+    }
+  }
+}
+
+// EntryName() and SectionName() point into the element a removal destroys.
+TEST(IniFileTest, RemovalAcceptsTheNameOfTheElementItRemoves) {
+  IniFile ini;
+  LoadText(ini, "[S]\nA=1\nKey=2\nB=3\nkey=4\nC=5\n[T]\nM=6\n[s]\nN=7\n");
+  ASSERT_TRUE(ini.PutString("S", ini.EntryName("S", 1), "new"));
+  EXPECT_EQ(ini.EntryCount("S"), 4);
+  EXPECT_STREQ(ini.EntryName("S", 3), "Key");
+  EXPECT_EQ(ini.GetString("S", "KEY", ""), "new");
+  ASSERT_TRUE(ini.Clear("S", ini.EntryName("S", 0)));
+  EXPECT_EQ(ini.EntryCount("S"), 3);
+  EXPECT_FALSE(ini.HasEntry("S", "A"));
+  EXPECT_EQ(ini.GetInt("S", "B", 0), 3);
+  ASSERT_TRUE(ini.Clear(ini.SectionName(0)));
+  EXPECT_EQ(ini.SectionCount(), 1);
+  EXPECT_FALSE(ini.HasSection("S"));
+  EXPECT_EQ(ini.GetInt("T", "M", 0), 6);
+}
+
+// The scenario editor writes a section of this size entry by entry; the name
+// index has to keep each write from rescanning the section.
+TEST(IniFileTest, ALargeSectionKeepsEveryEntryThroughPutAndReplace) {
+  constexpr int kEntries = 4096;
+  IniFile ini;
+  for (int i = 0; i < kEntries; ++i) {
+    ASSERT_TRUE(ini.PutInt("Map", absl::StrCat("Cell", i), i));
+  }
+  ASSERT_EQ(ini.EntryCount("Map"), kEntries);
+  ASSERT_TRUE(ini.PutInt("MAP", "cell100", -100));
+  EXPECT_EQ(ini.EntryCount("Map"), kEntries);
+  EXPECT_EQ(ini.GetInt("Map", "Cell100", 0), -100);
+  EXPECT_EQ(ini.GetInt("Map", "Cell99", 0), 99);
+  EXPECT_EQ(ini.GetInt("Map", "Cell4095", 0), 4095);
+  // A replaced entry moves to the end.
+  EXPECT_STREQ(ini.EntryName("Map", kEntries - 1), "cell100");
+}
+
 TEST(IniFileTest, UniqueIdFollowsEdits) {
   IniFile ini;
   ASSERT_TRUE(ini.PutInt("S", "K", 1));

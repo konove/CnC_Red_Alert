@@ -31,6 +31,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/ascii.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -107,24 +108,38 @@ std::string_view StripComment(const std::string_view line) {
 
 }  // namespace
 
-uint32_t IniFile::NameId(const std::string_view name) {
-  return CrcEngine::Compute(absl::AsciiStrToUpper(name));
+// FNV-1a over the upper-cased characters: names that NameEqual calls equal
+// hash alike, and no folded copy of the name is allocated per lookup.
+std::size_t IniFile::NameHash::operator()(const std::string_view name) const {
+  constexpr uint64_t kOffsetBasis = 0xCBF29CE484222325U;
+  constexpr uint64_t kPrime = 0x100000001B3U;
+  uint64_t hash = kOffsetBasis;
+  for (const char c : name) {
+    hash ^= static_cast<unsigned char>(
+        absl::ascii_toupper(static_cast<unsigned char>(c)));
+    hash *= kPrime;
+  }
+  return static_cast<std::size_t>(hash);
+}
+
+bool IniFile::NameEqual::operator()(const std::string_view left,
+                                    const std::string_view right) const {
+  return absl::EqualsIgnoreCase(left, right);
 }
 
 IniFile::~IniFile() = default;
 
 bool IniFile::Clear() {
   digest_valid_ = false;
-  sections_.clear();
+  // The index goes first: its keys are views of the section names.
   section_index_.clear();
+  sections_.clear();
   return true;
 }
 
 bool IniFile::Clear(const std::string_view section) {
   digest_valid_ = false;
-  if (const Section* found = FindSection(section)) {
-    RemoveSections(found->id());
-  }
+  RemoveSections(section);
   return true;
 }
 
@@ -132,9 +147,7 @@ bool IniFile::Clear(const std::string_view section,
                     const std::string_view entry) {
   digest_valid_ = false;
   if (Section* found = FindSection(section)) {
-    if (const Entry* found_entry = found->FindEntry(entry)) {
-      found->RemoveEntries(found_entry->id());
-    }
+    found->RemoveEntries(entry);
   }
   return true;
 }
@@ -200,14 +213,16 @@ bool IniFile::Load(ByteSource& source) {
 
       auto entry =
           std::make_unique<Entry>(std::string(name), std::string(value));
-      section->entry_index.try_emplace(entry->id(), entry.get());
+      // try_emplace keeps the first of two entries with one name as the one
+      // lookups find.
+      section->entry_index.try_emplace(entry->name, entry.get());
       section->entries.push_back(std::move(entry));
     }
 
-    // A section without entries is not stored. try_emplace keeps the first of
-    // two sections with one name as the one lookups find.
+    // A section without entries is not stored. As with entries, the first of
+    // two sections with one name is the one lookups find.
     if (!section->entries.empty()) {
-      section_index_.try_emplace(section->id(), section.get());
+      section_index_.try_emplace(section->name, section.get());
       sections_.push_back(std::move(section));
     }
   }
@@ -250,7 +265,7 @@ void IniFile::WriteSections(ByteSink& sink) const {
 }
 
 IniFile::Section* IniFile::FindSection(const std::string_view section) const {
-  const auto found = section_index_.find(NameId(section));
+  const auto found = section_index_.find(section);
   return found == section_index_.end() ? nullptr : found->second;
 }
 
@@ -429,19 +444,23 @@ bool IniFile::PutString(const std::string_view section,
   if (found == nullptr) {
     found = sections_.emplace_back(std::make_unique<Section>()).get();
     found->name = std::string(section);
-    section_index_.try_emplace(found->id(), found);
+    section_index_.try_emplace(found->name, found);
   }
 
-  // Remove the old entry and any duplicate of it.
-  found->RemoveEntries(NameId(entry));
+  // An empty value is not stored: Load() would drop the line anyway. The new
+  // entry is built before the old one goes, because `entry` may be the old
+  // one's EntryName().
+  auto replacement =
+      value.empty()
+          ? nullptr
+          : std::make_unique<Entry>(std::string(entry), std::string(value));
 
-  // An empty value is not stored: Load() would drop the line anyway.
-  if (!value.empty()) {
-    Entry* added = found->entries
-                       .emplace_back(std::make_unique<Entry>(
-                           std::string(entry), std::string(value)))
-                       .get();
-    found->entry_index.try_emplace(added->id(), added);
+  // Remove the old entry and any duplicate of it.
+  found->RemoveEntries(entry);
+
+  if (replacement != nullptr) {
+    Entry* added = found->entries.emplace_back(std::move(replacement)).get();
+    found->entry_index.try_emplace(added->name, added);
   }
   return true;
 }
@@ -501,7 +520,7 @@ bool IniFile::GetBool(const std::string_view section,
 
 const IniFile::Entry* IniFile::Section::FindEntry(
     const std::string_view entry_name) const {
-  const auto found = entry_index.find(NameId(entry_name));
+  const auto found = entry_index.find(entry_name);
   return found == entry_index.end() ? nullptr : found->second;
 }
 
@@ -564,20 +583,30 @@ void IniFile::ComputeDigest() const {
   digest_valid_ = true;
 }
 
-// The index slot goes first so no pointer to a destroyed entry is compared.
-// Names are matched by id, the same key the index looks them up by.
-void IniFile::Section::RemoveEntries(const uint32_t entry_id) {
-  entry_index.erase(entry_id);
-  std::erase_if(entries, [entry_id](const auto& owned) {
-    return owned->id() == entry_id;
+// The index holds the first element of every name present, so a name it does
+// not know has nothing to remove: writing a new entry does not scan the
+// section. The slot goes before the elements because its key is a view of
+// the first one's name; the scan then matches names the way the index does.
+// The name is copied for the scan: a caller may pass EntryName(), a view of
+// an entry the scan destroys.
+void IniFile::Section::RemoveEntries(const std::string_view entry_name) {
+  if (entry_index.erase(entry_name) == 0) {
+    return;
+  }
+  const std::string removed(entry_name);
+  std::erase_if(entries, [&removed](const auto& owned) {
+    return NameEqual()(owned->name, removed);
   });
 }
 
 // Same as Section::RemoveEntries, for sections.
-void IniFile::RemoveSections(const uint32_t section_id) {
-  section_index_.erase(section_id);
-  std::erase_if(sections_, [section_id](const auto& owned) {
-    return owned->id() == section_id;
+void IniFile::RemoveSections(const std::string_view section) {
+  if (section_index_.erase(section) == 0) {
+    return;
+  }
+  const std::string removed(section);
+  std::erase_if(sections_, [&removed](const auto& owned) {
+    return NameEqual()(owned->name, removed);
   });
 }
 

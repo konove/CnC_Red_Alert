@@ -23,7 +23,6 @@
 #define CNC_RED_ALERT_ENGINE_FILE_INI_FILE_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <span>
@@ -209,10 +208,26 @@ class IniFile {
   bool PutPublicKey(const PKey& key);
 
  private:
+  // Hash and equality of section and entry names, which compare without
+  // ASCII case: both fold each character the same way.
+  struct NameHash {
+    using is_transparent = void;
+    [[nodiscard]] std::size_t operator()(std::string_view name) const;
+  };
+  struct NameEqual {
+    using is_transparent = void;
+    [[nodiscard]] bool operator()(std::string_view left,
+                                  std::string_view right) const;
+  };
+  // Finds the first section or entry of a name. A key is a view of the name
+  // stored in the element it maps to, so an index slot must be erased before
+  // its element is destroyed.
+  template <class Element>
+  using NameIndex =
+      absl::flat_hash_map<std::string_view, Element*, NameHash, NameEqual>;
+
   // One "entry=value" line.
   struct Entry {
-    [[nodiscard]] uint32_t id() const { return NameId(name); }
-
     std::string name;
     std::string value;  // Never empty: such an entry is not stored.
   };
@@ -221,33 +236,28 @@ class IniFile {
   struct Section {
     // Returns the first entry named `entry_name`, or nullptr.
     [[nodiscard]] const Entry* FindEntry(std::string_view entry_name) const;
-    // Removes every entry whose name has the id `entry_id` (a file can hold
-    // duplicates; the index only knows the first), so none is left to
-    // resurface after the removal.
-    void RemoveEntries(uint32_t entry_id);
-    [[nodiscard]] uint32_t id() const { return NameId(name); }
+    // Removes every entry named `entry_name` (a file can hold duplicates; the
+    // index only knows the first), so none is left to resurface after the
+    // removal.
+    void RemoveEntries(std::string_view entry_name);
 
     std::string name;
-    std::vector<std::unique_ptr<Entry>> entries;        // In file order.
-    absl::flat_hash_map<uint32_t, Entry*> entry_index;  // By NameId().
+    std::vector<std::unique_ptr<Entry>> entries;  // In file order.
+    NameIndex<Entry> entry_index;
   };
 
   // Return the first section or entry of that name, or nullptr.
   [[nodiscard]] Section* FindSection(std::string_view section) const;
   [[nodiscard]] const Entry* FindEntry(std::string_view section,
                                        std::string_view entry) const;
-  // Removes every section whose name has the id `section_id`, duplicates
-  // included.
-  void RemoveSections(uint32_t section_id);
-  // The key of a section or entry name: its CRC without ASCII case, which is
-  // what makes names compare without case.
-  static uint32_t NameId(std::string_view name);
+  // Removes every section named `section`, duplicates included.
+  void RemoveSections(std::string_view section);
   // Writes every section to `sink` without finishing it.
   void WriteSections(ByteSink& sink) const;
   void ComputeDigest() const;
 
-  std::vector<std::unique_ptr<Section>> sections_;         // In file order.
-  absl::flat_hash_map<uint32_t, Section*> section_index_;  // By NameId().
+  std::vector<std::unique_ptr<Section>> sections_;  // In file order.
+  NameIndex<Section> section_index_;
 
   // The digest is a lazily computed cache of the database contents: const
   // queries such as UniqueId() fill it on first use, and every mutation
