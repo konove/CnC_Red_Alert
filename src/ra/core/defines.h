@@ -53,7 +53,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/cell.h"        // IWYU pragma: export
 #include "ra/core/coordinate.h"  // IWYU pragma: export
-#include "ra/core/jshell.h"
 #include "ra/core/packed.h"  // IWYU pragma: export
 #include "ra/core/rtti.h"    // IWYU pragma: export
 #include "ra/core/target.h"  // IWYU pragma: export

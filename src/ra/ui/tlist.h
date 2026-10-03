@@ -26,7 +26,6 @@
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/shapebtn.h"

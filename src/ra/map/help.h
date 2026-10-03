@@ -49,7 +49,6 @@
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"
 

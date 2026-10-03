@@ -48,7 +48,6 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/map/display.h"
 #include "ra/objects/house.h"
 

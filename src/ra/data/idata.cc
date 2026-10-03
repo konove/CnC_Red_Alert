@@ -73,7 +73,6 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"

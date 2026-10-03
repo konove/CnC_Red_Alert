@@ -42,7 +42,6 @@
 
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
-#include "ra/core/jshell.h"
 #include "ra/map/help.h"
 
 namespace ra {

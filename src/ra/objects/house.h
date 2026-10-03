@@ -55,7 +55,6 @@
 #include "game/sim/utracker.h"
 #include "ra/ai/region.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"

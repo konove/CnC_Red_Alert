@@ -50,7 +50,6 @@
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/map/display.h"
 #include "ra/map/radar.h"
 

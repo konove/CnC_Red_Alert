@@ -46,7 +46,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/objects/foot.h"
 
 class ArchiveReader;

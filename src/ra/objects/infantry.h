@@ -52,7 +52,6 @@
 #include "game/sim/direction.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cell.h"

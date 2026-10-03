@@ -54,7 +54,6 @@
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"

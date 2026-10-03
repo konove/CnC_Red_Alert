@@ -49,7 +49,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/core/target.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"

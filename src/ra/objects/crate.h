@@ -43,7 +43,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 
 namespace ra {
 

@@ -34,7 +34,6 @@
 #include "game/sim/direction.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/map/layer.h"
 #include "ra/map/map.h"

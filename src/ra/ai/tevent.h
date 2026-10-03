@@ -56,7 +56,6 @@
 #include "game/core/game_clock.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/objects/object.h"
 
 class ArchiveReader;

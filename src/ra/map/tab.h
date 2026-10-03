@@ -47,7 +47,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "ra/core/jshell.h"
 #include "ra/map/credits.h"
 #include "ra/map/sidebar.h"
 

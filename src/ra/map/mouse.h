@@ -47,7 +47,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/map/scroll.h"
 
 class ArchiveReader;

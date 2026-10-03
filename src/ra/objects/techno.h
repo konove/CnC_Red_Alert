@@ -54,7 +54,6 @@
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
 #include "ra/objects/door.h"

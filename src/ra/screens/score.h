@@ -38,7 +38,6 @@
 
 #include "absl/base/attributes.h"
 #include "engine/platform/timer.h"
-#include "ra/core/jshell.h"
 
 class ArchiveReader;
 class ArchiveWriter;

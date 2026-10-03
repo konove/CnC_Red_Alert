@@ -48,7 +48,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
 
 class ArchiveReader;
