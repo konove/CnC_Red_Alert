@@ -2,6 +2,7 @@
 // their readers take out of one, so a scenario the editor saves reads back as
 // it was.
 
+#include <algorithm>
 #include <cstddef>
 #include <span>
 #include <string>
@@ -16,15 +17,16 @@
 #include "engine/stream/vector_sink.h"
 #include "game/core/object_heap.h"
 #include "gtest/gtest.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
-#include "td/ai/prebuilt_base.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/map/world.h"
 #include "td/objects/cell.h"
 #include "td/objects/overlay.h"
+#include "td/objects/smudge.h"
 #include "td/objects/template.h"
 #include "td/objects/type.h"
 
@@ -98,10 +100,15 @@ TEST(ScenarioIniTest, SavedScenarioReadsBackIdentically) {
 class ScenarioWriterTest : public testing::Test {
  protected:
   void SetUp() override {
+    team_type_capacity_ = TheObjectHeaps().team_type().Capacity();
+    trigger_capacity_ = TheObjectHeaps().trigger().Capacity();
+    team_capacity_ = TheObjectHeaps().team().Capacity();
     TheObjectHeaps().team_type().Reset(8);
     TheObjectHeaps().trigger().Reset(8);
     TheObjectHeaps().team().Reset(8);
   }
+  // Runs even when an ASSERT returned early, so nothing leaks into the next
+  // test or suite.
   void TearDown() override {
     while (TheObjectHeaps().trigger().Count() != 0) {
       base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(0));
@@ -109,7 +116,15 @@ class ScenarioWriterTest : public testing::Test {
     while (TheObjectHeaps().team_type().Count() != 0) {
       base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(0));
     }
+    TheObjectHeaps().team_type().Reset(team_type_capacity_);
+    TheObjectHeaps().trigger().Reset(trigger_capacity_);
+    TheObjectHeaps().team().Reset(team_capacity_);
   }
+
+ private:
+  int team_type_capacity_ = 0;
+  int trigger_capacity_ = 0;
+  int team_capacity_ = 0;
 };
 
 TEST_F(ScenarioWriterTest, TeamTypesWriteBackWhatTheyRead) {
@@ -199,16 +214,32 @@ class ScenarioMapWriterTest : public ScenarioWriterTest {
     TheWorld().cell_triggers().clear();
     TheMap().Free_Cells();
   }
+  void TearDown() override {
+    TheMap().Init_Cells();
+    std::ranges::fill(TheWorld().cell_triggers(), nullptr);
+    base::At(TheWorld().waypoint(), 3) = Cell{};
+    TheMap().Theater = THEATER_NONE;
+    TheMap().MapCellX = 0;
+    TheMap().MapCellY = 0;
+    TheMap().MapCellWidth = 0;
+    TheMap().MapCellHeight = 0;
+    ScenarioWriterTest::TearDown();
+  }
 };
 
 TEST_F(ScenarioMapWriterTest, MapWritesItsParametersWaypointsAndCellTriggers) {
   IniFile scenario;
-  Parse(std::string(kScenarioText) + "[Triggers]\r\ntrig=Time,Win,5,None,None,1\r\n",
+  Parse(std::string(kScenarioText) +
+            "[Triggers]\r\ntrig=Time,Win,5,None,None,1\r\n",
         scenario);
   TriggerClass::Read_INI(scenario);
   ASSERT_EQ(TheObjectHeaps().trigger().Count(), 1);
   TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(0);
   TheMap().Theater = THEATER_WINTER;
+  TheMap().MapCellX = 3;
+  TheMap().MapCellY = 4;
+  TheMap().MapCellWidth = 20;
+  TheMap().MapCellHeight = 21;
   TheMap().at(Cell::FromIndex(10)).IsTrigger = true;
   TheWorld().cell_triggers().at(10) = trigger;
   base::At(TheWorld().waypoint(), 3) = Cell::FromIndex(777);
@@ -219,18 +250,15 @@ TEST_F(ScenarioMapWriterTest, MapWritesItsParametersWaypointsAndCellTriggers) {
 
   EXPECT_EQ(written.GetString("MAP", "Theater", ""),
             Theaters.at(THEATER_WINTER).Name);
-  for (const char* entry : {"X", "Y", "Width", "Height"}) {
-    EXPECT_TRUE(written.HasEntry("MAP", entry)) << entry;
-  }
+  EXPECT_EQ(written.GetInt("MAP", "X", -2), 3);
+  EXPECT_EQ(written.GetInt("MAP", "Y", -2), 4);
+  EXPECT_EQ(written.GetInt("MAP", "Width", -2), 20);
+  EXPECT_EQ(written.GetInt("MAP", "Height", -2), 21);
   EXPECT_EQ(written.EntryCount("Waypoints"), kWayptCount);
   EXPECT_EQ(written.GetInt("Waypoints", "3", -2), 777);
   EXPECT_EQ(written.GetInt("Waypoints", "4", -2), Cell{}.index());
   EXPECT_EQ(written.EntryCount("CellTriggers"), 1);
   EXPECT_EQ(written.GetString("CellTriggers", "10", ""), "trig");
-
-  TheMap().at(Cell::FromIndex(10)).IsTrigger = false;
-  TheWorld().cell_triggers().at(10) = nullptr;
-  TheMap().Theater = THEATER_NONE;
 }
 
 TEST_F(ScenarioMapWriterTest, OverlaysAndTemplatesWriteOneEntryPerCell) {
@@ -249,19 +277,36 @@ TEST_F(ScenarioMapWriterTest, OverlaysAndTemplatesWriteOneEntryPerCell) {
   EXPECT_EQ(written.EntryCount("TEMPLATE"), 1);
   EXPECT_EQ(written.GetString("TEMPLATE", "007", ""),
             TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1).IniName);
+}
 
-  TheMap().Init_Cells();
+// The bib is part of the building that stands on it, so it is not written.
+TEST_F(ScenarioMapWriterTest, SmudgesWriteTheirTypeCellAndDataButNotBibs) {
+  ASSERT_FALSE(SmudgeTypeClass::As_Reference(SMUDGE_CRATER1).IsBib);
+  ASSERT_TRUE(SmudgeTypeClass::As_Reference(SMUDGE_BIB1).IsBib);
+  TheMap().at(Cell::FromIndex(9)).Smudge = SMUDGE_CRATER1;
+  TheMap().at(Cell::FromIndex(9)).SmudgeData = 3;
+  TheMap().at(Cell::FromIndex(11)).Smudge = SMUDGE_BIB1;
+
+  IniFile written;
+  written.PutString("SMUDGE", "999", "STALE,999,0");
+  SmudgeClass::Write_INI(written);
+
+  EXPECT_EQ(written.EntryCount("SMUDGE"), 1);
+  EXPECT_EQ(
+      written.GetString("SMUDGE", "009", ""),
+      absl::StrFormat("%s,9,3",
+                      SmudgeTypeClass::As_Reference(SMUDGE_CRATER1).IniName));
+  EXPECT_FALSE(written.HasEntry("SMUDGE", "011"));
 }
 
 TEST(ScenarioIniBaseTest, PrebuiltBaseWritesBackWhatItReads) {
   const int first = Cell::FromIndex((MAP_CELL_W * 20) + 20).Center().packed();
   const int second = Cell::FromIndex((MAP_CELL_W * 22) + 25).Center().packed();
   IniFile scenario;
-  Parse(absl::StrFormat("[Base]\r\nCount=2\r\n000=%s,%d\r\n001=%s,%d\r\n",
-                        BuildingTypeClass::As_Reference(STRUCT_CONST).IniName,
-                        first,
-                        BuildingTypeClass::As_Reference(STRUCT_POWER).IniName,
-                        second),
+  Parse(absl::StrFormat(
+            "[Base]\r\nCount=2\r\n000=%s,%d\r\n001=%s,%d\r\n",
+            BuildingTypeClass::As_Reference(STRUCT_CONST).IniName, first,
+            BuildingTypeClass::As_Reference(STRUCT_POWER).IniName, second),
         scenario);
   PrebuiltBase base;
   base.ReadIni(scenario);
