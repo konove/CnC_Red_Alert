@@ -65,6 +65,6 @@ One commit per step, each verified with the plain build, `ctest`, the strict bui
 | Step | Commit   | Notes                                                       |
 | ---- | -------- | ----------------------------------------------------------- |
 | 1    | 51ebbc35 | TD's uncalled translucent builders went first, in 17243647. |
-| 2    |          | Vortex builder still to do.                                 |
+| 2    | 9ac94ea6 | Vortex builder in the next commit.                          |
 | 3    |          |                                                             |
 | 4    |          |                                                             |

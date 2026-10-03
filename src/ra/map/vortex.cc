@@ -56,7 +56,7 @@
  *Renders the vortex at its current position.                        *
  * CVC::Set_Redraw -- Flags the cells under to vortex to redraw. *
  * CVC::Setup_Remap_Tables -- Initialises the color remap tables based on
- *theater.   * CVC::Build_Fading_Table -- Builds a fading color lookup table. *
+ *theater.   * CVC::BuildShadeTable -- Builds a fading color lookup table. *
  *                                                                                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
@@ -79,6 +79,7 @@
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -1026,9 +1027,9 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
       file->ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
-        Build_Fading_Table(ThePalettes().game_palette(),
-                           base::At(VortexRemapTables, i), 0,
-                           240 - (i * 256 / MAX_REMAP_SHADES));
+        base::At(VortexRemapTables, i) =
+            BuildShadeTable(ThePalettes().game_palette(), 0,
+                            240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
       if (const auto out = OpenGameFile(remap_name, FileAccess::kWrite)) {
@@ -1053,72 +1054,39 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   LightningRemap[199] = 215;
 }
 
-/***********************************************************************************************
- * CVC::Build_Fading_Table -- Builds a fading color lookup table. *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    ptr to palette to base tables on * ptr to buffer to put clut in. *
- *           color to bias colors to * percentage of bias *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: Based on Conquer_Build_Fading_Table *
- *                                                                                             *
- * HISTORY: * 8/29/96 4:53PM ST : Created *
- *=============================================================================================*/
-void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
-                                            std::span<uint8_t> dest, int color,
-                                            int frac) {
-  if (!dest.empty()) {
-    auto ptr = dest.begin();
-
-    /*
-    **	Find an appropriate remap color index for every color in the palette.
-    **	There are certain exceptions to this, but they are trapped within the
-    **	loop.
-    */
-    for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
-      /*
-      **	If this color should not be remapped, then it will be stored as
-      *a remap *	to itself. This is effectively no remap.
-      */
-      if (index == 0 ||
-          (index >= kCycleColorStart &&
-           index < kCycleColorStart + kCycleColorCount) ||
-          index == kPulseColor || index == kEmberColor) {
-        *ptr++ = static_cast<unsigned char>(index);
-      } else {
-        /*
-        **	Find the color that, ideally, the working color should be
-        *remapped *	to in the special remap range.
-        */
-        // Try to match this color.
-        const engine::gfx::PaletteColor trycolor =
-            palette.at(index).FadedToward(frac, palette.at(color));
-
-        /*
-        **	Search through the remap range to find the color that should be
-        *remapped *	to.
-        */
-        int best = -1;
-        int bvalue = 0;
-        for (int id = 0; id < PaletteClass::COLOR_COUNT; id++) {
-          if (id != 0 &&
-              (id < kCycleColorStart ||
-               id >= kCycleColorStart + kCycleColorCount) &&
-              id != kPulseColor && id != kEmberColor) {
-            const int diff = palette.at(id).SquaredDistance(trycolor);
-            if (best == -1 || diff < bvalue) {
-              best = id;
-              bvalue = diff;
-            }
-          }
-        }
-        *ptr++ = static_cast<unsigned char>(best);
+FadingTable ChronalVortexClass::BuildShadeTable(const PaletteClass& palette,
+                                                int color, int frac) {
+  const auto keeps_own_color = [](int index) {
+    return index == 0 ||
+           (index >= kCycleColorStart &&
+            index < kCycleColorStart + kCycleColorCount) ||
+           index == kPulseColor || index == kEmberColor;
+  };
+  FadingTable table{};
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
+    if (keeps_own_color(index)) {
+      base::At(table, index) = static_cast<uint8_t>(index);
+      continue;
+    }
+    const engine::gfx::PaletteColor faded =
+        palette.at(index).FadedToward(frac, palette.at(color));
+    // Ties go to the lower color.
+    int best = -1;
+    int best_distance = 0;
+    for (int candidate = 0; candidate < PaletteClass::COLOR_COUNT;
+         candidate++) {
+      if (keeps_own_color(candidate)) {
+        continue;
+      }
+      const int distance = palette.at(candidate).SquaredDistance(faded);
+      if (best == -1 || distance < best_distance) {
+        best = candidate;
+        best_distance = distance;
       }
     }
+    base::At(table, index) = static_cast<uint8_t>(best);
   }
+  return table;
 }
 
 void ChronalVortexClass::Detach(Target target) {

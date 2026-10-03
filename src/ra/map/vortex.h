@@ -41,6 +41,9 @@
 #ifndef CNC_RED_ALERT_RA_MAP_VORTEX_H_
 #define CNC_RED_ALERT_RA_MAP_VORTEX_H_
 
+#include <array>
+
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/assets/palette.h"
 #include "ra/core/defines.h"
@@ -152,8 +155,12 @@ class ChronalVortexClass {
   /*
   ** Members for setting up the lookup tables.
   */
-  static void Build_Fading_Table(const PaletteClass& palette,
-                                 std::span<uint8_t> dest, int color, int frac);
+  // Returns the table that fades the palette toward `color` by `frac`
+  // (0..255). Color 0 and the colors the palette animates (the cycling range,
+  // the pulse and the ember) keep their own color, and nothing fades into
+  // them, so shading the vortex never makes it flicker.
+  static FadingTable BuildShadeTable(const PaletteClass& palette, int color,
+                                     int frac);
   void Coordinate_Remap(PixelView* inbuffer, int x, int y, int width,
                         int height, std::span<const uint8_t> remap_table);
 
@@ -194,7 +201,7 @@ class ChronalVortexClass {
   /*
   ** Color lookup tables for shading on vortex.
   */
-  unsigned char VortexRemapTables[MAX_REMAP_SHADES][256]{};
+  std::array<FadingTable, MAX_REMAP_SHADES> VortexRemapTables{};
 
   /*
   ** Color lookup table to make the blue lightning orange.
