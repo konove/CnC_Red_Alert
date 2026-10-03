@@ -45,6 +45,17 @@
 
 namespace ra {
 
+// Takes the first member off the list `group`, which is linked through `Next`,
+// and returns it with its own link cleared; nullptr when the list is empty.
+static FootClass* PopHead(FootClass*& group) {
+  FootClass* head = group;
+  if (head != nullptr) {
+    group = dynamic_cast<FootClass*>(head->Next);
+    head->Next = nullptr;
+  }
+  return head;
+}
+
 // Makes every member of the linked list `group` come out of `host`, a building
 // or a transport vehicle: walking out of the building, or loaded into the
 // transport, which is then told to unload. Members that cannot come out are
@@ -53,29 +64,25 @@ static bool SendGroupOutOf(FootClass* group, TechnoClass* host) {
   DCHECK(group != nullptr && host != nullptr);
   const bool is_building = host->What_Am_I() == RTTI_BUILDING;
   DCHECK(is_building || host->What_Am_I() == RTTI_UNIT);
-  int emerged_count = 0;
+  bool any_emerged = false;
 
-  // Take the members off the list one at a time: a transport chains its cargo
-  // through Next as well.
-  while (group != nullptr) {
-    FootClass* member = group;
-    group = dynamic_cast<FootClass*>(group->Next);
-    member->Next = nullptr;
-
+  // The members come off the list one at a time because a transport chains its
+  // cargo through Next as well.
+  while (FootClass* member = PopHead(group)) {
     if (!is_building) {
       // Nothing checks that the transport has room.
       host->Attach(member);
       host->Assign_Mission(MISSION_UNLOAD);
-      ++emerged_count;
+      any_emerged = true;
     } else if (host->Exit_Object(member) == 2) {
-      ++emerged_count;
+      any_emerged = true;
     } else {
       // Any result but 2, a completed exit, leaves the soldier in limbo.
       base::DeletePooled(member);
     }
   }
 
-  return emerged_count != 0;
+  return any_emerged;
 }
 
 // Returns whether the house keeps the reinforcement `aircraft` rather than
@@ -127,48 +134,57 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
   // Create the members, sorting them into transports and everything else.
   FootClass* transports = nullptr;
   FootClass* riders = nullptr;
+  HouseClass* const house = HouseClass::As_Pointer(team_type->House);
   for (int member_index = 0; member_index < team_type->ClassCount;
        member_index++) {
-    const TechnoTypeClass* member_type =
-        base::At(team_type->Members, member_index).Class;
+    const TeamMemberClass& entry = base::At(team_type->Members, member_index);
+    const TechnoTypeClass* member_type = entry.Class;
 
-    for (int copy = 0;
-         copy < base::At(team_type->Members, member_index).Quantity; copy++) {
+    for (int copy = 0; copy < entry.Quantity; copy++) {
       TheWorld().scenario_init()++;
-      auto* member = dynamic_cast<FootClass*>(
-          member_type->Create_One_Of(HouseClass::As_Pointer(team_type->House)));
+      auto* member =
+          dynamic_cast<FootClass*>(member_type->Create_One_Of(house));
       TheWorld().scenario_init()--;
 
-      if (member != nullptr) {
-        // Add the member to the team. scenario_init makes the team accept a
-        // member that is still in limbo.
-        if (team != nullptr) {
-          TheWorld().scenario_init()++;
-          team->Add(member);
-          TheWorld().scenario_init()--;
-          member->IsInitiated = true;
-        }
+      if (member == nullptr) {
+        continue;
+      }
 
-        const auto* aircraft = dynamic_cast<const AircraftClass*>(member);
-        if (aircraft != nullptr && !HouseKeepsAircraft(aircraft)) {
-          member->IsALoaner = true;
-        }
+      // Add the member to the team. scenario_init makes the team accept a
+      // member that is still in limbo.
+      if (team != nullptr) {
+        TheWorld().scenario_init()++;
+        team->Add(member);
+        TheWorld().scenario_init()--;
+        member->IsInitiated = true;
+      }
 
-        // A type that can carry passengers is a transport.
-        if (member_type->Max_Passengers() > 0) {
-          member->Next = transports;
-          transports = member;
+      const auto* aircraft = dynamic_cast<const AircraftClass*>(member);
+      if (aircraft != nullptr && !HouseKeepsAircraft(aircraft)) {
+        member->IsALoaner = true;
+      }
 
-        } else {
-          member->Next = riders;
-          riders = member;
-        }
+      // A type that can carry passengers is a transport.
+      if (member_type->Max_Passengers() > 0) {
+        member->Next = transports;
+        transports = member;
+      } else {
+        member->Next = riders;
+        riders = member;
       }
     }
   }
 
-  // Everything else rides in the first transport.
-  if (transports != nullptr && riders != nullptr) {
+  // Without a transport the group is the members themselves.
+  if (transports == nullptr) {
+    if (riders == nullptr) {
+      base::DeletePooled(team);
+    }
+    return riders;
+  }
+
+  if (riders != nullptr) {
+    // Everything else rides in the first transport.
     transports->Attach(riders);
 
     // HACK ALERT! A flying or sailing transport that the team's missions unload
@@ -177,23 +193,15 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
                                transports->What_Am_I() == RTTI_VESSEL)) {
       transports->IsALoaner = true;
     }
+  } else {
+    // A transport helicopter that arrives empty is itself the reinforcement, so
+    // the house keeps it.
+    const auto* helicopter = dynamic_cast<AircraftClass*>(transports);
+    if (helicopter != nullptr && *helicopter == AIRCRAFT_TRANSPORT) {
+      transports->IsALoaner = false;
+    }
   }
-
-  // A transport helicopter that arrives empty is itself the reinforcement, so
-  // the house keeps it.
-  const auto* helicopter = dynamic_cast<AircraftClass*>(transports);
-  if (helicopter != nullptr && riders == nullptr &&
-      *helicopter == AIRCRAFT_TRANSPORT) {
-    transports->IsALoaner = false;
-  }
-
-  if (transports == nullptr && riders == nullptr) {
-    base::DeletePooled(team);
-    return nullptr;
-  }
-
-  // Without a transport the group is the members themselves.
-  return transports != nullptr ? transports : riders;
+  return transports;
 }
 
 // Returns whether every member of the list `group` is infantry. Only such a
@@ -201,7 +209,7 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
 // edge.
 static bool IsAllInfantry(const FootClass* group) {
   while (group != nullptr) {
-    if (group->What_Am_I() != RTTI_INFANTRY) {
+    if (!group->Is_Infantry()) {
       return false;
     }
     group = dynamic_cast<const FootClass*>(group->Next);
@@ -243,6 +251,20 @@ static TechnoClass* FindHostNear(Cell origin) {
   return building_host;
 }
 
+// Returns the first cell around `cell` that is off the visible map and that
+// `member` can enter, or Cell::None() when there is none.
+static Cell FindEdgeCellNextTo(Cell cell, const FootClass& member) {
+  for (const game::FacingType direction :
+       magic_enum::enum_values<game::FacingType>()) {
+    const Cell neighbor = Adjacent_Cell(cell, direction);
+    if (!TheMap().In_Radar(neighbor) &&
+        member.Can_Enter_Cell(neighbor, direction) == game::MOVE_OK) {
+      return neighbor;
+    }
+  }
+  return Cell::None();
+}
+
 bool DeliverReinforcements(TeamTypeClass* team_type) {
   DCHECK(team_type != nullptr);
 
@@ -259,22 +281,22 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
     team_type->MissionList[0].Data.Value = team_type->Origin;
   }
 
-  FootClass* member = CreateGroup(team_type);
+  FootClass* group = CreateGroup(team_type);
 
   // Nothing could be created, most likely because the object limit was reached.
-  if (member == nullptr) {
+  if (group == nullptr) {
     return false;
   }
 
   // Infantry with an origin waypoint comes out of a building or a transport
   // there, if there is one. This relies on infantry never being a transport, so
   // the head of the list is a member and not a carrier.
-  if (team_type->Origin != -1 && IsAllInfantry(member)) {
+  if (team_type->Origin != -1 && IsAllInfantry(group)) {
     TechnoClass* host =
         FindHostNear(base::At(TheScenario().Waypoint, team_type->Origin));
 
     if (host != nullptr) {
-      return SendGroupOutOf(member, host);
+      return SendGroupOutOf(group, host);
     }
   }
 
@@ -288,37 +310,32 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   // SourceType counts the four edges clockwise from north and FacingType the
   // eight compass points, hence the factor of two. The facing is the edge's own
   // compass point, so the group starts out facing off the map.
-  const auto entry_facing =
-      static_cast<game::FacingType>(static_cast<int>(edge) * 2);
+  const game::DirType entry_dir =
+      game::Facing_Dir(game::AsFacing(static_cast<int>(edge) * 2));
 
-  Cell edge_cell =
-      TheMap().Calculated_Cell(edge, team_type->Origin, Cell::None(),
-                               member->Techno_Type_Class()->Speed);
+  Cell place_cell = TheMap().Calculated_Cell(
+      edge, team_type->Origin, Cell::None(), group->Techno_Type_Class()->Speed);
   // Ants come straight out of the ant hill at their origin waypoint instead.
-  const auto* lead_unit = dynamic_cast<UnitClass*>(member);
+  const auto* lead_unit = dynamic_cast<UnitClass*>(group);
   if (team_type->Origin != -1 && lead_unit != nullptr &&
       (*lead_unit == UNIT_ANT1 || *lead_unit == UNIT_ANT2 ||
        *lead_unit == UNIT_ANT3)) {
     const Cell hill_cell = base::At(TheScenario().Waypoint, team_type->Origin);
-    if ((hill_cell != Cell::None()) &&
-        (TheMap().at(hill_cell).TType == TEMPLATE_HILL01)) {
-      edge_cell = hill_cell;
+    if (hill_cell != Cell::None() &&
+        TheMap().at(hill_cell).TType == TEMPLATE_HILL01) {
+      place_cell = hill_cell;
     }
   }
 
-  Cell place_cell = edge_cell;
-
-  auto* remaining = dynamic_cast<FootClass*>(member->Next);
-  member->Next = nullptr;
-  bool any_placed = false;
   // Place the members one at a time: `member` is the one being placed and
-  // `remaining` the rest of the list. A cell index of 0 or less means there is
-  // no cell.
+  // `group` the rest of the list. A cell index of 0 or less means there is no
+  // cell.
+  FootClass* member = PopHead(group);
+  bool any_placed = false;
   while (place_cell.index() > 0 && member != nullptr) {
-    game::DirType facing = game::Facing_Dir(entry_facing);
-    if (member->What_Am_I() == RTTI_AIRCRAFT) {
-      facing = Random_Pick(game::DIR_N, kMaxRandomDirection);
-    }
+    const bool is_aircraft = member->What_Am_I() == RTTI_AIRCRAFT;
+    const game::DirType facing =
+        is_aircraft ? Random_Pick(game::DIR_N, kMaxRandomDirection) : entry_dir;
 
     // scenario_init places the member on the edge cell without asking whether
     // it can enter it.
@@ -328,51 +345,24 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
 
       // The team handler assigns the mission the member follows; until then it
       // guards. Aircraft start on their own.
-      if (member->What_Am_I() != RTTI_AIRCRAFT) {
+      if (!is_aircraft) {
         member->Assign_Mission(MISSION_GUARD);
         member->Commence();
       }
-
+      member = PopHead(group);
     } else {
       // The member could not be placed here, so place it again from a cell next
-      // to this one that is off the visible map and that it can enter; the rest
-      // of the group follows from that cell. Without such a cell, give up on
-      // the rest of the group.
-      bool found = false;
-      for (const game::FacingType direction :
-           magic_enum::enum_values<game::FacingType>()) {
-        const Cell neighbor = Adjacent_Cell(place_cell, direction);
-        if (!TheMap().In_Radar(neighbor) &&
-            member->Can_Enter_Cell(neighbor, direction) == game::MOVE_OK) {
-          place_cell = neighbor;
-          found = true;
-          break;
-        }
-      }
-      TheWorld().scenario_init()--;
-      if (found) {
-        continue;
-      }
-      break;
+      // to this one; the rest of the group follows from that cell. Without such
+      // a cell, give up on the rest of the group.
+      place_cell = FindEdgeCellNextTo(place_cell, *member);
     }
     TheWorld().scenario_init()--;
-
-    member = remaining;
-    if (member != nullptr) {
-      remaining = dynamic_cast<FootClass*>(member->Next);
-      member->Next = nullptr;
-    }
   }
 
   // Delete the members that could not be placed: the one the loop stopped at
   // and the rest of the list.
-  base::DeletePooled(member);
-  while (remaining != nullptr) {
-    FootClass* unplaced = remaining;
-    remaining = dynamic_cast<FootClass*>(remaining->Next);
-    unplaced->Next = nullptr;
-
-    base::DeletePooled(unplaced);
+  for (; member != nullptr; member = PopHead(group)) {
+    base::DeletePooled(member);
   }
 
   // Announce the reinforcements to the player they belong to.
