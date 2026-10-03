@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_DATA_INI_TYPES_H_
 
 #include <cstdint>
+#include <string_view>
 
 #include "engine/file/ini_file.h"
 #include "ra/core/defines.h"
@@ -52,95 +53,104 @@ class TriggerTypeClass;
 // The game's typed values in an INI database, read and written by their INI
 // names. A getter returns `defvalue` when the entry is missing (GetTriggerType
 // has none and returns nullptr).
-uint64_t GetBuildings(const engine::file::IniFile& ini, const char* section,
-                      const char* entry, uint64_t defvalue);
-UnitType GetUnitType(const engine::file::IniFile& ini, const char* section,
-                     const char* entry, UnitType defvalue);
-AnimType GetAnimType(const engine::file::IniFile& ini, const char* section,
-                     const char* entry, AnimType defvalue);
+uint64_t GetBuildings(const engine::file::IniFile& ini,
+                      std::string_view section, std::string_view entry,
+                      uint64_t defvalue);
+UnitType GetUnitType(const engine::file::IniFile& ini, std::string_view section,
+                     std::string_view entry, UnitType defvalue);
+AnimType GetAnimType(const engine::file::IniFile& ini, std::string_view section,
+                     std::string_view entry, AnimType defvalue);
 game::ArmorType GetArmorType(const engine::file::IniFile& ini,
-                             const char* section, const char* entry,
+                             std::string_view section, std::string_view entry,
                              game::ArmorType defvalue);
-BulletType GetBulletType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, BulletType defvalue);
-HousesType GetHousesType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, HousesType defvalue);
+BulletType GetBulletType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         BulletType defvalue);
+HousesType GetHousesType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         HousesType defvalue);
 // Returns the entry, written in cells ("1.5"), as leptons in 0..65535, or
 // `defvalue` when it is missing. Both keep their low 16 bits.
-int GetLepton(const engine::file::IniFile& ini, const char* section,
-              const char* entry, int defvalue);
-game::MPHType GetMPHType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, game::MPHType defvalue);
+int GetLepton(const engine::file::IniFile& ini, std::string_view section,
+              std::string_view entry, int defvalue);
+game::MPHType GetMPHType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         game::MPHType defvalue);
 OverlayType GetOverlayType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            OverlayType defvalue);
-SourceType GetSourceType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, SourceType defvalue);
+SourceType GetSourceType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         SourceType defvalue);
 TerrainType GetTerrainType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            TerrainType defvalue);
 TheaterType GetTheaterType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            TheaterType defvalue);
-ThemeType GetThemeType(const engine::file::IniFile& ini, const char* section,
-                       const char* entry, ThemeType defvalue);
+ThemeType GetThemeType(const engine::file::IniFile& ini,
+                       std::string_view section, std::string_view entry,
+                       ThemeType defvalue);
 TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
-                                 const char* section, const char* entry);
-VQType GetVQType(const engine::file::IniFile& ini, const char* section,
-                 const char* entry, VQType defvalue);
-VocType GetVocType(const engine::file::IniFile& ini, const char* section,
-                   const char* entry, VocType defvalue);
+                                 std::string_view section,
+                                 std::string_view entry);
+VQType GetVQType(const engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, VQType defvalue);
+VocType GetVocType(const engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, VocType defvalue);
 WarheadType GetWarheadType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            WarheadType defvalue);
-WeaponType GetWeaponType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, WeaponType defvalue);
-uint32_t GetOwners(const engine::file::IniFile& ini, const char* section,
-                   const char* entry, uint32_t defvalue);
-CrateType GetCrateType(const engine::file::IniFile& ini, const char* section,
-                       const char* entry, CrateType defvalue);
-bool PutBuildings(engine::file::IniFile& ini, const char* section,
-                  const char* entry, uint64_t value);
-bool PutAnimType(engine::file::IniFile& ini, const char* section,
-                 const char* entry, AnimType value);
-bool PutUnitType(engine::file::IniFile& ini, const char* section,
-                 const char* entry, UnitType value);
-bool PutArmorType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, game::ArmorType value);
-bool PutBulletType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, BulletType value);
-bool PutHousesType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, HousesType value);
+WeaponType GetWeaponType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         WeaponType defvalue);
+uint32_t GetOwners(const engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, uint32_t defvalue);
+CrateType GetCrateType(const engine::file::IniFile& ini,
+                       std::string_view section, std::string_view entry,
+                       CrateType defvalue);
+bool PutBuildings(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, uint64_t value);
+bool PutAnimType(engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, AnimType value);
+bool PutUnitType(engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, UnitType value);
+bool PutArmorType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, game::ArmorType value);
+bool PutBulletType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, BulletType value);
+bool PutHousesType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, HousesType value);
 // Writes `value`, in leptons, as the cell count GetLepton() reads (128 is
 // stored as ".5"). It keeps its low 16 bits. Returns whether it was stored.
-bool PutLepton(engine::file::IniFile& ini, const char* section,
-               const char* entry, int value);
-bool PutMPHType(engine::file::IniFile& ini, const char* section,
-                const char* entry, game::MPHType value);
-bool PutVQType(engine::file::IniFile& ini, const char* section,
-               const char* entry, VQType value);
-bool PutOverlayType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, OverlayType value);
-bool PutOwners(engine::file::IniFile& ini, const char* section,
-               const char* entry, uint32_t value);
-bool PutSourceType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, SourceType value);
-bool PutTerrainType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TerrainType value);
-bool PutTheaterType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TheaterType value);
-bool PutThemeType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, ThemeType value);
-bool PutTriggerType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TriggerTypeClass* value);
-bool PutVocType(engine::file::IniFile& ini, const char* section,
-                const char* entry, VocType value);
-bool PutWarheadType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, WarheadType value);
-bool PutWeaponType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, WeaponType value);
-bool PutCrateType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, CrateType value);
+bool PutLepton(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, int value);
+bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
+                std::string_view entry, game::MPHType value);
+bool PutVQType(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, VQType value);
+bool PutOverlayType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, OverlayType value);
+bool PutOwners(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, uint32_t value);
+bool PutSourceType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, SourceType value);
+bool PutTerrainType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TerrainType value);
+bool PutTheaterType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TheaterType value);
+bool PutThemeType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, ThemeType value);
+bool PutTriggerType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TriggerTypeClass* value);
+bool PutVocType(engine::file::IniFile& ini, std::string_view section,
+                std::string_view entry, VocType value);
+bool PutWarheadType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, WarheadType value);
+bool PutWeaponType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, WeaponType value);
+bool PutCrateType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, CrateType value);
 
 // Converts an INI owner specification into a house bitfield, one bit per
 // HousesType. The names "soviet", "allies" and "allied" expand to every house

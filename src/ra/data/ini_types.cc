@@ -96,8 +96,8 @@ static inline int Scale_To_256(int val) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-int GetLepton(const engine::file::IniFile& ini, const char* section,
-              const char* entry, int defvalue) {
+int GetLepton(const engine::file::IniFile& ini, std::string_view section,
+              std::string_view entry, int defvalue) {
   const Fixed result = ini.GetFixed(
       section, entry,
       Fixed(static_cast<uint16_t>(defvalue), game::kCellWidthLeptons));
@@ -123,8 +123,8 @@ int GetLepton(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutLepton(engine::file::IniFile& ini, const char* section,
-               const char* entry, int value) {
+bool PutLepton(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, int value) {
   return ini.PutFixed(
       section, entry,
       Fixed(static_cast<uint16_t>(value), game::kCellWidthLeptons));
@@ -152,8 +152,9 @@ bool PutLepton(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-game::MPHType GetMPHType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, game::MPHType defvalue) {
+game::MPHType GetMPHType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         game::MPHType defvalue) {
   const int val =
       ini.GetInt(section, entry, static_cast<int>(defvalue) * 100 / 256);
   return static_cast<game::MPHType>(Scale_To_256(val));
@@ -179,8 +180,8 @@ game::MPHType GetMPHType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutMPHType(engine::file::IniFile& ini, const char* section,
-                const char* entry, game::MPHType value) {
+bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
+                std::string_view entry, game::MPHType value) {
   return ini.PutInt(section, entry, static_cast<int>(value) * 100 / 256);
 }
 
@@ -208,8 +209,8 @@ bool PutMPHType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-uint32_t GetOwners(const engine::file::IniFile& ini, const char* section,
-                   const char* entry, uint32_t defvalue) {
+uint32_t GetOwners(const engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, uint32_t defvalue) {
   char buffer[128];
   uint32_t ownable = defvalue;
 
@@ -243,8 +244,8 @@ uint32_t GetOwners(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutOwners(engine::file::IniFile& ini, const char* section,
-               const char* entry, uint32_t value) {
+bool PutOwners(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, uint32_t value) {
   std::string buffer;
   // Optimization: avoid repeated allocations for small strings
   buffer.reserve(128);
@@ -303,7 +304,7 @@ bool PutOwners(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 game::ArmorType GetArmorType(const engine::file::IniFile& ini,
-                             const char* section, const char* entry,
+                             std::string_view section, std::string_view entry,
                              game::ArmorType defvalue) {
   char buffer[128];
 
@@ -328,8 +329,8 @@ game::ArmorType GetArmorType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutArmorType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, game::ArmorType value) {
+bool PutArmorType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, game::ArmorType value) {
   return ini.PutString(section, entry, ArmorName.at(value));
 }
 
@@ -356,8 +357,8 @@ bool PutArmorType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-VocType GetVocType(const engine::file::IniFile& ini, const char* section,
-                   const char* entry, VocType defvalue) {
+VocType GetVocType(const engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, VocType defvalue) {
   char buffer[128];
 
   ini.GetString(section, entry, VocName(defvalue), buffer);
@@ -383,8 +384,8 @@ VocType GetVocType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutVocType(engine::file::IniFile& ini, const char* section,
-                const char* entry, VocType value) {
+bool PutVocType(engine::file::IniFile& ini, std::string_view section,
+                std::string_view entry, VocType value) {
   if (value == VOC_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -412,8 +413,8 @@ bool PutVocType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-AnimType GetAnimType(const engine::file::IniFile& ini, const char* section,
-                     const char* entry, AnimType defvalue) {
+AnimType GetAnimType(const engine::file::IniFile& ini, std::string_view section,
+                     std::string_view entry, AnimType defvalue) {
   char buffer[128];
 
   ini.GetString(section, entry, Anim_Name(defvalue), buffer);
@@ -440,16 +441,16 @@ AnimType GetAnimType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutAnimType(engine::file::IniFile& ini, const char* section,
-                 const char* entry, AnimType value) {
+bool PutAnimType(engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, AnimType value) {
   if (value == ANIM_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
   return ini.PutString(section, entry, Anim_Name(value));
 }
 
-UnitType GetUnitType(const engine::file::IniFile& ini, const char* section,
-                     const char* entry, UnitType defvalue) {
+UnitType GetUnitType(const engine::file::IniFile& ini, std::string_view section,
+                     std::string_view entry, UnitType defvalue) {
   char buffer[128];
 
   const char* def = "<none>";
@@ -460,8 +461,8 @@ UnitType GetUnitType(const engine::file::IniFile& ini, const char* section,
   return UnitTypeClass::From_Name(buffer);
 }
 
-bool PutUnitType(engine::file::IniFile& ini, const char* section,
-                 const char* entry, UnitType value) {
+bool PutUnitType(engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, UnitType value) {
   if (value == UNIT_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -490,8 +491,9 @@ bool PutUnitType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponType GetWeaponType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, WeaponType defvalue) {
+WeaponType GetWeaponType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         WeaponType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -518,8 +520,8 @@ WeaponType GetWeaponType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutWeaponType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, WeaponType value) {
+bool PutWeaponType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, WeaponType value) {
   if (value == WEAPON_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -549,7 +551,7 @@ bool PutWeaponType(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 WarheadType GetWarheadType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            WarheadType defvalue) {
   char buffer[128];
 
@@ -582,8 +584,8 @@ WarheadType GetWarheadType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutWarheadType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, WarheadType value) {
+bool PutWarheadType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, WarheadType value) {
   if (value == WARHEAD_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -613,7 +615,7 @@ bool PutWarheadType(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 OverlayType GetOverlayType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            OverlayType defvalue) {
   char buffer[128];
 
@@ -641,8 +643,8 @@ OverlayType GetOverlayType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutOverlayType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, OverlayType value) {
+bool PutOverlayType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, OverlayType value) {
   DCHECK(value != OVERLAY_NONE);
   return ini.PutString(section, entry,
                        OverlayTypeClass::As_Reference(value).Name());
@@ -669,8 +671,9 @@ bool PutOverlayType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-BulletType GetBulletType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, BulletType defvalue) {
+BulletType GetBulletType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         BulletType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -707,8 +710,8 @@ BulletType GetBulletType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutBulletType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, BulletType value) {
+bool PutBulletType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, BulletType value) {
   if (value == BULLET_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -740,8 +743,9 @@ bool PutBulletType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-HousesType GetHousesType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, HousesType defvalue) {
+HousesType GetHousesType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         HousesType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -768,8 +772,8 @@ HousesType GetHousesType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutHousesType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, HousesType value) {
+bool PutHousesType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, HousesType value) {
   return ini.PutString(section, entry,
                        HouseTypeClass::As_Reference(value).Name());
 }
@@ -795,8 +799,8 @@ bool PutHousesType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-VQType GetVQType(const engine::file::IniFile& ini, const char* section,
-                 const char* entry, VQType defvalue) {
+VQType GetVQType(const engine::file::IniFile& ini, std::string_view section,
+                 std::string_view entry, VQType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -827,8 +831,8 @@ VQType GetVQType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutVQType(engine::file::IniFile& ini, const char* section,
-               const char* entry, VQType value) {
+bool PutVQType(engine::file::IniFile& ini, std::string_view section,
+               std::string_view entry, VQType value) {
   if (value == VQ_NONE) {
     return ini.PutString(section, entry, "<none>");
   }
@@ -857,7 +861,7 @@ bool PutVQType(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TheaterType GetTheaterType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            TheaterType defvalue) {
   char buffer[128];
 
@@ -885,8 +889,8 @@ TheaterType GetTheaterType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutTheaterType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TheaterType value) {
+bool PutTheaterType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TheaterType value) {
   return ini.PutString(section, entry, Theaters.at(value).Name);
 }
 
@@ -909,7 +913,8 @@ bool PutTheaterType(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
-                                 const char* section, const char* entry) {
+                                 std::string_view section,
+                                 std::string_view entry) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -937,8 +942,8 @@ TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutTriggerType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TriggerTypeClass* value) {
+bool PutTriggerType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TriggerTypeClass* value) {
   return ini.PutString(section, entry, value->Name());
 }
 
@@ -961,8 +966,9 @@ bool PutTriggerType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-ThemeType GetThemeType(const engine::file::IniFile& ini, const char* section,
-                       const char* entry, ThemeType defvalue) {
+ThemeType GetThemeType(const engine::file::IniFile& ini,
+                       std::string_view section, std::string_view entry,
+                       ThemeType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -990,8 +996,8 @@ ThemeType GetThemeType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutThemeType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, ThemeType value) {
+bool PutThemeType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, ThemeType value) {
   return ini.PutString(section, entry, ThemeClass::Base_Name(value));
 }
 
@@ -1017,8 +1023,9 @@ bool PutThemeType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-SourceType GetSourceType(const engine::file::IniFile& ini, const char* section,
-                         const char* entry, SourceType defvalue) {
+SourceType GetSourceType(const engine::file::IniFile& ini,
+                         std::string_view section, std::string_view entry,
+                         SourceType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -1047,8 +1054,8 @@ SourceType GetSourceType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutSourceType(engine::file::IniFile& ini, const char* section,
-                   const char* entry, SourceType value) {
+bool PutSourceType(engine::file::IniFile& ini, std::string_view section,
+                   std::string_view entry, SourceType value) {
   return ini.PutString(section, entry, SourceName.at(value));
 }
 
@@ -1072,8 +1079,9 @@ bool PutSourceType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-CrateType GetCrateType(const engine::file::IniFile& ini, const char* section,
-                       const char* entry, CrateType defvalue) {
+CrateType GetCrateType(const engine::file::IniFile& ini,
+                       std::string_view section, std::string_view entry,
+                       CrateType defvalue) {
   char buffer[128];
 
   if (ini.GetString(section, entry, "", buffer)) {
@@ -1101,8 +1109,8 @@ CrateType GetCrateType(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutCrateType(engine::file::IniFile& ini, const char* section,
-                  const char* entry, CrateType value) {
+bool PutCrateType(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, CrateType value) {
   return ini.PutString(section, entry, CrateNames.at(value));
 }
 
@@ -1127,7 +1135,7 @@ bool PutCrateType(engine::file::IniFile& ini, const char* section,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TerrainType GetTerrainType(const engine::file::IniFile& ini,
-                           const char* section, const char* entry,
+                           std::string_view section, std::string_view entry,
                            TerrainType defvalue) {
   char buffer[128];
 
@@ -1155,8 +1163,8 @@ TerrainType GetTerrainType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutTerrainType(engine::file::IniFile& ini, const char* section,
-                    const char* entry, TerrainType value) {
+bool PutTerrainType(engine::file::IniFile& ini, std::string_view section,
+                    std::string_view entry, TerrainType value) {
   return ini.PutString(section, entry,
                        TerrainTypeClass::As_Reference(value).Name());
 }
@@ -1184,8 +1192,9 @@ bool PutTerrainType(engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-uint64_t GetBuildings(const engine::file::IniFile& ini, const char* section,
-                      const char* entry, uint64_t defvalue) {
+uint64_t GetBuildings(const engine::file::IniFile& ini,
+                      std::string_view section, std::string_view entry,
+                      uint64_t defvalue) {
   char buffer[128];
   uint64_t pre = 0;
 
@@ -1228,8 +1237,8 @@ uint64_t GetBuildings(const engine::file::IniFile& ini, const char* section,
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutBuildings(engine::file::IniFile& ini, const char* section,
-                  const char* entry, const uint64_t value) {
+bool PutBuildings(engine::file::IniFile& ini, std::string_view section,
+                  std::string_view entry, const uint64_t value) {
   // We reserve 256 bytes to prevent reallocations for typical lists.
   std::string buffer;
   buffer.reserve(256);
