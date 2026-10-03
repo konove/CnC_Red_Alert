@@ -55,7 +55,7 @@ bool FillsNode(const BuildingClass& building, const BaseNode& node) {
          Cell::Containing(building.Coord) == node.cell;
 }
 
-bool IsOnMap(Cell cell) {
+bool IsOnMap(const Cell cell) {
   return cell.index() >= 0 && cell.index() < MAP_CELL_TOTAL;
 }
 
@@ -109,7 +109,7 @@ void PrebuiltBase::RemoveNodeFor(const BuildingClass& building) {
   }
 }
 
-const BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) const {
+const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {
   for (const BaseNode& node : nodes_) {
     // STRUCT_NONE asks for the first hole of any type.
     if ((type == STRUCT_NONE || node.type == type) &&
@@ -135,7 +135,10 @@ void PrebuiltBase::ReadIni(const CCINIClass& ini) {
   for (int i = 0; i < node_count; i++) {
     char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    ini.Get_String(kIniSection, entry.c_str(), nullptr, value, sizeof(value));
+    if (ini.Get_String(kIniSection, entry.c_str(), nullptr, value,
+                       sizeof(value)) == 0) {
+      continue;
+    }
 
     base::Tokenizer tokens(value, ",");
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
@@ -165,11 +168,10 @@ void PrebuiltBase::WriteIni(CCINIClass& ini) const {
   ini.Put_Int(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));
 
   for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
-    const BaseNode& node = base::At(nodes_, i);
+    const auto& [type, cell] = base::At(nodes_, i);
     const std::string entry = absl::StrFormat("%03td", i);
     const std::string value = absl::StrFormat(
-        "%s,%d", BuildingTypeClass::As_Reference(node.type).IniName,
-        node.cell.index());
+        "%s,%d", BuildingTypeClass::As_Reference(type).IniName, cell.index());
 
     ini.Put_String(kIniSection, entry.c_str(), value.c_str());
   }
@@ -200,8 +202,8 @@ void PrebuiltBase::Serialize(Archive& ar) {
       nodes_.push_back(node);
     }
   } else {
-    for (BaseNode& node : nodes_) {
-      ar(node.type, node.cell);
+    for (auto& [type, cell] : nodes_) {
+      ar(type, cell);
     }
   }
 }
