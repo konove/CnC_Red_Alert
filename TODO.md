@@ -183,6 +183,19 @@
     `+ Coordinate::FromLeptons(n, 0)` wraps within X instead
   - The two differ only when X is within `n` leptons of 0x10000, which no on-map coordinate is, so
     the change is safe in play but alters the off-map results; do it in its own commit
+- Compare the font too when Tiberian Dawn's message list matches messages
+  - `td/ui/msglist.cc` (~232 duplicate detection, ~251 multi-segment matching) compares only
+    `txtlabel->Style == style`; before `docs/TEXT_PRINT_SPLIT_PLAN.md` that value carried the font,
+    so two messages with the same text, colour and flags in different fonts now match. No caller
+    passes another font than the gradient one today; add `txtlabel->TextFont == font &&` to both
+- Decide whether `HasGradientFontBits()` should mean only the gradient font
+  - Nine widget and skin sites used to test `flags & TPF_6PT_GRAD`, which is 6 and so matched every
+    font index with bit 1 or 2 set: in RA the 8-point, 3-point, LED, VCR, gradient, map, typewriter
+    and score fonts, in TD the first six of those (indices 2-7). `HasGradientFontBits()` in
+    `ra/ui/dialog.cc` and `td/ui/dialog.cc` keeps that set, so TD's 8-point buttons draw in the
+    green gradient style. Narrowing it to `font == FontType::k6PointGradient` changes what those
+    buttons and lists look like; decide on a real display, together with the display check under
+    Testing
 
 ## Features
 
@@ -467,6 +480,19 @@
 - Consider making `RadarClass::RadarCell` a `Cell` in both games
   - It is still `int`, so three sites per game wrap it in `Cell::FromIndex()`; check its saved width
     first
+- Tidy up after `docs/TEXT_PRINT_SPLIT_PLAN.md`
+  - `ra/ai/special.cc` (~306, `PWEditClass::Draw_Text`) finds the gradient font by comparing font
+    data pointers; `TextFont == FontType::k6PointGradient` says the same, as TD's skin now does
+  - Collapse the double blank line before the `HasGradientFontBits()` comment in `ra/ui/dialog.h`
+    (~97) and `td/ui/dialog.h` (~76)
+  - `TextButtonClass::Set_Style(font, style)` (`game/ui/textbtn.h`) has no callers; delete it
+  - `kButtonFlags` and `kEButtonFlags` (`ra/core/defines.h`) hold the same value; keep one or say
+    why there are two
+  - `tools/split_text_print.py` still maps `TPF_LASTPOINT` to `FontType::k8Point`, although a print
+    with no font used 8-point glyphs without the 8-point spacing; make it refuse such an argument if
+    the tool is kept, or delete the tool
+  - The plan's Outcome says TD's `& TPF_6PT_GRAD` set is "the first six" fonts; it is indices 2-7
+    (8-point, 3-point, LED, VCR, gradient, map)
 
 ## Testing
 
@@ -528,6 +554,13 @@
     maps; the other 37 campaign scenarios run. The pre-plan binary (`2d6ef8ed`) does the same, so it
     predates `docs/CCPTR_REMOVAL_PLAN.md`
   - Until it is fixed, headless logic logs and save/load smoke tests cannot cover those scenarios
+- Check the TextPrintType split on a real display in both games
+  - `docs/TEXT_PRINT_SPLIT_PLAN.md` moved the font out of `TextPrintType` into a `FontType`
+    parameter of every printer and text widget. The golden tests (`ra_text_style_test`,
+    `td_text_style_test`) pin font, spacing and glyph palette per combination, but nobody has looked
+    at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
+    dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
+    `1f60381e`
 
 ## Debugging
 
