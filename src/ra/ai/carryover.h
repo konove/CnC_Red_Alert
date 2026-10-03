@@ -24,13 +24,17 @@
 #ifndef CNC_RED_ALERT_RA_AI_CARRYOVER_H_
 #define CNC_RED_ALERT_RA_AI_CARRYOVER_H_
 
+#include <cstdint>
+
 #include "ra/core/defines.h"
-#include "ra/objects/techno.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace ra {
+
+class TechnoClass;
+class TechnoTypeClass;
 
 // What it takes to recreate one object in a later scenario: its type, owner,
 // cell and strength. Everything else (facing, mission, veterancy, cargo) starts
@@ -47,31 +51,24 @@ class Carryover {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // An empty record (RTTI_NONE), for the saved-game loader to fill.
+  // An empty record, for the saved-game loader to fill.
   Carryover() = default;
 
-  // Records `techno`, which must be a building, vehicle, infantry or vessel to
-  // be carried over; any other kind is recorded but Recreate() ignores it.
+  // Records `techno`. A scenario carries over its buildings, vehicles, infantry
+  // and vessels, but any kind of techno can be recorded.
   explicit Carryover(const TechnoClass& techno);
 
   // Builds the recorded object and places it on the current map at its old
-  // cell. Nothing is placed when the object pool is full or the cell cannot
-  // take the object (the new map may differ from the old one).
+  // cell. Nothing is placed when the record is empty, its house is not in this
+  // scenario, the object pool is full, or the cell cannot take the object (the
+  // new map may differ from the old one).
   void Recreate() const;
 
  private:
-  // The kind of object, which selects the member of `type_` in use. RTTI_NONE
-  // for an empty record.
-  RTTIType rtti_{RTTI_NONE};
-
-  // The object's type within its kind. Only the member `rtti_` names is
-  // meaningful, and only these four kinds are carried over.
-  union {
-    StructType building;
-    UnitType unit;
-    InfantryType infantry;
-    VesselType vessel;
-  } type_{};
+  // The object's type, which also knows how to build one. The type objects live
+  // for the whole program, so the pointer outlasts the scenario. nullptr for an
+  // empty record.
+  const TechnoTypeClass* type_{nullptr};
 
   // The cell the object stood in on the old map. The inheriting scenario is
   // expected to use a map this still makes sense on.
@@ -79,7 +76,7 @@ class Carryover {
 
   // The object's strength (hit points) when it was recorded, so damage carries
   // over too.
-  int strength_{0};
+  int16_t strength_{0};
 
   // The house that owned the object. HOUSE_NONE for an empty record.
   HousesType house_{HOUSE_NONE};

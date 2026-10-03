@@ -6,10 +6,8 @@
 #include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/carryover.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
-#include "ra/core/defines.h"
 #include "ra/data/options.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
@@ -76,99 +74,6 @@ void ScoreClass::Serialize(Archive& ar) {
 }
 template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
-
-template <class Archive>
-void Carryover::Serialize(Archive& ar) {
-  ar(rtti_);
-  switch (rtti_) {
-    case RTTI_BUILDING:
-      if constexpr (Archive::kIsReading) {
-        type_.building = STRUCT_NONE;
-      }
-      ar(type_.building);
-      if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(type_.building)) {
-          ar.Fail("invalid carryover object type");
-        }
-      }
-      break;
-    case RTTI_UNIT:
-      if constexpr (Archive::kIsReading) {
-        type_.unit = UNIT_NONE;
-      }
-      ar(type_.unit);
-      if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(type_.unit)) {
-          ar.Fail("invalid carryover object type");
-        }
-      }
-      break;
-    case RTTI_INFANTRY:
-      if constexpr (Archive::kIsReading) {
-        type_.infantry = INFANTRY_NONE;
-      }
-      ar(type_.infantry);
-      if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(type_.infantry)) {
-          ar.Fail("invalid carryover object type");
-        }
-      }
-      break;
-    case RTTI_VESSEL:
-      if constexpr (Archive::kIsReading) {
-        type_.vessel = VESSEL_NONE;
-      }
-      ar(type_.vessel);
-      if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(type_.vessel)) {
-          ar.Fail("invalid carryover object type");
-        }
-      }
-      break;
-    case RTTIType::RTTI_NONE:
-    case RTTIType::RTTI_AIRCRAFT:
-    case RTTIType::RTTI_AIRCRAFTTYPE:
-    case RTTIType::RTTI_ANIM:
-    case RTTIType::RTTI_ANIMTYPE:
-    case RTTIType::RTTI_BUILDINGTYPE:
-    case RTTIType::RTTI_BULLET:
-    case RTTIType::RTTI_BULLETTYPE:
-    case RTTIType::RTTI_CELL:
-    case RTTIType::RTTI_FACTORY:
-    case RTTIType::RTTI_HOUSE:
-    case RTTIType::RTTI_HOUSETYPE:
-    case RTTIType::RTTI_INFANTRYTYPE:
-    case RTTIType::RTTI_OVERLAY:
-    case RTTIType::RTTI_OVERLAYTYPE:
-    case RTTIType::RTTI_SMUDGE:
-    case RTTIType::RTTI_SMUDGETYPE:
-    case RTTIType::RTTI_SPECIAL:
-    case RTTIType::RTTI_TEAM:
-    case RTTIType::RTTI_TEAMTYPE:
-    case RTTIType::RTTI_TEMPLATE:
-    case RTTIType::RTTI_TEMPLATETYPE:
-    case RTTIType::RTTI_TERRAIN:
-    case RTTIType::RTTI_TERRAINTYPE:
-    case RTTIType::RTTI_TRIGGER:
-    case RTTIType::RTTI_TRIGGERTYPE:
-    case RTTIType::RTTI_UNITTYPE:
-    case RTTIType::RTTI_VESSELTYPE:
-    default:
-      if constexpr (Archive::kIsReading) {
-        ar.Fail("invalid carryover object kind");
-      }
-      return;
-  }
-  ar(cell_, strength_, house_);
-  if constexpr (Archive::kIsReading) {
-    if (cell_.index() < 0 || cell_.index() >= MAP_CELL_TOTAL ||
-        !magic_enum::enum_contains(house_)) {
-      ar.Fail("invalid carryover cell or house");
-    }
-  }
-}
-template void Carryover::Serialize(ArchiveWriter&);
-template void Carryover::Serialize(ArchiveReader&);
 
 template <class Archive>
 void SpecialClass::Serialize(Archive& ar) {

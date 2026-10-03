@@ -40,12 +40,15 @@
 #include "game/core/heap_slot_ptr.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/ai/carryover.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
+#include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/map/layer.h"
@@ -77,6 +80,22 @@
 #include "ra/saveload/serialize.h"
 
 namespace ra {
+
+template <class Archive>
+void Carryover::Serialize(Archive& ar) {
+  ar(TechnoTypePtr(type_), cell_, strength_, house_);
+  if constexpr (Archive::kIsReading) {
+    if (type_ == nullptr) {
+      ar.Fail("invalid carryover object type");
+    }
+    if (cell_.index() < 0 || cell_.index() >= MAP_CELL_TOTAL ||
+        !magic_enum::enum_contains(house_)) {
+      ar.Fail("invalid carryover cell or house");
+    }
+  }
+}
+template void Carryover::Serialize(ArchiveWriter&);
+template void Carryover::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TeamMemberClass::Serialize(Archive& ar) {

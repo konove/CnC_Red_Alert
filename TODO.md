@@ -591,8 +591,8 @@
     scenario is known to have one; recorded in case a mission plays differently
   - Add `Cell::is_on_map()` to `ra/core/cell.h` and use it for the open-coded
     `index() < 0 || index() >= MAP_CELL_TOTAL`: `IsOnMap()` in `ra/ai/prebuilt_base.cc`,
-    `ra/saveload/saveglobals.cc:164`, `ra/saveload/iomap.cc:126` (variants at `iomap.cc:381`,
-    `ra/objects/crate.h:58`, `ra/map/findpath.cc:168-178`, `ra/map/display.cc:3777`,
+    `Carryover::Serialize()` in `ra/ai/carryover.cc`, `ra/saveload/iomap.cc:126` (variants at
+    `iomap.cc:381`, `ra/objects/crate.h:58`, `ra/map/findpath.cc:168-178`, `ra/map/display.cc:3777`,
     `ra/objects/terrain.cc:404`). About 4 lines plus the call sites
   - `PrebuiltBase::ReadIni()` rejects a node with `type == STRUCT_NONE` and `Serialize()` with
     `!magic_enum::enum_contains(type)`; one file-local `IsValidNode(const BaseNode&)` (about 5
@@ -690,20 +690,6 @@
     `std::string(token).c_str()`: `IconListClass::Add_Item_Detail()` (`ra/ui/iconlist`, virtual,
     stores the pointer), Tiberian Dawn's `NullModemClass::Send_Modem_Command()`, and the `name`
     parameter of the team and trigger `Fill_In()`, which feeds `Set_Name()`
-- Replace `Carryover`'s kind-plus-union with a `std::variant`
-  - `ra/ai/carryover.h:69` keeps `rtti_` and a union of `StructType`/`UnitType`/`InfantryType`/
-    `VesselType`. A `std::variant<std::monostate, StructType, UnitType, InfantryType, VesselType>`
-    with `std::visit` would drop `rtti_` and the three switches that each list all 28 `RTTIType`
-    values for `-Wswitch-enum`: the constructor and `Recreate()` in `ra/ai/carryover.cc` and
-    `Carryover::Serialize()` in `ra/saveload/saveglobals.cc:81`. `Serialize()` must keep writing the
-    `RTTIType` and then the type so the save format holds; check with `tools/ra_saveload_smoke.sh`.
-    About 150 lines; `docs/COORDINATE_TYPES_PLAN.md:90` lists the union as a candidate
-  - `strength_` (`ra/ai/carryover.h:82`) is an `int` saved as 4 bytes while `ObjectClass::Strength`
-    is `int16_t`, so `Recreate()` narrows it back with a cast. Making it `int16_t` changes the save
-    format (a `kSaveGameVersion` bump); do it with the variant or not at all
-  - The four loops that record the carryover objects in `ra/ai/scenario.cc:950-987` differ only in
-    the heap they walk; one helper templated on the heap would replace them (about 30 lines less)
-  - Left by the carryover modernization (`9931845f`..`fe837a37`)
 - Tidy what the region fold left in `HouseClass` (both games)
   - `Region`/`RegionClass` were folded into `HouseClass::RegionThreat`, a `std::array<int64_t, ...>`
     read through `RegionThreatAt()`; the `region.h` headers are gone

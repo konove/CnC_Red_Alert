@@ -18,127 +18,31 @@
 
 #include "ra/ai/carryover.h"
 
-#include <cstdint>
-
 #include "base/pooled.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
-#include "ra/objects/building.h"
-#include "ra/objects/infantry.h"
+#include "ra/objects/house.h"
+#include "ra/objects/object.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
-#include "ra/objects/unit.h"
-#include "ra/objects/vessel.h"
 
 namespace ra {
 
 Carryover::Carryover(const TechnoClass& techno)
-    : rtti_(techno.What_Am_I()),
+    : type_(techno.Techno_Type_Class()),
       cell_(Cell::Containing(techno.Coord)),
       strength_(techno.Strength),
-      house_(techno.Owner()) {
-  switch (rtti_) {
-    case RTTI_UNIT:
-      type_.unit = dynamic_cast<const UnitClass&>(techno).Class->Type;
-      break;
-
-    case RTTI_BUILDING:
-      type_.building = dynamic_cast<const BuildingClass&>(techno).Class->Type;
-      break;
-
-    case RTTI_INFANTRY:
-      type_.infantry = dynamic_cast<const InfantryClass&>(techno).Class->Type;
-      break;
-
-    case RTTI_VESSEL:
-      type_.vessel = dynamic_cast<const VesselClass&>(techno).Class->Type;
-      break;
-
-    case RTTI_NONE:
-    case RTTI_AIRCRAFT:
-    case RTTI_AIRCRAFTTYPE:
-    case RTTI_ANIM:
-    case RTTI_ANIMTYPE:
-    case RTTI_BUILDINGTYPE:
-    case RTTI_BULLET:
-    case RTTI_BULLETTYPE:
-    case RTTI_CELL:
-    case RTTI_FACTORY:
-    case RTTI_HOUSE:
-    case RTTI_HOUSETYPE:
-    case RTTI_INFANTRYTYPE:
-    case RTTI_OVERLAY:
-    case RTTI_OVERLAYTYPE:
-    case RTTI_SMUDGE:
-    case RTTI_SMUDGETYPE:
-    case RTTI_SPECIAL:
-    case RTTI_TEAM:
-    case RTTI_TEAMTYPE:
-    case RTTI_TEMPLATE:
-    case RTTI_TEMPLATETYPE:
-    case RTTI_TERRAIN:
-    case RTTI_TERRAINTYPE:
-    case RTTI_TRIGGER:
-    case RTTI_TRIGGERTYPE:
-    case RTTI_UNITTYPE:
-    case RTTI_VESSELTYPE:
-    default:
-      break;
-  }
-}
+      house_(techno.Owner()) {}
 
 void Carryover::Recreate() const {
-  TechnoClass* techno = nullptr;
-
-  switch (rtti_) {
-    case RTTI_UNIT:
-      techno = base::NewPooled<UnitClass>(type_.unit, house_);
-      break;
-
-    case RTTI_INFANTRY:
-      techno = base::NewPooled<InfantryClass>(type_.infantry, house_);
-      break;
-
-    case RTTI_BUILDING:
-      techno = base::NewPooled<BuildingClass>(type_.building, house_);
-      break;
-
-    case RTTI_VESSEL:
-      techno = base::NewPooled<VesselClass>(type_.vessel, house_);
-      break;
-    case RTTI_NONE:
-    case RTTI_AIRCRAFT:
-    case RTTI_AIRCRAFTTYPE:
-    case RTTI_ANIM:
-    case RTTI_ANIMTYPE:
-    case RTTI_BUILDINGTYPE:
-    case RTTI_BULLET:
-    case RTTI_BULLETTYPE:
-    case RTTI_CELL:
-    case RTTI_FACTORY:
-    case RTTI_HOUSE:
-    case RTTI_HOUSETYPE:
-    case RTTI_INFANTRYTYPE:
-    case RTTI_OVERLAY:
-    case RTTI_OVERLAYTYPE:
-    case RTTI_SMUDGE:
-    case RTTI_SMUDGETYPE:
-    case RTTI_SPECIAL:
-    case RTTI_TEAM:
-    case RTTI_TEAMTYPE:
-    case RTTI_TEMPLATE:
-    case RTTI_TEMPLATETYPE:
-    case RTTI_TERRAIN:
-    case RTTI_TERRAINTYPE:
-    case RTTI_TRIGGER:
-    case RTTI_TRIGGERTYPE:
-    case RTTI_UNITTYPE:
-    case RTTI_VESSELTYPE:
-    default:
-      break;
+  // The type's factories read the house, and the new scenario need not have
+  // the one the object belonged to.
+  HouseClass* const house = HouseClass::As_Pointer(house_);
+  if (type_ == nullptr || house == nullptr) {
+    return;
   }
-
-  if (techno == nullptr) {
+  ObjectClass* const object = type_->Create_One_Of(house);
+  if (object == nullptr) {
     return;
   }
 
@@ -146,19 +50,20 @@ void Carryover::Recreate() const {
   // that apply while a scenario is being read: with scenario_init set, the
   // check against standing outside the playable map is skipped, and the old
   // cell is not known to be good on this map.
+  const bool is_infantry = object->What_Am_I() == RTTI_INFANTRY;
   const int saved_scenario_init = TheWorld().scenario_init();
-  techno->Strength = static_cast<int16_t>(strength_);
-  if (rtti_ == RTTI_INFANTRY) {
+  object->Strength = strength_;
+  if (is_infantry) {
     TheWorld().scenario_init() = 0;
   }
-  const bool placed = techno->Unlimbo(cell_.Center());
-  if (rtti_ == RTTI_INFANTRY) {
+  const bool placed = object->Unlimbo(cell_.Center());
+  if (is_infantry) {
     TheWorld().scenario_init() = saved_scenario_init;
   }
   // The old cell may be off this map or occupied. An object left in limbo
   // would hold its pool slot for the rest of the scenario.
   if (!placed) {
-    base::DeletePooled(techno);
+    base::DeletePooled(object);
   }
 }
 
