@@ -80,9 +80,10 @@ class BaseClass {
   // Appends the nodes of the [Base] section of the scenario INI text in
   // `buffer`, in the order the section numbers them. An entry is
   // "NNN=TYPE,coordinate", NNN counting from 000 up to the section's Count; an
-  // entry that is missing or names no building type is skipped. The owner
-  // becomes the house opposing the [BASIC] Player: HOUSE_BAD against GoodGuy,
-  // HOUSE_GOOD against anyone else. Call Init() first: the list is not cleared.
+  // entry that is missing, names no building type or lies off the map is
+  // skipped. The owner becomes the house opposing the [BASIC] Player: HOUSE_BAD
+  // against GoodGuy, HOUSE_GOOD against anyone else. Call Init() first: the
+  // list is not cleared.
   void Read_INI(char* buffer);
 
   // Replaces the [Base] section of the INI text in `buffer` with this base's

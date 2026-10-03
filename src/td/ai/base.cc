@@ -94,6 +94,12 @@ void BaseClass::Read_INI(char* buffer) {
       continue;
     }
     node.Coord = Coordinate::FromPacked(*coordinate);
+    // Cell::Containing() does not mask an off-map coordinate, so its cell
+    // would index past the map in Get_Building().
+    if (node.Coord.cell_x() >= MAP_CELL_W ||
+        node.Coord.cell_y() >= MAP_CELL_H) {
+      continue;
+    }
 
     Nodes.push_back(node);
   }
