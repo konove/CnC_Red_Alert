@@ -174,9 +174,10 @@ class IniFile {
     IniSection(IniSection&&) = delete;
     IniSection& operator=(IniSection&&) = delete;
     IniEntry* Find_Entry(const char* entry) const;
-    // Removes `entry` from the list and the index. If a later entry has the
-    // same name, the index is re-pointed at it so lookups still find it.
-    void Remove_Entry(const IniEntry* entry);
+    // Removes every entry whose name has index id `id` (a file can hold
+    // duplicates; the index only knows the first), so none is left to
+    // resurface after the removal.
+    void Remove_Entries(uint32_t id);
     [[nodiscard]] uint32_t Index_ID() const {
       return CrcEngine::Compute(Section);
     }
@@ -191,9 +192,8 @@ class IniFile {
   */
   IniSection* Find_Section(const char* section) const;
   IniEntry* Find_Entry(const char* section, const char* entry) const;
-  // Removes `section` from the list and the index, re-pointing the index at
-  // a later section of the same name if there is one.
-  void Remove_Section(const IniSection* section);
+  // Removes every section whose name has index id `id`, duplicates included.
+  void Remove_Sections(uint32_t id);
   static void Strip_Comments(std::span<char> buffer);
 
   /*

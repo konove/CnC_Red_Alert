@@ -162,10 +162,10 @@ bool IniFile::Clear(const char* section, const char* entry) {
       if (entry != nullptr) {
         const IniEntry* entptr = secptr->Find_Entry(entry);
         if (entptr != nullptr) {
-          secptr->Remove_Entry(entptr);
+          secptr->Remove_Entries(entptr->Index_ID());
         }
       } else {
-        Remove_Section(secptr);
+        Remove_Sections(secptr->Index_ID());
       }
     }
   }
@@ -919,11 +919,9 @@ bool IniFile::Put_String(const char* section, const char* entry,
   }
 
   /*
-  **	Remove the old entry if found.
+  **	Remove the old entry, and any duplicate of it, if found.
   */
-  if (const IniEntry* old = secptr->Find_Entry(entry); old != nullptr) {
-    secptr->Remove_Entry(old);
-  }
+  secptr->Remove_Entries(CrcEngine::Compute(entry));
 
   /*
   **	Create and add the new entry.
@@ -1089,42 +1087,19 @@ IniFile::IniEntry* IniFile::IniSection::Find_Entry(const char* entry) const {
   return nullptr;
 }
 
-// The index points at the first entry of a name, so removing it re-points
-// the index at the next one of that name, if any.
-void IniFile::IniSection::Remove_Entry(const IniEntry* entry) {
-  const uint32_t id = entry->Index_ID();
+// The index slot goes first so no pointer to a destroyed entry is compared.
+// Names are matched by CRC, the same key the index looks them up by.
+void IniFile::IniSection::Remove_Entries(uint32_t id) {
+  EntryIndex.erase(id);
   std::erase_if(EntryList,
-                [entry](const auto& owned) { return owned.get() == entry; });
-  const auto indexed = EntryIndex.find(id);
-  if (indexed == EntryIndex.end() || indexed->second != entry) {
-    return;
-  }
-  EntryIndex.erase(indexed);
-  for (const auto& other : EntryList) {
-    if (other->Index_ID() == id) {
-      EntryIndex.try_emplace(id, other.get());
-      break;
-    }
-  }
+                [id](const auto& owned) { return owned->Index_ID() == id; });
 }
 
-// Same re-pointing as IniSection::Remove_Entry, for sections.
-void IniFile::Remove_Section(const IniSection* section) {
-  const uint32_t id = section->Index_ID();
-  std::erase_if(SectionList, [section](const auto& owned) {
-    return owned.get() == section;
-  });
-  const auto indexed = SectionIndex.find(id);
-  if (indexed == SectionIndex.end() || indexed->second != section) {
-    return;
-  }
-  SectionIndex.erase(indexed);
-  for (const auto& other : SectionList) {
-    if (other->Index_ID() == id) {
-      SectionIndex.try_emplace(id, other.get());
-      break;
-    }
-  }
+// Same as IniSection::Remove_Entries, for sections.
+void IniFile::Remove_Sections(uint32_t id) {
+  SectionIndex.erase(id);
+  std::erase_if(SectionList,
+                [id](const auto& owned) { return owned->Index_ID() == id; });
 }
 
 /***********************************************************************************************
