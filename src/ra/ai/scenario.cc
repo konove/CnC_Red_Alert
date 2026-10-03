@@ -181,6 +181,17 @@ static void Create_Units(bool official);
 static Cell Clip_Scatter(Cell cell, int maxdist);
 static Cell Clip_Move(Cell cell, game::FacingType facing, int dist);
 
+// Adds every living object of `heap` that is on the map to the carryover list.
+template <class T>
+static void RecordCarryover(const game::ObjectHeap<T>& heap) {
+  for (int index = 0; index < heap.Count(); index++) {
+    const T* object = heap.ActiveAt(index);
+    if (object != nullptr && !object->IsInLimbo && object->Strength > 0) {
+      TheWorld().carryover().emplace_back(*object);
+    }
+  }
+}
+
 // Paces the mission briefing: each line is left up for three seconds, or
 // until the speech playing over it finishes. Only this file shows briefings.
 static engine::platform::Timer<engine::platform::SystemTickSource> speech_timer;
@@ -938,53 +949,12 @@ void Do_Win() {
   **	for possible use in a future scenario.
   */
   if (TheScenario().IsToCarryOver) {
-    /*
-    **	First delete any existing carry over list. Any old list will be
-    **	blasted over by the new list -- there is only one logic carryover
-    **	list to be maintained.
-    */
+    // Only one list is kept, so this scenario's replaces any earlier one.
     TheWorld().carryover().clear();
-
-    /*
-    **	Record all objects, that are to be part of the carry over set, into
-    **	the carry over list.
-    */
-    for (int building_index = 0;
-         building_index < TheObjectHeaps().building().Count();
-         building_index++) {
-      BuildingClass* building =
-          TheObjectHeaps().building().ActiveAt(building_index);
-
-      if (building && !building->IsInLimbo && building->Strength > 0) {
-        TheWorld().carryover().emplace_back(*building);
-      }
-    }
-    for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
-         unit_index++) {
-      UnitClass* unit = TheObjectHeaps().unit().ActiveAt(unit_index);
-
-      if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-        TheWorld().carryover().emplace_back(*unit);
-      }
-    }
-    for (int infantry_index = 0;
-         infantry_index < TheObjectHeaps().infantry().Count();
-         infantry_index++) {
-      InfantryClass* infantry =
-          TheObjectHeaps().infantry().ActiveAt(infantry_index);
-
-      if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-        TheWorld().carryover().emplace_back(*infantry);
-      }
-    }
-    for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
-         vessel_index++) {
-      VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(vessel_index);
-
-      if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-        TheWorld().carryover().emplace_back(*vessel);
-      }
-    }
+    RecordCarryover(TheObjectHeaps().building());
+    RecordCarryover(TheObjectHeaps().unit());
+    RecordCarryover(TheObjectHeaps().infantry());
+    RecordCarryover(TheObjectHeaps().vessel());
   }
 
   /*
