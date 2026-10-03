@@ -5092,10 +5092,10 @@ int HouseClass::AI_Building() {
   }
 
   if (TheSession().Type == GAME_NORMAL &&
-      TheWorld().base().House == Class->House) {
-    const BaseNodeClass* node = TheWorld().base().Next_Buildable();
+      TheWorld().base().house() == Class->House) {
+    const BaseNodeClass* node = TheWorld().base().FirstUnbuiltNode();
     if (node) {
-      BuildStructure = node->Type;
+      BuildStructure = node->type;
     }
   }
 

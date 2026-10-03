@@ -40,16 +40,16 @@ namespace ra {
 class BaseNodeClass {
  public:
   BaseNodeClass() = default;
-  BaseNodeClass(StructType building, ra::Cell cell)
-      : Type(building), Cell(cell) {}
+  BaseNodeClass(StructType building_type, Cell top_left)
+      : type(building_type), cell(top_left) {}
   // Nodes are equal when they name the same building type on the same cell.
-  bool operator==(const BaseNodeClass& node) const;
+  bool operator==(const BaseNodeClass& other) const;
   bool operator!=(const BaseNodeClass& node) const;
   // Always true: the nodes have no order.
   bool operator>(const BaseNodeClass& node);
 
-  StructType Type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
-  ra::Cell Cell{};                // The building's top-left cell.
+  StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
+  Cell cell{};                    // The building's top-left cell.
 };
 
 // The prebuilt base of a single-player scenario: the buildings one computer
@@ -62,8 +62,8 @@ class BaseNodeClass {
 //
 // Example:
 //   BaseClass& base = TheWorld().base();
-//   if (const BaseNodeClass* node = base.Next_Buildable()) {
-//     house.BuildStructure = node->Type;
+//   if (const BaseNodeClass* node = base.FirstUnbuiltNode()) {
+//     house.BuildStructure = node->type;
 //   }
 class BaseClass {
  public:
@@ -80,60 +80,73 @@ class BaseClass {
 
   // Empties the base and leaves it without an owner, as it is before a
   // scenario is read.
-  void Init() {
-    House = HOUSE_NONE;
-    Nodes.clear();
+  void Clear() {
+    house_ = HOUSE_NONE;
+    nodes_.clear();
   }
 
   // Appends the nodes of the scenario's [Base] section, in the order the
   // section numbers them, and takes the owner from its Player entry; without
   // one the owner is the human player's house. An entry is "NNN=TYPE,cell",
   // NNN counting from 000 up to the section's Count; an entry that is missing,
-  // names no building type or has a cell off the map is skipped. Call Init()
+  // names no building type or has a cell off the map is skipped. Call Clear()
   // first: the list is not cleared.
-  void Read_INI(CCINIClass& ini);
+  void ReadIni(CCINIClass& ini);
 
   // Replaces the [Base] section of `ini` with this base. A base without an
   // owner (HOUSE_NONE) leaves the section empty.
-  void Write_INI(CCINIClass& ini);
+  void WriteIni(CCINIClass& ini);
 
   // The name of the scenario INI section the base is stored in.
   static const char* INI_Name() { return "Base"; }
 
-  // Returns whether the building of node `index` stands on the map.
-  [[nodiscard]] bool Is_Built(int index) const;
+  // Returns whether the building of node `node_index` stands on the map.
+  [[nodiscard]] bool IsBuilt(int node_index) const;
 
-  // Returns the building that fills node `index`: one of the node's type whose
-  // top-left cell is the node's cell, whichever house owns it. Returns nullptr
-  // if the node is a hole. `index` must be a valid index into Nodes.
-  [[nodiscard]] BuildingClass* Get_Building(int index) const;
+  // Returns the building that fills node `node_index`: one of the node's type
+  // whose top-left cell is the node's cell, whichever house owns it. Returns
+  // nullptr if the node is a hole. `node_index` must be a valid index into
+  // nodes().
+  [[nodiscard]] BuildingClass* FindBuilding(int node_index) const;
 
-  // Returns whether the base has a node for `obj`, which must not be nullptr.
-  bool Is_Node(const BuildingClass* obj);
+  // Returns whether the base has a node for `building`, which must not be
+  // nullptr.
+  bool HasNodeFor(const BuildingClass* building);
 
-  // Returns the first node with the type and top-left cell of `obj`, which
-  // must not be nullptr, or nullptr if the base has none.
-  BaseNodeClass* Get_Node(const BuildingClass* obj)
+  // Returns the first node with the type and top-left cell of `building`,
+  // which must not be nullptr, or nullptr if the base has none.
+  BaseNodeClass* FindNode(const BuildingClass* building)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  // Returns node `index`, which must be a valid index into Nodes.
+  // Returns node `index`, which must be a valid index into nodes().
   BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &base::At(Nodes, index);
+    return &base::At(nodes_, index);
   }
   // Returns the first node on `cell`, of any type, or nullptr if there is none.
   BaseNodeClass* Get_Node(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE)
+  BaseNodeClass* FirstUnbuiltNode(StructType type = STRUCT_NONE)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed is not removed; a destroyed building flagged for
   // rebuilding that has no node gets one appended (BuildingClass::Take_Damage).
-  std::vector<BaseNodeClass> Nodes;
+  std::vector<BaseNodeClass>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return nodes_;
+  }
+  [[nodiscard]] const std::vector<BaseNodeClass>& nodes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return nodes_;
+  }
 
   // The house that builds the base; HOUSE_NONE if the scenario has none.
-  HousesType House = HOUSE_NONE;
+  [[nodiscard]] HousesType house() const { return house_; }
+  void set_house(HousesType house) { house_ = house; }
+
+ private:
+  std::vector<BaseNodeClass> nodes_;
+  HousesType house_ = HOUSE_NONE;
 };
 
 extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);

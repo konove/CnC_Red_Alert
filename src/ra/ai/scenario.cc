@@ -771,7 +771,7 @@ void Clear_Scenario() {
 
   FactoryClass::Init();
 
-  TheWorld().base().Init();
+  TheWorld().base().Clear();
 
   TheWorld().current_object().clear();
 
@@ -2248,7 +2248,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Read in the AI's base information.
   */
-  TheWorld().base().Read_INI(ini);
+  TheWorld().base().ReadIni(ini);
   ServiceRealTime();
 
   /*
@@ -2412,7 +2412,7 @@ void Write_Scenario_INI(const char* fname) {
     VesselClass::Write_INI(ini);
     InfantryClass::Write_INI(ini);
     BuildingClass::Write_INI(ini);
-    TheWorld().base().Write_INI(ini);
+    TheWorld().base().WriteIni(ini);
     OverlayClass::Write_INI(ini);
     SmudgeClass::Write_INI(ini);
 

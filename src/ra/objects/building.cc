@@ -1733,12 +1733,12 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         *force *	the computer to rebuild this structure if it can.
         */
         if (IsToRebuild && Class->Level != -1 &&
-            TheWorld().base().House == House->Class->House &&
-            TheWorld().base().Get_Node(this) == nullptr) {
+            TheWorld().base().house() == House->Class->House &&
+            TheWorld().base().FindNode(this) == nullptr) {
           //				if (IsToRebuild && Class->IsBuildable &&
           // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
-          TheWorld().base().Nodes.emplace_back(Class->Type,
-                                               Cell::Containing(Coord));
+          TheWorld().base().nodes().emplace_back(Class->Type,
+                                                 Cell::Containing(Coord));
         }
 
         /*
@@ -2776,11 +2776,11 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        const BaseNodeClass* node = TheWorld().base().Next_Buildable(
+        const BaseNodeClass* node = TheWorld().base().FirstUnbuiltNode(
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         Coordinate coord{};
         if (node) {
-          coord = node->Cell.Center();
+          coord = node->cell.Center();
         } else {
           /*
           **	Find a suitable new spot to place.

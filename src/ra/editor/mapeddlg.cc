@@ -224,21 +224,21 @@ int MapEditClass::New_Scenario() {
     case SCEN_PLAYER_USSR:
       ThePlayer() = HouseClass::As_Pointer(HOUSE_USSR);
       ThePlayer()->IsHuman = true;
-      TheWorld().base().House = HOUSE_SPAIN;
+      TheWorld().base().set_house(HOUSE_SPAIN);
       LastHouse = HOUSE_GOOD;
       break;
 
     case SCEN_PLAYER_SPAIN:
       ThePlayer() = HouseClass::As_Pointer(HOUSE_SPAIN);
       ThePlayer()->IsHuman = true;
-      TheWorld().base().House = HOUSE_USSR;
+      TheWorld().base().set_house(HOUSE_USSR);
       LastHouse = HOUSE_GOOD;
       break;
 
     case SCEN_PLAYER_GREECE:
       ThePlayer() = HouseClass::As_Pointer(HOUSE_GREECE);
       ThePlayer()->IsHuman = true;
-      TheWorld().base().House = HOUSE_USSR;
+      TheWorld().base().set_house(HOUSE_USSR);
       LastHouse = HOUSE_GOOD;
       break;
     case ScenarioPlayerType::SCEN_PLAYER_NONE:
@@ -1933,8 +1933,8 @@ int MapEditClass::Load_Scenario() {
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
-    if (TheWorld().base().House != HOUSE_NONE) {
-      basebtn.Set_Selected_Index(static_cast<int>(TheWorld().base().House));
+    if (TheWorld().base().house() != HOUSE_NONE) {
+      basebtn.Set_Selected_Index(static_cast<int>(TheWorld().base().house()));
     }
 
     /*
@@ -2368,7 +2368,7 @@ int MapEditClass::Load_Scenario() {
         fetch = false;
         HouseStaticClass* hstatic = &hdata.at(house);
 
-        TheWorld().base().House = HousesType(basebtn.Current_Index());
+        TheWorld().base().set_house(HousesType(basebtn.Current_Index()));
         hstatic->InitialCredits =
             static_cast<int64_t>(creditbtn.Get_Value()) * 100;
         hstatic->Edge = SourceType(sourcebtn.Current_Index());
