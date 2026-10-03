@@ -42,6 +42,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/strings/format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -93,9 +94,8 @@ UtcDate TodayUtc() {
                  broken_down.tm_mday};
 }
 
-//	Long enough for any of the language table's message formats filled in
-//	with a chat line and a user name. Format_Runtime_Text truncates rather
-//	than overflowing, so this is a limit, not an assumption.
+//	Long enough for a chat line and a user name. The copies into it
+//	truncate rather than overflowing, so this is a limit, not an assumption.
 constexpr int kMessageMax = 512;
 
 //	A server's conndata is "something;host;port". The first field is not
@@ -256,14 +256,13 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
                                       LPCSTR szMessage) {
   //	debugprint( ">>> OnPaged got: %s ", szMessage );
 
-  char szPrint[kMessageMax];
-  Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_ONPAGE,
-                      WolText(pUser->name), szMessage);
+  const std::string szPrint =
+      base::FormatRuntime(TXT_WOL_ONPAGE, WolText(pUser->name), szMessage);
   if (!pOwner->bInGame) {
-    pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PAGE);
+    pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_PAGE);
   } else {
     TheSession().Messages.Add_Message(
-        nullptr, 0, szPrint, PCOLOR_GOLD, FontType::k6PointGradient,
+        nullptr, 0, szPrint.c_str(), PCOLOR_GOLD, FontType::k6PointGradient,
         TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     if (!pOwner->bFreezeExternalPager) {
@@ -605,10 +604,10 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
       if (pOwner->CurrentLevel == WOL_LEVEL_INGAMECHANNEL) {
         //	Note that the following is done before removing the user from
         // the playerlist.
-        char szPrint[kMessageMax];
-        Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_PLAYERLEFTGAME,
-                            WolText(pUser->name));
-        pOwner->PrintMessage(szPrint, WOLCOLORREMAP_LOCALMACHINEMESS);
+        pOwner->PrintMessage(
+            base::FormatRuntime(TXT_WOL_PLAYERLEFTGAME, WolText(pUser->name))
+                .c_str(),
+            WOLCOLORREMAP_LOCALMACHINEMESS);
         pOwner->pGSupDlg->OnGuestLeave(pUser);
       }
 
@@ -1007,9 +1006,8 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   ::GetCurrentDirectory(szCurDirSave);
   while (pUpdate) {
     ++iUpdateCurrent;
-    char szTitle[120];
-    Format_Runtime_Text(szTitle, sizeof(szTitle), TXT_WOL_DOWNLOADING,
-                        iUpdateCurrent, iUpdates);
+    const std::string szTitle =
+        base::FormatRuntime(TXT_WOL_DOWNLOADING, iUpdateCurrent, iUpdates);
     char fullpath[engine::platform::kMaxPath];
     absl::SNPrintF(fullpath, sizeof(fullpath), "%s\\%s",
                    WolText(pUpdate->patchpath), WolText(pUpdate->patchfile));
@@ -1032,7 +1030,7 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
                             WolText(pUpdate->password), fullpath,
                             WolText(pUpdate->patchfile), Game_Registry_Key());
     //		debugprint( "Call WOL_Download_Dialog()\n" );
-    if (!WOL_Download_Dialog(pDownload, pDownloadSink, szTitle)) {
+    if (!WOL_Download_Dialog(pDownload, pDownloadSink, szTitle.c_str())) {
       bReturn = false;
       break;
     }
@@ -1410,18 +1408,18 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
       //	Trigger a channel exit later on, when we have left this
       // callback.
       bGotKickedTrigger = true;
-      char szPrint[kMessageMax];
-      Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERKICKEDYOU,
-                          WolText(pUserKicker->name));
-      pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
+      pOwner->PrintMessage(
+          base::FormatRuntime(TXT_WOL_USERKICKEDYOU, WolText(pUserKicker->name))
+              .c_str(),
+          WOLCOLORREMAP_KICKORBAN);
       //	Ensure that the bGotKickedTrigger is acted upon immediately...
       pOwner->dwTimeNextWolapiPump = engine::platform::SystemMilliseconds();
     } else {
-      char szPrint[kMessageMax];
-      Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERKICKEDUSER,
-                          WolText(pUserKicker->name),
-                          WolText(pUserKicked->name));
-      pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
+      pOwner->PrintMessage(base::FormatRuntime(TXT_WOL_USERKICKEDUSER,
+                                               WolText(pUserKicker->name),
+                                               WolText(pUserKicked->name))
+                               .c_str(),
+                           WOLCOLORREMAP_KICKORBAN);
     }
     switch (Sim_Random_Pick(0, 3)) {
       case 0:
@@ -1595,9 +1593,9 @@ STDMETHODIMP RAChatEventSink::OnUserFlags(HRESULT hRes, LPCSTR name,
 STDMETHODIMP RAChatEventSink::OnChannelBan(HRESULT /*res*/, LPCSTR name,
                                            int banned) {
   if (banned && std::string_view(name) != "*") {
-    char szPrint[kMessageMax];
-    Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERWASBANNED, name);
-    pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
+    pOwner->PrintMessage(
+        base::FormatRuntime(TXT_WOL_USERWASBANNED, name).c_str(),
+        WOLCOLORREMAP_KICKORBAN);
   }
 
   return S_OK;
@@ -1803,10 +1801,11 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
           if (absl::EqualsIgnoreCase(WolText(pLadderNew->login_name),
                                      pOwner->szMyName)) {
             //	Set up local player's win/loss string.
-            Format_Runtime_Text(pOwner->szMyRecord, sizeof(pOwner->szMyRecord),
-                                TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
-                                pLadderNew->rung, pLadderNew->wins,
-                                pLadderNew->losses, pLadderNew->points);
+            base::SafeCopy(pOwner->szMyRecord,
+                           base::FormatRuntime(
+                               TXT_WOL_PERSONALWINLOSSRECORD, pOwner->szMyName,
+                               pLadderNew->rung, pLadderNew->wins,
+                               pLadderNew->losses, pLadderNew->points));
             pOwner->bMyRecordUpdated = true;
           }
         } else {  //	sku must be LADDER_CODE_AM
@@ -1822,11 +1821,12 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
           if (absl::EqualsIgnoreCase(WolText(pLadderNew->login_name),
                                      pOwner->szMyName)) {
             //	Set up local player's win/loss string for Aftermath.
-            Format_Runtime_Text(
-                pOwner->szMyRecordAM, sizeof(pOwner->szMyRecordAM),
-                TXT_WOL_PERSONALWINLOSSRECORDAM, pOwner->szMyName,
-                pLadderNew->rung, pLadderNew->wins, pLadderNew->losses,
-                pLadderNew->points);
+            base::SafeCopy(
+                pOwner->szMyRecordAM,
+                base::FormatRuntime(TXT_WOL_PERSONALWINLOSSRECORDAM,
+                                    pOwner->szMyName, pLadderNew->rung,
+                                    pLadderNew->wins, pLadderNew->losses,
+                                    pLadderNew->points));
             pOwner->bMyRecordUpdated = true;
           }
         }

@@ -22,6 +22,7 @@
 #include <cstring>
 #include <string_view>
 
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
@@ -33,7 +34,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/bigcheck.h"
@@ -199,10 +199,8 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   CS_Check.Add_Tail(*commands);
   AM_Check.Add_Tail(*commands);
 
-  char szPlayerCount[100];
-  Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount), TXT_WOL_CG_PLAYERS,
-                      cgiReturn.iPlayerMax);
-  PlayerCountStatic.Set_Text(szPlayerCount);
+  PlayerCountStatic.Set_Text(
+      base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax).c_str());
 
   /*
   **	Main Processing Loop.
@@ -283,9 +281,9 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           display = true;
         }
         cgiReturn.iPlayerMax = PlayerCountGauge.Get_Value() + 2;
-        Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
-                            TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
-        PlayerCountStatic.Set_Text(szPlayerCount);
+        PlayerCountStatic.Set_Text(
+            base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax)
+                .c_str());
         PlayerCountStatic.Draw_Me(view);
         break;
 
@@ -295,9 +293,9 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           PlayerCountGauge.Set_Value(0);
           //					PlayerCountGauge.Disable();
           cgiReturn.iPlayerMax = 2;
-          Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
-                              TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
-          PlayerCountStatic.Set_Text(szPlayerCount);
+          PlayerCountStatic.Set_Text(
+              base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax)
+                  .c_str());
           PlayerCountStatic.Draw_Me(view);
         }
         //				else

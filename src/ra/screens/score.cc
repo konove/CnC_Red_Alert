@@ -37,6 +37,7 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -47,6 +48,7 @@
 #include "base/count_up.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/strings/format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
@@ -906,31 +908,28 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
 void ScoreClass::Print_Minutes(int minutes,
                                const std::span<const uint8_t> palette) {
-  char str[20];
+  std::string text;
   if (minutes >= 60) {
     // The hours field is a single digit.
     if (minutes / 60 > 9) {
       minutes = (9 * 60) + 59;
     }
-    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
-                        minutes / 60, minutes % 60);
+    text = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
+                               minutes % 60);
   } else {
-    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
-                        minutes);
+    text = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
   }
-  TheScreen().visible_view().Print(ScoreFontStyle(palette), str, 550, 18,
-                                   kTBlack, kTBlack);
+  TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(), 550,
+                                   18, kTBlack, kTBlack);
 }
 
 void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
                                 int xpos, int ypos,
                                 const std::span<const uint8_t> palette) {
-  char destbuf[64];
-
-  Format_Runtime_Text(destbuf, sizeof(destbuf), str,
-                      percent <= maxval ? percent : maxval);
-  TheScreen().visible_view().Print(ScoreFontStyle(palette), destbuf, xpos * 2,
-                                   ypos * 2, kTBlack, kBlack);
+  const std::string text =
+      base::FormatRuntime(str, percent <= maxval ? percent : maxval);
+  TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(),
+                                   xpos * 2, ypos * 2, kTBlack, kBlack);
 }
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,

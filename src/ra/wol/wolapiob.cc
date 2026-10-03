@@ -86,7 +86,6 @@
 #include "ra/assets/palette.h"
 #include "ra/core/config.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
 #include "ra/ui/shapebtn.h"
@@ -887,10 +886,10 @@ void WolapiObject::ListChannels() {
         //	Regular chat channel.
         const std::string show = absl::StrFormat(
             "%s\t%-3u", WolText(pChannel->name), pChannel->currentUsers);
-        char szHelp[200];
-        Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_CHAT,
-                            WolText(pChannel->name), pChannel->currentUsers);
-        pILChannels->Add_Item(show.c_str(), szHelp,
+        const std::string szHelp = base::FormatRuntime(
+            TXT_WOL_TTIP_CHANLIST_CHAT, WolText(pChannel->name),
+            pChannel->currentUsers);
+        pILChannels->Add_Item(show.c_str(), szHelp.c_str(),
                               IconPointer(base::At(DibIconInfos, kDibiconUser)),
                               ICON_DIB, CHANNELTYPE_CHATCHANNEL, pChannel);
       } else {
@@ -899,16 +898,15 @@ void WolapiObject::ListChannels() {
         InterpretLobbyNumber(szLobbyName, iLobby);
         const std::string show =
             absl::StrFormat("%s\t%-3u", szLobbyName, pChannel->currentUsers);
-        char szHelp[200];
-        Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_LOBBY,
-                            szLobbyName, pChannel->currentUsers);
-        pILChannels->Add_Item(show.c_str(), szHelp, IconForGameType(-1),
+        const std::string szHelp = base::FormatRuntime(
+            TXT_WOL_TTIP_CHANLIST_LOBBY, szLobbyName, pChannel->currentUsers);
+        pILChannels->Add_Item(show.c_str(), szHelp.c_str(), IconForGameType(-1),
                               ICON_DIB, CHANNELTYPE_LOBBYCHANNEL, pChannel);
       }
     } else {
       //	Show game channel.
       std::string show;
-      char szHelp[200];
+      std::string szHelp;
       void* pGameKindIcon = nullptr;
       if (pChannel->type == GAME_TYPE) {
         //	Get RedAlert GameKind.
@@ -918,26 +916,23 @@ void WolapiObject::ListChannels() {
           case CREATEGAMEINFO::RAGAME:
             pGameKindIcon = IconPointer(
                 base::At(OldRAGameTypeInfos, 0));  //	Red Alert icon
-            Format_Runtime_Text(szHelp, sizeof(szHelp),
-                                TXT_WOL_TTIP_CHANLIST_RAGAME,
-                                TXT_WOL_TTIP_REDALERT, pChannel->currentUsers,
-                                pChannel->maxUsers);
+            szHelp = base::FormatRuntime(
+                TXT_WOL_TTIP_CHANLIST_RAGAME, TXT_WOL_TTIP_REDALERT,
+                pChannel->currentUsers, pChannel->maxUsers);
             break;
           case CREATEGAMEINFO::CSGAME:
             pGameKindIcon =
                 IconPointer(base::At(OldRAGameTypeInfos, 1));  //	CS icon
-            Format_Runtime_Text(szHelp, sizeof(szHelp),
-                                TXT_WOL_TTIP_CHANLIST_RAGAME,
-                                TXT_WOL_TTIP_COUNTERSTRIKE,
-                                pChannel->currentUsers, pChannel->maxUsers);
+            szHelp = base::FormatRuntime(
+                TXT_WOL_TTIP_CHANLIST_RAGAME, TXT_WOL_TTIP_COUNTERSTRIKE,
+                pChannel->currentUsers, pChannel->maxUsers);
             break;
           case CREATEGAMEINFO::AMGAME:
             pGameKindIcon =
                 IconPointer(base::At(OldRAGameTypeInfos, 2));  //	AM icon
-            Format_Runtime_Text(szHelp, sizeof(szHelp),
-                                TXT_WOL_TTIP_CHANLIST_RAGAME,
-                                TXT_WOL_TTIP_AFTERMATH, pChannel->currentUsers,
-                                pChannel->maxUsers);
+            szHelp = base::FormatRuntime(
+                TXT_WOL_TTIP_CHANLIST_RAGAME, TXT_WOL_TTIP_AFTERMATH,
+                pChannel->currentUsers, pChannel->maxUsers);
             break;
           default:
             //					debugprint( "Illegal value for
@@ -951,15 +946,15 @@ void WolapiObject::ListChannels() {
         pGameKindIcon = IconForGameType(pChannel->type);
         show = absl::StrFormat("%s\t%-2u", WolText(pChannel->name),
                                pChannel->currentUsers);
-        Format_Runtime_Text(szHelp, sizeof(szHelp), TXT_WOL_TTIP_CHANLIST_GAME,
-                            NameOfGameType(pChannel->type),
-                            pChannel->currentUsers);
+        szHelp = base::FormatRuntime(TXT_WOL_TTIP_CHANLIST_GAME,
+                                     NameOfGameType(pChannel->type),
+                                     pChannel->currentUsers);
       }
       void* pPrivateIcon = nullptr;
       if (pChannel->flags & CHAN_MODE_KEY) {
         //	Game is private.
         pPrivateIcon = IconPointer(base::At(DibIconInfos, kDibiconPrivate));
-        base::SafeAppend(szHelp, TXT_WOL_TTIP_PRIVATEGAME);
+        szHelp += TXT_WOL_TTIP_PRIVATEGAME;
       }
 
       void* pTournamentIcon = nullptr;
@@ -967,7 +962,7 @@ void WolapiObject::ListChannels() {
         //	Game is tournament.
         pTournamentIcon =
             IconPointer(base::At(DibIconInfos, kDibiconTournament));
-        base::SafeAppend(szHelp, TXT_WOL_TTIP_TOURNAMENTGAME);
+        szHelp += TXT_WOL_TTIP_TOURNAMENTGAME;
       }
 
       int iLatencyUse = pChannel->latency;
@@ -978,7 +973,7 @@ void WolapiObject::ListChannels() {
       static const int iLatencyBarX = 227 - iLatencyIconWidth - 19;
 
       pILChannels->Add_Item(
-          show.c_str(), szHelp, pGameKindIcon, ICON_DIB,
+          show.c_str(), szHelp.c_str(), pGameKindIcon, ICON_DIB,
           CHANNELTYPE_GAMECHANNEL, pChannel, nullptr, pPrivateIcon, ICON_DIB,
           pTournamentIcon, ICON_DIB,
           IconPointer(base::At(DibIconInfos, kDibiconLatency)), ICON_DIB,
@@ -1221,15 +1216,10 @@ bool WolapiObject::ListChannelUsers() {
       if (CurrentLevel == WOL_LEVEL_INGAMECHANNEL || bInLobby) {
         const int iRank =
             pNetUtilSink->GetUserRank(WolText(pUser->name), bShowRankRA);
-        char szNameToShow[WOL_NAME_LEN_MAX + 40];
-        if (iRank) {
-          //					debugprint("  Found %s has rank
-          //%u\n", (char*)pUser->name, iRank );
-          Format_Runtime_Text(szNameToShow, sizeof(szNameToShow),
-                              TXT_WOL_USERRANK, WolText(pUser->name), iRank);
-        } else {
-          base::SafeCopy(szNameToShow, WolText(pUser->name));
-        }
+        const std::string szNameToShow =
+            iRank ? base::FormatRuntime(TXT_WOL_USERRANK, WolText(pUser->name),
+                                        iRank)
+                  : std::string(WolText(pUser->name));
 
         static const int iLatencyBarX = 248 - iLatencyIconWidth - 5 - 16;
 
@@ -1252,8 +1242,8 @@ bool WolapiObject::ListChannelUsers() {
           }
         }
         pListToUse->Add_Item(
-            szNameToShow, nullptr, pIconStatus, ICON_DIB, nullptr, pUser,
-            nullptr, pIconSquelched, ICON_DIB, nullptr, ICON_DIB,
+            szNameToShow.c_str(), nullptr, pIconStatus, ICON_DIB, nullptr,
+            pUser, nullptr, pIconSquelched, ICON_DIB, nullptr, ICON_DIB,
             IconPointer(base::At(DibIconInfos, kDibiconLatency)), ICON_DIB,
             iLatencyBarX, 2, iLatencyBarWidth);
       } else {
@@ -1266,10 +1256,8 @@ bool WolapiObject::ListChannelUsers() {
     }
     if (pStaticUsers) {
       //	Display number of users in channel.
-      char szCount[100];
-      Format_Runtime_Text(szCount, sizeof(szCount), TXT_WOL_USERLIST,
-                          iUserCount);
-      pStaticUsers->Set_Text(szCount);
+      pStaticUsers->Set_Text(
+          base::FormatRuntime(TXT_WOL_USERLIST, iUserCount).c_str());
     }
     //	Reset multiselectedness, color, and item text for a user. Slow.
     //	(What a bloody, bloody hack.)
@@ -1283,7 +1271,7 @@ bool WolapiObject::ListChannelUsers() {
             //	Append house text to item string, as we found a valid house name
             // after the name, above.
             char szItem[120];
-            WritePlayerListItem(szItem, sizeof(szItem),
+            WritePlayerListItem(szItem,
                                 pUsersSaved.at(base::ToSize(iUser)).szName,
                                 pUsersSaved.at(base::ToSize(iUser)).House);
             pListToUse->Set_Item(static_cast<unsigned int>(iFind), szItem);
@@ -1446,7 +1434,7 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
 
 //***********************************************************************************************
 void WolapiObject::WritePlayerListItem(std::span<char> szDest,
-                                       std::size_t iSize, const char* szName,
+                                       const char* szName,
                                        HousesType House) const {
   //	Sets szDest to the way a player list item appears in a game channel.
   char szHouse[50];
@@ -1457,10 +1445,11 @@ void WolapiObject::WritePlayerListItem(std::span<char> szDest,
       szName, bShowRankRA);  //	Horrendous inefficiency here, when called for
                              // relisting players...
   if (iRank) {
-    Format_Runtime_Text(szDest, iSize, TXT_WOL_USERRANKHOUSE, szName, iRank,
-                        szHouse);
+    base::SafeCopy(szDest, base::FormatRuntime(TXT_WOL_USERRANKHOUSE, szName,
+                                               iRank, szHouse));
   } else {
-    Format_Runtime_Text(szDest, iSize, TXT_WOL_USERHOUSE, szName, szHouse);
+    base::SafeCopy(szDest,
+                   base::FormatRuntime(TXT_WOL_USERHOUSE, szName, szHouse));
   }
   //	debugprint( "WritePlayerListItem: '%s', ok?\n", szDest );
 }
@@ -1808,10 +1797,9 @@ void WolapiObject::DoFindPage() {
           GenericErrorMessage();
           break;
         case S_OK:
-          char szMessage[WOL_NAME_LEN_MAX + 30];
-          Format_Runtime_Text(szMessage, sizeof(szMessage), TXT_WOL_WASPAGED,
-                              FindPageDlg.szEdit);
-          PrintMessage(szMessage, WOLCOLORREMAP_LOCALMACHINEMESS);
+          PrintMessage(
+              base::FormatRuntime(TXT_WOL_WASPAGED, FindPageDlg.szEdit).c_str(),
+              WOLCOLORREMAP_LOCALMACHINEMESS);
           break;
         default:
           break;
@@ -2102,11 +2090,10 @@ bool WolapiObject::DoGameAdvertising(const Channel* pChannel) {
     return false;
   }
 
-  char szQuestion[512];
-  Format_Runtime_Text(szQuestion, sizeof(szQuestion), TXT_WOL_GAMEADVERTSHELL,
-                      NameOfGameType(pChannel->type));
+  const std::string szQuestion = base::FormatRuntime(
+      TXT_WOL_GAMEADVERTSHELL, NameOfGameType(pChannel->type));
   bPump_In_Call_Back = true;
-  if (WWMessageBox().Process(szQuestion, TXT_YES, TXT_NO) == 0) {
+  if (WWMessageBox().Process(szQuestion.c_str(), TXT_YES, TXT_NO) == 0) {
     bPump_In_Call_Back = false;
     return SpawnBrowser(szURL);
   }
@@ -2186,11 +2173,10 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       //	ShellExecute failed as well. Just print a message instead.
       ThePalettes().game_palette().Set();
       engine::window::TheDisplay().Restore();
-      char szError[300];
-      Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
-                          szURL);
+      const std::string szError =
+          base::FormatRuntime(TXT_WOL_CANTLAUNCHBROWSER, szURL);
       game::TheMouse().Show();
-      WWMessageBox().Process(szError);
+      WWMessageBox().Process(szError.c_str());
       return false;
     }
     //	(We return immediately after launching in this case.)
@@ -2347,14 +2333,13 @@ bool WolapiObject::EnterLevel_Games() {
       if (iType != 2 && iType != 3 && iType != 4) {
         //	Hack needed for the time being, to prevent the
         // old ra games from being seen.
-        char szHelp[200];
-        Format_Runtime_Text(szHelp, sizeof(szHelp),
-                            TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE,
-                            GameTypeInfos.at(base::ToSize(i)).szName);
-        pILChannels->Add_Item(GameTypeInfos.at(base::ToSize(i)).szName, szHelp,
-                              IconPointer(GameTypeInfos.at(base::ToSize(i))),
-                              ICON_DIB, CHANNELTYPE_GAMESOFTYPE,
-                              &GameTypeInfos.at(base::ToSize(i)));
+        const std::string szHelp =
+            base::FormatRuntime(TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE,
+                                GameTypeInfos.at(base::ToSize(i)).szName);
+        pILChannels->Add_Item(
+            GameTypeInfos.at(base::ToSize(i)).szName, szHelp.c_str(),
+            IconPointer(GameTypeInfos.at(base::ToSize(i))), ICON_DIB,
+            CHANNELTYPE_GAMESOFTYPE, &GameTypeInfos.at(base::ToSize(i)));
       }
     }
   }
@@ -2911,8 +2896,8 @@ void WolapiObject::RestoreChat() {
 //***********************************************************************************************
 void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
   CHATSAVE& ChatSaveNew = SavedChat.emplace_back();
-  Format_Runtime_Text(ChatSaveNew.szText, sizeof(ChatSaveNew.szText),
-                      TXT_WOL_HOSTLEFTGAME, szName);
+  base::SafeCopy(ChatSaveNew.szText,
+                 base::FormatRuntime(TXT_WOL_HOSTLEFTGAME, szName));
   ChatSaveNew.ItemExtras.pColorRemap =
       &ThePalettes().color_remaps().at(WOLCOLORREMAP_LOCALMACHINEMESS);
 }

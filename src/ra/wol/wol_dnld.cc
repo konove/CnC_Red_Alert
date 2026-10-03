@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/strings/format.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -33,7 +34,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/init.h"
@@ -226,16 +226,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         pDownloadSink->bFlagProgressUpdate = false;
         progress_meter.Set_Value((pDownloadSink->iBytesRead * 100) /
                                  pDownloadSink->iTotalSize);
-        char szText[200];
-        Format_Runtime_Text(
-            szText, sizeof(szText), TXT_WOL_DOWNLOADBYTES,
-            pDownloadSink->iBytesRead, pDownloadSink->iTotalSize,
-            (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize);
-        StatBytes.Set_Text(szText);
-        Format_Runtime_Text(szText, sizeof(szText), TXT_WOL_DOWNLOADTIME,
-                            pDownloadSink->iTimeLeft / 60,
-                            pDownloadSink->iTimeLeft % 60);
-        StatTime.Set_Text(szText);
+        StatBytes.Set_Text(
+            base::FormatRuntime(
+                TXT_WOL_DOWNLOADBYTES, pDownloadSink->iBytesRead,
+                pDownloadSink->iTotalSize,
+                (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize)
+                .c_str());
+        StatTime.Set_Text(base::FormatRuntime(TXT_WOL_DOWNLOADTIME,
+                                              pDownloadSink->iTimeLeft / 60,
+                                              pDownloadSink->iTimeLeft % 60)
+                              .c_str());
         display = std::max(display, REDRAW_BUTTONS);
       }
       if (pDownloadSink->bFlagStatusUpdate) {
@@ -261,10 +261,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         display = std::max(display, REDRAW_BUTTONS);
       }
       if (pDownloadSink->bFlagQueryResume && pDownloadSink->bResumed) {
-        char szTitleNew[200];
-        Format_Runtime_Text(szTitleNew, sizeof(szTitleNew),
-                            TXT_WOL_DOWNLOADRESUMED, szTitle);
-        StatTitle.Set_Text(szTitleNew);
+        StatTitle.Set_Text(
+            base::FormatRuntime(TXT_WOL_DOWNLOADRESUMED, szTitle).c_str());
         display = std::max(display, REDRAW_BUTTONS);
       }
 

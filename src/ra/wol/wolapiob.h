@@ -424,10 +424,10 @@ class WolapiObject {
   static void PullPlayerName_Into_From(std::span<char> szDest,
                                        const char* szSource);
   static HousesType PullPlayerHouse_From(const char* szSource);
-  //	Writes a game-channel player list item into szDest, truncating to
-  //	iSize rather than overflowing.
-  void WritePlayerListItem(std::span<char> szDest, std::size_t iSize,
-                           const char* szName, HousesType House) const;
+  //	Writes a game-channel player list item into szDest, truncating
+  //	rather than overflowing.
+  void WritePlayerListItem(std::span<char> szDest, const char* szName,
+                           HousesType House) const;
 
   void RequestPlayerPings();
 

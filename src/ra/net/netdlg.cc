@@ -133,6 +133,7 @@
 #include <iterator>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -147,6 +148,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/random.h"
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/game_file.h"
@@ -176,7 +178,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -1137,8 +1138,6 @@ bool Process_Global_Packet(GlobalPacketType* packet,
  * HISTORY: * 04/22/1995 BR : Created. *
  *=============================================================================================*/
 void Destroy_Connection(int id, int error) {
-  char txt[80];
-
   if (TheDebugState().print_events()) {
     absl::PrintF("Destroying connection for house %d (%s)\n", id,
                  HouseClass::As_Pointer(static_cast<HousesType>(id))->IniName);
@@ -1155,18 +1154,17 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   //	Create a message to display to the user
   //------------------------------------------------------------------------
-  txt[0] = '\0';
+  std::string message;
   if (error == 1) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                        housep->IniName);
+    message =
+        base::FormatRuntime(Text_String(TXT_CONNECTION_LOST), housep->IniName);
   } else if (error == 0) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                        housep->IniName);
+    message = base::FormatRuntime(Text_String(TXT_LEFT_GAME), housep->IniName);
   }
 
-  if (!std::string_view(txt).empty()) {
+  if (!message.empty()) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt, housep->RemapColor, kTextFont, kTextFlags,
+        nullptr, 0, message.c_str(), housep->RemapColor, kTextFont, kTextFlags,
         TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
   }
@@ -1200,10 +1198,9 @@ void Destroy_Connection(int id, int error) {
   //	If we're the last player left, tell the user.
   //------------------------------------------------------------------------
   if (TheSession().NumPlayers == 1) {
-    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt, housep->RemapColor, kTextFont, kTextFlags,
-        TheRules().MessageDelay * kTicksPerMinute);
+        nullptr, 0, Text_String(TXT_JUST_YOU_AND_ME), housep->RemapColor,
+        kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
   }
 
@@ -1812,23 +1809,18 @@ static int Net_Join_Dialog() {
           // If we're joined to a game, just print the player's name & side.
           //...............................................................
 #ifdef OLDWAY
-          if (TheSession().House == HOUSE_GOOD) {
-            Format_Runtime_Text(txt, sizeof(txt),
-                                Text_String(TXT_S_PLAYING_S), namebuf,
-                                Text_String(TXT_ALLIES));
-          } else {
-            Format_Runtime_Text(txt, sizeof(txt),
-                                Text_String(TXT_S_PLAYING_S), namebuf,
-                                Text_String(TXT_SOVIET));
-          }
+          const std::string playing = base::FormatRuntime(
+              Text_String(TXT_S_PLAYING_S), namebuf,
+              Text_String(TheSession().House == HOUSE_GOOD ? TXT_ALLIES
+                                                           : TXT_SOVIET));
 #else   // OLDWAY
-          Format_Runtime_Text(
-              txt, sizeof(txt), Text_String(TXT_S_PLAYING_S), namebuf,
+          const std::string playing = base::FormatRuntime(
+              Text_String(TXT_S_PLAYING_S), namebuf,
               Text_String(HouseTypeClass::As_Reference(TheSession().House)
                               .Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(
-              view, txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
+              view, playing.c_str(), d_dialog_cx, d_dialog_y + d_margin2 + 2,
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                   : &ThePalettes().color_remaps().at(TheSession().ColorIdx),
@@ -3428,7 +3420,6 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   int i = 0;
   int found = 0;
   JoinEventType retcode = EV_NONE;
-  char txt[80];
 
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return
@@ -3472,16 +3463,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
             engine::platform::SystemTicks();
         if (TheSession().Games.at(i)->Game.IsOpen !=
             TheSession().GPacket.GameInfo.IsOpen) {
-          if (TheSession().GPacket.GameInfo.IsOpen) {
-            Format_Runtime_Text(item, kGameListItemSize,
-                                Text_String(TXT_THATGUYS_GAME),
-                                TheSession().GPacket.Name);
-          } else {
-            Format_Runtime_Text(item, kGameListItemSize,
-                                Text_String(TXT_THATGUYS_GAME_BRACKET),
-                                TheSession().GPacket.Name);
-          }
-          gamelist->Set_Item(i, item);
+          gamelist->Set_Item(
+              i, base::FormatRuntime(
+                     Text_String(TheSession().GPacket.GameInfo.IsOpen
+                                     ? TXT_THATGUYS_GAME
+                                     : TXT_THATGUYS_GAME_BRACKET),
+                     TheSession().GPacket.Name));
           TheSession().Games.at(i)->Game.IsOpen =
               TheSession().GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
@@ -3500,19 +3487,21 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           // this game has changed.
           //............................................................
           if (*joinstate < JOIN_CONFIRMED) {
+            std::string message;
             if (TheSession().Games.at(i)->Game.IsOpen) {
-              Format_Runtime_Text(
-                  txt, sizeof(txt), Text_String(TXT_S_FORMED_NEW_GAME),
+              message = base::FormatRuntime(
+                  Text_String(TXT_S_FORMED_NEW_GAME),
                   TheSession().Games.at(TheSession().Games.Count() - 1)->Name);
               PlaySoundEffect(VOC_GAME_FORMING);
             } else {
-              Format_Runtime_Text(
-                  txt, sizeof(txt), Text_String(TXT_GAME_NOW_IN_PROGRESS),
+              message = base::FormatRuntime(
+                  Text_String(TXT_GAME_NOW_IN_PROGRESS),
                   TheSession().Games.at(TheSession().Games.Count() - 1)->Name);
               PlaySoundEffect(VOC_GAME_CLOSED);
             }
-            TheSession().Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN,
-                                              kTextFont, kTextFlags, 1200);
+            TheSession().Messages.Add_Message(nullptr, 0, message.c_str(),
+                                              PCOLOR_BROWN, kTextFont,
+                                              kTextFlags, 1200);
             retcode = EV_NEW_GAME;
           }
         }
@@ -3537,16 +3526,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Create a string for "xxx's Game", leaving room for brackets
       // around 	the string if it's a closed game
       //..................................................................
-      if (TheSession().GPacket.GameInfo.IsOpen) {
-        Format_Runtime_Text(item, kGameListItemSize,
-                            Text_String(TXT_THATGUYS_GAME),
-                            TheSession().GPacket.Name);
-      } else {
-        Format_Runtime_Text(item, kGameListItemSize,
-                            Text_String(TXT_THATGUYS_GAME_BRACKET),
-                            TheSession().GPacket.Name);
-      }
-      gamelist->Add_Item(item);
+      gamelist->Add_Item(
+          base::FormatRuntime(Text_String(TheSession().GPacket.GameInfo.IsOpen
+                                              ? TXT_THATGUYS_GAME
+                                              : TXT_THATGUYS_GAME_BRACKET),
+                              TheSession().GPacket.Name)
+              .c_str());
 
       //..................................................................
       // If this player's in the Chat vector, remove him from there
@@ -3563,11 +3548,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // now available.
       //..................................................................
       if (TheSession().GPacket.GameInfo.IsOpen && *joinstate < JOIN_CONFIRMED) {
-        Format_Runtime_Text(txt, sizeof(txt),
-                            Text_String(TXT_S_FORMED_NEW_GAME),
-                            TheSession().GPacket.Name);
-        TheSession().Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN,
-                                          kTextFont, kTextFlags, 1200);
+        const std::string message = base::FormatRuntime(
+            Text_String(TXT_S_FORMED_NEW_GAME), TheSession().GPacket.Name);
+        TheSession().Messages.Add_Message(nullptr, 0, message.c_str(),
+                                          PCOLOR_BROWN, kTextFont, kTextFlags,
+                                          1200);
         PlaySoundEffect(VOC_GAME_FORMING);
       }
 
@@ -5659,9 +5644,6 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   static int y;
   static int w;
   static int h;
-  char buf1[40] = {0};
-  char buf2[40] = {0};
-
   const int d_txt6_h = 12 + 1;
   const int d_margin = 10;
 
@@ -5674,6 +5656,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
   if (fresh) {
+    std::string status;
     switch (TheSession().Type) {
       case GAME_IPX:
       case GAME_INTERNET:
@@ -5682,12 +5665,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
         if (reconn) {
           const int id = TheNetwork().ipx().Connection_ID(oldest_index);
-          Format_Runtime_Text(buf1, sizeof(buf1),
-                              Text_String(TXT_RECONNECTING_TO),
-                              TheNetwork().ipx().Connection_Name(id));
+          status = base::FormatRuntime(Text_String(TXT_RECONNECTING_TO),
+                                       TheNetwork().ipx().Connection_Name(id));
         } else {
-          absl::SNPrintF(buf1, sizeof(buf1), "%s",
-                         Text_String(TXT_WAITING_FOR_CONNECTIONS));
+          status = Text_String(TXT_WAITING_FOR_CONNECTIONS);
         }
         break;
       case GameType::GAME_NORMAL:
@@ -5696,11 +5677,12 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         break;
     }
 
-    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
-                        timeval + 1);
+    const std::string time_allowed =
+        base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
     const char* buf3 = Text_String(TXT_PRESS_ESC);
 
-    w = std::max(StringPixelWidth(font, buf1), StringPixelWidth(font, buf2));
+    w = std::max(StringPixelWidth(font, status.c_str()),
+                 StringPixelWidth(font, time_allowed.c_str()));
 
     //	A tournament game forfeits if you cancel, so the box says so and has
     //	to be wide enough for the longer line.
@@ -5727,11 +5709,12 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     game::TheMouse().Hide();
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(view, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
-                     kTextFont, TPF_CENTER | kTextFlags);
+    Fancy_Text_Print(view, status.c_str(), 320, y + (d_margin * 2), scheme,
+                     kTBlack, kTextFont, TPF_CENTER | kTextFlags);
 
-    Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+    Fancy_Text_Print(view, time_allowed.c_str(), 320,
+                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kTBlack,
+                     kTextFont, TPF_CENTER | kTextFlags);
 
     Fancy_Text_Print(view, bForfeitWarning ? szNewCancelMessage : buf3, 320,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
@@ -5745,17 +5728,19 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   else {
     game::TheMouse().Hide();
 
-    Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
-                        timeval + 1);
+    const std::string time_allowed =
+        base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
+    const int time_width = StringPixelWidth(font, time_allowed.c_str());
 
-    const int fillx = 320 - (StringPixelWidth(font, buf2) / 2) - 6;
+    const int fillx = 320 - (time_width / 2) - 6;
     view.FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                  fillx + StringPixelWidth(font, buf2) + 12,
+                  fillx + time_width + 12,
                   y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
                   kBlack);
 
-    Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, kBlack, kTextFont, TPF_CENTER | kTextFlags);
+    Fancy_Text_Print(view, time_allowed.c_str(), 320,
+                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kBlack,
+                     kTextFont, TPF_CENTER | kTextFlags);
 
     game::TheMouse().Show();
   }

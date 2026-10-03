@@ -1096,11 +1096,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         //	"Password: ..."
         if (pWO->GameInfoCurrent.bPrivate) {
-          char szPrivatePassword[100];
-          Format_Runtime_Text(szPrivatePassword, sizeof(szPrivatePassword),
-                              TXT_WOL_PRIVATEPASSWORD,
-                              pWO->GameInfoCurrent.szPassword);
-          Fancy_Text_Print(view, szPrivatePassword,
+          const std::string szPrivatePassword = base::FormatRuntime(
+              TXT_WOL_PRIVATEPASSWORD, pWO->GameInfoCurrent.szPassword);
+          Fancy_Text_Print(view, szPrivatePassword.c_str(),
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
                            kTBlack, FontType::kType, TPF_NONE);
@@ -2087,7 +2085,7 @@ void WOL_GameSetupDialog::SetPlayerHouse(const char* szName, HousesType House) {
 
   //	Reset item text.
   char szItem[100];
-  pWO->WritePlayerListItem(szItem, sizeof(szItem), szName, House);
+  pWO->WritePlayerListItem(szItem, szName, House);
   //	debugprint ( "%i, %s\n", iItem, szItem );
   pILPlayers->Set_Item(static_cast<unsigned int>(iItem), szItem);
   pILPlayers->Flag_To_Redraw();

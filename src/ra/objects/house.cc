@@ -146,6 +146,7 @@
 #include <memory>
 #include <new>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
@@ -156,6 +157,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -183,7 +185,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
@@ -2014,8 +2015,6 @@ void HouseClass::Make_Ally(HousesType house) {
         Computer_Paranoid();
       }
 
-      char buffer[80];
-
       /*
       **	Sweep through all techno objects and perform a cheeseball tarcom
       *clear to ensure *	that fighting will most likely stop when the
@@ -2051,16 +2050,10 @@ void HouseClass::Make_Ally(HousesType house) {
       }
 
       if (IsHuman) {
-        Format_Runtime_Text(buffer, sizeof(buffer),
-                            Text_String(TXT_HAS_ALLIED), IniName,
-                            As_Pointer(house)->IniName);
-        //				sprintf(buffer,
-        // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
-        // HOUSE_MULTI1]->Name,
-        // Session.Players[((HouseClass::As_Pointer(house))->Class->House)
-        // - HOUSE_MULTI1]->Name);
+        const std::string message = base::FormatRuntime(
+            Text_String(TXT_HAS_ALLIED), IniName, As_Pointer(house)->IniName);
         TheSession().Messages.Add_Message(
-            nullptr, 0, buffer, RemapColor, FontType::k6PointGradient,
+            nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
             TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             kTicksPerMinute * TheRules().MessageDelay);
       }
@@ -2110,15 +2103,10 @@ void HouseClass::Make_Enemy(HousesType house) {
     if ((TheDebugState().developer_mode() ||
          TheSession().Type != GAME_NORMAL) &&
         !TheWorld().scenario_init() && IsHuman) {
-      char buffer[80];
-
-      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
-                          IniName, As_Pointer(house)->IniName);
-      //			sprintf(buffer, Text_String(TXT_AT_WAR),
-      // Session.Players[Class->House - HOUSE_MULTI1]->Name,
-      // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
+      const std::string message = base::FormatRuntime(
+          Text_String(TXT_AT_WAR), IniName, As_Pointer(house)->IniName);
       TheSession().Messages.Add_Message(
-          nullptr, 0, buffer, RemapColor, FontType::k6PointGradient,
+          nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
           TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           kTicksPerMinute * TheRules().MessageDelay);
       TheMap().Flag_To_Redraw(false);
@@ -3404,7 +3392,6 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
 void HouseClass::MPlayer_Defeated() {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  char txt[80];
   int i = 0;
   HouseClass* hptr = nullptr;
 
@@ -3450,11 +3437,11 @@ void HouseClass::MPlayer_Defeated() {
     /*
     **	Pop up a message showing that I was defeated
     */
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
-                        IniName);
+    const std::string message =
+        base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED), IniName);
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt, TheSession().ColorIdx, FontType::k6PointGradient,
-        TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        nullptr, 0, message.c_str(), TheSession().ColorIdx,
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
 
@@ -3463,11 +3450,11 @@ void HouseClass::MPlayer_Defeated() {
     **	If it wasn't me, find out who was defeated
     */
     if (IsHuman) {
-      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
-                          IniName);
+      const std::string message =
+          base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED), IniName);
 
       TheSession().Messages.Add_Message(
-          nullptr, 0, txt, RemapColor, FontType::k6PointGradient,
+          nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
           TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
       TheMap().Flag_To_Redraw(false);
@@ -3592,7 +3579,6 @@ void HouseClass::MPlayer_Defeated() {
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void HouseClass::Tally_Score() {
-
   /*
   ** Loop through all houses, tallying up each player's score
   */
@@ -4515,15 +4501,11 @@ int HouseClass::Expert_AI() {
       maxaircraft /= enemycount;
     }
 
-    Control.MaxBuilding =
-        std::max(Control.MaxBuilding, maxbuilding + 10);
+    Control.MaxBuilding = std::max(Control.MaxBuilding, maxbuilding + 10);
     Control.MaxUnit = std::max(Control.MaxUnit, maxunit + 10);
-    Control.MaxInfantry =
-        std::max(Control.MaxInfantry, maxinfantry + 10);
-    Control.MaxVessel =
-        std::max(Control.MaxVessel, maxvessel + 10);
-    Control.MaxAircraft =
-        std::max(Control.MaxAircraft, maxaircraft + 10);
+    Control.MaxInfantry = std::max(Control.MaxInfantry, maxinfantry + 10);
+    Control.MaxVessel = std::max(Control.MaxVessel, maxvessel + 10);
+    Control.MaxAircraft = std::max(Control.MaxAircraft, maxaircraft + 10);
   }
 
   /*
@@ -7116,7 +7098,6 @@ int HouseClass::Get_Quantity(StructType building) {
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
 void HouseClass::Read_INI(CCINIClass& ini) {
-
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     const char* hname = HouseTypeClass::As_Reference(index)
                             .IniName;  //	Pointer to house name.

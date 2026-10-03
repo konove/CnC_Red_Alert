@@ -72,6 +72,7 @@
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/strings/format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
@@ -795,8 +796,6 @@ static int Reconnect_Null_Modem() {
  * HISTORY: * 07/31/1995 DRD : Created. *
  *=============================================================================================*/
 void Destroy_Null_Connection(int id, int error) {
-  char txt[80];
-
   if (TheSession().NumPlayers == 1) {
     return;
   }
@@ -812,16 +811,16 @@ void Destroy_Null_Connection(int id, int error) {
   /*
   **	Create a message to display to the user
   */
-  txt[0] = '\0';
+  std::string message;
   switch (error) {
     case 1:
-      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                          housep->IniName);
+      message = base::FormatRuntime(Text_String(TXT_CONNECTION_LOST),
+                                    housep->IniName);
       break;
 
     case 0:
-      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                          housep->IniName);
+      message =
+          base::FormatRuntime(Text_String(TXT_LEFT_GAME), housep->IniName);
       break;
 
     case -1:
@@ -831,9 +830,9 @@ void Destroy_Null_Connection(int id, int error) {
       break;
   }
 
-  if (!std::string_view(txt).empty()) {
+  if (!message.empty()) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt,
+        nullptr, 0, message.c_str(),
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
         kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
@@ -865,9 +864,8 @@ void Destroy_Null_Connection(int id, int error) {
   **	If we're the last player left, tell the user.
   */
   if (TheSession().NumPlayers == 1) {
-    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt,
+        nullptr, 0, Text_String(TXT_JUST_YOU_AND_ME),
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
         kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
@@ -5610,9 +5608,9 @@ int Com_Show_Scenario_Dialog() {
             // greatest copy of our names & colors.  Do this every time
             // we receive an options packet.
             //.........................................................
-            Format_Runtime_Text(item, MPLAYER_NAME_MAX + 64,
-                                Text_String(TXT_THATGUYS_GAME), TheirName);
-            gamelist.Set_Item(0, item);
+            gamelist.Set_Item(
+                0,
+                base::FormatRuntime(Text_String(TXT_THATGUYS_GAME), TheirName));
 #ifdef OLDWAY
             if (TheSession().House == HOUSE_GOOD) {
               absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
