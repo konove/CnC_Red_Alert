@@ -16,59 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/INI.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : INI.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : September 10, 1993 *
- *                                                                                             *
- *                  Last Update : November 2, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * IniFile::Clear -- Clears out a section (or all sections) of the
- *INI data.                * IniFile::Entry_Count -- Fetches the number of
- *entries in a specified section.            * IniFile::Find_Entry -- Find
- *specified entry within section.                              *
- *   IniFile::Find_Section -- Find the specified section within the INI data. *
- *   IniFile::Get_Bool -- Fetch a boolean value for the section and entry
- *specified.          * IniFile::Get_Entry -- Get the entry identifier name
- *given ordinal number and section name* IniFile::Get_Fixed -- Fetch a fixed
- *point number from the section & entry.               * IniFile::Put_Fixed --
- *Store a fixed point number to the INI database.                    *
- *   IniFile::Get_Hex -- Fetches integer [hex format] from the section and
- *entry specified.   * IniFile::Get_Int -- Fetch an integer entry from the
- *specified section.                   * IniFile::Get_PKey -- Fetch a key from
- *the ini database.                                  * IniFile::Get_String --
- *Fetch the value of a particular entry in a specified section.     *
- *   IniFile::Get_TextBlock -- Fetch a block of normal text. *
- *   IniFile::Get_UUBlock -- Fetch an encoded block from the section specified.
- ** IniFile::IniSection::Find_Entry -- Finds a specified entry and returns
- *pointer to it.    * IniFile::Load -- Load INI data from the file specified. *
- *   IniFile::Load -- Load the INI data from the data stream (straw). *
- *   IniFile::Put_Bool -- Store a boolean value into the INI database. *
- *   IniFile::Put_Hex -- Store an integer into the INI database, but use a hex
- *format.        * IniFile::Put_Int -- Stores a signed integer into the INI
- *data base.                      * IniFile::Put_PKey -- Stores the key to the
- *INI database.                                 * IniFile::Put_String -- Output
- *a string to the section and entry specified.               *
- *   IniFile::Put_TextBlock -- Stores a block of text into an INI section. *
- *   IniFile::Put_UUBlock -- Store a binary encoded data block into the INI
- *database.         * IniFile::Save -- Save the ini data to the file specified.
- ** IniFile::Save -- Saves the INI data to a pipe stream. *
- *   IniFile::Section_Count -- Counts the number of sections in the INI data. *
- *   IniFile::Strip_Comments -- Strips comments of the specified text line. *
- *   IniFile::~IniFile -- Destructor for INI handler. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "engine/file/ini_file.h"
 
 #include <cctype>
@@ -114,7 +61,7 @@ namespace engine::file {
 
 namespace {
 
-// Reads one line into `line` without a length limit: stops at LF, drops CR and
+// Returns the next line without a length limit: stops at LF, drops CR and
 // trims. A line cut short by the end of the data is discarded (the result is
 // empty) and `eof` set, as Read_Line does.
 std::string ReadLine(ByteSource& source, bool& eof) {
@@ -148,49 +95,12 @@ uint32_t IniFile::Name_ID(std::string_view name) {
   return CrcEngine::Compute(absl::AsciiStrToUpper(name));
 }
 
-/***********************************************************************************************
- * IniFile::~IniFile -- Destructor for INI handler. *
- *                                                                                             *
- *    This is the destructor for the INI class. It handles deleting all of the
- *allocations     * it might have done. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 IniFile::~IniFile() { Clear(); }
 
 IniFile::IniEntry::~IniEntry() = default;
 
 IniFile::IniSection::~IniSection() = default;
 
-/***********************************************************************************************
- * IniFile::Clear -- Clears out a section (or all sections) of the INI data. *
- *                                                                                             *
- *    This routine is used to clear out the section specified. If no section is
- *specified,     * then the entire INI data is cleared out. Optionally, this
- *routine can be used to clear   * out just an individual entry in the specified
- *section.                                   *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section to clear out [pass nullptr to
- * clear all].          *
- *                                                                                             *
- *          entry    -- Pointer to optional entry specifier. If this parameter
- *is specified,   * then only this specific entry (if found) will be cleared.
- *Otherwise,   * the entire section specified will be cleared. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 08/21/1996 JLB : Optionally clears
- *section too.                                           * 11/02/1996 JLB :
- *Updates the index list.                                                  *
- *=============================================================================================*/
 bool IniFile::Clear(const char* section, const char* entry) {
   Invalidate_Message_Digest();
   if (section == nullptr) {
@@ -212,47 +122,17 @@ bool IniFile::Clear(const char* section, const char* entry) {
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Load -- Load INI data from the file specified. *
- *                                                                                             *
- *    Use this routine to load the INI class with the data from the specified
- *file.            *
- *                                                                                             *
- * INPUT:   file  -- Reference to the file that will be used to fill up this INI
- *manager.      *
- *                                                                                             *
- * OUTPUT:  bool; Was the file loaded successfully? *
- *                                                                                             *
- * WARNINGS:   This routine allocates memory. *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Load(ByteStream& file) {
   StreamSource fs(file);
   return Load(fs);
 }
 
-/***********************************************************************************************
- * IniFile::Load -- Load the INI data from the data stream (straw). *
- *                                                                                             *
- *    This will fetch data from the straw and build an INI database from it. *
- *                                                                                             *
- * INPUT:   straw -- The straw that the data will be provided from. *
- *                                                                                             *
- * OUTPUT:  bool; Was the database loaded ok? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/10/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Load(ByteSource& file) {
   Invalidate_Message_Digest();
   bool end_of_file = false;
   std::string line;
 
-  /*
-  **	Prescan until the first section is found.
-  */
+  // Skip to the first section header. Data without one is not an INI file.
   while (!end_of_file) {
     line = ReadLine(file, end_of_file);
     if (end_of_file) {
@@ -263,42 +143,29 @@ bool IniFile::Load(ByteSource& file) {
     }
   }
 
-  /*
-  **	Process a section. The line holds the section header.
-  */
+  // One pass per section; `line` holds its header on entry.
   while (!end_of_file) {
     const std::string_view name = absl::StripAsciiWhitespace(
         std::string_view(line).substr(1, std::string_view(line).find(']') - 1));
     auto secptr = std::make_unique<IniSection>(std::string(name).c_str());
 
-    /*
-    **	Read in the entries of this section.
-    */
     while (!end_of_file) {
-      /*
-      **	If this line is the start of another section, then bail out
-      **	of the entry loop and let the outer section loop take
-      **	care of it.
-      */
+      // The next header ends this section; the outer loop takes it from
+      // `line`.
       line = ReadLine(file, end_of_file);
       if (IsSectionLine(line)) {
         break;
       }
 
-      /*
-      **	Determine if this line is a comment or blank line. Throw it out
-      **	if it is.
-      */
+      // Blank lines, whole-line comments and lines without an entry name are
+      // dropped, so they do not survive a load and save.
       const std::string_view text = Strip_Comments(line);
       if (text.empty() || text.front() == ';' || text.front() == '=') {
         continue;
       }
 
-      /*
-      **	Split the line into entry and value sections. Lines without an
-      * "=" *	and the "foobar=" case are ignored; "=foobar" was thrown out
-      * above.
-      */
+      // Split at the first '='. A line without one and "name=" with no value
+      // are ignored; "=value" was dropped above.
       const auto split = text.find('=');
       if (split == std::string_view::npos) {
         continue;
@@ -317,10 +184,8 @@ bool IniFile::Load(ByteSource& file) {
       secptr->EntryList.push_back(std::move(entryptr));
     }
 
-    /*
-    **	All the entries for this section have been parsed. If this section is
-    **	blank, then don't bother storing it.
-    */
+    // A section without entries is not stored. try_emplace keeps the first of
+    // two sections with one name as the one lookups find.
     if (!secptr->EntryList.empty()) {
       SectionIndex.try_emplace(secptr->Index_ID(), secptr.get());
       SectionList.push_back(std::move(secptr));
@@ -329,38 +194,11 @@ bool IniFile::Load(ByteSource& file) {
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Save -- Save the ini data to the file specified. *
- *                                                                                             *
- *    Use this routine to save the ini data to the file specified. All existing
- *data in the    * file, if it was present, is replaced. *
- *                                                                                             *
- * INPUT:   file  -- Reference to the file to write the INI data to. *
- *                                                                                             *
- * OUTPUT:  bool; Was the data written to the file? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Save(ByteStream& file) const {
   StreamSink fp(file);
   return Save(fp);
 }
 
-/***********************************************************************************************
- * IniFile::Save -- Saves the INI data to a pipe stream. *
- *                                                                                             *
- *    This routine will output the data of the INI file to a pipe stream. *
- *                                                                                             *
- * INPUT:   pipe  -- Reference to the pipe stream to pump the INI image to. *
- *                                                                                             *
- * OUTPUT:  bool; Did every byte reach the end of the pipe? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Save(ByteSink& pipe) const {
   WriteSections(pipe);
   return pipe.Finish();
@@ -374,17 +212,11 @@ void IniFile::WriteSections(ByteSink& pipe) const {
   };
 
   for (const auto& secptr : SectionList) {
-    /*
-    **	Output the section identifier.
-    */
     put("[");
     put(secptr->Section);
     put("]");
     put("\r\n");
 
-    /*
-    **	Output all the entries and values in this section.
-    */
     for (const auto& entryptr : secptr->EntryList) {
       put(entryptr->Entry);
       put("=");
@@ -392,31 +224,11 @@ void IniFile::WriteSections(ByteSink& pipe) const {
       put("\r\n");
     }
 
-    /*
-    **	After the last entry in this section, output an extra
-    **	blank line for readability purposes.
-    */
+    // A blank line after each section, for readability.
     put("\r\n");
   }
 }
 
-/***********************************************************************************************
- * IniFile::Find_Section -- Find the specified section within the INI data. *
- *                                                                                             *
- *    This routine will scan through the INI data looking for the section
- *specified. If the    * section could be found, then a pointer to the section
- *control data is returned.          *
- *                                                                                             *
- * INPUT:   section  -- The name of the section to search for. Don't enclose the
- *name in       * brackets. Case is NOT sensitive in the search. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the INI section control structure if the
- *section was     * found. Otherwise, nullptr is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
- *=============================================================================================*/
 IniFile::IniSection* IniFile::Find_Section(const char* section) const {
   if (section != nullptr) {
     const auto found = SectionIndex.find(Name_ID(section));
@@ -427,20 +239,6 @@ IniFile::IniSection* IniFile::Find_Section(const char* section) const {
   return nullptr;
 }
 
-/***********************************************************************************************
- * IniFile::Section_Count -- Counts the number of sections in the INI data. *
- *                                                                                             *
- *    This routine will scan through all the sections in the INI data and return
- *a count       * of the number it found. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of sections recorded in the INI data. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
- *=============================================================================================*/
 int IniFile::Section_Count() const {
   return static_cast<int>(SectionList.size());
 }
@@ -452,21 +250,6 @@ const char* IniFile::Get_Section(int index) const {
   return SectionList.at(base::ToSize(index))->Section.c_str();
 }
 
-/***********************************************************************************************
- * IniFile::Entry_Count -- Fetches the number of entries in a specified
- *section.              *
- *                                                                                             *
- *    This routine will examine the section specified and return with the number
- *of entries    * associated with it. *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section that will be examined. *
- *                                                                                             *
- * OUTPUT:  Returns with the number entries in the specified section. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index manager. *
- *=============================================================================================*/
 int IniFile::Entry_Count(const char* section) const {
   const IniSection* secptr = Find_Section(section);
   if (secptr != nullptr) {
@@ -475,24 +258,6 @@ int IniFile::Entry_Count(const char* section) const {
   return 0;
 }
 
-/***********************************************************************************************
- * IniFile::Find_Entry -- Find specified entry within section. *
- *                                                                                             *
- *    This support routine will find the specified entry in the specified
- *section. If found,   * a pointer to the entry control structure will be
- *returned.                               *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section name to search under. *
- *                                                                                             *
- *          entry    -- Pointer to the entry name to search for. *
- *                                                                                             *
- * OUTPUT:  If the entry was found, then a pointer to the entry control
- *structure will be      * returned. Otherwise, nullptr will be returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 IniFile::IniEntry* IniFile::Find_Entry(const char* section,
                                        const char* entry) const {
   const IniSection* secptr = Find_Section(section);
@@ -502,25 +267,6 @@ IniFile::IniEntry* IniFile::Find_Entry(const char* section,
   return nullptr;
 }
 
-/***********************************************************************************************
- * IniFile::Get_Entry -- Get the entry identifier name given ordinal number and
- *section name. *
- *                                                                                             *
- *    This will return the identifier name for the entry under the section
- *specified. The      * ordinal number specified is used to determine which
- *entry to retrieve. The entry         * identifier is the text that appears to
- *the left of the "=" character.                    *
- *                                                                                             *
- * INPUT:   section  -- The section to use. *
- *                                                                                             *
- *          index    -- The ordinal number to use when fetching an entry name. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the entry name. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 const char* IniFile::Get_Entry(const char* section, int index) const {
   const IniSection* secptr = Find_Section(section);
 
@@ -531,28 +277,6 @@ const char* IniFile::Get_Entry(const char* section, int index) const {
   return nullptr;
 }
 
-/***********************************************************************************************
- * IniFile::Put_UUBlock -- Store a binary encoded data block into the INI
- *database.           *
- *                                                                                             *
- *    Use this routine to store an arbitrary length binary block of data into
- *the INI database.* This routine will covert the data into displayable form and
- *then break it into lines     * that are stored in sequence to the section. A
- *section used to store data in this         * fashion can not be used for any
- *other entries.                                           *
- *                                                                                             *
- * INPUT:   section  -- The section identifier to place the data into. *
- *                                                                                             *
- *          block    -- Pointer to the block of binary data to store. *
- *                                                                                             *
- *          len      -- The length of the binary data. *
- *                                                                                             *
- * OUTPUT:  bool; Was the data stored to the database? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_UUBlock(const char* section, std::span<const std::byte> block,
                           int len) {
   if (section == nullptr || len < 1 || std::cmp_greater(len, block.size())) {
@@ -585,33 +309,6 @@ bool IniFile::Put_UUBlock(const char* section, std::span<const std::byte> block,
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Get_UUBlock -- Fetch an encoded block from the section specified. *
- *                                                                                             *
- *    This routine will take all the entries in the specified section and
- *decompose them into  * a binary block of data that will be stored into the
- *buffer specified. By using this      * routine [and the Put_UUBLock
- *counterpart], arbitrary blocks of binary data may be        * stored in the
- *INI file. A section processed by this routine can contain no other         *
- *    entries than those put there by a previous call to Put_UUBlock. *
- *                                                                                             *
- * INPUT:   section  -- The section name to process. *
- *                                                                                             *
- *          block    -- Pointer to the buffer that will hold the retrieved data.
- **
- *                                                                                             *
- *          len      -- The length of the buffer. The retrieved data will not
- *fill past this   * limit. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of bytes decoded into the buffer specified.
- **
- *                                                                                             *
- * WARNINGS:   If the number of bytes retrieved exactly matches the length of
- *the buffer       * specified, then you might have a condition of buffer
- *"overflow".                *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 int IniFile::Get_UUBlock(const char* section, std::span<std::byte> block,
                          int len) const {
   if (section == nullptr) {
@@ -636,27 +333,6 @@ int IniFile::Get_UUBlock(const char* section, std::span<std::byte> block,
   return static_cast<int>(bpipe.bytes_written());
 }
 
-/***********************************************************************************************
- * IniFile::Put_TextBlock -- Stores a block of text into an INI section. *
- *                                                                                             *
- *    This routine will take an arbitrarily long block of text and store it into
- *the INI       * database. The text is broken up into lines and each line is
- *then stored as a numbered    * entry in the specified section. A section used
- *to store text in this way can not be used * to hold any other entries. The
- *text is presumed to contain space characters scattered    * throughout it and
- *that one space between words and sentences is natural.                 *
- *                                                                                             *
- * INPUT:   section  -- The section to place the text block into. *
- *                                                                                             *
- *          text     -- Pointer to a null terminated text string that holds the
- *block of       * text. The length can be arbitrary. *
- *                                                                                             *
- * OUTPUT:  bool; Was the text block placed into the database? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_TextBlock(const char* section, const char* text) {
   if (section == nullptr) {
     return false;
@@ -675,9 +351,7 @@ bool IniFile::Put_TextBlock(const char* section, const char* text) {
     char b[32];
     absl::SNPrintF(b, sizeof(b), "%d", index);
 
-    /*
-    **	Scan backward looking for a good break position.
-    */
+    // A full buffer may have cut a word: break the line at its last blank.
     int count = static_cast<int>(std::string_view(buffer).size());
     if (count > 0) {
       if (count >= 75) {
@@ -707,29 +381,6 @@ bool IniFile::Put_TextBlock(const char* section, const char* text) {
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Get_TextBlock -- Fetch a block of normal text. *
- *                                                                                             *
- *    This will take all entries in the specified section and format them into a
- *block of      * normalized text. That is, text with single spaces between each
- *concatenated line. All    * entries in the specified section are processed by
- *this routine. Use Put_TextBlock to     * build the entries in the section. *
- *                                                                                             *
- * INPUT:   section  -- The section name to process. *
- *                                                                                             *
- *          buffer   -- Pointer to the buffer that will hold the complete text.
- **
- *                                                                                             *
- *          len      -- The length of the buffer specified. The text will, at
- *most, fill this  * buffer with the last character being forced to null. *
- *                                                                                             *
- * OUTPUT:  Returns with the number of characters placed into the buffer. The
- *trailing null    * is not counted. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 int IniFile::Get_TextBlock(const char* section, std::span<char> buffer,
                            int len) const {
   if (len <= 0 || std::cmp_greater(len, buffer.size())) {
@@ -744,9 +395,7 @@ int IniFile::Get_TextBlock(const char* section, std::span<char> buffer,
   const int elen = Entry_Count(section);
   int total = 0;
   for (int index = 0; index < elen; index++) {
-    /*
-    **	Add spacers between lines of fetched text.
-    */
+    // One space stands for each line break Put_TextBlock() made.
     if (index > 0) {
       base::At(buffer, 0) = ' ';
       buffer = buffer.subspan(1);
@@ -768,34 +417,6 @@ int IniFile::Get_TextBlock(const char* section, std::span<char> buffer,
   return total;
 }
 
-/***********************************************************************************************
- * IniFile::Put_Int -- Stores a signed integer into the INI data base. *
- *                                                                                             *
- *    Use this routine to store an integer value into the section and entry
- *specified.         *
- *                                                                                             *
- * INPUT:   section  -- The identifier for the section that the entry will be
- *placed in.       *
- *                                                                                             *
- *          entry    -- The entry identifier used for the integer number. *
- *                                                                                             *
- *          number   -- The integer number to store in the database. *
- *                                                                                             *
- *          format   -- The format to store the integer. The format is generally
- *only a        * cosmetic affect. The Get_Int operation will interpret the
- *value the    * same regardless of what format was used to store the integer. *
- *                                                                                             *
- *                      0  : plain decimal digit * 1  : hexadecimal digit
- *(trailing "h")                                  * 2  : hexadecimal digit
- *(leading "$")                                   *
- *                                                                                             *
- * OUTPUT:  bool; Was the number stored? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. * 07/10/1996 JLB : Handles multiple
- *integer formats.                                        *
- *=============================================================================================*/
 bool IniFile::Put_Int(const char* section, const char* entry, int number,
                       int format) {
   char buffer[32];
@@ -819,33 +440,8 @@ bool IniFile::Put_Int(const char* section, const char* entry, int number,
   return Put_String(section, entry, buffer);
 }
 
-/***********************************************************************************************
- * IniFile::Get_Int -- Fetch an integer entry from the specified section. *
- *                                                                                             *
- *    This routine will fetch an integer value from the entry and section
- *specified. If no     * entry could be found, then the default value will be
- *returned instead.                   *
- *                                                                                             *
- * INPUT:   section  -- The section name to search under. *
- *                                                                                             *
- *          entry    -- The entry name to search for. *
- *                                                                                             *
- *          defvalue -- The default value to use if the specified entry could
- *not be found.    *
- *                                                                                             *
- * OUTPUT:  Returns with the integer value specified in the INI database or else
- *returns the   * default value. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 07/10/1996 JLB : Handles multiple
- *integer formats.                                        *
- *=============================================================================================*/
 int IniFile::Get_Int(const char* section, const char* entry,
                      int defvalue) const {
-  /*
-  **	Verify that the parameters are nominally correct.
-  */
   if (section == nullptr || entry == nullptr) {
     return defvalue;
   }
@@ -857,28 +453,6 @@ int IniFile::Get_Int(const char* section, const char* entry,
   return defvalue;
 }
 
-/***********************************************************************************************
- * IniFile::Put_Hex -- Store an integer into the INI database, but use a hex
- *format.          *
- *                                                                                             *
- *    This routine is similar to the Put_Int routine, but the number is stored
- *as a hexadecimal* number. *
- *                                                                                             *
- * INPUT:   section  -- The identifier for the section that the entry will be
- *placed in.       *
- *                                                                                             *
- *          entry    -- The entry identifier to tag to the integer number
- *specified.           *
- *                                                                                             *
- *          number   -- The number to assign the the specified entry and placed
- *in the         * specified section. *
- *                                                                                             *
- * OUTPUT:  bool; Was the number placed into the INI database? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_Hex(const char* section, const char* entry, int number) {
   char buffer[32];
 
@@ -887,35 +461,8 @@ bool IniFile::Put_Hex(const char* section, const char* entry, int number) {
   return Put_String(section, entry, buffer);
 }
 
-/***********************************************************************************************
- * IniFile::Get_Hex -- Fetches integer [hex format] from the section and entry
- *specified.     *
- *                                                                                             *
- *    This routine will search under the section specified, looking for a
- *matching entry. The  * value is interpreted as a hexadecimal number and then
- *returned. If no entry could be     * found, then the default value is returned
- *instead.                                       *
- *                                                                                             *
- * INPUT:   section  -- The section identifier to search under. *
- *                                                                                             *
- *          entry    -- The entry identifier to search for. *
- *                                                                                             *
- *          defvalue -- The default value to use if the entry could not be
- *located.            *
- *                                                                                             *
- * OUTPUT:  Returns with the integer value from the specified section and entry.
- *If no entry   * could be found, then the default value will be returned
- *instead.                   *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 int IniFile::Get_Hex(const char* section, const char* entry,
                      int defvalue) const {
-  /*
-  **	Verify that the parameters are nominally correct.
-  */
   if (section == nullptr || entry == nullptr) {
     return defvalue;
   }
@@ -929,25 +476,6 @@ int IniFile::Get_Hex(const char* section, const char* entry,
   return defvalue;
 }
 
-/***********************************************************************************************
- * IniFile::Put_String -- Output a string to the section and entry specified. *
- *                                                                                             *
- *    This routine will put an arbitrary string to the section and entry
- *specified. Any        * previous matching entry will be replaced. *
- *                                                                                             *
- * INPUT:   section  -- The section identifier to place the string under. *
- *                                                                                             *
- *          entry    -- The entry identifier to identify this string [placed
- *under the section]*
- *                                                                                             *
- *          string   -- Pointer to the string to assign to this entry. *
- *                                                                                             *
- * OUTPUT:  bool; Was the entry assigned without error? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. * 11/02/1996 JLB : Uses index handler. *
- *=============================================================================================*/
 bool IniFile::Put_String(const char* section, const char* entry,
                          const char* string) {
   if (section == nullptr || entry == nullptr) {
@@ -963,14 +491,10 @@ bool IniFile::Put_String(const char* section, const char* entry,
     SectionIndex.try_emplace(secptr->Index_ID(), secptr);
   }
 
-  /*
-  **	Remove the old entry, and any duplicate of it, if found.
-  */
+  // Remove the old entry and any duplicate of it.
   secptr->Remove_Entries(Name_ID(entry));
 
-  /*
-  **	Create and add the new entry.
-  */
+  // An empty value is not stored: Load() would drop the line anyway.
   if (string != nullptr && !std::string_view(string).empty()) {
     IniEntry* entryptr =
         secptr->EntryList
@@ -981,34 +505,6 @@ bool IniFile::Put_String(const char* section, const char* entry,
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Get_String -- Fetch the value of a particular entry in a specified
- *section.       *
- *                                                                                             *
- *    This will retrieve the entire text to the right of the "=" character. The
- *text is        * found by finding a matching entry in the section specified.
- *If no matching entry could   * be found, then the default value will be stored
- *in the output string buffer.             *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section name to search under. *
- *                                                                                             *
- *          entry    -- The entry identifier to search for. *
- *                                                                                             *
- *          defvalue -- If no entry could be found, then this text will be
- *returned.           *
- *                                                                                             *
- *          buffer   -- Output buffer to store the retrieved string into. *
- *                                                                                             *
- *          size     -- The size of the output buffer. The maximum string length
- *that could    * be retrieved will be one less than this length. This is due to
- *the     * forced trailing zero added to the end of the string. *
- *                                                                                             *
- * OUTPUT:  Returns with the length of the string retrieved. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 int IniFile::Get_String(const char* section, const char* entry,
                         const char* defvalue, std::span<char> buffer,
                         int size) const {
@@ -1031,58 +527,12 @@ int IniFile::Get_String(const char* section, const char* entry,
   return static_cast<int>(std::string_view(buffer.data()).size());
 }
 
-/***********************************************************************************************
- * IniFile::Put_Bool -- Store a boolean value into the INI database. *
- *                                                                                             *
- *    Use this routine to place a boolean value into the INI database. The
- *boolean value will  * be stored as "yes" or "no". *
- *                                                                                             *
- * INPUT:   section  -- The section to place the entry and boolean value into. *
- *                                                                                             *
- *          entry    -- The entry identifier to tag to the boolean value. *
- *                                                                                             *
- *          value    -- The boolean value to place into the database. *
- *                                                                                             *
- * OUTPUT:  bool; Was the boolean value placed into the database? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_Bool(const char* section, const char* entry, bool value) {
   return Put_String(section, entry, value ? "yes" : "no");
 }
 
-/***********************************************************************************************
- * IniFile::Get_Bool -- Fetch a boolean value for the section and entry
- *specified.            *
- *                                                                                             *
- *    This routine will search under the section specified, looking for a
- *matching entry. If   * one is found, the value is interpreted as a boolean
- *value and then returned. In the case * of no matching entry, the default value
- *will be returned instead. The boolean value      * is interpreted using the
- *standard boolean conventions. e.g., "Yes", "Y", "1", "True",    * "T" are all
- *consider to be a true boolean value.                                         *
- *                                                                                             *
- * INPUT:   section  -- The section to search under. *
- *                                                                                             *
- *          entry    -- The entry to search for. *
- *                                                                                             *
- *          defvalue -- The default value to use if no matching entry could be
- *located.        *
- *                                                                                             *
- * OUTPUT:  Returns with the boolean value of the specified section and entry.
- *If no match     * then the default boolean value is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/02/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Get_Bool(const char* section, const char* entry,
                        bool defvalue) const {
-  /*
-  **	Verify that the parameters are nominally correct.
-  */
   if (section == nullptr || entry == nullptr) {
     return defvalue;
   }
@@ -1106,22 +556,6 @@ bool IniFile::Get_Bool(const char* section, const char* entry,
   return defvalue;
 }
 
-/***********************************************************************************************
- * IniFile::IniSection::Find_Entry -- Finds a specified entry and returns
- *pointer to it.      *
- *                                                                                             *
- *    This routine scans the supplied entry for the section specified. This is
- *used for        * internal database maintenance. *
- *                                                                                             *
- * INPUT:   entry -- The entry to scan for. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the entry control structure if the entry
- *was found.      * Otherwise it returns nullptr. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. * 11/02/1996 JLB : Uses index handler. *
- *=============================================================================================*/
 IniFile::IniEntry* IniFile::IniSection::Find_Entry(const char* entry) const {
   if (entry != nullptr) {
     const auto found = EntryIndex.find(Name_ID(entry));
@@ -1209,26 +643,6 @@ void IniFile::Remove_Sections(uint32_t id) {
                 [id](const auto& owned) { return owned->Index_ID() == id; });
 }
 
-/***********************************************************************************************
- * IniFile::Put_PKey -- Stores the key to the INI database. *
- *                                                                                             *
- *    The key stored to the database will have both the exponent and modulus
- *portions saved.   * Since the fast key only requires the modulus, it is only
- *necessary to save the slow      * key to the database. However, storing the
- *slow key stores the information necessary to   * generate the fast and slow
- *keys. Because public key encryption requires one key to be    * completely
- *secure, only store the fast key in situations where the INI database will * be
- *made public. *
- *                                                                                             *
- * INPUT:   key   -- The key to store the INI database. *
- *                                                                                             *
- * OUTPUT:  bool; Was the key stored to the database? *
- *                                                                                             *
- * WARNINGS:   Store the fast key for public INI database availability. Store
- *the slow key if  * the INI database is secure. *
- *                                                                                             *
- * HISTORY: * 07/08/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_PKey(const PKey& key) {
   char buffer[512];
 
@@ -1240,30 +654,12 @@ bool IniFile::Put_PKey(const PKey& key) {
   return true;
 }
 
-/***********************************************************************************************
- * IniFile::Get_PKey -- Fetch a key from the ini database. *
- *                                                                                             *
- *    This routine will fetch the key from the INI database. The key fetched is
- *controlled by  * the parameter. There are two choices of key -- the fast or
- *slow key.                     *
- *                                                                                             *
- * INPUT:   fast  -- Should the fast key be retrieved? The fast key has the
- *advantage of       * requiring only the modulus value. *
- *                                                                                             *
- * OUTPUT:  Returns with the key retrieved. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/08/1996 JLB : Created. *
- *=============================================================================================*/
 PKey IniFile::Get_PKey(bool fast) const {
   PKey key;
   unsigned char buffer[512];
 
-  /*
-  **	When retrieving the fast key, the exponent is a known constant. Don't
-  *parse the *	exponent from the database.
-  */
+  // The fast key's exponent is a known constant, so a database published
+  // without [PrivateKey] still yields it.
   if (fast) {
     const BigInt exp = PKey::Fast_Exponent();
     const auto length = exp.DEREncode(buffer);
@@ -1281,29 +677,6 @@ PKey IniFile::Get_PKey(bool fast) const {
   return key;
 }
 
-/***********************************************************************************************
- * IniFile::Get_Fixed -- Fetch a fixed point number from the section & entry. *
- *                                                                                             *
- *    This routine will examine the section and entry specified and interpret
- *the value        * as if it were a fixed point number. The format of the fixed
- *point number can be          * percentage (e.g. 100%) or a floating point
- *number (e.g., 1.7).                           *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section identifier to look under. *
- *                                                                                             *
- *          entry    -- Pointer to the entry identifier to examine. *
- *                                                                                             *
- *          defvalue -- If the section and entry could not be found, then this
- *value will      * be returned. *
- *                                                                                             *
- * OUTPUT:  Returns with the fixed point number that occurs at the section and
- *entry           * specified. If it could not be found, then the default value
- *is returned.           *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 Fixed IniFile::Get_Fixed(const char* section, const char* entry,
                          Fixed defvalue) const {
   char buffer[128];
@@ -1315,44 +688,10 @@ Fixed IniFile::Get_Fixed(const char* section, const char* entry,
   return retval;
 }
 
-/***********************************************************************************************
- * IniFile::Put_Fixed -- Store a fixed point number to the INI database. *
- *                                                                                             *
- *    Use this routine to output a fixed point number to the database. The entry
- *will be       * placed in the section and entry specified. If there was any
- *existing entry, it will      * be replaced. *
- *                                                                                             *
- * INPUT:   section  -- Pointer to the section identifier. *
- *                                                                                             *
- *          entry    -- Pointer to the entry identifier to use for this value. *
- *                                                                                             *
- *          value    -- The value to store in the database. *
- *                                                                                             *
- * OUTPUT:  bool; Was the data stored? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 bool IniFile::Put_Fixed(const char* section, const char* entry, Fixed value) {
   return Put_String(section, entry, value.ToString().c_str());
 }
 
-/***********************************************************************************************
- * IniFile::Strip_Comments -- Strips comments of the specified text line. *
- *                                                                                             *
- *    This routine will scan the string (text line) supplied and if any comment
- *portions are   * found, they will be trimmed off. Leading and trailing blanks
- *are also removed.           *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to the null terminate string to be processed. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/03/1996 JLB : Created. *
- *=============================================================================================*/
 std::string_view IniFile::Strip_Comments(std::string_view line) {
   return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));
 }
