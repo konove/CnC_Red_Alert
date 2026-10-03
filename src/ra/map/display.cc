@@ -368,38 +368,38 @@ static MixArchive* theater_data = nullptr;
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
   static constexpr auto MouseCols =
-      std::to_array<TLucentType>({{kBlack, kBlack, 110, 0},
-                                  {kWhite, kWhite, 110, 0},
-                                  {kLtGrey, kLtGrey, 110, 0},
-                                  {DKGREY, DKGREY, 110, 0}});
+      std::to_array<TranslucentColor>({{kBlack, kBlack, 110, 0},
+                                       {kWhite, kWhite, 110, 0},
+                                       {kLtGrey, kLtGrey, 110, 0},
+                                       {DKGREY, DKGREY, 110, 0}});
   static constexpr auto MagicCols =
-      std::to_array<TLucentType>({{32, 32, 110, 0},
-                                  {33, 33, 110, 0},
-                                  {34, 34, 110, 0},
-                                  {35, 35, 110, 0},
-                                  {36, 36, 110, 0},
-                                  {37, 37, 110, 0},
-                                  {38, 38, 110, 0},
-                                  {39, 39, 110, 0},
-                                  {kBlack, kBlack, 200, 0},
-                                  {kWhite, kBlack, 40, 0},
-                                  {kLtGrey, kBlack, 80, 0},
-                                  {DKGREY, kBlack, 140, 0},
-                                  {kLtGreen, kBlack, 130, 0}});
+      std::to_array<TranslucentColor>({{32, 32, 110, 0},
+                                       {33, 33, 110, 0},
+                                       {34, 34, 110, 0},
+                                       {35, 35, 110, 0},
+                                       {36, 36, 110, 0},
+                                       {37, 37, 110, 0},
+                                       {38, 38, 110, 0},
+                                       {39, 39, 110, 0},
+                                       {kBlack, kBlack, 200, 0},
+                                       {kWhite, kBlack, 40, 0},
+                                       {kLtGrey, kBlack, 80, 0},
+                                       {DKGREY, kBlack, 140, 0},
+                                       {kLtGreen, kBlack, 130, 0}});
   static constexpr auto WhiteCols =
-      std::to_array<TLucentType>({{1, kWhite, 80, 0}});
+      std::to_array<TranslucentColor>({{1, kWhite, 80, 0}});
   static constexpr auto ShadowCols =
-      std::to_array<TLucentType>({{kWhite + 1, kBlack, 130, 0},
-                                  {kWhite, kBlack, 170, 0},
-                                  {LTGRAY, kBlack, 250, 0},
-                                  {DKGRAY, kBlack, 250, 0}});
+      std::to_array<TranslucentColor>({{kWhite + 1, kBlack, 130, 0},
+                                       {kWhite, kBlack, 170, 0},
+                                       {LTGRAY, kBlack, 250, 0},
+                                       {DKGRAY, kBlack, 250, 0}});
   static constexpr auto UShadowCols =
-      std::to_array<TLucentType>({{kLtGreen, kBlack, 130, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 130, 0}});
   // Only the source color matters; the fade is the gold remap table.
   static constexpr auto UShadowColsAir =
-      std::to_array<TLucentType>({{kLtGreen, kWhite, 0, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kWhite, 0, 0}});
   static constexpr auto UShadowColsSnow =
-      std::to_array<TLucentType>({{kLtGreen, kBlack, 75, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 75, 0}});
 
   /*
   **	Invoke parent's init routine.
@@ -456,29 +456,30 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   FadingGreen = BuildFadingTable(palette, kGreen, 110);
   FadingYellow = BuildFadingTable(palette, kYellow, 140);
   FadingRed = BuildFadingTable(palette, kRed, 140);
-  MouseTranslucentTable = BuildTranslucentTable(palette, MouseCols);
-  TranslucentTable = BuildTranslucentTable(palette, MagicCols);
-  WhiteTranslucentTable = BuildTranslucentTable(palette, WhiteCols);
-  ShadowTrans = BuildTranslucentTable(palette, ShadowCols);
+  MouseTranslucentTable = BuildTranslucencyTable(palette, MouseCols);
+  TranslucentTable = BuildTranslucencyTable(palette, MagicCols);
+  WhiteTranslucentTable = BuildTranslucencyTable(palette, WhiteCols);
+  ShadowTrans = BuildTranslucencyTable(palette, ShadowCols);
 
-  UnitShadowAir = MakeTranslucencyTable(UShadowColsAir, [](const TLucentType&) {
-    return std::to_array(
-        ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable);
-  });
-  UnitShadow = ConquerBuildTranslucentTable(
+  UnitShadowAir =
+      BuildTranslucencyTableWith(UShadowColsAir, [](const TranslucentColor&) {
+        return std::to_array(
+            ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable);
+      });
+  UnitShadow = BuildShadowTranslucencyTable(
       palette, theater == THEATER_SNOW ? UShadowColsSnow : UShadowCols);
 
-  FadingShade = ConquerBuildFadingTable(palette, kBlack,
-                                        theater == THEATER_SNOW ? 75 : 130);
-  FadingLight = ConquerBuildFadingTable(palette, kWhite, 85);
+  FadingShade = BuildShadowFadingTable(palette, kBlack,
+                                       theater == THEATER_SNOW ? 75 : 130);
+  FadingLight = BuildShadowFadingTable(palette, kWhite, 85);
 
   // The aircraft shadow draws every color through one shadow fade.
   SpecialGhost = {};
-  std::ranges::copy(ConquerBuildFadingTable(palette, kBlack, 100),
+  std::ranges::copy(BuildShadowFadingTable(palette, kBlack, 100),
                     std::span(SpecialGhost).subspan(256).begin());
 
-  FadingBrighten = MakeFadingTable(palette, kWhite, 25);
-  FadingWayDark = MakeFadingTable(palette, DKGRAY, 192);
+  FadingBrighten = BuildClosestColorFadingTable(palette, kWhite, 25);
+  FadingWayDark = BuildClosestColorFadingTable(palette, DKGRAY, 192);
 
   /*
   **	Adjust the palette according to the visual control option settings.

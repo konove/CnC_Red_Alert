@@ -320,8 +320,8 @@ void GameOptionsClass::Process() {
       /*
       **	Reset up the window.  Window x-coords are in bytes not pixels.
       */
-      Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
-                 OptionHeight);
+      SetWindowRect(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY,
+                    OptionWidth, OptionHeight);
       game::TheMouse().Hide();
 
       /*

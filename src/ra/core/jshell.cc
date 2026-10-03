@@ -32,18 +32,19 @@
 
 namespace ra {
 
-void Set_Window(int window, int x, int y, int w, int h) {
-  base::At(base::At(WindowList, window), kWindowWidth) = w;
-  base::At(base::At(WindowList, window), kWindowHeight) = h;
+void SetWindowRect(int window, int x, int y, int width, int height) {
+  base::At(base::At(WindowList, window), kWindowWidth) = width;
+  base::At(base::At(WindowList, window), kWindowHeight) = height;
   base::At(base::At(WindowList, window), kWindowX) = x;
   base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
-FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
+FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
+                                         int target_color, int ratio) {
   FadingTable table{};
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
     const engine::gfx::PaletteColor faded =
-        palette.at(index).FadedToward(frac, palette.at(color));
+        palette.at(index).FadedToward(ratio, palette.at(target_color));
     // Closest_Color() always finds an entry: its starting distance is larger
     // than any two colors can be apart.
     base::At(table, index) = static_cast<uint8_t>(palette.Closest_Color(faded));
@@ -51,8 +52,8 @@ FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
   return table;
 }
 
-FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
-                                    int frac) {
+FadingTable BuildShadowFadingTable(const PaletteClass& palette,
+                                   int target_color, int ratio) {
   constexpr int kShadowStart = PaletteClass::COLOR_COUNT - 16;
   FadingTable table{};
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
@@ -63,7 +64,7 @@ FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
       continue;
     }
     const engine::gfx::PaletteColor faded =
-        palette.at(index).FadedToward(frac, palette.at(color));
+        palette.at(index).FadedToward(ratio, palette.at(target_color));
     // Color 255 is not a candidate; ties go to the lower color.
     int best = -1;
     int best_distance = 0;

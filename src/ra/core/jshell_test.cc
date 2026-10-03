@@ -19,13 +19,13 @@ namespace {
 
 using engine::gfx::PaletteColor;
 
-TEST(MakeTranslucencyTableTest, LooksUpEachSourceColorsFade) {
-  constexpr auto kControl =
-      std::to_array<TLucentType>({{5, 40, 0, 0}, {9, 70, 0, 0}});
+TEST(BuildTranslucencyTableWithTest, LooksUpEachSourceColorsFade) {
+  constexpr auto kColors =
+      std::to_array<TranslucentColor>({{5, 40, 0, 0}, {9, 70, 0, 0}});
   const TranslucencyTable<2> table =
-      MakeTranslucencyTable(kControl, [](const TLucentType& entry) {
+      BuildTranslucencyTableWith(kColors, [](const TranslucentColor& entry) {
         FadingTable fade{};
-        fade.fill(entry.DestColor);
+        fade.fill(entry.target_color);
         return fade;
       });
   const std::span<const uint8_t> view(table);
@@ -39,25 +39,25 @@ TEST(MakeTranslucencyTableTest, LooksUpEachSourceColorsFade) {
   EXPECT_EQ(base::At(view, 767), 70);
 }
 
-TEST(BuildTranslucentTableTest, FadesMatchTheEngineFadingTable) {
+TEST(BuildTranslucencyTableTest, FadesMatchTheEngineFadingTable) {
   PaletteClass palette(PaletteColor(30, 30, 30));
   palette.at(7) = PaletteColor(200, 10, 10);
   palette.at(8) = PaletteColor(110, 20, 20);
-  constexpr auto kControl = std::to_array<TLucentType>({{3, 7, 128, 0}});
+  constexpr auto kColors = std::to_array<TranslucentColor>({{3, 7, 128, 0}});
 
-  const TranslucencyTable<1> table = BuildTranslucentTable(palette, kControl);
+  const TranslucencyTable<1> table = BuildTranslucencyTable(palette, kColors);
 
   const FadingTable expected = BuildFadingTable(palette, 7, 128);
   EXPECT_TRUE(std::ranges::equal(std::span(table).subspan(256), expected));
 }
 
-TEST(ConquerBuildFadingTableTest, StaysInsideTheShadowRange) {
+TEST(BuildShadowFadingTableTest, StaysInsideTheShadowRange) {
   // Color 255 matches the target exactly, so only its exclusion keeps it out.
   PaletteClass palette(PaletteColor(200, 200, 200));
   palette.at(255) = PaletteColor(0, 0, 0);
   palette.at(250) = PaletteColor(20, 20, 20);
 
-  const FadingTable table = ConquerBuildFadingTable(palette, 255, 255);
+  const FadingTable table = BuildShadowFadingTable(palette, 255, 255);
 
   EXPECT_EQ(table.at(0), 0);
   EXPECT_EQ(table.at(1), 250);
