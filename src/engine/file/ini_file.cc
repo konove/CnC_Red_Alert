@@ -18,7 +18,6 @@
 
 #include "engine/file/ini_file.h"
 
-#include <cctype>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -358,7 +357,7 @@ bool IniFile::Put_TextBlock(const char* section, const char* text) {
         while (count) {
           const char c = base::At(buffer, count);
 
-          if (isspace(c)) {
+          if (absl::ascii_isspace(static_cast<unsigned char>(c))) {
             break;
           }
           count--;
@@ -539,7 +538,8 @@ bool IniFile::Get_Bool(const char* section, const char* entry,
 
   IniEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    switch (toupper(entryptr->Value.at(0))) {
+    switch (absl::ascii_toupper(
+        static_cast<unsigned char>(entryptr->Value.at(0)))) {
       case 'Y':
       case 'T':
       case '1':
