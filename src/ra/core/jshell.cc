@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Red Alert's text-window setter and the builders of the fading and
-// translucency tables its theaters draw through.
+// File: The builders of the fading and translucency tables Red Alert's
+// theaters draw through.
 
 #include "ra/core/jshell.h"
 
@@ -26,17 +26,9 @@
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
-#include "engine/gfx/text_window.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
-
-void SetWindowRect(int window, int x, int y, int width, int height) {
-  base::At(base::At(WindowList, window), kWindowWidth) = width;
-  base::At(base::At(WindowList, window), kWindowHeight) = height;
-  base::At(base::At(WindowList, window), kWindowX) = x;
-  base::At(base::At(WindowList, window), kWindowY) = y;
-}
 
 FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
                                          int target_color, int ratio) {

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Red Alert's text-window setter and the builders of the fading and
-// translucency tables its theaters draw through.
+// File: The builders of the fading and translucency tables Red Alert's
+// theaters draw through.
 
 #ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
 #define CNC_RED_ALERT_RA_CORE_JSHELL_H_
@@ -42,11 +42,6 @@ struct TranslucentColor {
   uint8_t target_color;  // Palette index the background fades toward.
   uint8_t fade_ratio;    // How far it fades: 0 not at all, 255 fully.
 };
-
-// Sets row `window` of WindowList (a WindowNumberType) to the rectangle at
-// (`x`, `y`), `width` by `height`. All four are in pixels: unlike Tiberian
-// Dawn, Red Alert does not keep the X position and width in 8-pixel bytes.
-void SetWindowRect(int window, int x, int y, int width, int height);
 
 // Returns the table that fades every palette color toward `target_color` by
 // `ratio` (0..255; values outside are clamped), each entry the palette's

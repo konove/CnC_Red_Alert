@@ -59,7 +59,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/tab.h"
@@ -317,11 +316,6 @@ void GameOptionsClass::Process() {
       TheMap().Flag_To_Redraw(true);
       TheMap().Render();
 
-      /*
-      **	Reset up the window.  Window x-coords are in bytes not pixels.
-      */
-      SetWindowRect(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY,
-                    OptionWidth, OptionHeight);
       game::TheMouse().Hide();
 
       /*
