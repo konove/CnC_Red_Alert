@@ -44,26 +44,15 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "engine/gfx/palette.h"
 
 class ByteStream;
 
 namespace td {
-
-// Prints `format` with `args`, checked at compile time, to stderr, then
-// exits with a failure code.
-[[noreturn]] void Fatal_Message(std::string_view message);
-template <typename... Args>
-[[noreturn]] void Fatal(const absl::FormatSpec<Args...>& format,
-                        const Args&... args) {
-  Fatal_Message(absl::StrFormat(format, args...));
-}
 
 struct TLucentType {
   unsigned char SourceColor;

@@ -39,8 +39,7 @@
  *   Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
  *only.            * Load_Alloc_Data -- Allocates a buffer and loads the file
  *into it.                         * Load_Uncompress -- Loads and uncompresses
- *data to a buffer.                               * Fatal -- General purpose
- *fatal error handler.                                             * Set_Window
+ *data to a buffer.                               * Set_Window
  *-- Sets the window dimensions to that specified. * Small_Icon -- Create a
  *small icon from a big one.                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,15 +51,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -74,7 +69,6 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "td/core/support.h"
-#include "td/startup/startup.h"
 
 namespace td {
 
@@ -150,37 +144,6 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
-/***********************************************************************************************
- * Fatal -- General purpose fatal error handler. *
- *                                                                                             *
- *    This is a very simple general purpose fatal error handler. It goes
- *directly to text      * mode, prints the error, and then aborts with a failure
- *code.                             *
- *                                                                                             *
- * INPUT:   message  -- The text message to display. *
- *                                                                                             *
- *          ...      -- Any optional parameters that are used in formatting the
- *message.       *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine never returns. The game exits immediately. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void Fatal_Message(const std::string_view message) {
-  ShutDown();
-  absl::FPrintF(stderr, "%s", message);
-  exit(EXIT_FAILURE);
-}
-
-#ifdef NEVER
-void File_Fatal(const char* message) {
-  ShutDown();
-  perror(message);
-  exit(EXIT_FAILURE);
-}
-#endif
 
 /***********************************************************************************************
  * Load_Uncompress -- Loads and uncompresses data to a buffer. *
