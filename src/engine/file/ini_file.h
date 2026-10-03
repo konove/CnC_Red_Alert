@@ -48,6 +48,13 @@ enum class IniLoadResult {
   kDigestMismatch,  // Read, but the embedded digest does not match the data.
 };
 
+// One entry of a section, as IniFile::Entries() returns it. The views are
+// valid until the database is next changed.
+struct IniEntry {
+  std::string_view name;   // The text left of the '='.
+  std::string_view value;  // Without surrounding blanks.
+};
+
 // A database of named sections, each a list of `entry=value` lines, in the text
 // format of Windows INI files: the game rules, the scenarios and the settings.
 // Section and entry names compare without ASCII case; values are kept as text
@@ -134,6 +141,18 @@ class IniFile {
   // exist. The view is valid until the database is next changed.
   [[nodiscard]] std::string_view EntryName(
       std::string_view section, int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Returns every entry of `section` in file order, each with its own value:
+  // of two entries with one name, both are returned, where a getter finds
+  // only the first. Empty when there is no such section.
+  //
+  // Example:
+  //   for (const auto& [name, value] : ini.Entries("Units")) { ... }
+  [[nodiscard]] std::vector<IniEntry> Entries(std::string_view section) const
+      // The views are of strings the sections own through pointers, which the
+      // analysis cannot connect to this object.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The getters return the value of `entry` in `section`, or `default_value`
   // when the entry is missing or its text does not parse as the requested

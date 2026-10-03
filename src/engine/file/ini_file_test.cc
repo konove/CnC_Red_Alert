@@ -430,6 +430,28 @@ TEST(IniFileTest, EntryNamesComeInFileOrder) {
   EXPECT_EQ(ini->EntryCount("Missing"), 0);
 }
 
+TEST(IniFileTest, EntriesComeInFileOrderWithTheirOwnValues) {
+  const auto ini = Parse("[S]\nB = 1 \nA=2\nb=3\n");
+  const std::vector<IniEntry> entries = ini->Entries("s");
+  ASSERT_EQ(entries.size(), 3U);
+  EXPECT_EQ(entries.at(0).name, "B");
+  EXPECT_EQ(entries.at(0).value, "1");
+  EXPECT_EQ(entries.at(1).name, "A");
+  EXPECT_EQ(entries.at(1).value, "2");
+  // A duplicate keeps its own value; GetString() finds only the first.
+  EXPECT_EQ(entries.at(2).name, "b");
+  EXPECT_EQ(entries.at(2).value, "3");
+  EXPECT_TRUE(ini->Entries("Missing").empty());
+}
+
+TEST(IniFileTest, EntriesTrimAValuePutWithBlanks) {
+  IniFile ini;
+  ASSERT_TRUE(ini.PutString("S", "A", "  padded  "));
+  const std::vector<IniEntry> entries = ini.Entries("S");
+  ASSERT_EQ(entries.size(), 1U);
+  EXPECT_EQ(entries.at(0).value, "padded");
+}
+
 TEST(IniFileTest, GetStringReturnsTheValueOrTheDefault) {
   IniFile ini;
   ASSERT_TRUE(ini.PutString("S", "K", "  padded value "));

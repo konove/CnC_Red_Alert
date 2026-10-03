@@ -299,6 +299,19 @@ std::string_view IniFile::EntryName(const std::string_view section,
   return found->entries.at(base::ToSize(index))->name;
 }
 
+std::vector<IniEntry> IniFile::Entries(const std::string_view section) const {
+  std::vector<IniEntry> entries;
+  if (const Section* found = FindSection(section)) {
+    entries.reserve(found->entries.size());
+    for (const auto& entry : found->entries) {
+      // Trimmed like GetString(): PutString() stores a value as given.
+      entries.push_back(
+          {entry->name, absl::StripAsciiWhitespace(entry->value)});
+    }
+  }
+  return entries;
+}
+
 bool IniFile::PutBase64Block(const std::string_view section,
                              const std::span<const std::byte> block) {
   if (block.empty()) {
@@ -322,18 +335,14 @@ bool IniFile::PutBase64Block(const std::string_view section,
   return true;
 }
 
-// The entries are fetched by name, as the original did, so a section with a
-// duplicated entry name decodes the first of them twice.
 std::vector<std::byte> IniFile::GetBase64Block(
     const std::string_view section) const {
   std::vector<std::byte> block;
   VectorSink sink(block);
   Base64Sink decoder(Base64Mode::kDecode, sink);
 
-  const int entry_count = EntryCount(section);
-  for (int index = 0; index < entry_count; index++) {
-    const std::string line = GetString(section, EntryName(section, index), "=");
-    decoder.Write(std::as_bytes(std::span(line)));
+  for (const IniEntry& entry : Entries(section)) {
+    decoder.Write(std::as_bytes(std::span(entry.value)));
   }
   decoder.Finish();
   return block;
@@ -373,13 +382,12 @@ bool IniFile::PutTextBlock(const std::string_view section,
 
 std::string IniFile::GetTextBlock(const std::string_view section) const {
   std::string text;
-  const int entry_count = EntryCount(section);
-  for (int index = 0; index < entry_count; index++) {
+  for (const IniEntry& entry : Entries(section)) {
     // One space stands for each line break PutTextBlock() made.
-    if (index > 0) {
+    if (!text.empty()) {
       text += ' ';
     }
-    text += GetString(section, EntryName(section, index), "");
+    text += entry.value;
   }
   return text;
 }
