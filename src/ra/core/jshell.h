@@ -38,10 +38,10 @@ namespace ra {
 // One translucent color of a translucency table: shape pixels of SourceColor
 // are not drawn as that color but fade what is under them toward DestColor.
 struct TLucentType {
-  unsigned char SourceColor;  // Palette index that draws translucent.
-  unsigned char DestColor;    // Palette index the background fades toward.
-  unsigned char Fading;       // How far it fades: 0 not at all, 255 fully.
-  unsigned char reserved;     // Unused; 0 in every table.
+  uint8_t SourceColor;  // Palette index that draws translucent.
+  uint8_t DestColor;    // Palette index the background fades toward.
+  uint8_t Fading;       // How far it fades: 0 not at all, 255 fully.
+  uint8_t reserved;     // Unused; 0 in every table.
 };
 
 // Sets row `window` of WindowList (a WindowNumberType) to the rectangle at
