@@ -2627,13 +2627,13 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        const BaseNodeClass* node = TheWorld().base().Next_Buildable(
+        const BaseNodeClass* node = TheWorld().base().FirstUnbuiltNode(
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         if (node) {
-          if (Flush_For_Placement(base, Cell::Containing(node->Coord))) {
+          if (Flush_For_Placement(base, Cell::Containing(node->coord))) {
             return 1;
           }
-          if (base->Unlimbo(node->Coord)) {
+          if (base->Unlimbo(node->coord)) {
             return 2;
           }
         }

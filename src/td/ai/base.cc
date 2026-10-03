@@ -36,45 +36,46 @@
 
 namespace td {
 
-bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
-  return Type == node.Type && Coord == node.Coord;
+bool BaseNodeClass::operator==(const BaseNodeClass& other) const {
+  return type == other.type && coord == other.coord;
 }
 
 bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
-  return Type != node.Type || Coord != node.Coord;
+  return type != node.type || coord != node.coord;
 }
 
 bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
-BaseClass::~BaseClass() { Nodes.clear(); }
+BaseClass::~BaseClass() { nodes_.clear(); }
 
-void BaseClass::Read_INI(const char* buffer) {
+void BaseClass::ReadIni(const char* ini_text) {
   BaseNodeClass node;  // node to add to list
 
   // The base belongs to whoever opposes the human player.
   char player[20];
-  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", player, buffer);
+  WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", player, ini_text);
   if (HouseTypeClass::From_Name(player) == HOUSE_GOOD) {
-    House = HOUSE_BAD;
+    house_ = HOUSE_BAD;
   } else {
-    House = HOUSE_GOOD;
+    house_ = HOUSE_GOOD;
   }
 
-  const int count = WWGetPrivateProfileInt(INI_Name(), "Count", 0, buffer);
+  const int node_count =
+      WWGetPrivateProfileInt(INI_Name(), "Count", 0, ini_text);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < node_count; i++) {
     char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
     WWGetPrivateProfileString(INI_Name(), entry.c_str(), nullptr, value,
-                              buffer);
+                              ini_text);
 
     base::Tokenizer tokens(value, ",");
-    node.Type = BuildingTypeClass::From_Name(tokens.Next());
+    node.type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.
-    if (node.Type == STRUCT_NONE) {
+    if (node.type == STRUCT_NONE) {
       continue;
     }
 
@@ -86,44 +87,46 @@ void BaseClass::Read_INI(const char* buffer) {
     if (!coordinate) {
       continue;
     }
-    node.Coord = Coordinate::FromPacked(*coordinate);
+    node.coord = Coordinate::FromPacked(*coordinate);
     // Cell::Containing() does not mask an off-map coordinate, so its cell
-    // would index past the map in Get_Building().
-    if (node.Coord.cell_x() >= MAP_CELL_W ||
-        node.Coord.cell_y() >= MAP_CELL_H) {
+    // would index past the map in FindBuilding().
+    if (node.coord.cell_x() >= MAP_CELL_W ||
+        node.coord.cell_y() >= MAP_CELL_H) {
       continue;
     }
 
-    Nodes.push_back(node);
+    nodes_.push_back(node);
   }
 }
 
-void BaseClass::Write_INI(std::string& buffer) {
+void BaseClass::WriteIni(std::string& ini_text) {
   // Passing no entry deletes the whole section.
-  WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, buffer);
+  WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, ini_text);
 
-  // Read_INI() finds the entries by counting from "000" up to Count.
+  // ReadIni() finds the entries by counting from "000" up to Count.
   WWWritePrivateProfileInt(INI_Name(), "Count",
-                           static_cast<int>(std::ssize(Nodes)), buffer);
+                           static_cast<int>(std::ssize(nodes_)), ini_text);
 
-  for (int i = 0; i < std::ssize(Nodes); i++) {
+  for (int i = 0; i < std::ssize(nodes_); i++) {
     const std::string entry = absl::StrFormat("%03d", i);
     const std::string value = absl::StrFormat(
         "%s,%d",
-        BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
-        static_cast<int>(base::At(Nodes, i).Coord.packed()));
+        BuildingTypeClass::As_Reference(base::At(nodes_, i).type).IniName,
+        static_cast<int>(base::At(nodes_, i).coord.packed()));
 
     WWWritePrivateProfileString(INI_Name(), entry.c_str(), value.c_str(),
-                                buffer);
+                                ini_text);
   }
 }
 
-bool BaseClass::Is_Built(int index) { return Get_Building(index) != nullptr; }
+bool BaseClass::IsBuilt(int node_index) {
+  return FindBuilding(node_index) != nullptr;
+}
 
-BuildingClass* BaseClass::Get_Building(int index) {
+BuildingClass* BaseClass::FindBuilding(int node_index) {
   ObjectClass* obj[4];
 
-  const Cell cell = Cell::Containing(base::At(Nodes, index).Coord);
+  const Cell cell = Cell::Containing(base::At(nodes_, node_index).coord);
 
   // A building occupies the cells of its foundation and only overlaps the
   // others its image covers. The node's cell can be either, so look in both
@@ -135,10 +138,10 @@ BuildingClass* BaseClass::Get_Building(int index) {
 
   BuildingClass* bldg = nullptr;
   for (auto& i : obj) {
-    if (i && i->Coord == base::At(Nodes, index).Coord &&
+    if (i && i->Coord == base::At(nodes_, node_index).coord &&
         i->What_Am_I() == RTTI_BUILDING &&
         dynamic_cast<BuildingClass*>(i)->Class->Type ==
-            base::At(Nodes, index).Type) {
+            base::At(nodes_, node_index).type) {
       bldg = dynamic_cast<BuildingClass*>(i);
       break;
     }
@@ -147,29 +150,31 @@ BuildingClass* BaseClass::Get_Building(int index) {
   return bldg;
 }
 
-bool BaseClass::Is_Node(BuildingClass* obj) { return Get_Node(obj) != nullptr; }
+bool BaseClass::HasNodeFor(BuildingClass* building) {
+  return FindNode(building) != nullptr;
+}
 
-BaseNodeClass* BaseClass::Get_Node(BuildingClass* obj) {
-  for (int i = 0; i < std::ssize(Nodes); i++) {
-    if (obj->Class->Type == base::At(Nodes, i).Type &&
-        obj->Coord == base::At(Nodes, i).Coord) {
-      return &base::At(Nodes, i);
+BaseNodeClass* BaseClass::FindNode(BuildingClass* building) {
+  for (int i = 0; i < std::ssize(nodes_); i++) {
+    if (building->Class->Type == base::At(nodes_, i).type &&
+        building->Coord == base::At(nodes_, i).coord) {
+      return &base::At(nodes_, i);
     }
   }
   return nullptr;
 }
 
-BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
-  for (int i = 0; i < std::ssize(Nodes); i++) {
+BaseNodeClass* BaseClass::FirstUnbuiltNode(StructType type) {
+  for (int i = 0; i < std::ssize(nodes_); i++) {
     // STRUCT_NONE asks for the first hole of any type.
     if (type == STRUCT_NONE) {
-      if (!Is_Built(i)) {
-        return &base::At(Nodes, i);
+      if (!IsBuilt(i)) {
+        return &base::At(nodes_, i);
       }
 
     } else {
-      if (base::At(Nodes, i).Type == type && !Is_Built(i)) {
-        return &base::At(Nodes, i);
+      if (base::At(nodes_, i).type == type && !IsBuilt(i)) {
+        return &base::At(nodes_, i);
       }
     }
   }

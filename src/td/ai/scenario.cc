@@ -337,7 +337,7 @@ void Clear_Scenario() {
 
   FactoryClass::Init();
 
-  TheWorld().base().Init();
+  TheWorld().base().ClearNodes();
 
   TheWorld().current_object().clear();
 }
@@ -556,11 +556,13 @@ void Do_Win() {
     /*
     **	Remove the building from the prebuild list.
     */
-    for (int index = 0; index < std::ssize(TheWorld().base().Nodes); index++) {
+    for (int index = 0; index < std::ssize(TheWorld().base().nodes());
+         index++) {
       const BaseNodeClass* node = TheWorld().base().Get_Node(index);
 
-      if (node && node->Type == TheWorld().sabotaged_type()) {
-        TheWorld().base().Nodes.erase(TheWorld().base().Nodes.begin() + index);
+      if (node && node->type == TheWorld().sabotaged_type()) {
+        TheWorld().base().nodes().erase(TheWorld().base().nodes().begin() +
+                                        index);
         break;
       }
     }

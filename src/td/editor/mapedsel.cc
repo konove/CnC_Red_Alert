@@ -567,10 +567,10 @@ int MapEditClass::Move_Grabbed_Object() {
     ** in the Base's Node list.
     */
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING) {
-      BaseNodeClass* node = TheWorld().base().Get_Node(
+      BaseNodeClass* node = TheWorld().base().FindNode(
           dynamic_cast<BuildingClass*>(GrabbedObject));
       if (node != nullptr) {
-        node->Coord = new_coord;
+        node->coord = new_coord;
       }
     }
 
@@ -634,7 +634,7 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   You can't change the house if the object is part of the AI's Base.
   ------------------------------------------------------------------------*/
   if (base::At(TheWorld().current_object(), 0)->What_Am_I() == RTTI_BUILDING &&
-      TheWorld().base().Is_Node(dynamic_cast<BuildingClass*>(
+      TheWorld().base().HasNodeFor(dynamic_cast<BuildingClass*>(
           base::At(TheWorld().current_object(), 0)))) {
     return false;
   }

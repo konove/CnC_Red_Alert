@@ -179,16 +179,16 @@ int MapEditClass::New_Scenario() {
     if (player == SCEN_PLAYER_GDI) {
       ThePlayer() = HouseClass::As_Pointer(HOUSE_GOOD);
       ThePlayer()->IsHuman = true;
-      TheWorld().base().House = HOUSE_BAD;
+      TheWorld().base().set_house(HOUSE_BAD);
     } else {
       if (player == SCEN_PLAYER_NOD) {
         ThePlayer() = HouseClass::As_Pointer(HOUSE_BAD);
         ThePlayer()->IsHuman = true;
-        TheWorld().base().House = HOUSE_GOOD;
+        TheWorld().base().set_house(HOUSE_GOOD);
       } else {
         ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
         ThePlayer()->IsHuman = true;
-        TheWorld().base().House = HOUSE_MULTI4;
+        TheWorld().base().set_house(HOUSE_MULTI4);
       }
     }
     LastHouse = HOUSE_GOOD;
@@ -282,7 +282,7 @@ int MapEditClass::Load_Scenario() {
   } else if (TheWorld().scen_player() == SCEN_PLAYER_JP) {
     ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
     ThePlayer()->IsHuman = true;
-    TheWorld().base().House = HOUSE_MULTI4;
+    TheWorld().base().set_house(HOUSE_MULTI4);
   } else {
     LastHouse = HOUSE_GOOD;
   }
@@ -374,16 +374,16 @@ int MapEditClass::Save_Scenario() {
     if (TheWorld().scen_player() == SCEN_PLAYER_GDI) {
       ThePlayer() = HouseClass::As_Pointer(HOUSE_GOOD);
       ThePlayer()->IsHuman = true;
-      TheWorld().base().House = HOUSE_BAD;
+      TheWorld().base().set_house(HOUSE_BAD);
     } else {
       if (TheWorld().scen_player() == SCEN_PLAYER_NOD) {
         ThePlayer() = HouseClass::As_Pointer(HOUSE_BAD);
         ThePlayer()->IsHuman = true;
-        TheWorld().base().House = HOUSE_GOOD;
+        TheWorld().base().set_house(HOUSE_GOOD);
       } else {
         ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
         ThePlayer()->IsHuman = true;
-        TheWorld().base().House = HOUSE_MULTI4;
+        TheWorld().base().set_house(HOUSE_MULTI4);
       }
     }
     LastHouse = HOUSE_GOOD;

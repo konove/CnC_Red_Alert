@@ -15,29 +15,29 @@ namespace td {
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("BASE"));
-  auto count = static_cast<int32_t>(std::ssize(Nodes));
-  ar(House, count);
+  auto count = static_cast<int32_t>(std::ssize(nodes_));
+  ar(house_, count);
   if constexpr (Archive::kIsReading) {
-    if (!ar.ok() || House < HOUSE_NONE || House >= HOUSE_COUNT ||
-        count < 0 || count > MAP_CELL_TOTAL) {
+    if (!ar.ok() || house_ < HOUSE_NONE || house_ >= HOUSE_COUNT || count < 0 ||
+        count > MAP_CELL_TOTAL) {
       ar.Fail("invalid saved base house or count");
       return;
     }
-    Nodes.clear();
-    Nodes.reserve(base::ToSize(count));
+    nodes_.clear();
+    nodes_.reserve(base::ToSize(count));
   }
   for (int32_t i = 0; i < count; ++i) {
     BaseNodeClass node;
     if constexpr (!Archive::kIsReading) {
-      node = base::At(Nodes, i);
+      node = base::At(nodes_, i);
     }
-    ar(node.Type, node.Coord);
+    ar(node.type, node.coord);
     if constexpr (Archive::kIsReading) {
-      if (!ar.ok() || node.Type < STRUCT_WEAP || node.Type >= STRUCT_COUNT) {
+      if (!ar.ok() || node.type < STRUCT_WEAP || node.type >= STRUCT_COUNT) {
         ar.Fail("invalid saved base building type");
         return;
       }
-      Nodes.push_back(node);
+      nodes_.push_back(node);
     }
   }
 }

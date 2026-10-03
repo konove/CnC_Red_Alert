@@ -43,13 +43,13 @@ class BaseNodeClass {
   BaseNodeClass() = default;
   // Nodes are equal when they name the same building type at the same
   // coordinate.
-  bool operator==(const BaseNodeClass& node) const;
+  bool operator==(const BaseNodeClass& other) const;
   bool operator!=(const BaseNodeClass& node) const;
   // Always true: the nodes have no order.
   bool operator>(const BaseNodeClass& node);
 
-  StructType Type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
-  Coordinate Coord{};             // Where the building is placed.
+  StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
+  Coordinate coord{};             // Where the building is placed.
 };
 
 // The prebuilt base of a single-player scenario: the buildings the computer
@@ -62,8 +62,8 @@ class BaseNodeClass {
 //
 // Example:
 //   BaseClass& base = TheWorld().base();
-//   if (const BaseNodeClass* node = base.Next_Buildable()) {
-//     techno = &BuildingTypeClass::As_Reference(node->Type);
+//   if (const BaseNodeClass* node = base.FirstUnbuiltNode()) {
+//     techno = &BuildingTypeClass::As_Reference(node->type);
 //   }
 class BaseClass {
  public:
@@ -74,21 +74,21 @@ class BaseClass {
   BaseClass(BaseClass&&) = delete;
   BaseClass& operator=(BaseClass&&) = delete;
 
-  // Empties the node list. The owner stays: Read_INI() always sets it.
-  void Init() { Nodes.clear(); }
+  // Empties the node list. The owner stays: ReadIni() always sets it.
+  void ClearNodes() { nodes_.clear(); }
 
   // Appends the nodes of the [Base] section of the scenario INI text in
-  // `buffer`, in the order the section numbers them. An entry is
+  // `ini_text`, in the order the section numbers them. An entry is
   // "NNN=TYPE,coordinate", NNN counting from 000 up to the section's Count; an
   // entry that is missing, names no building type or lies off the map is
   // skipped. The owner becomes the house opposing the [BASIC] Player: HOUSE_BAD
-  // against GoodGuy, HOUSE_GOOD against anyone else. Call Init() first: the
-  // list is not cleared.
-  void Read_INI(const char* buffer);
+  // against GoodGuy, HOUSE_GOOD against anyone else. Call ClearNodes() first:
+  // the list is not cleared.
+  void ReadIni(const char* ini_text);
 
-  // Replaces the [Base] section of the INI text in `buffer` with this base's
+  // Replaces the [Base] section of the INI text in `ini_text` with this base's
   // nodes. The owner is not written.
-  void Write_INI(std::string& buffer);
+  void WriteIni(std::string& ini_text);
 
   // The name of the scenario INI section the base is stored in.
   static const char* INI_Name() { return "Base"; }
@@ -98,37 +98,50 @@ class BaseClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Returns whether the building of node `index` stands on the map.
-  bool Is_Built(int index);
+  // Returns whether the building of node `node_index` stands on the map.
+  bool IsBuilt(int node_index);
 
-  // Returns the building that fills node `index`: one of the node's type at
-  // the node's coordinate, whichever house owns it. Returns nullptr if the node
-  // is a hole. `index` must be a valid index into Nodes.
-  BuildingClass* Get_Building(int index);
+  // Returns the building that fills node `node_index`: one of the node's type
+  // at the node's coordinate, whichever house owns it. Returns nullptr if the
+  // node is a hole. `node_index` must be a valid index into nodes().
+  BuildingClass* FindBuilding(int node_index);
 
-  // Returns whether the base has a node for `obj`, which must not be nullptr.
-  bool Is_Node(BuildingClass* obj);
+  // Returns whether the base has a node for `building`, which must not be
+  // nullptr.
+  bool HasNodeFor(BuildingClass* building);
 
-  // Returns the first node with the type and coordinate of `obj`, which must
-  // not be nullptr, or nullptr if the base has none.
-  BaseNodeClass* Get_Node(BuildingClass* obj) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  // Returns node `index`, which must be a valid index into Nodes.
+  // Returns the first node with the type and coordinate of `building`, which
+  // must not be nullptr, or nullptr if the base has none.
+  BaseNodeClass* FindNode(BuildingClass* building)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // Returns node `index`, which must be a valid index into nodes().
   BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &base::At(Nodes, index);
+    return &base::At(nodes_, index);
   }
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE)
+  BaseNodeClass* FirstUnbuiltNode(StructType type = STRUCT_NONE)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed stays; one whose building type was sabotaged in the
   // previous mission is removed when the scenario starts.
-  std::vector<BaseNodeClass> Nodes;
+  std::vector<BaseNodeClass>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return nodes_;
+  }
+  [[nodiscard]] const std::vector<BaseNodeClass>& nodes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return nodes_;
+  }
 
   // The house that builds the base; HOUSE_NONE before a scenario is read.
-  HousesType House = HOUSE_NONE;
+  [[nodiscard]] HousesType house() const { return house_; }
+  void set_house(HousesType house) { house_ = house; }
+
+ private:
+  std::vector<BaseNodeClass> nodes_;
+  HousesType house_ = HOUSE_NONE;
 };
 
 extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -1204,10 +1204,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               RTTI_BUILDING) {
             auto* building = dynamic_cast<BuildingClass*>(
                 base::At(TheWorld().current_object(), 0));
-            if (TheWorld().base().Is_Node(building)) {
-              BaseNodeClass* node = TheWorld().base().Get_Node(
+            if (TheWorld().base().HasNodeFor(building)) {
+              BaseNodeClass* node = TheWorld().base().FindNode(
                   building);  // for removing from an AI Base
-              base::EraseFirst(TheWorld().base().Nodes, *node);
+              base::EraseFirst(TheWorld().base().nodes(), *node);
             }
           }
 

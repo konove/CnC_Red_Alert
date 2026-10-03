@@ -525,7 +525,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in the AI's base information.
   */
-  TheWorld().base().Read_INI(buffer);
+  TheWorld().base().ReadIni(buffer);
   Call_Back();
 
   /*
@@ -763,7 +763,7 @@ void Write_Scenario_Ini(const char* root) {
     OverlayClass::Write_INI(ini);
     SmudgeClass::Write_INI(ini);
 
-    TheWorld().base().Write_INI(ini);
+    TheWorld().base().WriteIni(ini);
 
     /*
     **	Write the scenario data out to a file.
