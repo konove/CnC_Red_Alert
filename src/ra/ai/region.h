@@ -25,8 +25,6 @@
 
 #include <cstdint>
 
-#include "base/buffer.h"
-
 namespace ra {
 
 // The threat a house sees in one map region: the summed risk ratings of the
@@ -44,50 +42,19 @@ namespace ra {
 // the two calls must be given equal amounts or the region drifts.
 class Region {
  public:
-  Region() = default;
-
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(threat_);
   }
 
-  // Byte-wise comparisons, which order regions by the raw bytes of the threat
-  // value rather than by its magnitude.
-  bool operator!=(const Region& region) {
-    return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region), sizeof(Region)) != 0;
-  }
-  bool operator==(const Region& region) {
-    return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region), sizeof(Region)) == 0;
-  }
-  bool operator>(const Region& region) {
-    return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region), sizeof(Region)) > 0;
-  }
-  bool operator<(const Region& region) {
-    return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region), sizeof(Region)) < 0;
-  }
-
-  // Forgets all threat in the region.
-  void Reset_Threat() { threat_ = 0; }
-
-  // Adds `threat` to the region, or subtracts it when `neg` is set. `threat`
-  // is the magnitude, so callers pass it non-negative.
-  void AdjustThreat(int threat, bool neg) {
-    if (neg) {
-      threat_ -= threat;
-    } else {
-      threat_ += threat;
-    }
-  }
+  // Adds `delta` to the region's threat; negative when an object leaves.
+  void AdjustThreat(int delta) { threat_ += delta; }
 
   // The region's current threat; 0 when no enemy object is in or next to it.
   [[nodiscard]] int threat() const { return static_cast<int>(threat_); }
 
- protected:
+ private:
   // Summed threat ratings; 0 for an empty region. Saved as 64 bits, though the
   // sum of a map's worth of ratings fits an int.
   int64_t threat_ = 0;

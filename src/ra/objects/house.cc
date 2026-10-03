@@ -2203,18 +2203,12 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   // Divisor for each neighbor: a quarter for the corners, half for the
   // edges, the full threat for the center.
   static const int _div[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
-  bool neg = false;
 
-  if (threat < 0) {
-    threat = -threat;
-    neg = true;
-  } else {
-    neg = false;
-  }
-
+  // Division truncates toward zero, so lifting an object takes away exactly
+  // the shares that placing it added.
   for (int lp = 0; lp < 9; lp++) {
     base::At(Regions, region + base::At(_val, lp))
-        .AdjustThreat(threat / base::At(_div, lp), neg);
+        .AdjustThreat(threat / base::At(_div, lp));
   }
 }
 
