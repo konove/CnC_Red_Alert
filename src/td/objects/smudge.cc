@@ -54,7 +54,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
+#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -289,13 +289,11 @@ bool SmudgeClass::Mark(MarkType mark) {
  *value as well.                                      *
  *=============================================================================================*/
 void SmudgeClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];  // Working string staging buffer.
-
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
-    ini.GetString(INI_Name(), key, "", buf);
-    base::Tokenizer tokens(buf, ",");
+    std::string value = ini.GetString(INI_Name(), key, "");
+    base::Tokenizer tokens(value.data(), ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {

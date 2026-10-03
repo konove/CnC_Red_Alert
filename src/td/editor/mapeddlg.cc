@@ -57,6 +57,7 @@
 #include <cstring>
 #include <filesystem>
 #include <span>
+#include <string>
 #include <string_view>
 #include <system_error>
 #include <vector>
@@ -3121,7 +3122,6 @@ int MapEditClass::Import_Triggers() {
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
   std::vector<const char*> trignames;             // list of INI trigger names
-  char buf[128];                            // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
   /*........................................................................
@@ -3171,14 +3171,13 @@ int MapEditClass::Import_Triggers() {
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
     const char* tbuffer =
         master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
-    master_ini.GetString(
-        TriggerClass::INI_Name(), tbuffer, "",
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
+    std::string entry =
+        master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
 
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(entry.data(), ",");
     char* eventptr = tokens.Next();
     char* actionptr = tokens.Next();
     tokens.Next();  // data, unused
@@ -3315,13 +3314,12 @@ int MapEditClass::Import_Triggers() {
       ** and fill it in.
       */
       if (triggerlist.Is_Checked(entry_index)) {
-        master_ini.GetString(
-            TriggerClass::INI_Name(), tbuffer, "",
-            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
+        std::string entry =
+            master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
 
         auto* trigger =
             base::NewPooled<TriggerClass>();  // Working trigger pointer.
-        trigger->Fill_In(tbuffer, buf);
+        trigger->Fill_In(tbuffer, entry.data());
 
         if (trigger->House != HOUSE_NONE) {
           TheWorld().house_triggers().at(trigger->House).push_back(trigger);
@@ -3419,7 +3417,6 @@ int MapEditClass::Import_Teams() {
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
   std::vector<const char*> teamnames;    // list of INI team names
-  char buf[128];                        // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
   int i = 0;
@@ -3469,14 +3466,13 @@ int MapEditClass::Import_Teams() {
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
     const char* tbuffer =
         master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
-    master_ini.GetString(
-        TeamTypeClass::INI_Name(), tbuffer, "",
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
+    std::string entry =
+        master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
 
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(entry.data(), ",");
     char* houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused
@@ -3615,12 +3611,11 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(entry_index)) {
-        master_ini.GetString(
-            TeamTypeClass::INI_Name(), tbuffer, "",
-            std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)));
+        std::string entry =
+            master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
 
         auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
-        team->Fill_In(tbuffer, buf);
+        team->Fill_In(tbuffer, entry.data());
       }
     }
   }

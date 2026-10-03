@@ -1709,8 +1709,6 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
 void HouseClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];
-
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     const char* hname = HouseTypeClass::As_Reference(index)
                             .IniName;  //	Pointer to house name.
@@ -1731,16 +1729,15 @@ void HouseClass::Read_INI(const engine::file::IniFile& ini) {
     p->MaxUnit = maxunit;
     p->Credits = static_cast<int64_t>(credits) * 100;
     p->InitialCredits = p->Credits;
-    ini.GetString(hname, "Edge", "", buf);
-    p->Edge = Source_From_Name(buf);
+    p->Edge = Source_From_Name(ini.GetString(hname, "Edge", "").c_str());
     if (p->Edge == SOURCE_NONE) {
       p->Edge = SOURCE_NORTH;
     }
 
     if (TheSession().type() == GAME_NORMAL) {
-      ini.GetString(hname, "Allies", "", buf);
-      if (!std::string_view(buf).empty()) {
-        base::Tokenizer tokens(buf, ", \t");
+      std::string allies = ini.GetString(hname, "Allies", "");
+      if (!allies.empty()) {
+        base::Tokenizer tokens(allies.data(), ", \t");
         const char* tok = tokens.Next();
         while (tok) {
           const HousesType h = HouseTypeClass::From_Name(tok);

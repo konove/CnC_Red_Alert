@@ -285,7 +285,6 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
 bool Read_Scenario_Ini(const char* root, bool fresh) {
   char fname[engine::platform::kMaxFname +
              engine::platform::kMaxExt];  // full INI filename
-  char buf[128];                      // Working string staging buffer.
   int rndmax = 0;
   int rndmin = 0;
   unsigned char val = 0;
@@ -369,11 +368,16 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
-  scenario.GetString("Basic", "Intro", "x", TheWorld().intro_movie());
-  scenario.GetString("Basic", "Brief", "x", TheWorld().brief_movie());
-  scenario.GetString("Basic", "Win", "x", TheWorld().win_movie());
-  scenario.GetString("Basic", "Lose", "x", TheWorld().lose_movie());
-  scenario.GetString("Basic", "Action", "x", TheWorld().action_movie());
+  base::SafeCopy(TheWorld().intro_movie(),
+                 scenario.GetString("Basic", "Intro", "x"));
+  base::SafeCopy(TheWorld().brief_movie(),
+                 scenario.GetString("Basic", "Brief", "x"));
+  base::SafeCopy(TheWorld().win_movie(),
+                 scenario.GetString("Basic", "Win", "x"));
+  base::SafeCopy(TheWorld().lose_movie(),
+                 scenario.GetString("Basic", "Lose", "x"));
+  base::SafeCopy(TheWorld().action_movie(),
+                 scenario.GetString("Basic", "Action", "x"));
 
   /*
   **	For single-player scenarios, 'BuildLevel' is the scenario number.
@@ -405,8 +409,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Fetch the transition theme for this scenario.
   */
   TheWorld().transit_theme() = THEME_NONE;
-  scenario.GetString("Basic", "Theme", "No Theme", buf);
-  TheWorld().transit_theme() = ThemeClass::From_Name(buf);
+  TheWorld().transit_theme() = ThemeClass::From_Name(
+      scenario.GetString("Basic", "Theme", "No Theme").c_str());
 
   /*
   **	Read in the team-type data. The team types must be created before any
@@ -429,14 +433,15 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   //	if (GameToPlay == GAME_NORMAL && (ScenPlayer == SCEN_PLAYER_GDI ||
   // ScenPlayer == SCEN_PLAYER_NOD)) {
   if (TheSession().type() == GAME_NORMAL) {
-    scenario.GetString("Basic", "Player", "GoodGuy", buf);
+    const std::string player = scenario.GetString("Basic", "Player", "GoodGuy");
     TheWorld().carry_over_percent() =
         scenario.GetInt("Basic", "CarryOverMoney", 100);
     TheWorld().carry_over_percent() =
         base::CardinalToFixed(100, TheWorld().carry_over_percent());
     carry_over_cap = scenario.GetInt("Basic", "carry_over_cap", -1);
 
-    ThePlayer() = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
+    ThePlayer() =
+        HouseClass::As_Pointer(HouseTypeClass::From_Name(player.c_str()));
     ThePlayer()->IsHuman = true;
     int carryover = 0;
     // Any negative cap, not just the -1 default, means uncapped; the original
@@ -553,7 +558,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
     absl::SNPrintF(buff, sizeof(buff), "%d", index++);
     stage.front() = '\0';
-    scenario.GetString("Briefing", buff, "", stage.first(stage.size() - 1));
+    base::SafeCopy(stage.first(stage.size() - 1),
+                   scenario.GetString("Briefing", buff, ""));
     if (std::string_view(stage.data()).empty()) {
       break;
     }
@@ -584,7 +590,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
       absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
       work.front() = '\0';
-      mission_ini.GetString(root, buff, "", work.first(work.size() - 1));
+      base::SafeCopy(work.first(work.size() - 1),
+                     mission_ini.GetString(root, buff, ""));
       if (std::string_view(work.data()).empty()) {
         break;
       }

@@ -55,9 +55,9 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 
-#include "base/array.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/disk_file.h"
@@ -120,8 +120,7 @@ int Read_Game_Options();
 void Check_From_WChat(const char* wchat_name) {
 #ifndef DEMO
 
-  char default_string[] = {"Error"};
-  char key_string[256];
+  const std::string_view default_string = "Error";
   engine::file::IniFile ini;
   std::unique_ptr<DiskStream> wchat_file;
 
@@ -147,47 +146,41 @@ void Check_From_WChat(const char* wchat_name) {
     /*
     ** Get the IP address
     */
-    base::At(key_string, 0) = 0;
+    const std::string address =
+        ini.GetString("Internet", "Address", default_string);
 
-    ini.GetString("Internet", "Address", default_string, key_string);
-
-    if ((std::string_view(key_string) == default_string)) {
+    if (address == default_string) {
       if (wchat_name) {
       }
       return;
     }
-    base::SafeCopy(TheNetwork().westwood_address(), key_string);
+    base::SafeCopy(TheNetwork().westwood_address(), address);
 
     /*
     ** Get the port number
     */
-    base::At(key_string, 0) = 0;
+    const std::string port = ini.GetString("Internet", "Port", default_string);
 
-    ini.GetString("Internet", "Port", default_string, key_string);
-
-    if ((std::string_view(key_string) == default_string)) {
+    if (port == default_string) {
       if (wchat_name) {
       }
       return;
     }
 
-    TheNetwork().westwood_port() = base::ParseIntegerOr<int>(key_string, 0);
+    TheNetwork().westwood_port() = base::ParseIntegerOr<int>(port, 0);
 
     /*
     ** Get host or client
     */
-    base::At(key_string, 0) = 0;
+    const std::string host = ini.GetString("Internet", "Host", default_string);
 
-    ini.GetString("Internet", "Host", default_string, key_string);
-
-    if ((std::string_view(key_string) == default_string)) {
+    if (host == default_string) {
       if (wchat_name) {
       }
       return;
     }
 
-    TheNetwork().westwood_is_host() =
-        std::string_view(key_string).contains('1');
+    TheNetwork().westwood_is_host() = host.contains('1');
 
     TheSpecial().IsFromWChat = true;
   }
@@ -257,7 +250,8 @@ int Read_Game_Options(const char* name) {
   /*------------------------------------------------------------------------
   Get the player's name
   ------------------------------------------------------------------------*/
-  ini.GetString("Options", "Handle", "Noname", TheSession().player_name());
+  base::SafeCopy(TheSession().player_name(),
+                 ini.GetString("Options", "Handle", "Noname"));
   base::SafeCopy(TheSession().game_name(), TheSession().player_name());
   TheSession().color_index() = ini.GetInt("Options", "Color", 0);
   TheSession().preferred_color() = TheSession().color_index();

@@ -360,12 +360,10 @@ static int Run(int argc, char* argv[])
       **	Check for forced intro movie run disabling. If the conquer
       **	configuration file says "no", then don't run the intro.
       */
-      char tempbuff[5];
-      conquer_ini.GetString(
-          "Intro", "PlayIntro", "Yes",
-          std::span(tempbuff).first(static_cast<std::size_t>(4)));
-      TheSpecial().IsFromInstall = !absl::EqualsIgnoreCase(tempbuff, "No") &&
-                                   !TheGameState().spawned_from_chat();
+      TheSpecial().IsFromInstall =
+          !absl::EqualsIgnoreCase(
+              conquer_ini.GetString("Intro", "PlayIntro", "Yes"), "No") &&
+          !TheGameState().spawned_from_chat();
       ThePalettes().set_slow_palette(
           conquer_ini.GetInt("Options", "SlowPalette", 1) != 0);
 
@@ -373,9 +371,7 @@ static int Run(int argc, char* argv[])
       /*
       **	Check for override directory path for CD searches.
       */
-      std::array<char, 128> cd_path{};
-      conquer_ini.GetString("CD", "Path", ".", cd_path);
-      TheGameState().override_path() = cd_path.data();
+      TheGameState().override_path() = conquer_ini.GetString("CD", "Path", ".");
 #endif
 
       /*
@@ -508,11 +504,9 @@ void Read_Setup_Options(ByteStream& config_file,
 }
 
 bool MarkIntroPlayed(engine::file::IniFile& ini) {
-  // Compared as the reader in Run() does: the first three characters, without
-  // case.
-  char value[4];
-  ini.GetString("Intro", "PlayIntro", "Yes", value);
-  if (absl::EqualsIgnoreCase(value, "No")) {
+  // Compared as the reader in Run() does: without case.
+  if (absl::EqualsIgnoreCase(ini.GetString("Intro", "PlayIntro", "Yes"),
+                             "No")) {
     return false;
   }
   ini.PutString("Intro", "PlayIntro", "No");

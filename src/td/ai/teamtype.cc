@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -170,8 +171,6 @@ void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[500];        // INI entry buffer
-
   /*
   ----------------------- Loop for all team entries ------------------------
   */
@@ -187,12 +186,12 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     ......................... Get the team entry ..........................
     */
-    ini.GetString(INI_Name(), name, "", buf);
+    std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     .......................... Fill the team in ...........................
     */
-    team->Fill_In(name, buf);
+    team->Fill_In(name, entry.data());
   }
 
   /*
@@ -509,8 +508,6 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
-  char buf[256];        // INI entry buffer
-
   /*
   ----------------------- Loop for all team entries ------------------------
   */
@@ -531,12 +528,12 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     /*
     ......................... Get the team entry ..........................
     */
-    ini.GetString("Teams", name, "", buf);
+    std::string entry = ini.GetString("Teams", name, "");
 
     /*
     .......................... 1st token: House ...........................
     */
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(entry.data(), ",");
     team->House = HouseTypeClass::From_Name(tokens.Next());
 
     /*

@@ -70,7 +70,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
-#include <span>
 #include <string_view>
 
 #include "base/array.h"
@@ -494,45 +493,39 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   IsFreeScroll = ini.GetInt("Options", "FreeScrolling", 0) != 0;
   ThePalettes().set_slow_palette(ini.GetInt("Options", "SlowPalette", 1) != 0);
 
-  char workbuf[128];
-
   /*
   **	Check for and possible enable true object names.
   */
-  ini.GetString("Options", "TrueNames", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_TRUENAME) {
+  if (HashKeyPhrase(ini.GetString("Options", "TrueNames", "")) ==
+      PARM_TRUENAME) {
     TheSpecial().IsNamed = true;
   }
 
   /*
   **	Enable 6 player games if special flag is detected.
   */
-  ini.GetString("Options", "Players", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_6PLAYER) {
+  if (HashKeyPhrase(ini.GetString("Options", "Players", "")) == PARM_6PLAYER) {
     TheSession().max_players() = 6;
   }
 
   /*
   **	Enable three point turning logic as indicated.
   */
-  ini.GetString("Options", "Rotation", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_3POINT) {
+  if (HashKeyPhrase(ini.GetString("Options", "Rotation", "")) == PARM_3POINT) {
     TheSpecial().IsThreePoint = true;
   }
 
   /*
   **	Allow purchase of the helipad separately from the helicopter.
   */
-  ini.GetString("Options", "Helipad", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_HELIPAD) {
+  if (HashKeyPhrase(ini.GetString("Options", "Helipad", "")) == PARM_HELIPAD) {
     TheSpecial().IsSeparate = true;
   }
 
   /*
   **	Allow the MCV to undeploy rather than sell.
   */
-  ini.GetString("Options", "MCV", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_MCV) {
+  if (HashKeyPhrase(ini.GetString("Options", "MCV", "")) == PARM_MCV) {
     TheSpecial().IsMCVDeploy = true;
   }
 
@@ -540,16 +533,15 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   **	Allow disabling of building bibs so that tigher building packing can
   *occur.
   */
-  ini.GetString("Options", "Bibs", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_BIB) {
+  if (HashKeyPhrase(ini.GetString("Options", "Bibs", "")) == PARM_BIB) {
     TheSpecial().IsRoad = true;
   }
 
   /*
   **	Allow targeting of trees without having to hold down the shift key.
   */
-  ini.GetString("Options", "TreeTarget", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_TREETARGET) {
+  if (HashKeyPhrase(ini.GetString("Options", "TreeTarget", "")) ==
+      PARM_TREETARGET) {
     TheSpecial().IsTreeTarget = true;
   }
 
@@ -557,16 +549,14 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   **	Allow infantry to fire while moving. Attacker gets advantage with this
   *flag.
   */
-  ini.GetString("Options", "Combat", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_COMBAT) {
+  if (HashKeyPhrase(ini.GetString("Options", "Combat", "")) == PARM_COMBAT) {
     TheSpecial().IsDefenderAdvantage = false;
   }
 
   /*
   **	Allow custom scores.
   */
-  ini.GetString("Options", "Scores", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_SCORE) {
+  if (HashKeyPhrase(ini.GetString("Options", "Scores", "")) == PARM_SCORE) {
     TheSpecial().IsVariation = true;
   }
 
@@ -576,8 +566,7 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   *upon. Infantry will run from an *	incoming explosive (grenade or napalm)
   *or damage that can't be directly addressed.
   */
-  ini.GetString("Options", "CombatIQ", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_IQ) {
+  if (HashKeyPhrase(ini.GetString("Options", "CombatIQ", "")) == PARM_IQ) {
     TheSpecial().IsSmartDefense = true;
     TheSpecial().IsScatter = true;
   }
@@ -585,24 +574,22 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   /*
   **	Enable the infantry squish marks when run over by a vehicle.
   */
-  ini.GetString("Options", "Overrun", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_SQUISH) {
+  if (HashKeyPhrase(ini.GetString("Options", "Overrun", "")) == PARM_SQUISH) {
     TheSpecial().IsGross = true;
   }
 
   /*
   **	Enable the human generated sound effects.
   */
-  ini.GetString("Options", "Sounds", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_HUMAN) {
+  if (HashKeyPhrase(ini.GetString("Options", "Sounds", "")) == PARM_HUMAN) {
     TheSpecial().IsJuvenile = true;
   }
 
   /*
   **	Scrolling is disabled over the tabs with this option.
   */
-  ini.GetString("Options", "Scrolling", "", workbuf);
-  if (HashKeyPhrase(workbuf) == PARM_SCROLLING) {
+  if (HashKeyPhrase(ini.GetString("Options", "Scrolling", "")) ==
+      PARM_SCROLLING) {
     TheSpecial().IsScrollMod = true;
   }
 }

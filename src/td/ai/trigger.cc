@@ -69,7 +69,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -1083,8 +1083,6 @@ bool TriggerClass::Remove() {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];
-
   /*
   **	Loop for all trigger entries.
   */
@@ -1106,12 +1104,12 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get the trigger entry.
     */
-    ini.GetString(INI_Name(), name, "", buf);
+    std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In(name, buf);
+    trigger->Fill_In(name, entry.data());
 
     /*
     **	Add 'trigger' to the House's list.

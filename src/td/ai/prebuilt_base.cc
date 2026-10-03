@@ -58,21 +58,19 @@ bool IsOnMap(const Coordinate coord) {
 
 void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // The base belongs to whoever opposes the human player.
-  char player[20];
-  ini.GetString("BASIC", "Player", "GoodGuy", player);
-  house_ =
-      HouseTypeClass::From_Name(player) == HOUSE_GOOD ? HOUSE_BAD : HOUSE_GOOD;
+  const std::string player = ini.GetString("BASIC", "Player", "GoodGuy");
+  house_ = HouseTypeClass::From_Name(player.c_str()) == HOUSE_GOOD ? HOUSE_BAD
+                                                                   : HOUSE_GOOD;
 
   const int node_count = ini.GetInt(kIniSection, "Count", 0);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
-    char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    ini.GetString(kIniSection, entry, "", value);
+    std::string value = ini.GetString(kIniSection, entry, "");
 
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value.data(), ",");
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.

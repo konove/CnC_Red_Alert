@@ -139,6 +139,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -3491,8 +3492,6 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];
-
   /*
   **	Loop for all building entries.
   */
@@ -3502,12 +3501,12 @@ void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get a building entry.
     */
-    ini.GetString(INI_Name(), key, "", buf);
+    std::string value = ini.GetString(INI_Name(), key, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(value.data(), ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 

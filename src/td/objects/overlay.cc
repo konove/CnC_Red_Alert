@@ -53,7 +53,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
+#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -348,14 +348,12 @@ bool OverlayClass::Mark(MarkType mark) {
  *manual crates in multiplayer scenarios.              *
  *=============================================================================================*/
 void OverlayClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];
-
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(key, 0));
-    ini.GetString(INI_Name(), key, "", buf);
-    base::Tokenizer tokens(buf, ",\n\r");
+    std::string value = ini.GetString(INI_Name(), key, "");
+    base::Tokenizer tokens(value.data(), ",\n\r");
     const OverlayType classid = OverlayTypeClass::From_Name(tokens.Next());
 
     /*

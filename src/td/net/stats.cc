@@ -43,7 +43,6 @@
 
 #include "td/net/stats.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -55,6 +54,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/ini_file.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
@@ -277,9 +277,8 @@ void Send_Statistics_Packet() {
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     engine::file::IniFile scenario;
     LoadIniFile(fname, scenario);
-    scenario.GetString(
-        "Basic", "Name", "Nulls-Ville",
-        std::span(namebuffer).first(static_cast<std::size_t>(40)));
+    base::SafeCopy(namebuffer,
+                   scenario.GetString("Basic", "Name", "Nulls-Ville"));
     stats.Add_Field(FIELD_SCENARIO, namebuffer);
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 

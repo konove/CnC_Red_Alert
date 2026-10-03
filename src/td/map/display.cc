@@ -1093,9 +1093,8 @@ Cell DisplayClass::Click_Cell_Calc(int x, int y) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
-  char name[16];
   const char* trigsection = "CellTriggers";
-  char buf[20];  // trigger name for a cell
+  char buf[20];  // waypoint entry name
 
   /*
   **	Read the map dimensions.
@@ -1109,9 +1108,9 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
   **	is custom to this data. Load the custom data (as it related to terrain)
   **	at this point.
   */
-  ini.GetString("MAP", "Theater", Theaters.at(THEATER_DESERT).Name,
-                std::span(name).first(static_cast<std::size_t>(13)));
-  Theater = Theater_From_Name(name);
+  Theater = Theater_From_Name(
+      ini.GetString("MAP", "Theater", Theaters.at(THEATER_DESERT).Name)
+          .c_str());
 
   /*
   **	Now that the theater is known, init the entire map hierarchy
@@ -1171,7 +1170,7 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get a cell trigger assignment.
     */
-    ini.GetString(trigsection, key, "", buf);
+    const std::string trigger_name = ini.GetString(trigsection, key, "");
 
     /*
     **	Get cell # from entry name.
@@ -1183,7 +1182,7 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
       **	Assign trigger pointer using trigger name.
       */
       base::At(TheWorld().cell_triggers(), cell) =
-          TriggerClass::As_Pointer(buf);
+          TriggerClass::As_Pointer(trigger_name.c_str());
       if (base::At(TheWorld().cell_triggers(), cell)) {
         (*this).at(Cell::FromIndex(cell)).IsTrigger = true;
         if (base::At(TheWorld().cell_triggers(), cell)) {

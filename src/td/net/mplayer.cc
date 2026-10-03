@@ -434,7 +434,6 @@ static int ValidInitStringIndex(const int index) {
 }
 
 void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
-  char buf[128];           // buffer for parsing INI entry
   int i = 0;
 
   /*------------------------------------------------------------------------
@@ -451,8 +450,8 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     /*------------------------------------------------------------------------
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/
-    ini.GetString("MultiPlayer", "Handle", "Noname",
-                  TheSession().player_name());
+    base::SafeCopy(TheSession().player_name(),
+                   ini.GetString("MultiPlayer", "Handle", "Noname"));
 
     /*------------------------------------------------------------------------
     Get the player's last-used Color
@@ -471,16 +470,15 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   /*------------------------------------------------------------------------
   Read in default serial settings
   ------------------------------------------------------------------------*/
-  ini.GetString("SerialDefaults", "ModemName", "NoName",
-                std::span(TheNetwork().serial_defaults().ModemName)
-                    .first(static_cast<std::size_t>(MODEM_NAME_MAX)));
+  base::SafeCopy(std::span(TheNetwork().serial_defaults().ModemName)
+                     .first(static_cast<std::size_t>(MODEM_NAME_MAX)),
+                 ini.GetString("SerialDefaults", "ModemName", "NoName"));
   if ((std::string_view(TheNetwork().serial_defaults().ModemName) ==
        "NoName")) {
     base::At(TheNetwork().serial_defaults().ModemName, 0) = 0;
   }
-  ini.GetString("SerialDefaults", "Port", "0",
-                std::span(buf).first(static_cast<std::size_t>(5)));
-  if (const auto value = base::ParseHex<int>(buf)) {
+  if (const auto value =
+          base::ParseHex<int>(ini.GetString("SerialDefaults", "Port", "0"))) {
     TheNetwork().serial_defaults().Port = *value;
   }
   TheNetwork().serial_defaults().IRQ = ini.GetInt("SerialDefaults", "IRQ", -1);
@@ -494,14 +492,15 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
       ini.GetInt("SerialDefaults", "ErrorCorrection", 0) != 0;
   TheNetwork().serial_defaults().HardwareFlowControl =
       ini.GetInt("SerialDefaults", "HardwareFlowControl", 1) != 0;
-  ini.GetString("SerialDefaults", "DialMethod", "T",
-                std::span(buf).first(static_cast<std::size_t>(2)));
+  // Only the first character names the method.
+  const std::string dial_method =
+      ini.GetString("SerialDefaults", "DialMethod", "T").substr(0, 1);
 
   // find dial method
 
   for (i = 0; i < kDialMethods; i++) {
     if (absl::EqualsIgnoreCase(
-            buf, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
+            dial_method, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
       TheNetwork().serial_defaults().DialMethod =
           static_cast<DialMethodType>(i);
       break;
@@ -520,9 +519,9 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   TheNetwork().serial_defaults().CallWaitStringIndex =
       ini.GetInt("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
 
-  ini.GetString("SerialDefaults", "CallWaitString", "",
-                std::span(TheNetwork().serial_defaults().CallWaitString)
-                    .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)));
+  base::SafeCopy(std::span(TheNetwork().serial_defaults().CallWaitString)
+                     .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)),
+                 ini.GetString("SerialDefaults", "CallWaitString", ""));
 
   if (TheNetwork().serial_defaults().IRQ == 0 ||
       TheNetwork().serial_defaults().Baud == 0) {
@@ -540,8 +539,9 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry.get(), INITSTRBUF_MAX);
 
-    ini.GetString("InitStrings", ini.EntryName("InitStrings", index), "",
-                  entry_storage);
+    base::SafeCopy(
+        entry_storage,
+        ini.GetString("InitStrings", ini.EntryName("InitStrings", index), ""));
 
     std::ranges::transform(base::MutableCString(entry.get()), entry.get(),
                            absl::ascii_toupper);
@@ -576,13 +576,13 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "",
-                  std::span(buf).first(static_cast<std::size_t>(128)));
+    std::string listing =
+        ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
 
     /*.....................................................................
     Extract name, phone # & serial port settings
     .....................................................................*/
-    base::Tokenizer tokens(buf, "|");
+    base::Tokenizer tokens(listing.data(), "|");
     char* tokenptr = tokens.Next();  // ptr to token
     if (tokenptr) {
       base::SafeCopy(phone->Name, tokenptr);
@@ -649,13 +649,12 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      base::SafeCopy(buf, tokenptr);
-
       // find dial method
 
       for (i = 0; i < kDialMethods; i++) {
         if (absl::EqualsIgnoreCase(
-                buf, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
+                tokenptr,
+                kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
           phone->Settings.DialMethod = static_cast<DialMethodType>(i);
           break;
         }
@@ -707,32 +706,28 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
 
     TheDebugState().trap_object_type() = static_cast<RTTIType>(
         ini.GetInt("SyncBug", "Type", static_cast<int>(RTTI_NONE)));
-    ini.GetString("SyncBug", "Type", "NONE",
-                  std::span(buf).first(static_cast<std::size_t>(80)));
-    if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
+    const std::string type_name = ini.GetString("SyncBug", "Type", "NONE");
+    if (absl::EqualsIgnoreCase(type_name, "AIRCRAFT")) {
       TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
-    } else if (absl::EqualsIgnoreCase(buf, "ANIM")) {
+    } else if (absl::EqualsIgnoreCase(type_name, "ANIM")) {
       TheDebugState().trap_object_type() = RTTI_ANIM;
-    } else if (absl::EqualsIgnoreCase(buf, "BUILDING")) {
+    } else if (absl::EqualsIgnoreCase(type_name, "BUILDING")) {
       TheDebugState().trap_object_type() = RTTI_BUILDING;
-    } else if (absl::EqualsIgnoreCase(buf, "BULLET")) {
+    } else if (absl::EqualsIgnoreCase(type_name, "BULLET")) {
       TheDebugState().trap_object_type() = RTTI_BULLET;
-    } else if (absl::EqualsIgnoreCase(buf, "INFANTRY")) {
+    } else if (absl::EqualsIgnoreCase(type_name, "INFANTRY")) {
       TheDebugState().trap_object_type() = RTTI_INFANTRY;
-    } else if (absl::EqualsIgnoreCase(buf, "UNIT")) {
+    } else if (absl::EqualsIgnoreCase(type_name, "UNIT")) {
       TheDebugState().trap_object_type() = RTTI_UNIT;
     } else {
       TheDebugState().trap_object_type() = RTTI_NONE;
     }
 
-    ini.GetString("SyncBug", "Coord", "0",
-                  std::span(buf).first(static_cast<std::size_t>(80)));
-    TheDebugState().trap_coord() =
-        Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
+    TheDebugState().trap_coord() = Coordinate::FromPacked(
+        base::ParseHexOr<uint32_t>(ini.GetString("SyncBug", "Coord", "0"), 0));
 
-    ini.GetString("SyncBug", "this", "0",
-                  std::span(buf).first(static_cast<std::size_t>(80)));
-    if (const auto trap_this = base::ParseHex<uintptr_t>(buf)) {
+    if (const auto trap_this =
+            base::ParseHex<uintptr_t>(ini.GetString("SyncBug", "this", "0"))) {
       TheDebugState().trap_this() = std::bit_cast<void*>(*trap_this);
     }
   }
@@ -894,9 +889,8 @@ void Read_Scenario_Descriptions() {
     /*.....................................................................
     Extract description & add it to the list.
     .....................................................................*/
-    scenario.GetString("Basic", "Name", "Nulls-Ville",
-                       std::span(base::At(mplayer_descriptions, i))
-                           .first(static_cast<std::size_t>(40)));
+    base::SafeCopy(base::At(mplayer_descriptions, i),
+                   scenario.GetString("Basic", "Name", "Nulls-Ville"));
     TheSession().scenarios().push_back(base::At(mplayer_descriptions, i));
   }
 }

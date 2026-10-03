@@ -59,7 +59,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -125,15 +125,13 @@ int TemplateClass::Validate() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];  // Working string staging buffer.
-
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(
         base::ParseIntegerOr<int16_t>(key, 0));  // Cell of building.
-    ini.GetString(INI_Name(), key, "", buf);
-    base::Tokenizer tokens(buf, ",\r\n");
+    std::string value = ini.GetString(INI_Name(), key, "");
+    base::Tokenizer tokens(value.data(), ",\r\n");
     const TemplateType temp =
         TemplateTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (temp != TEMPLATE_NONE) {

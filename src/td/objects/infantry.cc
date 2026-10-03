@@ -117,6 +117,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -3081,8 +3082,6 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
-  char buf[128];
-
   /*------------------------------------------------------------------------
   Loop for all infantry entries
   ------------------------------------------------------------------------*/
@@ -3092,12 +3091,12 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get an infantry entry
     */
-    ini.GetString(INI_Name(), key, "", buf);
+    std::string value = ini.GetString(INI_Name(), key, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(buf, ",\n\r");
+    base::Tokenizer tokens(value.data(), ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
