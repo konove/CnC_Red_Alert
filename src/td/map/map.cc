@@ -78,7 +78,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/region.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -1211,10 +1210,8 @@ int MapClass::Cell_Region(Cell cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(Cell cell, HousesType house) {
-  int threat =
-      base::At(HouseClass::As_Pointer(house)->Regions,
-               MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
-          .Threat_Value();
+  int threat = HouseClass::As_Pointer(house)->RegionThreatAt(
+      MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()));
   if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;
   }

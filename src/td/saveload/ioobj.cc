@@ -273,7 +273,7 @@ void HouseClass::Serialize(Archive& ar) {
      Power, Drain, Edge, AircraftFactory, InfantryFactory, UnitFactory,
      BuildingFactory, SpecialFactory, FlagLocation, FlagHome, remap_id,
      RemapColor, Color, BrightColor, Name, UnitsKilled, UnitsLost,
-     BuildingsKilled, BuildingsLost, WhoLastHurtMe, Regions, BlitzTime,
+     BuildingsKilled, BuildingsLost, WhoLastHurtMe, RegionThreat, BlitzTime,
      NukeDest, Allies, DamageTime, TeamTime, TriggerTime, SpeakAttackDelay,
      SpeakPowerDelay, SpeakMoneyDelay, SpeakMaxedDelay);
   if constexpr (Archive::kIsReading) {

@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
 #define CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -53,7 +54,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/utracker.h"
-#include "td/ai/region.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/objects/object.h"
@@ -491,7 +491,12 @@ class HouseClass {
   }
   void Begin_Production() { IsStarted = true; }
   const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  // Adds `threat` to `region` and a share of it to the eight regions around
+  // it; negative when an object leaves.
   void Adjust_Threat(int region, int threat);
+  // The threat this house sees in `region`; 0 when no enemy object is in or
+  // next to it.
+  [[nodiscard]] int RegionThreatAt(int region) const;
 
   static void Init();
   static void One_Time();
@@ -529,11 +534,21 @@ class HouseClass {
   // one_time_effect = false);
   [[nodiscard]] bool Has_Nuke_Device() const;
 
-  /*
-  **	This vector holds the recorded status of the map regions. It is through
-  **	this region information that team paths are calculated.
-  */
-  RegionClass Regions[MAP_TOTAL_REGIONS]{};
+  // The threat this house sees in each map region: the summed risk ratings of
+  // the other houses' ground objects standing in the region, plus half of
+  // those in the regions beside it and a quarter of those diagonal to it
+  // (Adjust_Threat() does the spreading). A computer house counts every other
+  // house's objects, a human house only those it is not allied with
+  // (CellClass::Adjust_Threat()). Path finding and team routing read it
+  // through MapClass::Cell_Threat() to steer around defended ground.
+  //
+  // Only the campaign tracks threat; in a multiplayer game every region stays
+  // 0. An object adds its rating when it is placed on the map and subtracts
+  // the same amount when it is lifted, so the two calls must be given equal
+  // amounts or a region drifts.
+  //
+  // Saved as 64 bits, though the sum of a map's worth of ratings fits an int.
+  std::array<int64_t, kMapTotalRegions> RegionThreat{};
 
 #ifdef OBSOLETE
   /*

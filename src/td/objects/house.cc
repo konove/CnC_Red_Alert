@@ -139,7 +139,6 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
@@ -158,7 +157,6 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "td/ai/prebuilt_base.h"
-#include "td/ai/region.h"
 #include "td/ai/reinf.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -466,8 +464,7 @@ HouseClass::HouseClass(HousesType house)
   UnitFactories = 0;
   UnitFactory = -1;
   UScan = 0;
-  base::FillBytes(std::as_writable_bytes(base::Suffix(Regions, 0)), 0x00,
-                  sizeof(Regions));
+  RegionThreat.fill(0);
 
   Init_Trackers();
 }
@@ -2071,19 +2068,17 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   // Divisor of the threat for each neighbor: quarter diagonally, half
   // orthogonally, full in the center.
   static const int _thr[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
-  bool neg = false;
 
-  if (threat < 0) {
-    threat = -threat;
-    neg = true;
-  } else {
-    neg = false;
-  }
-
+  // Division truncates toward zero, so lifting an object takes away exactly
+  // the shares that placing it added.
   for (int lp = 0; lp < 9; lp++) {
-    base::At(Regions, region + base::At(_val, lp))
-        .Adjust_Threat(threat / base::At(_thr, lp), neg);
+    base::At(RegionThreat, region + base::At(_val, lp)) +=
+        threat / base::At(_thr, lp);
   }
+}
+
+int HouseClass::RegionThreatAt(const int region) const {
+  return static_cast<int>(base::At(RegionThreat, region));
 }
 
 /***********************************************************************************************

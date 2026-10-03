@@ -16,7 +16,6 @@
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "gtest/gtest.h"
-#include "td/ai/region.h"
 #include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
@@ -316,19 +315,6 @@ TEST(TdSaveValuesTest,
   ArchiveReader reader(source);
   reader(loaded);
   EXPECT_FALSE(reader.ok());
-}
-
-TEST(TdSaveValuesTest, RegionPreservesWideAndNegativeThreat) {
-  for (int64_t threat :
-       {int64_t{1} * 1024 * 1024 * 1024 * 1024, int64_t{-17}}) {
-    std::array<uint8_t, 64> bytes{};
-    SpanSink sink(std::as_writable_bytes(std::span(bytes)));
-    ArchiveWriter writer(sink);
-    writer(threat);
-    RegionClass region;
-    Restore(region, bytes);
-    EXPECT_EQ(Save(region), bytes);
-  }
 }
 
 TEST(TdSaveValuesTest, SuperweaponResumesPartialChargeAtRestoredFrame) {

@@ -248,7 +248,7 @@ static_assert(MAP_CELL_TOTAL <= INT16_MAX);
   (((MAP_CELL_W + (REGION_WIDTH - 1)) / REGION_WIDTH) + 2)
 #define MAP_REGION_HEIGHT \
   (((MAP_CELL_H + (REGION_WIDTH - 1)) / REGION_HEIGHT) + 2)
-#define MAP_TOTAL_REGIONS (MAP_REGION_WIDTH * MAP_REGION_HEIGHT)
+inline constexpr int kMapTotalRegions = MAP_REGION_WIDTH * MAP_REGION_HEIGHT;
 
 // These are the special weapons that can be used in the game. The common thread
 // with these weapons is that they are controlled through the sidebar mechanism.
