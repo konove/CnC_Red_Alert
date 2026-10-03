@@ -54,34 +54,34 @@ Carryover::Carryover(const TechnoClass& techno)
       type_.vessel = dynamic_cast<const VesselClass&>(techno).Class->Type;
       break;
 
-    case RTTIType::RTTI_NONE:
-    case RTTIType::RTTI_AIRCRAFT:
-    case RTTIType::RTTI_AIRCRAFTTYPE:
-    case RTTIType::RTTI_ANIM:
-    case RTTIType::RTTI_ANIMTYPE:
-    case RTTIType::RTTI_BUILDINGTYPE:
-    case RTTIType::RTTI_BULLET:
-    case RTTIType::RTTI_BULLETTYPE:
-    case RTTIType::RTTI_CELL:
-    case RTTIType::RTTI_FACTORY:
-    case RTTIType::RTTI_HOUSE:
-    case RTTIType::RTTI_HOUSETYPE:
-    case RTTIType::RTTI_INFANTRYTYPE:
-    case RTTIType::RTTI_OVERLAY:
-    case RTTIType::RTTI_OVERLAYTYPE:
-    case RTTIType::RTTI_SMUDGE:
-    case RTTIType::RTTI_SMUDGETYPE:
-    case RTTIType::RTTI_SPECIAL:
-    case RTTIType::RTTI_TEAM:
-    case RTTIType::RTTI_TEAMTYPE:
-    case RTTIType::RTTI_TEMPLATE:
-    case RTTIType::RTTI_TEMPLATETYPE:
-    case RTTIType::RTTI_TERRAIN:
-    case RTTIType::RTTI_TERRAINTYPE:
-    case RTTIType::RTTI_TRIGGER:
-    case RTTIType::RTTI_TRIGGERTYPE:
-    case RTTIType::RTTI_UNITTYPE:
-    case RTTIType::RTTI_VESSELTYPE:
+    case RTTI_NONE:
+    case RTTI_AIRCRAFT:
+    case RTTI_AIRCRAFTTYPE:
+    case RTTI_ANIM:
+    case RTTI_ANIMTYPE:
+    case RTTI_BUILDINGTYPE:
+    case RTTI_BULLET:
+    case RTTI_BULLETTYPE:
+    case RTTI_CELL:
+    case RTTI_FACTORY:
+    case RTTI_HOUSE:
+    case RTTI_HOUSETYPE:
+    case RTTI_INFANTRYTYPE:
+    case RTTI_OVERLAY:
+    case RTTI_OVERLAYTYPE:
+    case RTTI_SMUDGE:
+    case RTTI_SMUDGETYPE:
+    case RTTI_SPECIAL:
+    case RTTI_TEAM:
+    case RTTI_TEAMTYPE:
+    case RTTI_TEMPLATE:
+    case RTTI_TEMPLATETYPE:
+    case RTTI_TERRAIN:
+    case RTTI_TERRAINTYPE:
+    case RTTI_TRIGGER:
+    case RTTI_TRIGGERTYPE:
+    case RTTI_UNITTYPE:
+    case RTTI_VESSELTYPE:
     default:
       break;
   }
@@ -106,34 +106,34 @@ void Carryover::Recreate() const {
     case RTTI_VESSEL:
       techno = base::NewPooled<VesselClass>(type_.vessel, house_);
       break;
-    case RTTIType::RTTI_NONE:
-    case RTTIType::RTTI_AIRCRAFT:
-    case RTTIType::RTTI_AIRCRAFTTYPE:
-    case RTTIType::RTTI_ANIM:
-    case RTTIType::RTTI_ANIMTYPE:
-    case RTTIType::RTTI_BUILDINGTYPE:
-    case RTTIType::RTTI_BULLET:
-    case RTTIType::RTTI_BULLETTYPE:
-    case RTTIType::RTTI_CELL:
-    case RTTIType::RTTI_FACTORY:
-    case RTTIType::RTTI_HOUSE:
-    case RTTIType::RTTI_HOUSETYPE:
-    case RTTIType::RTTI_INFANTRYTYPE:
-    case RTTIType::RTTI_OVERLAY:
-    case RTTIType::RTTI_OVERLAYTYPE:
-    case RTTIType::RTTI_SMUDGE:
-    case RTTIType::RTTI_SMUDGETYPE:
-    case RTTIType::RTTI_SPECIAL:
-    case RTTIType::RTTI_TEAM:
-    case RTTIType::RTTI_TEAMTYPE:
-    case RTTIType::RTTI_TEMPLATE:
-    case RTTIType::RTTI_TEMPLATETYPE:
-    case RTTIType::RTTI_TERRAIN:
-    case RTTIType::RTTI_TERRAINTYPE:
-    case RTTIType::RTTI_TRIGGER:
-    case RTTIType::RTTI_TRIGGERTYPE:
-    case RTTIType::RTTI_UNITTYPE:
-    case RTTIType::RTTI_VESSELTYPE:
+    case RTTI_NONE:
+    case RTTI_AIRCRAFT:
+    case RTTI_AIRCRAFTTYPE:
+    case RTTI_ANIM:
+    case RTTI_ANIMTYPE:
+    case RTTI_BUILDINGTYPE:
+    case RTTI_BULLET:
+    case RTTI_BULLETTYPE:
+    case RTTI_CELL:
+    case RTTI_FACTORY:
+    case RTTI_HOUSE:
+    case RTTI_HOUSETYPE:
+    case RTTI_INFANTRYTYPE:
+    case RTTI_OVERLAY:
+    case RTTI_OVERLAYTYPE:
+    case RTTI_SMUDGE:
+    case RTTI_SMUDGETYPE:
+    case RTTI_SPECIAL:
+    case RTTI_TEAM:
+    case RTTI_TEAMTYPE:
+    case RTTI_TEMPLATE:
+    case RTTI_TEMPLATETYPE:
+    case RTTI_TERRAIN:
+    case RTTI_TERRAINTYPE:
+    case RTTI_TRIGGER:
+    case RTTI_TRIGGERTYPE:
+    case RTTI_UNITTYPE:
+    case RTTI_VESSELTYPE:
     default:
       break;
   }
