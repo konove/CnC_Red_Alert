@@ -530,6 +530,35 @@
   - Replace `PaletteClass::COLOR_COUNT` (`ra/assets/palette.h:50`) with
     `engine::gfx::Palette::kColorCount`, which it aliases
 
+- Leftovers from the `game/core/cell_size.h` modernization (`c0677e15..d6422369`, formerly
+  `display_constants.h`)
+  - Decide whether cells need separate width and height constants. `kCellWidthPixels` /
+    `kCellHeightPixels` are both 24 and `kCellWidthLeptons` / `kCellHeightLeptons` both 256, and the
+    code already assumes a square cell (`kLeptonsPerPixel` is used on both axes). One `kCellPixels`
+    and one `kCellLeptons` would rewrite the 102 uses of the two height constants; the pairs do say
+    which axis a line measures. The alternative spelling `kCellPixelWidth` was also considered for
+    the current names
+  - `Cell::kLeptonsPerCell = 256` (`ra/core/cell.h:104`, `td/core/cell.h:118`, the latter
+    `unsigned`) repeats `game::kCellWidthLeptons`. Define it from the shared constant, or leave the
+    value classes free of the include; `cell.h` is included almost everywhere
+  - `kLeptonsPerPixel` is 256/24 truncated to 10 (exact 10.67). `DriveClass` track stepping
+    (`ra/objects/drive.cc:616-650`, `td/objects/drive.cc:621-654`), `FlyClass` (`fly.cc:77`, `79`)
+    and RA's `combat.cc:138-140` rely on it, so it is shipped simulation behaviour; changing it
+    desyncs. Recorded only so nobody "fixes" it
+  - `ra/core/coord.cc:195-196` and `td/core/inline.h:23,34` convert leptons to pixels by hand,
+    truncating, where `Lepton_To_Pixel()` / `Pixel_To_Lepton()` round. Check whether the difference
+    is wanted before sharing the helper; a change moves what is drawn or refreshed by one pixel
+  - Turn the macro constants `EDGE_ZONE` (`ra/map/display.cc:1603`, `td/map/display.cc:1636`) and
+    `THREAT_THRESHOLD` (`ra/map/findpath.cc:127`, `td/map/findpath.cc:120`) into `constexpr`
+    constants. Expect clang-tidy findings in the expressions that use them: macros hide their
+    expansions from it, and this run uncovered `>> 1` on signed values and mergeable nested ifs that
+    way
+  - Delete the commented-out code that mentions the cell sizes: `ra/objects/combat.cc:202`,
+    `ra/objects/techno.cc:1951-1953`, `td/map/display.cc:2593-2594`, `td/map/power.cc:183`,
+    `td/objects/drive.cc:883`, `td/objects/techno.cc:1342` (`/remove-dead-code` on each file)
+  - `td/map/findpath.cc` may have the nested ifs that were merged in Red Alert's path cost check
+    (`c6404158`); it was not flagged, so compare the two by hand
+
 ## Testing
 
 - Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
