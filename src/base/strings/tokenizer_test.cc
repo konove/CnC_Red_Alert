@@ -19,6 +19,14 @@ TEST(TokenizerTest, SplitsFieldsAndLeavesTheTextUntouched) {
   EXPECT_EQ(text, "GDI,E1,256");
 }
 
+TEST(TokenizerTest, SplitsOnCommasByDefault) {
+  base::Tokenizer tokens("GDI,E1 E2,256");
+  EXPECT_EQ(tokens.Next(), "GDI");
+  EXPECT_EQ(tokens.Next(), "E1 E2");
+  EXPECT_EQ(tokens.Next(), "256");
+  EXPECT_TRUE(tokens.Next().empty());
+}
+
 TEST(TokenizerTest, TokensAreViewsIntoTheText) {
   const std::string_view text = "a,bc";
   base::Tokenizer tokens(text, ",");

@@ -10,7 +10,7 @@
 //
 // Example:
 //   const std::string entry = ini.GetString("INFANTRY", "000");
-//   base::Tokenizer tokens(entry, ",");
+//   base::Tokenizer tokens(entry);
 //   const HousesType house = HouseTypeClass::From_Name(tokens.Next());
 //   const InfantryType type = InfantryTypeClass::From_Name(tokens.Next());
 //   const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
@@ -26,10 +26,12 @@ namespace base {
 
 class Tokenizer {
  public:
-  // Splits `text` on any character in `delimiters`. The characters of both
-  // must outlive the tokenizer and the tokens it returns.
-  Tokenizer(std::string_view text ABSL_ATTRIBUTE_LIFETIME_BOUND,
-            std::string_view delimiters ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  // Splits `text` on any character in `delimiters`, by default the comma that
+  // separates INI fields. The characters of both must outlive the tokenizer
+  // and the tokens it returns.
+  explicit Tokenizer(
+      std::string_view text ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      std::string_view delimiters ABSL_ATTRIBUTE_LIFETIME_BOUND = ",");
 
   // Returns the next token, or an empty view once none remain. A token is
   // never empty, and it is not NUL-terminated. Once an empty view has been
