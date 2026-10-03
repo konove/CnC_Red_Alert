@@ -217,6 +217,20 @@
     recorded game can diverge), or leave it and replace the TODO with a comment saying why
   - Found in the carryover modernization (`9931845f`..`fe837a37`); Tiberian Dawn has no carryover
     objects
+- Check whether a captured object leaves stale threat in the houses' regions
+  - An object adds its `Risk()` to the other houses' `Region`s on `MARK_DOWN` and subtracts it on
+    `MARK_UP` (`ra/objects/object.cc:1668,1682`, via `CellClass::Adjust_Threat()` in
+    `ra/objects/cell.cc:1710`), and each call reads `Owner()` and the alliances afresh.
+    `TechnoClass::Captured()` (`ra/objects/techno.cc:4047`) changes the owner without lifting the
+    object, so the later `MARK_UP` skips the new owner and subtracts from the old one, which never
+    had the amount added: the new owner keeps the threat for good and the old owner's region goes
+    negative. A human house whose alliances change while objects are down drifts the same way. Not
+    traced to the end: confirm with a campaign capture and a dump of `HouseClass::Regions`
+  - Only the campaign tracks threat (`GAME_NORMAL`), where it steers `findpath.cc:1324` and
+    `team.cc:567`. A fix (adjust the regions around the owner change in `Captured()`, about 10
+    lines) changes computer path choices, so it is a simulation change to decide on
+  - Tiberian Dawn has the same code (`td/objects/object.cc:1396,1409`). Found in the region
+    modernization (`805bd6ba`..`1ad6409d`)
 
 ## Features
 
@@ -704,6 +718,22 @@
   - The four loops that record the carryover objects in `ra/ai/scenario.cc:950-987` differ only in
     the heap they walk; one helper templated on the heap would replace them (about 30 lines less)
   - Left by the carryover modernization (`9931845f`..`fe837a37`)
+- Run the region modernization on Tiberian Dawn's `td/ai/region.h`, or fold `Region` away
+  - Red Alert's pass (`805bd6ba`..`1ad6409d`) renamed `RegionClass` to `Region`, dropped the
+    uncalled `Reset_Threat()` and byte-wise comparison operators, and made `AdjustThreat()` take a
+    signed delta. `td/ai/region.h` is the same file before the pass; its users are
+    `td/objects/house.h:536`, `house.cc:469,2084`, `td/map/map.cc:1217` and
+    `td/saveload/savevalues_test.cc:328`. `/modernize-file src/td/ai/region.h`, about 60 lines
+  - `Region` (`ra/ai/region.h`) is now a wrapper around one `int64_t`. Alternative to keeping it:
+    make `HouseClass::Regions` a `std::array<int64_t, kMapTotalRegions>` of threat values (same save
+    bytes) and delete the header; touches `ra/objects/house.h:850`, `house.cc:2197`,
+    `ra/map/map.cc:1311` and `ra/saveload/ioobj.cc:589`. If it stays, `RegionThreat` was the other
+    name considered, since threat is all it holds
+  - `threat_` is saved as 64 bits and read through `static_cast<int>` in `Region::threat()`; making
+    it an `int` changes the save format (a `kSaveGameVersion` bump)
+  - `HouseClass::Adjust_Threat()` (`ra/objects/house.cc:2197`) keeps its Westwood banner and the
+    `static const` tables `_val`/`_div`, which could be `constexpr kNeighborOffsets`/
+    `kNeighborDivisors`; it belongs to a pass over `house.cc`
 
 ## Testing
 
