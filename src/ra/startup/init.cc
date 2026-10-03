@@ -1088,10 +1088,7 @@ bool Select_Game(bool /*fade*/) {
       break;
     case GAME_INTERNET:
       if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
-        //				debugprint( "pWolapi is
-        // null on internet
-        // game!" );
-        Fatal("pWolapi is null on internet game!");
+        LOG(FATAL) << "Internet game without a WOLAPI object";
       }
       // if( pWolapi->bEnableNewAftermathUnits )
       if (TheSession().IsAftermath) {

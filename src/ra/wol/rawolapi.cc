@@ -56,7 +56,6 @@
 #include "ra/assets/installation.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/world.h"
@@ -570,16 +569,10 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
           if (!pUserPrevious) {
             //	Head of list is being removed.
             pUserList = pUserSearch->next;
-            if (!pUserList) {
-              //	This means all entries were removed. Can't happen, as
-              // you are still there.
-              //							debugprint(
-              //"This means all entries were removed. Can't happen, as you are
-              // still there. (OnChannelLeave)\n" );
-              Fatal(
-                  "This means all entries were removed. Can't happen, as you "
-                  "are still there. (OnChannelLeave)\n");
-            }
+            // The local user is still in the channel, so another entry must
+            // remain.
+            CHECK(pUserList != nullptr)
+                << "OnChannelLeave removed the last user from the channel list";
           } else {
             pUserPrevious->next = pUserSearch->next;
             if (!pUserPrevious->next) {

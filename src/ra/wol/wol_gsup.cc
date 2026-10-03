@@ -66,7 +66,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -2486,9 +2485,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
             TheGameState().disable_msgbox() = true;
           }
         } else {
-          //				debugprint( "Impossible arose on
-          // WOL_GAMEOPT_INFSTART.\n" );
-          Fatal("Impossible arose on WOL_GAMEOPT_INFSTART.\n");
+          LOG(FATAL) << "Guest received WOL_GAMEOPT_INFSTART with no game host";
         }
         PlaySoundEffect(VOC_GAME_CLOSED);
         break;
@@ -2525,11 +2522,8 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
       case WOL_GAMEOPT::WOL_GAMEOPT_REQSTART:
       case WOL_GAMEOPT::WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       default:
-        //			debugprint( "Unhandled value of %i in
-        // ProcessInform!!!\n", opt ); WOL_PrintMessage( *pILDisc, "Error -
-        // Unhandled value in ProcessInform!!!", WOLCOLORREMAP_LOCALMACHINEMESS
-        // );
-        Fatal("Error - Unhandled value in ProcessInform!");
+        LOG(FATAL) << "Unhandled game option " << static_cast<int>(opt)
+                   << " in ProcessInform";
     }
   }
   //	debugprint( "* END of ProcessInform: '%s'\n", szInform );

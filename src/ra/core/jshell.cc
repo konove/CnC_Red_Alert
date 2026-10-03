@@ -35,7 +35,7 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * Build_Translucent_Table -- Creates a translucent control table.
  ** Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
- *only.            * Fatal -- General purpose fatal error handler. *
+ *only.            *
  *   Load_Uncompress -- Loads and uncompresses data to a buffer. * Set_Window --
  *Sets the window dimensions to that specified.                               *
  *   Small_Icon -- Create a small icon from a big one. * Translucent_Table_Size
@@ -48,14 +48,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string_view>
 #include <utility>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -69,7 +65,6 @@
 #include "engine/stream/seek_origin.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/palette.h"
-#include "ra/startup/startup.h"
 
 namespace ra {
 
@@ -141,30 +136,6 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowHeight) = h;
   base::At(base::At(WindowList, window), kWindowX) = x;
   base::At(base::At(WindowList, window), kWindowY) = y;
-}
-
-/***********************************************************************************************
- * Fatal -- General purpose fatal error handler. *
- *                                                                                             *
- *    This is a very simple general purpose fatal error handler. It goes
- *directly to text      * mode, prints the error, and then aborts with a failure
- *code.                             *
- *                                                                                             *
- * INPUT:   message  -- The text message to display. *
- *                                                                                             *
- *          ...      -- Any optional parameters that are used in formatting the
- *message.       *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine never returns. The game exits immediately. *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void Fatal_Message(const std::string_view message) {
-  // ShutDownEngine();
-  absl::FPrintF(stderr, "%s", message);
-  EmergencyExit(EXIT_FAILURE);
 }
 
 /***********************************************************************************************

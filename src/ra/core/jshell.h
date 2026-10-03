@@ -46,7 +46,6 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/strings/str_format.h"
 #include "base/types.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/palette.h"
@@ -91,15 +90,6 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
                                            std::span<unsigned char> dest
                                                ABSL_ATTRIBUTE_LIFETIME_BOUND,
                                            int color, int frac);
-
-// Prints `format` with `args`, checked at compile time, to stderr and the
-// mono page, then exits with a failure code.
-[[noreturn]] void Fatal_Message(std::string_view message);
-template <typename... Args>
-[[noreturn]] void Fatal(const absl::FormatSpec<Args...>& format,
-                        const Args&... args) {
-  Fatal_Message(absl::StrFormat(format, args...));
-}
 
 }  // namespace ra
 
