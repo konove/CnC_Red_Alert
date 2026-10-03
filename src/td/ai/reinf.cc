@@ -735,7 +735,6 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       obj->Commence();
     } else {
       base::DeletePooled(obj);
-      sub--;
       return sub;
     }
   }
