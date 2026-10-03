@@ -125,6 +125,18 @@ TEST(ArchiveTest, CharArraysAreRawBytesAndOtherArraysElementWise) {
   EXPECT_EQ(rvalues[2], 3);
 }
 
+TEST(ArchiveTest, StdArraysMatchBuiltInArrays) {
+  std::array<int64_t, 2> values = {1, -2};
+  int64_t plain[2] = {1, -2};
+  const auto bytes = WriteWith([&](auto& ar) { ar(values); });
+  EXPECT_EQ(bytes, WriteWith([&](auto& ar) { ar(plain); }));
+  EXPECT_EQ(bytes.size(), 16U);
+
+  std::array<int64_t, 2> loaded = {};
+  EXPECT_TRUE(ReadWith(bytes, [&](auto& ar) { ar(loaded); }));
+  EXPECT_EQ(loaded, values);
+}
+
 struct Point {
   int32_t x = 0;
   int32_t y = 0;

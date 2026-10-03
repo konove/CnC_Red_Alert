@@ -21,6 +21,7 @@
 // may be interleaved with archive calls on the same chain.
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <concepts>
 #include <cstddef>
@@ -42,6 +43,13 @@
 // instead.
 template <class T>
 concept ArchiveScalar = std::integral<T> || std::is_enum_v<T>;
+
+// True for std::array<T, N>, which the archive walks element by element like
+// a built-in array.
+template <class T>
+inline constexpr bool kIsStdArray = false;
+template <class T, std::size_t N>
+inline constexpr bool kIsStdArray<std::array<T, N>> = true;
 
 // Packs a four-character tag into the uint32_t written by Section().
 constexpr uint32_t FourCC(const char (&tag)[5]) {
@@ -93,6 +101,11 @@ class ArchiveBase {
         for (auto& element : value) {
           Field(element);
         }
+      }
+    } else if constexpr (kIsStdArray<V>) {
+      // The same bytes as a built-in array: no length prefix.
+      for (auto& element : value) {
+        Field(element);
       }
     } else if constexpr (std::same_as<V, bool>) {
       uint8_t byte = 0;
