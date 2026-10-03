@@ -422,6 +422,17 @@ void Read_MultiPlayer_Settings() {
   ReadMultiPlayerSettings(ini);
 }
 
+// Returns `index` if it selects an init string (-1 means send none), else 0:
+// the file may name a string the list lost, and the dialer indexes the list
+// with it. The list is never empty here, ReadMultiPlayerSettings() adds "ATZ".
+static int ValidInitStringIndex(const int index) {
+  if (index == -1 ||
+      (index >= 0 && index < std::ssize(TheNetwork().init_strings()))) {
+    return index;
+  }
+  return 0;
+}
+
 void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   char buf[128];           // buffer for parsing INI entry
   int i = 0;
@@ -549,6 +560,8 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     TheNetwork().init_strings().push_back(std::move(entry));
     TheNetwork().serial_defaults().InitStringIndex = 0;
   }
+  TheNetwork().serial_defaults().InitStringIndex =
+      ValidInitStringIndex(TheNetwork().serial_defaults().InitStringIndex);
 
   /*------------------------------------------------------------------------
   Read in all phone book listings, in the order the file lists them.
@@ -659,7 +672,8 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      phone->Settings.InitStringIndex = base::ParseIntegerOr<int>(tokenptr, 0);
+      phone->Settings.InitStringIndex =
+          ValidInitStringIndex(base::ParseIntegerOr<int>(tokenptr, 0));
     } else {
       phone->Settings.InitStringIndex = 0;
     }
@@ -724,32 +738,6 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   }
 }
 
-// Returns the index the file holds for `index` into the init strings. The file
-// cannot hold an empty string, so the ones after an empty one move up by a
-// place; an index at an empty string itself points at the next string.
-static int InitStringIndexInFile(const int index) {
-  const auto& strings = TheNetwork().init_strings();
-  if (index < 0) {
-    return index;
-  }
-  int file_index = index;
-  int stored = 0;
-  for (int i = 0; i < std::ssize(strings); i++) {
-    if (std::string_view(base::At(strings, i).get()).empty()) {
-      if (i < index) {
-        file_index--;
-      }
-    } else {
-      stored++;
-    }
-  }
-  if (index < std::ssize(strings) &&
-      std::string_view(base::At(strings, index).get()).empty()) {
-    file_index = std::clamp(file_index, 0, std::max(stored - 1, 0));
-  }
-  return file_index;
-}
-
 /***********************************************************************************************
  * Write_MultiPlayer_Settings -- writes multi-player settings to conquer.ini *
  *                                                                                             *
@@ -794,8 +782,7 @@ void WriteMultiPlayerSettings(engine::file::IniFile& ini) {
   ini.PutString("SerialDefaults", "CallWaitString", serial.CallWaitString);
   ini.PutInt("SerialDefaults", "CallWaitStringIndex",
              serial.CallWaitStringIndex);
-  ini.PutInt("SerialDefaults", "InitStringIndex",
-             InitStringIndexInFile(serial.InitStringIndex));
+  ini.PutInt("SerialDefaults", "InitStringIndex", serial.InitStringIndex);
   ini.PutInt("SerialDefaults", "Init", serial.Init ? 1 : 0);
   ini.PutString("SerialDefaults", "DialMethod",
                 kDialMethodCheck.at(serial.DialMethod));
@@ -816,15 +803,12 @@ void WriteMultiPlayerSettings(engine::file::IniFile& ini) {
   ini.Clear("InitStrings");
 
   /*------------------------------------------------------------------------
-  Save all InitString entries, which land in the file in the order written. An
-  empty one cannot be stored, so the ones after it move up and
-  InitStringIndexInFile() renumbers the indexes that point at them.
+  Save all InitString entries, which land in the file in the order written.
+  The list never holds an empty string (the dialog refuses to add one and the
+  reader drops one), so the indexes into it stay valid.
   ------------------------------------------------------------------------*/
   int stored = 0;
   for (const auto& init_string : TheNetwork().init_strings()) {
-    if (std::string_view(init_string.get()).empty()) {
-      continue;
-    }
     ini.PutString("InitStrings", absl::StrFormat("%03d", stored++),
                   init_string.get());
   }
@@ -852,8 +836,8 @@ void WriteMultiPlayerSettings(engine::file::IniFile& ini) {
             phone.Settings.ErrorCorrection ? 1 : 0,
             phone.Settings.HardwareFlowControl ? 1 : 0,
             kDialMethodCheck.at(phone.Settings.DialMethod),
-            InitStringIndexInFile(phone.Settings.InitStringIndex),
-            phone.Settings.CallWaitStringIndex, phone.Settings.CallWaitString));
+            phone.Settings.InitStringIndex, phone.Settings.CallWaitStringIndex,
+            phone.Settings.CallWaitString));
   }
 }
 

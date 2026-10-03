@@ -2732,6 +2732,11 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonAdd):
 
+        // CONQUER.INI cannot hold an empty or blank string, so the list does
+        // not either.
+        if (absl::StripAsciiWhitespace(initstrbuf).empty()) {
+          break;
+        }
         std::ranges::transform(base::MutableCString(initstrbuf), initstrbuf,
                                absl::ascii_toupper);
         item = TheNetwork()

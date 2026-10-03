@@ -185,36 +185,65 @@ TEST_F(MultiPlayerSettingsTest, EverySettingReadsBackAsItWasWritten) {
   EXPECT_EQ(TheNetwork().phone_book().at(1)->Settings.Baud, 2400);
 }
 
-// The file cannot hold an empty init string. The strings after it move up, so
-// the indexes that pointed at them are renumbered and still choose the same
-// string.
-TEST_F(MultiPlayerSettingsTest, AnEmptyInitStringIsLeftOutAndIndexesFollow) {
+// A file the old binary wrote with an empty init string holds "000=" and
+// indexes counted with it. The empty string is not a list entry, and an index
+// the list lost falls back to the first string instead of overrunning it.
+TEST_F(MultiPlayerSettingsTest,
+       AnOldFileWithAnEmptyInitStringGivesAValidIndex) {
+  IniFile ini;
+  LoadIniText(
+      "[SerialDefaults]\r\nInitStringIndex=1\r\n"
+      "[InitStrings]\r\n000=\r\n001=ATZ\r\n",
+      ini);
+  ReadMultiPlayerSettings(ini);
+
+  ASSERT_EQ(TheNetwork().init_strings().size(), 1U);
+  EXPECT_EQ(InitString(0), "ATZ");
+  EXPECT_EQ(TheNetwork().serial_defaults().InitStringIndex, 0);
+}
+
+TEST_F(MultiPlayerSettingsTest, AnIndexBeyondTheListIsClamped) {
+  IniFile ini;
+  LoadIniText(
+      "[SerialDefaults]\r\nInitStringIndex=7\r\n"
+      "[InitStrings]\r\n000=ATZ\r\n001=AT&F\r\n"
+      "[PhoneBook]\r\n000=home|555|3f8|4|9600|0|0|1|T|9|3|\r\n",
+      ini);
+  ReadMultiPlayerSettings(ini);
+  EXPECT_EQ(TheNetwork().serial_defaults().InitStringIndex, 0);
+
+  // -1 is the "send nothing" choice and stays.
+  IniFile none;
+  LoadIniText(
+      "[SerialDefaults]\r\nInitStringIndex=-1\r\n[InitStrings]\r\n000=ATZ\r\n",
+      none);
+  ReadMultiPlayerSettings(none);
+  EXPECT_EQ(TheNetwork().serial_defaults().InitStringIndex, -1);
+}
+
+TEST_F(MultiPlayerSettingsTest, ABlankInitStringIsNotAListEntry) {
+  IniFile ini;
+  LoadIniText("[InitStrings]\r\n000=   \r\n001=ATZ\r\n", ini);
+  ReadMultiPlayerSettings(ini);
+
+  ASSERT_EQ(TheNetwork().init_strings().size(), 1U);
+  EXPECT_EQ(InitString(0), "ATZ");
+}
+
+TEST_F(MultiPlayerSettingsTest, WritingAndReadingKeepsTheInitStringIndex) {
   AddInitString("ATZ");
-  AddInitString("");
   AddInitString("AT&F");
+  AddInitString("AT&K3");
   TheNetwork().serial_defaults().InitStringIndex = 2;
-  AddPhone("HOME", "555-1234").Settings.InitStringIndex = 2;
-  AddPhone("WORK", "555-9876").Settings.InitStringIndex = 0;
-  // An index at the empty string itself points at the string after it.
-  AddPhone("CELL", "555-0000").Settings.InitStringIndex = 1;
 
   IniFile ini;
   WriteMultiPlayerSettings(ini);
-  EXPECT_EQ(ini.EntryCount("InitStrings"), 2);
-
+  EXPECT_EQ(ini.GetInt("SerialDefaults", "InitStringIndex", -9), 2);
   ReadMultiPlayerSettings(ini);
 
-  ASSERT_EQ(TheNetwork().init_strings().size(), 2U);
-  EXPECT_EQ(InitString(0), "ATZ");
-  EXPECT_EQ(InitString(1), "AT&F");
-  EXPECT_EQ(InitString(TheNetwork().serial_defaults().InitStringIndex), "AT&F");
-  // The phone book keeps the index in its tenth field.
-  EXPECT_EQ(ini.GetString("PhoneBook", "000", ""),
-            "HOME|555-1234|0|0|0|0|0|0|T|1|0|");
-  EXPECT_EQ(ini.GetString("PhoneBook", "001", ""),
-            "WORK|555-9876|0|0|0|0|0|0|T|0|0|");
-  EXPECT_EQ(ini.GetString("PhoneBook", "002", ""),
-            "CELL|555-0000|0|0|0|0|0|0|T|1|0|");
+  ASSERT_EQ(TheNetwork().init_strings().size(), 3U);
+  EXPECT_EQ(TheNetwork().serial_defaults().InitStringIndex, 2);
+  EXPECT_EQ(InitString(2), "AT&K3");
 }
 
 // An entry with no value is not stored, and the readers' defaults for it are
