@@ -1162,10 +1162,8 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
           base::At(TheWorld().waypoint(), kWayptHome);
 
   /*
-  **	Read the cell trigger names, and assign TriggerClass pointers
-  */
-  /*
-  **	Loop through all CellTrigger entries.
+  **	Read the cell trigger names, and assign TriggerClass pointers. Loop
+  **	through all CellTrigger entries.
   */
   const int count = ini.EntryCount(trigsection);
   for (int i = 0; i < count; ++i) {

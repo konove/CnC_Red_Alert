@@ -3086,9 +3086,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
 void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[128];
 
-
   /*------------------------------------------------------------------------
-  Read the entire INFANTRY INI section into HIDBUF
+  Loop for all infantry entries
   ------------------------------------------------------------------------*/
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {

@@ -3496,9 +3496,8 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
 void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[128];
 
-
   /*
-  **	Read the entire building INI section into HIDBUF
+  **	Loop for all building entries.
   */
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
