@@ -16,27 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/JSHELL.CPP 2     3/13/97 2:05p Steve_tall $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : JSHELL.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : April 2, 1994 *
- *                                                                                             *
- *                  Last Update : May 11, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions:
- *   Set_Window -- Sets the window dimensions to that specified. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: Red Alert's text-window setter and the builders of the fading and
+// translucency tables its theaters draw through.
 
 #include "ra/core/jshell.h"
 
@@ -51,27 +32,6 @@
 
 namespace ra {
 
-/***********************************************************************************************
- * Set_Window -- Sets the window dimensions to that specified. *
- *                                                                                             *
- *    Use this routine to set the windows dimensions to the coordinates and
- *dimensions         * specified. *
- *                                                                                             *
- * INPUT:   x     -- Window X pixel position. *
- *                                                                                             *
- *          y     -- Window Y pixel position. *
- *                                                                                             *
- *          w     -- Window width in pixels. *
- *                                                                                             *
- *          h     -- Window height in pixels. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   The X and width values are truncated to an even 8 pixel boundary.
- *This is       * the same as stripping off the lower 3 bits. *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
 void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowWidth) = w;
   base::At(base::At(WindowList, window), kWindowHeight) = h;
@@ -84,6 +44,8 @@ FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
     const engine::gfx::PaletteColor faded =
         palette.at(index).FadedToward(frac, palette.at(color));
+    // Closest_Color() always finds an entry: its starting distance is larger
+    // than any two colors can be apart.
     base::At(table, index) = static_cast<uint8_t>(palette.Closest_Color(faded));
   }
   return table;
@@ -94,6 +56,8 @@ FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
   constexpr int kShadowStart = PaletteClass::COLOR_COUNT - 16;
   FadingTable table{};
   for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
+    // Transparent black and the shadow colors above the first one are drawn
+    // as they are; that is what stops a shadow over a shadow from darkening.
     if (index == 0 || index > kShadowStart) {
       base::At(table, index) = static_cast<uint8_t>(index);
       continue;
