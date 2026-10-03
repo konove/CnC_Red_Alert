@@ -2,7 +2,8 @@
 
 Written 2026-10-02, on the tree at c83e30e9.
 
-**Status: in progress.**
+**Status: done** (2026-10-02, 17243647..97075a43), display check by hand still open; see
+[Progress](#progress).
 
 The builders of the color-remap tables are C functions: the caller passes a
 `std::span<unsigned char>` to fill, and gets the same span back. Every caller fills a fixed-size
@@ -45,10 +46,12 @@ an empty span that no caller takes and that leaks. Return the tables as values i
 3. **RA picture.** `std::vector<uint8_t> LoadPicture(std::string_view name)` returns the decoded
    pixels, over `ReadPicture(ByteStream&)` for tests; `init.cc` reads the remap colors from them
    instead of going through the screen pages.
-4. **TD.** Same as step 2 for `Conquer_Build_Fading_Table()` and the `DisplayClass` statics; delete
-   the uncalled translucent builders (and `TLucentType` if nothing else uses it). Decide
-   `Load_Uncompress()` case by case: its callers draw the picture on the screen page, so the page
-   may really be the destination there.
+4. **TD.** `ConquerBuildFadingTable()` returns a `FadingTable` and the `DisplayClass` statics become
+   `std::array`s (`TranslucencyTable` moves to `engine/gfx/fading_table.h` for both games). The
+   uncalled translucent builders and `TLucentType` are deleted. `Load_Uncompress()`: every caller
+   decodes onto the system-memory page and then draws it, so both games read pictures through a new
+   `engine::gfx::ReadCpsImage(ByteStream&)`, which returns the pixels and the palette colors as
+   vectors; TD puts the pixels on the page with `CopyPictureToPage()`.
 
 One commit per step, each verified with the plain build, `ctest`, the strict build and cpplint.
 
@@ -63,9 +66,9 @@ One commit per step, each verified with the plain build, `ctest`, the strict bui
 
 ## Progress
 
-| Step | Commit   | Notes                                                       |
-| ---- | -------- | ----------------------------------------------------------- |
-| 1    | 51ebbc35 | TD's uncalled translucent builders went first, in 17243647. |
-| 2    | 9ac94ea6 | Vortex builder in 64c902c6.                                 |
-| 3    |          |                                                             |
-| 4    |          |                                                             |
+| Step | Commit   | Notes                                                               |
+| ---- | -------- | ------------------------------------------------------------------- |
+| 1    | 51ebbc35 | TD's uncalled translucent builders went first, in 17243647.         |
+| 2    | 9ac94ea6 | Vortex builder in 64c902c6.                                         |
+| 3    | 5e581e48 | A temporary CHECK matched the 320 pixels read against the old path. |
+| 4    | 4dc7fa9c | Tables. Pictures: 624dd25c (engine), 831a2448 (RA), 97075a43 (TD).  |
