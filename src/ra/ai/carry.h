@@ -40,53 +40,53 @@ namespace ra {
 // Example:
 //   TheWorld().carryover().emplace_back(building);  // as the scenario ends
 //   ...
-//   for (const auto& object : TheWorld().carryover()) object.Create();
-class CarryoverClass {
+//   for (const auto& object : TheWorld().carryover()) object.Recreate();
+class Carryover {
  public:
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar);
 
   // Records `techno`, which must be a building, vehicle, infantry or vessel to
-  // be carried over; any other kind is recorded but Create() ignores it.
+  // be carried over; any other kind is recorded but Recreate() ignores it.
   // nullptr gives an empty record, which is what the saved-game loader fills.
-  explicit CarryoverClass(TechnoClass* techno = nullptr);
+  explicit Carryover(TechnoClass* techno = nullptr);
 
   // Builds the recorded object and places it on the current map at its old
   // cell. Nothing is placed when the object pool is full or the cell cannot
   // take the object (the new map may differ from the old one). Always returns
   // false, whether or not the object was placed.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create() const;
+  bool Recreate() const;
 
  protected:
-  // The kind of object, which selects the member of `Type` in use. RTTI_NONE
+  // The kind of object, which selects the member of `type_` in use. RTTI_NONE
   // for an empty record.
-  RTTIType RTTI{RTTI_NONE};
+  RTTIType rtti_{RTTI_NONE};
 
-  // The object's type within its kind. Only the member `RTTI` names is
+  // The object's type within its kind. Only the member `rtti_` names is
   // meaningful, and only these four kinds are carried over.
   union {
-    StructType Building;
-    UnitType Unit;
-    InfantryType Infantry;
-    VesselType Vessel;
-  } Type{};
+    StructType building;
+    UnitType unit;
+    InfantryType infantry;
+    VesselType vessel;
+  } type_{};
 
   // The cell the object stood in on the old map. The inheriting scenario is
   // expected to use a map this still makes sense on.
-  ra::Cell Cell{};
+  Cell cell_{};
 
   // The object's strength (hit points) when it was recorded, so damage carries
   // over too.
-  int Strength{0};
+  int strength_{0};
 
   // The house that owned the object. HOUSE_NONE for an empty record.
-  HousesType House{HOUSE_NONE};
+  HousesType house_{HOUSE_NONE};
 };
 
-extern template void CarryoverClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void CarryoverClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void Carryover::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void Carryover::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

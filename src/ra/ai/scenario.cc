@@ -615,7 +615,7 @@ void Fill_In_Data() {
   */
   if (TheScenario().IsToInherit) {
     for (const auto& object : TheWorld().carryover()) {
-      object.Create();
+      object.Recreate();
     }
   }
 

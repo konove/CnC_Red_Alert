@@ -1948,7 +1948,7 @@ functions whose results the engine ignores on purpose:
 | `Create_One_Of`                 | 8        | The object heap owns what it creates.               |
 | `AI_Build_*`, `AI_Raise_*`, ... | 8        | The planner does not act on whether a helper acted. |
 | `Create_And_Place`              | 3        | Crate and editor drops tolerate a failed placement. |
-| `CarryoverClass::Create`        | 1        | Recreated for its side effect.                      |
+| `Carryover::Recreate`           | 1        | Recreated for its side effect.                      |
 
 Those 47 declarations keep no attribute, each under a `NOLINTNEXTLINE` that says why. With them
 excluded, no call site in either game discards a `[[nodiscard]]` result. The member function const

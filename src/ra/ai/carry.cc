@@ -32,25 +32,25 @@
 
 namespace ra {
 
-CarryoverClass::CarryoverClass(TechnoClass* techno) {
+Carryover::Carryover(TechnoClass* techno) {
   if (techno) {
-    RTTI = techno->What_Am_I();
+    rtti_ = techno->What_Am_I();
 
-    switch (RTTI) {
+    switch (rtti_) {
       case RTTI_UNIT:
-        Type.Unit = dynamic_cast<UnitClass*>(techno)->Class->Type;
+        type_.unit = dynamic_cast<UnitClass*>(techno)->Class->Type;
         break;
 
       case RTTI_BUILDING:
-        Type.Building = dynamic_cast<BuildingClass*>(techno)->Class->Type;
+        type_.building = dynamic_cast<BuildingClass*>(techno)->Class->Type;
         break;
 
       case RTTI_INFANTRY:
-        Type.Infantry = dynamic_cast<InfantryClass*>(techno)->Class->Type;
+        type_.infantry = dynamic_cast<InfantryClass*>(techno)->Class->Type;
         break;
 
       case RTTI_VESSEL:
-        Type.Vessel = dynamic_cast<VesselClass*>(techno)->Class->Type;
+        type_.vessel = dynamic_cast<VesselClass*>(techno)->Class->Type;
         break;
 
       case RTTIType::RTTI_NONE:
@@ -85,30 +85,30 @@ CarryoverClass::CarryoverClass(TechnoClass* techno) {
         break;
     }
 
-    House = techno->Owner();
-    Strength = techno->Strength;
-    Cell = Cell::Containing(techno->Coord);
+    house_ = techno->Owner();
+    strength_ = techno->Strength;
+    cell_ = Cell::Containing(techno->Coord);
   }
 }
 
-bool CarryoverClass::Create() const {
+bool Carryover::Recreate() const {
   TechnoClass* techno = nullptr;
 
-  switch (RTTI) {
+  switch (rtti_) {
     case RTTI_UNIT:
-      techno = base::NewPooled<UnitClass>(Type.Unit, House);
+      techno = base::NewPooled<UnitClass>(type_.unit, house_);
       break;
 
     case RTTI_INFANTRY:
-      techno = base::NewPooled<InfantryClass>(Type.Infantry, House);
+      techno = base::NewPooled<InfantryClass>(type_.infantry, house_);
       break;
 
     case RTTI_BUILDING:
-      techno = base::NewPooled<BuildingClass>(Type.Building, House);
+      techno = base::NewPooled<BuildingClass>(type_.building, house_);
       break;
 
     case RTTI_VESSEL:
-      techno = base::NewPooled<VesselClass>(Type.Vessel, House);
+      techno = base::NewPooled<VesselClass>(type_.vessel, house_);
       break;
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFT:
@@ -147,16 +147,16 @@ bool CarryoverClass::Create() const {
     // that apply while a scenario is being read: with scenario_init set, the
     // check against standing outside the playable map is skipped, and the old
     // cell is not known to be good on this map.
-    const int oldscen = TheWorld().scenario_init();
-    techno->Strength = static_cast<int16_t>(Strength);
-    if (RTTI == RTTI_INFANTRY) {
+    const int saved_scenario_init = TheWorld().scenario_init();
+    techno->Strength = static_cast<int16_t>(strength_);
+    if (rtti_ == RTTI_INFANTRY) {
       TheWorld().scenario_init() = 0;
     }
     // TODO: an object that cannot be placed stays in limbo and keeps its pool
     // slot for the rest of the scenario.
-    techno->Unlimbo(Cell.Center());
-    if (RTTI == RTTI_INFANTRY) {
-      TheWorld().scenario_init() = oldscen;
+    techno->Unlimbo(cell_.Center());
+    if (rtti_ == RTTI_INFANTRY) {
+      TheWorld().scenario_init() = saved_scenario_init;
     }
   }
 

@@ -109,7 +109,7 @@ class World {
   }
 
   // What the scenario leaves behind for the next one in the campaign.
-  std::vector<CarryoverClass>& carryover() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<Carryover>& carryover() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return carryover_;
   }
 
@@ -207,7 +207,7 @@ class World {
   int map_trigger_id_ = 0;
   int logic_trigger_id_ = 0;
 
-  std::vector<CarryoverClass> carryover_;
+  std::vector<Carryover> carryover_;
 
   std::array<game::MPHType, kTeamCount> team_max_speed_{};
   std::array<SpeedType, kTeamCount> team_speed_{};

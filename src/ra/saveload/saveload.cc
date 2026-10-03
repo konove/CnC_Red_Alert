@@ -216,7 +216,7 @@ static void SerializeCarryover(Archive& ar) {
     }
     TheWorld().carryover().clear();
     for (int i = 0; i < count; ++i) {
-      CarryoverClass object;
+      Carryover object;
       ar(object);
       if (!ar.ok()) {
         return;

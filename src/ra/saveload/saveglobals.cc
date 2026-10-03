@@ -78,49 +78,49 @@ template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void CarryoverClass::Serialize(Archive& ar) {
-  ar(RTTI);
-  switch (RTTI) {
+void Carryover::Serialize(Archive& ar) {
+  ar(rtti_);
+  switch (rtti_) {
     case RTTI_BUILDING:
       if constexpr (Archive::kIsReading) {
-        Type.Building = STRUCT_NONE;
+        type_.building = STRUCT_NONE;
       }
-      ar(Type.Building);
+      ar(type_.building);
       if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(Type.Building)) {
+        if (!magic_enum::enum_contains(type_.building)) {
           ar.Fail("invalid carryover object type");
         }
       }
       break;
     case RTTI_UNIT:
       if constexpr (Archive::kIsReading) {
-        Type.Unit = UNIT_NONE;
+        type_.unit = UNIT_NONE;
       }
-      ar(Type.Unit);
+      ar(type_.unit);
       if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(Type.Unit)) {
+        if (!magic_enum::enum_contains(type_.unit)) {
           ar.Fail("invalid carryover object type");
         }
       }
       break;
     case RTTI_INFANTRY:
       if constexpr (Archive::kIsReading) {
-        Type.Infantry = INFANTRY_NONE;
+        type_.infantry = INFANTRY_NONE;
       }
-      ar(Type.Infantry);
+      ar(type_.infantry);
       if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(Type.Infantry)) {
+        if (!magic_enum::enum_contains(type_.infantry)) {
           ar.Fail("invalid carryover object type");
         }
       }
       break;
     case RTTI_VESSEL:
       if constexpr (Archive::kIsReading) {
-        Type.Vessel = VESSEL_NONE;
+        type_.vessel = VESSEL_NONE;
       }
-      ar(Type.Vessel);
+      ar(type_.vessel);
       if constexpr (Archive::kIsReading) {
-        if (!magic_enum::enum_contains(Type.Vessel)) {
+        if (!magic_enum::enum_contains(type_.vessel)) {
           ar.Fail("invalid carryover object type");
         }
       }
@@ -159,16 +159,16 @@ void CarryoverClass::Serialize(Archive& ar) {
       }
       return;
   }
-  ar(Cell, Strength, House);
+  ar(cell_, strength_, house_);
   if constexpr (Archive::kIsReading) {
-    if (Cell.index() < 0 || Cell.index() >= MAP_CELL_TOTAL ||
-        !magic_enum::enum_contains(House)) {
+    if (cell_.index() < 0 || cell_.index() >= MAP_CELL_TOTAL ||
+        !magic_enum::enum_contains(house_)) {
       ar.Fail("invalid carryover cell or house");
     }
   }
 }
-template void CarryoverClass::Serialize(ArchiveWriter&);
-template void CarryoverClass::Serialize(ArchiveReader&);
+template void Carryover::Serialize(ArchiveWriter&);
+template void Carryover::Serialize(ArchiveReader&);
 
 template <class Archive>
 void SpecialClass::Serialize(Archive& ar) {

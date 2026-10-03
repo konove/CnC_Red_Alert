@@ -429,7 +429,7 @@ only where the two games' layouts already match.
   could do while those were globals but cannot while `World` is building its own members, so
   `World`'s constructor does it. What made the sweeps slow was name collisions: `MouseClass`,
   `EventClass` and the infantry animation struct all have a `Frame` member, `MapClass` has a
-  `Logic()` method, and `ThemeClass`, `SessionClass`, `TEventClass`, `CarryoverClass`,
+  `Logic()` method, and `ThemeClass`, `SessionClass`, `TEventClass`, `Carryover`,
   `BuildingTypeClass` and `MapEditClass` have members called `Score`, `BuildLevel`, `Infantry`,
   `Aircraft`, `Anims`, `Scenario` and `ScenVar`. The rename script skips comments, strings and
   member access, but an unqualified use inside the owning class looks exactly like the global; each
