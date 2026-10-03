@@ -1753,16 +1753,12 @@ void TeamTypeClass::Detach(Target target, bool /*unused*/) {
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
-  const int len = ini.EntryCount(INI_Name());
-
   /*
   **	Loop for all team entries, create and fill in.
   */
-  for (int index = 0; index < len; index++) {
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
-      const std::string_view entry = ini.EntryName(INI_Name(), index);
-      const std::string value = ini.GetString(INI_Name(), entry, "");
       team->Fill_In(entry, value);
     }
   }

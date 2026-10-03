@@ -121,7 +121,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -5797,15 +5796,7 @@ void BuildingClass::Update_Radar_Spied() {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Read_INI(engine::file::IniFile& ini) {
-  const int len = ini.EntryCount(INI_Name());
-  for (int index = 0; index < len; index++) {
-    const std::string_view entry = ini.EntryName(INI_Name(), index);
-
-    /*
-    **	Get a building entry.
-    */
-    const std::string value = ini.GetString(INI_Name(), entry, "");
-
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     /*
     **	1st token: house name.
     */

@@ -3295,15 +3295,7 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
   game::DirType dir = game::DIR_N;
   TriggerTypeClass* tp = nullptr;
 
-  const int len = ini.EntryCount(INI_Name());
-  for (int index = 0; index < len; index++) {
-    const std::string_view entry = ini.EntryName(INI_Name(), index);
-
-    /*
-    **	Get an infantry entry
-    */
-    const std::string value = ini.GetString(INI_Name(), entry, "");
-
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     /*
     **	1st token: house name.
     */

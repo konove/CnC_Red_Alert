@@ -2067,20 +2067,12 @@ AttachType TriggerTypeClass::Attaches_To() const {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
-  const int len = ini.EntryCount(INI_Name());
-  for (int index = 0; index < len; index++) {
-    const std::string_view entry = ini.EntryName(INI_Name(), index);
-
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     /*
     **	Create a new trigger.
     */
     auto* trigger =
         base::NewPooled<TriggerTypeClass>();  // Working trigger pointer.
-
-    /*
-    **	Get the trigger entry.
-    */
-    const std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	Fill in the trigger.

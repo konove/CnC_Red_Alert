@@ -52,7 +52,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <string_view>
 
 #include "absl/log/check.h"
@@ -307,11 +306,7 @@ void SmudgeClass::Disown(Cell cell) {
  *value as well.                                      *
  *=============================================================================================*/
 void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
-  const int len = ini.EntryCount(INI_Name());
-  for (int index = 0; index < len; index++) {
-    const std::string_view entry = ini.EntryName(INI_Name(), index);
-
-    const std::string value = ini.GetString(INI_Name(), entry, "");
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     base::Tokenizer tokens(value);
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.

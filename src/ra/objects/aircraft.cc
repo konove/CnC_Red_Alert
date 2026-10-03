@@ -627,12 +627,7 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Read_INI(engine::file::IniFile& ini) {
-  const int counter = ini.EntryCount(INI_Name());
-  for (int index = 0; index < counter; index++) {
-    // TODO: redundancy here: could be one call to ini.GetString(INI_Name(),
-    // index, "")
-    const std::string_view entry = ini.EntryName(INI_Name(), index);
-    const std::string value = ini.GetString(INI_Name(), entry, "");
+  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.

@@ -64,6 +64,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
@@ -549,19 +550,18 @@ void SessionClass::Read_MultiPlayer_Settings() {
       SerialDefaults.Baud = -1;
     }
 
-    const int initcount = ini.EntryCount("InitStrings");
-    for (int index = 0; index < initcount; index++) {
+    const std::vector<engine::file::IniEntry> init_strings =
+        ini.Entries("InitStrings");
+    for (const engine::file::IniEntry& init : init_strings) {
       auto entry = std::make_unique<InitString>();
-      base::SafeCopy(*entry,
-                     ini.GetString("InitStrings",
-                                   ini.EntryName("InitStrings", index), ""));
+      base::SafeCopy(*entry, init.value);
       std::ranges::transform(base::MutableCString(entry->data()), entry->data(),
                              absl::ascii_toupper);
       InitStrings.Add(std::move(entry));
     }
 
     //	if no entries then have at least one
-    if (initcount == 0) {
+    if (init_strings.empty()) {
       auto entry = std::make_unique<InitString>();
       base::SafeCopy(*entry, "ATZ");
       InitStrings.Add(std::move(entry));
@@ -569,14 +569,12 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     //	Read the entry names in
-    const int phonecount = ini.EntryCount("PhoneBook");
-    for (int index = 0; index < phonecount; index++) {
+    for (const engine::file::IniEntry& listing : ini.Entries("PhoneBook")) {
       //	Create a new phone book entry
       auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
       //	Read the entire entry in
-      const std::string phone_text =
-          ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
+      const std::string_view phone_text = listing.value;
 
       //	Extract name, phone # & serial port settings
       base::Tokenizer tokens(phone_text, "|");
@@ -895,11 +893,9 @@ void SessionClass::Read_Scenario_Descriptions() {
   if (const auto file = OpenGameFile("MISSIONS.PKT")) {
     engine::file::IniFile ini;
     ini.Load(*file);
-    const int count = ini.EntryCount("Missions");
-    // debugprint( "Found %i missions in Missions.pkt\n", count );
-    for (int index = 0; index < count; index++) {
-      const std::string fname(ini.EntryName("Missions", index));
-      const std::string description = ini.GetString("Missions", fname, "");
+    for (const engine::file::IniEntry& mission : ini.Entries("Missions")) {
+      const std::string fname(mission.name);
+      const std::string description(mission.value);
       Scenarios.Add(std::make_unique<MultiMission>(
           fname.c_str(), description.c_str(), nullptr, true,
           IsMissionCounterstrike(fname)));
@@ -926,10 +922,9 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Load(*mission_file);
     }
 
-    const int count = ini.EntryCount("Missions");
-    for (int index = 0; index < count; index++) {
-      const std::string fname(ini.EntryName("Missions", index));
-      const std::string description = ini.GetString("Missions", fname, "");
+    for (const engine::file::IniEntry& mission : ini.Entries("Missions")) {
+      const std::string fname(mission.name);
+      const std::string description(mission.value);
 
       Scenarios.Add(std::make_unique<MultiMission>(
           fname.c_str(), description.c_str(), nullptr, true,
@@ -949,11 +944,9 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (const auto file2 = OpenGameFile("CSTRIKE.PKT")) {
       engine::file::IniFile ini;
       ini.Load(*file2);
-      const int count = ini.EntryCount("Missions");
-      // debugprint( "Found %i missions in cstrike.pkt\n", count );
-      for (int index = 0; index < count; index++) {
-        const std::string fname(ini.EntryName("Missions", index));
-        const std::string description = ini.GetString("Missions", fname, "");
+      for (const engine::file::IniEntry& mission : ini.Entries("Missions")) {
+        const std::string fname(mission.name);
+        const std::string description(mission.value);
         Scenarios.Add(std::make_unique<MultiMission>(
             fname.c_str(), description.c_str(), nullptr, true,
             IsMissionCounterstrike(fname)));
@@ -975,11 +968,9 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (const auto file2 = OpenGameFile("AFTMATH.PKT")) {
       engine::file::IniFile ini;
       ini.Load(*file2);
-      const int count = ini.EntryCount("Missions");
-      // debugprint( "Found %i missions in aftmath.pkt\n", count );
-      for (int index = 0; index < count; index++) {
-        const std::string fname(ini.EntryName("Missions", index));
-        const std::string description = ini.GetString("Missions", fname, "");
+      for (const engine::file::IniEntry& mission : ini.Entries("Missions")) {
+        const std::string fname(mission.name);
+        const std::string description(mission.value);
         Scenarios.Add(std::make_unique<MultiMission>(
             fname.c_str(), description.c_str(), nullptr, true,
             IsMissionCounterstrike(fname)));
