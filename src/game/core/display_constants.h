@@ -17,7 +17,6 @@ namespace game {
 
 //	-----------------------------------------------------------
 #define PIXEL_LEPTON_W (ICON_LEPTON_W / ICON_PIXEL_W)
-#define PIXEL_LEPTON_H (ICON_LEPTON_H / ICON_PIXEL_H)
 
 }  // namespace game
 
