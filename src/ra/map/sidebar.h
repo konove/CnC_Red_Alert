@@ -50,6 +50,7 @@
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
+#include "ra/core/jshell.h"
 #include "ra/map/power.h"
 #include "ra/objects/stage.h"
 #include "ra/ui/shapebtn.h"
@@ -313,7 +314,7 @@ class SidebarClass : public PowerClass {
     **	This points to the shapes that are used for the clock overlay. This
     *displays *	progress of construction.
     */
-    static unsigned char ClockTranslucentTable[(1 + 1) * 256];
+    static TranslucencyTable<1> ClockTranslucentTable;
 
   } Column[kColumns];
 

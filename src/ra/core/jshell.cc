@@ -33,16 +33,13 @@
  *                  Last Update : May 11, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Build_Translucent_Table -- Creates a translucent control table.
- ** Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
- *only.            *
+ * Functions:
  *   Set_Window -- Sets the window dimensions to that specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
 #include "ra/core/jshell.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -150,201 +147,41 @@ int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
   return LoadUncompress(*file, scratchbuf, destbuf) / 8000;
 }
 
-namespace {
-
-// A translucent table is a 256-byte map from source color to fading table,
-// followed by one 256-entry fading table per translucent color.
-constexpr base::ssize TranslucentTableSize(int count) {
-  return 256 * (base::ssize{count} + 1);
+FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
+  FadingTable table{};
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
+    const engine::gfx::PaletteColor faded =
+        palette.at(index).FadedToward(frac, palette.at(color));
+    base::At(table, index) = static_cast<uint8_t>(palette.Closest_Color(faded));
+  }
+  return table;
 }
 
-}  // namespace
-
-/***********************************************************************************************
- * Build_Translucent_Table -- Creates a translucent control table. *
- *                                                                                             *
- *    The table created by this routine is used by Draw_Shape (GHOST) to *
- *    achieve a translucent affect. The original color of the shape will * show
- *through. This differs from the fading effect, since that * affect only alters
- *the background color toward a single destination                      * color.
- **
- *                                                                                             *
- * INPUT:   palette  -- Pointer to the control palette. *
- *                                                                                             *
- *          control  -- Pointer to array of structures that control how * the
- *translucent table will be built.                                   *
- *                                                                                             *
- *          count    -- The number of entries in the control array. *
- *                                                                                             *
- *          buffer   -- Pointer to buffer to place the translucent table. * If
- *NULL is passed in, then the buffer will be                          *
- *                      allocated. *
- *                                                                                             *
- * OUTPUT:  Returns with pointer to the translucent table. *
- *                                                                                             *
- * WARNINGS:   This routine is exceedingly slow. Use sparingly. *
- *                                                                                             *
- * HISTORY: * 04/02/1994 JLB : Created. *
- *=============================================================================================*/
-std::span<unsigned char> Build_Translucent_Table(
-    const PaletteClass& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer) {
-  if (count <= 0 || std::cmp_greater(count, control.size())) {
-    return buffer;
-  }
-  const auto size = base::ToSize(TranslucentTableSize(count));
-  if (buffer.empty()) {
-    // This legacy allocation is returned with its exact size to the caller.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    buffer = std::span<unsigned char>(new unsigned char[size], size);
-  }
-  if (buffer.size() < size) {
-    return {};
-  }
-  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
-  for (int index = 0; index < count; ++index) {
-    const auto& item = base::At(control, base::ToSize(index));
-    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    std::ranges::copy(BuildFadingTable(palette, item.DestColor, item.Fading),
-                      buffer.subspan(base::ToSize(index + 1) * 256).begin());
-  }
-  return buffer;
-}
-
-/***********************************************************************************************
- * Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
- *only.              *
- *                                                                                             *
- *    This routine will build a translucent (fading) table to remap colors into
- *the shadow     * color region of the palette. Shadow colors are not affected
- *by this translucent table.   * This means that a shape can be overlapped any
- *number of times and the imagery will       * remain deterministic (and
- *constant).                                                     *
- *                                                                                             *
- * INPUT:   palette  -- Pointer to the palette to base the translucent process
- *on.             *
- *                                                                                             *
- *          control  -- Pointer to special control structure that specifies the
- ** target color, and percentage of fade.                                  *
- *                                                                                             *
- *          count    -- The number of colors to be remapped (entries in the
- *control array).    *
- *                                                                                             *
- *          buffer   -- Pointer to the staging buffer that will hold the
- *translucent table     * data. If this parameter is NULL, then an appropriate
- *sized table       * will be allocated. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the translucent table data. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/27/1994 JLB : Created. *
- *=============================================================================================*/
-std::span<unsigned char> Conquer_Build_Translucent_Table(
-    const PaletteClass& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer) {
-  if (count <= 0 || std::cmp_greater(count, control.size())) {
-    return buffer;
-  }
-  const auto size = base::ToSize(TranslucentTableSize(count));
-  if (buffer.empty()) {
-    // This legacy allocation is returned with its exact size to the caller.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    buffer = std::span<unsigned char>(new unsigned char[size], size);
-  }
-  if (buffer.size() < size) {
-    return {};
-  }
-  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
-  for (int index = 0; index < count; ++index) {
-    const auto& item = base::At(control, base::ToSize(index));
-    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Conquer_Build_Fading_Table(
-        palette, buffer.subspan(base::ToSize(index + 1) * 256, 256),
-        item.DestColor, item.Fading);
-  }
-  return buffer;
-}
-
-std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
-                                           std::span<unsigned char> dest,
-                                           int color, int frac) {
-  if (dest.size() >= PaletteClass::COLOR_COUNT) {
-    auto ptr = dest.begin();
-
-    /*
-    **	Find an appropriate remap color index for every color in the palette.
-    **	There are certain exceptions to this, but they are trapped within the
-    **	loop.
-    */
-    for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
-      /*
-      **	Find the color that, ideally, the working color should be
-      *remapped *	to in the special remap range.
-      */
-      // Try to match this color.
-      const engine::gfx::PaletteColor trycolor =
-          palette.at(index).FadedToward(frac, palette.at(color));
-
-      /*
-      **	Search through the remap range to find the color that should be
-      *remapped *	to. This special range is used for shadows or other
-      *effects that are *	not compounded if additively applied.
-      */
-      *ptr++ = static_cast<unsigned char>(palette.Closest_Color(trycolor));
+FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
+                                    int frac) {
+  constexpr int kShadowStart = PaletteClass::COLOR_COUNT - 16;
+  FadingTable table{};
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
+    if (index == 0 || index > kShadowStart) {
+      base::At(table, index) = static_cast<uint8_t>(index);
+      continue;
     }
-  }
-  return dest;
-}
-
-std::span<unsigned char> Conquer_Build_Fading_Table(
-    const PaletteClass& palette, std::span<unsigned char> dest, int color,
-    int frac) {
-  if (dest.size() >= PaletteClass::COLOR_COUNT) {
-    auto ptr = dest.begin();
-    //		HsvColor desthsv = palette[color];
-
-    /*
-    **	Find an appropriate remap color index for every color in the palette.
-    **	There are certain exceptions to this, but they are trapped within the
-    **	loop.
-    */
-    for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
-      /*
-      **	If this color should not be remapped, then it will be stored as
-      *a remap *	to itself. This is effectively no remap.
-      */
-      if (index > PaletteClass::COLOR_COUNT - 16 || index == 0) {
-        *ptr++ = static_cast<unsigned char>(index);
-      } else {
-        /*
-        **	Find the color that, ideally, the working color should be
-        *remapped *	to in the special remap range.
-        */
-        // Try to match this color.
-        const engine::gfx::PaletteColor trycolor =
-            palette.at(index).FadedToward(frac, palette.at(color));
-
-        /*
-        **	Search through the remap range to find the color that should be
-        *remapped *	to. This special range is used for shadows or other
-        *effects that are *	not compounded if additively applied.
-        */
-        int best = -1;
-        int bvalue = 0;
-        for (int id = PaletteClass::COLOR_COUNT - 16;
-             id < PaletteClass::COLOR_COUNT - 1; id++) {
-          const int diff = palette.at(id).SquaredDistance(trycolor);
-          if (best == -1 || diff < bvalue) {
-            best = id;
-            bvalue = diff;
-          }
-        }
-        *ptr++ = static_cast<unsigned char>(best);
+    const engine::gfx::PaletteColor faded =
+        palette.at(index).FadedToward(frac, palette.at(color));
+    // Color 255 is not a candidate; ties go to the lower color.
+    int best = -1;
+    int best_distance = 0;
+    for (int candidate = kShadowStart;
+         candidate < PaletteClass::COLOR_COUNT - 1; candidate++) {
+      const int distance = palette.at(candidate).SquaredDistance(faded);
+      if (best == -1 || distance < best_distance) {
+        best = candidate;
+        best_distance = distance;
       }
     }
+    base::At(table, index) = static_cast<uint8_t>(best);
   }
-  return dest;
+  return table;
 }
 
 }  // namespace ra

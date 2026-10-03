@@ -40,13 +40,15 @@
 #ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
 #define CNC_RED_ALERT_RA_CORE_JSHELL_H_
 
+#include <algorithm>
+#include <array>
+#include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <span>
-#include <vector>
 
-#include "absl/base/attributes.h"
-#include "base/types.h"
-#include "ra/assets/compat.h"
+#include "base/array.h"
+#include "engine/gfx/fading_table.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
@@ -63,21 +65,65 @@ struct TLucentType {
 // size in units of 8000 bytes, 0 on failure.
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
                  std::span<uint8_t> destbuf);
-std::span<unsigned char> Conquer_Build_Fading_Table(
-    const PaletteClass& palette,
-    std::span<unsigned char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
-    int frac);
 void Set_Window(int window, int x, int y, int w, int h);
-std::span<unsigned char> Build_Translucent_Table(
-    const PaletteClass& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-std::span<unsigned char> Conquer_Build_Translucent_Table(
-    const PaletteClass& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
-                                           std::span<unsigned char> dest
-                                               ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                           int color, int frac);
+
+// Returns the table that fades every palette color toward `color` by `frac`
+// (0..255), each entry the palette's closest color to the faded one.
+FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac);
+
+// Returns a fading table toward `color` by `frac` that stays inside the shadow
+// range, the last 16 palette colors: colors 1..240 fade to the closest of
+// colors 240..254, and color 0 and colors 241..255 keep their own color. A
+// shadow drawn over a shadow therefore does not darken further, however many
+// shapes overlap.
+FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
+                                    int frac);
+
+// A translucency table: 256 bytes giving each palette color the index of the
+// fading table it is drawn through (255 for an opaque color), followed by
+// those `N` fading tables. Shapes drawn with ShapeFlags::kGhost read it.
+template <std::size_t N>
+using TranslucencyTable = std::array<uint8_t, 256 * (N + 1)>;
+
+// Returns the translucency table in which each `control` entry's SourceColor
+// is drawn through `fade(entry)` and every other color is opaque.
+template <std::size_t N, std::invocable<const TLucentType&> MakeFade>
+TranslucencyTable<N> MakeTranslucencyTable(
+    const std::array<TLucentType, N>& control, MakeFade fade) {
+  TranslucencyTable<N> table{};
+  const std::span<uint8_t> lookup = std::span(table).first(256);
+  std::ranges::fill(lookup, uint8_t{255});
+  for (std::size_t index = 0; index < N; ++index) {
+    const TLucentType& entry = base::At(control, index);
+    base::At(lookup, entry.SourceColor) = static_cast<uint8_t>(index);
+    const FadingTable faded = fade(entry);
+    std::ranges::copy(faded,
+                      std::span(table).subspan((index + 1) * 256).begin());
+  }
+  return table;
+}
+
+// Returns the translucency table that draws each `control` entry's
+// SourceColor faded toward its DestColor by its Fading, matched against the
+// whole of `palette`.
+template <std::size_t N>
+TranslucencyTable<N> BuildTranslucentTable(
+    const PaletteClass& palette, const std::array<TLucentType, N>& control) {
+  return MakeTranslucencyTable(control, [&palette](const TLucentType& entry) {
+    return BuildFadingTable(palette, entry.DestColor, entry.Fading);
+  });
+}
+
+// Like BuildTranslucentTable(), but the fades stay inside the shadow range
+// (see ConquerBuildFadingTable()), so overlapping translucent shapes do not
+// compound.
+template <std::size_t N>
+TranslucencyTable<N> ConquerBuildTranslucentTable(
+    const PaletteClass& palette, const std::array<TLucentType, N>& control) {
+  return MakeTranslucencyTable(control, [&palette](const TLucentType& entry) {
+    return ConquerBuildFadingTable(palette, entry.DestColor, entry.Fading);
+  });
+}
 
 }  // namespace ra
 

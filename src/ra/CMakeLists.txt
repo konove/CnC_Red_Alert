@@ -164,6 +164,13 @@ add_gtest(
 target_compile_definitions(ra_palette_test PRIVATE RA_NO_ENTRY_POINT=1)
 
 add_gtest(
+    NAME ra_jshell_test
+    SOURCES core/jshell_test.cc startup/startup.cc
+    LIBS ra_engine
+)
+target_compile_definitions(ra_jshell_test PRIVATE RA_NO_ENTRY_POINT=1)
+
+add_gtest(
     NAME ra_screen_test
     SOURCES assets/screen_test.cc assets/screen.cc
     LIBS base engine_window

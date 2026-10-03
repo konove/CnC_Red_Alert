@@ -172,7 +172,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
         const engine::gfx::ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fading_data,
-            .shadow_table = base::Suffix(DisplayClass::SpecialGhost, 256),
+            .shadow_table = std::span(DisplayClass::SpecialGhost).subspan(256),
             .predator_offset = pred_offset,
         };
         engine::gfx::DrawShapeFrame(

@@ -37,10 +37,11 @@ an empty span that no caller takes and that leaks. Return the tables as values i
    callers and the tests.
 2. **RA tables.** `ConquerBuildFadingTable()` and `MakeFadingTable()` return `FadingTable`; the
    translucent builders become templates over the control table's size,
-   `TranslucentTable<N> BuildTranslucentTable(palette, const std::array<TLucentType, N>&)` with
-   `TranslucentTable<N> = std::array<uint8_t, 256 * (N + 1)>`, dropping `count`,
-   `TranslucentTableSize()` and the `new[]` branch. The `DisplayClass` and sidebar statics and the
-   control tables become `std::array`s. The vortex builder returns a `FadingTable` too.
+   `TranslucencyTable<N> BuildTranslucentTable(palette, const std::array<TLucentType, N>&)` with
+   `TranslucencyTable<N> = std::array<uint8_t, 256 * (N + 1)>` (not `TranslucentTable<N>`, which
+   `DisplayClass::TranslucentTable` would hide), dropping `count`, `TranslucentTableSize()` and the
+   `new[]` branch. The `DisplayClass` and sidebar statics and the control tables become
+   `std::array`s. The vortex builder returns a `FadingTable` too, in its own commit.
 3. **RA picture.** `std::vector<uint8_t> LoadPicture(std::string_view name)` returns the decoded
    pixels; `init.cc` reads the remap colors from them instead of going through the screen pages.
 4. **TD.** Same as step 2 for `Conquer_Build_Fading_Table()` and the `DisplayClass` statics; delete
@@ -61,9 +62,9 @@ One commit per step, each verified with the plain build, `ctest`, the strict bui
 
 ## Progress
 
-| Step | Commit | Notes |
-| ---- | ------ | ----- |
-| 1    |        |       |
-| 2    |        |       |
-| 3    |        |       |
-| 4    |        |       |
+| Step | Commit   | Notes                                                       |
+| ---- | -------- | ----------------------------------------------------------- |
+| 1    | 51ebbc35 | TD's uncalled translucent builders went first, in 17243647. |
+| 2    |          | Vortex builder still to do.                                 |
+| 3    |          |                                                             |
+| 4    |          |                                                             |

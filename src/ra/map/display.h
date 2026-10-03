@@ -105,13 +105,13 @@ class DisplayClass : public MapClass {
   static FadingTable FadingGreen;
   static FadingTable FadingYellow;
   static FadingTable FadingRed;
-  static unsigned char TranslucentTable[(kMagicColorCount + 1) * 256];
-  static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
-  static unsigned char MouseTranslucentTable[(4 + 1) * 256];
+  static TranslucencyTable<kMagicColorCount> TranslucentTable;
+  static TranslucencyTable<1> WhiteTranslucentTable;
+  static TranslucencyTable<4> MouseTranslucentTable;
   static std::span<const std::byte> TransIconset;
-  static unsigned char UnitShadow[(kUnitShadowColorCount + 1) * 256];
-  static unsigned char UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
-  static unsigned char SpecialGhost[2 * 256];
+  static TranslucencyTable<kUnitShadowColorCount> UnitShadow;
+  static TranslucencyTable<kUnitShadowColorCount> UnitShadowAir;
+  static TranslucencyTable<1> SpecialGhost;
 
   //-------------------------------------------------------------------------
   DisplayClass();
@@ -331,7 +331,7 @@ class DisplayClass : public MapClass {
   int NewX{0}, NewY{0};
 
   static std::span<const std::byte> ShadowShapes;
-  static unsigned char ShadowTrans[(kShadowColorCount + 1) * 256];
+  static TranslucencyTable<kShadowColorCount> ShadowTrans;
 
   void Redraw_Icons(PixelView& view);
   void Redraw_Shadow(PixelView& view);

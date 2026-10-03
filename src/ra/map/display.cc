@@ -103,6 +103,7 @@
 #include "ra/map/display.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -209,16 +210,16 @@ FadingTable DisplayClass::FadingLight;
 FadingTable DisplayClass::FadingGreen;
 FadingTable DisplayClass::FadingYellow;
 FadingTable DisplayClass::FadingRed;
-unsigned char DisplayClass::TranslucentTable[(kMagicColorCount + 1) * 256];
-unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
-unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
+TranslucencyTable<kMagicColorCount> DisplayClass::TranslucentTable;
+TranslucencyTable<1> DisplayClass::WhiteTranslucentTable;
+TranslucencyTable<4> DisplayClass::MouseTranslucentTable;
 std::span<const std::byte> DisplayClass::TransIconset;
-unsigned char DisplayClass::UnitShadow[(kUnitShadowColorCount + 1) * 256];
-unsigned char DisplayClass::UnitShadowAir[(kUnitShadowColorCount + 1) * 256];
-unsigned char DisplayClass::SpecialGhost[2 * 256];
+TranslucencyTable<kUnitShadowColorCount> DisplayClass::UnitShadow;
+TranslucencyTable<kUnitShadowColorCount> DisplayClass::UnitShadowAir;
+TranslucencyTable<1> DisplayClass::SpecialGhost;
 
 std::span<const std::byte> DisplayClass::ShadowShapes;
-unsigned char DisplayClass::ShadowTrans[(kShadowColorCount + 1) * 256];
+TranslucencyTable<kShadowColorCount> DisplayClass::ShadowTrans;
 
 /*
 ** Bit array of cell redraw flags
@@ -366,30 +367,39 @@ static MixArchive* theater_data = nullptr;
  *=============================================================================================*/
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
-  static const TLucentType MouseCols[4] = {{kBlack, kBlack, 110, 0},
-                                           {kWhite, kWhite, 110, 0},
-                                           {kLtGrey, kLtGrey, 110, 0},
-                                           {DKGREY, DKGREY, 110, 0}};
-  static const TLucentType MagicCols[kMagicColorCount] = {
-      {32, 32, 110, 0},          {33, 33, 110, 0},
-      {34, 34, 110, 0},          {35, 35, 110, 0},
-      {36, 36, 110, 0},          {37, 37, 110, 0},
-      {38, 38, 110, 0},          {39, 39, 110, 0},
-      {kBlack, kBlack, 200, 0},  {kWhite, kBlack, 40, 0},
-      {kLtGrey, kBlack, 80, 0},  {DKGREY, kBlack, 140, 0},
-      {kLtGreen, kBlack, 130, 0}};
-  static const TLucentType WhiteCols[1] = {{1, kWhite, 80, 0}};
-  static const TLucentType ShadowCols[kShadowColorCount] = {
-      {kWhite + 1, kBlack, 130, 0},
-      {kWhite, kBlack, 170, 0},
-      {LTGRAY, kBlack, 250, 0},
-      {DKGRAY, kBlack, 250, 0}};
-  static const TLucentType UShadowCols[kUnitShadowColorCount] = {
-      {kLtGreen, kBlack, 130, 0}};
-  static const TLucentType UShadowColsAir[kUnitShadowColorCount] = {
-      {kLtGreen, kWhite, 0, 0}};
-  static const TLucentType UShadowColsSnow[kUnitShadowColorCount] = {
-      {kLtGreen, kBlack, 75, 0}};
+  static constexpr auto MouseCols =
+      std::to_array<TLucentType>({{kBlack, kBlack, 110, 0},
+                                  {kWhite, kWhite, 110, 0},
+                                  {kLtGrey, kLtGrey, 110, 0},
+                                  {DKGREY, DKGREY, 110, 0}});
+  static constexpr auto MagicCols =
+      std::to_array<TLucentType>({{32, 32, 110, 0},
+                                  {33, 33, 110, 0},
+                                  {34, 34, 110, 0},
+                                  {35, 35, 110, 0},
+                                  {36, 36, 110, 0},
+                                  {37, 37, 110, 0},
+                                  {38, 38, 110, 0},
+                                  {39, 39, 110, 0},
+                                  {kBlack, kBlack, 200, 0},
+                                  {kWhite, kBlack, 40, 0},
+                                  {kLtGrey, kBlack, 80, 0},
+                                  {DKGREY, kBlack, 140, 0},
+                                  {kLtGreen, kBlack, 130, 0}});
+  static constexpr auto WhiteCols =
+      std::to_array<TLucentType>({{1, kWhite, 80, 0}});
+  static constexpr auto ShadowCols =
+      std::to_array<TLucentType>({{kWhite + 1, kBlack, 130, 0},
+                                  {kWhite, kBlack, 170, 0},
+                                  {LTGRAY, kBlack, 250, 0},
+                                  {DKGRAY, kBlack, 250, 0}});
+  static constexpr auto UShadowCols =
+      std::to_array<TLucentType>({{kLtGreen, kBlack, 130, 0}});
+  // Only the source color matters; the fade is the gold remap table.
+  static constexpr auto UShadowColsAir =
+      std::to_array<TLucentType>({{kLtGreen, kWhite, 0, 0}});
+  static constexpr auto UShadowColsSnow =
+      std::to_array<TLucentType>({{kLtGreen, kBlack, 75, 0}});
 
   /*
   **	Invoke parent's init routine.
@@ -442,67 +452,33 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   ThePalettes().original_palette() = ThePalettes().game_palette();
 
-  FadingGreen = BuildFadingTable(ThePalettes().game_palette(), kGreen, 110);
+  const PaletteClass& palette = ThePalettes().game_palette();
+  FadingGreen = BuildFadingTable(palette, kGreen, 110);
+  FadingYellow = BuildFadingTable(palette, kYellow, 140);
+  FadingRed = BuildFadingTable(palette, kRed, 140);
+  MouseTranslucentTable = BuildTranslucentTable(palette, MouseCols);
+  TranslucentTable = BuildTranslucentTable(palette, MagicCols);
+  WhiteTranslucentTable = BuildTranslucentTable(palette, WhiteCols);
+  ShadowTrans = BuildTranslucentTable(palette, ShadowCols);
 
-  FadingYellow = BuildFadingTable(ThePalettes().game_palette(), kYellow, 140);
+  UnitShadowAir = MakeTranslucencyTable(UShadowColsAir, [](const TLucentType&) {
+    return std::to_array(
+        ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable);
+  });
+  UnitShadow = ConquerBuildTranslucentTable(
+      palette, theater == THEATER_SNOW ? UShadowColsSnow : UShadowCols);
 
-  FadingRed = BuildFadingTable(ThePalettes().game_palette(), kRed, 140);
+  FadingShade = ConquerBuildFadingTable(palette, kBlack,
+                                        theater == THEATER_SNOW ? 75 : 130);
+  FadingLight = ConquerBuildFadingTable(palette, kWhite, 85);
 
-  Build_Translucent_Table(ThePalettes().game_palette(),
-                          base::Suffix(MouseCols, 0), 4, MouseTranslucentTable);
+  // The aircraft shadow draws every color through one shadow fade.
+  SpecialGhost = {};
+  std::ranges::copy(ConquerBuildFadingTable(palette, kBlack, 100),
+                    std::span(SpecialGhost).subspan(256).begin());
 
-  Build_Translucent_Table(ThePalettes().game_palette(),
-                          base::Suffix(MagicCols, 0), kMagicColorCount,
-                          TranslucentTable);
-
-  Build_Translucent_Table(ThePalettes().game_palette(),
-                          base::Suffix(WhiteCols, 0), 1, WhiteTranslucentTable);
-
-  Build_Translucent_Table(ThePalettes().game_palette(),
-                          base::Suffix(ShadowCols, 0), kShadowColorCount,
-                          ShadowTrans);
-
-  Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
-                                  base::Suffix(UShadowColsAir, 0),
-                                  kUnitShadowColorCount, UnitShadowAir);
-  base::CopyBytes(
-      std::as_writable_bytes(base::Suffix(UnitShadowAir, 256)),
-      base::ObjectBytes(
-          ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable),
-      sizeof(ThePalettes().color_remaps().at(PCOLOR_GOLD).RemapTable));
-  if (theater == THEATER_SNOW) {
-    Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
-                                    base::Suffix(UShadowColsSnow, 0),
-                                    kUnitShadowColorCount, UnitShadow);
-  } else {
-    Conquer_Build_Translucent_Table(ThePalettes().game_palette(),
-                                    base::Suffix(UShadowCols, 0),
-                                    kUnitShadowColorCount, UnitShadow);
-  }
-
-  if (theater == THEATER_SNOW) {
-    Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingShade,
-                               kBlack, 75);
-  } else {
-    Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingShade,
-                               kBlack, 130);
-  }
-
-  Conquer_Build_Fading_Table(ThePalettes().game_palette(), FadingLight, kWhite,
-                             85);
-
-  /*
-  **	Create the shadow color used by aircraft.
-  */
-  Conquer_Build_Fading_Table(ThePalettes().game_palette(),
-                             base::Suffix(SpecialGhost, 256), kBlack, 100);
-  for (int index = 0; index < 256; index++) {
-    base::At(SpecialGhost, index) = 0;
-  }
-
-  Make_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
-
-  Make_Fading_Table(ThePalettes().game_palette(), FadingWayDark, DKGRAY, 192);
+  FadingBrighten = MakeFadingTable(palette, kWhite, 25);
+  FadingWayDark = MakeFadingTable(palette, DKGRAY, 192);
 
   /*
   **	Adjust the palette according to the visual control option settings.

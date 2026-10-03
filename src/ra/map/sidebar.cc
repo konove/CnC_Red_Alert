@@ -90,6 +90,7 @@
 
 #include "ra/map/sidebar.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -153,7 +154,7 @@ std::span<const std::byte> SidebarClass::SidebarBottomShape = {};
 **	This holds the translucent table for use with the construction clock
 **	animation.
 */
-unsigned char SidebarClass::StripClass::ClockTranslucentTable[(1 + 1) * 256];
+TranslucencyTable<1> SidebarClass::StripClass::ClockTranslucentTable;
 
 /***************************************************************************
 **	This points to the main sidebar shapes. These include the upgrade and
@@ -1167,23 +1168,11 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   Reload_LogoShapes();
 
   if (theater != THEATER_NONE && theater != TheWorld().last_theater()) {
-    static const TLucentType ClockCols[1] = {
-        {kGreen, kBlack, 100, 0}  //			{GREEN, LTGREY, 180, 0}
-    };
-
-    /*
-    **	The translucent table sends green to its fading half; that half is then
-    **	rebuilt from the game palette with only the last 16 colors as
-    **	candidates, so the palette given here shapes nothing else. (The
-    **	original first hid the cycling colors from it, which the rebuild made
-    **	moot.)
-    */
-    Build_Translucent_Table(ThePalettes().original_palette(),
-                            base::Suffix(ClockCols, 0), 1,
-                            ClockTranslucentTable);
-    Conquer_Build_Fading_Table(ThePalettes().game_palette(),
-                               base::Suffix(ClockTranslucentTable, 256), kBlack,
-                               100);
+    // The clock's sweep shades green through a shadow-range fade.
+    static constexpr auto ClockCols =
+        std::to_array<TLucentType>({{kGreen, kBlack, 100, 0}});
+    ClockTranslucentTable =
+        ConquerBuildTranslucentTable(ThePalettes().game_palette(), ClockCols);
   }
 }
 
