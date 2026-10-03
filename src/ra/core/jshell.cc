@@ -38,8 +38,7 @@
  *only.            *
  *   Load_Uncompress -- Loads and uncompresses data to a buffer. * Set_Window --
  *Sets the window dimensions to that specified.                               *
- *   Small_Icon -- Create a small icon from a big one. * Translucent_Table_Size
- *-- Determines the size of a translucent table.                     *
+ *   Small_Icon -- Create a small icon from a big one. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -208,22 +207,15 @@ int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
   return Load_Uncompress(*file, scratchbuf, destbuf) / 8000;
 }
 
-/***********************************************************************************************
- * Translucent_Table_Size -- Determines the size of a translucent table. *
- *                                                                                             *
- *    Use this routine to determine how big the translucent table needs * to be
- *given the specified number of colors. This value is typically * used when
- *allocating the buffer for the translucent table. *
- *                                                                                             *
- * INPUT:   count -- The number of colors that are translucent. *
- *                                                                                             *
- * OUTPUT:  Returns the size of the translucent table. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/02/1994 JLB : Created. *
- *=============================================================================================*/
-int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
+namespace {
+
+// A translucent table is a 256-byte map from source color to fading table,
+// followed by one 256-entry fading table per translucent color.
+constexpr base::ssize TranslucentTableSize(int count) {
+  return 256 * (base::ssize{count} + 1);
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * Build_Translucent_Table -- Creates a translucent control table. *
@@ -257,7 +249,7 @@ std::span<unsigned char> Build_Translucent_Table(
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }
-  const auto size = base::ToSize(Translucent_Table_Size(count));
+  const auto size = base::ToSize(TranslucentTableSize(count));
   if (buffer.empty()) {
     // This legacy allocation is returned with its exact size to the caller.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -312,7 +304,7 @@ std::span<unsigned char> Conquer_Build_Translucent_Table(
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }
-  const auto size = base::ToSize(Translucent_Table_Size(count));
+  const auto size = base::ToSize(TranslucentTableSize(count));
   if (buffer.empty()) {
     // This legacy allocation is returned with its exact size to the caller.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
