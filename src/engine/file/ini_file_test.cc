@@ -110,6 +110,32 @@ TEST(IniFileTest, AcceptsBareLineFeeds) {
   EXPECT_EQ(ini->EntryCount("S"), 2);
 }
 
+TEST(IniFileTest, ReadsALastEntryWithoutANewline) {
+  const auto ini = Parse("[S]\nA=1\nB=2");
+  EXPECT_EQ(ini->EntryCount("S"), 2);
+  EXPECT_EQ(ini->GetInt("S", "B", 0), 2);
+}
+
+TEST(IniFileTest, ReadsALastEntryEndingInACarriageReturn) {
+  const auto ini = Parse("[S]\r\nA=1\r\nB=2\r");
+  EXPECT_EQ(ini->EntryCount("S"), 2);
+  EXPECT_EQ(ini->GetInt("S", "B", 0), 2);
+}
+
+TEST(IniFileTest, ALastHeaderWithoutEntriesIsAbsent) {
+  const auto ini = Parse("[S]\nA=1\n[T]");
+  EXPECT_TRUE(ini->HasSection("S"));
+  EXPECT_FALSE(ini->HasSection("T"));
+}
+
+TEST(IniFileTest, DataWithoutAnyEntryBearingSectionFailsToLoad) {
+  IniFile ini;
+  SpanSource header_only(std::as_bytes(std::span(std::string_view("[S]"))));
+  EXPECT_FALSE(ini.Load(header_only));
+  SpanSource empty(std::as_bytes(std::span(std::string_view(""))));
+  EXPECT_FALSE(ini.Load(empty));
+}
+
 TEST(IniFileTest, PutReplacesEveryDuplicateOfAnEntry) {
   IniFile ini;
   LoadText(ini, "[S]\nK=1\nK=2\n");

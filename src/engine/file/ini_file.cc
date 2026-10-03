@@ -71,16 +71,16 @@ constexpr int kTextLineLength = 75;
 constexpr int kBase64LineLength = 70;
 
 // Returns the next line without a length limit: stops at LF, drops CR and
-// trims. A line cut short by the end of the data is discarded (the result is
-// empty) and `eof` set, as Read_Line does.
+// trims. The end of the data sets `eof` and ends the line it cuts short, which
+// is returned like any other: a file need not end in a line feed. At the end
+// of the data the line is empty.
 std::string ReadLine(ByteSource& source, bool& eof) {
   std::string line;
   for (;;) {
     char c = 0;
     if (!source.ReadObject(c)) {
       eof = true;
-      line.clear();
-      return line;
+      break;
     }
     if (c == '\n') {
       break;
@@ -151,6 +151,7 @@ bool IniFile::Load(ByteSource& source) {
   while (!end_of_file) {
     line = ReadLine(source, end_of_file);
     if (end_of_file) {
+      // A header that is the last line of the data has no entries after it.
       return false;
     }
     if (IsSectionLine(line)) {
@@ -167,7 +168,8 @@ bool IniFile::Load(ByteSource& source) {
 
     while (!end_of_file) {
       // The next header ends this section; the outer loop takes it from
-      // `line`.
+      // `line`. A last line without a line feed is parsed below like the rest,
+      // and the loop ends after it.
       line = ReadLine(source, end_of_file);
       if (IsSectionLine(line)) {
         break;

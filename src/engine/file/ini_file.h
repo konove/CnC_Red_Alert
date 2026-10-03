@@ -72,8 +72,8 @@ class IniFile {
 
   // Adds the sections read from the stream to the database; it is not cleared
   // first. Text before the first section header is skipped, and a section
-  // without entries is not stored. Returns false when the data holds no
-  // section header at all.
+  // without entries is not stored. The last line need not end in a line feed.
+  // Returns false when the data holds no section header before its last line.
   bool Load(ByteStream& stream);
   bool Load(ByteSource& source);
   // Writes every section as "[name]", its "entry=value" lines and a blank
