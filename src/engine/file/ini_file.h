@@ -54,7 +54,9 @@ enum class IniLoadResult {
 //
 // A name that occurs twice is looked up as its first occurrence. Blank lines
 // and comments (from ';' to the end of the line) are dropped on load, so a
-// saved file holds only the data.
+// saved file holds only the data. Load() keeps reading past a NUL byte;
+// callers that want the legacy "text ends at the first NUL" rule load from
+// ReadIniText() or ReadIniFile().
 //
 // Example:
 //   IniFile ini;
@@ -73,7 +75,9 @@ class IniFile {
   // Adds the sections read from the stream to the database; it is not cleared
   // first. Text before the first section header is skipped, and a section
   // without entries is not stored. The last line need not end in a line feed.
-  // Returns false when the data holds no section header before its last line.
+  // Returns false, adding nothing, when no section header line ends in a line
+  // feed: for empty data and for "[S]" alone. Otherwise returns true, even
+  // when no section was stored: "[S]\n" loads as true with zero sections.
   bool Load(ByteStream& stream);
   bool Load(ByteSource& source);
   // Writes every section as "[name]", its "entry=value" lines and a blank
@@ -118,7 +122,7 @@ class IniFile {
   // The number of sections, duplicates counted.
   [[nodiscard]] int SectionCount() const;
   // Returns the name of section `index` in file order, or nullptr when out of
-  // range.
+  // range. The pointer is valid until the database is next changed.
   [[nodiscard]] const char* SectionName(int index) const
       [[clang::lifetimebound]];
 
@@ -126,8 +130,9 @@ class IniFile {
   [[nodiscard]] int EntryCount(std::string_view section) const;
   // Returns the name (the text left of the '=') of entry `index` of `section`
   // in file order, or nullptr when the section or the index does not exist.
-  // The analysis cannot follow the name through the section index.
+  // The pointer is valid until the database is next changed.
   [[nodiscard]] const char* EntryName(std::string_view section, int index) const
+      // The analysis cannot follow the name through the section index.
       // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
       [[clang::lifetimebound]];
 
@@ -178,7 +183,10 @@ class IniFile {
   // entry goes last. They always return true.
 
   // An empty `value` removes the entry: the file format cannot hold an entry
-  // without a value.
+  // without a value. The names and the value are stored as given, but not all
+  // text reads back after Save() and Load(): a value containing ';' is cut
+  // there, leading and trailing blanks are trimmed, a line break ends the
+  // value, and a name containing '=' or starting with '[' does not survive.
   bool PutString(std::string_view section, std::string_view entry,
                  std::string_view value);
   // `format` chooses the spelling, all of which GetInt() reads back: 0 is
@@ -202,10 +210,6 @@ class IniFile {
   // the section alone, for an empty `block`.
   bool PutBase64Block(std::string_view section,
                       std::span<const std::byte> block);
-  // Stores the modulus of `key` in [PublicKey] and its exponent in
-  // [PrivateKey]. A database written this way holds the private key, so it
-  // must not be shipped. Always returns true.
-  bool PutPublicKey(const PKey& key);
 
  private:
   // Hash and equality of section and entry names, which compare without

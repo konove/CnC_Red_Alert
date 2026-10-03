@@ -6,10 +6,13 @@
 #include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/installed.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/ini_file.h"
+#include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
@@ -25,6 +28,16 @@ namespace td {
 namespace {
 
 using engine::file::IniFile;
+
+// Fills `reloaded` from the text Save() writes for `ini`, which is what the
+// next run of the game reads.
+void SaveAndReload(const IniFile& ini, IniFile& reloaded) {
+  std::vector<std::byte> saved;
+  VectorSink sink(saved);
+  ASSERT_TRUE(ini.Save(sink));
+  SpanSource source(saved);
+  ASSERT_TRUE(reloaded.Load(source));
+}
 
 // The settings live in the session, the network, the special flags and the
 // debug state, so each test installs its own and leaves the shared ones alone.
@@ -102,13 +115,15 @@ TEST_F(MultiPlayerSettingsTest,
   FillUnusualSettings();
 
   WriteMultiPlayerSettings(ini);
+  IniFile reloaded;
+  SaveAndReload(ini, reloaded);
 
-  EXPECT_EQ(ini.GetString("Mine", "Foo", ""), "Bar");
-  EXPECT_EQ(ini.GetString("MultiPlayer", "Unknown", ""), "Kept");
-  EXPECT_EQ(ini.GetInt("MultiPlayer", "Color", -1), 3);
+  EXPECT_EQ(reloaded.GetString("Mine", "Foo", ""), "Bar");
+  EXPECT_EQ(reloaded.GetString("MultiPlayer", "Unknown", ""), "Kept");
+  EXPECT_EQ(reloaded.GetInt("MultiPlayer", "Color", -1), 3);
   // The section the settings own is rewritten whole.
-  EXPECT_FALSE(ini.HasEntry("SerialDefaults", "Stale"));
-  EXPECT_EQ(ini.GetInt("SerialDefaults", "Baud", -1), 9600);
+  EXPECT_FALSE(reloaded.HasEntry("SerialDefaults", "Stale"));
+  EXPECT_EQ(reloaded.GetInt("SerialDefaults", "Baud", -1), 9600);
 }
 
 TEST_F(MultiPlayerSettingsTest, EverySettingReadsBackAsItWasWritten) {

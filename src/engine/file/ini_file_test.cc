@@ -1,4 +1,5 @@
-// Checks numeric defaults and legacy hexadecimal forms through the INI API.
+// Tests IniFile: parsing and saving INI text, name lookup, the typed getters
+// and setters, the text and base64 blocks, and the digest.
 #include "engine/file/ini_file.h"
 
 #include <algorithm>
@@ -132,12 +133,46 @@ TEST(IniFileTest, ALastHeaderWithoutEntriesIsAbsent) {
   EXPECT_FALSE(ini->HasSection("T"));
 }
 
-TEST(IniFileTest, DataWithoutAnyEntryBearingSectionFailsToLoad) {
+TEST(IniFileTest, DataWithoutAHeaderEndingInALineFeedFailsToLoad) {
+  for (const std::string_view text : {"", "[S]", "A=1\n", "A=1\n[S]"}) {
+    IniFile ini;
+    SpanSource source(std::as_bytes(std::span(text)));
+    EXPECT_FALSE(ini.Load(source)) << text;
+    EXPECT_EQ(ini.SectionCount(), 0) << text;
+  }
+}
+
+TEST(IniFileTest, AHeaderEndingInALineFeedLoadsEvenWithoutEntries) {
   IniFile ini;
-  SpanSource header_only(std::as_bytes(std::span(std::string_view("[S]"))));
-  EXPECT_FALSE(ini.Load(header_only));
-  SpanSource empty(std::as_bytes(std::span(std::string_view(""))));
-  EXPECT_FALSE(ini.Load(empty));
+  SpanSource source(std::as_bytes(std::span(std::string_view("[S]\n"))));
+  EXPECT_TRUE(ini.Load(source));
+  EXPECT_EQ(ini.SectionCount(), 0);
+  EXPECT_FALSE(ini.is_loaded());
+}
+
+TEST(IniFileTest, AWholeLineCommentIsNotAnEntry) {
+  const auto ini = Parse("[S]\n; K=1\n  ;L=2\nM=3\n");
+  EXPECT_EQ(ini->EntryCount("S"), 1);
+  EXPECT_FALSE(ini->HasEntry("S", "K"));
+  EXPECT_FALSE(ini->HasEntry("S", "; K"));
+  EXPECT_FALSE(ini->HasEntry("S", "L"));
+  EXPECT_EQ(ini->GetInt("S", "M", 0), 3);
+}
+
+TEST(IniFileTest, ACommentAfterAValueIsCutWithTheBlanksBeforeIt) {
+  const auto ini = Parse("[S]\nK=value ; note\nL=a;b\nM=;gone\n");
+  EXPECT_EQ(ini->GetString("S", "K", ""), "value");
+  EXPECT_EQ(ini->GetString("S", "L", ""), "a");
+  // Nothing is left of the value, and an entry without one is not stored.
+  EXPECT_FALSE(ini->HasEntry("S", "M"));
+  EXPECT_EQ(ini->EntryCount("S"), 2);
+}
+
+TEST(IniFileTest, ACommentAfterAHeaderIsNotPartOfTheSectionName) {
+  const auto ini = Parse("[ Sec ] ; note\nK=1\n");
+  ASSERT_EQ(ini->SectionCount(), 1);
+  EXPECT_STREQ(ini->SectionName(0), "Sec");
+  EXPECT_EQ(ini->GetInt("Sec", "K", 0), 1);
 }
 
 TEST(IniFileTest, PutReplacesEveryDuplicateOfAnEntry) {
@@ -432,6 +467,19 @@ TEST(IniFileTest, GetStringAcceptsItsOwnBufferAsTheDefault) {
   std::array<char, 16> buffer{"previous"};
   EXPECT_EQ(ini.GetString("S", "Missing", buffer.data(), buffer), 8);
   EXPECT_STREQ(buffer.data(), "previous");
+  // A default that starts inside the buffer copies towards its front, which
+  // happens to work without a copy of the default.
+  EXPECT_EQ(ini.GetString("S", "Missing",
+                          std::string_view(buffer.data()).substr(2), buffer),
+            6);
+  EXPECT_STREQ(buffer.data(), "evious");
+  // A default that starts before the part of the buffer written to would be
+  // overwritten while it is read, were it not copied first.
+  std::array<char, 16> shifted{"previous"};
+  EXPECT_EQ(ini.GetString("S", "Missing", std::string_view(shifted.data()),
+                          std::span(shifted).subspan(2)),
+            8);
+  EXPECT_STREQ(shifted.data(), "prprevious");
   EXPECT_EQ(ini.GetString("S", "K", buffer.data(), buffer), 6);
   EXPECT_STREQ(buffer.data(), "stored");
 }

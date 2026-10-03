@@ -75,8 +75,8 @@ constexpr int kBase64LineLength = 70;
 
 // Returns the next line without a length limit: stops at LF, drops CR and
 // trims. The end of the data sets `eof` and ends the line it cuts short, which
-// is returned like any other: a file need not end in a line feed. At the end
-// of the data the line is empty.
+// is returned like any other: a file need not end in a line feed. Only when
+// the data ends right after a line feed, or is empty, is that last line empty.
 std::string ReadLine(ByteSource& source, bool& eof) {
   std::string line;
   for (;;) {
@@ -608,19 +608,6 @@ void IniFile::RemoveSections(const std::string_view section) {
   std::erase_if(sections_, [&removed](const auto& owned) {
     return NameEqual()(owned->name, removed);
   });
-}
-
-bool IniFile::PutPublicKey(const PKey& key) {
-  std::byte encoded[512];
-
-  int length = key.Encode_Modulus(encoded);
-  PutBase64Block(kPublicKeySection,
-                 std::span(encoded).first(base::ToSize(length)));
-
-  length = key.Encode_Exponent(encoded);
-  PutBase64Block(kPrivateKeySection,
-                 std::span(encoded).first(base::ToSize(length)));
-  return true;
 }
 
 PKey IniFile::GetPublicKey(const bool fast) const {

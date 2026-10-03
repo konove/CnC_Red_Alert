@@ -3,10 +3,13 @@
 
 #include "td/data/options.h"
 
-#include <string_view>
+#include <cstddef>
+#include <vector>
 
 #include "base/installed.h"
 #include "engine/file/ini_file.h"
+#include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "td/assets/palettes.h"
 #include "td/data/ini_io.h"
@@ -16,6 +19,16 @@ namespace td {
 namespace {
 
 using engine::file::IniFile;
+
+// Fills `reloaded` from the text Save() writes for `ini`, which is what the
+// next run of the game reads.
+void SaveAndReload(const IniFile& ini, IniFile& reloaded) {
+  std::vector<std::byte> saved;
+  VectorSink sink(saved);
+  ASSERT_TRUE(ini.Save(sink));
+  SpanSource source(saved);
+  ASSERT_TRUE(reloaded.Load(source));
+}
 
 // Reading applies the settings to the game palette and the palette speed, so
 // each test installs palettes of its own for the length of the test.
@@ -57,10 +70,12 @@ TEST_F(OptionsSettingsTest, SavingKeepsSectionsAndEntriesTheGameDoesNotKnow) {
       ini);
 
   MakeUnusualOptions().WriteSettings(ini);
+  IniFile reloaded;
+  SaveAndReload(ini, reloaded);
 
-  EXPECT_EQ(ini.GetString("Mine", "Foo", ""), "Bar");
-  EXPECT_EQ(ini.GetString("Options", "Unknown", ""), "Kept");
-  EXPECT_EQ(ini.GetInt("Options", "GameSpeed", -1), 1);
+  EXPECT_EQ(reloaded.GetString("Mine", "Foo", ""), "Bar");
+  EXPECT_EQ(reloaded.GetString("Options", "Unknown", ""), "Kept");
+  EXPECT_EQ(reloaded.GetInt("Options", "GameSpeed", -1), 1);
 }
 
 TEST_F(OptionsSettingsTest, EveryOptionReadsBackAsItWasWritten) {

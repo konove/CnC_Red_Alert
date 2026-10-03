@@ -56,9 +56,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <optional>
 #include <span>
-#include <string>
 #include <string_view>
 #include <system_error>
 #include <vector>
@@ -73,7 +71,6 @@
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
@@ -92,6 +89,7 @@
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/data/ini.h"
+#include "td/data/ini_io.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/mplayer.h"
@@ -3153,14 +3151,10 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  const std::optional<std::string> master =
-      engine::file::ReadIniFile("MASTER.INI");
-  if (!master) {
+  engine::file::IniFile master_ini;  // the parsed MASTER.INI
+  if (!LoadIniFile("MASTER.INI", master_ini)) {
     return (-1);
   }
-  engine::file::IniFile master_ini;  // the parsed MASTER.INI
-  SpanSource master_source(std::as_bytes(std::span(*master)));
-  master_ini.Load(master_source);
 
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
@@ -3456,14 +3450,10 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  const std::optional<std::string> master =
-      engine::file::ReadIniFile("MASTER.INI");
-  if (!master) {
+  engine::file::IniFile master_ini;  // the parsed MASTER.INI
+  if (!LoadIniFile("MASTER.INI", master_ini)) {
     return (-1);
   }
-  engine::file::IniFile master_ini;  // the parsed MASTER.INI
-  SpanSource master_source(std::as_bytes(std::span(*master)));
-  master_ini.Load(master_source);
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/

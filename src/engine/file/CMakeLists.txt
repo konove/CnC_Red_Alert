@@ -22,8 +22,8 @@ target_sources(engine_file PUBLIC
 )
 
 target_link_libraries(engine_file
-        PUBLIC engine_codec engine_crypto absl::core_headers absl::no_destructor
-        PRIVATE absl::check absl::flat_hash_map absl::strings
+        PUBLIC engine_codec engine_crypto absl::core_headers absl::flat_hash_map absl::no_destructor
+        PRIVATE absl::check absl::strings
 )
 
 # Tests
