@@ -46,20 +46,11 @@
 #include <span>
 #include <vector>
 
-#include "absl/base/attributes.h"
-#include "base/types.h"
 #include "engine/gfx/palette.h"
 
 class ByteStream;
 
 namespace td {
-
-struct TLucentType {
-  unsigned char SourceColor;
-  unsigned char DestColor;
-  unsigned char Fading;
-  unsigned char reserved;
-};
 
 void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
@@ -77,12 +68,6 @@ std::vector<std::byte> LoadAllocData(ByteStream& file);
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         engine::gfx::Palette* palette);
-std::span<unsigned char> Build_Translucent_Table(
-    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
-std::span<unsigned char> Conquer_Build_Translucent_Table(
-    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 }  // namespace td
 

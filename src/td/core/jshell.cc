@@ -34,12 +34,10 @@
  *                  Last Update : May 11, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Build_Translucent_Table -- Creates a translucent control table.
- *   Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
- *only.            * Load_Alloc_Data -- Allocates a buffer and loads the file
- *into it.                         * Load_Uncompress -- Loads and uncompresses
- *data to a buffer.                               * Set_Window
- *-- Sets the window dimensions to that specified. *
+ * Functions:
+ *   Load_Alloc_Data -- Allocates a buffer and loads the file into it.
+ *   Load_Uncompress -- Loads and uncompresses data to a buffer.
+ *   Set_Window -- Sets the window dimensions to that specified.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -51,7 +49,6 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
-#include <utility>
 #include <vector>
 
 #include "base/array.h"
@@ -59,12 +56,10 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/codec/compressed_block.h"
-#include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
-#include "td/core/support.h"
 
 namespace td {
 
@@ -191,123 +186,6 @@ std::span<std::byte> Load_Alloc_Data(ByteStream& file) {
   file.Read(std::as_writable_bytes(storage.first(size)));
   base::At(storage, size) = '\0';
   return std::as_writable_bytes(storage.first(size));
-}
-
-namespace {
-
-// A translucent table is a 256-byte map from source color to fading table,
-// followed by one 256-entry fading table per translucent color.
-constexpr base::ssize TranslucentTableSize(int count) {
-  return 256 * (base::ssize{count} + 1);
-}
-
-}  // namespace
-
-/***********************************************************************************************
- * Build_Translucent_Table -- Creates a translucent control table. *
- *                                                                                             *
- *    The table created by this routine is used by Draw_Shape (GHOST) to *
- *    achieve a translucent affect. The original color of the shape will * show
- *through. This differs from the fading effect, since that * affect only alters
- *the background color toward a single destination                      * color.
- **
- *                                                                                             *
- * INPUT:   palette  -- Pointer to the control palette. *
- *                                                                                             *
- *          control  -- Pointer to array of structures that control how * the
- *translucent table will be built.                                   *
- *                                                                                             *
- *          count    -- The number of entries in the control array. *
- *                                                                                             *
- *          buffer   -- Pointer to buffer to place the translucent table. * If
- *NULL is passed in, then the buffer will be                          *
- *                      allocated. *
- *                                                                                             *
- * OUTPUT:  Returns with pointer to the translucent table. *
- *                                                                                             *
- * WARNINGS:   This routine is exceedingly slow. Use sparingly. *
- *                                                                                             *
- * HISTORY: * 04/02/1994 JLB : Created. *
- *=============================================================================================*/
-std::span<unsigned char> Build_Translucent_Table(
-    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer) {
-  if (count <= 0 || std::cmp_greater(count, control.size())) {
-    return buffer;
-  }
-  const auto size = base::ToSize(TranslucentTableSize(count));
-  if (buffer.empty()) {
-    // This legacy allocation is returned with its exact size to the caller.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    buffer = std::span<unsigned char>(new unsigned char[size], size);
-  }
-  if (buffer.size() < size) {
-    return {};
-  }
-  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
-  for (int index = 0; index < count; ++index) {
-    const auto& item = base::At(control, base::ToSize(index));
-    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Build_Fading_Table(palette,
-                       buffer.subspan(base::ToSize(index + 1) * 256, 256),
-                       item.DestColor, item.Fading);
-  }
-  return buffer;
-}
-
-/***********************************************************************************************
- * Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
- *only.              *
- *                                                                                             *
- *    This routine will build a translucent (fading) table to remap colors into
- *the shadow     * color region of the palette. Shadow colors are not affected
- *by this translucent table.   * This means that a shape can be overlapped any
- *number of times and the imagery will       * remain deterministic (and
- *constant).                                                     *
- *                                                                                             *
- * INPUT:   palette  -- Pointer to the palette to base the translucent process
- *on.             *
- *                                                                                             *
- *          control  -- Pointer to special control structure that specifies the
- ** target color, and percentage of fade.                                  *
- *                                                                                             *
- *          count    -- The number of colors to be remapped (entries in the
- *control array).    *
- *                                                                                             *
- *          buffer   -- Pointer to the staging buffer that will hold the
- *translucent table     * data. If this parameter is NULL, then an appropriate
- *sized table       * will be allocated. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the translucent table data. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/27/1994 JLB : Created. *
- *=============================================================================================*/
-std::span<unsigned char> Conquer_Build_Translucent_Table(
-    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
-    int count, std::span<unsigned char> buffer) {
-  if (count <= 0 || std::cmp_greater(count, control.size())) {
-    return buffer;
-  }
-  const auto size = base::ToSize(TranslucentTableSize(count));
-  if (buffer.empty()) {
-    // This legacy allocation is returned with its exact size to the caller.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    buffer = std::span<unsigned char>(new unsigned char[size], size);
-  }
-  if (buffer.size() < size) {
-    return {};
-  }
-  std::ranges::fill(buffer.first(256), static_cast<unsigned char>(255));
-  for (int index = 0; index < count; ++index) {
-    const auto& item = base::At(control, base::ToSize(index));
-    base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Conquer_Build_Fading_Table(
-        palette, buffer.subspan(base::ToSize(index + 1) * 256, 256),
-        item.DestColor, item.Fading);
-  }
-  return buffer;
 }
 
 }  // namespace td
