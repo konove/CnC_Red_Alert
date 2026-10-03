@@ -196,6 +196,21 @@
     green gradient style. Narrowing it to `font == FontType::k6PointGradient` changes what those
     buttons and lists look like; decide on a real display, together with the display check under
     Testing
+- Read Tiberian Dawn's `[Basic] CarryOverCap` under its own name
+  - `td/data/ini.cc:437` and `:720` read and write the key `"carry_over_cap"`: b2135cdf ("Make the
+    carry-over cap local to ini.cc") renamed the variable and the rename reached the string literal.
+    Red Alert still uses `CarryOverCap`. A scenario that sets `CarryOverCap` is ignored today
+  - One line each. It changes behaviour against any pre-fix binary, so re-take the headless baseline
+    afterwards
+- Stop Tiberian Dawn's phone-book reader overwriting the line it is splitting
+  - `td/net/mplayer.cc:652` does `base::SafeCopy(buf, tokenptr)` into the buffer being tokenized, so
+    the fields after `DialMethod` always read as their defaults
+- Give Tiberian Dawn's modem init strings a fallback when `CONQUER.INI` cannot be loaded
+  - `Read_MultiPlayer_Settings()` (`td/net/mplayer.cc`) clears the init-string list and returns
+    without the "ATZ" default the normal path adds; `td/net/nullmgr.cc:384` then calls `.at(0)` on
+    an empty list if someone dials. The old reader had the same shape
+  - `Build_Init_String_Listbox()` (`td/net/nulldlg.cc`) sorts the list in place while the stored
+    indexes stay, so a saved `InitStringIndex` can name a different string afterwards
 
 ## Features
 
@@ -586,13 +601,14 @@
   - Sharing the two `PrebuiltBase` classes in `src/game/` was looked at and not done. About 70 lines
     per game are identical (`FindBuilding()`, `HasNodeFor()`, `FindNode()`, `AddNode()`,
     `RemoveNodeFor()`, `FirstUnbuiltNode()`, the accessors); everything else differs: the node holds
-    a `Cell` in Red Alert and a `Coordinate` in Tiberian Dawn (in the save and the INI too), the INI
-    interface (`CCINIClass` against `WWGetPrivateProfile*` on text), the owner rule (`Player=` entry
-    against "the house opposing `[BASIC]` Player"), and the save layout (TD has a `BASE` section tag
-    and validates the house). `src/game` may not include either game, so the shared part would be a
-    header-only `game::sim::PrebuiltBase<Traits>` (about 130 lines plus a test and a traits struct
-    per game) with INI and `Serialize()` still per game: roughly as much glue as it removes. Revisit
-    if the INI layers converge; until then keep the twins textually aligned
+    a `Cell` in Red Alert and a `Coordinate` in Tiberian Dawn (in the save and the INI too), the
+    owner rule (`Player=` entry against "the house opposing `[BASIC]` Player"), and the save layout
+    (TD has a `BASE` section tag and validates the house). `src/game` may not include either game,
+    so the shared part would be a header-only `game::sim::PrebuiltBase<Traits>` (about 130 lines
+    plus a test and a traits struct per game) with INI and `Serialize()` still per game: roughly as
+    much glue as it removes. Both now read and write through `engine::file::IniFile`
+    (`docs/INI_SHARING_PLAN.md`), which removes one difference; until someone revisits it keep the
+    twins textually aligned
   - Converting Tiberian Dawn's `BaseNode::coord` to a `Cell` would align it with Red Alert: about 40
     lines in `td/ai/prebuilt_base.{h,cc}`, `td/saveload/saveglobals.cc` and five callers. The saved
     node shrinks from 4 to 2 bytes (`kSaveGameVersion` bump), and the INI must keep writing a packed
@@ -620,6 +636,39 @@
     `ra/editor/mapeddlg.cc:448-462`
   - `MapEditClass::Build_Base_To()` (`ra/editor/mapedplc.cc:1750`) declares `obj` at the top and
     first assigns it thirty lines down; declare it at its use
+- Decide what `;` inside an INI value means (`engine/file/ini_file.cc`, `StripComment()`)
+  - `IniFile::Load()` cuts every value at the first `;`. Red Alert always did; Tiberian Dawn's old
+    text reader kept it, so a custom mission whose `[Briefing]` or `MISSION.INI` line contains `;`
+    now shows truncated in game, and a handle, phone-book entry or init string with one is cut the
+    next time settings are loaded. No shipped file of either game has `;` in a value
+  - Treating `;` as a comment only at the start of a line or after a blank would fix it, but changes
+    what Red Alert hashes for the multiplayer rules check if any of `RULES.INI`'s 177 commented
+    values has no blank before the `;`; measure that first
+- Finish the `IniFile` clean-up left by `docs/INI_SHARING_PLAN.md`
+  - `GetHex()`, `PutHex()`, `SectionName()`, `SectionCount()` and `is_loaded()` have no caller
+    outside tests; every `Put*()` and `Clear()` always returns true and could return `void`;
+    `PutInt()`'s `format` is a magic 0/1/2. `PKey::Encode_Modulus()` and `Encode_Exponent()`
+    (`engine/crypto/pk.cc`) lost their only caller with `PutPublicKey()`
+  - `PutString(section, entry, "")` on a missing section creates an empty section, which `Save()`
+    writes as a bare header and `Load()` drops, so `SaveWithDigest()` followed by `LoadVerified()`
+    reports a mismatch for such a database. Harmless while callers accept a mismatch
+  - `PutTextBlock()` and `PutBase64Block()` clear the section and then use `section` again; a
+    `SectionName()` pointer passed as `section` dangles after the clear. No caller does that
+  - Replacing or clearing an existing name scans its section; rewriting all 4,096 entries of a
+    filled section in place is about 16.8 million name compares. Not measured as slow
+  - A UTF-8 byte order mark makes the first section header unrecognized; not compared with the old
+    readers
+  - `/fix-ide-issues` on `ini_file.cc` (CLion timed out during the plan) and `/simplify` on it
+- Modernize `ra/data/ini_types.{h,cc}` (`/modernize-file`)
+  - The banners still say `CCINI.H`/`CCINI.CPP` and the comments at `ini_types.cc:231`, `:728` and
+    `:1246` name `Get_Owners`/`Get_Buildings`
+  - About 19 Red Alert headers include `engine/file/ini_file.h` (which pulls in `flat_hash_map`,
+    `pk.h`, `sha.h` and three stream headers) for a `Read_INI(IniFile&)` parameter; forward-declare
+    `engine::file::IniFile` as Tiberian Dawn's headers and `ra/ai/prebuilt_base.h` do
+- Decide whether Red Alert should reject a scenario whose digest does not match
+  - `IniFile::LoadVerified()` reports `kDigestMismatch`; `Read_Scenario_INI()` (`ra/ai/scenario.cc`)
+    accepts it, as it has since the port. The original refused tampered official scenarios and
+    exempted multiplayer maps 1-24
 
 ## Testing
 
@@ -636,10 +685,19 @@
     `engine/crypto/blowfish_stream_test.cc`, and `engine/codec/stream_golden_test.cc`,
     `codec_corrupt_test.cc`, `codec_state_test.cc`, `lcw_comp_test.cc`, `stream_error_test.cc`
   - `engine/file/mix_archive_test.cc:95` defines its own class named `VectorSink`
-- Rename `ra/data/profile_buffer_test.cc` to `profile_test.cc`
-  - It tests `ra/data/profile.h`; the misleading name keeps clang-format from treating
-    `ra/data/profile.h` as its main include, and it shares a basename with
-    `engine/file/profile_buffer_test.cc`
+- Check the INI sharing work by hand (`docs/INI_SHARING_PLAN.md`, Outcome)
+  - Tiberian Dawn's scenario editor: load SCG01EA, save it under a new name, and compare the two
+    files' sorted `section/key=value` lines. `Write_Scenario_Ini()` is reachable only from the
+    editor, so no automated run exercises the load → writers → save path, and the unit, infantry,
+    building, terrain, aircraft and house writers (which need live objects) have no test
+  - Tiberian Dawn's options dialog: change a setting, quit, and check `CONQUER.INI` kept its unknown
+    keys; the `DEMO` and Windows-only branches, `Check_From_WChat()` and `Read_Game_Options()` were
+    converted by reading only
+  - A two-player Red Alert lobby, to confirm both sides compute the same `rules.ini` ID
+- Run `IniFileTest.RemovalAcceptsTheNameOfTheElementItRemoves` under ASan
+  - It passes without the guard it documents in a normal build: the names are short enough to live
+    in the string's inline buffer, which still reads back after the free. `-DENABLE_ASAN=ON` would
+    catch it; no CI job builds with ASan
 - Check the keyboard and mouse refactors on a real display (headless runs cannot press keys)
   - Keys: typing, Backspace, Enter and Esc in edit boxes and the message line; hall-of-fame name
     entry; battle hotkeys, including a Steam `REDALERT.INI` whose `[WinHotkeys]` holds Windows key
