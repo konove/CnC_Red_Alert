@@ -194,12 +194,6 @@
     green gradient style. Narrowing it to `font == FontType::k6PointGradient` changes what those
     buttons and lists look like; decide on a real display, together with the display check under
     Testing
-- Read Tiberian Dawn's `[Basic] CarryOverCap` under its own name
-  - `td/data/ini.cc:437` and `:720` read and write the key `"carry_over_cap"`: b2135cdf ("Make the
-    carry-over cap local to ini.cc") renamed the variable and the rename reached the string literal.
-    Red Alert still uses `CarryOverCap`. A scenario that sets `CarryOverCap` is ignored today
-  - One line each. It changes behaviour against any pre-fix binary, so re-take the headless baseline
-    afterwards
 - Stop Tiberian Dawn's phone-book reader overwriting the line it is splitting
   - `td/net/mplayer.cc:652` does `base::SafeCopy(buf, tokenptr)` into the buffer being tokenized, so
     the fields after `DialMethod` always read as their defaults

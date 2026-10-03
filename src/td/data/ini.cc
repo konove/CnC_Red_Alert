@@ -438,7 +438,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
         scenario.GetInt("Basic", "CarryOverMoney", 100);
     TheWorld().carry_over_percent() =
         base::CardinalToFixed(100, TheWorld().carry_over_percent());
-    carry_over_cap = scenario.GetInt("Basic", "carry_over_cap", -1);
+    carry_over_cap = scenario.GetInt("Basic", "CarryOverCap", -1);
 
     ThePlayer() = HouseClass::As_Pointer(HouseTypeClass::From_Name(player));
     ThePlayer()->IsHuman = true;
@@ -723,7 +723,7 @@ void Write_Scenario_Ini(const char* root) {
     ini.PutInt("Basic", "BuildLevel", TheWorld().build_level());
     ini.PutInt("Basic", "CarryOverMoney",
                base::FixedToCardinal(100, TheWorld().carry_over_percent()));
-    ini.PutInt("Basic", "carry_over_cap", carry_over_cap);
+    ini.PutInt("Basic", "CarryOverCap", carry_over_cap);
 
     TeamTypeClass::Write_INI(ini, true);
     TriggerClass::Write_INI(ini, true);
