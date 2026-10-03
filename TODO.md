@@ -559,6 +559,49 @@
   - `td/map/findpath.cc` may have the nested ifs that were merged in Red Alert's path cost check
     (`c6404158`); it was not flagged, so compare the two by hand
 
+- Leftovers from the `ra/ai/prebuilt_base` modernization (`a40289da..694eabde`, formerly
+  `ra/ai/base`, class `BaseClass`)
+  - Run `/modernize-file` on the twin, `td/ai/base.cc` and `td/ai/base.h`. It still has
+    `BaseClass`/`BaseNodeClass`, the `operator>` that always returns true, the virtual destructor
+    and public `Nodes`/`House`; only the missing-type check in `Read_INI()` was carried over
+    (`a4659cae`)
+  - Check whether an off-map coordinate in Tiberian Dawn's `[Base]` section can fail the bounds
+    check: `td/ai/base.cc` `Read_INI()` accepts any coordinate, and `Get_Building()` calls
+    `TheMap().at(Cell::Containing(coord))`. Red Alert now skips such entries (`6ca5ccbc`)
+  - Decide on the name `PrebuiltBase`. It follows the scenario files and the original comments
+    ("prebuild base"); `AiBase` and `BaseBuildList` were the alternatives. A change renames the file
+    again
+  - A malformed `[Base]` entry used to stall the list: `FirstUnbuiltNode()` returned the
+    `STRUCT_NONE` node forever and the nodes after it were never built. Both games now skip the
+    entry, so such a (custom) scenario builds the rest of its base. No shipped scenario is known to
+    have one; recorded in case a mission plays differently
+  - Add `Cell::is_on_map()` to `ra/core/cell.h` and use it for the open-coded
+    `index() < 0 || index() >= MAP_CELL_TOTAL`: `IsOnMap()` in `ra/ai/prebuilt_base.cc`,
+    `ra/saveload/saveglobals.cc:164`, `ra/saveload/iomap.cc:126` (variants at `iomap.cc:381`,
+    `ra/objects/crate.h:58`, `ra/map/findpath.cc:168-178`, `ra/map/display.cc:3777`,
+    `ra/objects/terrain.cc:404`). About 4 lines plus the call sites
+  - `PrebuiltBase::ReadIni()` rejects a node with `type == STRUCT_NONE` and `Serialize()` with
+    `!magic_enum::enum_contains(type)`; one file-local `IsValidNode(const BaseNode&)` (about 5
+    lines) would give a single definition of a node a building can fill
+  - `PrebuiltBase::FindNode()` has one caller left, `ra/editor/mapedsel.cc:542`, which moves the
+    node's cell. A `MoveNodeFor(building, cell)` would let it go and leave no way to mutate a node
+    from outside
+  - `HouseClass::AI_Building()` (`ra/objects/house.cc:5096`) calls `FirstUnbuiltNode()` every frame;
+    once the base is complete that scans every node, each with a `dynamic_cast` per non-null
+    overlapper in `FindBuilding()` (the run dropped the `What_Am_I()` pre-check as redundant).
+    Estimated at microseconds, not profiled; measure before touching
+  - `bugprone-throwing-static-initialization.AllowedTypes` in `.clang-tidy:190` still lists
+    `BaseClass`. Red Alert's is `PrebuiltBase` and owned by `World`, and the full strict build is
+    clean without it; drop the entry once `td::BaseClass` is renamed (editing `.clang-tidy`
+    re-analyzes the tree)
+  - Run `/fix-ide-issues` on `ra/ai/prebuilt_base.h`: CLion timed out on the header three times
+    during the run; `prebuilt_base.cc` is clean
+  - Delete the commented-out code around the base's callers (`/remove-dead-code` on each file):
+    `ra/objects/building.cc:1738-1739`, `ra/editor/mapedplc.cc:1008-1010`,
+    `ra/editor/mapeddlg.cc:448-462`
+  - `MapEditClass::Build_Base_To()` (`ra/editor/mapedplc.cc:1750`) declares `obj` at the top and
+    first assigns it thirty lines down; declare it at its use
+
 ## Testing
 
 - Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
