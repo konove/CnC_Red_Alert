@@ -49,14 +49,13 @@
 #include <cstring>
 #include <memory>
 #include <span>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "engine/file/profile_buffer.h"
+#include "engine/file/ini_file.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
@@ -65,7 +64,7 @@
 #include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
-#include "td/data/profile.h"
+#include "td/data/ini_io.h"
 #include "td/map/world.h"
 #include "td/net/network.h"
 #include "td/net/session.h"
@@ -276,10 +275,11 @@ void Send_Statistics_Packet() {
     char fname[128];
     char namebuffer[40];
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
-    WWGetPrivateProfileString(
+    engine::file::IniFile scenario;
+    LoadIniFile(fname, scenario);
+    scenario.GetString(
         "Basic", "Name", "Nulls-Ville",
-        std::span(namebuffer).first(static_cast<std::size_t>(40)), ini.c_str());
+        std::span(namebuffer).first(static_cast<std::size_t>(40)));
     stats.Add_Field(FIELD_SCENARIO, namebuffer);
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 

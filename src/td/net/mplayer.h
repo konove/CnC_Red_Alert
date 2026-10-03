@@ -5,6 +5,10 @@
 
 #include "td/core/defines.h"
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 inline PlayerColorType MPlayerID_To_ColorIndex(uint16_t id) {
@@ -21,6 +25,14 @@ inline uint16_t Build_MPlayerID(int c_idx, HousesType htype) {
 GameType Select_MPlayer_Game();
 void Read_MultiPlayer_Settings();
 void Write_MultiPlayer_Settings();
+// Sets the player's handle, colour and side, the serial defaults, the init
+// strings, the phone book and the sync-bug trap from `ini`. The two lists
+// are emptied first. Read_MultiPlayer_Settings() reads them from CONQUER.INI.
+void ReadMultiPlayerSettings(const engine::file::IniFile& ini);
+// Stores those settings in `ini`, which keeps what else it holds, and replaces
+// its [SerialDefaults], [InitStrings] and [PhoneBook] sections.
+// Write_MultiPlayer_Settings() saves them to CONQUER.INI.
+void WriteMultiPlayerSettings(engine::file::IniFile& ini);
 void Read_Scenario_Descriptions();
 void Free_Scenario_Descriptions();
 void Computer_Message();

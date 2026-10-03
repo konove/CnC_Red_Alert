@@ -55,7 +55,6 @@
 #include <cstring>
 #include <memory>
 #include <span>
-#include <string>
 #include <string_view>
 
 #include "base/array.h"
@@ -64,6 +63,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/disk_stream.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -77,7 +77,7 @@
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
-#include "td/data/profile.h"
+#include "td/data/ini_io.h"
 #include "td/data/text.h"
 #include "td/map/world.h"
 #include "td/net/mplayer.h"
@@ -123,23 +123,24 @@ void Check_From_WChat(const char* wchat_name) {
 
   char default_string[] = {"Error"};
   char key_string[256];
-  std::string ini_storage;
-  const char* ini_file = nullptr;
+  engine::file::IniFile ini;
   std::unique_ptr<DiskStream> wchat_file;
 
   /*
-  ** Get a pointer to C&CSPAWN.INI either by reading it from disk or getting it
-  ** from the DDE server.
+  ** Get C&CSPAWN.INI either by reading it from disk or getting it from the DDE
+  ** server. Without either the database stays empty and every lookup below
+  ** returns "Error".
   */
   if (wchat_name) {
     wchat_file = OpenDiskFile(wchat_name);
     if (wchat_file) {
-      ini_storage = engine::file::ReadProfileText(*wchat_file);
+      LoadIniText(engine::file::ReadProfileText(*wchat_file), ini);
     }
-    ini_file = ini_storage.c_str();
   } else {
 #ifdef _WIN32
-    ini_file = DDEServer.Get_MPlayer_Game_Info();
+    if (const char* dde_text = DDEServer.Get_MPlayer_Game_Info()) {
+      LoadIniText(dde_text, ini);
+    }
 #endif
   }
 
@@ -149,8 +150,7 @@ void Check_From_WChat(const char* wchat_name) {
     */
     base::At(key_string, 0) = 0;
 
-    WWGetPrivateProfileString("Internet", "Address", default_string, key_string,
-                              ini_file);
+    ini.GetString("Internet", "Address", default_string, key_string);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
@@ -164,8 +164,7 @@ void Check_From_WChat(const char* wchat_name) {
     */
     base::At(key_string, 0) = 0;
 
-    WWGetPrivateProfileString("Internet", "Port", default_string, key_string,
-                              ini_file);
+    ini.GetString("Internet", "Port", default_string, key_string);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
@@ -180,8 +179,7 @@ void Check_From_WChat(const char* wchat_name) {
     */
     base::At(key_string, 0) = 0;
 
-    WWGetPrivateProfileString("Internet", "Host", default_string, key_string,
-                              ini_file);
+    ini.GetString("Internet", "Host", default_string, key_string);
 
     if ((std::string_view(key_string) == default_string)) {
       if (wchat_name) {
@@ -227,8 +225,7 @@ void Check_From_WChat(const char* wchat_name) {
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
 int Read_Game_Options(const char* name) {
-  std::string ini_storage;
-  const char* buffer = nullptr;
+  engine::file::IniFile ini;
 
   char filename[256] = {"INVALID.123"};
 
@@ -247,49 +244,44 @@ int Read_Game_Options(const char* name) {
     }
   }
   if (name) {
-    ini_storage = engine::file::ReadProfileText(*file);
-    buffer = ini_storage.c_str();
+    LoadIniText(engine::file::ReadProfileText(*file), ini);
   } else {
 #ifdef _WIN32
-    buffer = DDEServer.Get_MPlayer_Game_Info();
+    // No packet from the DDE server leaves the database empty, so every
+    // setting below takes its default.
+    if (const char* dde_text = DDEServer.Get_MPlayer_Game_Info()) {
+      LoadIniText(dde_text, ini);
+    }
 #endif
   }
 
   /*------------------------------------------------------------------------
   Get the player's name
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Options", "Handle", "Noname",
-                            TheSession().player_name(), buffer);
+  ini.GetString("Options", "Handle", "Noname", TheSession().player_name());
   base::SafeCopy(TheSession().game_name(), TheSession().player_name());
-  TheSession().color_index() =
-      WWGetPrivateProfileInt("Options", "Color", 0, buffer);
+  TheSession().color_index() = ini.GetInt("Options", "Color", 0);
   TheSession().preferred_color() = TheSession().color_index();
-  TheSession().house() = static_cast<HousesType>(WWGetPrivateProfileInt(
-      "Options", "Side", static_cast<int>(HOUSE_GOOD), buffer));
+  TheSession().house() = static_cast<HousesType>(
+      ini.GetInt("Options", "Side", static_cast<int>(HOUSE_GOOD)));
 
-  TheSession().credits() =
-      WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
-  TheSession().bases() = WWGetPrivateProfileInt("Options", "Bases", 0, buffer);
-  TheSession().tiberium() =
-      WWGetPrivateProfileInt("Options", "Tiberium", 0, buffer);
-  TheSession().crates() =
-      WWGetPrivateProfileInt("Options", "Crates", 0, buffer);
-  TheSession().ghosts() = WWGetPrivateProfileInt("Options", "AI", 0, buffer);
-  TheWorld().build_level() =
-      WWGetPrivateProfileInt("Options", "BuildLevel", 0, buffer);
-  TheSession().unit_count() =
-      WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer);
-  TheWorld().seed() = WWGetPrivateProfileInt("Options", "Seed", 0, buffer);
-  TheSpecial().IsCaptureTheFlag = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer));
+  TheSession().credits() = ini.GetInt("Options", "Credits", 0);
+  TheSession().bases() = ini.GetInt("Options", "Bases", 0);
+  TheSession().tiberium() = ini.GetInt("Options", "Tiberium", 0);
+  TheSession().crates() = ini.GetInt("Options", "Crates", 0);
+  TheSession().ghosts() = ini.GetInt("Options", "AI", 0);
+  TheWorld().build_level() = ini.GetInt("Options", "BuildLevel", 0);
+  TheSession().unit_count() = ini.GetInt("Options", "UnitCount", 0);
+  TheWorld().seed() = ini.GetInt("Options", "Seed", 0);
+  TheSpecial().IsCaptureTheFlag =
+      static_cast<unsigned>(ini.GetInt("Options", "CaptureTheFlag", 0));
   // externs.h declares these unsigned long; the INI stores them as ints.
-  TheNetwork().westwood_game_id() = static_cast<uint32_t>(
-      WWGetPrivateProfileInt("Internet", "GameID", 0, buffer));
-  TheNetwork().westwood_start_time() = static_cast<uint32_t>(
-      WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer));
+  TheNetwork().westwood_game_id() =
+      static_cast<uint32_t>(ini.GetInt("Internet", "GameID", 0));
+  TheNetwork().westwood_start_time() =
+      static_cast<uint32_t>(ini.GetInt("Internet", "StartTime", 0));
 
-  TheNetwork().internet_max_players() =
-      WWGetPrivateProfileInt("Internet", "MaxPlayers", 2, buffer);
+  TheNetwork().internet_max_players() = ini.GetInt("Internet", "MaxPlayers", 2);
 
   if (TheSession().tiberium()) {
     TheSpecial().IsTGrowth = 1;
@@ -298,8 +290,7 @@ int Read_Game_Options(const char* name) {
     TheSpecial().IsTGrowth = 0;
     TheSpecial().IsTSpread = 0;
   }
-  TheSession().scenario_index() =
-      WWGetPrivateProfileInt("Options", "Scenario", 0, buffer);
+  TheSession().scenario_index() = ini.GetInt("Options", "Scenario", 0);
   TheWorld().scenario() =
       TheSession().scenario_index();  // MPlayerFilenum[ScenarioIdx];
 
@@ -309,9 +300,9 @@ int Read_Game_Options(const char* name) {
       Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
   TheSession().max_ahead() = TheNetwork().chat_max_ahead() =
-      WWGetPrivateProfileInt("Timing", "MaxAhead", 9, buffer);
+      ini.GetInt("Timing", "MaxAhead", 9);
   TheSession().frame_send_rate() = TheNetwork().chat_send_rate() =
-      WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
+      ini.GetInt("Timing", "SendRate", 3);
 
   if (name) {
   }

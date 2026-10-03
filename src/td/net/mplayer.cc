@@ -69,12 +69,11 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/game_file.h"
-#include "engine/file/profile_buffer.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/net/ipxmgr.h"
@@ -89,7 +88,7 @@
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/data/ini.h"
-#include "td/data/profile.h"
+#include "td/data/ini_io.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -410,6 +409,20 @@ GameType Select_MPlayer_Game() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_MultiPlayer_Settings() {
+  /*------------------------------------------------------------------------
+  Create filename and read the file. Without one the lists stay empty and
+  everything else keeps its value.
+  ------------------------------------------------------------------------*/
+  engine::file::IniFile ini;
+  if (!LoadIniFile("CONQUER.INI", ini)) {
+    TheNetwork().init_strings().clear();
+    TheNetwork().phone_book().clear();
+    return;
+  }
+  ReadMultiPlayerSettings(ini);
+}
+
+void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   char buf[128];           // buffer for parsing INI entry
   int i = 0;
 
@@ -423,73 +436,55 @@ void Read_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   TheNetwork().phone_book().clear();
 
-  /*------------------------------------------------------------------------
-  Create filename and read the file.
-  ------------------------------------------------------------------------*/
-  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
-  if (!ini) {
-    return;
-  }
-  const char* buffer = ini->data();
-
   if (!TheSpecial().IsFromWChat) {
     /*------------------------------------------------------------------------
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/
-    WWGetPrivateProfileString("MultiPlayer", "Handle", "Noname",
-                              TheSession().player_name(), buffer);
+    ini.GetString("MultiPlayer", "Handle", "Noname",
+                  TheSession().player_name());
 
     /*------------------------------------------------------------------------
     Get the player's last-used Color
     ------------------------------------------------------------------------*/
-    TheSession().preferred_color() =
-        WWGetPrivateProfileInt("MultiPlayer", "Color", 0, buffer);
-    TheSession().house() = static_cast<HousesType>(WWGetPrivateProfileInt(
-        "MultiPlayer", "Side", static_cast<int>(HOUSE_GOOD), buffer));
+    TheSession().preferred_color() = ini.GetInt("MultiPlayer", "Color", 0);
+    TheSession().house() = static_cast<HousesType>(
+        ini.GetInt("MultiPlayer", "Side", static_cast<int>(HOUSE_GOOD)));
     TheNetwork().current_phone_index() =
-        WWGetPrivateProfileInt("MultiPlayer", "PhoneIndex", -1, buffer);
+        ini.GetInt("MultiPlayer", "PhoneIndex", -1);
   } else {
     TheNetwork().current_phone_index() = -1;
   }
 
-  TheDebugState().trap_check_heap() =
-      WWGetPrivateProfileInt("MultiPlayer", "CheckHeap", 0, buffer);
+  TheDebugState().trap_check_heap() = ini.GetInt("MultiPlayer", "CheckHeap", 0);
 
   /*------------------------------------------------------------------------
   Read in default serial settings
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(
-      "SerialDefaults", "ModemName", "NoName",
-      std::span(TheNetwork().serial_defaults().ModemName)
-          .first(static_cast<std::size_t>(MODEM_NAME_MAX)),
-      buffer);
+  ini.GetString("SerialDefaults", "ModemName", "NoName",
+                std::span(TheNetwork().serial_defaults().ModemName)
+                    .first(static_cast<std::size_t>(MODEM_NAME_MAX)));
   if ((std::string_view(TheNetwork().serial_defaults().ModemName) ==
        "NoName")) {
     base::At(TheNetwork().serial_defaults().ModemName, 0) = 0;
   }
-  WWGetPrivateProfileString("SerialDefaults", "Port", "0",
-                            std::span(buf).first(static_cast<std::size_t>(5)),
-                            buffer);
+  ini.GetString("SerialDefaults", "Port", "0",
+                std::span(buf).first(static_cast<std::size_t>(5)));
   if (const auto value = base::ParseHex<int>(buf)) {
     TheNetwork().serial_defaults().Port = *value;
   }
-  TheNetwork().serial_defaults().IRQ =
-      WWGetPrivateProfileInt("SerialDefaults", "IRQ", -1, buffer);
+  TheNetwork().serial_defaults().IRQ = ini.GetInt("SerialDefaults", "IRQ", -1);
   TheNetwork().serial_defaults().Baud =
-      WWGetPrivateProfileInt("SerialDefaults", "Baud", -1, buffer);
+      ini.GetInt("SerialDefaults", "Baud", -1);
   TheNetwork().serial_defaults().Init =
-      WWGetPrivateProfileInt("SerialDefaults", "Init", 0, buffer) != 0;
+      ini.GetInt("SerialDefaults", "Init", 0) != 0;
   TheNetwork().serial_defaults().Compression =
-      WWGetPrivateProfileInt("SerialDefaults", "Compression", 0, buffer) != 0;
+      ini.GetInt("SerialDefaults", "Compression", 0) != 0;
   TheNetwork().serial_defaults().ErrorCorrection =
-      WWGetPrivateProfileInt("SerialDefaults", "ErrorCorrection", 0, buffer) !=
-      0;
+      ini.GetInt("SerialDefaults", "ErrorCorrection", 0) != 0;
   TheNetwork().serial_defaults().HardwareFlowControl =
-      WWGetPrivateProfileInt("SerialDefaults", "HardwareFlowControl", 1,
-                             buffer) != 0;
-  WWGetPrivateProfileString("SerialDefaults", "DialMethod", "T",
-                            std::span(buf).first(static_cast<std::size_t>(2)),
-                            buffer);
+      ini.GetInt("SerialDefaults", "HardwareFlowControl", 1) != 0;
+  ini.GetString("SerialDefaults", "DialMethod", "T",
+                std::span(buf).first(static_cast<std::size_t>(2)));
 
   // find dial method
 
@@ -509,16 +504,14 @@ void Read_MultiPlayer_Settings() {
   }
 
   TheNetwork().serial_defaults().InitStringIndex =
-      WWGetPrivateProfileInt("SerialDefaults", "InitStringIndex", 0, buffer);
+      ini.GetInt("SerialDefaults", "InitStringIndex", 0);
 
-  TheNetwork().serial_defaults().CallWaitStringIndex = WWGetPrivateProfileInt(
-      "SerialDefaults", "CallWaitStringIndex", kCallWaitCustom, buffer);
+  TheNetwork().serial_defaults().CallWaitStringIndex =
+      ini.GetInt("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
 
-  WWGetPrivateProfileString(
-      "SerialDefaults", "CallWaitString", "",
-      std::span(TheNetwork().serial_defaults().CallWaitString)
-          .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)),
-      buffer);
+  ini.GetString("SerialDefaults", "CallWaitString", "",
+                std::span(TheNetwork().serial_defaults().CallWaitString)
+                    .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)));
 
   if (TheNetwork().serial_defaults().IRQ == 0 ||
       TheNetwork().serial_defaults().Baud == 0) {
@@ -528,42 +521,26 @@ void Read_MultiPlayer_Settings() {
   }
 
   /*------------------------------------------------------------------------
-  Set 'tbuffer' to point past the actual INI data
+  Read in & store each entry, in the order the file lists them
   ------------------------------------------------------------------------*/
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
-
-  /*------------------------------------------------------------------------
-  Read all Base-Scenario names into 'tbuffer'
-  ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("InitStrings", nullptr, nullptr, key_cursor,
-                            buffer);
-
-  /*------------------------------------------------------------------------
-  Read in & store each entry
-  ------------------------------------------------------------------------*/
-  while (*tbuffer != '\0') {
+  for (int index = 0; index < ini.EntryCount("InitStrings"); index++) {
     auto entry = std::make_unique<char[]>(INITSTRBUF_MAX);
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry.get(), INITSTRBUF_MAX);
 
-    WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry_storage,
-                              buffer);
+    ini.GetString("InitStrings", ini.EntryName("InitStrings", index), "",
+                  entry_storage);
 
     std::ranges::transform(base::MutableCString(entry.get()), entry.get(),
                            absl::ascii_toupper);
 
     TheNetwork().init_strings().push_back(std::move(entry));
-
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 
   // if no entries then have at least one
 
-  if (key_cursor.data() == key_storage.data()) {
+  if (TheNetwork().init_strings().empty()) {
     auto entry = std::make_unique<char[]>(INITSTRBUF_MAX);
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -574,22 +551,10 @@ void Read_MultiPlayer_Settings() {
   }
 
   /*------------------------------------------------------------------------
-  Repeat the process for the phonebook
-  ------------------------------------------------------------------------*/
-  key_cursor = std::span(key_storage);
-  tbuffer = key_cursor.data();
-
-  /*------------------------------------------------------------------------
-  Read in all phone book listings.
+  Read in all phone book listings, in the order the file lists them.
   Format: Name=PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-
-  /*........................................................................
-  Read the entry names in
-  ........................................................................*/
-  WWGetPrivateProfileString("PhoneBook", nullptr, nullptr, key_cursor, buffer);
-
-  while (*tbuffer != '\0') {
+  for (int index = 0; index < ini.EntryCount("PhoneBook"); index++) {
     /*.....................................................................
     Create a new phone book entry
     .....................................................................*/
@@ -598,9 +563,8 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    WWGetPrivateProfileString(
-        "PhoneBook", tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(128)), buffer);
+    ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "",
+                  std::span(buf).first(static_cast<std::size_t>(128)));
 
     /*.....................................................................
     Extract name, phone # & serial port settings
@@ -719,24 +683,18 @@ void Read_MultiPlayer_Settings() {
     Add it to our list
     .....................................................................*/
     TheNetwork().phone_book().push_back(std::move(phone));
-
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 
   /*------------------------------------------------------------------------
   Read special recording playback values, to help find sync bugs
   ------------------------------------------------------------------------*/
   if (TheSession().playback_game()) {
-    TheDebugState().trap_frame() =
-        WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
+    TheDebugState().trap_frame() = ini.GetInt("SyncBug", "Frame", 0x7fffffff);
 
-    TheDebugState().trap_object_type() =
-        static_cast<RTTIType>(WWGetPrivateProfileInt(
-            "SyncBug", "Type", static_cast<int>(RTTI_NONE), buffer));
-    WWGetPrivateProfileString(
-        "SyncBug", "Type", "NONE",
-        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
+    TheDebugState().trap_object_type() = static_cast<RTTIType>(
+        ini.GetInt("SyncBug", "Type", static_cast<int>(RTTI_NONE)));
+    ini.GetString("SyncBug", "Type", "NONE",
+                  std::span(buf).first(static_cast<std::size_t>(80)));
     if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
       TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
     } else if (absl::EqualsIgnoreCase(buf, "ANIM")) {
@@ -753,19 +711,43 @@ void Read_MultiPlayer_Settings() {
       TheDebugState().trap_object_type() = RTTI_NONE;
     }
 
-    WWGetPrivateProfileString(
-        "SyncBug", "Coord", "0",
-        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
+    ini.GetString("SyncBug", "Coord", "0",
+                  std::span(buf).first(static_cast<std::size_t>(80)));
     TheDebugState().trap_coord() =
         Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
 
-    WWGetPrivateProfileString(
-        "SyncBug", "this", "0",
-        std::span(buf).first(static_cast<std::size_t>(80)), buffer);
+    ini.GetString("SyncBug", "this", "0",
+                  std::span(buf).first(static_cast<std::size_t>(80)));
     if (const auto trap_this = base::ParseHex<uintptr_t>(buf)) {
       TheDebugState().trap_this() = std::bit_cast<void*>(*trap_this);
     }
   }
+}
+
+// Returns the index the file holds for `index` into the init strings. The file
+// cannot hold an empty string, so the ones after an empty one move up by a
+// place; an index at an empty string itself points at the next string.
+static int InitStringIndexInFile(const int index) {
+  const auto& strings = TheNetwork().init_strings();
+  if (index < 0) {
+    return index;
+  }
+  int file_index = index;
+  int stored = 0;
+  for (int i = 0; i < std::ssize(strings); i++) {
+    if (std::string_view(base::At(strings, i).get()).empty()) {
+      if (i < index) {
+        file_index--;
+      }
+    } else {
+      stored++;
+    }
+  }
+  if (index < std::ssize(strings) &&
+      std::string_view(base::At(strings, index).get()).empty()) {
+    file_index = std::clamp(file_index, 0, std::max(stored - 1, 0));
+  }
+  return file_index;
 }
 
 /***********************************************************************************************
@@ -780,112 +762,99 @@ void Read_MultiPlayer_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Write_MultiPlayer_Settings() {
-  char entrytext[4];
-  char buf[128];  // buffer for parsing INI entry
+  // The file may hold entries and sections this routine does not write, which
+  // loading it first carries over.
+  engine::file::IniFile ini;
+  LoadIniFile("CONQUER.INI", ini);
+  WriteMultiPlayerSettings(ini);
+  SaveIniFile("CONQUER.INI", ini);
+}
 
-  std::string ini = engine::file::ReadProfileFile("CONQUER.INI").value_or("");
-
+void WriteMultiPlayerSettings(engine::file::IniFile& ini) {
   /*------------------------------------------------------------------------
   Save the player's last-used Handle & Color
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex",
-                           TheNetwork().current_phone_index(), ini);
-  WWWritePrivateProfileInt("MultiPlayer", "Color",
-                           TheSession().preferred_color(), ini);
-  WWWritePrivateProfileInt("MultiPlayer", "Side",
-                           static_cast<int>(TheSession().house()), ini);
-  WWWritePrivateProfileString("MultiPlayer", "Handle",
-                              TheSession().player_name(), ini);
+  ini.PutInt("MultiPlayer", "PhoneIndex", TheNetwork().current_phone_index());
+  ini.PutInt("MultiPlayer", "Color", TheSession().preferred_color());
+  ini.PutInt("MultiPlayer", "Side", static_cast<int>(TheSession().house()));
+  // An empty Handle drops the entry, and a missing one reads as "Noname", as
+  // the empty one the old writer stored did.
+  ini.PutString("MultiPlayer", "Handle", TheSession().player_name());
 
   /*------------------------------------------------------------------------
   Clear all existing SerialDefault entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr, ini);
+  ini.Clear("SerialDefaults");
 
   /*------------------------------------------------------------------------
-  Save default serial settings in opposite order you want to see them
+  Save default serial settings. A text left empty is not stored; the reader's
+  default for it is the empty text, which is what it would have read.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("SerialDefaults", "CallWaitString",
-                              TheNetwork().serial_defaults().CallWaitString,
-                              ini);
-  WWWritePrivateProfileInt("SerialDefaults", "CallWaitStringIndex",
-                           TheNetwork().serial_defaults().CallWaitStringIndex,
-                           ini);
-  WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
-                           TheNetwork().serial_defaults().InitStringIndex, ini);
-  WWWritePrivateProfileInt("SerialDefaults", "Init",
-                           TheNetwork().serial_defaults().Init ? 1 : 0, ini);
-  WWWritePrivateProfileString(
-      "SerialDefaults", "DialMethod",
-      kDialMethodCheck.at(TheNetwork().serial_defaults().DialMethod), ini);
-  WWWritePrivateProfileInt("SerialDefaults", "Baud",
-                           TheNetwork().serial_defaults().Baud, ini);
-  WWWritePrivateProfileInt("SerialDefaults", "IRQ",
-                           TheNetwork().serial_defaults().IRQ, ini);
-  absl::SNPrintF(
-      buf, sizeof(buf), "%x",
-      static_cast<unsigned int>(TheNetwork().serial_defaults().Port));
-  WWWritePrivateProfileString("SerialDefaults", "Port", buf, ini);
-  WWWritePrivateProfileString("SerialDefaults", "ModemName",
-                              TheNetwork().serial_defaults().ModemName, ini);
-  WWWritePrivateProfileInt("SerialDefaults", "Compression",
-                           TheNetwork().serial_defaults().Compression ? 1 : 0,
-                           ini);
-  WWWritePrivateProfileInt(
-      "SerialDefaults", "ErrorCorrection",
-      TheNetwork().serial_defaults().ErrorCorrection ? 1 : 0, ini);
-  WWWritePrivateProfileInt(
-      "SerialDefaults", "HardwareFlowControl",
-      TheNetwork().serial_defaults().HardwareFlowControl ? 1 : 0, ini);
+  const SerialSettingsType& serial = TheNetwork().serial_defaults();
+  ini.PutString("SerialDefaults", "CallWaitString", serial.CallWaitString);
+  ini.PutInt("SerialDefaults", "CallWaitStringIndex",
+             serial.CallWaitStringIndex);
+  ini.PutInt("SerialDefaults", "InitStringIndex",
+             InitStringIndexInFile(serial.InitStringIndex));
+  ini.PutInt("SerialDefaults", "Init", serial.Init ? 1 : 0);
+  ini.PutString("SerialDefaults", "DialMethod",
+                kDialMethodCheck.at(serial.DialMethod));
+  ini.PutInt("SerialDefaults", "Baud", serial.Baud);
+  ini.PutInt("SerialDefaults", "IRQ", serial.IRQ);
+  ini.PutString("SerialDefaults", "Port",
+                absl::StrFormat("%x", static_cast<unsigned int>(serial.Port)));
+  ini.PutString("SerialDefaults", "ModemName", serial.ModemName);
+  ini.PutInt("SerialDefaults", "Compression", serial.Compression ? 1 : 0);
+  ini.PutInt("SerialDefaults", "ErrorCorrection",
+             serial.ErrorCorrection ? 1 : 0);
+  ini.PutInt("SerialDefaults", "HardwareFlowControl",
+             serial.HardwareFlowControl ? 1 : 0);
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("InitStrings", nullptr, nullptr, ini);
+  ini.Clear("InitStrings");
 
   /*------------------------------------------------------------------------
-  Save all InitString entries.  In descending order so they come out in
-  ascending order.
+  Save all InitString entries, which land in the file in the order written. An
+  empty one cannot be stored, so the ones after it move up and
+  InitStringIndexInFile() renumbers the indexes that point at them.
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(std::ssize(TheNetwork().init_strings())) - 1;
-       i >= 0; i--) {
-    absl::SNPrintF(buf, sizeof(buf), "%03d", i);
-    WWWritePrivateProfileString(
-        "InitStrings", buf,
-        TheNetwork().init_strings().at(base::ToSize(i)).get(), ini);
+  int stored = 0;
+  for (const auto& init_string : TheNetwork().init_strings()) {
+    if (std::string_view(init_string.get()).empty()) {
+      continue;
+    }
+    ini.PutString("InitStrings", absl::StrFormat("%03d", stored++),
+                  init_string.get());
   }
 
   /*------------------------------------------------------------------------
   Clear all existing Phone Book entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr, ini);
+  ini.Clear("PhoneBook");
 
   /*------------------------------------------------------------------------
-  Save all Phone Book entries.
-  Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
+  Save all Phone Book entries, in the order of the book.
+  Format: Entry=Name|PhoneNum|Port|IRQ|Baud|Compression|ErrorCorrection|
+          HardwareFlowControl|DialMethod|InitStringIndex|CallWaitStringIndex|
+          CallWaitString
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(std::ssize(TheNetwork().phone_book())) - 1;
-       i >= 0; i--) {
-    const PhoneEntryClass& phone =
-        *TheNetwork().phone_book().at(base::ToSize(i));
-    absl::SNPrintF(
-        buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", phone.Name,
-        phone.Number, static_cast<unsigned int>(phone.Settings.Port),
-        phone.Settings.IRQ, phone.Settings.Baud,
-        phone.Settings.Compression ? 1 : 0,
-        phone.Settings.ErrorCorrection ? 1 : 0,
-        phone.Settings.HardwareFlowControl ? 1 : 0,
-        kDialMethodCheck.at(phone.Settings.DialMethod),
-        phone.Settings.InitStringIndex, phone.Settings.CallWaitStringIndex,
-        phone.Settings.CallWaitString);
-    absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
-    WWWritePrivateProfileString("PhoneBook", entrytext, buf, ini);
+  int entry_number = 0;
+  for (const auto& entry : TheNetwork().phone_book()) {
+    const PhoneEntryClass& phone = *entry;
+    ini.PutString(
+        "PhoneBook", absl::StrFormat("%03d", entry_number++),
+        absl::StrFormat(
+            "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", phone.Name, phone.Number,
+            static_cast<unsigned int>(phone.Settings.Port), phone.Settings.IRQ,
+            phone.Settings.Baud, phone.Settings.Compression ? 1 : 0,
+            phone.Settings.ErrorCorrection ? 1 : 0,
+            phone.Settings.HardwareFlowControl ? 1 : 0,
+            kDialMethodCheck.at(phone.Settings.DialMethod),
+            InitStringIndexInFile(phone.Settings.InitStringIndex),
+            phone.Settings.CallWaitStringIndex, phone.Settings.CallWaitString));
   }
-
-  /*------------------------------------------------------------------------
-  Write the INI data out to a file.
-  ------------------------------------------------------------------------*/
-  engine::file::WriteProfileFile("CONQUER.INI", ini);
 }
 
 /***********************************************************************************************
@@ -935,15 +904,15 @@ void Read_Scenario_Descriptions() {
                       base::At(TheSession().scenario_files(), i),
                       SCEN_PLAYER_MPLAYER, game::SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
+    engine::file::IniFile scenario;
+    LoadIniFile(fname, scenario);
 
     /*.....................................................................
     Extract description & add it to the list.
     .....................................................................*/
-    WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville",
-                              std::span(base::At(mplayer_descriptions, i))
-                                  .first(static_cast<std::size_t>(40)),
-                              ini.c_str());
+    scenario.GetString("Basic", "Name", "Nulls-Ville",
+                       std::span(base::At(mplayer_descriptions, i))
+                           .first(static_cast<std::size_t>(40)));
     TheSession().scenarios().push_back(base::At(mplayer_descriptions, i));
   }
 }
