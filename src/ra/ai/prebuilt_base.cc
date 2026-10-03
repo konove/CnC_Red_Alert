@@ -129,15 +129,14 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // only the fallback for a section that omits it.
   house_ = GetHousesType(ini, kIniSection, "Player", ThePlayer()->Class->House);
 
-  const int node_count = ini.Get_Int(kIniSection, "Count", 0);
+  const int node_count = ini.GetInt(kIniSection, "Count", 0);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
     char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    if (ini.Get_String(kIniSection, entry.c_str(), nullptr, value,
-                       sizeof(value)) == 0) {
+    if (ini.GetString(kIniSection, entry, "", value) == 0) {
       continue;
     }
 
@@ -166,7 +165,7 @@ void PrebuiltBase::WriteIni(engine::file::IniFile& ini) const {
   PutHousesType(ini, kIniSection, "Player", house_);
 
   // ReadIni() finds the entries by counting from "000" up to Count.
-  ini.Put_Int(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));
+  ini.PutInt(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));
 
   for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
     const auto& [type, cell] = base::At(nodes_, i);
@@ -174,7 +173,7 @@ void PrebuiltBase::WriteIni(engine::file::IniFile& ini) const {
     const std::string value = absl::StrFormat(
         "%s,%d", BuildingTypeClass::As_Reference(type).IniName, cell.index());
 
-    ini.Put_String(kIniSection, entry.c_str(), value.c_str());
+    ini.PutString(kIniSection, entry, value);
   }
 }
 

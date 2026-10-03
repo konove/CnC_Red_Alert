@@ -20,11 +20,11 @@ namespace {
 // Values from the [WinHotkeys] section of a Steam install's REDALERT.INI.
 TEST(OptionsHotkeysTest, LoadsWindowsKeyCodes) {
   engine::file::IniFile ini;
-  ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyForceMove1", 18));  // VK_MENU
-  ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyStop", 83));        // 'S'
-  ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyTeam1", 49));       // '1'
-  ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyHome2", 103));      // VK_NUMPAD7
-  ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyRepairOn", 0));
+  ASSERT_TRUE(ini.PutInt("WinHotkeys", "KeyForceMove1", 18));  // VK_MENU
+  ASSERT_TRUE(ini.PutInt("WinHotkeys", "KeyStop", 83));        // 'S'
+  ASSERT_TRUE(ini.PutInt("WinHotkeys", "KeyTeam1", 49));       // '1'
+  ASSERT_TRUE(ini.PutInt("WinHotkeys", "KeyHome2", 103));      // VK_NUMPAD7
+  ASSERT_TRUE(ini.PutInt("WinHotkeys", "KeyRepairOn", 0));
 
   OptionsClass options;
   options.KeyRepairOn = engine::window::KN_T;
@@ -52,11 +52,11 @@ TEST(OptionsHotkeysTest, SavesWindowsKeyCodes) {
   const OptionsClass options;
   options.SaveHotkeys(ini);
 
-  EXPECT_EQ(ini.Get_Int("WinHotkeys", "KeyForceMove1"), 18);
-  EXPECT_EQ(ini.Get_Int("WinHotkeys", "KeyStop"), 83);
-  EXPECT_EQ(ini.Get_Int("WinHotkeys", "KeyTeam10"), 48);
-  EXPECT_EQ(ini.Get_Int("WinHotkeys", "KeyHome2"), 103);
-  EXPECT_EQ(ini.Get_Int("WinHotkeys", "KeyBookmark1"), 120);  // VK_F9
+  EXPECT_EQ(ini.GetInt("WinHotkeys", "KeyForceMove1"), 18);
+  EXPECT_EQ(ini.GetInt("WinHotkeys", "KeyStop"), 83);
+  EXPECT_EQ(ini.GetInt("WinHotkeys", "KeyTeam10"), 48);
+  EXPECT_EQ(ini.GetInt("WinHotkeys", "KeyHome2"), 103);
+  EXPECT_EQ(ini.GetInt("WinHotkeys", "KeyBookmark1"), 120);  // VK_F9
 }
 
 // Writing the bindings and reading them back changes none of them.

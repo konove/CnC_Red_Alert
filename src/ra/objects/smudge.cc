@@ -307,11 +307,11 @@ void SmudgeClass::Disown(Cell cell) {
 void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];  // Working string staging buffer.
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+    ini.GetString(INI_Name(), entry, "", buf);
     base::Tokenizer tokens(buf, ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
@@ -368,7 +368,7 @@ void SmudgeClass::Write_INI(engine::file::IniFile& ini) {
         absl::SNPrintF(uname, sizeof(uname), "%d", index);
         absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d", stype->IniName, index,
                        ptr->SmudgeData);
-        ini.Put_String(INI_Name(), uname, buf);
+        ini.PutString(INI_Name(), uname, buf);
       }
     }
   }

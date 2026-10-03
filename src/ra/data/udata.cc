@@ -1318,10 +1318,9 @@ void UnitTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
 bool UnitTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsNoFireWhileMoving =
-        ini.Get_Bool(IniName, "NoMovingFire", IsNoFireWhileMoving);
-    Speed = ini.Get_Bool(IniName, "Tracked", Speed == SPEED_TRACK)
-                ? SPEED_TRACK
-                : SPEED_WHEEL;
+        ini.GetBool(IniName, "NoMovingFire", IsNoFireWhileMoving);
+    Speed = ini.GetBool(IniName, "Tracked", Speed == SPEED_TRACK) ? SPEED_TRACK
+                                                                  : SPEED_WHEEL;
 
     /*
     **	If this unit can drive over walls, then mark it as recognizing the

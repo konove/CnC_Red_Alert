@@ -2450,7 +2450,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         // szInform = szInform.subspan(7);
         //			//	Check rules.ini compatibility.
         //			int iRulesID = atoi( szInform );
-        //			if( RuleINI.Get_Unique_ID() != iRulesID )
+        //			if( RuleINI.UniqueId() != iRulesID )
         //			{
         //				//	Rules.ini incompatible. Don't
         // respond to call for start.
@@ -2630,7 +2630,7 @@ void WOL_GameSetupDialog::SendParams() {
       GParamsLastSent.bSlowUnitBuildRate ? 1 : 0,
       TheRules()
           .rule_ini()
-          .Get_Unique_ID()  //	Used to verify rules.ini files match.
+          .UniqueId()  //	Used to verify rules.ini files match.
   );
 
   pWO->SendGameOpt(szSend, nullptr);
@@ -2870,7 +2870,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   }
   const int iRulesID = base::ParseIntegerOr<int>(szToken, 0);
 
-  return (TheRules().rule_ini().Get_Unique_ID() == iRulesID);
+  return (TheRules().rule_ini().UniqueId() == iRulesID);
 }
 
 //***********************************************************************************************

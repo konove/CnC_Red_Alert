@@ -165,17 +165,17 @@ WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 bool WarheadTypeClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
-    SpreadFactor = ini.Get_Int(Name(), "Spread", SpreadFactor);
-    IsWallDestroyer = ini.Get_Bool(Name(), "Wall", IsWallDestroyer);
-    IsWoodDestroyer = ini.Get_Bool(Name(), "Wood", IsWoodDestroyer);
-    IsTiberiumDestroyer = ini.Get_Bool(Name(), "Ore", IsTiberiumDestroyer);
-    ExplosionSet = ini.Get_Int(Name(), "Explosion", ExplosionSet);
-    InfantryDeath = ini.Get_Int(Name(), "InfDeath", InfantryDeath);
+  if (ini.HasSection(Name())) {
+    SpreadFactor = ini.GetInt(Name(), "Spread", SpreadFactor);
+    IsWallDestroyer = ini.GetBool(Name(), "Wall", IsWallDestroyer);
+    IsWoodDestroyer = ini.GetBool(Name(), "Wood", IsWoodDestroyer);
+    IsTiberiumDestroyer = ini.GetBool(Name(), "Ore", IsTiberiumDestroyer);
+    ExplosionSet = ini.GetInt(Name(), "Explosion", ExplosionSet);
+    InfantryDeath = ini.GetInt(Name(), "InfDeath", InfantryDeath);
 
     char buffer[128];
-    if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
-                       buffer, sizeof(buffer))) {
+    if (ini.GetString(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
+                      buffer)) {
       base::Tokenizer tokens(buffer, ",");
       for (const game::ArmorType armor :
            magic_enum::enum_values<game::ArmorType>()) {

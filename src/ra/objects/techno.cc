@@ -6565,11 +6565,11 @@ static inline int Scale_To_256(int val) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
+  if (ini.HasSection(Name())) {
     char buffer[256];
     const int id = ((static_cast<int>(RTTI) + 1) * 100) + ID;
 
-    ini.Get_String(Name(), "Name", "", buffer, sizeof(buffer));
+    ini.GetString(Name(), "Name", "", buffer);
     if (!std::string_view(buffer).empty()) {
       if constexpr (!config::kIsEnglish) {
         for (int xx = 0; base::At(kNameOverrides, base::ToSize(xx)) != nullptr;
@@ -6596,9 +6596,9 @@ bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
       }
     }
 
-    IsDoubleOwned = ini.Get_Bool(Name(), "DoubleOwned", IsDoubleOwned);
+    IsDoubleOwned = ini.GetBool(Name(), "DoubleOwned", IsDoubleOwned);
     ThreatRange = GetLepton(ini, Name(), "GuardRange", ThreatRange);
-    IsExploding = ini.Get_Bool(Name(), "Explodes", IsExploding);
+    IsExploding = ini.GetBool(Name(), "Explodes", IsExploding);
     PrimaryWeapon = WeaponTypeClass::As_Pointer(GetWeaponType(
         ini, Name(), "Primary",
         PrimaryWeapon != nullptr ? static_cast<WeaponType>(PrimaryWeapon->ID)
@@ -6608,29 +6608,28 @@ bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
                       SecondaryWeapon != nullptr
                           ? static_cast<WeaponType>(SecondaryWeapon->ID)
                           : WEAPON_NONE));
-    IsCloakable = ini.Get_Bool(Name(), "Cloakable", IsCloakable);
-    IsCrushable = ini.Get_Bool(Name(), "Crushable", IsCrushable);
-    IsScanner = ini.Get_Bool(Name(), "Sensors", IsScanner);
+    IsCloakable = ini.GetBool(Name(), "Cloakable", IsCloakable);
+    IsCrushable = ini.GetBool(Name(), "Crushable", IsCrushable);
+    IsScanner = ini.GetBool(Name(), "Sensors", IsScanner);
     Armor = GetArmorType(ini, Name(), "Armor", Armor);
     Prerequisite = GetBuildings(ini, Name(), "Prerequisite", Prerequisite);
-    MaxStrength = static_cast<int16_t>(
-        ini.Get_Int(Name(), "Strength", MaxStrength));
-    SightRange = ini.Get_Int(Name(), "Sight", SightRange);
-    Level = ini.Get_Int(Name(), "TechLevel", Level);
-    MaxSpeed = static_cast<game::MPHType>(Scale_To_256(ini.Get_Int(
+    MaxStrength =
+        static_cast<int16_t>(ini.GetInt(Name(), "Strength", MaxStrength));
+    SightRange = ini.GetInt(Name(), "Sight", SightRange);
+    Level = ini.GetInt(Name(), "TechLevel", Level);
+    MaxSpeed = static_cast<game::MPHType>(Scale_To_256(ini.GetInt(
         Name(), "Speed", Fixed(static_cast<int>(MaxSpeed), 256) * 100)));
-    Cost = ini.Get_Int(Name(), "Cost", Cost);
-    MaxAmmo = ini.Get_Int(Name(), "Ammo", MaxAmmo);
-    Risk = Reward = Points = ini.Get_Int(Name(), "Points", Points);
+    Cost = ini.GetInt(Name(), "Cost", Cost);
+    MaxAmmo = ini.GetInt(Name(), "Ammo", MaxAmmo);
+    Risk = Reward = Points = ini.GetInt(Name(), "Points", Points);
     Ownable = GetOwners(ini, Name(), "Owner", Ownable);
-    IsCrew = ini.Get_Bool(Name(), "Crewed", IsCrew);
-    IsRepairable = ini.Get_Bool(Name(), "Repairable", IsRepairable);
-    IsInvisible = ini.Get_Bool(Name(), "Invisible", IsInvisible);
-    IsSelfHealing = ini.Get_Bool(Name(), "SelfHealing", IsSelfHealing);
-    ROT = ini.Get_Int(Name(), "ROT", ROT);
-    MaxPassengers = ini.Get_Int(Name(), "Passengers", MaxPassengers);
-    ini.Get_String(Name(), "Image", GraphicName, GraphicName,
-                   sizeof(GraphicName));
+    IsCrew = ini.GetBool(Name(), "Crewed", IsCrew);
+    IsRepairable = ini.GetBool(Name(), "Repairable", IsRepairable);
+    IsInvisible = ini.GetBool(Name(), "Invisible", IsInvisible);
+    IsSelfHealing = ini.GetBool(Name(), "SelfHealing", IsSelfHealing);
+    ROT = ini.GetInt(Name(), "ROT", ROT);
+    MaxPassengers = ini.GetInt(Name(), "Passengers", MaxPassengers);
+    ini.GetString(Name(), "Image", GraphicName, GraphicName);
     // TheKeyboard().Read();
 
     IsLeader = false;

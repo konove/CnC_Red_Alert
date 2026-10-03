@@ -1336,10 +1336,10 @@ InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
  *=============================================================================================*/
 bool InfantryTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
-    IsFraidyCat = ini.Get_Bool(Name(), "Fraidycat", IsFraidyCat);
-    IsCapture = ini.Get_Bool(Name(), "Infiltrate", IsCapture);
-    IsBomber = ini.Get_Bool(Name(), "C4", IsBomber);
-    IsDog = ini.Get_Bool(Name(), "IsCanine", IsDog);
+    IsFraidyCat = ini.GetBool(Name(), "Fraidycat", IsFraidyCat);
+    IsCapture = ini.GetBool(Name(), "Infiltrate", IsCapture);
+    IsBomber = ini.GetBool(Name(), "C4", IsBomber);
+    IsDog = ini.GetBool(Name(), "IsCanine", IsDog);
     if (IsBomber) {
       IsCapture = true;
     }

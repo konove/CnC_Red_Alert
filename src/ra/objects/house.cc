@@ -7106,29 +7106,28 @@ void HouseClass::Read_INI(engine::file::IniFile& ini) {
     auto* p =
         base::NewPooled<HouseClass>(index);  // Pointer to current player data.
     p->Control.TechLevel =
-        ini.Get_Int(hname, "TechLevel", TheScenario().Scenario);
+        ini.GetInt(hname, "TechLevel", TheScenario().Scenario);
     p->Control.MaxBuilding =
-        ini.Get_Int(hname, "MaxBuilding", p->Control.MaxBuilding);
-    p->Control.MaxUnit = ini.Get_Int(hname, "MaxUnit", p->Control.MaxUnit);
+        ini.GetInt(hname, "MaxBuilding", p->Control.MaxBuilding);
+    p->Control.MaxUnit = ini.GetInt(hname, "MaxUnit", p->Control.MaxUnit);
     p->Control.MaxInfantry =
-        ini.Get_Int(hname, "MaxInfantry", p->Control.MaxInfantry);
-    p->Control.MaxVessel =
-        ini.Get_Int(hname, "MaxVessel", p->Control.MaxVessel);
+        ini.GetInt(hname, "MaxInfantry", p->Control.MaxInfantry);
+    p->Control.MaxVessel = ini.GetInt(hname, "MaxVessel", p->Control.MaxVessel);
     if (p->Control.MaxVessel == 0) {
       p->Control.MaxVessel = p->Control.MaxUnit;
     }
     p->Control.InitialCredits =
-        static_cast<int64_t>(ini.Get_Int(hname, "Credits", 0)) * 100;
+        static_cast<int64_t>(ini.GetInt(hname, "Credits", 0)) * 100;
     p->Credits = p->Control.InitialCredits;
 
-    int iq = ini.Get_Int(hname, "IQ", 0);
+    int iq = ini.GetInt(hname, "IQ", 0);
     if (iq > TheRules().MaxIQ) {
       iq = 1;
     }
     p->IQ = p->Control.IQ = iq;
 
     p->Control.Edge = GetSourceType(ini, hname, "Edge", SOURCE_NORTH);
-    p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
+    p->IsPlayerControl = ini.GetBool(hname, "PlayerControl", false);
 
     const uint32_t owners =
         GetOwners(ini, hname, "Allies", base::Bit<uint32_t>(HOUSE_NEUTRAL));
@@ -7176,8 +7175,8 @@ void HouseClass::Write_INI(engine::file::IniFile& ini) {
       }
 
       if (p->Control.InitialCredits != control.InitialCredits) {
-        ini.Put_Int(name, "Credits",
-                    static_cast<int>(p->Control.InitialCredits / 100));
+        ini.PutInt(name, "Credits",
+                   static_cast<int>(p->Control.InitialCredits / 100));
       }
 
       if (p->Control.Edge != control.Edge) {
@@ -7185,34 +7184,34 @@ void HouseClass::Write_INI(engine::file::IniFile& ini) {
       }
 
       if (p->Control.MaxUnit > 0 && p->Control.MaxUnit != control.MaxUnit) {
-        ini.Put_Int(name, "MaxUnit", p->Control.MaxUnit);
+        ini.PutInt(name, "MaxUnit", p->Control.MaxUnit);
       }
 
       if (p->Control.MaxInfantry > 0 &&
           p->Control.MaxInfantry != control.MaxInfantry) {
-        ini.Put_Int(name, "MaxInfantry", p->Control.MaxInfantry);
+        ini.PutInt(name, "MaxInfantry", p->Control.MaxInfantry);
       }
 
       if (p->Control.MaxBuilding > 0 &&
           p->Control.MaxBuilding != control.MaxBuilding) {
-        ini.Put_Int(name, "MaxBuilding", p->Control.MaxBuilding);
+        ini.PutInt(name, "MaxBuilding", p->Control.MaxBuilding);
       }
 
       if (p->Control.MaxVessel > 0 &&
           p->Control.MaxVessel != control.MaxVessel) {
-        ini.Put_Int(name, "MaxVessel", p->Control.MaxVessel);
+        ini.PutInt(name, "MaxVessel", p->Control.MaxVessel);
       }
 
       if (p->Control.TechLevel != control.TechLevel) {
-        ini.Put_Int(name, "TechLevel", p->Control.TechLevel);
+        ini.PutInt(name, "TechLevel", p->Control.TechLevel);
       }
 
       if (p->Control.IQ != control.IQ) {
-        ini.Put_Int(name, "IQ", p->Control.IQ);
+        ini.PutInt(name, "IQ", p->Control.IQ);
       }
 
       if (static_cast<bool>(p->IsPlayerControl) && p != ThePlayer()) {
-        ini.Put_Bool(name, "PlayerControl", p->IsPlayerControl);
+        ini.PutBool(name, "PlayerControl", p->IsPlayerControl);
       }
 
       PutOwners(ini, name, "Allies",

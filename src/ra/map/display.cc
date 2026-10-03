@@ -4039,10 +4039,10 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   **	Read the map dimensions.
   */
   const char* const name = "Map";
-  const int x = ini.Get_Int(name, "X", 1);
-  const int y = ini.Get_Int(name, "Y", 1);
-  const int w = ini.Get_Int(name, "Width", MAP_CELL_W - 2);
-  const int h = ini.Get_Int(name, "Height", MAP_CELL_H - 2);
+  const int x = ini.GetInt(name, "X", 1);
+  const int y = ini.GetInt(name, "Y", 1);
+  const int w = ini.GetInt(name, "Width", MAP_CELL_W - 2);
+  const int h = ini.GetInt(name, "Height", MAP_CELL_H - 2);
 
   Set_Map_Dimensions(x, y, w, h);
 
@@ -4081,7 +4081,7 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
     char buf[20];
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
     base::At(TheScenario().Waypoint, i) =
-        Cell::FromIndex(ini.Get_Int("Waypoints", buf, -1));
+        Cell::FromIndex(ini.GetInt("Waypoints", buf, -1));
 
     if (base::At(TheScenario().Waypoint, i) != Cell::None()) {
       (*this).at(base::At(TheScenario().Waypoint, i)).IsWaypoint = true;
@@ -4109,12 +4109,12 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   /*
   **	Loop through all CellTrigger entries.
   */
-  int len = ini.Entry_Count("CellTriggers");
+  int len = ini.EntryCount("CellTriggers");
   for (int index = 0; index < len; index++) {
     /*
     **	Get a cell trigger and cell assignment.
     */
-    const char* cellentry = ini.Get_Entry("CellTriggers", index);
+    const char* cellentry = ini.EntryName("CellTriggers", index);
     TriggerTypeClass* tp = GetTriggerType(ini, "CellTriggers", cellentry);
     const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(cellentry, 0));
@@ -4133,8 +4133,7 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   **	Read the map template data.
   */
   static const char* const MAPPACK = "MapPack";
-  len = ini.Get_UUBlock(MAPPACK, base::ObjectBytes(map_pack_buffer),
-                        sizeof(map_pack_buffer));
+  len = ini.GetBase64Block(MAPPACK, base::ObjectBytes(map_pack_buffer));
   SpanSource bstraw(
       std::as_bytes(std::span(map_pack_buffer).first(base::ToSize(len))));
   TheMap().Read_Binary(bstraw);
@@ -4166,10 +4165,10 @@ void DisplayClass::Write_INI(engine::file::IniFile& ini) {
   static const char* const NAME = "Map";
   ini.Clear(NAME);
   PutTheaterType(ini, NAME, "Theater", TheScenario().Theater);
-  ini.Put_Int(NAME, "X", MapCellX);
-  ini.Put_Int(NAME, "Y", MapCellY);
-  ini.Put_Int(NAME, "Width", MapCellWidth);
-  ini.Put_Int(NAME, "Height", MapCellHeight);
+  ini.PutInt(NAME, "X", MapCellX);
+  ini.PutInt(NAME, "Y", MapCellY);
+  ini.PutInt(NAME, "Width", MapCellWidth);
+  ini.PutInt(NAME, "Height", MapCellHeight);
 
   /*
   **	Save the Waypoint entries.
@@ -4179,7 +4178,7 @@ void DisplayClass::Write_INI(engine::file::IniFile& ini) {
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     if (base::At(TheScenario().Waypoint, i) != Cell::None()) {
       absl::SNPrintF(entry, sizeof(entry), "%d", i);
-      ini.Put_Int(WAYNAME, entry, base::At(TheScenario().Waypoint, i).index());
+      ini.PutInt(WAYNAME, entry, base::At(TheScenario().Waypoint, i).index());
     }
   }
 
@@ -4215,7 +4214,8 @@ void DisplayClass::Write_INI(engine::file::IniFile& ini) {
   const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);
   if (len) {
-    ini.Put_UUBlock(MAPPACK, base::ObjectBytes(map_pack_buffer), len);
+    ini.PutBase64Block(
+        MAPPACK, base::ObjectBytes(map_pack_buffer).first(base::ToSize(len)));
   }
 }
 

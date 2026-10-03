@@ -479,14 +479,14 @@ std::span<const unsigned char> HouseTypeClass::Remap_Table() const {
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseTypeClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
-    FirepowerBias = ini.Get_Fixed(Name(), "Firepower", FirepowerBias);
-    GroundspeedBias = ini.Get_Fixed(Name(), "Groundspeed", GroundspeedBias);
-    AirspeedBias = ini.Get_Fixed(Name(), "Airspeed", AirspeedBias);
-    ArmorBias = ini.Get_Fixed(Name(), "Armor", ArmorBias);
-    ROFBias = ini.Get_Fixed(Name(), "ROF", ROFBias);
-    CostBias = ini.Get_Fixed(Name(), "Cost", CostBias);
-    BuildSpeedBias = ini.Get_Fixed(Name(), "BuildTime", BuildSpeedBias);
+  if (ini.HasSection(Name())) {
+    FirepowerBias = ini.GetFixed(Name(), "Firepower", FirepowerBias);
+    GroundspeedBias = ini.GetFixed(Name(), "Groundspeed", GroundspeedBias);
+    AirspeedBias = ini.GetFixed(Name(), "Airspeed", AirspeedBias);
+    ArmorBias = ini.GetFixed(Name(), "Armor", ArmorBias);
+    ROFBias = ini.GetFixed(Name(), "ROF", ROFBias);
+    CostBias = ini.GetFixed(Name(), "Cost", CostBias);
+    BuildSpeedBias = ini.GetFixed(Name(), "BuildTime", BuildSpeedBias);
     return true;
   }
   return false;

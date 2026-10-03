@@ -2056,9 +2056,9 @@ AttachType TriggerTypeClass::Attaches_To() const {
 void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
     /*
     **	Create a new trigger.
@@ -2069,7 +2069,7 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get the trigger entry.
     */
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+    ini.GetString(INI_Name(), entry, "", buf);
 
     /*
     **	Fill in the trigger.
@@ -2171,7 +2171,7 @@ void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
     TriggerTypeClass* trigger = TheObjectHeaps().trigger_type().ActiveAt(index);
 
     trigger->Build_INI_Entry(buf);
-    ini.Put_String(INI_Name(), trigger->IniName, buf.c_str());
+    ini.PutString(INI_Name(), trigger->IniName, buf);
   }
 }
 

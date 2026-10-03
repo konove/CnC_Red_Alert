@@ -98,7 +98,7 @@ static inline int Scale_To_256(int val) {
  *=============================================================================================*/
 int GetLepton(const engine::file::IniFile& ini, const char* section,
               const char* entry, int defvalue) {
-  const Fixed result = ini.Get_Fixed(
+  const Fixed result = ini.GetFixed(
       section, entry,
       Fixed(static_cast<uint16_t>(defvalue), game::kCellWidthLeptons));
   // An 8.8 Fixed times 256 is its raw 16-bit word, so this is 0..65535.
@@ -125,7 +125,7 @@ int GetLepton(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutLepton(engine::file::IniFile& ini, const char* section,
                const char* entry, int value) {
-  return ini.Put_Fixed(
+  return ini.PutFixed(
       section, entry,
       Fixed(static_cast<uint16_t>(value), game::kCellWidthLeptons));
 }
@@ -155,7 +155,7 @@ bool PutLepton(engine::file::IniFile& ini, const char* section,
 game::MPHType GetMPHType(const engine::file::IniFile& ini, const char* section,
                          const char* entry, game::MPHType defvalue) {
   const int val =
-      ini.Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
+      ini.GetInt(section, entry, static_cast<int>(defvalue) * 100 / 256);
   return static_cast<game::MPHType>(Scale_To_256(val));
 }
 
@@ -181,7 +181,7 @@ game::MPHType GetMPHType(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutMPHType(engine::file::IniFile& ini, const char* section,
                 const char* entry, game::MPHType value) {
-  return ini.Put_Int(section, entry, static_cast<int>(value) * 100 / 256);
+  return ini.PutInt(section, entry, static_cast<int>(value) * 100 / 256);
 }
 
 /***********************************************************************************************
@@ -213,7 +213,7 @@ uint32_t GetOwners(const engine::file::IniFile& ini, const char* section,
   char buffer[128];
   uint32_t ownable = defvalue;
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     ownable = 0;
     base::Tokenizer tokens(buffer, ",");
     while (const char* name = tokens.Next()) {
@@ -276,7 +276,7 @@ bool PutOwners(engine::file::IniFile& ini, const char* section,
 
   // Only write to INI if we actually constructed a string
   if (!buffer.empty()) {
-    return ini.Put_String(section, entry, buffer.c_str());
+    return ini.PutString(section, entry, buffer);
   }
 
   return true;
@@ -307,8 +307,7 @@ game::ArmorType GetArmorType(const engine::file::IniFile& ini,
                              game::ArmorType defvalue) {
   char buffer[128];
 
-  ini.Get_String(section, entry, ArmorName.at(defvalue), buffer,
-                 sizeof(buffer));
+  ini.GetString(section, entry, ArmorName.at(defvalue), buffer);
   return Armor_From_Name(buffer);
 }
 
@@ -331,7 +330,7 @@ game::ArmorType GetArmorType(const engine::file::IniFile& ini,
  *=============================================================================================*/
 bool PutArmorType(engine::file::IniFile& ini, const char* section,
                   const char* entry, game::ArmorType value) {
-  return ini.Put_String(section, entry, ArmorName.at(value));
+  return ini.PutString(section, entry, ArmorName.at(value));
 }
 
 /***********************************************************************************************
@@ -361,7 +360,7 @@ VocType GetVocType(const engine::file::IniFile& ini, const char* section,
                    const char* entry, VocType defvalue) {
   char buffer[128];
 
-  ini.Get_String(section, entry, VocName(defvalue), buffer, sizeof(buffer));
+  ini.GetString(section, entry, VocName(defvalue), buffer);
   return VocFromName(buffer);
 }
 
@@ -387,9 +386,9 @@ VocType GetVocType(const engine::file::IniFile& ini, const char* section,
 bool PutVocType(engine::file::IniFile& ini, const char* section,
                 const char* entry, VocType value) {
   if (value == VOC_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry, VocName(value));
+  return ini.PutString(section, entry, VocName(value));
 }
 
 /***********************************************************************************************
@@ -417,7 +416,7 @@ AnimType GetAnimType(const engine::file::IniFile& ini, const char* section,
                      const char* entry, AnimType defvalue) {
   char buffer[128];
 
-  ini.Get_String(section, entry, Anim_Name(defvalue), buffer, sizeof(buffer));
+  ini.GetString(section, entry, Anim_Name(defvalue), buffer);
   return Anim_From_Name(buffer);
 }
 
@@ -444,9 +443,9 @@ AnimType GetAnimType(const engine::file::IniFile& ini, const char* section,
 bool PutAnimType(engine::file::IniFile& ini, const char* section,
                  const char* entry, AnimType value) {
   if (value == ANIM_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry, Anim_Name(value));
+  return ini.PutString(section, entry, Anim_Name(value));
 }
 
 UnitType GetUnitType(const engine::file::IniFile& ini, const char* section,
@@ -457,17 +456,17 @@ UnitType GetUnitType(const engine::file::IniFile& ini, const char* section,
   if (defvalue != UNIT_NONE) {
     def = UnitTypeClass::As_Reference(defvalue).Name();
   }
-  ini.Get_String(section, entry, def, buffer, sizeof(buffer));
+  ini.GetString(section, entry, def, buffer);
   return UnitTypeClass::From_Name(buffer);
 }
 
 bool PutUnitType(engine::file::IniFile& ini, const char* section,
                  const char* entry, UnitType value) {
   if (value == UNIT_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry,
-                        UnitTypeClass::As_Reference(value).Name());
+  return ini.PutString(section, entry,
+                       UnitTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -495,7 +494,7 @@ WeaponType GetWeaponType(const engine::file::IniFile& ini, const char* section,
                          const char* entry, WeaponType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return Weapon_From_Name(buffer);
   }
   return defvalue;
@@ -522,10 +521,10 @@ WeaponType GetWeaponType(const engine::file::IniFile& ini, const char* section,
 bool PutWeaponType(engine::file::IniFile& ini, const char* section,
                    const char* entry, WeaponType value) {
   if (value == WEAPON_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry,
-                        WeaponTypeClass::As_Pointer(value)->Name());
+  return ini.PutString(section, entry,
+                       WeaponTypeClass::As_Pointer(value)->Name());
 }
 
 /***********************************************************************************************
@@ -554,7 +553,7 @@ WarheadType GetWarheadType(const engine::file::IniFile& ini,
                            WarheadType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     for (const WarheadType wh : magic_enum::enum_values<WarheadType>()) {
       if (absl::EqualsIgnoreCase(WarheadTypeClass::As_Pointer(wh)->Name(),
                                  buffer)) {
@@ -586,10 +585,10 @@ WarheadType GetWarheadType(const engine::file::IniFile& ini,
 bool PutWarheadType(engine::file::IniFile& ini, const char* section,
                     const char* entry, WarheadType value) {
   if (value == WARHEAD_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry,
-                        WarheadTypeClass::As_Pointer(value)->Name());
+  return ini.PutString(section, entry,
+                       WarheadTypeClass::As_Pointer(value)->Name());
 }
 
 /***********************************************************************************************
@@ -618,7 +617,7 @@ OverlayType GetOverlayType(const engine::file::IniFile& ini,
                            OverlayType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return OverlayTypeClass::From_Name(buffer);
   }
   return defvalue;
@@ -645,8 +644,8 @@ OverlayType GetOverlayType(const engine::file::IniFile& ini,
 bool PutOverlayType(engine::file::IniFile& ini, const char* section,
                     const char* entry, OverlayType value) {
   DCHECK(value != OVERLAY_NONE);
-  return ini.Put_String(section, entry,
-                        OverlayTypeClass::As_Reference(value).Name());
+  return ini.PutString(section, entry,
+                       OverlayTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -674,7 +673,7 @@ BulletType GetBulletType(const engine::file::IniFile& ini, const char* section,
                          const char* entry, BulletType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     for (const BulletType proj : magic_enum::enum_values<BulletType>()) {
       if (absl::EqualsIgnoreCase(BulletTypeClass::As_Reference(proj).Name(),
                                  buffer)) {
@@ -711,11 +710,11 @@ BulletType GetBulletType(const engine::file::IniFile& ini, const char* section,
 bool PutBulletType(engine::file::IniFile& ini, const char* section,
                    const char* entry, BulletType value) {
   if (value == BULLET_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry,
-                        BulletTypeClass::As_Reference(value).Name());
-  //	return(ini.Put_String(section, entry, ProjectileNames[value]));
+  return ini.PutString(section, entry,
+                       BulletTypeClass::As_Reference(value).Name());
+  //	return(ini.PutString(section, entry, ProjectileNames[value]));
 }
 
 /***********************************************************************************************
@@ -745,7 +744,7 @@ HousesType GetHousesType(const engine::file::IniFile& ini, const char* section,
                          const char* entry, HousesType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return HouseTypeClass::From_Name(buffer);
   }
   return defvalue;
@@ -771,8 +770,8 @@ HousesType GetHousesType(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutHousesType(engine::file::IniFile& ini, const char* section,
                    const char* entry, HousesType value) {
-  return ini.Put_String(section, entry,
-                        HouseTypeClass::As_Reference(value).Name());
+  return ini.PutString(section, entry,
+                       HouseTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -800,7 +799,7 @@ VQType GetVQType(const engine::file::IniFile& ini, const char* section,
                  const char* entry, VQType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     for (const VQType vq : magic_enum::enum_values<VQType>()) {
       if (absl::EqualsIgnoreCase(buffer, VQName.at(vq))) {
         return vq;
@@ -831,9 +830,9 @@ VQType GetVQType(const engine::file::IniFile& ini, const char* section,
 bool PutVQType(engine::file::IniFile& ini, const char* section,
                const char* entry, VQType value) {
   if (value == VQ_NONE) {
-    return ini.Put_String(section, entry, "<none>");
+    return ini.PutString(section, entry, "<none>");
   }
-  return ini.Put_String(section, entry, VQName.at(value));
+  return ini.PutString(section, entry, VQName.at(value));
 }
 
 /***********************************************************************************************
@@ -862,7 +861,7 @@ TheaterType GetTheaterType(const engine::file::IniFile& ini,
                            TheaterType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return Theater_From_Name(buffer);
   }
   return defvalue;
@@ -888,7 +887,7 @@ TheaterType GetTheaterType(const engine::file::IniFile& ini,
  *=============================================================================================*/
 bool PutTheaterType(engine::file::IniFile& ini, const char* section,
                     const char* entry, TheaterType value) {
-  return ini.Put_String(section, entry, Theaters.at(value).Name);
+  return ini.PutString(section, entry, Theaters.at(value).Name);
 }
 
 /***********************************************************************************************
@@ -913,7 +912,7 @@ TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
                                  const char* section, const char* entry) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return TriggerTypeClass::From_Name(buffer);
   }
   return nullptr;
@@ -940,7 +939,7 @@ TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
  *=============================================================================================*/
 bool PutTriggerType(engine::file::IniFile& ini, const char* section,
                     const char* entry, TriggerTypeClass* value) {
-  return ini.Put_String(section, entry, value->Name());
+  return ini.PutString(section, entry, value->Name());
 }
 
 /***********************************************************************************************
@@ -966,7 +965,7 @@ ThemeType GetThemeType(const engine::file::IniFile& ini, const char* section,
                        const char* entry, ThemeType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return ThemeClass::From_Name(buffer);
   }
   return defvalue;
@@ -993,7 +992,7 @@ ThemeType GetThemeType(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutThemeType(engine::file::IniFile& ini, const char* section,
                   const char* entry, ThemeType value) {
-  return ini.Put_String(section, entry, ThemeClass::Base_Name(value));
+  return ini.PutString(section, entry, ThemeClass::Base_Name(value));
 }
 
 /***********************************************************************************************
@@ -1022,7 +1021,7 @@ SourceType GetSourceType(const engine::file::IniFile& ini, const char* section,
                          const char* entry, SourceType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return Source_From_Name(buffer);
   }
   return defvalue;
@@ -1050,7 +1049,7 @@ SourceType GetSourceType(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutSourceType(engine::file::IniFile& ini, const char* section,
                    const char* entry, SourceType value) {
-  return ini.Put_String(section, entry, SourceName.at(value));
+  return ini.PutString(section, entry, SourceName.at(value));
 }
 
 /***********************************************************************************************
@@ -1077,7 +1076,7 @@ CrateType GetCrateType(const engine::file::IniFile& ini, const char* section,
                        const char* entry, CrateType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return Crate_From_Name(buffer);
   }
   return defvalue;
@@ -1104,7 +1103,7 @@ CrateType GetCrateType(const engine::file::IniFile& ini, const char* section,
  *=============================================================================================*/
 bool PutCrateType(engine::file::IniFile& ini, const char* section,
                   const char* entry, CrateType value) {
-  return ini.Put_String(section, entry, CrateNames.at(value));
+  return ini.PutString(section, entry, CrateNames.at(value));
 }
 
 /***********************************************************************************************
@@ -1132,7 +1131,7 @@ TerrainType GetTerrainType(const engine::file::IniFile& ini,
                            TerrainType defvalue) {
   char buffer[128];
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     return TerrainTypeClass::From_Name(base::Tokenizer(buffer, ",").Next());
   }
   return defvalue;
@@ -1158,8 +1157,8 @@ TerrainType GetTerrainType(const engine::file::IniFile& ini,
  *=============================================================================================*/
 bool PutTerrainType(engine::file::IniFile& ini, const char* section,
                     const char* entry, TerrainType value) {
-  return ini.Put_String(section, entry,
-                        TerrainTypeClass::As_Reference(value).Name());
+  return ini.PutString(section, entry,
+                       TerrainTypeClass::As_Reference(value).Name());
 }
 
 /***********************************************************************************************
@@ -1190,7 +1189,7 @@ uint64_t GetBuildings(const engine::file::IniFile& ini, const char* section,
   char buffer[128];
   uint64_t pre = 0;
 
-  if (ini.Get_String(section, entry, "", buffer, sizeof(buffer))) {
+  if (ini.GetString(section, entry, "", buffer)) {
     pre = 0;
     base::Tokenizer tokens(buffer, ",");
     while (const char* token = tokens.Next()) {
@@ -1257,7 +1256,7 @@ bool PutBuildings(engine::file::IniFile& ini, const char* section,
   }
 
   if (!buffer.empty()) {
-    return ini.Put_String(section, entry, buffer.c_str());
+    return ini.PutString(section, entry, buffer);
   }
 
   return true;

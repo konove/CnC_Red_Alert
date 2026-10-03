@@ -285,9 +285,8 @@ bool OverlayClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void OverlayClass::Read_INI(engine::file::IniFile& ini) {
   if (TheWorld().new_ini_format() > 1) {
-    const int len =
-        ini.Get_UUBlock("OverlayPack", base::ObjectBytes(overlay_pack_buffer),
-                        sizeof(overlay_pack_buffer));
+    const int len = ini.GetBase64Block("OverlayPack",
+                                       base::ObjectBytes(overlay_pack_buffer));
 
     if (len > 0) {
       SpanSource bpipe(std::as_bytes(
@@ -335,10 +334,10 @@ void OverlayClass::Read_INI(engine::file::IniFile& ini) {
     }
   }
 
-  if (TheWorld().new_ini_format() < 2 || ini.Is_Present("Overlay")) {
-    const int len = ini.Entry_Count(INI_Name());
+  if (TheWorld().new_ini_format() < 2 || ini.HasSection("Overlay")) {
+    const int len = ini.EntryCount(INI_Name());
     for (int index = 0; index < len; index++) {
-      const char* entry = ini.Get_Entry(INI_Name(), index);
+      const char* entry = ini.EntryName(INI_Name(), index);
       const Cell cell =
           Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
       const OverlayType classid =
@@ -395,8 +394,9 @@ void OverlayClass::Write_INI(engine::file::IniFile& ini) {
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {
-    ini.Put_UUBlock("OverlayPack", base::ObjectBytes(overlay_pack_buffer),
-                    static_cast<int>(bpipe.bytes_written()));
+    ini.PutBase64Block("OverlayPack",
+                       base::ObjectBytes(overlay_pack_buffer)
+                           .first(base::ToSize(bpipe.bytes_written())));
   }
 
   //	for (Cell index = 0; index < MAP_CELL_TOTAL; index++) {

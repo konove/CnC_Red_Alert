@@ -489,34 +489,33 @@ void SessionClass::Read_MultiPlayer_Settings() {
   engine::file::IniFile ini;
   if (const auto fc = OpenDiskFile(kConfigFileName); fc && ini.Load(*fc)) {
     //	Get the player's last-used Handle
-    ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
+    ini.GetString("MultiPlayer", "Handle", "Noname", Handle);
 
     //	Get the player's last-used Color
     PrefColor =
-        static_cast<PlayerColorType>(ini.Get_Int("MultiPlayer", "Color", 0));
-    int iSide =
-        ini.Get_Int("MultiPlayer", "Side", static_cast<int>(HOUSE_USSR));
+        static_cast<PlayerColorType>(ini.GetInt("MultiPlayer", "Color", 0));
+    int iSide = ini.GetInt("MultiPlayer", "Side", static_cast<int>(HOUSE_USSR));
     iSide = std::max(2, std::min(6, iSide));
     House = static_cast<HousesType>(iSide);
-    CurPhoneIdx = ini.Get_Int("MultiPlayer", "PhoneIndex", -1);
+    CurPhoneIdx = ini.GetInt("MultiPlayer", "PhoneIndex", -1);
 
     //	Read in default serial settings
-    ini.Get_String("SerialDefaults", "ModemName", "NoName",
-                   SerialDefaults.ModemName, MODEM_NAME_MAX);
+    ini.GetString("SerialDefaults", "ModemName", "NoName",
+                  SerialDefaults.ModemName);
     if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
       SerialDefaults.ModemName[0] = 0;
     }
-    SerialDefaults.Port = ini.Get_Int("SerialDefaults", "Port", 0);
-    SerialDefaults.IRQ = ini.Get_Int("SerialDefaults", "IRQ", -1);
-    SerialDefaults.Baud = ini.Get_Int("SerialDefaults", "Baud", -1);
+    SerialDefaults.Port = ini.GetInt("SerialDefaults", "Port", 0);
+    SerialDefaults.IRQ = ini.GetInt("SerialDefaults", "IRQ", -1);
+    SerialDefaults.Baud = ini.GetInt("SerialDefaults", "Baud", -1);
     SerialDefaults.Compression =
-        ini.Get_Int("SerialDefaults", "Compression", 0) != 0;
+        ini.GetInt("SerialDefaults", "Compression", 0) != 0;
     SerialDefaults.ErrorCorrection =
-        ini.Get_Int("SerialDefaults", "ErrorCorrection", 0) != 0;
+        ini.GetInt("SerialDefaults", "ErrorCorrection", 0) != 0;
     SerialDefaults.HardwareFlowControl =
-        ini.Get_Int("SerialDefaults", "HardwareFlowControl", 1) != 0;
+        ini.GetInt("SerialDefaults", "HardwareFlowControl", 1) != 0;
 
-    ini.Get_String("SerialDefaults", "DialMethod", "T", buf, 2);
+    ini.GetString("SerialDefaults", "DialMethod", "T", std::span(buf).first(2));
 
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
@@ -533,13 +532,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     SerialDefaults.InitStringIndex =
-        ini.Get_Int("SerialDefaults", "InitStringIndex", 0);
+        ini.GetInt("SerialDefaults", "InitStringIndex", 0);
 
     SerialDefaults.CallWaitStringIndex =
-        ini.Get_Int("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
+        ini.GetInt("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
 
-    ini.Get_String("SerialDefaults", "CallWaitString", "",
-                   SerialDefaults.CallWaitString, CWAITSTRBUF_MAX);
+    ini.GetString("SerialDefaults", "CallWaitString", "",
+                  SerialDefaults.CallWaitString);
 
     if (SerialDefaults.IRQ == 0 || SerialDefaults.Baud == 0) {
       SerialDefaults.Port = 0;
@@ -547,11 +546,11 @@ void SessionClass::Read_MultiPlayer_Settings() {
       SerialDefaults.Baud = -1;
     }
 
-    const int initcount = ini.Entry_Count("InitStrings");
+    const int initcount = ini.EntryCount("InitStrings");
     for (int index = 0; index < initcount; index++) {
       auto entry = std::make_unique<InitString>();
-      ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
-                     nullptr, *entry, INITSTRBUF_MAX);
+      ini.GetString("InitStrings", ini.EntryName("InitStrings", index), "",
+                    *entry);
       std::ranges::transform(base::MutableCString(entry->data()), entry->data(),
                              absl::ascii_toupper);
       InitStrings.Add(std::move(entry));
@@ -566,14 +565,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     //	Read the entry names in
-    const int phonecount = ini.Entry_Count("PhoneBook");
+    const int phonecount = ini.EntryCount("PhoneBook");
     for (int index = 0; index < phonecount; index++) {
       //	Create a new phone book entry
       auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
       //	Read the entire entry in
-      ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr,
-                     buf, sizeof(buf));
+      ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "", buf);
 
       //	Extract name, phone # & serial port settings
       base::Tokenizer tokens(buf, "|");
@@ -716,9 +714,9 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     //	Read special recording playback values, to help find sync bugs
-    TrapFrame = ini.Get_Int("SyncBug", "Frame", 0x7fffffff);
+    TrapFrame = ini.GetInt("SyncBug", "Frame", 0x7fffffff);
 
-    ini.Get_String("SyncBug", "Type", "NONE", buf, 80);
+    ini.GetString("SyncBug", "Type", "NONE", std::span(buf).first(80));
 
     if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
@@ -736,20 +734,20 @@ void SessionClass::Read_MultiPlayer_Settings() {
       TrapObjType = RTTI_NONE;
     }
 
-    ini.Get_String("SyncBug", "Coord", "0", buf, 80);
+    ini.GetString("SyncBug", "Coord", "0", std::span(buf).first(80));
     TrapCoord = Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
 
-    ini.Get_String("SyncBug", "Target", "0", buf, 80);
+    ini.GetString("SyncBug", "Target", "0", std::span(buf).first(80));
     TrapTarget = Target::FromPacked(
         static_cast<int32_t>(base::ParseHexOr<uint32_t>(buf, 0)));
 
-    ini.Get_String("SyncBug", "Cell", "0", buf, 80);
+    ini.GetString("SyncBug", "Cell", "0", std::span(buf).first(80));
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(buf, 0));
     if (cell.index() != 0) {
       TrapCell = &TheMap().at(cell);
     }
 
-    TrapPrintCRC = ini.Get_Int("SyncBug", "PrintCRC", 0x7fffffff);
+    TrapPrintCRC = ini.GetInt("SyncBug", "PrintCRC", 0x7fffffff);
   }
 }
 
@@ -776,33 +774,33 @@ void SessionClass::Write_MultiPlayer_Settings() {
   }
   if (loaded) {
     //	Save the player's last-used Handle & Color
-    ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);
-    ini.Put_Int("MultiPlayer", "Color", static_cast<int>(PrefColor));
-    ini.Put_Int("MultiPlayer", "Side", static_cast<int>(House));
-    ini.Put_String("MultiPlayer", "Handle", Handle);
+    ini.PutInt("MultiPlayer", "PhoneIndex", CurPhoneIdx);
+    ini.PutInt("MultiPlayer", "Color", static_cast<int>(PrefColor));
+    ini.PutInt("MultiPlayer", "Side", static_cast<int>(House));
+    ini.PutString("MultiPlayer", "Handle", Handle);
 
     //	Clear all existing Settings.SerialDefault entries.
     ini.Clear("SerialDefaults");
 
     //	Save default serial settings in opposite order you want to see them
-    ini.Put_String("SerialDefaults", "CallWaitString",
-                   SerialDefaults.CallWaitString);
-    ini.Put_Int("SerialDefaults", "CallWaitStringIndex",
-                SerialDefaults.CallWaitStringIndex ? 1 : 0);
-    ini.Put_Int("SerialDefaults", "InitStringIndex",
-                SerialDefaults.InitStringIndex ? 1 : 0);
-    ini.Put_String("SerialDefaults", "DialMethod",
-                   DialMethodCheck.at(SerialDefaults.DialMethod));
-    ini.Put_Int("SerialDefaults", "Baud", SerialDefaults.Baud ? 1 : 0);
-    ini.Put_Int("SerialDefaults", "IRQ", SerialDefaults.IRQ ? 1 : 0);
-    ini.Put_Int("SerialDefaults", "Port", SerialDefaults.Port, 1);
-    ini.Put_String("SerialDefaults", "ModemName", SerialDefaults.ModemName);
-    ini.Put_Int("SerialDefaults", "Compression",
-                SerialDefaults.Compression ? 1 : 0);
-    ini.Put_Int("SerialDefaults", "ErrorCorrection",
-                SerialDefaults.ErrorCorrection ? 1 : 0);
-    ini.Put_Int("SerialDefaults", "HardwareFlowControl",
-                SerialDefaults.HardwareFlowControl ? 1 : 0);
+    ini.PutString("SerialDefaults", "CallWaitString",
+                  SerialDefaults.CallWaitString);
+    ini.PutInt("SerialDefaults", "CallWaitStringIndex",
+               SerialDefaults.CallWaitStringIndex ? 1 : 0);
+    ini.PutInt("SerialDefaults", "InitStringIndex",
+               SerialDefaults.InitStringIndex ? 1 : 0);
+    ini.PutString("SerialDefaults", "DialMethod",
+                  DialMethodCheck.at(SerialDefaults.DialMethod));
+    ini.PutInt("SerialDefaults", "Baud", SerialDefaults.Baud ? 1 : 0);
+    ini.PutInt("SerialDefaults", "IRQ", SerialDefaults.IRQ ? 1 : 0);
+    ini.PutInt("SerialDefaults", "Port", SerialDefaults.Port, 1);
+    ini.PutString("SerialDefaults", "ModemName", SerialDefaults.ModemName);
+    ini.PutInt("SerialDefaults", "Compression",
+               SerialDefaults.Compression ? 1 : 0);
+    ini.PutInt("SerialDefaults", "ErrorCorrection",
+               SerialDefaults.ErrorCorrection ? 1 : 0);
+    ini.PutInt("SerialDefaults", "HardwareFlowControl",
+               SerialDefaults.HardwareFlowControl ? 1 : 0);
 
     //	Clear all existing InitString entries.
     ini.Clear("InitStrings");
@@ -811,7 +809,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
     for (int index = 0; index < InitStrings.Count(); index++) {
       char buf[10];
       absl::SNPrintF(buf, sizeof(buf), "%03d", index);
-      ini.Put_String("InitStrings", buf, InitStrings.at(index)->data());
+      ini.PutString("InitStrings", buf, InitStrings.at(index)->data());
     }
 
     //	Clear all existing Phone Book entries.
@@ -835,7 +833,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
                      PhoneBook.at(i)->Settings.CallWaitStringIndex,
                      PhoneBook.at(i)->Settings.CallWaitString);
       absl::SNPrintF(entrytext, sizeof(entrytext), "%03td", i);
-      ini.Put_String("PhoneBook", entrytext, buf);
+      ini.PutString("PhoneBook", entrytext, buf);
     }
 
     //	Write the INI data out to a file.
@@ -892,12 +890,12 @@ void SessionClass::Read_Scenario_Descriptions() {
   if (const auto file = OpenGameFile("MISSIONS.PKT")) {
     engine::file::IniFile ini;
     ini.Load(*file);
-    const int count = ini.Entry_Count("Missions");
+    const int count = ini.EntryCount("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
-      const char* fname = ini.Get_Entry("Missions", index);
+      const char* fname = ini.EntryName("Missions", index);
       char buffer[128];
-      ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
+      ini.GetString("Missions", fname, "", buffer);
       Scenarios.Add(std::make_unique<MultiMission>(
           fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
     }
@@ -923,11 +921,11 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Load(*mission_file);
     }
 
-    const int count = ini.Entry_Count("Missions");
+    const int count = ini.EntryCount("Missions");
     for (int index = 0; index < count; index++) {
-      const char* fname = ini.Get_Entry("Missions", index);
+      const char* fname = ini.EntryName("Missions", index);
       char buffer[128];
-      ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
+      ini.GetString("Missions", fname, "", buffer);
 
       Scenarios.Add(std::make_unique<MultiMission>(
           fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
@@ -946,12 +944,12 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (const auto file2 = OpenGameFile("CSTRIKE.PKT")) {
       engine::file::IniFile ini;
       ini.Load(*file2);
-      const int count = ini.Entry_Count("Missions");
+      const int count = ini.EntryCount("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        const char* fname = ini.Get_Entry("Missions", index);
+        const char* fname = ini.EntryName("Missions", index);
         char buffer[128];
-        ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
+        ini.GetString("Missions", fname, "", buffer);
         Scenarios.Add(std::make_unique<MultiMission>(
             fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
       }
@@ -972,12 +970,12 @@ void SessionClass::Read_Scenario_Descriptions() {
     if (const auto file2 = OpenGameFile("AFTMATH.PKT")) {
       engine::file::IniFile ini;
       ini.Load(*file2);
-      const int count = ini.Entry_Count("Missions");
+      const int count = ini.EntryCount("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        const char* fname = ini.Get_Entry("Missions", index);
+        const char* fname = ini.EntryName("Missions", index);
         char buffer[128];
-        ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
+        ini.GetString("Missions", fname, "", buffer);
         Scenarios.Add(std::make_unique<MultiMission>(
             fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
       }
@@ -999,13 +997,11 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Load(*mission_file);
     }
 
-    ini.Get_String("Basic", "Name", "No Name", name_buffer,
-                   sizeof(name_buffer));
-    ini.Get_String("Digest", "1", "No Digest", digest_buffer,
-                   sizeof(digest_buffer));
+    ini.GetString("Basic", "Name", "No Name", name_buffer);
+    ini.GetString("Digest", "1", "No Digest", digest_buffer);
     Scenarios.Add(std::make_unique<MultiMission>(
         found.name.c_str(), name_buffer, digest_buffer,
-        ini.Get_Bool("Basic", "Official", false), false));
+        ini.GetBool("Basic", "Official", false), false));
   }
 }
 

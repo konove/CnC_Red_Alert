@@ -114,8 +114,7 @@ std::string ProfileValue(const std::string_view text,
 std::string IniValue(const IniFile& ini, const std::string_view text,
                      const std::string& section, const std::string& key) {
   std::vector<char> out = BufferFor(text);
-  ini.Get_String(section.c_str(), key.c_str(), kAbsent, out,
-                 static_cast<int>(out.size()));
+  ini.GetString(section, key, kAbsent, out);
   return out.data();
 }
 
@@ -143,10 +142,10 @@ base::ssize CompareFile(const std::string& path) {
   }
 
   // Check 1: every key IniFile has reads the same through the profile.
-  for (int i = 0; i < ini.Section_Count(); ++i) {
-    const std::string section = ini.Get_Section(i);
-    for (int j = 0; j < ini.Entry_Count(section.c_str()); ++j) {
-      const std::string key = ini.Get_Entry(section.c_str(), j);
+  for (int i = 0; i < ini.SectionCount(); ++i) {
+    const std::string section = ini.SectionName(i);
+    for (int j = 0; j < ini.EntryCount(section); ++j) {
+      const std::string key = ini.EntryName(section, j);
       const std::string profile = ProfileValue(text, section, key, kAbsent);
       const std::string value = IniValue(ini, text, section, key);
       ++keys_compared;
@@ -160,13 +159,13 @@ base::ssize CompareFile(const std::string& path) {
 
   // Check 2: every section and key the profile has, IniFile has too.
   for (const std::string& section : sections) {
-    if (!ini.Section_Present(section.c_str())) {
+    if (!ini.HasSection(section)) {
       absl::PrintF("SECTION %s [%s]\n", path, section);
       ++printed;
     }
     std::vector<std::string> common;
     for (const std::string& key : ProfileKeys(text, section)) {
-      if (ini.Is_Present(section.c_str(), key.c_str())) {
+      if (ini.HasEntry(section, key)) {
         common.push_back(absl::AsciiStrToLower(key));
         continue;
       }
@@ -175,9 +174,8 @@ base::ssize CompareFile(const std::string& path) {
       ++printed;
     }
     std::vector<std::string> ini_order;
-    for (int j = 0; j < ini.Entry_Count(section.c_str()); ++j) {
-      const std::string key =
-          absl::AsciiStrToLower(ini.Get_Entry(section.c_str(), j));
+    for (int j = 0; j < ini.EntryCount(section); ++j) {
+      const std::string key = absl::AsciiStrToLower(ini.EntryName(section, j));
       if (std::ranges::contains(common, key) &&
           !std::ranges::contains(ini_order, key)) {
         ini_order.push_back(key);

@@ -489,15 +489,15 @@ const char* MissionControlClass::Name() const {
 }
 
 bool MissionControlClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
-    IsNoThreat = ini.Get_Bool(Name(), "NoThreat", IsNoThreat);
-    IsZombie = ini.Get_Bool(Name(), "Zombie", IsZombie);
-    IsRecruitable = ini.Get_Bool(Name(), "Recruitable", IsRecruitable);
-    IsParalyzed = ini.Get_Bool(Name(), "Paralyzed", IsParalyzed);
-    IsRetaliate = ini.Get_Bool(Name(), "Retaliate", IsRetaliate);
-    IsScatter = ini.Get_Bool(Name(), "Scatter", IsScatter);
-    Rate = ini.Get_Fixed(Name(), "Rate", Rate);
-    AARate = ini.Get_Fixed(Name(), "AARate", Fixed(0));
+  if (ini.HasSection(Name())) {
+    IsNoThreat = ini.GetBool(Name(), "NoThreat", IsNoThreat);
+    IsZombie = ini.GetBool(Name(), "Zombie", IsZombie);
+    IsRecruitable = ini.GetBool(Name(), "Recruitable", IsRecruitable);
+    IsParalyzed = ini.GetBool(Name(), "Paralyzed", IsParalyzed);
+    IsRetaliate = ini.GetBool(Name(), "Retaliate", IsRetaliate);
+    IsScatter = ini.GetBool(Name(), "Scatter", IsScatter);
+    Rate = ini.GetFixed(Name(), "Rate", Rate);
+    AARate = ini.GetFixed(Name(), "AARate", Fixed(0));
     if (AARate == 0) {
       AARate = Rate;
     }

@@ -2121,8 +2121,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Fetch the appropriate movie names from the INI file.
   */
   const char* const BASIC = "Basic";
-  ini.Get_String(BASIC, "Name", "<none>", TheScenario().Description,
-                 sizeof(TheScenario().Description));
+  ini.GetString(BASIC, "Name", "<none>", TheScenario().Description);
   TheScenario().IntroMovie =
       GetVQType(ini, BASIC, "Intro", TheScenario().IntroMovie);
   TheScenario().BriefMovie =
@@ -2133,35 +2132,35 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   TheScenario().ActionMovie =
       GetVQType(ini, BASIC, "Action", TheScenario().ActionMovie);
   TheScenario().IsToCarryOver =
-      ini.Get_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
+      ini.GetBool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
   TheScenario().IsToInherit =
-      ini.Get_Bool(BASIC, "ToInherit", TheScenario().IsToInherit);
+      ini.GetBool(BASIC, "ToInherit", TheScenario().IsToInherit);
   TheScenario().IsInheritTimer =
-      ini.Get_Bool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
+      ini.GetBool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
   TheScenario().IsEndOfGame =
-      ini.Get_Bool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
+      ini.GetBool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
   TheScenario().IsTanyaEvac =
-      ini.Get_Bool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
+      ini.GetBool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
   TheScenario().TransitTheme = GetThemeType(ini, BASIC, "Theme", THEME_NONE);
-  TheWorld().new_ini_format() = ini.Get_Int(BASIC, "NewINIFormat", 0);
+  TheWorld().new_ini_format() = ini.GetInt(BASIC, "NewINIFormat", 0);
   TheScenario().CarryOverPercent =
-      ini.Get_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
+      ini.GetFixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
   TheScenario().CarryOverPercent.Saturate(1);
   TheScenario().CarryOverCap =
-      ini.Get_Int(BASIC, "CarryOverCap", TheScenario().CarryOverCap);
+      ini.GetInt(BASIC, "CarryOverCap", TheScenario().CarryOverCap);
   TheScenario().IsNoSpyPlane =
-      ini.Get_Bool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
+      ini.GetBool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
   TheScenario().IsSkipScore =
-      ini.Get_Bool(BASIC, "SkipScore", TheScenario().IsSkipScore);
+      ini.GetBool(BASIC, "SkipScore", TheScenario().IsSkipScore);
   TheScenario().IsOneTimeOnly =
-      ini.Get_Bool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
+      ini.GetBool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
   TheScenario().IsNoMapSel =
-      ini.Get_Bool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
+      ini.GetBool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
   TheScenario().IsTruckCrate =
-      ini.Get_Bool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
+      ini.GetBool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
   TheScenario().IsMoneyTiberium =
-      ini.Get_Bool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
-  TheScenario().Percent = ini.Get_Int(BASIC, "Percent", TheScenario().Percent);
+      ini.GetBool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
+  TheScenario().Percent = ini.GetInt(BASIC, "Percent", TheScenario().Percent);
 
   /*
   **	Read in the specific information for each of the house types.  This
@@ -2216,7 +2215,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   TheMap().Read_INI(ini);
   ServiceRealTime();
 
-  //	if (NewINIFormat < 2 || !ini.Is_Present("MapPack")) {
+  //	if (NewINIFormat < 2 || !ini.HasSection("MapPack")) {
   //		Map.Read_Binary(root, &ScenarioCRC);
   //	}
 
@@ -2264,7 +2263,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   SmudgeClass::Read_INI(ini);
   ServiceRealTime();
 
-  /*	Moved above ini.Get_TextBlock(...) so Xlat mission.ini could be loaded
+  /*	Moved above ini.GetTextBlock(...) so Xlat mission.ini could be loaded
   **	If the briefing text could not be found in the INI file, then search
   **	the mission.ini file.  VG 10/17/96
   */
@@ -2272,15 +2271,13 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   if (const auto fc = OpenGameFile("MISSION.INI")) {
     mini.Load(*fc);
   }
-  mini.Get_TextBlock(fname, TheScenario().BriefingText,
-                     sizeof(TheScenario().BriefingText));
+  mini.GetTextBlock(fname, TheScenario().BriefingText);
 
   /*
   **	Read in any briefing text.
   */
   if (base::At(TheScenario().BriefingText, 0) == '\0') {
-    ini.Get_TextBlock("Briefing", TheScenario().BriefingText,
-                      sizeof(TheScenario().BriefingText));
+    ini.GetTextBlock("Briefing", TheScenario().BriefingText);
   }
   /*
   **	Perform a final overpass of the map. This handles smoothing of certain
@@ -2317,7 +2314,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       const int save_init =
           TheWorld().scenario_init();  // turn ScenarioInit off
       TheWorld().scenario_init() = 0;
-      Create_Units(ini.Get_Bool("Basic", "Official", false));
+      Create_Units(ini.GetBool("Basic", "Official", false));
       TheWorld().scenario_init() = save_init;  // turn ScenarioInit back on
     }
 
@@ -2379,7 +2376,7 @@ void Write_Scenario_INI(const char* fname) {
 
     static const char* const BASIC = "Basic";
     ini.Clear(BASIC);
-    ini.Put_String(BASIC, "Name", TheScenario().Description);
+    ini.PutString(BASIC, "Name", TheScenario().Description);
     PutVQType(ini, BASIC, "Intro", TheScenario().IntroMovie);
     PutVQType(ini, BASIC, "Brief", TheScenario().BriefMovie);
     PutVQType(ini, BASIC, "Win", TheScenario().WinMovie);
@@ -2387,22 +2384,22 @@ void Write_Scenario_INI(const char* fname) {
     PutVQType(ini, BASIC, "Action", TheScenario().ActionMovie);
     PutHousesType(ini, BASIC, "Player", ThePlayer()->Class->House);
     PutThemeType(ini, BASIC, "Theme", TheScenario().TransitTheme);
-    ini.Put_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
-    ini.Put_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
-    ini.Put_Bool(BASIC, "ToInherit", TheScenario().IsToInherit);
-    ini.Put_Bool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
-    ini.Put_Bool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
-    ini.Put_Int(BASIC, "NewINIFormat", 3);
-    ini.Put_Int(BASIC, "CarryOverCap", TheScenario().CarryOverCap / 100);
-    ini.Put_Bool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
-    ini.Put_Bool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
-    ini.Put_Bool(BASIC, "SkipScore", TheScenario().IsSkipScore);
-    ini.Put_Bool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
-    ini.Put_Bool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
-    ini.Put_Bool(BASIC, "Official", true);
-    ini.Put_Bool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
-    ini.Put_Bool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
-    ini.Put_Int(BASIC, "Percent", TheScenario().Percent);
+    ini.PutFixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
+    ini.PutBool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
+    ini.PutBool(BASIC, "ToInherit", TheScenario().IsToInherit);
+    ini.PutBool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
+    ini.PutBool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
+    ini.PutInt(BASIC, "NewINIFormat", 3);
+    ini.PutInt(BASIC, "CarryOverCap", TheScenario().CarryOverCap / 100);
+    ini.PutBool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
+    ini.PutBool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
+    ini.PutBool(BASIC, "SkipScore", TheScenario().IsSkipScore);
+    ini.PutBool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
+    ini.PutBool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
+    ini.PutBool(BASIC, "Official", true);
+    ini.PutBool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
+    ini.PutBool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
+    ini.PutInt(BASIC, "Percent", TheScenario().Percent);
 
     HouseClass::Write_INI(ini);
     TeamTypeClass::Write_INI(ini);
@@ -2418,7 +2415,7 @@ void Write_Scenario_INI(const char* fname) {
     SmudgeClass::Write_INI(ini);
 
     if (!std::string_view(TheScenario().BriefingText).empty()) {
-      ini.Put_TextBlock("Briefing", TheScenario().BriefingText);
+      ini.PutTextBlock("Briefing", TheScenario().BriefingText);
     }
     //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
     if (const auto rawfile = OpenDiskFile(fname, FileAccess::kWrite)) {

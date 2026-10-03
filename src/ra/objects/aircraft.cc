@@ -627,11 +627,11 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
 void AircraftClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
-  const int counter = ini.Entry_Count(INI_Name());
+  const int counter = ini.EntryCount(INI_Name());
   for (int index = 0; index < counter; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf) - 1);
+    ini.GetString(INI_Name(), entry, "", std::span(buf).first(sizeof(buf) - 1));
     base::Tokenizer tokens(buf, ",");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.

@@ -141,7 +141,7 @@ bool Get_Broadcast_Addresses() {
       // The list copies the text, so one buffer serves every entry.
       char temp[128];
       absl::SNPrintF(entry_name, sizeof(entry_name), "%d", entry);
-      res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
+      res = ip_ini.GetString("IP_ADDRESSES", entry_name, "", temp);
       if (res) {
         ip_address_list.Add_Item(temp);
         DLOG(INFO) << "Adding address " << temp;

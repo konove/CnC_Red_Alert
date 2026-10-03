@@ -5797,14 +5797,14 @@ void BuildingClass::Update_Radar_Spied() {
 void BuildingClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
     /*
     **	Get a building entry.
     */
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+    ini.GetString(INI_Name(), entry, "", buf);
 
     /*
     **	1st token: house name.
@@ -5931,7 +5931,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
                          ? building->Trigger->Class->IniName
                          : "None",
                      building->IsAllowedToSell, building->IsToRebuild);
-      ini.Put_String(INI_Name(), uname, buf);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

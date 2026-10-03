@@ -69,7 +69,7 @@ void Assets::LoadTutorialText() {
     char entry[10];
     absl::SNPrintF(entry, sizeof(entry), "%d", index);
     std::string& text = base::At(std::span(tutorial_text_), index);
-    if (ini.Get_String("Tutorial", entry, "", buffer, sizeof(buffer))) {
+    if (ini.GetString("Tutorial", entry, "", buffer)) {
       text = std::string_view(buffer);
     } else {
       text.clear();

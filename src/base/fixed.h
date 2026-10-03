@@ -165,7 +165,7 @@ class Fixed {
   }
 
   // Rounding, clamping and inversion, in place. Each returns *this so calls
-  // chain: `Get_Fixed(...).SaturateBelow(1)`.
+  // chain: `GetFixed(...).SaturateBelow(1)`.
 
   // Ceiling: rounds up only if there is a fractional part. Adding 255
   // (not 256) avoids carrying into the whole part when fraction is zero.

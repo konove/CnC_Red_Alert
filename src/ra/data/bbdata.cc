@@ -234,29 +234,29 @@ BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 bool BulletTypeClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
-    Arming = ini.Get_Int(Name(), "Arm", Arming);
-    ROT = static_cast<unsigned char>(ini.Get_Int(Name(), "ROT", ROT));
-    Tumble = ini.Get_Int(Name(), "Frames", Tumble);
-    IsHigh = ini.Get_Bool(Name(), "High", IsHigh);
-    IsShadow = ini.Get_Bool(Name(), "Shadow", IsShadow);
-    IsArcing = ini.Get_Bool(Name(), "Arcing", IsArcing);
-    IsDropping = ini.Get_Bool(Name(), "Dropping", IsDropping);
-    IsInvisible = ini.Get_Bool(Name(), "Inviso", IsInvisible);
-    IsProximityArmed = ini.Get_Bool(Name(), "Proximity", IsProximityArmed);
-    IsFlameEquipped = ini.Get_Bool(Name(), "Animates", IsFlameEquipped);
-    IsFueled = ini.Get_Bool(Name(), "Ranged", IsFueled);
-    IsInaccurate = ini.Get_Bool(Name(), "Inaccuate", IsInaccurate);
-    IsAntiAircraft = ini.Get_Bool(Name(), "AA", IsAntiAircraft);
-    IsAntiGround = ini.Get_Bool(Name(), "AG", IsAntiGround);
-    IsAntiSub = ini.Get_Bool(Name(), "ASW", IsAntiSub);
-    IsDegenerate = ini.Get_Bool(Name(), "Degenerates", IsDegenerate);
-    IsSubSurface = ini.Get_Bool(Name(), "UnderWater", IsSubSurface);
-    IsParachuted = ini.Get_Bool(Name(), "Parachuted", IsParachuted);
-    IsFaceless = !ini.Get_Bool(Name(), "Rotates", !IsFaceless);
-    IsTranslucent = ini.Get_Bool(Name(), "Translucent", IsTranslucent);
-    IsGigundo = ini.Get_Bool(Name(), "Gigundo", IsGigundo);
-    ini.Get_String(Name(), "Image", "none", GraphicName, sizeof(GraphicName));
+  if (ini.HasSection(Name())) {
+    Arming = ini.GetInt(Name(), "Arm", Arming);
+    ROT = static_cast<unsigned char>(ini.GetInt(Name(), "ROT", ROT));
+    Tumble = ini.GetInt(Name(), "Frames", Tumble);
+    IsHigh = ini.GetBool(Name(), "High", IsHigh);
+    IsShadow = ini.GetBool(Name(), "Shadow", IsShadow);
+    IsArcing = ini.GetBool(Name(), "Arcing", IsArcing);
+    IsDropping = ini.GetBool(Name(), "Dropping", IsDropping);
+    IsInvisible = ini.GetBool(Name(), "Inviso", IsInvisible);
+    IsProximityArmed = ini.GetBool(Name(), "Proximity", IsProximityArmed);
+    IsFlameEquipped = ini.GetBool(Name(), "Animates", IsFlameEquipped);
+    IsFueled = ini.GetBool(Name(), "Ranged", IsFueled);
+    IsInaccurate = ini.GetBool(Name(), "Inaccuate", IsInaccurate);
+    IsAntiAircraft = ini.GetBool(Name(), "AA", IsAntiAircraft);
+    IsAntiGround = ini.GetBool(Name(), "AG", IsAntiGround);
+    IsAntiSub = ini.GetBool(Name(), "ASW", IsAntiSub);
+    IsDegenerate = ini.GetBool(Name(), "Degenerates", IsDegenerate);
+    IsSubSurface = ini.GetBool(Name(), "UnderWater", IsSubSurface);
+    IsParachuted = ini.GetBool(Name(), "Parachuted", IsParachuted);
+    IsFaceless = !ini.GetBool(Name(), "Rotates", !IsFaceless);
+    IsTranslucent = ini.GetBool(Name(), "Translucent", IsTranslucent);
+    IsGigundo = ini.GetBool(Name(), "Gigundo", IsGigundo);
+    ini.GetString(Name(), "Image", "none", GraphicName);
     return true;
   }
   return false;

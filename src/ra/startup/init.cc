@@ -1208,7 +1208,7 @@ static bool LogoAlreadyPlayed() {
   if (const auto file = OpenGameFile(kConfigFileName)) {
     ini.Load(*file);
   }
-  return ini.Get_Bool(kLogoPlayedSection, kLogoPlayedEntry, false);
+  return ini.GetBool(kLogoPlayedSection, kLogoPlayedEntry, false);
 }
 
 static void MarkLogoPlayed() {
@@ -1222,7 +1222,7 @@ static void MarkLogoPlayed() {
   if (const auto file = OpenGameFile(kConfigFileName)) {
     ini.Load(*file);
   }
-  ini.Put_Bool(kLogoPlayedSection, kLogoPlayedEntry, true);
+  ini.PutBool(kLogoPlayedSection, kLogoPlayedEntry, true);
   if (const auto file = OpenGameFile(kConfigFileName, FileAccess::kWrite)) {
     ini.Save(*file);
   }
@@ -2409,7 +2409,7 @@ static void Init_Keys() {
   engine::file::IniFile ini;
   ini.Load(source);
 
-  TheAssets().set_mix_key(ini.Get_PKey(true));
+  TheAssets().set_mix_key(ini.GetPublicKey(true));
 }
 
 /***************************************************************************

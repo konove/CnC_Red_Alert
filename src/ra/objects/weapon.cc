@@ -197,18 +197,18 @@ WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 bool WeaponTypeClass::Read_INI(engine::file::IniFile& ini) {
-  if (ini.Is_Present(Name())) {
-    IsSupressed = ini.Get_Bool(Name(), "Supress", IsSupressed);
-    Burst = ini.Get_Int(Name(), "Burst", Burst);
-    Attack = ini.Get_Int(Name(), "Damage", Attack);
+  if (ini.HasSection(Name())) {
+    IsSupressed = ini.GetBool(Name(), "Supress", IsSupressed);
+    Burst = ini.GetInt(Name(), "Burst", Burst);
+    Attack = ini.GetInt(Name(), "Damage", Attack);
     MaxSpeed = GetMPHType(ini, Name(), "Speed", MaxSpeed);
-    ROF = ini.Get_Int(Name(), "ROF", ROF);
+    ROF = ini.GetInt(Name(), "ROF", ROF);
     Range = GetLepton(ini, Name(), "Range", Range);
     Sound = GetVocType(ini, Name(), "Report", Sound);
     Anim = GetAnimType(ini, Name(), "Anim", Anim);
-    IsCamera = ini.Get_Bool(Name(), "Camera", IsCamera);
-    IsElectric = ini.Get_Bool(Name(), "Charges", IsElectric);
-    IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
+    IsCamera = ini.GetBool(Name(), "Camera", IsCamera);
+    IsElectric = ini.GetBool(Name(), "Charges", IsElectric);
+    IsTurboBoosted = ini.GetBool(Name(), "TurboBoost", IsTurboBoosted);
 
     WarheadType wtype = WarheadPtr != nullptr
                             ? static_cast<WarheadType>(WarheadPtr->ID)

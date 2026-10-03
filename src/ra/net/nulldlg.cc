@@ -3682,8 +3682,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         base::SafeCopy(SendPacket.Name, namebuf);
-        SendPacket.ScenarioInfo.CheatCheck =
-            TheRules().rule_ini().Get_Unique_ID();
+        SendPacket.ScenarioInfo.CheatCheck = TheRules().rule_ini().UniqueId();
         SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
         SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
         SendPacket.ScenarioInfo.House = TheSession().House;
@@ -3892,7 +3891,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 rc = 0;
               } else {
                 if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                    TheRules().rule_ini().Get_Unique_ID()) {
+                    TheRules().rule_ini().UniqueId()) {
                   WWMessageBox().Process(TXT_MISMATCH);
 
                   // to skip the other system not responding msg
@@ -4386,8 +4385,8 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
           */
           engine::file::IniFile ini;
           ini.Load(*file);
-          ini.Get_String("Digest", "1", "No digest here mate. Nope.",
-                         digest_buffer, sizeof(digest_buffer));
+          ini.GetString("Digest", "1", "No digest here mate. Nope.",
+                        digest_buffer);
         }
         // debugprint("digest = %s, digest_buffer = %s.\n", digest,
         // digest_buffer);
@@ -5290,8 +5289,7 @@ int Com_Show_Scenario_Dialog() {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       base::SafeCopy(SendPacket.Name, namebuf);
-      SendPacket.ScenarioInfo.CheatCheck =
-          TheRules().rule_ini().Get_Unique_ID();
+      SendPacket.ScenarioInfo.CheatCheck = TheRules().rule_ini().UniqueId();
       SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
       SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
       SendPacket.ScenarioInfo.House = TheSession().House;
@@ -5561,7 +5559,7 @@ int Com_Show_Scenario_Dialog() {
             // ........................................................
             else {
               if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                  TheRules().rule_ini().Get_Unique_ID()) {
+                  TheRules().rule_ini().UniqueId()) {
                 WWMessageBox().Process(TXT_MISMATCH);
 
                 // to skip the other system not responding msg

@@ -1970,11 +1970,11 @@ bool VesselClass::Is_Allowed_To_Recloak() const {
 void VesselClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+    ini.GetString(INI_Name(), entry, "", buf);
     base::Tokenizer tokens(buf, ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Vessel house.
@@ -2080,7 +2080,7 @@ void VesselClass::Write_INI(engine::file::IniFile& ini) {
           vessel->PrimaryFacing.Current(), Mission_Name(vessel->Mission),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
-      ini.Put_String(INI_Name(), uname, buf);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

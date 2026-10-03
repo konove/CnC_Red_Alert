@@ -61,7 +61,7 @@ enum class IniLoadResult {
 // Example:
 //   IniFile ini;
 //   if (ini.Load(stream)) {
-//     const int credits = ini.Get_Int("Basic", "Credits", 0);
+//     const int credits = ini.GetInt("Basic", "Credits", 0);
 //   }
 class IniFile {
  public:
@@ -72,199 +72,189 @@ class IniFile {
   IniFile(IniFile&&) = delete;
   IniFile& operator=(IniFile&&) = delete;
 
-  // Adds the sections read from `file` to the database; it is not cleared
+  // Adds the sections read from the stream to the database; it is not cleared
   // first. Text before the first section header is skipped, and a section
   // without entries is not stored. Returns false when the data holds no
   // section header at all.
-  bool Load(ByteStream& file);
-  bool Load(ByteSource& file);
+  bool Load(ByteStream& stream);
+  bool Load(ByteSource& source);
   // Writes every section as "[name]", its "entry=value" lines and a blank
   // line, with CR LF line ends, and finishes the sink. Returns whether every
   // byte was accepted.
-  bool Save(ByteStream& file) const;
-  bool Save(ByteSink& pipe) const;
+  bool Save(ByteStream& stream) const;
+  bool Save(ByteSink& sink) const;
 
   // Loads the database like Load(). A [Digest] section, if present, is
   // removed and compared with the SHA-1 of the remaining data; the data is
   // kept either way.
-  IniLoadResult LoadVerified(ByteStream& file);
-  IniLoadResult LoadVerified(ByteSource& file);
+  IniLoadResult LoadVerified(ByteStream& stream);
+  IniLoadResult LoadVerified(ByteSource& source);
   // Saves the database followed by a [Digest] section holding the SHA-1 of the
   // data. The database itself is left unchanged; it must not already hold a
   // [Digest] section (LoadVerified() removes one that decodes to a non-empty
   // block).
-  bool SaveWithDigest(ByteStream& file) const;
-  bool SaveWithDigest(ByteSink& pipe) const;
+  bool SaveWithDigest(ByteStream& stream) const;
+  bool SaveWithDigest(ByteSink& sink) const;
 
   // A CRC of the data's SHA-1; equal for equal databases.
-  [[nodiscard]] int Get_Unique_ID() const;
+  [[nodiscard]] int UniqueId() const;
 
-  // Removes `entry` from `section`, the whole `section` when `entry` is
-  // nullptr, or everything when `section` is nullptr too. A name that is not
-  // found removes nothing. Always returns true.
-  bool Clear(const char* section = nullptr, const char* entry = nullptr);
+  // Remove everything, one section, or one entry of a section, with every
+  // duplicate of the name. A name that is not found removes nothing. They
+  // always return true.
+  bool Clear();
+  bool Clear(std::string_view section);
+  bool Clear(std::string_view section, std::string_view entry);
 
-  int Line_Count(const char* section) const;
   // True once the database holds at least one section.
-  [[nodiscard]] bool Is_Loaded() const { return !SectionList.empty(); }
-  [[nodiscard]] int Size() const;
-  // Whether `section` holds `entry`, or, with a null `entry`, whether
-  // `section` exists.
-  bool Is_Present(const char* section, const char* entry = nullptr) const {
-    if (entry == nullptr) {
-      return Find_Section(section) != nullptr;
-    }
-    return Find_Entry(section, entry) != nullptr;
+  [[nodiscard]] bool is_loaded() const { return !sections_.empty(); }
+
+  [[nodiscard]] bool HasSection(std::string_view section) const {
+    return FindSection(section) != nullptr;
+  }
+  [[nodiscard]] bool HasEntry(std::string_view section,
+                              std::string_view entry) const {
+    return FindEntry(section, entry) != nullptr;
   }
 
   // The number of sections, duplicates counted.
-  [[nodiscard]] int Section_Count() const;
+  [[nodiscard]] int SectionCount() const;
   // Returns the name of section `index` in file order, or nullptr when out of
   // range.
-  [[nodiscard]] const char* Get_Section(int index) const
+  [[nodiscard]] const char* SectionName(int index) const
       [[clang::lifetimebound]];
-  bool Section_Present(const char* section) const {
-    return Find_Section(section) != nullptr;
-  }
 
   // The number of entries in `section`; 0 when there is no such section.
-  int Entry_Count(const char* section) const;
+  [[nodiscard]] int EntryCount(std::string_view section) const;
   // Returns the name (the text left of the '=') of entry `index` of `section`
   // in file order, or nullptr when the section or the index does not exist.
-  const char* Get_Entry(const char* section, int index) const;
+  // The analysis cannot follow the name through the section index.
+  [[nodiscard]] const char* EntryName(std::string_view section, int index) const
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      [[clang::lifetimebound]];
 
-  // The getters return the value of `entry` in `section`, or `defvalue` when
-  // the entry is missing, a name is null, or the text does not parse as the
-  // requested type.
+  // The getters return the value of `entry` in `section`, or `default_value`
+  // when the entry is missing or its text does not parse as the requested
+  // type.
 
-  // Copies the value, without surrounding blanks, into the first `size` chars
-  // of `buffer` and terminates it; a longer value is cut. Returns the length
-  // stored. `defvalue` may be null (an empty string) and may point into
-  // `buffer`. A null name stores an empty string, not the default.
-  int Get_String(const char* section, const char* entry, const char* defvalue,
-                 std::span<char> buffer, int size) const;
+  // Returns the value without surrounding blanks; `default_value` is trimmed
+  // the same way.
+  [[nodiscard]] std::string GetString(std::string_view section,
+                                      std::string_view entry,
+                                      std::string_view default_value) const;
+  // As above, copied into `buffer` and terminated; a value longer than the
+  // buffer is cut. Returns the length stored. `default_value` may be a view
+  // of `buffer`.
+  int GetString(std::string_view section, std::string_view entry,
+                std::string_view default_value, std::span<char> buffer) const;
   // Reads decimal, "$FF", "0FFh" and "0xFF" forms.
-  int Get_Int(const char* section, const char* entry, int defvalue = 0) const;
+  [[nodiscard]] int GetInt(std::string_view section, std::string_view entry,
+                           int default_value = 0) const;
   // Reads the value as hexadecimal digits, with or without a "0x" prefix.
-  int Get_Hex(const char* section, const char* entry, int defvalue = 0) const;
+  [[nodiscard]] int GetHex(std::string_view section, std::string_view entry,
+                           int default_value = 0) const;
   // Decides by the first character: Y, T or 1 is true and N, F or 0 false, in
   // either case.
-  bool Get_Bool(const char* section, const char* entry,
-                bool defvalue = false) const;
+  [[nodiscard]] bool GetBool(std::string_view section, std::string_view entry,
+                             bool default_value = false) const;
+  // Reads "1.5" and "150%" forms. Text without digits reads as zero, not as
+  // `default_value`.
+  [[nodiscard]] Fixed GetFixed(std::string_view section, std::string_view entry,
+                               Fixed default_value) const;
   // Joins the values of every entry of `section`, in order and separated by
-  // single spaces, into the first `len` chars of `buffer`, terminated: the
-  // text Put_TextBlock() stored. Returns the length stored.
-  int Get_TextBlock(const char* section, std::span<char> buffer, int len) const;
-  // Decodes the base64 text Put_UUBlock() stored in `section` into the first
-  // `len` bytes of `block` and returns the number of bytes decoded; data
-  // beyond `len` is dropped, so a full buffer may mean a truncated block.
-  int Get_UUBlock(const char* section, std::span<std::byte> block,
-                  int len) const;
+  // single spaces, into `buffer`, terminated: the text PutTextBlock() stored.
+  // Text that does not fit is dropped. Returns the length stored.
+  int GetTextBlock(std::string_view section, std::span<char> buffer) const;
+  // Decodes the base64 text PutBase64Block() stored in `section` into `block`
+  // and returns the number of bytes decoded; data that does not fit is
+  // dropped, so a full buffer may mean a truncated block.
+  int GetBase64Block(std::string_view section,
+                     std::span<std::byte> block) const;
   // Returns the key held in [PublicKey] (the modulus) and [PrivateKey] (the
   // exponent). With `fast`, the exponent is the well-known public one and
   // only the modulus is read.
-  [[nodiscard]] PKey Get_PKey(bool fast) const;
-  // Reads "1.5" and "150%" forms. Text without digits reads as zero, not as
-  // `defvalue`.
-  Fixed Get_Fixed(const char* section, const char* entry, Fixed defvalue) const;
+  [[nodiscard]] PKey GetPublicKey(bool fast) const;
 
   // The setters store a value under `entry` in `section`, creating the
   // section and replacing an existing entry (and every duplicate of it); a new
-  // entry goes last. They return false, storing nothing, for a null name.
+  // entry goes last. They always return true.
 
-  // Writes "1.5" style text, which Get_Fixed() reads back.
-  bool Put_Fixed(const char* section, const char* entry, Fixed value);
-  // A null or empty `string` removes the entry: the file format cannot hold
-  // an entry without a value.
-  bool Put_String(const char* section, const char* entry, const char* string);
-  // Writes bare hexadecimal digits, which Get_Hex() reads back.
-  bool Put_Hex(const char* section, const char* entry, int number);
-  // `format` chooses the spelling, all of which Get_Int() reads back: 0 is
+  // An empty `value` removes the entry: the file format cannot hold an entry
+  // without a value.
+  bool PutString(std::string_view section, std::string_view entry,
+                 std::string_view value);
+  // `format` chooses the spelling, all of which GetInt() reads back: 0 is
   // decimal, 1 hexadecimal with a trailing 'h', 2 hexadecimal with a leading
   // '$'.
-  bool Put_Int(const char* section, const char* entry, int number,
-               int format = 0);
+  bool PutInt(std::string_view section, std::string_view entry, int number,
+              int format = 0);
+  // Writes bare hexadecimal digits, which GetHex() reads back.
+  bool PutHex(std::string_view section, std::string_view entry, int number);
   // Writes "yes" or "no".
-  bool Put_Bool(const char* section, const char* entry, bool value);
+  bool PutBool(std::string_view section, std::string_view entry, bool value);
+  // Writes "1.5" style text, which GetFixed() reads back.
+  bool PutFixed(std::string_view section, std::string_view entry, Fixed value);
   // Replaces `section` with `text` broken at blanks into lines of at most 75
   // characters, stored as the entries "1", "2", ... The section can hold
-  // nothing else. A word longer than a line ends the block: it and the text
-  // after it are not stored.
-  bool Put_TextBlock(const char* section, const char* text);
-  // Replaces `section` with the first `len` bytes of `block` as base64 text
-  // in numbered entries of 70 characters. The section can hold nothing else.
-  // Returns false when `len` is not in 1..block.size().
-  bool Put_UUBlock(const char* section, std::span<const std::byte> block,
-                   int len);
+  // nothing else. A word of 75 characters or more ends the block: it and the
+  // text after it are not stored. Always returns true.
+  bool PutTextBlock(std::string_view section, std::string_view text);
+  // Replaces `section` with `block` as base64 text in numbered entries of 70
+  // characters. The section can hold nothing else. Returns false, leaving
+  // the section alone, for an empty `block`.
+  bool PutBase64Block(std::string_view section,
+                      std::span<const std::byte> block);
   // Stores the modulus of `key` in [PublicKey] and its exponent in
   // [PrivateKey]. A database written this way holds the private key, so it
-  // must not be shipped.
-  bool Put_PKey(const PKey& key);
+  // must not be shipped. Always returns true.
+  bool PutPublicKey(const PKey& key);
 
- protected:
+ private:
   // One "entry=value" line.
-  struct IniEntry {
-    explicit IniEntry(const char* entry = "", const char* value = "")
-        : Entry(entry), Value(value) {}
-    ~IniEntry();
-    IniEntry(const IniEntry&) = delete;
-    IniEntry& operator=(const IniEntry&) = delete;
-    IniEntry(IniEntry&&) = delete;
-    IniEntry& operator=(IniEntry&&) = delete;
-    [[nodiscard]] uint32_t Index_ID() const { return Name_ID(Entry); }
+  struct Entry {
+    [[nodiscard]] uint32_t id() const { return NameId(name); }
 
-    std::string Entry;
-    std::string Value;  // Never empty: such an entry is not stored.
+    std::string name;
+    std::string value;  // Never empty: such an entry is not stored.
   };
 
   // One "[section]" and the entries under it.
-  struct IniSection {
-    explicit IniSection(const char* section) : Section(section) {}
-    ~IniSection();
-    IniSection(const IniSection&) = delete;
-    IniSection& operator=(const IniSection&) = delete;
-    IniSection(IniSection&&) = delete;
-    IniSection& operator=(IniSection&&) = delete;
-    // Returns the first entry named `entry`, or nullptr.
-    IniEntry* Find_Entry(const char* entry) const;
-    // Removes every entry whose name has index id `id` (a file can hold
+  struct Section {
+    // Returns the first entry named `entry_name`, or nullptr.
+    [[nodiscard]] const Entry* FindEntry(std::string_view entry_name) const;
+    // Removes every entry whose name has the id `entry_id` (a file can hold
     // duplicates; the index only knows the first), so none is left to
     // resurface after the removal.
-    void Remove_Entries(uint32_t id);
-    [[nodiscard]] uint32_t Index_ID() const { return Name_ID(Section); }
+    void RemoveEntries(uint32_t entry_id);
+    [[nodiscard]] uint32_t id() const { return NameId(name); }
 
-    std::string Section;
-    std::vector<std::unique_ptr<IniEntry>> EntryList;     // In file order.
-    absl::flat_hash_map<uint32_t, IniEntry*> EntryIndex;  // By CRC of the name.
+    std::string name;
+    std::vector<std::unique_ptr<Entry>> entries;        // In file order.
+    absl::flat_hash_map<uint32_t, Entry*> entry_index;  // By NameId().
   };
 
-  // Return the first section or entry of that name, or nullptr when there is
-  // none or a name is null.
-  IniSection* Find_Section(const char* section) const;
-  IniEntry* Find_Entry(const char* section, const char* entry) const;
-  // Removes every section whose name has index id `id`, duplicates included.
-  void Remove_Sections(uint32_t id);
-  // The key of a section or entry name: names compare without ASCII case.
-  static uint32_t Name_ID(std::string_view name);
-  // Returns `line` up to its first ';', without trailing blanks.
-  static std::string_view Strip_Comments(std::string_view line);
+  // Return the first section or entry of that name, or nullptr.
+  [[nodiscard]] Section* FindSection(std::string_view section) const;
+  [[nodiscard]] const Entry* FindEntry(std::string_view section,
+                                       std::string_view entry) const;
+  // Removes every section whose name has the id `section_id`, duplicates
+  // included.
+  void RemoveSections(uint32_t section_id);
+  // The key of a section or entry name: its CRC without ASCII case, which is
+  // what makes names compare without case.
+  static uint32_t NameId(std::string_view name);
+  // Writes every section to `sink` without finishing it.
+  void WriteSections(ByteSink& sink) const;
+  void ComputeDigest() const;
 
-  std::vector<std::unique_ptr<IniSection>> SectionList;  // In file order.
-
-  absl::flat_hash_map<uint32_t, IniSection*>
-      SectionIndex;  // By CRC of the name.
-
- private:
-  // Writes every section to `pipe` without finishing it.
-  void WriteSections(ByteSink& pipe) const;
-  void Calculate_Message_Digest() const;
-  void Invalidate_Message_Digest() { IsDigestPresent = false; }
+  std::vector<std::unique_ptr<Section>> sections_;         // In file order.
+  absl::flat_hash_map<uint32_t, Section*> section_index_;  // By NameId().
 
   // The digest is a lazily computed cache of the database contents: const
-  // queries such as Get_Unique_ID() fill it on first use, and every mutation
-  // invalidates it.
-  mutable bool IsDigestPresent : 1 {false};
-  mutable Sha1Digest Digest{};
+  // queries such as UniqueId() fill it on first use, and every mutation
+  // clears `digest_valid_`.
+  mutable bool digest_valid_ = false;
+  mutable Sha1Digest digest_{};
 };
 
 }  // namespace engine::file

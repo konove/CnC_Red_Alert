@@ -3118,8 +3118,7 @@ static bool Request_To_Join(const char* playername, int join_index,
     TheSession().GPacket.PlayerInfo.MinVersion = VersionClass::Min_Version();
   }
   TheSession().GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
-  TheSession().GPacket.PlayerInfo.CheatCheck =
-      TheRules().rule_ini().Get_Unique_ID();
+  TheSession().GPacket.PlayerInfo.CheatCheck = TheRules().rule_ini().UniqueId();
 
   TheNetwork().ipx().Send_Global_Message(
       base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
@@ -5376,7 +5375,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     * match.
     */
     if (TheSession().GPacket.PlayerInfo.CheatCheck !=
-            TheRules().rule_ini().Get_Unique_ID() &&
+            TheRules().rule_ini().UniqueId() &&
         !resend) {
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));

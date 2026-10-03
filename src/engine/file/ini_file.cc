@@ -20,8 +20,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
 #include <iterator>
 #include <memory>
 #include <span>
@@ -32,6 +30,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/ascii.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -59,6 +58,17 @@
 namespace engine::file {
 
 namespace {
+
+// The section LoadVerified() and SaveWithDigest() keep the SHA-1 in, and the
+// two that hold a public key.
+constexpr std::string_view kDigestSection = "Digest";
+constexpr std::string_view kPublicKeySection = "PublicKey";
+constexpr std::string_view kPrivateKeySection = "PrivateKey";
+
+// The longest line PutTextBlock() stores, and the base64 characters
+// PutBase64Block() puts in one entry.
+constexpr int kTextLineLength = 75;
+constexpr int kBase64LineLength = 70;
 
 // Returns the next line without a length limit: stops at LF, drops CR and
 // trims. A line cut short by the end of the data is discarded (the result is
@@ -88,52 +98,57 @@ bool IsSectionLine(std::string_view line) {
   return !line.empty() && line.front() == '[' && line.contains(']');
 }
 
+// Returns `line` up to its first ';', without trailing blanks.
+std::string_view StripComment(std::string_view line) {
+  return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));
+}
+
 }  // namespace
 
-uint32_t IniFile::Name_ID(std::string_view name) {
+uint32_t IniFile::NameId(std::string_view name) {
   return CrcEngine::Compute(absl::AsciiStrToUpper(name));
 }
 
-IniFile::~IniFile() { Clear(); }
+IniFile::~IniFile() = default;
 
-IniFile::IniEntry::~IniEntry() = default;
+bool IniFile::Clear() {
+  digest_valid_ = false;
+  sections_.clear();
+  section_index_.clear();
+  return true;
+}
 
-IniFile::IniSection::~IniSection() = default;
+bool IniFile::Clear(std::string_view section) {
+  digest_valid_ = false;
+  if (const Section* found = FindSection(section)) {
+    RemoveSections(found->id());
+  }
+  return true;
+}
 
-bool IniFile::Clear(const char* section, const char* entry) {
-  Invalidate_Message_Digest();
-  if (section == nullptr) {
-    SectionList.clear();
-    SectionIndex.clear();
-  } else {
-    IniSection* secptr = Find_Section(section);
-    if (secptr != nullptr) {
-      if (entry != nullptr) {
-        const IniEntry* entptr = secptr->Find_Entry(entry);
-        if (entptr != nullptr) {
-          secptr->Remove_Entries(entptr->Index_ID());
-        }
-      } else {
-        Remove_Sections(secptr->Index_ID());
-      }
+bool IniFile::Clear(std::string_view section, std::string_view entry) {
+  digest_valid_ = false;
+  if (Section* found = FindSection(section)) {
+    if (const Entry* found_entry = found->FindEntry(entry)) {
+      found->RemoveEntries(found_entry->id());
     }
   }
   return true;
 }
 
-bool IniFile::Load(ByteStream& file) {
-  StreamSource fs(file);
-  return Load(fs);
+bool IniFile::Load(ByteStream& stream) {
+  StreamSource source(stream);
+  return Load(source);
 }
 
-bool IniFile::Load(ByteSource& file) {
-  Invalidate_Message_Digest();
+bool IniFile::Load(ByteSource& source) {
+  digest_valid_ = false;
   bool end_of_file = false;
   std::string line;
 
   // Skip to the first section header. Data without one is not an INI file.
   while (!end_of_file) {
-    line = ReadLine(file, end_of_file);
+    line = ReadLine(source, end_of_file);
     if (end_of_file) {
       return false;
     }
@@ -144,21 +159,22 @@ bool IniFile::Load(ByteSource& file) {
 
   // One pass per section; `line` holds its header on entry.
   while (!end_of_file) {
-    const std::string_view name = absl::StripAsciiWhitespace(
-        std::string_view(line).substr(1, std::string_view(line).find(']') - 1));
-    auto secptr = std::make_unique<IniSection>(std::string(name).c_str());
+    const std::string_view header = line;
+    auto section = std::make_unique<Section>();
+    section->name = std::string(
+        absl::StripAsciiWhitespace(header.substr(1, header.find(']') - 1)));
 
     while (!end_of_file) {
       // The next header ends this section; the outer loop takes it from
       // `line`.
-      line = ReadLine(file, end_of_file);
+      line = ReadLine(source, end_of_file);
       if (IsSectionLine(line)) {
         break;
       }
 
       // Blank lines, whole-line comments and lines without an entry name are
       // dropped, so they do not survive a load and save.
-      const std::string_view text = Strip_Comments(line);
+      const std::string_view text = StripComment(line);
       if (text.empty() || text.front() == ';' || text.front() == '=') {
         continue;
       }
@@ -169,57 +185,57 @@ bool IniFile::Load(ByteSource& file) {
       if (split == std::string_view::npos) {
         continue;
       }
-      const std::string_view key =
+      const std::string_view name =
           absl::StripAsciiWhitespace(text.substr(0, split));
       const std::string_view value =
           absl::StripAsciiWhitespace(text.substr(split + 1));
-      if (key.empty() || value.empty()) {
+      if (name.empty() || value.empty()) {
         continue;
       }
 
-      auto entryptr = std::make_unique<IniEntry>(std::string(key).c_str(),
-                                                 std::string(value).c_str());
-      secptr->EntryIndex.try_emplace(entryptr->Index_ID(), entryptr.get());
-      secptr->EntryList.push_back(std::move(entryptr));
+      auto entry =
+          std::make_unique<Entry>(std::string(name), std::string(value));
+      section->entry_index.try_emplace(entry->id(), entry.get());
+      section->entries.push_back(std::move(entry));
     }
 
     // A section without entries is not stored. try_emplace keeps the first of
     // two sections with one name as the one lookups find.
-    if (!secptr->EntryList.empty()) {
-      SectionIndex.try_emplace(secptr->Index_ID(), secptr.get());
-      SectionList.push_back(std::move(secptr));
+    if (!section->entries.empty()) {
+      section_index_.try_emplace(section->id(), section.get());
+      sections_.push_back(std::move(section));
     }
   }
   return true;
 }
 
-bool IniFile::Save(ByteStream& file) const {
-  StreamSink fp(file);
-  return Save(fp);
+bool IniFile::Save(ByteStream& stream) const {
+  StreamSink sink(stream);
+  return Save(sink);
 }
 
-bool IniFile::Save(ByteSink& pipe) const {
-  WriteSections(pipe);
-  return pipe.Finish();
+bool IniFile::Save(ByteSink& sink) const {
+  WriteSections(sink);
+  return sink.Finish();
 }
 
 // Writes the sections without finishing the sink, so SaveWithDigest can
 // append a second database's sections before the one Finish().
-void IniFile::WriteSections(ByteSink& pipe) const {
-  const auto put = [&pipe](std::string_view text) {
-    pipe.Write(std::as_bytes(std::span(text)));
+void IniFile::WriteSections(ByteSink& sink) const {
+  const auto put = [&sink](std::string_view text) {
+    sink.Write(std::as_bytes(std::span(text)));
   };
 
-  for (const auto& secptr : SectionList) {
+  for (const auto& section : sections_) {
     put("[");
-    put(secptr->Section);
+    put(section->name);
     put("]");
     put("\r\n");
 
-    for (const auto& entryptr : secptr->EntryList) {
-      put(entryptr->Entry);
+    for (const auto& entry : section->entries) {
+      put(entry->name);
       put("=");
-      put(entryptr->Value);
+      put(entry->value);
       put("\r\n");
     }
 
@@ -228,318 +244,231 @@ void IniFile::WriteSections(ByteSink& pipe) const {
   }
 }
 
-IniFile::IniSection* IniFile::Find_Section(const char* section) const {
-  if (section != nullptr) {
-    const auto found = SectionIndex.find(Name_ID(section));
-    if (found != SectionIndex.end()) {
-      return found->second;
-    }
-  }
-  return nullptr;
+IniFile::Section* IniFile::FindSection(std::string_view section) const {
+  const auto found = section_index_.find(NameId(section));
+  return found == section_index_.end() ? nullptr : found->second;
 }
 
-int IniFile::Section_Count() const {
-  return static_cast<int>(SectionList.size());
-}
+int IniFile::SectionCount() const { return static_cast<int>(sections_.size()); }
 
-const char* IniFile::Get_Section(int index) const {
-  if (index < 0 || index >= Section_Count()) {
+const char* IniFile::SectionName(int index) const {
+  if (index < 0 || index >= SectionCount()) {
     return nullptr;
   }
-  return SectionList.at(base::ToSize(index))->Section.c_str();
+  return sections_.at(base::ToSize(index))->name.c_str();
 }
 
-int IniFile::Entry_Count(const char* section) const {
-  const IniSection* secptr = Find_Section(section);
-  if (secptr != nullptr) {
-    return static_cast<int>(secptr->EntryList.size());
+int IniFile::EntryCount(std::string_view section) const {
+  const Section* found = FindSection(section);
+  return found == nullptr ? 0 : static_cast<int>(found->entries.size());
+}
+
+const IniFile::Entry* IniFile::FindEntry(std::string_view section,
+                                         std::string_view entry) const {
+  const Section* found = FindSection(section);
+  return found == nullptr ? nullptr : found->FindEntry(entry);
+}
+
+const char* IniFile::EntryName(std::string_view section, int index) const {
+  const Section* found = FindSection(section);
+  if (found == nullptr || index < 0 || index >= std::ssize(found->entries)) {
+    return nullptr;
   }
-  return 0;
+  return found->entries.at(base::ToSize(index))->name.c_str();
 }
 
-IniFile::IniEntry* IniFile::Find_Entry(const char* section,
-                                       const char* entry) const {
-  const IniSection* secptr = Find_Section(section);
-  if (secptr != nullptr) {
-    return secptr->Find_Entry(entry);
-  }
-  return nullptr;
-}
-
-const char* IniFile::Get_Entry(const char* section, int index) const {
-  const IniSection* secptr = Find_Section(section);
-
-  if (secptr != nullptr && index >= 0 &&
-      index < std::ssize(secptr->EntryList)) {
-    return secptr->EntryList.at(base::ToSize(index))->Entry.c_str();
-  }
-  return nullptr;
-}
-
-bool IniFile::Put_UUBlock(const char* section, std::span<const std::byte> block,
-                          int len) {
-  if (section == nullptr || len < 1 || std::cmp_greater(len, block.size())) {
+bool IniFile::PutBase64Block(std::string_view section,
+                             std::span<const std::byte> block) {
+  if (block.empty()) {
     return false;
   }
 
-  Invalidate_Message_Digest();
   Clear(section);
 
-  SpanSource straw(block.first(base::ToSize(len)));
-  Base64Source bstraw(Base64Mode::kEncode, straw);
+  SpanSource source(block);
+  Base64Source encoder(Base64Mode::kEncode, source);
 
-  int counter = 1;
-
-  for (;;) {
-    char buffer[71];
-    char sbuffer[32];
-
-    const auto length = static_cast<int>(bstraw.Read(
-        std::as_writable_bytes(std::span(buffer).first(sizeof(buffer) - 1))));
-    base::At(buffer, length) = '\0';
+  for (int line_number = 1;; ++line_number) {
+    char line[kBase64LineLength];
+    const auto length = encoder.Read(std::as_writable_bytes(std::span(line)));
     if (length == 0) {
       break;
     }
-
-    absl::SNPrintF(sbuffer, sizeof(sbuffer), "%d", counter);
-    Put_String(section, sbuffer, buffer);
-    counter++;
+    PutString(section, absl::StrCat(line_number),
+              std::string_view(line, base::ToSize(length)));
   }
   return true;
 }
 
-int IniFile::Get_UUBlock(const char* section, std::span<std::byte> block,
-                         int len) const {
-  if (section == nullptr) {
-    return 0;
-  }
+// The entries are fetched by name, as the original did, so a section with a
+// duplicated entry name decodes the first of them twice.
+int IniFile::GetBase64Block(std::string_view section,
+                            std::span<std::byte> block) const {
+  SpanSink sink(block);
+  Base64Sink decoder(Base64Mode::kDecode, sink);
 
-  if (len < 0 || std::cmp_greater(len, block.size())) {
-    return 0;
+  const int entry_count = EntryCount(section);
+  for (int index = 0; index < entry_count; index++) {
+    char line[128];
+    const int length = GetString(section, EntryName(section, index), "=", line);
+    decoder.Write(std::as_bytes(std::span(line).first(base::ToSize(length))));
   }
-  SpanSink bpipe(block.first(base::ToSize(len)));
-  Base64Sink b64pipe(Base64Mode::kDecode, bpipe);
-
-  const int counter = Entry_Count(section);
-  for (int index = 0; index < counter; index++) {
-    char buffer[128];
-
-    const int length = Get_String(section, Get_Entry(section, index), "=",
-                                  buffer, sizeof(buffer));
-    b64pipe.Write(std::as_bytes(std::span(buffer).first(base::ToSize(length))));
-  }
-  b64pipe.Finish();
-  return static_cast<int>(bpipe.bytes_written());
+  decoder.Finish();
+  return static_cast<int>(sink.bytes_written());
 }
 
-bool IniFile::Put_TextBlock(const char* section, const char* text) {
-  if (section == nullptr) {
-    return false;
-  }
-
-  Invalidate_Message_Digest();
+bool IniFile::PutTextBlock(std::string_view section, std::string_view text) {
   Clear(section);
-  std::string_view remaining(text == nullptr ? "" : text);
 
-  int index = 1;
-  while (!remaining.empty()) {
-    char buffer[128];
-
-    base::SafeCopy(std::span(buffer).first(76), remaining);
-
-    char b[32];
-    absl::SNPrintF(b, sizeof(b), "%d", index);
+  for (int line_number = 1; !text.empty(); ++line_number) {
+    char line[kTextLineLength + 1];
+    base::SafeCopy(line, text);
 
     // A full buffer may have cut a word: break the line at its last blank.
-    int count = static_cast<int>(std::string_view(buffer).size());
-    if (count > 0) {
-      if (count >= 75) {
-        while (count) {
-          const char c = base::At(buffer, count);
-
-          if (absl::ascii_isspace(static_cast<unsigned char>(c))) {
-            break;
-          }
-          count--;
-        }
-
-        if (count == 0) {
-          break;
-        }
-        base::At(buffer, count) = '\0';
-      }
-
-      strtrim(base::MutableCString(buffer));
-      Put_String(section, b, buffer);
-      index++;
-      remaining.remove_prefix(base::ToSize(count));
-    } else {
+    // The terminator the scan starts on is not a blank.
+    int length = static_cast<int>(std::string_view(line).size());
+    if (length == 0) {
       break;
     }
+    if (length >= kTextLineLength) {
+      while (length > 0 && !absl::ascii_isspace(static_cast<unsigned char>(
+                               base::At(line, length)))) {
+        length--;
+      }
+      if (length == 0) {
+        break;
+      }
+      base::At(line, length) = '\0';
+    }
+
+    strtrim(line);
+    PutString(section, absl::StrCat(line_number), line);
+    text.remove_prefix(base::ToSize(length));
   }
   return true;
 }
 
-int IniFile::Get_TextBlock(const char* section, std::span<char> buffer,
-                           int len) const {
-  if (len <= 0 || std::cmp_greater(len, buffer.size())) {
+int IniFile::GetTextBlock(std::string_view section,
+                          std::span<char> buffer) const {
+  if (buffer.empty()) {
     return 0;
   }
+  buffer.front() = '\0';
 
-  base::At(buffer, 0) = '\0';
-  if (len <= 1) {
-    return 0;
-  }
-
-  const int elen = Entry_Count(section);
+  const int entry_count = EntryCount(section);
   int total = 0;
-  for (int index = 0; index < elen; index++) {
-    // One space stands for each line break Put_TextBlock() made.
+  for (int index = 0; index < entry_count && buffer.size() > 1; index++) {
+    // One space stands for each line break PutTextBlock() made.
     if (index > 0) {
-      base::At(buffer, 0) = ' ';
+      buffer.front() = ' ';
       buffer = buffer.subspan(1);
-      len--;
       total++;
     }
 
-    Get_String(section, Get_Entry(section, index), "", buffer, len);
-
-    const int partial =
-        static_cast<int>(std::string_view(buffer.data()).size());
-    total += partial;
-    buffer = buffer.subspan(base::ToSize(partial));
-    len -= partial;
-    if (len <= 1) {
-      break;
-    }
+    const int length =
+        GetString(section, EntryName(section, index), "", buffer);
+    total += length;
+    buffer = buffer.subspan(base::ToSize(length));
   }
   return total;
 }
 
-bool IniFile::Put_Int(const char* section, const char* entry, int number,
-                      int format) {
-  char buffer[32];
-
+bool IniFile::PutInt(std::string_view section, std::string_view entry,
+                     int number, int format) {
+  const auto bits = static_cast<unsigned int>(number);
   switch (format) {
-    default:
-    case 0:
-      absl::SNPrintF(buffer, sizeof(buffer), "%d", number);
-      break;
-
     case 1:
-      absl::SNPrintF(buffer, sizeof(buffer), "%Xh",
-                     static_cast<unsigned int>(number));
-      break;
-
+      return PutString(section, entry, absl::StrFormat("%Xh", bits));
     case 2:
-      absl::SNPrintF(buffer, sizeof(buffer), "$%X",
-                     static_cast<unsigned int>(number));
-      break;
+      return PutString(section, entry, absl::StrFormat("$%X", bits));
+    default:
+      return PutString(section, entry, absl::StrCat(number));
   }
-  return Put_String(section, entry, buffer);
 }
 
-int IniFile::Get_Int(const char* section, const char* entry,
-                     int defvalue) const {
-  if (section == nullptr || entry == nullptr) {
-    return defvalue;
-  }
-
-  const IniEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr) {
-    return base::ParseIniIntegerOr(entryptr->Value, defvalue);
-  }
-  return defvalue;
+int IniFile::GetInt(std::string_view section, std::string_view entry,
+                    int default_value) const {
+  const Entry* found = FindEntry(section, entry);
+  return found == nullptr
+             ? default_value
+             : base::ParseIniIntegerOr(found->value, default_value);
 }
 
-bool IniFile::Put_Hex(const char* section, const char* entry, int number) {
-  char buffer[32];
-
-  absl::SNPrintF(buffer, sizeof(buffer), "%X",
-                 static_cast<unsigned int>(number));
-  return Put_String(section, entry, buffer);
+bool IniFile::PutHex(std::string_view section, std::string_view entry,
+                     int number) {
+  return PutString(section, entry,
+                   absl::StrFormat("%X", static_cast<unsigned int>(number)));
 }
 
-int IniFile::Get_Hex(const char* section, const char* entry,
-                     int defvalue) const {
-  if (section == nullptr || entry == nullptr) {
-    return defvalue;
-  }
-
-  const IniEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr) {
-    if (const auto value = base::ParseHex<uint32_t>(entryptr->Value)) {
+int IniFile::GetHex(std::string_view section, std::string_view entry,
+                    int default_value) const {
+  if (const Entry* found = FindEntry(section, entry)) {
+    // All 32 bits are kept, so "FFFFFFFF" reads as -1.
+    if (const auto value = base::ParseHex<uint32_t>(found->value)) {
       return static_cast<int>(*value);
     }
   }
-  return defvalue;
+  return default_value;
 }
 
-bool IniFile::Put_String(const char* section, const char* entry,
-                         const char* string) {
-  if (section == nullptr || entry == nullptr) {
-    return false;
-  }
-
-  Invalidate_Message_Digest();
-  IniSection* secptr = Find_Section(section);
-
-  if (secptr == nullptr) {
-    secptr =
-        SectionList.emplace_back(std::make_unique<IniSection>(section)).get();
-    SectionIndex.try_emplace(secptr->Index_ID(), secptr);
+bool IniFile::PutString(std::string_view section, std::string_view entry,
+                        std::string_view value) {
+  digest_valid_ = false;
+  Section* found = FindSection(section);
+  if (found == nullptr) {
+    found = sections_.emplace_back(std::make_unique<Section>()).get();
+    found->name = std::string(section);
+    section_index_.try_emplace(found->id(), found);
   }
 
   // Remove the old entry and any duplicate of it.
-  secptr->Remove_Entries(Name_ID(entry));
+  found->RemoveEntries(NameId(entry));
 
   // An empty value is not stored: Load() would drop the line anyway.
-  if (string != nullptr && !std::string_view(string).empty()) {
-    IniEntry* entryptr =
-        secptr->EntryList
-            .emplace_back(std::make_unique<IniEntry>(entry, string))
-            .get();
-    secptr->EntryIndex.try_emplace(entryptr->Index_ID(), entryptr);
+  if (!value.empty()) {
+    Entry* added = found->entries
+                       .emplace_back(std::make_unique<Entry>(
+                           std::string(entry), std::string(value)))
+                       .get();
+    found->entry_index.try_emplace(added->id(), added);
   }
   return true;
 }
 
-int IniFile::Get_String(const char* section, const char* entry,
-                        const char* defvalue, std::span<char> buffer,
-                        int size) const {
-  if (size <= 0 || std::cmp_greater(size, buffer.size())) {
+std::string IniFile::GetString(std::string_view section, std::string_view entry,
+                               std::string_view default_value) const {
+  const Entry* found = FindEntry(section, entry);
+  return std::string(absl::StripAsciiWhitespace(
+      found == nullptr ? default_value : std::string_view(found->value)));
+}
+
+int IniFile::GetString(std::string_view section, std::string_view entry,
+                       std::string_view default_value,
+                       std::span<char> buffer) const {
+  if (buffer.empty()) {
     return 0;
   }
-  buffer = buffer.first(base::ToSize(size));
-  if (section == nullptr || entry == nullptr) {
-    base::At(buffer, 0) = '\0';
-    return 0;
-  }
-  const IniEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr) {
-    defvalue = entryptr->Value.c_str();
-  }
-  // A caller may use its output as the default. Copy before clearing it.
-  const std::string value = defvalue == nullptr ? "" : defvalue;
-  base::SafeCopy(buffer, value.c_str());
+  const Entry* found = FindEntry(section, entry);
+  // A caller may use its output as the default. Copy before overwriting it.
+  const std::string value(found == nullptr ? default_value
+                                           : std::string_view(found->value));
+  // Cut to the buffer first and trim after, so a cut that ends in blanks
+  // loses them too.
+  base::SafeCopy(buffer, value);
   strtrim(buffer);
   return static_cast<int>(std::string_view(buffer.data()).size());
 }
 
-bool IniFile::Put_Bool(const char* section, const char* entry, bool value) {
-  return Put_String(section, entry, value ? "yes" : "no");
+bool IniFile::PutBool(std::string_view section, std::string_view entry,
+                      bool value) {
+  return PutString(section, entry, value ? "yes" : "no");
 }
 
-bool IniFile::Get_Bool(const char* section, const char* entry,
-                       bool defvalue) const {
-  if (section == nullptr || entry == nullptr) {
-    return defvalue;
-  }
-
-  IniEntry* entryptr = Find_Entry(section, entry);
-  if (entryptr) {
-    switch (absl::ascii_toupper(
-        static_cast<unsigned char>(entryptr->Value.at(0)))) {
+bool IniFile::GetBool(std::string_view section, std::string_view entry,
+                      bool default_value) const {
+  if (const Entry* found = FindEntry(section, entry)) {
+    switch (
+        absl::ascii_toupper(static_cast<unsigned char>(found->value.front()))) {
       case 'Y':
       case 'T':
       case '1':
@@ -553,147 +482,137 @@ bool IniFile::Get_Bool(const char* section, const char* entry,
         break;
     }
   }
-  return defvalue;
+  return default_value;
 }
 
-IniFile::IniEntry* IniFile::IniSection::Find_Entry(const char* entry) const {
-  if (entry != nullptr) {
-    const auto found = EntryIndex.find(Name_ID(entry));
-    if (found != EntryIndex.end()) {
-      return found->second;
-    }
-  }
-  return nullptr;
+const IniFile::Entry* IniFile::Section::FindEntry(
+    std::string_view entry_name) const {
+  const auto found = entry_index.find(NameId(entry_name));
+  return found == entry_index.end() ? nullptr : found->second;
 }
 
-IniLoadResult IniFile::LoadVerified(ByteStream& file) {
-  StreamSource fs(file);
-  return LoadVerified(fs);
+IniLoadResult IniFile::LoadVerified(ByteStream& stream) {
+  StreamSource source(stream);
+  return LoadVerified(source);
 }
 
-IniLoadResult IniFile::LoadVerified(ByteSource& file) {
-  if (!Load(file)) {
+IniLoadResult IniFile::LoadVerified(ByteSource& source) {
+  if (!Load(source)) {
     return IniLoadResult::kFailed;
   }
 
   Sha1Digest embedded{};
-  const int len = Get_UUBlock("Digest", base::ObjectBytes(embedded),
-                              static_cast<int>(embedded.size()));
-  if (len <= 0) {
+  if (GetBase64Block(kDigestSection, base::ObjectBytes(embedded)) <= 0) {
     return IniLoadResult::kLoaded;
   }
 
   // The digest covers the data without its own section.
-  Clear("Digest");
-  Calculate_Message_Digest();
-  return embedded == Digest ? IniLoadResult::kLoaded
-                            : IniLoadResult::kDigestMismatch;
+  Clear(kDigestSection);
+  ComputeDigest();
+  return embedded == digest_ ? IniLoadResult::kLoaded
+                             : IniLoadResult::kDigestMismatch;
 }
 
-bool IniFile::SaveWithDigest(ByteStream& file) const {
-  StreamSink fp(file);
-  return SaveWithDigest(fp);
+bool IniFile::SaveWithDigest(ByteStream& stream) const {
+  StreamSink sink(stream);
+  return SaveWithDigest(sink);
 }
 
 // The digest section is built in a scratch database and saved after the data,
 // which is what appending it to this one would produce.
-bool IniFile::SaveWithDigest(ByteSink& pipe) const {
-  Calculate_Message_Digest();
+bool IniFile::SaveWithDigest(ByteSink& sink) const {
+  ComputeDigest();
   IniFile digest_section;
-  digest_section.Put_UUBlock("Digest", base::ObjectBytes(Digest),
-                             static_cast<int>(Digest.size()));
-  DCHECK(!Section_Present("Digest"));
-  WriteSections(pipe);
-  digest_section.WriteSections(pipe);
-  return pipe.Finish();
+  digest_section.PutBase64Block(kDigestSection, base::ObjectBytes(digest_));
+  DCHECK(!HasSection(kDigestSection));
+  WriteSections(sink);
+  digest_section.WriteSections(sink);
+  return sink.Finish();
 }
 
-int IniFile::Get_Unique_ID() const {
-  if (!IsDigestPresent) {
-    Calculate_Message_Digest();
+int IniFile::UniqueId() const {
+  if (!digest_valid_) {
+    ComputeDigest();
   }
 
   CrcEngine crc;
-  for (const std::byte byte : Digest) {
+  for (const std::byte byte : digest_) {
     crc.Update(std::to_integer<uint8_t>(byte));
   }
   return static_cast<int>(crc.Value());
 }
 
-void IniFile::Calculate_Message_Digest() const {
+void IniFile::ComputeDigest() const {
   NullSink discard;
   Sha1Sink sha(discard);
   Save(sha);
-  Digest = sha.digest();
-  IsDigestPresent = true;
+  digest_ = sha.digest();
+  digest_valid_ = true;
 }
 
 // The index slot goes first so no pointer to a destroyed entry is compared.
-// Names are matched by CRC, the same key the index looks them up by.
-void IniFile::IniSection::Remove_Entries(uint32_t id) {
-  EntryIndex.erase(id);
-  std::erase_if(EntryList,
-                [id](const auto& owned) { return owned->Index_ID() == id; });
+// Names are matched by id, the same key the index looks them up by.
+void IniFile::Section::RemoveEntries(uint32_t entry_id) {
+  entry_index.erase(entry_id);
+  std::erase_if(entries, [entry_id](const auto& owned) {
+    return owned->id() == entry_id;
+  });
 }
 
-// Same as IniSection::Remove_Entries, for sections.
-void IniFile::Remove_Sections(uint32_t id) {
-  SectionIndex.erase(id);
-  std::erase_if(SectionList,
-                [id](const auto& owned) { return owned->Index_ID() == id; });
+// Same as Section::RemoveEntries, for sections.
+void IniFile::RemoveSections(uint32_t section_id) {
+  section_index_.erase(section_id);
+  std::erase_if(sections_, [section_id](const auto& owned) {
+    return owned->id() == section_id;
+  });
 }
 
-bool IniFile::Put_PKey(const PKey& key) {
-  char buffer[512];
+bool IniFile::PutPublicKey(const PKey& key) {
+  std::byte encoded[512];
 
-  int len = key.Encode_Modulus(base::ObjectBytes(buffer));
-  Put_UUBlock("PublicKey", base::ObjectBytes(buffer), len);
+  int length = key.Encode_Modulus(encoded);
+  PutBase64Block(kPublicKeySection,
+                 std::span(encoded).first(base::ToSize(length)));
 
-  len = key.Encode_Exponent(base::ObjectBytes(buffer));
-  Put_UUBlock("PrivateKey", base::ObjectBytes(buffer), len);
+  length = key.Encode_Exponent(encoded);
+  PutBase64Block(kPrivateKeySection,
+                 std::span(encoded).first(base::ToSize(length)));
   return true;
 }
 
-PKey IniFile::Get_PKey(bool fast) const {
+PKey IniFile::GetPublicKey(bool fast) const {
   PKey key;
-  unsigned char buffer[512];
+  unsigned char encoded[512];
 
   // The fast key's exponent is a known constant, so a database published
   // without [PrivateKey] still yields it.
   if (fast) {
-    const BigInt exp = PKey::Fast_Exponent();
-    const auto length = exp.DEREncode(buffer);
-    key.Decode_Exponent(base::ObjectBytes(buffer).first(base::ToSize(length)));
+    const BigInt exponent = PKey::Fast_Exponent();
+    const auto length = exponent.DEREncode(encoded);
+    key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
   } else {
     const int length =
-        Get_UUBlock("PrivateKey", base::ObjectBytes(buffer), sizeof(buffer));
-    key.Decode_Exponent(base::ObjectBytes(buffer).first(base::ToSize(length)));
+        GetBase64Block(kPrivateKeySection, base::ObjectBytes(encoded));
+    key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
   }
 
   const int length =
-      Get_UUBlock("PublicKey", base::ObjectBytes(buffer), sizeof(buffer));
-  key.Decode_Modulus(base::ObjectBytes(buffer).first(base::ToSize(length)));
+      GetBase64Block(kPublicKeySection, base::ObjectBytes(encoded));
+  key.Decode_Modulus(base::ObjectBytes(encoded).first(base::ToSize(length)));
 
   return key;
 }
 
-Fixed IniFile::Get_Fixed(const char* section, const char* entry,
-                         Fixed defvalue) const {
-  char buffer[128];
-  Fixed retval = defvalue;
-
-  if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    retval = Fixed::FromString(buffer);
-  }
-  return retval;
+Fixed IniFile::GetFixed(std::string_view section, std::string_view entry,
+                        Fixed default_value) const {
+  // A value that is only blanks counts as missing.
+  const std::string text = GetString(section, entry, "");
+  return text.empty() ? default_value : Fixed::FromString(text);
 }
 
-bool IniFile::Put_Fixed(const char* section, const char* entry, Fixed value) {
-  return Put_String(section, entry, value.ToString().c_str());
-}
-
-std::string_view IniFile::Strip_Comments(std::string_view line) {
-  return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));
+bool IniFile::PutFixed(std::string_view section, std::string_view entry,
+                       Fixed value) {
+  return PutString(section, entry, value.ToString());
 }
 
 }  // namespace engine::file

@@ -555,25 +555,25 @@ void OptionsClass::Load_Settings() {
   */
   static const char* const OPTIONS = "Options";
   GameSpeed = static_cast<unsigned>(
-      ini.Get_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed)));
-  ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", ScrollRate);
+      ini.GetInt(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed)));
+  ScrollRate = ini.GetInt(OPTIONS, "ScrollRate", ScrollRate);
   // The file holds the stored values, not the slider positions the setters
   // take.
-  Brightness = ini.Get_Fixed(OPTIONS, "Brightness", Brightness);
-  Set_Sound_Volume(ini.Get_Fixed(OPTIONS, "Volume", Volume), false);
-  Set_Score_Volume(ini.Get_Fixed(OPTIONS, "ScoreVolume", ScoreVolume), false);
+  Brightness = ini.GetFixed(OPTIONS, "Brightness", Brightness);
+  Set_Sound_Volume(ini.GetFixed(OPTIONS, "Volume", Volume), false);
+  Set_Score_Volume(ini.GetFixed(OPTIONS, "ScoreVolume", ScoreVolume), false);
   MultiScoreVolume =
-      ini.Get_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
-  Contrast = ini.Get_Fixed(OPTIONS, "Contrast", Contrast);
-  Saturation = ini.Get_Fixed(OPTIONS, "Color", Saturation);
-  Tint = ini.Get_Fixed(OPTIONS, "Tint", Tint);
+      ini.GetFixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
+  Contrast = ini.GetFixed(OPTIONS, "Contrast", Contrast);
+  Saturation = ini.GetFixed(OPTIONS, "Color", Saturation);
+  Tint = ini.GetFixed(OPTIONS, "Tint", Tint);
   ShowPalette(Saturation);
-  AutoScroll = ini.Get_Bool(OPTIONS, "AutoScroll", AutoScroll);
-  Set_Repeat(ini.Get_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat));
-  Set_Shuffle(ini.Get_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle));
+  AutoScroll = ini.GetBool(OPTIONS, "AutoScroll", AutoScroll);
+  Set_Repeat(ini.GetBool(OPTIONS, "IsScoreRepeat", IsScoreRepeat));
+  Set_Shuffle(ini.GetBool(OPTIONS, "IsScoreShuffle", IsScoreShuffle));
   ThePalettes().set_slow_palette(
-      ini.Get_Bool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
-  IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
+      ini.GetBool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
+  IsPaletteScroll = ini.GetBool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
   LoadHotkeys(ini);
 }
@@ -607,21 +607,21 @@ void OptionsClass::Save_Settings() const {
   **	Save Options settings
   */
   static const char* const OPTIONS = "Options";
-  ini.Put_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed));
-  ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
-  ini.Put_Fixed(OPTIONS, "Brightness", Brightness);
-  ini.Put_Fixed(OPTIONS, "Volume", Volume);
+  ini.PutInt(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed));
+  ini.PutInt(OPTIONS, "ScrollRate", ScrollRate);
+  ini.PutFixed(OPTIONS, "Brightness", Brightness);
+  ini.PutFixed(OPTIONS, "Volume", Volume);
   if (TheSession().Type == GAME_NORMAL) {  // Save only when non-multiplayer.
-    ini.Put_Fixed(OPTIONS, "ScoreVolume", ScoreVolume);
+    ini.PutFixed(OPTIONS, "ScoreVolume", ScoreVolume);
   }
-  ini.Put_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
-  ini.Put_Fixed(OPTIONS, "Contrast", Contrast);
-  ini.Put_Fixed(OPTIONS, "Color", Saturation);
-  ini.Put_Fixed(OPTIONS, "Tint", Tint);
-  ini.Put_Bool(OPTIONS, "AutoScroll", AutoScroll);
-  ini.Put_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat);
-  ini.Put_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle);
-  ini.Put_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
+  ini.PutFixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
+  ini.PutFixed(OPTIONS, "Contrast", Contrast);
+  ini.PutFixed(OPTIONS, "Color", Saturation);
+  ini.PutFixed(OPTIONS, "Tint", Tint);
+  ini.PutBool(OPTIONS, "AutoScroll", AutoScroll);
+  ini.PutBool(OPTIONS, "IsScoreRepeat", IsScoreRepeat);
+  ini.PutBool(OPTIONS, "IsScoreShuffle", IsScoreShuffle);
+  ini.PutBool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
   SaveHotkeys(ini);
 
@@ -636,7 +636,7 @@ void OptionsClass::Save_Settings() const {
 void OptionsClass::LoadHotkeys(const engine::file::IniFile& ini) {
   for (const auto& [name, key] : kHotkeys) {
     // No Windows code is negative, so -1 marks a missing entry.
-    if (const int windows_key = ini.Get_Int(HotkeyName, name, -1);
+    if (const int windows_key = ini.GetInt(HotkeyName, name, -1);
         windows_key >= 0) {
       this->*key = engine::window::KeyFromWindowsKey(windows_key);
     }
@@ -645,8 +645,7 @@ void OptionsClass::LoadHotkeys(const engine::file::IniFile& ini) {
 
 void OptionsClass::SaveHotkeys(engine::file::IniFile& ini) const {
   for (const auto& [name, key] : kHotkeys) {
-    ini.Put_Int(HotkeyName, name,
-                engine::window::WindowsKeyFromKey(this->*key));
+    ini.PutInt(HotkeyName, name, engine::window::WindowsKeyFromKey(this->*key));
   }
 }
 

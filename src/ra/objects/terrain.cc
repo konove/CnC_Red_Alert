@@ -725,10 +725,10 @@ Coordinate TerrainClass::Target_Coord() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Read_INI(engine::file::IniFile& ini) {
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
 
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
     const TerrainType terrain =
         GetTerrainType(ini, INI_Name(), entry, TERRAIN_NONE);
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));

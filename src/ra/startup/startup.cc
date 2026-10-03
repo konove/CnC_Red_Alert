@@ -181,7 +181,7 @@ static void ReadConfigOptions(const engine::file::IniFile& ini,
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.
   TheScreen().set_mode_height(
-      options.tall_screen || ini.Get_Bool("Options", "Resolution", false)
+      options.tall_screen || ini.GetBool("Options", "Resolution", false)
           ? 480
           : Screen::kHeight);
 
@@ -190,7 +190,7 @@ static void ReadConfigOptions(const engine::file::IniFile& ini,
   if (options.socket.has_value()) {
     TheNetwork().ipx().Set_Socket(*options.socket);
   } else {
-    const int socket = ini.Get_Int("Options", "Socket", 0);
+    const int socket = ini.GetInt("Options", "Socket", 0);
     if (socket > 0 && socket < 0x4000) {
       TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
@@ -200,9 +200,8 @@ static void ReadConfigOptions(const engine::file::IniFile& ini,
   std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
     std::array<char, 512> dest_net{};
-    // Get_String() returns the length of the trimmed value; 0 if absent.
-    const int length = ini.Get_String("Options", "DestNet", nullptr, dest_net,
-                                      static_cast<int>(dest_net.size()));
+    // GetString() returns the length of the trimmed value; 0 if absent.
+    const int length = ini.GetString("Options", "DestNet", "", dest_net);
     if (length > 0) {
       bridge_net =
           ParseDestNet(std::string_view(dest_net.data(), base::ToSize(length)));
@@ -380,9 +379,9 @@ static int Run(const int argc, char* argv[])
   // movie. The installer used to write PlayIntro=yes; with no entry it
   // still defaults to yes, so a fresh install sees the movie once.
   if (!TheSpecial().IsFromInstall) {
-    TheSpecial().IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
+    TheSpecial().IsFromInstall = ini.GetBool("Intro", "PlayIntro", true);
   }
-  ThePalettes().set_slow_palette(ini.Get_Bool("Options", "SlowPalette", false));
+  ThePalettes().set_slow_palette(ini.GetBool("Options", "SlowPalette", false));
 
   // Whatever happens next, the intro has now been shown once: write
   // PlayIntro=no so later launches go straight to the menu. Tiberian
@@ -390,7 +389,7 @@ static int Run(const int argc, char* argv[])
   // shipped allowing it.
   if (TheSpecial().IsFromInstall) {
     TheGameState().breakout_allowed() = true;
-    ini.Put_Bool("Intro", "PlayIntro", false);
+    ini.PutBool("Intro", "PlayIntro", false);
     if (const auto config_file =
             OpenDiskFile(kConfigFileName, FileAccess::kWrite)) {
       ini.Save(*config_file);

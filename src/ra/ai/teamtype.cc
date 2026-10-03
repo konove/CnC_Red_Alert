@@ -1755,7 +1755,7 @@ void TeamTypeClass::Detach(Target target, bool /*unused*/) {
 void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[500];        // INI entry buffer
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
 
   /*
   **	Loop for all team entries, create and fill in.
@@ -1763,8 +1763,8 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
   for (int index = 0; index < len; index++) {
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
-      const char* entry = ini.Get_Entry(INI_Name(), index);
-      ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+      const char* entry = ini.EntryName(INI_Name(), index);
+      ini.GetString(INI_Name(), entry, "", buf);
       team->Fill_In(entry, buf);
     }
   }
@@ -1965,7 +1965,7 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
     TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
     std::string buf;
     team->Build_INI_Entry(buf);
-    ini.Put_String(INI_Name(), team->IniName, buf.c_str());
+    ini.PutString(INI_Name(), team->IniName, buf);
   }
 }
 

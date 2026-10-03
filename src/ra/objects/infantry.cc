@@ -3294,14 +3294,14 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
   game::DirType dir = game::DIR_N;
   TriggerTypeClass* tp = nullptr;
 
-  const int len = ini.Entry_Count(INI_Name());
+  const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.Get_Entry(INI_Name(), index);
+    const char* entry = ini.EntryName(INI_Name(), index);
 
     /*
     **	Get an infantry entry
     */
-    ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
+    ini.GetString(INI_Name(), entry, "", buf);
 
     /*
     **	1st token: house name.
@@ -3437,7 +3437,7 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
                      infantry->Trigger != nullptr
                          ? infantry->Trigger->Class->IniName
                          : "None");
-      ini.Put_String(INI_Name(), uname, buf);
+      ini.PutString(INI_Name(), uname, buf);
     }
   }
 }

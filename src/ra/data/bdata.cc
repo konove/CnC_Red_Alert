@@ -3753,17 +3753,17 @@ bool BuildingTypeClass::Flush_For_Placement(Cell cell,
  *=============================================================================================*/
 bool BuildingTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
-    Speed = ini.Get_Bool(Name(), "WaterBound", Speed == SPEED_FLOAT)
+    Speed = ini.GetBool(Name(), "WaterBound", Speed == SPEED_FLOAT)
                 ? SPEED_FLOAT
                 : SPEED_NONE;
-    Capacity = ini.Get_Int(Name(), "Storage", Capacity);
-    Adjacent = ini.Get_Int(Name(), "Adjacent", Adjacent);
-    IsCaptureable = ini.Get_Bool(Name(), "Capturable", IsCaptureable);
-    IsPowered = ini.Get_Bool(Name(), "Powered", IsPowered);
-    IsBibbed = ini.Get_Bool(Name(), "Bib", IsBibbed);
-    IsUnsellable = ini.Get_Bool(Name(), "Unsellable", IsUnsellable);
-    IsBase = ini.Get_Bool(Name(), "BaseNormal", IsBase);
-    Power = ini.Get_Int(Name(), "Power", Power > 0 ? Power : -Drain);
+    Capacity = ini.GetInt(Name(), "Storage", Capacity);
+    Adjacent = ini.GetInt(Name(), "Adjacent", Adjacent);
+    IsCaptureable = ini.GetBool(Name(), "Capturable", IsCaptureable);
+    IsPowered = ini.GetBool(Name(), "Powered", IsPowered);
+    IsBibbed = ini.GetBool(Name(), "Bib", IsBibbed);
+    IsUnsellable = ini.GetBool(Name(), "Unsellable", IsUnsellable);
+    IsBase = ini.GetBool(Name(), "BaseNormal", IsBase);
+    Power = ini.GetInt(Name(), "Power", Power > 0 ? Power : -Drain);
     if (Power < 0) {
       Drain = -Power;
       Power = 0;

@@ -201,8 +201,8 @@ TEST(StreamGoldenTest, SaveGameChainProducesPinnedBytesAndDigest) {
   EXPECT_EQ(Drain(decompress, 1000), input);
 }
 
-// IniFile::Put_UUBlock draws 70 characters at a time for each entry, and
-// Get_UUBlock pushes the entries back through a decoding pipe.
+// IniFile::PutBase64Block draws 70 characters at a time for each entry, and
+// GetBase64Block pushes the entries back through a decoding pipe.
 TEST(StreamGoldenTest, Base64EncodesInUuBlockLines) {
   const std::vector<uint8_t> input = Input();
   SpanSource plain(std::as_bytes(std::span(input)));
