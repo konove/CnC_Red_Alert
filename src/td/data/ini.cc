@@ -72,9 +72,11 @@
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
+#include "engine/stream/span_source.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "td/ai/prebuilt_base.h"
@@ -360,6 +362,13 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 #endif
   }
 
+  // The text ends at its first NUL, the end-of-file rule of the old readers. A
+  // text with no section at all leaves the database empty, so every lookup
+  // returns its default, as the old text scans did.
+  engine::file::IniFile scenario;
+  SpanSource source(std::as_bytes(std::span(*ini)));
+  scenario.Load(source);
+
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
@@ -411,7 +420,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the team-type data. The team types must be created before any
   **	triggers can be created.
   */
-  TeamTypeClass::Read_INI(buffer);
+  TeamTypeClass::Read_INI(scenario);
   Call_Back();
 
   /*
@@ -478,7 +487,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the trigger data. The triggers must be created before any other
   **	objects can be initialized.
   */
-  TriggerClass::Read_INI(buffer);
+  TriggerClass::Read_INI(scenario);
   Call_Back();
 
   /*

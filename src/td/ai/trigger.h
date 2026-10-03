@@ -56,6 +56,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 enum class EventType {
@@ -161,8 +165,8 @@ class TriggerClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(char* buffer);
-  void Fill_In(char* name, char* entry);
+  static void Read_INI(const engine::file::IniFile& ini);
+  void Fill_In(const char* name, char* entry);
   static void Write_INI(std::string& buffer, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
   // Field-wise saved-game support, defined in ioobj.cc.

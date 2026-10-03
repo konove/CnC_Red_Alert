@@ -81,6 +81,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
 #include "game/core/object_heap.h"
 #include "td/ai/reinf.h"
@@ -1075,7 +1076,7 @@ bool TriggerClass::Remove() {
  * The House's EMSListOf triggers is set in this routine, and cleared in the *
  * HouseClass::Init() routine. *
  *                                                                                             *
- * INPUT: * buffer      buffer to hold the INI data *
+ * INPUT: * ini         parsed scenario INI file *
  *                                                                                             *
  * OUTPUT: * none. *
  *                                                                                             *
@@ -1083,25 +1084,16 @@ bool TriggerClass::Remove() {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Read_INI(char* buffer) {
+void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[128];
-
-  /*
-  **	Set 'tbuffer' to point just past the INI buffer
-  */
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
-
-  /*
-  **	Read all TRIGGER entry names into 'tbuffer'
-  */
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   /*
   **	Loop for all trigger entries.
   */
-  while (*tbuffer != '\0') {
+  const int count = ini.EntryCount(INI_Name());
+  for (int i = 0; i < count; ++i) {
+    const char* name = ini.EntryName(INI_Name(), i);  // Trigger ID.
+
     /*
     **	Create a new trigger.
     */
@@ -1111,20 +1103,17 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Set its name.
     */
-    trigger->Set_Name(tbuffer);
+    trigger->Set_Name(name);
 
     /*
     **	Get the trigger entry.
     */
-    WWGetPrivateProfileString(
-        INI_Name(), tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    ini.GetString(INI_Name(), name, "", buf);
 
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In(tbuffer, buf);
+    trigger->Fill_In(name, buf);
 
     /*
     **	Add 'trigger' to the House's list.
@@ -1139,12 +1128,6 @@ void TriggerClass::Read_INI(char* buffer) {
       TheWorld().house_triggers().at(trigger->House).push_back(trigger);
       trigger->AttachCount++;
     }
-
-    /*
-    **	Go to next entry.
-    */
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 }
 
@@ -1169,7 +1152,7 @@ void TriggerClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Fill_In(char* name, char* entry) {
+void TriggerClass::Fill_In(const char* name, char* entry) {
   Validate();
 
   /*

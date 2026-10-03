@@ -51,6 +51,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 class TeamClass;
@@ -129,10 +133,10 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(char* buffer);
-  void Fill_In(char* name, char* entry);
+  static void Read_INI(const engine::file::IniFile& ini);
+  void Fill_In(const char* name, char* entry);
   static void Write_INI(std::string& buffer, bool refresh);
-  static void Read_Old_INI(char* buffer);
+  static void Read_Old_INI(const engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>

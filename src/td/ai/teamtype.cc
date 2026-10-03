@@ -61,7 +61,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -72,6 +71,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -159,7 +159,7 @@ void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
  *       MissionCount,Mission:Arg,Mission:Arg,Mission:Arg,...              *
  *                                                                         *
  * INPUT:                                                                  *
- *      buffer      buffer to hold the INI data                            *
+ *      ini         parsed scenario INI file                               *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -171,25 +171,16 @@ void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_INI(char* buffer) {
+void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[500];        // INI entry buffer
-
-  /*------------------------------------------------------------------------
-  Set 'tbuffer' to point just past the INI buffer
-  ------------------------------------------------------------------------*/
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of team names.
-
-  /*------------------------------------------------------------------------
-  Read all TeamType entry names into 'tbuffer'
-  ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------
   */
-  while (*tbuffer != '\0') {
+  const int count = ini.EntryCount(INI_Name());
+  for (int i = 0; i < count; ++i) {
+    const char* name = ini.EntryName(INI_Name(), i);  // Team name.
+
     /*
     ....................... Create a new team type ........................
     */
@@ -198,28 +189,19 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString(
-        INI_Name(), tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    ini.GetString(INI_Name(), name, "", buf);
 
     /*
     .......................... Fill the team in ...........................
     */
-    team->Fill_In(tbuffer, buf);
-
-    /*
-    ...................... Go to the next INI entry .......................
-    */
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
+    team->Fill_In(name, buf);
   }
 
   /*
   ** If no teams were read in, try reading the old INI format.
   */
   if (TheObjectHeaps().team_type().Count() == 0) {
-    Read_Old_INI(buffer);
+    Read_Old_INI(ini);
   }
 }
 
@@ -247,7 +229,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(char* name, char* entry) {
+void TeamTypeClass::Fill_In(const char* name, char* entry) {
   Validate();
   char* p1 = nullptr;  // parsing pointer
   char* p2 = nullptr;  // parsing pointer
@@ -516,7 +498,7 @@ void TeamTypeClass::Write_INI(std::string& buffer, bool refresh) {
  *       RecruitPriority,MaxAllowed,InitNum,Class:Num,Class:Num,...,Fear   *
  *                                                                         *
  * INPUT:                                                                  *
- *      buffer      buffer to hold the INI data                            *
+ *      ini         parsed scenario INI file                               *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -528,25 +510,16 @@ void TeamTypeClass::Write_INI(std::string& buffer, bool refresh) {
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_Old_INI(char* buffer) {
+void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   char buf[256];        // INI entry buffer
-
-  /*------------------------------------------------------------------------
-  Set 'tbuffer' to point just past the INI buffer
-  ------------------------------------------------------------------------*/
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of team names.
-
-  /*------------------------------------------------------------------------
-  Read all TeamType entry names into 'tbuffer'
-  ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Teams", nullptr, nullptr, key_cursor, buffer);
 
   /*
   ----------------------- Loop for all team entries ------------------------
   */
-  while (*tbuffer != '\0') {
+  const int count = ini.EntryCount("Teams");
+  for (int i = 0; i < count; ++i) {
+    const char* name = ini.EntryName("Teams", i);  // Team name.
+
     /*
     ........................ Create a new trigger .........................
     */
@@ -555,15 +528,12 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ............................ Set its name .............................
     */
-    team->Set_Name(tbuffer);
+    team->Set_Name(name);
 
     /*
     ......................... Get the team entry ..........................
     */
-    WWGetPrivateProfileString(
-        "Teams", tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    ini.GetString("Teams", name, "", buf);
 
     /*
     .......................... 1st token: House ...........................
@@ -672,12 +642,6 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     }
 
     team->Fear = 0;
-
-    /*
-    ...................... Go to the next INI entry .......................
-    */
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 }
 
