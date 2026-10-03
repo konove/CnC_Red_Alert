@@ -559,22 +559,15 @@
   - `td/map/findpath.cc` may have the nested ifs that were merged in Red Alert's path cost check
     (`c6404158`); it was not flagged, so compare the two by hand
 
-- Leftovers from the `ra/ai/prebuilt_base` modernization (`a40289da..694eabde`, formerly
-  `ra/ai/base`, class `BaseClass`)
-  - Run `/modernize-file` on the twin, `td/ai/base.cc` and `td/ai/base.h`. It still has
-    `BaseClass`/`BaseNodeClass`, the `operator>` that always returns true, the virtual destructor
-    and public `Nodes`/`House`; only the missing-type check in `Read_INI()` was carried over
-    (`a4659cae`)
-  - Check whether an off-map coordinate in Tiberian Dawn's `[Base]` section can fail the bounds
-    check: `td/ai/base.cc` `Read_INI()` accepts any coordinate, and `Get_Building()` calls
-    `TheMap().at(Cell::Containing(coord))`. Red Alert now skips such entries (`6ca5ccbc`)
+- Leftovers from the `ra/ai/prebuilt_base` and `td/ai/prebuilt_base` modernizations (Red Alert
+  `a40289da..694eabde`, Tiberian Dawn `1b228f44..b459d1bc`; formerly `ai/base`, class `BaseClass`)
   - Decide on the name `PrebuiltBase`. It follows the scenario files and the original comments
     ("prebuild base"); `AiBase` and `BaseBuildList` were the alternatives. A change renames the file
     again
   - A malformed `[Base]` entry used to stall the list: `FirstUnbuiltNode()` returned the
     `STRUCT_NONE` node forever and the nodes after it were never built. Both games now skip the
-    entry, so such a (custom) scenario builds the rest of its base. No shipped scenario is known to
-    have one; recorded in case a mission plays differently
+    entry (and one off the map), so such a (custom) scenario builds the rest of its base. No shipped
+    scenario is known to have one; recorded in case a mission plays differently
   - Add `Cell::is_on_map()` to `ra/core/cell.h` and use it for the open-coded
     `index() < 0 || index() >= MAP_CELL_TOTAL`: `IsOnMap()` in `ra/ai/prebuilt_base.cc`,
     `ra/saveload/saveglobals.cc:164`, `ra/saveload/iomap.cc:126` (variants at `iomap.cc:381`,
@@ -590,12 +583,38 @@
     once the base is complete that scans every node, each with a `dynamic_cast` per non-null
     overlapper in `FindBuilding()` (the run dropped the `What_Am_I()` pre-check as redundant).
     Estimated at microseconds, not profiled; measure before touching
-  - `bugprone-throwing-static-initialization.AllowedTypes` in `.clang-tidy:190` still lists
-    `BaseClass`. Red Alert's is `PrebuiltBase` and owned by `World`, and the full strict build is
-    clean without it; drop the entry once `td::BaseClass` is renamed (editing `.clang-tidy`
-    re-analyzes the tree)
-  - Run `/fix-ide-issues` on `ra/ai/prebuilt_base.h`: CLion timed out on the header three times
-    during the run; `prebuilt_base.cc` is clean
+  - Sharing the two `PrebuiltBase` classes in `src/game/` was looked at and not done. About 70 lines
+    per game are identical (`FindBuilding()`, `HasNodeFor()`, `FindNode()`, `AddNode()`,
+    `RemoveNodeFor()`, `FirstUnbuiltNode()`, the accessors); everything else differs: the node holds
+    a `Cell` in Red Alert and a `Coordinate` in Tiberian Dawn (in the save and the INI too), the INI
+    interface (`CCINIClass` against `WWGetPrivateProfile*` on text), the owner rule (`Player=` entry
+    against "the house opposing `[BASIC]` Player"), and the save layout (TD has a `BASE` section tag
+    and validates the house). `src/game` may not include either game, so the shared part would be a
+    header-only `game::sim::PrebuiltBase<Traits>` (about 130 lines plus a test and a traits struct
+    per game) with INI and `Serialize()` still per game: roughly as much glue as it removes. Revisit
+    if the INI layers converge; until then keep the twins textually aligned
+  - Converting Tiberian Dawn's `BaseNode::coord` to a `Cell` would align it with Red Alert: about 40
+    lines in `td/ai/prebuilt_base.{h,cc}`, `td/saveload/saveglobals.cc` and five callers. The saved
+    node shrinks from 4 to 2 bytes (`kSaveGameVersion` bump), and the INI must keep writing a packed
+    coordinate. It does not by itself enable sharing: `td::Cell` and `ra::Cell` are different
+    classes
+  - Tiberian Dawn's `FillsNode()` (`td/ai/prebuilt_base.cc`) compares coordinates exactly, so a node
+    with sub-cell bits is never built: buildings report whole-cell coordinates
+    (`BuildingTypeClass::Coord_Fixup()`). The save self-test in `td/startup/init.cc:1582-1586` adds
+    such nodes (`Cell::Center()`), and a `[Base]` entry could. `coord.Whole()` in `AddNode()` would
+    fix both in one line, but changes which INI entries count as built; decide first
+  - `PrebuiltBase::Serialize()` in `td/saveload/saveglobals.cc` accepts any saved coordinate, while
+    `ReadIni()` rejects one off the map and `FindBuilding()` indexes the map with it; Red Alert
+    checks in both. The check (`IsOnMap()` in `td/ai/prebuilt_base.cc`) is file-local, and `td/ai`
+    may not include `td/saveload`, which is why `Serialize()` lives apart; make it a static member
+    or a `Coordinate` method and call it on load
+  - `HasNodeFor()`, `FindNode()` and `RemoveNodeFor()` are three spellings of one search in both
+    games; one private helper returning the iterator would serve all three (about 10 lines each
+    game)
+  - Tiberian Dawn's `FindNode()` has one caller left, `td/editor/mapedsel.cc:570`, like Red Alert's
+  - The commented-out code and the `obj` declaration noted below for Red Alert's editor have twins
+    in `td/editor/mapedplc.cc` (`Build_Base_To()`); check `td/editor/mapeddlg.cc` and
+    `td/objects/building.cc` too
   - Delete the commented-out code around the base's callers (`/remove-dead-code` on each file):
     `ra/objects/building.cc:1738-1739`, `ra/editor/mapedplc.cc:1008-1010`,
     `ra/editor/mapeddlg.cc:448-462`
