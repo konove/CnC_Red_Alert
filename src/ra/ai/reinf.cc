@@ -16,33 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/REINF.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : REINF.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : May 24, 1994 *
- *                                                                                             *
- *                  Last Update : July 26, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Create_Air_Reinforcement -- Creates air strike reinforcement *
- *   Do_Reinforcements -- Create and place a reinforcement team. *
- *   _Consists_Only_Of_Infantry -- Determine if this group consists only of
- *infantry.          * _Create_Group -- Create a group given team specification.
- ** _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *
- *   _Who_Can_Pop_Out_Of -- Find a suitable host for these reinforcements. *
- *   _Need_To_Take -- Examines unit to determine if it should be confiscated. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "ra/ai/reinf.h"
 
 #include "absl/log/check.h"
@@ -72,39 +45,23 @@
 
 namespace ra {
 
-/***********************************************************************************************
- * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *
- *                                                                                             *
- *    This routine will cause the group to pop out of the object specified. *
- *                                                                                             *
- * INPUT:   group    -- Pointer to the first object in the group to be popped
- *out.             *
- *                                                                                             *
- *          object   -- Pointer to the object that the group is to pop out of. *
- *                                                                                             *
- * OUTPUT:  bool; Was the group popped out of the specified object? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1996 JLB : Created. *
- *=============================================================================================*/
+// Makes every member of the linked list `group` come out of `object`: walking
+// out of a building, or loaded into a transport that is then told to unload.
+// Members that cannot come out are deleted. Returns whether any did.
 static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   DCHECK(group != nullptr && object != nullptr);
   int quantity = 0;
 
-  /*
-  **	Take every infantry member of this group and detach it from the group
-  *list *	and then make it pop out of the candidate source.
-  */
+  // Take the members off the list one at a time: a transport chains its cargo
+  // through Next as well.
   while (group != nullptr) {
     TechnoClass* todo = group;
     group = dynamic_cast<FootClass*>(group->Next);
     todo->Next = nullptr;
 
     switch (object->What_Am_I()) {
-      /*
-      **	The infantry just walks out of a building.
-      */
+      // Infantry walks out of a building. Any result but 2, a completed exit,
+      // leaves the soldier in limbo, so it is deleted.
       case RTTI_BUILDING:
         if (object->Exit_Object(todo) != 2) {
           base::DeletePooled(todo);
@@ -113,9 +70,8 @@ static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
         }
         break;
 
-      /*
-      **	Infantry get attached to transport vehicles and then unload.
-      */
+      // Infantry is loaded into a transport, which then unloads it. Nothing
+      // checks that the transport has room.
       case RTTI_UNIT:
       case RTTI_VESSEL:
       case RTTI_AIRCRAFT:
@@ -161,30 +117,15 @@ static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
   return quantity != 0;
 }
 
-/***********************************************************************************************
- * _Need_To_Take -- Examines unit to determine if it should be confiscated. *
- *                                                                                             *
- *    The unit is examined and if the owning house needs to confiscate it, then
- *this routine   * will return true. In other cases, the unit should be left to
- *its own devices.            *
- *                                                                                             *
- * INPUT:   unit  -- Pointer to the object to examine. *
- *                                                                                             *
- * OUTPUT:  bool; Should the object be confiscated by the player so that it
- *becomes one of     * his normal game objects? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/26/1996 JLB : Created. *
- *=============================================================================================*/
+// Returns whether the house keeps the reinforcement aircraft `air` rather than
+// borrowing it for one sortie. Only a Yak or a MiG can be kept, and only while
+// the house has an airstrip that no other one is using.
 static bool Need_To_Take(const AircraftClass* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
 
-    /*
-    **	Loop through all aircraft and subtract all the ones that are NOT
-    *loaners.
-    */
+    // Each Yak or MiG that is already kept uses up one airstrip. Only the human
+    // player's aircraft are counted, whichever house `air` belongs to.
     for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
       const AircraftClass* airptr = TheObjectHeaps().aircraft().ActiveAt(index);
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
@@ -203,21 +144,10 @@ static bool Need_To_Take(const AircraftClass* air) {
   return false;
 }
 
-/***********************************************************************************************
- * _Create_Group -- Create a group given team specification. *
- *                                                                                             *
- *    This routine will create all members of the group as specified by the team
- *type.         *
- *                                                                                             *
- * INPUT:   teamtype -- Pointer to the team type that specifies what objects
- *should be         * created in this group. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the first member of the group created. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1996 JLB : Created. *
- *=============================================================================================*/
+// Creates the team for `teamtype` and all its members, in limbo. Returns the
+// head of a list linked through `Next`: the transports, with every other
+// member loaded into the first one, or the members themselves when the type
+// has no transport. Returns nullptr when no member could be created.
 static FootClass* Create_Group(TeamTypeClass* teamtype) {
   DCHECK(teamtype != nullptr);
 
@@ -234,10 +164,7 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	Now that the official source for the reinforcement has been determined,
-  *the *	objects themselves must be created.
-  */
+  // Create the members, sorting them into transports and everything else.
   FootClass* transport = nullptr;
   FootClass* object = nullptr;
   for (int index = 0; index < teamtype->ClassCount; index++) {
@@ -251,9 +178,8 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
       TheWorld().scenario_init()--;
 
       if (temp != nullptr) {
-        /*
-        **	Add the member to the team.
-        */
+        // Add the member to the team. scenario_init makes the team accept a
+        // member that is still in limbo.
         if (team != nullptr) {
           TheWorld().scenario_init()++;
           team->Add(temp);
@@ -266,20 +192,12 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
           temp->IsALoaner = true;
         }
 
-        /*
-        **	Build the list of transporters and passengers.
-        */
+        // A type that can carry passengers is a transport.
         if (tclass->Max_Passengers() > 0) {
-          /*
-          **	Link to the list of transports.
-          */
           temp->Next = transport;
           transport = temp;
 
         } else {
-          /*
-          **	Link to the list of normal objects.
-          */
           temp->Next = object;
           object = temp;
         }
@@ -287,29 +205,20 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	If the group consists of transports and normal objects, then assign the
-  *normal *	objects to be passengers on the transport.
-  */
+  // Everything else rides in the first transport.
   if (transport != nullptr && object != nullptr) {
     transport->Attach(object);
 
-    /*
-    **	HACK ALERT! If the this team has an unload mission, then flag the
-    *transport *	as a loaner so that it will exit from the map when the
-    *unload process is *	complete, but only if the transport is an
-    *aircraft type.
-    */
+    // HACK ALERT! A flying or sailing transport that the team's missions unload
+    // is a loaner: it leaves the map once it has unloaded.
     if (hasunload && (transport->What_Am_I() == RTTI_AIRCRAFT ||
                       transport->What_Am_I() == RTTI_VESSEL)) {
       transport->IsALoaner = true;
     }
   }
 
-  /*
-  **	For JUST transport helicopters, consider the loaner a gift if there are
-  **	no passengers.
-  */
+  // A transport helicopter that arrives empty is itself the reinforcement, so
+  // the house keeps it.
   const auto* air_transport = dynamic_cast<AircraftClass*>(transport);
   if (air_transport != nullptr && object == nullptr &&
       *air_transport == AIRCRAFT_TRANSPORT) {
@@ -321,10 +230,7 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
     return nullptr;
   }
 
-  /*
-  **	If this group consists only of non-transport object, then just return
-  *with a pointer *	to the first member of the group.
-  */
+  // Without a transport the group is the members themselves.
   if (transport == nullptr) {
     return object;
   }
@@ -332,23 +238,9 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
   return transport;
 }
 
-/***********************************************************************************************
- * _Consists_Only_Of_Infantry -- Determine if this group consists only of
- *infantry.            *
- *                                                                                             *
- *    Use this to determine if the specified group only contains infantry. Such
- *a reinforcement* group is a candidate for popping out of a building or
- *transport vehicle rather than      * driving/walking/sailing/flying onto the
- *map under its own power.                         *
- *                                                                                             *
- * INPUT:   first -- Pointer to the first object in the group to examine. *
- *                                                                                             *
- * OUTPUT:  bool; Is the entire group composed of infantry type units? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1996 JLB : Created. *
- *=============================================================================================*/
+// Returns whether every member of the list `first` is infantry. Only such a
+// group can come out of a building or a transport instead of crossing the map
+// edge.
 static bool Consists_Only_Of_Infantry(const FootClass* first) {
   while (first != nullptr) {
     if (first->What_Am_I() != RTTI_INFANTRY) {
@@ -359,24 +251,9 @@ static bool Consists_Only_Of_Infantry(const FootClass* first) {
   return true;
 }
 
-/***********************************************************************************************
- * _Who_Can_Pop_Out_Of -- Find a suitable host for these reinforcements. *
- *                                                                                             *
- *    This routine is used to scan nearby locations to determine if there is a
- *suitable host   * for these reinforcements to "pop out of" (apologies to
- *Aliens). Typical hosts include    * buildings and transport vehicles (of any
- *kind).                                          *
- *                                                                                             *
- * INPUT:   origin   -- The cell that should be scanned from. Only this location
- *and immediate * adjacent locations will be scanned. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to a suitable host. If none could be found
- *then nullptr is     * returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1996 JLB : Created. *
- *=============================================================================================*/
+// Returns something at `origin` or in one of the eight cells around it that
+// infantry can come out of: a transport vehicle if there is one, otherwise a
+// building; nullptr when there is neither.
 static TechnoClass* Who_Can_Pop_Out_Of(Cell origin) {
   CellClass* cellptr = &TheMap().at(origin);
   TechnoClass* candidate = nullptr;
@@ -400,40 +277,16 @@ static TechnoClass* Who_Can_Pop_Out_Of(Cell origin) {
   return candidate;
 }
 
-/***********************************************************************************************
- * Do_Reinforcements -- Create and place a reinforcement team. *
- *                                                                                             *
- *    This routine is called when a reinforcement team must be created and
- *placed on the map.  * It will create all members of the team and place them at
- *the location determined from    * the team composition. The reinforcement team
- *should follow team orders until overridden  * by AI or player intervention. *
- *                                                                                             *
- * INPUT:   teamtype -- Pointer to the team type to create as a reinforcement. *
- *                                                                                             *
- * OUTPUT:  Was the reinforcement successfully created and placed? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/08/1995 JLB : Created. * 05/18/1995 JLB : Returns success or
- *failure condition.                                    * 06/19/1995 JLB :
- *Announces reinforcements.                                                *
- *   02/15/1996 JLB : Recognizes team reinforcement location. *
- *=============================================================================================*/
 bool Do_Reinforcements(TeamTypeClass* teamtype) {
   DCHECK(teamtype != nullptr);
 
-  /*
-  **	perform some preliminary checks for validity.
-  */
+  // A type with no members has nothing to bring on.
   if (!teamtype || !teamtype->ClassCount) {
     return false;
   }
 
-  /*
-  **	HACK ALERT!
-  **	Give this team an attack waypoint mission that will attack the waypoint
-  *location of this *	team if there are no team missions previously assigned.
-  */
+  // HACK ALERT! A team without missions would sit where it arrived, so the type
+  // is given one: attack its origin waypoint. The team type keeps it.
   if (teamtype->MissionCount == 0) {
     teamtype->MissionCount = 1;
     teamtype->MissionList[0].Mission = TMISSION_ATT_WAYPT;
@@ -442,24 +295,16 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
 
   FootClass* object = Create_Group(teamtype);
 
-  /*
-  **	Bail on this reinforcement if no reinforcements could be created.
-  **	This is probably because the object maximum was reached.
-  */
+  // Nothing could be created, most likely because the object limit was reached.
   if (!object) {
     return false;
   }
 
-  /*
-  **	Special case code to handle infantry types that run from a building.
-  *This presumes *	that infantry are never a transport (which is safe to
-  *do).
-  */
+  // Infantry with an origin waypoint comes out of a building or a transport
+  // there, if there is one. This relies on infantry never being a transport, so
+  // the head of the list is a member and not a carrier.
   if (object != nullptr && teamtype->Origin != -1 &&
       Consists_Only_Of_Infantry(object)) {
-    /*
-    **	Search for an object that these infantry can pop out of.
-    */
     TechnoClass* candidate =
         Who_Can_Pop_Out_Of(base::At(TheScenario().Waypoint, teamtype->Origin));
 
@@ -468,28 +313,22 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	The reinforcements must be delivered the old fashioned way -- by moving
-  *onto the *	map using their own power. First order of business is to
-  *determine where they *	should arrive from.
-  */
+  // Otherwise the group moves onto the map under its own power, from the
+  // house's map edge, or north when it has none.
   SourceType source = HouseClass::As_Pointer(teamtype->House)->Control.Edge;
   if (source == SOURCE_NONE) {
     source = SOURCE_NORTH;
   }
 
-  /*
-  **	Pick the location where the reinforcements appear and then place
-  **	them there.
-  */
-  const auto eface = static_cast<game::FacingType>(static_cast<int>(source) *
-                                                   2);  // Facing to enter map.
+  // SourceType counts the four edges clockwise from north and FacingType the
+  // eight compass points, hence the factor of two. The facing is the edge's own
+  // compass point, so the group starts out facing off the map.
+  const auto eface =
+      static_cast<game::FacingType>(static_cast<int>(source) * 2);
 
   Cell cell = TheMap().Calculated_Cell(source, teamtype->Origin, Cell::None(),
                                        object->Techno_Type_Class()->Speed);
-  /*
-  **	For the ants, they will pop out of the ant hill directly.
-  */
+  // Ants come straight out of the ant hill at their origin waypoint instead.
   const auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
@@ -505,32 +344,32 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   auto* o = dynamic_cast<FootClass*>(object->Next);
   object->Next = nullptr;
   bool okvoice = false;
+  // Place the members one at a time: `object` is the one being placed and `o`
+  // the rest of the list. A cell index of 0 or less means there is no cell.
   while (newcell.index() > 0 && object != nullptr) {
     game::DirType desiredfacing = game::Facing_Dir(eface);
     if (object->What_Am_I() == RTTI_AIRCRAFT) {
       desiredfacing = Random_Pick(game::DIR_N, kMaxRandomDirection);
     }
 
+    // scenario_init places the object on the edge cell without asking whether
+    // it can enter it.
     TheWorld().scenario_init()++;
     if (object->Unlimbo(newcell.Center(), desiredfacing)) {
       okvoice = true;
 
-      /*
-      **	If this object is part of a team, then the mission for this
-      **	object will be guard. The team handler will assign the proper
-      **	mission that it should follow.
-      */
+      // The team handler assigns the mission the member follows; until then it
+      // guards. Aircraft start on their own.
       if (object->What_Am_I() != RTTI_AIRCRAFT) {
         object->Assign_Mission(MISSION_GUARD);
         object->Commence();
       }
 
     } else {
-      /*
-      **	Could not unlimbo at location specified so find an adjacent
-      *location that it can *	be unlimboed at. If this fails, then abort the
-      *whole placement process.
-      */
+      // The object could not be placed here, so place it again from a cell next
+      // to this one that is off the visible map and that it can enter; the rest
+      // of the group follows from that cell. Without such a cell, give up on
+      // the rest of the group.
       bool found = false;
       for (const game::FacingType adj :
            magic_enum::enum_values<game::FacingType>()) {
@@ -556,9 +395,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	If there are still objects that could not be placed, then delete them.
-  */
+  // Delete the members that could not be placed.
   if (o != nullptr) {
     while (o != nullptr) {
       FootClass* old = o;
@@ -569,9 +406,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	Announce when the reinforcements have arrived.
-  */
+  // Announce the reinforcements to the player they belong to.
   if (okvoice && teamtype->House == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
@@ -579,32 +414,6 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   return true;
 }
 
-/***********************************************************************************************
- * Create_Air_Reinforcement -- Creates air strike reinforcement *
- *                                                                                             *
- *    This routine is used to launch an airstrike. It will create the necessary
- *aircraft and   * assign them to attack the target specified. This routine
- *bypasses the normal             * reinforcement logic since it doesn't need
- *the sophistication of unloading and following  * team mission lists. *
- *                                                                                             *
- * INPUT:   house    -- The perpetrator of this air strike. *
- *                                                                                             *
- *          air      -- The type of aircraft to make up this airstrike. *
- *                                                                                             *
- *          number   -- The number of aircraft in this airstrike. *
- *                                                                                             *
- *          mission  -- The mission to assign the aircraft. *
- *                                                                                             *
- *          tarcom   -- The target to assign these aircraft. *
- *                                                                                             *
- *          navcom   -- The navigation target to assign (if necessary). *
- *                                                                                             *
- * OUTPUT:  Returns the number of aircraft created for this airstrike. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Commented. *
- *=============================================================================================*/
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, Target tarcom,
                              Target navcom) {
@@ -613,22 +422,13 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   DCHECK(number != 0);
   DCHECK(static_cast<unsigned>(mission) <
          magic_enum::enum_count<MissionType>());
-  /*
-  ** Get a pointer to the class of the object that we are going to create.
-  */
   const TechnoTypeClass* type =
       static_cast<TechnoTypeClass*>(&AircraftTypeClass::As_Reference(air));
 
-  /*
-  ** Loop through the number of objects we are supposed to create and
-  ** 	create and place them on the map.
-  */
+  // Create and place the aircraft one at a time.
   int sub = 0;
   for (sub = 0; sub < number; sub++) {
-    /*
-    ** Create one of the required objects.  If this fails we could have
-    ** a real problem.
-    */
+    // Creation fails when the aircraft pool is full.
     TheWorld().scenario_init()++;
     auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     TheWorld().scenario_init()--;
@@ -636,15 +436,10 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       return sub;
     }
 
-    /*
-    ** Flying objects always have the IsALoaner bit set.
-    */
+    // Strike aircraft are always loaners: they leave the map when done.
     obj->IsALoaner = true;
 
-    /*
-    ** Find a cell for the object to come in on.  This is stolen from the
-    ** the code that handles a SOURCE_AIR in the normal logic.
-    */
+    // Enter from the house's map edge, or from the north when it has none.
     SourceType source = house->Control.Edge;
     switch (source) {
       case SOURCE_NORTH:
@@ -662,36 +457,25 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     const Cell newcell =
         TheMap().Calculated_Cell(source, -1, Cell::None(), SPEED_WINGED);
 
-    /*
-    ** Try and place the object onto the map.
-    */
+    // scenario_init places the aircraft on the edge cell without asking whether
+    // it can enter it.
     TheWorld().scenario_init()++;
     const bool placed = obj->Unlimbo(newcell.Center(), game::DIR_N);
     TheWorld().scenario_init()--;
     if (placed) {
-      /*
-      ** If we succeeded in placing the obj onto the map then
-      ** now we need to give it a mission and destination.
-      */
+      // The aircraft is on the map: give it its orders. A default Target means
+      // that none was given.
       obj->Assign_Mission(mission);
 
-      /*
-      ** If a navcom was specified then set it.
-      */
       if (navcom != Target{}) {
         obj->Assign_Destination(navcom);
       }
 
-      /*
-      ** If a tarcom was specified then set it.
-      */
       if (tarcom != Target{}) {
         obj->Assign_Target(tarcom);
       }
 
-      /*
-      ** Start the object into action.
-      */
+      // Start the object into action.
       obj->Commence();
     } else {
       base::DeletePooled(obj);
