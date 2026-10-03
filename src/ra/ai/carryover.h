@@ -21,8 +21,8 @@
 // vehicles, infantry and vessels when it ends, and "ToInherit" in a later
 // scenario puts them back on its map.
 
-#ifndef CNC_RED_ALERT_RA_AI_CARRY_H_
-#define CNC_RED_ALERT_RA_AI_CARRY_H_
+#ifndef CNC_RED_ALERT_RA_AI_CARRYOVER_H_
+#define CNC_RED_ALERT_RA_AI_CARRYOVER_H_
 
 #include "ra/core/defines.h"
 #include "ra/objects/techno.h"
@@ -90,4 +90,4 @@ extern template void Carryover::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_CARRY_H_
+#endif  // CNC_RED_ALERT_RA_AI_CARRYOVER_H_
