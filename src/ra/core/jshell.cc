@@ -32,7 +32,8 @@
 namespace ra {
 
 FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
-                                         int target_color, int ratio) {
+                                         const int target_color,
+                                         const int ratio) {
   const engine::gfx::PaletteColor& target = palette.at(target_color);
   FadingTable table{};
   for (int index = 0; index < engine::gfx::Palette::kColorCount; index++) {
@@ -46,7 +47,7 @@ FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
 }
 
 FadingTable BuildShadowFadingTable(const engine::gfx::Palette& palette,
-                                   int target_color, int ratio) {
+                                   const int target_color, const int ratio) {
   constexpr int kShadowStart = engine::gfx::Palette::kColorCount - 16;
   // Color 255 is not a candidate.
   constexpr auto kCandidates =
