@@ -73,7 +73,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/color_scheme.h"

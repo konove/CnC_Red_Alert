@@ -36,8 +36,7 @@
  * Functions: * Build_Translucent_Table -- Creates a translucent control table.
  ** Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
  *only.            *
- *   Load_Uncompress -- Loads and uncompresses data to a buffer. * Set_Window --
- *Sets the window dimensions to that specified.                               *
+ *   Set_Window -- Sets the window dimensions to that specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -93,28 +92,14 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
-/***********************************************************************************************
- * Load_Uncompress -- Loads and uncompresses data to a buffer. *
- *                                                                                             *
- *    This is the C++ counterpart to the Load_Uncompress function. It will load
- *the file       * specified into the graphic buffer indicated and uncompress
- *it.                           *
- *                                                                                             *
- * INPUT:   file     -- The file to load and uncompress. *
- *                                                                                             *
- *          uncomp_buff -- The graphic buffer that initial loading will use. *
- *                                                                                             *
- *          dest_buff   -- The buffer that will hold the uncompressed data. *
- *                                                                                             *
- * OUTPUT:  Returns with the size of the uncompressed data in the destination
- *buffer.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                        std::span<uint8_t> dest_buff) {
+namespace {
+
+// Reads one compressed picture from `file` and uncompresses it into
+// `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer),
+// skipping the palette it may carry. Returns the uncompressed size, 0 on
+// failure.
+int32_t LoadUncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
+                       std::span<uint8_t> dest_buff) {
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
     CompressedBlockHeader header{};
@@ -154,13 +139,15 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
   return decode();
 }
 
+}  // namespace
+
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
                  std::span<uint8_t> destbuf) {
   const auto file = OpenGameFile(filename);
   if (!file) {
     return 0;
   }
-  return Load_Uncompress(*file, scratchbuf, destbuf) / 8000;
+  return LoadUncompress(*file, scratchbuf, destbuf) / 8000;
 }
 
 namespace {
