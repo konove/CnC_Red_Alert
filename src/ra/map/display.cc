@@ -368,38 +368,38 @@ static MixArchive* theater_data = nullptr;
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
   static constexpr auto MouseCols =
-      std::to_array<TranslucentColor>({{kBlack, kBlack, 110, 0},
-                                       {kWhite, kWhite, 110, 0},
-                                       {kLtGrey, kLtGrey, 110, 0},
-                                       {DKGREY, DKGREY, 110, 0}});
+      std::to_array<TranslucentColor>({{kBlack, kBlack, 110},
+                                       {kWhite, kWhite, 110},
+                                       {kLtGrey, kLtGrey, 110},
+                                       {DKGREY, DKGREY, 110}});
   static constexpr auto MagicCols =
-      std::to_array<TranslucentColor>({{32, 32, 110, 0},
-                                       {33, 33, 110, 0},
-                                       {34, 34, 110, 0},
-                                       {35, 35, 110, 0},
-                                       {36, 36, 110, 0},
-                                       {37, 37, 110, 0},
-                                       {38, 38, 110, 0},
-                                       {39, 39, 110, 0},
-                                       {kBlack, kBlack, 200, 0},
-                                       {kWhite, kBlack, 40, 0},
-                                       {kLtGrey, kBlack, 80, 0},
-                                       {DKGREY, kBlack, 140, 0},
-                                       {kLtGreen, kBlack, 130, 0}});
+      std::to_array<TranslucentColor>({{32, 32, 110},
+                                       {33, 33, 110},
+                                       {34, 34, 110},
+                                       {35, 35, 110},
+                                       {36, 36, 110},
+                                       {37, 37, 110},
+                                       {38, 38, 110},
+                                       {39, 39, 110},
+                                       {kBlack, kBlack, 200},
+                                       {kWhite, kBlack, 40},
+                                       {kLtGrey, kBlack, 80},
+                                       {DKGREY, kBlack, 140},
+                                       {kLtGreen, kBlack, 130}});
   static constexpr auto WhiteCols =
-      std::to_array<TranslucentColor>({{1, kWhite, 80, 0}});
+      std::to_array<TranslucentColor>({{1, kWhite, 80}});
   static constexpr auto ShadowCols =
-      std::to_array<TranslucentColor>({{kWhite + 1, kBlack, 130, 0},
-                                       {kWhite, kBlack, 170, 0},
-                                       {LTGRAY, kBlack, 250, 0},
-                                       {DKGRAY, kBlack, 250, 0}});
+      std::to_array<TranslucentColor>({{kWhite + 1, kBlack, 130},
+                                       {kWhite, kBlack, 170},
+                                       {LTGRAY, kBlack, 250},
+                                       {DKGRAY, kBlack, 250}});
   static constexpr auto UShadowCols =
-      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 130, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 130}});
   // Only the source color matters; the fade is the gold remap table.
   static constexpr auto UShadowColsAir =
-      std::to_array<TranslucentColor>({{kLtGreen, kWhite, 0, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kWhite, 0}});
   static constexpr auto UShadowColsSnow =
-      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 75, 0}});
+      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 75}});
 
   /*
   **	Invoke parent's init routine.

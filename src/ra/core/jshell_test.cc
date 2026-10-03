@@ -21,7 +21,7 @@ using engine::gfx::PaletteColor;
 
 TEST(BuildTranslucencyTableWithTest, LooksUpEachSourceColorsFade) {
   constexpr auto kColors =
-      std::to_array<TranslucentColor>({{5, 40, 0, 0}, {9, 70, 0, 0}});
+      std::to_array<TranslucentColor>({{5, 40, 0}, {9, 70, 0}});
   const TranslucencyTable<2> table =
       BuildTranslucencyTableWith(kColors, [](const TranslucentColor& entry) {
         FadingTable fade{};
@@ -43,7 +43,7 @@ TEST(BuildTranslucencyTableTest, FadesMatchTheEngineFadingTable) {
   PaletteClass palette(PaletteColor(30, 30, 30));
   palette.at(7) = PaletteColor(200, 10, 10);
   palette.at(8) = PaletteColor(110, 20, 20);
-  constexpr auto kColors = std::to_array<TranslucentColor>({{3, 7, 128, 0}});
+  constexpr auto kColors = std::to_array<TranslucentColor>({{3, 7, 128}});
 
   const TranslucencyTable<1> table = BuildTranslucencyTable(palette, kColors);
 

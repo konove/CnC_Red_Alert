@@ -41,7 +41,6 @@ struct TranslucentColor {
   uint8_t source_color;  // Palette index that draws translucent.
   uint8_t target_color;  // Palette index the background fades toward.
   uint8_t fade_ratio;    // How far it fades: 0 not at all, 255 fully.
-  uint8_t reserved;      // Unused; 0 in every table.
 };
 
 // Sets row `window` of WindowList (a WindowNumberType) to the rectangle at

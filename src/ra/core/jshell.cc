@@ -22,7 +22,6 @@
 #include "ra/core/jshell.h"
 
 #include <cstdint>
-#include <cstring>
 
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"

@@ -1171,7 +1171,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   if (theater != THEATER_NONE && theater != TheWorld().last_theater()) {
     // The clock's sweep shades green through a shadow-range fade.
     static constexpr auto ClockCols =
-        std::to_array<TranslucentColor>({{kGreen, kBlack, 100, 0}});
+        std::to_array<TranslucentColor>({{kGreen, kBlack, 100}});
     ClockTranslucentTable =
         BuildShadowTranslucencyTable(ThePalettes().game_palette(), ClockCols);
   }
