@@ -2776,7 +2776,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        const BaseNodeClass* node = TheWorld().base().FirstUnbuiltNode(
+        const BaseNode* node = TheWorld().base().FirstUnbuiltNode(
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         Coordinate coord{};
         if (node) {

@@ -539,7 +539,7 @@ int MapEditClass::Move_Grabbed_Object() {
     ** in the Base's Node list.
     */
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING) {
-      BaseNodeClass* node = TheWorld().base().FindNode(
+      BaseNode* node = TheWorld().base().FindNode(
           dynamic_cast<const BuildingClass*>(GrabbedObject));
       if (node != nullptr) {
         node->cell = Cell::Containing(new_coord);

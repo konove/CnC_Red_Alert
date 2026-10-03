@@ -42,23 +42,23 @@
 
 namespace ra {
 
-bool BaseNodeClass::operator==(const BaseNodeClass& other) const {
+bool BaseNode::operator==(const BaseNode& other) const {
   return type == other.type && cell == other.cell;
 }
 
-bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
+bool BaseNode::operator!=(const BaseNode& node) const {
   return !(*this == node);
 }
 
-bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
+bool BaseNode::operator>(const BaseNode& /*unused*/) { return true; }
 
-BaseClass::~BaseClass() { nodes_.clear(); }
+PrebuiltBase::~PrebuiltBase() { nodes_.clear(); }
 
-bool BaseClass::IsBuilt(int node_index) const {
+bool PrebuiltBase::IsBuilt(int node_index) const {
   return FindBuilding(node_index) != nullptr;
 }
 
-BuildingClass* BaseClass::FindBuilding(int node_index) const {
+BuildingClass* PrebuiltBase::FindBuilding(int node_index) const {
   const auto& node = base::At(nodes_, node_index);
   const Cell target_cell = node.cell;
 
@@ -106,11 +106,11 @@ BuildingClass* BaseClass::FindBuilding(int node_index) const {
   return nullptr;
 }
 
-bool BaseClass::HasNodeFor(const BuildingClass* building) {
+bool PrebuiltBase::HasNodeFor(const BuildingClass* building) {
   return FindNode(building) != nullptr;
 }
 
-BaseNodeClass* BaseClass::FindNode(const BuildingClass* building) {
+BaseNode* PrebuiltBase::FindNode(const BuildingClass* building) {
   for (int i = 0; i < std::ssize(nodes_); i++) {
     if (building->Class->Type == base::At(nodes_, i).type &&
         Cell::Containing(building->Coord) == base::At(nodes_, i).cell) {
@@ -120,7 +120,7 @@ BaseNodeClass* BaseClass::FindNode(const BuildingClass* building) {
   return nullptr;
 }
 
-BaseNodeClass* BaseClass::Get_Node(Cell cell) {
+BaseNode* PrebuiltBase::Get_Node(Cell cell) {
   for (int index = 0; index < std::ssize(nodes_); index++) {
     if (cell == base::At(nodes_, index).cell) {
       return &base::At(nodes_, index);
@@ -129,7 +129,7 @@ BaseNodeClass* BaseClass::Get_Node(Cell cell) {
   return nullptr;
 }
 
-BaseNodeClass* BaseClass::FirstUnbuiltNode(StructType type) {
+BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) {
   for (int i = 0; i < std::ssize(nodes_); i++) {
     // STRUCT_NONE asks for the first hole of any type.
     if (type == STRUCT_NONE) {
@@ -149,9 +149,9 @@ BaseNodeClass* BaseClass::FirstUnbuiltNode(StructType type) {
   return nullptr;
 }
 
-void BaseClass::ReadIni(CCINIClass& ini) {
+void PrebuiltBase::ReadIni(CCINIClass& ini) {
   char value[128];
-  BaseNodeClass node;  // node to add to list
+  BaseNode node;  // node to add to list
 
   // The scenario names the owner under "Player"; the human player's house is
   // only the fallback for a section that omits it.
@@ -183,7 +183,7 @@ void BaseClass::ReadIni(CCINIClass& ini) {
   }
 }
 
-void BaseClass::WriteIni(CCINIClass& ini) {
+void PrebuiltBase::WriteIni(CCINIClass& ini) {
   ini.Clear(INI_Name());
 
   if (house_ != HOUSE_NONE) {
@@ -205,7 +205,7 @@ void BaseClass::WriteIni(CCINIClass& ini) {
 }
 
 template <class Archive>
-void BaseClass::Serialize(Archive& ar) {
+void PrebuiltBase::Serialize(Archive& ar) {
   ar(house_);
   auto count = static_cast<int32_t>(std::ssize(nodes_));
   ar(count);
@@ -219,7 +219,7 @@ void BaseClass::Serialize(Archive& ar) {
     nodes_.clear();
     nodes_.reserve(base::ToSize(count));
     for (int i = 0; i < count; ++i) {
-      BaseNodeClass node;
+      BaseNode node;
       ar(node.type, node.cell);
       if (!ar.ok() || !magic_enum::enum_contains(node.type) ||
           node.cell.index() < 0 || node.cell.index() >= MAP_CELL_TOTAL) {
@@ -234,7 +234,7 @@ void BaseClass::Serialize(Archive& ar) {
     }
   }
 }
-template void BaseClass::Serialize(ArchiveWriter&);
-template void BaseClass::Serialize(ArchiveReader&);
+template void PrebuiltBase::Serialize(ArchiveWriter&);
+template void PrebuiltBase::Serialize(ArchiveReader&);
 
 }  // namespace ra

@@ -812,7 +812,7 @@ void MapEditClass::Start_Placement() {
 int MapEditClass::Place_Object() {
   Cell template_cell{};      // cell being checked for template
   Coordinate obj_coord{};    // coord of occupier object
-                             //	BaseNodeClass node;
+                             //	BaseNode node;
                              //// for adding to an AI Base
 
   /*

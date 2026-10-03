@@ -37,16 +37,16 @@ namespace ra {
 
 // One entry of the prebuilt base: a type of building and the cell its top-left
 // corner goes on.
-class BaseNodeClass {
+class BaseNode {
  public:
-  BaseNodeClass() = default;
-  BaseNodeClass(StructType building_type, Cell top_left)
+  BaseNode() = default;
+  BaseNode(StructType building_type, Cell top_left)
       : type(building_type), cell(top_left) {}
   // Nodes are equal when they name the same building type on the same cell.
-  bool operator==(const BaseNodeClass& other) const;
-  bool operator!=(const BaseNodeClass& node) const;
+  bool operator==(const BaseNode& other) const;
+  bool operator!=(const BaseNode& node) const;
   // Always true: the nodes have no order.
-  bool operator>(const BaseNodeClass& node);
+  bool operator>(const BaseNode& node);
 
   StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
   Cell cell{};                    // The building's top-left cell.
@@ -61,22 +61,22 @@ class BaseNodeClass {
 // anything.)
 //
 // Example:
-//   BaseClass& base = TheWorld().base();
-//   if (const BaseNodeClass* node = base.FirstUnbuiltNode()) {
+//   PrebuiltBase& base = TheWorld().base();
+//   if (const BaseNode* node = base.FirstUnbuiltNode()) {
 //     house.BuildStructure = node->type;
 //   }
-class BaseClass {
+class PrebuiltBase {
  public:
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  BaseClass() = default;
-  virtual ~BaseClass();
-  BaseClass(const BaseClass&) = delete;
-  BaseClass& operator=(const BaseClass&) = delete;
-  BaseClass(BaseClass&&) = delete;
-  BaseClass& operator=(BaseClass&&) = delete;
+  PrebuiltBase() = default;
+  virtual ~PrebuiltBase();
+  PrebuiltBase(const PrebuiltBase&) = delete;
+  PrebuiltBase& operator=(const PrebuiltBase&) = delete;
+  PrebuiltBase(PrebuiltBase&&) = delete;
+  PrebuiltBase& operator=(PrebuiltBase&&) = delete;
 
   // Empties the base and leaves it without an owner, as it is before a
   // scenario is read.
@@ -115,27 +115,27 @@ class BaseClass {
 
   // Returns the first node with the type and top-left cell of `building`,
   // which must not be nullptr, or nullptr if the base has none.
-  BaseNodeClass* FindNode(const BuildingClass* building)
+  BaseNode* FindNode(const BuildingClass* building)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns node `index`, which must be a valid index into nodes().
-  BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  BaseNode* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return &base::At(nodes_, index);
   }
   // Returns the first node on `cell`, of any type, or nullptr if there is none.
-  BaseNodeClass* Get_Node(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  BaseNode* Get_Node(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNodeClass* FirstUnbuiltNode(StructType type = STRUCT_NONE)
+  BaseNode* FirstUnbuiltNode(StructType type = STRUCT_NONE)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed is not removed; a destroyed building flagged for
   // rebuilding that has no node gets one appended (BuildingClass::Take_Damage).
-  std::vector<BaseNodeClass>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<BaseNode>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
   }
-  [[nodiscard]] const std::vector<BaseNodeClass>& nodes() const
+  [[nodiscard]] const std::vector<BaseNode>& nodes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
   }
@@ -145,12 +145,12 @@ class BaseClass {
   void set_house(HousesType house) { house_ = house; }
 
  private:
-  std::vector<BaseNodeClass> nodes_;
+  std::vector<BaseNode> nodes_;
   HousesType house_ = HOUSE_NONE;
 };
 
-extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void BaseClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void PrebuiltBase::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void PrebuiltBase::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
