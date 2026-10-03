@@ -221,7 +221,7 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
     if (left < 0 && bottom >= game::kCellHeightPixels) {
       base::At(computed_offsets, index++) = MAP_CELL_W - 1;
     }
-    if (right >= game::kCellHeightPixels && top < 0) {
+    if (right >= game::kCellWidthPixels && top < 0) {
       base::At(computed_offsets, index++) = -(MAP_CELL_W - 1);
     }
     base::At(computed_offsets, index) = kRefreshEol;
