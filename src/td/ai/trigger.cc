@@ -69,7 +69,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <string_view>
 #include <vector>
 
@@ -1086,10 +1085,7 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
   /*
   **	Loop for all trigger entries.
   */
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view name = ini.EntryName(INI_Name(), i);  // Trigger ID.
-
+  for (const auto& [name, entry] : ini.Entries(INI_Name())) {
     /*
     **	Create a new trigger.
     */
@@ -1100,11 +1096,6 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
     **	Set its name.
     */
     trigger->Set_Name(name);
-
-    /*
-    **	Get the trigger entry.
-    */
-    const std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     **	Fill in the trigger.

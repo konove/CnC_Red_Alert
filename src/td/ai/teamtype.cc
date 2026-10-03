@@ -58,7 +58,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -174,19 +173,11 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
   /*
   ----------------------- Loop for all team entries ------------------------
   */
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view name = ini.EntryName(INI_Name(), i);  // Team name.
-
+  for (const auto& [name, entry] : ini.Entries(INI_Name())) {
     /*
     ....................... Create a new team type ........................
     */
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
-
-    /*
-    ......................... Get the team entry ..........................
-    */
-    const std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     .......................... Fill the team in ...........................
@@ -511,10 +502,7 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   /*
   ----------------------- Loop for all team entries ------------------------
   */
-  const int count = ini.EntryCount("Teams");
-  for (int i = 0; i < count; ++i) {
-    const std::string_view name = ini.EntryName("Teams", i);  // Team name.
-
+  for (const auto& [name, entry] : ini.Entries("Teams")) {
     /*
     ........................ Create a new trigger .........................
     */
@@ -524,11 +512,6 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     ............................ Set its name .............................
     */
     team->Set_Name(name);
-
-    /*
-    ......................... Get the team entry ..........................
-    */
-    const std::string entry = ini.GetString("Teams", name, "");
 
     /*
     .......................... 1st token: House ...........................

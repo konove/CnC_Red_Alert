@@ -56,6 +56,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
@@ -3158,7 +3159,8 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  const int entry_count = master_ini.EntryCount(TriggerClass::INI_Name());
+  const std::vector<engine::file::IniEntry> entries =
+      master_ini.Entries(TriggerClass::INI_Name());
 
   /*........................................................................
   For each entry in the INI section:
@@ -3166,12 +3168,7 @@ int MapEditClass::Import_Triggers() {
   - Generate a string describing the trigger
   - Add that string to the list box
   ........................................................................*/
-  for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-    const std::string_view tbuffer =
-        master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
-    const std::string entry =
-        master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
-
+  for (const auto& [tbuffer, entry] : entries) {
     /*
     ** Parse the INI entry
     */
@@ -3299,17 +3296,14 @@ int MapEditClass::Import_Triggers() {
   that trigger for this scenario.
   ........................................................................*/
   if (!cancel) {
-    for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-      const std::string_view tbuffer =
-          master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
+    for (int entry_index = 0; entry_index < std::ssize(entries);
+         entry_index++) {
+      const auto& [tbuffer, entry] = entries.at(base::ToSize(entry_index));
       /*
       ** If this item is checked on the list, create a new trigger
       ** and fill it in.
       */
       if (triggerlist.Is_Checked(entry_index)) {
-        const std::string entry =
-            master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
-
         auto* trigger =
             base::NewPooled<TriggerClass>();  // Working trigger pointer.
         trigger->Fill_In(tbuffer, entry);
@@ -3445,7 +3439,8 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  const int entry_count = master_ini.EntryCount(TeamTypeClass::INI_Name());
+  const std::vector<engine::file::IniEntry> entries =
+      master_ini.Entries(TeamTypeClass::INI_Name());
 
   /*........................................................................
   For each entry in the INI section:
@@ -3453,12 +3448,7 @@ int MapEditClass::Import_Teams() {
   - Generate a string describing the team
   - Add that string to the list box
   ........................................................................*/
-  for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-    const std::string_view tbuffer =
-        master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
-    const std::string entry =
-        master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
-
+  for (const auto& [tbuffer, entry] : entries) {
     /*
     ** Parse the INI entry
     */
@@ -3588,17 +3578,14 @@ int MapEditClass::Import_Teams() {
   that team for this scenario.
   ........................................................................*/
   if (!cancel) {
-    for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-      const std::string_view tbuffer =
-          master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
+    for (int entry_index = 0; entry_index < std::ssize(entries);
+         entry_index++) {
+      const auto& [tbuffer, entry] = entries.at(base::ToSize(entry_index));
       /*
       ** If this item is checked on the list, create a new team
       ** and fill it in.
       */
       if (teamlist.Is_Checked(entry_index)) {
-        const std::string entry =
-            master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
-
         auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
         team->Fill_In(tbuffer, entry);
       }

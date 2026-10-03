@@ -77,7 +77,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -779,11 +778,8 @@ std::span<const uint8_t> TerrainClass::Radar_Icon(Cell cell) {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Read_INI(const engine::file::IniFile& ini) {
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view key = ini.EntryName(INI_Name(), i);  // Entry key.
+  for (const auto& [key, value] : ini.Entries(INI_Name())) {
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(key, 0));
-    const std::string value = ini.GetString(INI_Name(), key, "");
     base::Tokenizer tokens(value);
     const TerrainType terrain =
         TerrainTypeClass::From_Name(tokens.Next());  // Terrain type.

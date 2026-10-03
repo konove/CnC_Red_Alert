@@ -533,15 +533,13 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   /*------------------------------------------------------------------------
   Read in & store each entry, in the order the file lists them
   ------------------------------------------------------------------------*/
-  for (int index = 0; index < ini.EntryCount("InitStrings"); index++) {
+  for (const engine::file::IniEntry& init : ini.Entries("InitStrings")) {
     auto entry = std::make_unique<char[]>(INITSTRBUF_MAX);
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry.get(), INITSTRBUF_MAX);
 
-    base::SafeCopy(
-        entry_storage,
-        ini.GetString("InitStrings", ini.EntryName("InitStrings", index), ""));
+    base::SafeCopy(entry_storage, init.value);
 
     std::ranges::transform(base::MutableCString(entry.get()), entry.get(),
                            absl::ascii_toupper);
@@ -567,7 +565,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   Read in all phone book listings, in the order the file lists them.
   Format: Name=PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (int index = 0; index < ini.EntryCount("PhoneBook"); index++) {
+  for (const engine::file::IniEntry& book_entry : ini.Entries("PhoneBook")) {
     /*.....................................................................
     Create a new phone book entry
     .....................................................................*/
@@ -576,8 +574,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    const std::string listing =
-        ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
+    const std::string_view listing = book_entry.value;
 
     /*.....................................................................
     Extract name, phone # & serial port settings

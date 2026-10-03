@@ -110,7 +110,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -512,10 +511,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view key = ini.EntryName(INI_Name(), i);  // Entry key.
-    const std::string value = ini.GetString(INI_Name(), key, "");
+  for (const auto& [key, value] : ini.Entries(INI_Name())) {
     base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.

@@ -139,7 +139,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -3495,14 +3494,7 @@ void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
   /*
   **	Loop for all building entries.
   */
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view key = ini.EntryName(INI_Name(), i);  // Entry key.
-    /*
-    **	Get a building entry.
-    */
-    const std::string value = ini.GetString(INI_Name(), key, "");
-
+  for (const auto& [key, value] : ini.Entries(INI_Name())) {
     /*
     **	1st token: house name.
     */

@@ -54,7 +54,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -289,10 +288,7 @@ bool SmudgeClass::Mark(MarkType mark) {
  *value as well.                                      *
  *=============================================================================================*/
 void SmudgeClass::Read_INI(const engine::file::IniFile& ini) {
-  const int count = ini.EntryCount(INI_Name());
-  for (int i = 0; i < count; ++i) {
-    const std::string_view key = ini.EntryName(INI_Name(), i);  // Entry key.
-    const std::string value = ini.GetString(INI_Name(), key, "");
+  for (const auto& [key, value] : ini.Entries(INI_Name())) {
     base::Tokenizer tokens(value);
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
