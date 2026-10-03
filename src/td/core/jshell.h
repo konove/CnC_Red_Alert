@@ -79,7 +79,6 @@ std::vector<std::byte> LoadAllocData(ByteStream& file);
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         engine::gfx::Palette* palette);
-int32_t Translucent_Table_Size(int count);
 std::span<unsigned char> Build_Translucent_Table(
     const engine::gfx::Palette& palette, std::span<const TLucentType> control,
     int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);

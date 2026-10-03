@@ -35,7 +35,6 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * Build_Translucent_Table -- Creates a translucent control table.
- ** Translucent_Table_Size -- Determines the size of a translucent table. *
  *   Conquer_Build_Translucent_Table -- Builds fading table for shadow colors
  *only.            * Load_Alloc_Data -- Allocates a buffer and loads the file
  *into it.                         * Load_Uncompress -- Loads and uncompresses
@@ -241,22 +240,15 @@ std::span<std::byte> Load_Alloc_Data(ByteStream& file) {
   return std::as_writable_bytes(storage.first(size));
 }
 
-/***********************************************************************************************
- * Translucent_Table_Size -- Determines the size of a translucent table. *
- *                                                                                             *
- *    Use this routine to determine how big the translucent table needs * to be
- *given the specified number of colors. This value is typically * used when
- *allocating the buffer for the translucent table. *
- *                                                                                             *
- * INPUT:   count -- The number of colors that are translucent. *
- *                                                                                             *
- * OUTPUT:  Returns the size of the translucent table. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/02/1994 JLB : Created. *
- *=============================================================================================*/
-int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
+namespace {
+
+// A translucent table is a 256-byte map from source color to fading table,
+// followed by one 256-entry fading table per translucent color.
+constexpr base::ssize TranslucentTableSize(int count) {
+  return 256 * (base::ssize{count} + 1);
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * Build_Translucent_Table -- Creates a translucent control table. *
@@ -290,7 +282,7 @@ std::span<unsigned char> Build_Translucent_Table(
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }
-  const auto size = base::ToSize(Translucent_Table_Size(count));
+  const auto size = base::ToSize(TranslucentTableSize(count));
   if (buffer.empty()) {
     // This legacy allocation is returned with its exact size to the caller.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -345,7 +337,7 @@ std::span<unsigned char> Conquer_Build_Translucent_Table(
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }
-  const auto size = base::ToSize(Translucent_Table_Size(count));
+  const auto size = base::ToSize(TranslucentTableSize(count));
   if (buffer.empty()) {
     // This legacy allocation is returned with its exact size to the caller.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
