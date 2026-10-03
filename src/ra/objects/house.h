@@ -847,7 +847,7 @@ class HouseClass {
   **	This vector holds the recorded status of the map regions. It is through
   **	this region information that team paths are calculated.
   */
-  RegionClass Regions[kMapTotalRegions];
+  Region Regions[kMapTotalRegions];
 
   /*
   **	This count down timer class decrements and then changes

@@ -42,9 +42,9 @@ namespace ra {
 // The value is kept up to date incrementally: an object adds its rating when
 // it is placed on the map and subtracts the same amount when it is lifted, so
 // the two calls must be given equal amounts or the region drifts.
-class RegionClass {
+class Region {
  public:
-  RegionClass() = default;
+  Region() = default;
 
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
@@ -54,25 +54,21 @@ class RegionClass {
 
   // Byte-wise comparisons, which order regions by the raw bytes of the threat
   // value rather than by its magnitude.
-  bool operator!=(const RegionClass& region) {
+  bool operator!=(const Region& region) {
     return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region),
-                              sizeof(RegionClass)) != 0;
+                              base::ObjectBytes(region), sizeof(Region)) != 0;
   }
-  bool operator==(const RegionClass& region) {
+  bool operator==(const Region& region) {
     return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region),
-                              sizeof(RegionClass)) == 0;
+                              base::ObjectBytes(region), sizeof(Region)) == 0;
   }
-  bool operator>(const RegionClass& region) {
+  bool operator>(const Region& region) {
     return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region),
-                              sizeof(RegionClass)) > 0;
+                              base::ObjectBytes(region), sizeof(Region)) > 0;
   }
-  bool operator<(const RegionClass& region) {
+  bool operator<(const Region& region) {
     return base::CompareBytes(base::ObjectBytes(*this),
-                              base::ObjectBytes(region),
-                              sizeof(RegionClass)) < 0;
+                              base::ObjectBytes(region), sizeof(Region)) < 0;
   }
 
   // Forgets all threat in the region.
