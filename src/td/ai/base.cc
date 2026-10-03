@@ -174,6 +174,11 @@ void BaseClass::Read_INI(char* buffer) {
     */
     base::Tokenizer tokens(buf, ",");
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
+    // A node without a type is one no building can fill, and a game saved
+    // with it is rejected when loaded.
+    if (node.Type == STRUCT_NONE) {
+      continue;
+    }
 
     /*
     ** Read & set the node's coordinate
