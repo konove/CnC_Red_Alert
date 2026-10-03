@@ -46,6 +46,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"
@@ -122,6 +123,10 @@ class IniFile {
   **	section is present.
   */
   [[nodiscard]] int Section_Count() const;
+  // Returns the name of section `index` in file order, or nullptr when out of
+  // range.
+  [[nodiscard]] const char* Get_Section(int index) const
+      [[clang::lifetimebound]];
   bool Section_Present(const char* section) const {
     return Find_Section(section) != nullptr;
   }
@@ -163,8 +168,6 @@ class IniFile {
   bool Put_PKey(const PKey& key);
 
  protected:
-  static constexpr int kMaxLineLength = 128;
-
   /*
   **	The value entries for the INI file are stored as objects of this type.
   **	The entry identifier and value string are combined into this object.
@@ -177,9 +180,7 @@ class IniFile {
     IniEntry& operator=(const IniEntry&) = delete;
     IniEntry(IniEntry&&) = delete;
     IniEntry& operator=(IniEntry&&) = delete;
-    [[nodiscard]] uint32_t Index_ID() const {
-      return CrcEngine::Compute(Entry);
-    }
+    [[nodiscard]] uint32_t Index_ID() const { return Name_ID(Entry); }
 
     std::string Entry;
     std::string Value;
@@ -201,9 +202,7 @@ class IniFile {
     // duplicates; the index only knows the first), so none is left to
     // resurface after the removal.
     void Remove_Entries(uint32_t id);
-    [[nodiscard]] uint32_t Index_ID() const {
-      return CrcEngine::Compute(Section);
-    }
+    [[nodiscard]] uint32_t Index_ID() const { return Name_ID(Section); }
 
     std::string Section;
     std::vector<std::unique_ptr<IniEntry>> EntryList;     // In file order.
@@ -217,7 +216,10 @@ class IniFile {
   IniEntry* Find_Entry(const char* section, const char* entry) const;
   // Removes every section whose name has index id `id`, duplicates included.
   void Remove_Sections(uint32_t id);
-  static void Strip_Comments(std::span<char> buffer);
+  // The key of a section or entry name: names compare without ASCII case.
+  static uint32_t Name_ID(std::string_view name);
+  // Returns `line` up to its first ';', without trailing blanks.
+  static std::string_view Strip_Comments(std::string_view line);
 
   /*
   **	This is the list of all sections within this INI file.

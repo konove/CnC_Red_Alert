@@ -1,12 +1,15 @@
 // Checks numeric defaults and legacy hexadecimal forms through the INI API.
 #include "engine/file/ini_file.h"
 
+#include <array>
 #include <cstddef>
+#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
@@ -60,6 +63,48 @@ TEST(IniFileTest, ReplacingAnEntryKeepsTheOthersReachable) {
 void LoadText(IniFile& ini, std::string_view text) {
   SpanSource source(std::as_bytes(std::span(text)));
   ASSERT_TRUE(ini.Load(source));
+}
+
+std::unique_ptr<IniFile> Parse(std::string_view text) {
+  auto ini = std::make_unique<IniFile>();
+  SpanSource source(std::as_bytes(std::span(text)));
+  CHECK(ini->Load(source));
+  return ini;
+}
+
+TEST(IniFileTest, NamesCompareWithoutCase) {
+  const auto ini = Parse("[BASIC]\r\nPlayer=GoodGuy\r\n");
+  std::array<char, 32> buf{};
+  EXPECT_GT(ini->Get_String("Basic", "PLAYER", "", buf, 32), 0);
+  EXPECT_STREQ(buf.data(), "GoodGuy");
+  EXPECT_TRUE(ini->Section_Present("basic"));
+  EXPECT_STREQ(ini->Get_Section(0), "BASIC");  // stored spelling is kept
+  EXPECT_EQ(ini->Get_Section(1), nullptr);
+}
+
+TEST(IniFileTest, LongLinesAreNotTruncated) {
+  const std::string value(400, 'x');
+  const auto ini = Parse("[TeamTypes]\nT1=" + value + "\n");
+  std::array<char, 500> buf{};
+  EXPECT_EQ(ini->Get_String("TeamTypes", "T1", "", buf, 500), 400);
+}
+
+TEST(IniFileTest, FirstDuplicateWins) {
+  const auto ini = Parse("[S]\nK=1\nK=2\n[S]\nK=3\n");
+  EXPECT_EQ(ini->Get_Int("S", "K", 0), 1);
+}
+
+TEST(IniFileTest, DuplicatesDifferingInCaseAreDuplicates) {
+  const auto ini = Parse("[S]\nk=1\nK=2\n");
+  EXPECT_EQ(ini->Get_Int("S", "K", 0), 1);
+  ASSERT_TRUE(ini->Put_Int("S", "K", 9));
+  EXPECT_EQ(ini->Entry_Count("S"), 1);
+  EXPECT_EQ(ini->Get_Int("S", "k", 0), 9);
+}
+
+TEST(IniFileTest, AcceptsBareLineFeeds) {
+  const auto ini = Parse("[S]\nA=1\nB=2\n");
+  EXPECT_EQ(ini->Entry_Count("S"), 2);
 }
 
 TEST(IniFileTest, PutReplacesEveryDuplicateOfAnEntry) {

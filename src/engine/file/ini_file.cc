@@ -71,7 +71,6 @@
 
 #include "engine/file/ini_file.h"
 
-#include <algorithm>
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
@@ -80,12 +79,13 @@
 #include <iterator>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
-#include "absl/strings/match.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -111,6 +111,42 @@
 #include "engine/stream/stream_source.h"
 
 namespace engine::file {
+
+namespace {
+
+// Reads one line into `line` without a length limit: stops at LF, drops CR and
+// trims. A line cut short by the end of the data is discarded (the result is
+// empty) and `eof` set, as Read_Line does.
+std::string ReadLine(ByteSource& source, bool& eof) {
+  std::string line;
+  for (;;) {
+    char c = 0;
+    if (!source.ReadObject(c)) {
+      eof = true;
+      line.clear();
+      return line;
+    }
+    if (c == '\n') {
+      break;
+    }
+    if (c != '\r') {
+      line.push_back(c);
+    }
+  }
+  absl::StripAsciiWhitespace(&line);
+  return line;
+}
+
+// True for a section header, "[name]".
+bool IsSectionLine(std::string_view line) {
+  return !line.empty() && line.front() == '[' && line.contains(']');
+}
+
+}  // namespace
+
+uint32_t IniFile::Name_ID(std::string_view name) {
+  return CrcEngine::Compute(absl::AsciiStrToUpper(name));
+}
 
 /***********************************************************************************************
  * IniFile::~IniFile -- Destructor for INI handler. *
@@ -212,32 +248,28 @@ bool IniFile::Load(ByteStream& file) {
 bool IniFile::Load(ByteSource& file) {
   Invalidate_Message_Digest();
   bool end_of_file = false;
-  char buffer[kMaxLineLength];
+  std::string line;
 
   /*
   **	Prescan until the first section is found.
   */
   while (!end_of_file) {
-    Read_Line(file, buffer, end_of_file);
+    line = ReadLine(file, end_of_file);
     if (end_of_file) {
       return false;
     }
-    if (buffer[0] == '[' && absl::StrContains(buffer, ']')) {
+    if (IsSectionLine(line)) {
       break;
     }
   }
 
   /*
-  **	Process a section. The buffer is prefilled with the section name line.
+  **	Process a section. The line holds the section header.
   */
   while (!end_of_file) {
-    buffer[0] = ' ';
-    const auto close = std::string_view(buffer).find(']');
-    if (close != std::string_view::npos) {
-      base::At(buffer, close) = '\0';
-    }
-    strtrim(base::MutableCString(buffer));
-    auto secptr = std::make_unique<IniSection>(buffer);
+    const std::string_view name = absl::StripAsciiWhitespace(
+        std::string_view(line).substr(1, std::string_view(line).find(']') - 1));
+    auto secptr = std::make_unique<IniSection>(std::string(name).c_str());
 
     /*
     **	Read in the entries of this section.
@@ -248,54 +280,46 @@ bool IniFile::Load(ByteSource& file) {
       **	of the entry loop and let the outer section loop take
       **	care of it.
       */
-      const int len = Read_Line(file, buffer, end_of_file);
-      if (buffer[0] == '[' && absl::StrContains(buffer, ']')) {
+      line = ReadLine(file, end_of_file);
+      if (IsSectionLine(line)) {
         break;
       }
 
       /*
       **	Determine if this line is a comment or blank line. Throw it out
-      *if it is.
+      **	if it is.
       */
-      Strip_Comments(buffer);
-      if (len == 0 || buffer[0] == ';' || buffer[0] == '=') {
+      const std::string_view text = Strip_Comments(line);
+      if (text.empty() || text.front() == ';' || text.front() == '=') {
         continue;
       }
 
       /*
-      **	The line isn't an obvious comment. Make sure that there is the
-      *"=" character *	at an appropriate spot.
+      **	Split the line into entry and value sections. Lines without an
+      * "=" *	and the "foobar=" case are ignored; "=foobar" was thrown out
+      * above.
       */
-      const auto split = std::string_view(buffer).find('=');
+      const auto split = text.find('=');
       if (split == std::string_view::npos) {
         continue;
       }
-
-      /*
-      **	Split the line into entry and value sections. Be sure to catch
-      *the *	"=foobar" and "foobar=" cases. These lines are ignored.
-      */
-      base::At(buffer, split) = '\0';
-      const auto value = std::span(buffer).subspan(split + 1);
-      char* divider = value.data();
-      strtrim(base::MutableCString(buffer));
-      if (std::string_view(buffer).empty()) {
+      const std::string_view key =
+          absl::StripAsciiWhitespace(text.substr(0, split));
+      const std::string_view value =
+          absl::StripAsciiWhitespace(text.substr(split + 1));
+      if (key.empty() || value.empty()) {
         continue;
       }
 
-      strtrim(value);
-      if (std::string_view(divider).empty()) {
-        continue;
-      }
-
-      auto entryptr = std::make_unique<IniEntry>(buffer, divider);
+      auto entryptr = std::make_unique<IniEntry>(std::string(key).c_str(),
+                                                 std::string(value).c_str());
       secptr->EntryIndex.try_emplace(entryptr->Index_ID(), entryptr.get());
       secptr->EntryList.push_back(std::move(entryptr));
     }
 
     /*
     **	All the entries for this section have been parsed. If this section is
-    *blank, then *	don't bother storing it.
+    **	blank, then don't bother storing it.
     */
     if (!secptr->EntryList.empty()) {
       SectionIndex.try_emplace(secptr->Index_ID(), secptr.get());
@@ -395,7 +419,7 @@ void IniFile::WriteSections(ByteSink& pipe) const {
  *=============================================================================================*/
 IniFile::IniSection* IniFile::Find_Section(const char* section) const {
   if (section != nullptr) {
-    const auto found = SectionIndex.find(CrcEngine::Compute(section));
+    const auto found = SectionIndex.find(Name_ID(section));
     if (found != SectionIndex.end()) {
       return found->second;
     }
@@ -419,6 +443,13 @@ IniFile::IniSection* IniFile::Find_Section(const char* section) const {
  *=============================================================================================*/
 int IniFile::Section_Count() const {
   return static_cast<int>(SectionList.size());
+}
+
+const char* IniFile::Get_Section(int index) const {
+  if (index < 0 || index >= Section_Count()) {
+    return nullptr;
+  }
+  return SectionList.at(base::ToSize(index))->Section.c_str();
 }
 
 /***********************************************************************************************
@@ -767,7 +798,7 @@ int IniFile::Get_TextBlock(const char* section, std::span<char> buffer,
  *=============================================================================================*/
 bool IniFile::Put_Int(const char* section, const char* entry, int number,
                       int format) {
-  char buffer[kMaxLineLength];
+  char buffer[32];
 
   switch (format) {
     default:
@@ -849,7 +880,7 @@ int IniFile::Get_Int(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool IniFile::Put_Hex(const char* section, const char* entry, int number) {
-  char buffer[kMaxLineLength];
+  char buffer[32];
 
   absl::SNPrintF(buffer, sizeof(buffer), "%X",
                  static_cast<unsigned int>(number));
@@ -935,7 +966,7 @@ bool IniFile::Put_String(const char* section, const char* entry,
   /*
   **	Remove the old entry, and any duplicate of it, if found.
   */
-  secptr->Remove_Entries(CrcEngine::Compute(entry));
+  secptr->Remove_Entries(Name_ID(entry));
 
   /*
   **	Create and add the new entry.
@@ -1093,7 +1124,7 @@ bool IniFile::Get_Bool(const char* section, const char* entry,
  *=============================================================================================*/
 IniFile::IniEntry* IniFile::IniSection::Find_Entry(const char* entry) const {
   if (entry != nullptr) {
-    const auto found = EntryIndex.find(CrcEngine::Compute(entry));
+    const auto found = EntryIndex.find(Name_ID(entry));
     if (found != EntryIndex.end()) {
       return found->second;
     }
@@ -1322,13 +1353,8 @@ bool IniFile::Put_Fixed(const char* section, const char* entry, Fixed value) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void IniFile::Strip_Comments(std::span<char> buffer) {
-  const auto comment = std::ranges::find(buffer, ';');
-  const auto nul = std::ranges::find(buffer, '\0');
-  if (comment < nul) {
-    *comment = '\0';
-    strtrim(buffer);
-  }
+std::string_view IniFile::Strip_Comments(std::string_view line) {
+  return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));
 }
 
 }  // namespace engine::file
