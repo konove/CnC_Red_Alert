@@ -16,26 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/REGION.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : REGION.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 03/09/95 *
- *                                                                                             *
- *                  Last Update : March 9, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// One house's view of one map region: how much enemy firepower stands in it.
+// The map is divided into regions of kRegionWidth x kRegionHeight cells, and
+// each house keeps one Region per map region (HouseClass::Regions).
 
 #ifndef CNC_RED_ALERT_RA_AI_REGION_H_
 #define CNC_RED_ALERT_RA_AI_REGION_H_
@@ -46,15 +29,31 @@
 
 namespace ra {
 
+// The threat a house sees in one map region: the summed risk ratings of the
+// other houses' ground objects standing in the region, plus half of those in
+// the regions beside it and a quarter of those diagonal to it
+// (HouseClass::Adjust_Threat() does the spreading). A computer house counts
+// every other house's objects, a human house only those it is not allied with
+// (CellClass::Adjust_Threat()). Path finding and team routing read the value
+// through MapClass::Cell_Threat() to steer around defended ground.
+//
+// Only the campaign tracks threat; in a multiplayer game every region stays 0.
+//
+// The value is kept up to date incrementally: an object adds its rating when
+// it is placed on the map and subtracts the same amount when it is lifted, so
+// the two calls must be given equal amounts or the region drifts.
 class RegionClass {
  public:
   RegionClass() = default;
 
-  // Saved-game support.
+  // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Threat);
   }
+
+  // Byte-wise comparisons, which order regions by the raw bytes of the threat
+  // value rather than by its magnitude.
   bool operator!=(const RegionClass& region) {
     return base::CompareBytes(base::ObjectBytes(*this),
                               base::ObjectBytes(region),
@@ -76,7 +75,11 @@ class RegionClass {
                               sizeof(RegionClass)) < 0;
   }
 
+  // Forgets all threat in the region.
   void Reset_Threat() { Threat = 0; }
+
+  // Adds `threat` to the region, or subtracts it when `neg` is set. `threat`
+  // is the magnitude, so callers pass it non-negative.
   void Adjust_Threat(int threat, bool neg) {
     if (neg) {
       Threat -= threat;
@@ -84,9 +87,13 @@ class RegionClass {
       Threat += threat;
     }
   }
+
+  // The region's current threat; 0 when no enemy object is in or next to it.
   [[nodiscard]] int Threat_Value() const { return static_cast<int>(Threat); }
 
  protected:
+  // Summed threat ratings; 0 for an empty region. Saved as 64 bits, though the
+  // sum of a map's worth of ratings fits an int.
   int64_t Threat = 0;
 };
 
