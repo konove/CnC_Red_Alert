@@ -40,18 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
 #define CNC_RED_ALERT_RA_CORE_JSHELL_H_
 
-#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
-#include "base/array.h"
-#include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/types.h"
 #include "ra/assets/compat.h"
@@ -60,50 +56,6 @@
 class ByteStream;
 
 namespace ra {
-
-
-// Bit indices must refer to the supplied word span.
-inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
-  CHECK_GE(bit, 0);
-  CHECK_LT(base::ToSize(bit / 32), array.size());
-  if (value) {
-    base::At(array, base::ToSize(bit / 32)) |= base::Bit<uint32_t>(bit % 32);
-  } else {
-    base::At(array, base::ToSize(bit / 32)) &= ~base::Bit<uint32_t>(bit % 32);
-  }
-}
-
-inline bool Get_Bit(std::span<const uint32_t> array, int bit) {
-  CHECK_GE(bit, 0);
-  CHECK_LT(base::ToSize(bit / 32), array.size());
-  return (base::At(array, base::ToSize(bit / 32)) &
-          base::Bit<uint32_t>(bit % 32)) != 0;
-}
-
-// Returns -1 if no matching bit exists within the supplied words.
-inline int First_True_Bit(std::span<const uint32_t> array) {
-  int off = 0;
-  for (const uint32_t word : array) {
-    const int pos = std::countr_zero(word);
-    if (pos < 32) {
-      return off + pos;
-    }
-    off += 32;
-  }
-  return -1;
-}
-
-inline int First_False_Bit(std::span<const uint32_t> array) {
-  int off = 0;
-  for (const uint32_t word : array) {
-    const int pos = std::countr_zero(~word);
-    if (pos < 32) {
-      return off + pos;
-    }
-    off += 32;
-  }
-  return -1;
-}
 
 struct TLucentType {
   unsigned char SourceColor;
