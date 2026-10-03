@@ -56,12 +56,14 @@
 #include "td/net/event.h"
 
 #include <cstdio>
+#include <string>
 #include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/pooled.h"
+#include "base/strings/format.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "td/ai/special.h"
@@ -69,7 +71,6 @@
 #include "td/assets/audio.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
@@ -417,7 +418,6 @@ void EventClass::Execute() {
   TechnoClass* techno = nullptr;
   AnimClass* anim = nullptr;
   const HouseClass* house = nullptr;
-  char txt[80];
   int i = 0;
   // #if (0)
   if (Type > PROCESS_TIME) {
@@ -471,10 +471,10 @@ void EventClass::Execute() {
       TheSpecial() = Data.Options.Data;
       HouseClass* sender = TheObjectHeaps().house().Slot(ID);
 
-      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
-                          sender->Name);
+      std::string message =
+          base::FormatRuntime(Text_String(TXT_SPECIAL_WARNING), sender->Name);
       TheSession().messages().Add_Message(
-          txt,
+          message.data(),
           base::At(TheSession().text_colors(),
                    static_cast<int>(sender->RemapColor)),
           FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0,

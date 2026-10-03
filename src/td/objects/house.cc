@@ -144,6 +144,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -168,7 +169,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
@@ -1922,8 +1922,6 @@ void HouseClass::Make_Ally(HousesType house) {
     if ((TheDebugState().developer_mode() ||
          TheSession().type() != GAME_NORMAL) &&
         !TheWorld().scenario_init()) {
-      char buffer[80];
-
       /*
       **	Sweep through all techno objects and perform a cheeseball tarcom
       *clear to ensure *	that fighting will most likely stop when the
@@ -1940,10 +1938,10 @@ void HouseClass::Make_Ally(HousesType house) {
         }
       }
 
-      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_HAS_ALLIED),
-                          Name, As_Pointer(house)->Name);
+      std::string message = base::FormatRuntime(Text_String(TXT_HAS_ALLIED),
+                                                Name, As_Pointer(house)->Name);
       TheSession().messages().Add_Message(
-          buffer,
+          message.data(),
           base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
           FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0,
           0);
@@ -1980,12 +1978,10 @@ void HouseClass::Make_Enemy(HousesType house) {
         (TheDebugState().developer_mode() ||
          TheSession().type() != GAME_NORMAL) &&
         !TheWorld().scenario_init()) {
-      char buffer[80];
-
-      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
-                          enemy->Name);
+      std::string message =
+          base::FormatRuntime(Text_String(TXT_AT_WAR), Name, enemy->Name);
       TheSession().messages().Add_Message(
-          buffer,
+          message.data(),
           base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
           FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
           0);
@@ -3799,7 +3795,6 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
  *=========================================================================*/
 void HouseClass::MPlayer_Defeated() {
   Validate();
-  char txt[80];
   int i = 0;
   unsigned char id = 0;
   HousesType house = HOUSE_NONE;
@@ -3841,10 +3836,11 @@ void HouseClass::MPlayer_Defeated() {
     /*.....................................................................
     Pop up a message showing that I was defeated
     .....................................................................*/
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
-                        TheSession().player_name());
+    std::string message = base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED),
+                                              TheSession().player_name());
     TheSession().messages().Add_Message(
-        txt, base::At(TheSession().text_colors(), TheSession().color_index()),
+        message.data(),
+        base::At(TheSession().text_colors(), TheSession().color_index()),
         FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
         0);
     TheMap().Flag_To_Redraw(false);
@@ -3854,21 +3850,21 @@ void HouseClass::MPlayer_Defeated() {
     If it wasn't me, find out who was defeated
     ------------------------------------------------------------------------*/
     if (IsHuman) {
-      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
-                          Text_String(TXT_UNKNOWN));
+      std::string message = base::FormatRuntime(
+          Text_String(TXT_PLAYER_DEFEATED), Text_String(TXT_UNKNOWN));
       id = 0;
       for (i = 0; i < TheSession().player_count(); i++) {
         house = base::At(TheSession().player_houses(), i);
         if (As_Pointer(house) == this) {
-          Format_Runtime_Text(txt, sizeof(txt),
-                              Text_String(TXT_PLAYER_DEFEATED),
-                              base::At(TheSession().player_names(), i));
+          message =
+              base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED),
+                                  base::At(TheSession().player_names(), i));
           id = base::At(TheSession().player_ids(), i);
         }
       }
 
       TheSession().messages().Add_Message(
-          txt,
+          message.data(),
           base::At(TheSession().text_colors(),
                    static_cast<int>(MPlayerID_To_ColorIndex(id))),
           FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,

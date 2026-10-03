@@ -59,6 +59,7 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -71,6 +72,7 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/random.h"
+#include "base/strings/format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
@@ -1649,18 +1651,17 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
  *=========================================================================*/
 void ScoreClass::Print_Minutes(Presentation& show, const FontStyle& font,
                                int minutes) {
-  char str[20];
+  std::string str;
   if (minutes >= 60) {
     if (minutes / 60 > 9) {
       minutes = (9 * 60) + 59;
     }
-    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
-                        minutes / 60, minutes % 60);
+    str = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
+                              minutes % 60);
   } else {
-    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
-                        minutes);
+    str = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
   }
-  show.text_page().view().Print(font, str, 550, 18, kTBlack, kTBlack);
+  show.text_page().view().Print(font, str.c_str(), 550, 18, kTBlack, kTBlack);
 }
 
 /***********************************************************************************************
@@ -1686,15 +1687,13 @@ void ScoreClass::Print_Minutes(Presentation& show, const FontStyle& font,
 void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
                                 const char* str, int percent, int max, int xpos,
                                 int ypos) {
-  char destbuf[64];
-
-  Format_Runtime_Text(destbuf, sizeof(destbuf), str,
-                      percent <= max ? percent : max);
-  const int width = static_cast<int>(std::string_view(destbuf).size()) * 7;
+  const std::string text =
+      base::FormatRuntime(str, percent <= max ? percent : max);
+  const int width = static_cast<int>(text.size()) * 7;
 
   show.text_page().view().FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
                                    (ypos + 7) * 2, kBlack);
-  show.text_page().view().Print(font, destbuf, xpos * 2, ypos * 2, kWhite,
+  show.text_page().view().Print(font, text.c_str(), xpos * 2, ypos * 2, kWhite,
                                 kTBlack);
 
   // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,

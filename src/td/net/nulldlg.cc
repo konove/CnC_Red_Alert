@@ -60,6 +60,7 @@
 #include <iterator>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -70,6 +71,7 @@
 #include "base/buffer.h"
 #include "base/cardinal.h"
 #include "base/numeric.h"
+#include "base/strings/format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
@@ -92,7 +94,6 @@
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -819,8 +820,6 @@ static int Reconnect_Null_Modem() {
  * HISTORY: * 07/31/1995 DRD : Created. *
  *=============================================================================================*/
 void Destroy_Null_Connection(int id, int error) {
-  char txt[80];
-
   if (TheSession().player_count() == 1) {
     return;
   }
@@ -843,20 +842,20 @@ void Destroy_Null_Connection(int id, int error) {
   /*------------------------------------------------------------------------
   Create a message to display to the user
   ------------------------------------------------------------------------*/
-  base::At(txt, 0) = '\0';
+  std::string message;
   if (error == 1) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                        base::At(TheSession().player_names(), idx));
+    message = base::FormatRuntime(Text_String(TXT_CONNECTION_LOST),
+                                  base::At(TheSession().player_names(), idx));
   } else if (error == 0) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                        base::At(TheSession().player_names(), idx));
+    message = base::FormatRuntime(Text_String(TXT_LEFT_GAME),
+                                  base::At(TheSession().player_names(), idx));
   } else if (error == -1) {
     TheNetwork().null_modem().Delete_Connection();
   }
 
-  if (!std::string_view(txt).empty()) {
+  if (!message.empty()) {
     TheSession().messages().Add_Message(
-        txt,
+        message.data(),
         base::At(TheSession().text_colors(),
                  static_cast<int>(
                      MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
@@ -897,9 +896,9 @@ void Destroy_Null_Connection(int id, int error) {
   If we're the last player left, tell the user.
   ------------------------------------------------------------------------*/
   if (TheSession().player_count() == 1) {
-    absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
+    message = Text_String(TXT_JUST_YOU_AND_ME);
     TheSession().messages().Add_Message(
-        txt,
+        message.data(),
         base::At(TheSession().text_colors(),
                  static_cast<int>(
                      MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
@@ -4113,10 +4112,11 @@ int Com_Scenario_Dialog() {
             /*..................................................................
             Add the message to our own screen
             ..................................................................*/
-            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                TheSession().player_name(), SendPacket.Message);
+            std::string message = base::FormatRuntime(
+                Text_String(TXT_FROM), TheSession().player_name(),
+                SendPacket.Message);
             TheSession().messages().Add_Message(
-                txt,
+                message.data(),
                 base::At(TheSession().text_colors(),
                          TheSession().color_index()),
                 FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -4349,11 +4349,12 @@ int Com_Scenario_Dialog() {
           /*..................................................................
           Incoming message: add to our list
           ..................................................................*/
-          case SERIAL_MESSAGE:
+          case SERIAL_MESSAGE: {
             // Smart_Printf( "received serial message\n" );
             oppscorescreen = false;
-            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                ReceivePacket.Name, ReceivePacket.Message);
+            std::string message =
+                base::FormatRuntime(Text_String(TXT_FROM), ReceivePacket.Name,
+                                    ReceivePacket.Message);
             magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
@@ -4361,7 +4362,7 @@ int Com_Scenario_Dialog() {
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
             TheSession().messages().Add_Message(
-                txt,
+                message.data(),
                 base::At(TheSession().text_colors(),
                          static_cast<int>(
                              MPlayerID_To_ColorIndex(ReceivePacket.ID))),
@@ -4373,6 +4374,7 @@ int Com_Scenario_Dialog() {
             //						display =
             // REDRAW_MESSAGE;
             break;
+          }
 
           //
           // get their response time
@@ -5342,11 +5344,11 @@ int Com_Show_Scenario_Dialog() {
                   /*..................................................................
                   Add the message to our own screen
                   ..................................................................*/
-                  Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                      TheSession().player_name(),
-                                      SendPacket.Message);
+                  std::string message = base::FormatRuntime(
+                      Text_String(TXT_FROM), TheSession().player_name(),
+                      SendPacket.Message);
                   TheSession().messages().Add_Message(
-                      txt,
+                      message.data(),
                       base::At(TheSession().text_colors(),
                                TheSession().color_index()),
                       FontType::k6PointGradient,
@@ -5617,10 +5619,11 @@ int Com_Show_Scenario_Dialog() {
           /*..................................................................
           Incoming message: add to our list
           ..................................................................*/
-          case SERIAL_MESSAGE:
+          case SERIAL_MESSAGE: {
             oppscorescreen = false;
-            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                ReceivePacket.Name, ReceivePacket.Message);
+            std::string message =
+                base::FormatRuntime(Text_String(TXT_FROM), ReceivePacket.Name,
+                                    ReceivePacket.Message);
             magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
@@ -5628,7 +5631,7 @@ int Com_Show_Scenario_Dialog() {
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
             TheSession().messages().Add_Message(
-                txt,
+                message.data(),
                 base::At(TheSession().text_colors(),
                          static_cast<int>(
                              MPlayerID_To_ColorIndex(ReceivePacket.ID))),
@@ -5636,6 +5639,7 @@ int Com_Show_Scenario_Dialog() {
                 1200, magic_number, crc);
             display = REDRAW_MESSAGE;
             break;
+          }
 
           //
           // throw away timing packet

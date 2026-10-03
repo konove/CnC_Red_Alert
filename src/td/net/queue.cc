@@ -84,6 +84,7 @@
 #include <cstring>
 #include <fstream>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -91,6 +92,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
 #include "engine/net/connect.h"
@@ -1760,7 +1762,6 @@ static RetcodeType Process_Serial_Packet(
       &serial_storage;  // for parsing serial packets
   EventClass event_storage;
   const EventClass* event = &event_storage;
-  char txt[MAX_MESSAGE_LENGTH + 80];
 
   //------------------------------------------------------------------------
   //	Determine if this packet means that the other player has left the game
@@ -1802,8 +1803,8 @@ static RetcodeType Process_Serial_Packet(
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                        serial_packet->Name, serial_packet->Message);
+    std::string message = base::FormatRuntime(
+        Text_String(TXT_FROM), serial_packet->Name, serial_packet->Message);
 
     const auto magic_number =
         base::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
@@ -1813,7 +1814,7 @@ static RetcodeType Process_Serial_Packet(
                                           .subspan(COMPAT_MESSAGE_LENGTH - 2));
 
     TheSession().messages().Add_Message(
-        txt,
+        message.data(),
         base::At(TheSession().text_colors(),
                  static_cast<int>(MPlayerID_To_ColorIndex(serial_packet->ID))),
         FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,

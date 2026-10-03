@@ -61,12 +61,9 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "absl/types/span.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/strings/format.h"
-#include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "base/unaligned.h"
 #include "engine/codec/compressed_block.h"
@@ -175,12 +172,6 @@ void Fatal_Message(const std::string_view message) {
   ShutDown();
   absl::FPrintF(stderr, "%s", message);
   exit(EXIT_FAILURE);
-}
-
-void Format_Runtime_Text(std::span<char> buffer, const size_t size,
-                         const char* format,
-                         const absl::Span<const absl::FormatArg> args) {
-  base::SafeCopy(buffer.first(size), base::FormatRuntime(format, args).c_str());
 }
 
 #ifdef NEVER

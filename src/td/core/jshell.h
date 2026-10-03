@@ -49,8 +49,6 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
-#include "absl/types/span.h"
-#include "base/strings/format.h"
 #include "base/types.h"
 #include "engine/gfx/palette.h"
 
@@ -65,22 +63,6 @@ template <typename... Args>
 [[noreturn]] void Fatal(const absl::FormatSpec<Args...>& format,
                         const Args&... args) {
   Fatal_Message(absl::StrFormat(format, args...));
-}
-
-// Formats `format`, known only at run time (the string table or a format
-// handed in by a caller), with `args` into `buffer`, which holds `size` bytes.
-// The result is always null terminated and truncated rather than allowed to
-// overflow. Each conversion is checked against its argument; a format that
-// does not match `args` is copied unformatted (see base::FormatRuntime).
-void Format_Runtime_Text(std::span<char> buffer, size_t size,
-                         const char* format,
-                         absl::Span<const absl::FormatArg> args = {});
-template <typename... Args>
-  requires(sizeof...(Args) > 0)
-void Format_Runtime_Text(std::span<char> buffer, const size_t size,
-                         const char* format, const Args&... args) {
-  const auto packed = base::MakeFormatArgs(args...);
-  Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }
 
 struct TLucentType {

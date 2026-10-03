@@ -85,6 +85,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
 #include "engine/audio/audio_mixer.h"
@@ -933,8 +934,9 @@ static void Message_Input(engine::window::KeyNumber& input) {
                !TheSession().obi_wan())) {
             const int id = TheNetwork().ipx().Connection_ID(input - KN_F1);
             message_address = *TheNetwork().ipx().Connection_Address(id);
-            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
-                                TheNetwork().ipx().Connection_Name(id));
+            base::SafeCopy(txt, base::FormatRuntime(
+                                    Text_String(TXT_TO),
+                                    TheNetwork().ipx().Connection_Name(id)));
 
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
@@ -1352,7 +1354,6 @@ void Call_Back() {
         */
         if (TheNetwork().global_packet().Command == NET_MESSAGE) {
           bool msg_ok = false;
-          char txt[80];
 
           /*
           ** If NetProtect is set, make sure this message came from within
@@ -1366,9 +1367,9 @@ void Call_Back() {
           }
 
           if (msg_ok) {
-            Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                TheNetwork().global_packet().Name,
-                                TheNetwork().global_packet().Message.Buf);
+            std::string message = base::FormatRuntime(
+                Text_String(TXT_FROM), TheNetwork().global_packet().Name,
+                TheNetwork().global_packet().Message.Buf);
             magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
@@ -1378,7 +1379,7 @@ void Call_Back() {
             color = static_cast<int>(MPlayerID_To_ColorIndex(
                 TheNetwork().global_packet().Message.ID));
             TheSession().messages().Add_Message(
-                txt, base::At(TheSession().text_colors(), color),
+                message.data(), base::At(TheSession().text_colors(), color),
                 FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 600, magic_number, crc);
 
@@ -2931,7 +2932,6 @@ bool Force_CD_Available(int cd) {
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
-  char buffer[128];
 
   ThemeType theme_playing = THEME_NONE;
 
@@ -2998,18 +2998,16 @@ bool Force_CD_Available(int cd) {
       /*
       **	Prompt to insert the CD into the drive.
       */
+      std::string prompt;
       if (cd == -1) {
-        absl::SNPrintF(buffer, sizeof(buffer), "%s",
-                       Text_String(TXT_CD_DIALOG_1));
+        prompt = Text_String(TXT_CD_DIALOG_1);
       } else {
         if (cd == 2) {
-          absl::SNPrintF(buffer, sizeof(buffer), "%s",
-                         Text_String(TXT_CD_DIALOG_3));
+          prompt = Text_String(TXT_CD_DIALOG_3);
         } else {
           // 0 or 1?
-          Format_Runtime_Text(buffer, sizeof(buffer),
-                              Text_String(TXT_CD_DIALOG_2), cd + 1,
-                              base::At(_volid, cd));
+          prompt = base::FormatRuntime(Text_String(TXT_CD_DIALOG_2), cd + 1,
+                                       base::At(_volid, cd));
         }
       }
       // The theme was already stopped above, and the only way out of this
@@ -3033,7 +3031,7 @@ bool Force_CD_Available(int cd) {
       {
         const engine::window::HardwareCursor::ShownScope shown(
             game::TheMouse());
-        if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE,
+        if (CCMessageBox().Process(prompt.c_str(), TXT_OK, TXT_CANCEL, TXT_NONE,
                                    true) == 1) {
           TheGameState().in_main_loop() = old_in_main_loop;
           return false;
