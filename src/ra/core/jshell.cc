@@ -205,9 +205,8 @@ std::span<unsigned char> Build_Translucent_Table(
   for (int index = 0; index < count; ++index) {
     const auto& item = base::At(control, base::ToSize(index));
     base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Build_Fading_Table(palette,
-                       buffer.subspan(base::ToSize(index + 1) * 256, 256),
-                       item.DestColor, item.Fading);
+    std::ranges::copy(BuildFadingTable(palette, item.DestColor, item.Fading),
+                      buffer.subspan(base::ToSize(index + 1) * 256).begin());
   }
   return buffer;
 }

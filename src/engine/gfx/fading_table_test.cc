@@ -1,8 +1,5 @@
 #include "engine/gfx/fading_table.h"
 
-#include <array>
-#include <cstdint>
-#include <span>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
@@ -28,9 +25,7 @@ TEST(BuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
   SetColor(palette, 1, 10, 20, 50);
   SetColor(palette, 2, 50, 20, 10);
   SetColor(palette, 3, 20, 50, 10);
-  std::array<uint8_t, 256> table{};
-
-  Build_Fading_Table(palette, table, 1, 255);
+  const FadingTable table = BuildFadingTable(palette, 1, 255);
 
   EXPECT_EQ(table.at(0), 0);
   EXPECT_EQ(table.at(2), 1);
@@ -43,9 +38,7 @@ TEST(BuildFadingTableTest, TiesGoToTheLaterColor) {
   SetColor(palette, 1, 20, 20, 20);
   SetColor(palette, 2, 18, 20, 20);
   SetColor(palette, 3, 22, 20, 20);
-  std::array<uint8_t, 256> table{};
-
-  Build_Fading_Table(palette, table, 1, 0);
+  const FadingTable table = BuildFadingTable(palette, 1, 0);
 
   EXPECT_EQ(table.at(1), 3);
 }
@@ -53,22 +46,19 @@ TEST(BuildFadingTableTest, TiesGoToTheLaterColor) {
 TEST(BuildFadingTableTest, PerfectMatchTakesTheFirstColor) {
   Palette palette(kWhiteGuns);
   SetColor(palette, 1, 20, 20, 20);
-  std::array<uint8_t, 256> table{};
-
-  Build_Fading_Table(palette, table, 1, 0);
+  const FadingTable table = BuildFadingTable(palette, 1, 0);
 
   // Entry 4 is white like every entry after it; entry 2 is the first match.
   EXPECT_EQ(table.at(4), 2);
 }
 
-TEST(BuildFadingTableTest, RejectsShortTables) {
+TEST(BuildFadingTableDeathTest, RejectsColorsOutsideThePalette) {
   const Palette palette;
-  std::array<uint8_t, 255> table{};
-  table.fill(7);
 
-  Build_Fading_Table(palette, table, 1, 128);
-
-  EXPECT_EQ(table.at(0), 7);
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(BuildFadingTable(palette, 256, 128), "color 256");
+  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
 }  // namespace

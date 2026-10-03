@@ -179,14 +179,14 @@ base::EnumArray<LayerType, LayerClass, kLayerCount> DisplayClass::Layer;
 /*
 ** Fading tables
 */
-unsigned char DisplayClass::FadingBrighten[256];
-unsigned char DisplayClass::FadingShade[256];
-unsigned char DisplayClass::FadingLight[256];
+FadingTable DisplayClass::FadingBrighten;
+FadingTable DisplayClass::FadingShade;
+FadingTable DisplayClass::FadingLight;
 base::EnumArray<HousesType, unsigned char[3][256], kHouseCount>
     DisplayClass::RemapTables;
-unsigned char DisplayClass::FadingGreen[256];
-unsigned char DisplayClass::FadingYellow[256];
-unsigned char DisplayClass::FadingRed[256];
+FadingTable DisplayClass::FadingGreen;
+FadingTable DisplayClass::FadingYellow;
+FadingTable DisplayClass::FadingRed;
 unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
@@ -487,7 +487,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     base::At(SpecialGhost, index) = 0;
   }
 
-  Build_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
+  FadingBrighten = BuildFadingTable(ThePalettes().game_palette(), kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.

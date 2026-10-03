@@ -3,20 +3,17 @@
 #include <algorithm>
 #include <climits>
 #include <cstdint>
-#include <span>
 
+#include "absl/log/check.h"
+#include "base/array.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 
-std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
-                                      std::span<uint8_t> dest, int color,
-                                      int frac) {
-  if (dest.size() < 256 || color < 0 || color >= 256) {
-    return dest;
-  }
-
-  // Fractions above 255 become 255.
+FadingTable BuildFadingTable(const engine::gfx::Palette& palette, int color,
+                             int frac) {
+  CHECK(color >= 0 && color < 256) << "color " << color;
   frac = std::min<int>(frac, 255);
+  FadingTable table{};
 
   // Record the target components.
   const engine::gfx::PaletteColor& target = palette.at(color);
@@ -24,13 +21,7 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
   const auto targetgreen = static_cast<uint8_t>(target.green());
   const auto targetblue = static_cast<uint8_t>(target.blue());
 
-  // Main loop
-
-  auto dptr = dest.begin();
-
-  // Transparent black never gets remapped.
-  *dptr++ = 0;
-
+  // Entry 0 stays 0: transparent black never gets remapped.
   for (int remap_index = 1; remap_index < 256; remap_index++) {
     const engine::gfx::PaletteColor& orig = palette.at(remap_index);
     const auto origred = static_cast<uint8_t>(orig.red());
@@ -81,8 +72,8 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
     }
 
     // When the loop exits, we have found the closest match.
-    *dptr++ = matchcolor;
+    base::At(table, remap_index) = matchcolor;
   }
 
-  return dest;
+  return table;
 }

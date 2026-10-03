@@ -26,6 +26,7 @@
 
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
@@ -97,13 +98,13 @@ class DisplayClass : public MapClass {
   const ObjectTypeClass* PendingObject{nullptr};
   HousesType PendingHouse{HOUSE_NONE};
 
-  static unsigned char FadingBrighten[256];
-  static unsigned char FadingShade[256];
-  static unsigned char FadingWayDark[256];
-  static unsigned char FadingLight[256];
-  static unsigned char FadingGreen[256];
-  static unsigned char FadingYellow[256];
-  static unsigned char FadingRed[256];
+  static FadingTable FadingBrighten;
+  static FadingTable FadingShade;
+  static FadingTable FadingWayDark;
+  static FadingTable FadingLight;
+  static FadingTable FadingGreen;
+  static FadingTable FadingYellow;
+  static FadingTable FadingRed;
   static unsigned char TranslucentTable[(kMagicColorCount + 1) * 256];
   static unsigned char WhiteTranslucentTable[(1 + 1) * 256];
   static unsigned char MouseTranslucentTable[(4 + 1) * 256];

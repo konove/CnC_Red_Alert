@@ -202,13 +202,13 @@ base::EnumArray<LayerType, LayerClass> DisplayClass::Layer;
 /*
 ** Fading tables
 */
-unsigned char DisplayClass::FadingBrighten[256];
-unsigned char DisplayClass::FadingShade[256];
-unsigned char DisplayClass::FadingWayDark[256];
-unsigned char DisplayClass::FadingLight[256];
-unsigned char DisplayClass::FadingGreen[256];
-unsigned char DisplayClass::FadingYellow[256];
-unsigned char DisplayClass::FadingRed[256];
+FadingTable DisplayClass::FadingBrighten;
+FadingTable DisplayClass::FadingShade;
+FadingTable DisplayClass::FadingWayDark;
+FadingTable DisplayClass::FadingLight;
+FadingTable DisplayClass::FadingGreen;
+FadingTable DisplayClass::FadingYellow;
+FadingTable DisplayClass::FadingRed;
 unsigned char DisplayClass::TranslucentTable[(kMagicColorCount + 1) * 256];
 unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
 unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
@@ -442,11 +442,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
 
   ThePalettes().original_palette() = ThePalettes().game_palette();
 
-  Build_Fading_Table(ThePalettes().game_palette(), FadingGreen, kGreen, 110);
+  FadingGreen = BuildFadingTable(ThePalettes().game_palette(), kGreen, 110);
 
-  Build_Fading_Table(ThePalettes().game_palette(), FadingYellow, kYellow, 140);
+  FadingYellow = BuildFadingTable(ThePalettes().game_palette(), kYellow, 140);
 
-  Build_Fading_Table(ThePalettes().game_palette(), FadingRed, kRed, 140);
+  FadingRed = BuildFadingTable(ThePalettes().game_palette(), kRed, 140);
 
   Build_Translucent_Table(ThePalettes().game_palette(),
                           base::Suffix(MouseCols, 0), 4, MouseTranslucentTable);
