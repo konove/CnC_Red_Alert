@@ -294,11 +294,9 @@
   - `Stopwatch` and `Timer` are both timers; the name kept by `docs/TIMER_UNIFICATION_PLAN.md` does
     not say which way it counts
   - `td/map/credits.h:75` has an `int Countdown` member that the new name would shadow
-- Delete the commented-out code in `ra/wol/wol_logn.cc:439`, `ra/wol/wolapiob.cc:801` and
-  `ra/core/jshell.cc:407`
-  - `jshell.cc` still builds an `HsvColor` from a palette entry, which no longer compiles
-  - The first two still name `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it
-    no longer matches the code around it
+- Delete the commented-out code in `ra/wol/wol_logn.cc:439` and `ra/wol/wolapiob.cc:801`
+  - Both still name `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it no
+    longer matches the code around it
 - Consider stepping the source coordinates incrementally in `ScaleRotateShape()`
   (`ra/assets/shape_draw.cc`)
   - Each destination pixel recomputes `bx`/`by` with four multiplies; adding a constant per x (DDA)
@@ -493,6 +491,44 @@
     the tool is kept, or delete the tool
   - The plan's Outcome says TD's `& TPF_6PT_GRAD` set is "the first six" fonts; it is indices 2-7
     (8-point, 3-point, LED, VCR, gradient, map)
+- Follow up the `ra/core/fading_table_builders` modernization (`71420e43`..`dec8840c`, formerly
+  `ra/core/jshell`)
+  - Make `PaletteClass::Closest_Color()` (`ra/assets/palette.cc:63`) a free function over
+    `engine::gfx::Palette`: it reads only `at()` and `BuildClosestColorFadingTable()` is its one
+    caller, which could then drop `PaletteClass` and `ra/assets/palette.h` (4 files, same bytes)
+  - Move `TranslucentColor`, `BuildTranslucencyTableWith()` and `BuildTranslucencyTable()` next to
+    `TranslucencyTable` in `engine/gfx/fading_table.h`: they use nothing from Red Alert (~5 files,
+    same bytes); Tiberian Dawn reads its translucency tables from files, so this is for cohesion,
+    not sharing
+  - `BuildShadowFadingTable()` and `td::ConquerBuildFadingTable()` (`td/core/support.cc:21`) are one
+    mechanism written twice with different rules: RA fades colors 1..240 to the closest of 240..254
+    with `PaletteColor::FadedToward()`, TD fades 1..239 to 240..255 with `(diff * (frac / 2)) >> 7`.
+    A shared engine builder needs the ranges as parameters and a test that each game's table bytes
+    stay the same (~6 files); a plain merge changes the shadows on screen
+  - `SpecialGhost` is assembled by hand in both games (`ra/map/display.cc:477`,
+    `td/map/display.cc:484`): a zeroed lookup and one fade copied to `subspan(256)`. Either give the
+    engine a helper for "every color through one fade", or make it a plain `FadingTable` after
+    checking `ra/assets/shape_draw.cc:125`, which passes the whole table
+  - `UShadowColsAir` (`ra/map/display.cc`) fills a `target_color` and `fade_ratio` its fade ignores;
+    `BuildTranslucencyTableWith()` could take the source colors alone
+  - `BuildTranslucencyTable()` and `BuildShadowTranslucencyTable()` differ only in the fade builder
+    they call; kept apart for the names at their 6 call sites
+  - Names to confirm: `BuildClosestColorFadingTable` (it could instead be folded into the engine's
+    `BuildFadingTable()`, which changes `FadingBrighten`/`FadingWayDark` on screen),
+    `BuildTranslucencyTableWith` (or an overload of `BuildTranslucencyTable`), and whether the file
+    belongs in `ra/assets/` beside `palette.h` instead of `ra/core/`
+  - Rename `td::ConquerBuildFadingTable()` and `td::Set_Window()` (`td/core/jshell.cc:84`,
+    `td/core/support.cc:21`) when Tiberian Dawn's files get the same pass
+  - `ra/startup/startup.cc:365-368` sets the `WINDOW_EDITOR` width and height that the scenario
+    editor (`ra/editor/mapedplc.cc:392`, `mapedtm.cc:910`) overwrites before every read; delete the
+    two stores
+  - The column comments in `engine/gfx/text_window.h:13,15` ("X byte position", "width in bytes")
+    are true for Tiberian Dawn only; Red Alert stores pixels
+  - `ra/data/udata.cc:66`, `adata.cc`, `bbdata.cc` and `idata.cc` keep `engine/file/disk_file.h`
+    under an `IWYU pragma: keep` for a "debug-only loose-file override below" that no longer exists;
+    remove the include if the strict build agrees
+  - Replace `PaletteClass::COLOR_COUNT` (`ra/assets/palette.h:50`) with
+    `engine::gfx::Palette::kColorCount`, which it aliases
 
 ## Testing
 
