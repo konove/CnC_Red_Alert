@@ -98,6 +98,8 @@
 #include "engine/crypto/crc.h"
 #include "engine/crypto/int.h"
 #include "engine/crypto/pk.h"
+#include "engine/crypto/sha.h"
+#include "engine/crypto/sha1_sink.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
@@ -153,6 +155,7 @@ IniFile::IniSection::~IniSection() = default;
  *Updates the index list.                                                  *
  *=============================================================================================*/
 bool IniFile::Clear(const char* section, const char* entry) {
+  Invalidate_Message_Digest();
   if (section == nullptr) {
     SectionList.clear();
     SectionIndex.clear();
@@ -206,6 +209,7 @@ bool IniFile::Load(ByteStream& file) {
  * HISTORY: * 07/10/1996 JLB : Created. *
  *=============================================================================================*/
 bool IniFile::Load(ByteSource& file) {
+  Invalidate_Message_Digest();
   bool end_of_file = false;
   char buffer[kMaxLineLength];
 
@@ -517,6 +521,7 @@ bool IniFile::Put_UUBlock(const char* section, std::span<const std::byte> block,
     return false;
   }
 
+  Invalidate_Message_Digest();
   Clear(section);
 
   SpanSource straw(block.first(base::ToSize(len)));
@@ -619,6 +624,7 @@ bool IniFile::Put_TextBlock(const char* section, const char* text) {
     return false;
   }
 
+  Invalidate_Message_Digest();
   Clear(section);
   std::string_view remaining(text == nullptr ? "" : text);
 
@@ -910,6 +916,7 @@ bool IniFile::Put_String(const char* section, const char* entry,
     return false;
   }
 
+  Invalidate_Message_Digest();
   IniSection* secptr = Find_Section(section);
 
   if (secptr == nullptr) {
@@ -1085,6 +1092,65 @@ IniFile::IniEntry* IniFile::IniSection::Find_Entry(const char* entry) const {
     }
   }
   return nullptr;
+}
+
+IniLoadResult IniFile::LoadVerified(ByteStream& file) {
+  StreamSource fs(file);
+  return LoadVerified(fs);
+}
+
+IniLoadResult IniFile::LoadVerified(ByteSource& file) {
+  if (!Load(file)) {
+    return IniLoadResult::kFailed;
+  }
+
+  Sha1Digest embedded{};
+  const int len = Get_UUBlock("Digest", base::ObjectBytes(embedded),
+                              static_cast<int>(embedded.size()));
+  if (len <= 0) {
+    return IniLoadResult::kLoaded;
+  }
+
+  // The digest covers the data without its own section.
+  Clear("Digest");
+  Calculate_Message_Digest();
+  return embedded == Digest ? IniLoadResult::kLoaded
+                            : IniLoadResult::kDigestMismatch;
+}
+
+bool IniFile::SaveWithDigest(ByteStream& file) const {
+  StreamSink fp(file);
+  return SaveWithDigest(fp);
+}
+
+// The digest section is built in a scratch database and saved after the data,
+// which is what appending it to this one would produce.
+bool IniFile::SaveWithDigest(ByteSink& pipe) const {
+  Calculate_Message_Digest();
+  IniFile digest_section;
+  digest_section.Put_UUBlock("Digest", base::ObjectBytes(Digest),
+                             static_cast<int>(Digest.size()));
+  return Save(pipe) && digest_section.Save(pipe);
+}
+
+int IniFile::Get_Unique_ID() const {
+  if (!IsDigestPresent) {
+    Calculate_Message_Digest();
+  }
+
+  CrcEngine crc;
+  for (const std::byte byte : Digest) {
+    crc.Update(std::to_integer<uint8_t>(byte));
+  }
+  return static_cast<int>(crc.Value());
+}
+
+void IniFile::Calculate_Message_Digest() const {
+  NullSink discard;
+  Sha1Sink sha(discard);
+  Save(sha);
+  Digest = sha.digest();
+  IsDigestPresent = true;
 }
 
 // The index slot goes first so no pointer to a destroyed entry is compared.

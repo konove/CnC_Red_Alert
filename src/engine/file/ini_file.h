@@ -52,11 +52,19 @@
 #include "base/fixed.h"
 #include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"
+#include "engine/crypto/sha.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 
 namespace engine::file {
+
+// The outcome of IniFile::LoadVerified().
+enum class IniLoadResult {
+  kFailed,          // Nothing usable was read.
+  kLoaded,          // Read; the digest was absent or matched.
+  kDigestMismatch,  // Read, but the embedded digest does not match the data.
+};
 
 /*
 **	This is an INI database handler class. It handles a database with a disk
@@ -78,6 +86,20 @@ class IniFile {
   bool Load(ByteSource& file);
   bool Save(ByteStream& file) const;
   bool Save(ByteSink& pipe) const;
+
+  // Loads the database like Load(). A [Digest] section, if present, is
+  // removed and compared with the SHA-1 of the remaining data; the data is
+  // kept either way.
+  IniLoadResult LoadVerified(ByteStream& file);
+  IniLoadResult LoadVerified(ByteSource& file);
+  // Saves the database followed by a [Digest] section holding the SHA-1 of the
+  // data. The database itself is left unchanged; it must not already hold a
+  // [Digest] section, which LoadVerified() always removes.
+  bool SaveWithDigest(ByteStream& file) const;
+  bool SaveWithDigest(ByteSink& pipe) const;
+
+  // A CRC of the data's SHA-1; equal for equal databases.
+  [[nodiscard]] int Get_Unique_ID() const;
 
   /*
   **	Erase all data within this INI file manager.
@@ -203,6 +225,16 @@ class IniFile {
 
   absl::flat_hash_map<uint32_t, IniSection*>
       SectionIndex;  // By CRC of the name.
+
+ private:
+  void Calculate_Message_Digest() const;
+  void Invalidate_Message_Digest() { IsDigestPresent = false; }
+
+  // The digest is a lazily computed cache of the database contents: const
+  // queries such as Get_Unique_ID() fill it on first use, and every mutation
+  // invalidates it.
+  mutable bool IsDigestPresent : 1 {false};
+  mutable Sha1Digest Digest{};
 };
 
 }  // namespace engine::file

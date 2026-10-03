@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -93,6 +94,64 @@ TEST(IniFileTest, ClearingASectionRemovesItsDuplicates) {
   EXPECT_FALSE(ini.Section_Present("S"));
   EXPECT_EQ(ini.Section_Count(), 1);
   EXPECT_EQ(ini.Get_Int("T", "M", 0), 5);
+}
+
+TEST(IniFileTest, UniqueIdFollowsEdits) {
+  IniFile ini;
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  const int before = ini.Get_Unique_ID();
+  ASSERT_TRUE(ini.Put_Int("S", "K", 2));
+  EXPECT_NE(ini.Get_Unique_ID(), before);
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  EXPECT_EQ(ini.Get_Unique_ID(), before);
+}
+
+TEST(IniFileTest, UniqueIdFollowsRemovals) {
+  IniFile ini;
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  ASSERT_TRUE(ini.Put_Int("S", "L", 2));
+  const int both = ini.Get_Unique_ID();
+  ASSERT_TRUE(ini.Clear("S", "L"));
+  EXPECT_NE(ini.Get_Unique_ID(), both);
+  ASSERT_TRUE(ini.Clear("S"));
+  const int empty = IniFile().Get_Unique_ID();
+  EXPECT_EQ(ini.Get_Unique_ID(), empty);
+}
+
+TEST(IniFileTest, DigestRoundTripsAndDetectsEdits) {
+  IniFile ini;
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
+  ASSERT_TRUE(ini.SaveWithDigest(sink));
+  EXPECT_FALSE(ini.Section_Present("Digest"));
+
+  IniFile same;
+  SpanSource source(bytes);
+  EXPECT_EQ(same.LoadVerified(source), IniLoadResult::kLoaded);
+  EXPECT_FALSE(same.Section_Present("Digest"));
+
+  std::string text;
+  for (const std::byte byte : bytes) {
+    text.push_back(static_cast<char>(byte));
+  }
+  text.replace(text.find("K=1"), 3, "K=2");
+  IniFile edited;
+  SpanSource edited_source(std::as_bytes(std::span(text)));
+  EXPECT_EQ(edited.LoadVerified(edited_source), IniLoadResult::kDigestMismatch);
+  EXPECT_EQ(edited.Get_Int("S", "K", 0), 2);  // still loaded
+}
+
+TEST(IniFileTest, LoadVerifiedAcceptsDataWithoutADigest) {
+  IniFile ini;
+  LoadText(ini, "[S]\nK=1\n");
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
+  ASSERT_TRUE(ini.Save(sink));
+  IniFile loaded;
+  SpanSource source(bytes);
+  EXPECT_EQ(loaded.LoadVerified(source), IniLoadResult::kLoaded);
+  EXPECT_EQ(loaded.Get_Int("S", "K", 0), 1);
 }
 
 }  // namespace
