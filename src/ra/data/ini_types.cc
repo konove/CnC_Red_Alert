@@ -211,12 +211,11 @@ bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
  *=============================================================================================*/
 uint32_t GetOwners(const engine::file::IniFile& ini, std::string_view section,
                    std::string_view entry, uint32_t defvalue) {
-  char buffer[128];
   uint32_t ownable = defvalue;
-
-  if (ini.GetString(section, entry, "", buffer)) {
+  std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
     ownable = 0;
-    base::Tokenizer tokens(buffer, ",");
+    base::Tokenizer tokens(value.data(), ",");
     while (const char* name = tokens.Next()) {
       ownable |= Owner_From_Name(name);
     }
@@ -306,10 +305,8 @@ bool PutOwners(engine::file::IniFile& ini, std::string_view section,
 game::ArmorType GetArmorType(const engine::file::IniFile& ini,
                              std::string_view section, std::string_view entry,
                              game::ArmorType defvalue) {
-  char buffer[128];
-
-  ini.GetString(section, entry, ArmorName.at(defvalue), buffer);
-  return Armor_From_Name(buffer);
+  return Armor_From_Name(
+      ini.GetString(section, entry, ArmorName.at(defvalue)).c_str());
 }
 
 /***********************************************************************************************
@@ -359,10 +356,7 @@ bool PutArmorType(engine::file::IniFile& ini, std::string_view section,
  *=============================================================================================*/
 VocType GetVocType(const engine::file::IniFile& ini, std::string_view section,
                    std::string_view entry, VocType defvalue) {
-  char buffer[128];
-
-  ini.GetString(section, entry, VocName(defvalue), buffer);
-  return VocFromName(buffer);
+  return VocFromName(ini.GetString(section, entry, VocName(defvalue)).c_str());
 }
 
 /***********************************************************************************************
@@ -415,10 +409,8 @@ bool PutVocType(engine::file::IniFile& ini, std::string_view section,
  *=============================================================================================*/
 AnimType GetAnimType(const engine::file::IniFile& ini, std::string_view section,
                      std::string_view entry, AnimType defvalue) {
-  char buffer[128];
-
-  ini.GetString(section, entry, Anim_Name(defvalue), buffer);
-  return Anim_From_Name(buffer);
+  return Anim_From_Name(
+      ini.GetString(section, entry, Anim_Name(defvalue)).c_str());
 }
 
 /***********************************************************************************************
@@ -451,14 +443,11 @@ bool PutAnimType(engine::file::IniFile& ini, std::string_view section,
 
 UnitType GetUnitType(const engine::file::IniFile& ini, std::string_view section,
                      std::string_view entry, UnitType defvalue) {
-  char buffer[128];
-
   const char* def = "<none>";
   if (defvalue != UNIT_NONE) {
     def = UnitTypeClass::As_Reference(defvalue).Name();
   }
-  ini.GetString(section, entry, def, buffer);
-  return UnitTypeClass::From_Name(buffer);
+  return UnitTypeClass::From_Name(ini.GetString(section, entry, def).c_str());
 }
 
 bool PutUnitType(engine::file::IniFile& ini, std::string_view section,
@@ -494,10 +483,9 @@ bool PutUnitType(engine::file::IniFile& ini, std::string_view section,
 WeaponType GetWeaponType(const engine::file::IniFile& ini,
                          std::string_view section, std::string_view entry,
                          WeaponType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return Weapon_From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return Weapon_From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -553,12 +541,11 @@ bool PutWeaponType(engine::file::IniFile& ini, std::string_view section,
 WarheadType GetWarheadType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            WarheadType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
     for (const WarheadType wh : magic_enum::enum_values<WarheadType>()) {
       if (absl::EqualsIgnoreCase(WarheadTypeClass::As_Pointer(wh)->Name(),
-                                 buffer)) {
+                                 value)) {
         return wh;
       }
     }
@@ -617,10 +604,9 @@ bool PutWarheadType(engine::file::IniFile& ini, std::string_view section,
 OverlayType GetOverlayType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            OverlayType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return OverlayTypeClass::From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return OverlayTypeClass::From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -674,12 +660,11 @@ bool PutOverlayType(engine::file::IniFile& ini, std::string_view section,
 BulletType GetBulletType(const engine::file::IniFile& ini,
                          std::string_view section, std::string_view entry,
                          BulletType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
     for (const BulletType proj : magic_enum::enum_values<BulletType>()) {
       if (absl::EqualsIgnoreCase(BulletTypeClass::As_Reference(proj).Name(),
-                                 buffer)) {
+                                 value)) {
         //			if
         //(absl::EqualsIgnoreCase(ProjectileNames[proj], buffer))
         //{
@@ -746,10 +731,9 @@ bool PutBulletType(engine::file::IniFile& ini, std::string_view section,
 HousesType GetHousesType(const engine::file::IniFile& ini,
                          std::string_view section, std::string_view entry,
                          HousesType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return HouseTypeClass::From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return HouseTypeClass::From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -801,11 +785,10 @@ bool PutHousesType(engine::file::IniFile& ini, std::string_view section,
  *=============================================================================================*/
 VQType GetVQType(const engine::file::IniFile& ini, std::string_view section,
                  std::string_view entry, VQType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
     for (const VQType vq : magic_enum::enum_values<VQType>()) {
-      if (absl::EqualsIgnoreCase(buffer, VQName.at(vq))) {
+      if (absl::EqualsIgnoreCase(value, VQName.at(vq))) {
         return vq;
       }
     }
@@ -863,10 +846,9 @@ bool PutVQType(engine::file::IniFile& ini, std::string_view section,
 TheaterType GetTheaterType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            TheaterType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return Theater_From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return Theater_From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -915,10 +897,9 @@ bool PutTheaterType(engine::file::IniFile& ini, std::string_view section,
 TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
                                  std::string_view section,
                                  std::string_view entry) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return TriggerTypeClass::From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return TriggerTypeClass::From_Name(value.c_str());
   }
   return nullptr;
 }
@@ -969,10 +950,9 @@ bool PutTriggerType(engine::file::IniFile& ini, std::string_view section,
 ThemeType GetThemeType(const engine::file::IniFile& ini,
                        std::string_view section, std::string_view entry,
                        ThemeType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return ThemeClass::From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return ThemeClass::From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -1026,10 +1006,9 @@ bool PutThemeType(engine::file::IniFile& ini, std::string_view section,
 SourceType GetSourceType(const engine::file::IniFile& ini,
                          std::string_view section, std::string_view entry,
                          SourceType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return Source_From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return Source_From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -1082,10 +1061,9 @@ bool PutSourceType(engine::file::IniFile& ini, std::string_view section,
 CrateType GetCrateType(const engine::file::IniFile& ini,
                        std::string_view section, std::string_view entry,
                        CrateType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return Crate_From_Name(buffer);
+  const std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return Crate_From_Name(value.c_str());
   }
   return defvalue;
 }
@@ -1137,10 +1115,10 @@ bool PutCrateType(engine::file::IniFile& ini, std::string_view section,
 TerrainType GetTerrainType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            TerrainType defvalue) {
-  char buffer[128];
-
-  if (ini.GetString(section, entry, "", buffer)) {
-    return TerrainTypeClass::From_Name(base::Tokenizer(buffer, ",").Next());
+  std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
+    return TerrainTypeClass::From_Name(
+        base::Tokenizer(value.data(), ",").Next());
   }
   return defvalue;
 }
@@ -1195,12 +1173,11 @@ bool PutTerrainType(engine::file::IniFile& ini, std::string_view section,
 uint64_t GetBuildings(const engine::file::IniFile& ini,
                       std::string_view section, std::string_view entry,
                       uint64_t defvalue) {
-  char buffer[128];
   uint64_t pre = 0;
-
-  if (ini.GetString(section, entry, "", buffer)) {
+  std::string value = ini.GetString(section, entry, "");
+  if (!value.empty()) {
     pre = 0;
-    base::Tokenizer tokens(buffer, ",");
+    base::Tokenizer tokens(value.data(), ",");
     while (const char* token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {

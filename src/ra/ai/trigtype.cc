@@ -2054,8 +2054,6 @@ AttachType TriggerTypeClass::Attaches_To() const {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
-
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
@@ -2069,12 +2067,12 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get the trigger entry.
     */
-    ini.GetString(INI_Name(), entry, "", buf);
+    std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In(entry, buf);
+    trigger->Fill_In(entry, value.data());
   }
 
   if (TheWorld().new_ini_format() < 2) {

@@ -61,7 +61,7 @@
 #include <cstring>
 #include <ctime>  // for station ID computation
 #include <memory>
-#include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -489,7 +489,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
   engine::file::IniFile ini;
   if (const auto fc = OpenDiskFile(kConfigFileName); fc && ini.Load(*fc)) {
     //	Get the player's last-used Handle
-    ini.GetString("MultiPlayer", "Handle", "Noname", Handle);
+    base::SafeCopy(Handle, ini.GetString("MultiPlayer", "Handle", "Noname"));
 
     //	Get the player's last-used Color
     PrefColor =
@@ -500,8 +500,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
     CurPhoneIdx = ini.GetInt("MultiPlayer", "PhoneIndex", -1);
 
     //	Read in default serial settings
-    ini.GetString("SerialDefaults", "ModemName", "NoName",
-                  SerialDefaults.ModemName);
+    base::SafeCopy(SerialDefaults.ModemName,
+                   ini.GetString("SerialDefaults", "ModemName", "NoName"));
     if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
       SerialDefaults.ModemName[0] = 0;
     }
@@ -515,12 +515,15 @@ void SessionClass::Read_MultiPlayer_Settings() {
     SerialDefaults.HardwareFlowControl =
         ini.GetInt("SerialDefaults", "HardwareFlowControl", 1) != 0;
 
-    ini.GetString("SerialDefaults", "DialMethod", "T", std::span(buf).first(2));
+    // Only the first character names the method.
+    const std::string dial_method =
+        ini.GetString("SerialDefaults", "DialMethod", "T").substr(0, 1);
 
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
       if (absl::EqualsIgnoreCase(
-              buf, DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
+              dial_method,
+              DialMethodCheck.at(static_cast<DialMethodType>(i)))) {
         SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
         break;
       }
@@ -537,8 +540,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
     SerialDefaults.CallWaitStringIndex =
         ini.GetInt("SerialDefaults", "CallWaitStringIndex", kCallWaitCustom);
 
-    ini.GetString("SerialDefaults", "CallWaitString", "",
-                  SerialDefaults.CallWaitString);
+    base::SafeCopy(SerialDefaults.CallWaitString,
+                   ini.GetString("SerialDefaults", "CallWaitString", ""));
 
     if (SerialDefaults.IRQ == 0 || SerialDefaults.Baud == 0) {
       SerialDefaults.Port = 0;
@@ -549,8 +552,9 @@ void SessionClass::Read_MultiPlayer_Settings() {
     const int initcount = ini.EntryCount("InitStrings");
     for (int index = 0; index < initcount; index++) {
       auto entry = std::make_unique<InitString>();
-      ini.GetString("InitStrings", ini.EntryName("InitStrings", index), "",
-                    *entry);
+      base::SafeCopy(*entry,
+                     ini.GetString("InitStrings",
+                                   ini.EntryName("InitStrings", index), ""));
       std::ranges::transform(base::MutableCString(entry->data()), entry->data(),
                              absl::ascii_toupper);
       InitStrings.Add(std::move(entry));
@@ -571,10 +575,11 @@ void SessionClass::Read_MultiPlayer_Settings() {
       auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
       //	Read the entire entry in
-      ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "", buf);
+      std::string phone_text =
+          ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
 
       //	Extract name, phone # & serial port settings
-      base::Tokenizer tokens(buf, "|");
+      base::Tokenizer tokens(phone_text.data(), "|");
       char* tokenptr = tokens.Next();  // ptr to token
       if (tokenptr) {
         base::SafeCopy(phone->Name, tokenptr);
@@ -716,33 +721,33 @@ void SessionClass::Read_MultiPlayer_Settings() {
     //	Read special recording playback values, to help find sync bugs
     TrapFrame = ini.GetInt("SyncBug", "Frame", 0x7fffffff);
 
-    ini.GetString("SyncBug", "Type", "NONE", std::span(buf).first(80));
+    const std::string trap_type = ini.GetString("SyncBug", "Type", "NONE");
 
-    if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
+    if (absl::EqualsIgnoreCase(trap_type, "AIRCRAFT")) {
       TrapObjType = RTTI_AIRCRAFT;
-    } else if (absl::EqualsIgnoreCase(buf, "ANIM")) {
+    } else if (absl::EqualsIgnoreCase(trap_type, "ANIM")) {
       TrapObjType = RTTI_ANIM;
-    } else if (absl::EqualsIgnoreCase(buf, "BUILDING")) {
+    } else if (absl::EqualsIgnoreCase(trap_type, "BUILDING")) {
       TrapObjType = RTTI_BUILDING;
-    } else if (absl::EqualsIgnoreCase(buf, "BULLET")) {
+    } else if (absl::EqualsIgnoreCase(trap_type, "BULLET")) {
       TrapObjType = RTTI_BULLET;
-    } else if (absl::EqualsIgnoreCase(buf, "INFANTRY")) {
+    } else if (absl::EqualsIgnoreCase(trap_type, "INFANTRY")) {
       TrapObjType = RTTI_INFANTRY;
-    } else if (absl::EqualsIgnoreCase(buf, "UNIT")) {
+    } else if (absl::EqualsIgnoreCase(trap_type, "UNIT")) {
       TrapObjType = RTTI_UNIT;
     } else {
       TrapObjType = RTTI_NONE;
     }
 
-    ini.GetString("SyncBug", "Coord", "0", std::span(buf).first(80));
-    TrapCoord = Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
+    TrapCoord = Coordinate::FromPacked(
+        base::ParseHexOr<uint32_t>(ini.GetString("SyncBug", "Coord", "0"), 0));
 
-    ini.GetString("SyncBug", "Target", "0", std::span(buf).first(80));
-    TrapTarget = Target::FromPacked(
-        static_cast<int32_t>(base::ParseHexOr<uint32_t>(buf, 0)));
+    TrapTarget =
+        Target::FromPacked(static_cast<int32_t>(base::ParseHexOr<uint32_t>(
+            ini.GetString("SyncBug", "Target", "0"), 0)));
 
-    ini.GetString("SyncBug", "Cell", "0", std::span(buf).first(80));
-    const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(buf, 0));
+    const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(
+        ini.GetString("SyncBug", "Cell", "0"), 0));
     if (cell.index() != 0) {
       TrapCell = &TheMap().at(cell);
     }
@@ -894,10 +899,10 @@ void SessionClass::Read_Scenario_Descriptions() {
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
       const char* fname = ini.EntryName("Missions", index);
-      char buffer[128];
-      ini.GetString("Missions", fname, "", buffer);
-      Scenarios.Add(std::make_unique<MultiMission>(
-          fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
+      const std::string description = ini.GetString("Missions", fname, "");
+      Scenarios.Add(
+          std::make_unique<MultiMission>(fname, description.c_str(), nullptr,
+                                         true, IsMissionCounterstrike(fname)));
     }
   /*		//	ajw Copy file for viewing.
                   GameFile fileCopy( "msns_pkt.txt" );
@@ -924,11 +929,11 @@ void SessionClass::Read_Scenario_Descriptions() {
     const int count = ini.EntryCount("Missions");
     for (int index = 0; index < count; index++) {
       const char* fname = ini.EntryName("Missions", index);
-      char buffer[128];
-      ini.GetString("Missions", fname, "", buffer);
+      const std::string description = ini.GetString("Missions", fname, "");
 
-      Scenarios.Add(std::make_unique<MultiMission>(
-          fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
+      Scenarios.Add(
+          std::make_unique<MultiMission>(fname, description.c_str(), nullptr,
+                                         true, IsMissionCounterstrike(fname)));
     }
   }
 
@@ -948,10 +953,10 @@ void SessionClass::Read_Scenario_Descriptions() {
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
         const char* fname = ini.EntryName("Missions", index);
-        char buffer[128];
-        ini.GetString("Missions", fname, "", buffer);
+        const std::string description = ini.GetString("Missions", fname, "");
         Scenarios.Add(std::make_unique<MultiMission>(
-            fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
+            fname, description.c_str(), nullptr, true,
+            IsMissionCounterstrike(fname)));
       }
       /*ajw Copy file for viewing.
                               GameFile fileCopy( "cs_pkt.txt" );
@@ -974,10 +979,10 @@ void SessionClass::Read_Scenario_Descriptions() {
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
         const char* fname = ini.EntryName("Missions", index);
-        char buffer[128];
-        ini.GetString("Missions", fname, "", buffer);
+        const std::string description = ini.GetString("Missions", fname, "");
         Scenarios.Add(std::make_unique<MultiMission>(
-            fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
+            fname, description.c_str(), nullptr, true,
+            IsMissionCounterstrike(fname)));
       }
     }
   }
@@ -987,9 +992,6 @@ void SessionClass::Read_Scenario_Descriptions() {
   * appropriate entries
   **  into the scenario list list
   */
-  char name_buffer[128];
-  char digest_buffer[32];
-
   for (const FoundFile& found : FindFiles("*.MPR")) {
     // debugprint( "Found MPR '%s'\n", file_name );
     engine::file::IniFile ini;
@@ -997,10 +999,10 @@ void SessionClass::Read_Scenario_Descriptions() {
       ini.Load(*mission_file);
     }
 
-    ini.GetString("Basic", "Name", "No Name", name_buffer);
-    ini.GetString("Digest", "1", "No Digest", digest_buffer);
+    const std::string name = ini.GetString("Basic", "Name", "No Name");
+    const std::string digest = ini.GetString("Digest", "1", "No Digest");
     Scenarios.Add(std::make_unique<MultiMission>(
-        found.name.c_str(), name_buffer, digest_buffer,
+        found.name.c_str(), name.c_str(), digest.c_str(),
         ini.GetBool("Basic", "Official", false), false));
   }
 }

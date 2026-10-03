@@ -4355,7 +4355,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
   // length=%d, digest=%s, official=%d\n", description, filename, length,
   // digest, official);
 
-  char digest_buffer[32];
+  std::string digest_buffer;
   /*
   ** Scan through the scenario list looking for scenarios with matching
   *descriptions.
@@ -4385,8 +4385,8 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
           */
           engine::file::IniFile ini;
           ini.Load(*file);
-          ini.GetString("Digest", "1", "No digest here mate. Nope.",
-                        digest_buffer);
+          digest_buffer =
+              ini.GetString("Digest", "1", "No digest here mate. Nope.");
         }
         // debugprint("digest = %s, digest_buffer = %s.\n", digest,
         // digest_buffer);

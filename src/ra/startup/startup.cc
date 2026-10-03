@@ -39,7 +39,7 @@
 // The test that links this file defines RA_NO_ENTRY_POINT; these headers
 // serve only main() and the two helpers it calls.
 #ifndef RA_NO_ENTRY_POINT
-#include <array>
+#include <array>  // IWYU pragma: keep (WinMain)
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -56,7 +56,6 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/bytes_of.h"
-#include "base/numeric.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/ini_file.h"
@@ -199,12 +198,9 @@ static void ReadConfigOptions(const engine::file::IniFile& ini,
   // DestNet names a network on the far side of an IPX bridge.
   std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
-    std::array<char, 512> dest_net{};
-    // GetString() returns the length of the trimmed value; 0 if absent.
-    const int length = ini.GetString("Options", "DestNet", "", dest_net);
-    if (length > 0) {
-      bridge_net =
-          ParseDestNet(std::string_view(dest_net.data(), base::ToSize(length)));
+    const std::string dest_net = ini.GetString("Options", "DestNet", "");
+    if (!dest_net.empty()) {
+      bridge_net = ParseDestNet(dest_net);
     }
   }
   if (bridge_net.has_value()) {

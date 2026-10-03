@@ -52,6 +52,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -305,14 +306,12 @@ void SmudgeClass::Disown(Cell cell) {
  *value as well.                                      *
  *=============================================================================================*/
 void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];  // Working string staging buffer.
-
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.GetString(INI_Name(), entry, "", buf);
-    base::Tokenizer tokens(buf, ",");
+    std::string value = ini.GetString(INI_Name(), entry, "");
+    base::Tokenizer tokens(value.data(), ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {

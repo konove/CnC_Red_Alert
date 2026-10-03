@@ -121,6 +121,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -5795,8 +5796,6 @@ void BuildingClass::Update_Radar_Spied() {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
-
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
@@ -5804,12 +5803,12 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get a building entry.
     */
-    ini.GetString(INI_Name(), entry, "", buf);
+    std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(value.data(), ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 

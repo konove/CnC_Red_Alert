@@ -1753,8 +1753,6 @@ void TeamTypeClass::Detach(Target target, bool /*unused*/) {
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
 void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[500];        // INI entry buffer
-
   const int len = ini.EntryCount(INI_Name());
 
   /*
@@ -1764,8 +1762,8 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
       const char* entry = ini.EntryName(INI_Name(), index);
-      ini.GetString(INI_Name(), entry, "", buf);
-      team->Fill_In(entry, buf);
+      std::string value = ini.GetString(INI_Name(), entry, "");
+      team->Fill_In(entry, value.data());
     }
   }
 }

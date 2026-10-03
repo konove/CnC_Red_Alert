@@ -4,7 +4,6 @@
 
 #include <span>
 #include <string>
-#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -65,15 +64,10 @@ void Assets::LoadTutorialText() {
   }
 
   for (int index = 0; index < kTutorialTextCount; ++index) {
-    char buffer[128];
     char entry[10];
     absl::SNPrintF(entry, sizeof(entry), "%d", index);
-    std::string& text = base::At(std::span(tutorial_text_), index);
-    if (ini.GetString("Tutorial", entry, "", buffer)) {
-      text = std::string_view(buffer);
-    } else {
-      text.clear();
-    }
+    base::At(std::span(tutorial_text_), index) =
+        ini.GetString("Tutorial", entry, "");
   }
 }
 

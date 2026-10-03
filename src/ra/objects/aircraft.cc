@@ -114,6 +114,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -625,14 +626,12 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void AircraftClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
-
   const int counter = ini.EntryCount(INI_Name());
   for (int index = 0; index < counter; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.GetString(INI_Name(), entry, "", std::span(buf).first(sizeof(buf) - 1));
-    base::Tokenizer tokens(buf, ",");
+    std::string value = ini.GetString(INI_Name(), entry, "");
+    base::Tokenizer tokens(value.data(), ",");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {

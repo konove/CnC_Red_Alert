@@ -108,6 +108,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -4706,16 +4707,14 @@ Target UnitClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
-
   const int len = ini.EntryCount(INI_Name());
 
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.GetString(INI_Name(), entry, "", buf);
+    std::string value = ini.GetString(INI_Name(), entry, "");
 
-    base::Tokenizer tokens(buf, ",\r\n");
+    base::Tokenizer tokens(value.data(), ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {

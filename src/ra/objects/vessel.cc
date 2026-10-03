@@ -72,6 +72,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -1968,14 +1969,12 @@ bool VesselClass::Is_Allowed_To_Recloak() const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
-
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    ini.GetString(INI_Name(), entry, "", buf);
-    base::Tokenizer tokens(buf, ",\r\n");
+    std::string value = ini.GetString(INI_Name(), entry, "");
+    base::Tokenizer tokens(value.data(), ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Vessel house.
     if (inhouse != HOUSE_NONE) {

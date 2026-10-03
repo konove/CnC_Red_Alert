@@ -102,7 +102,7 @@ void ReadScenarioName(ByteStream& file, std::span<char> name) {
   SpanSource source(std::as_bytes(std::span(text)));
   engine::file::IniFile scenario;
   scenario.Load(source);
-  scenario.GetString("Basic", "Name", "x", name);
+  base::SafeCopy(name, scenario.GetString("Basic", "Name", "x"));
 }
 
 }  // namespace

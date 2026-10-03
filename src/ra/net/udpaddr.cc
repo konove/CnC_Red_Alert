@@ -131,22 +131,23 @@ bool Get_Broadcast_Addresses() {
   ** Add all the ip addresses from the ini file to the list box.
   */
   engine::file::IniFile ip_ini;
-  int res = 0;
+  bool found = false;
 
   if (const auto fc = OpenGameFile("IP.INI"); fc && ip_ini.Load(*fc)) {
     int entry = 0;
     char entry_name[16];
     do {
       entry++;
-      // The list copies the text, so one buffer serves every entry.
-      char temp[128];
       absl::SNPrintF(entry_name, sizeof(entry_name), "%d", entry);
-      res = ip_ini.GetString("IP_ADDRESSES", entry_name, "", temp);
-      if (res) {
-        ip_address_list.Add_Item(temp);
-        DLOG(INFO) << "Adding address " << temp;
+      // The list copies the text.
+      const std::string address =
+          ip_ini.GetString("IP_ADDRESSES", entry_name, "");
+      found = !address.empty();
+      if (found) {
+        ip_address_list.Add_Item(address.c_str());
+        DLOG(INFO) << "Adding address " << address;
       }
-    } while (res);
+    } while (found);
   }
   ip_address_list.Flag_To_Redraw();
 

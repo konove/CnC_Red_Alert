@@ -46,6 +46,7 @@
 #include "ra/objects/warhead.h"
 
 #include <cstring>
+#include <string>
 
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
@@ -173,10 +174,10 @@ bool WarheadTypeClass::Read_INI(engine::file::IniFile& ini) {
     ExplosionSet = ini.GetInt(Name(), "Explosion", ExplosionSet);
     InfantryDeath = ini.GetInt(Name(), "InfDeath", InfantryDeath);
 
-    char buffer[128];
-    if (ini.GetString(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
-                      buffer)) {
-      base::Tokenizer tokens(buffer, ",");
+    std::string verses =
+        ini.GetString(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%");
+    if (!verses.empty()) {
+      base::Tokenizer tokens(verses.data(), ",");
       for (const game::ArmorType armor :
            magic_enum::enum_values<game::ArmorType>()) {
         Modifier.at(armor) = Fixed::FromString(tokens.Next());

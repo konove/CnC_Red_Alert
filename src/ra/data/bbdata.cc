@@ -49,6 +49,7 @@
 #include <cstddef>
 #include <filesystem>
 
+#include "base/strings/safe_string.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
@@ -256,7 +257,7 @@ bool BulletTypeClass::Read_INI(engine::file::IniFile& ini) {
     IsFaceless = !ini.GetBool(Name(), "Rotates", !IsFaceless);
     IsTranslucent = ini.GetBool(Name(), "Translucent", IsTranslucent);
     IsGigundo = ini.GetBool(Name(), "Gigundo", IsGigundo);
-    ini.GetString(Name(), "Image", "none", GraphicName);
+    base::SafeCopy(GraphicName, ini.GetString(Name(), "Image", "none"));
     return true;
   }
   return false;

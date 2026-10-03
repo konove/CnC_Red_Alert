@@ -59,6 +59,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include "base/enum_array.h"
 #include "base/strings/number_parse.h"
@@ -691,12 +692,13 @@ bool RulesClass::Powerups(engine::file::IniFile& ini) {
   static const char* const POWERUPS = "Powerups";
   if (ini.HasSection(POWERUPS)) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
-      char buffer[128];
-      if (ini.GetString(POWERUPS, CrateNames.at(crate), "0,NONE", buffer)) {
+      std::string value =
+          ini.GetString(POWERUPS, CrateNames.at(crate), "0,NONE");
+      if (!value.empty()) {
         /*
         **	Share odds.
         */
-        base::Tokenizer tokens(buffer, ",");
+        base::Tokenizer tokens(value.data(), ",");
         char* token = tokens.Next();
         if (token) {
           strtrim(base::MutableCString(token));
@@ -795,13 +797,13 @@ bool RulesClass::Themes(engine::file::IniFile& ini) {
   if (ini.HasSection(THEMECONTROL)) {
     for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
       if (ini.HasEntry(THEMECONTROL, ThemeClass::Base_Name(theme))) {
-        char buffer[128];
         int scen = 1;
         uint32_t owners =
             kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 
-        ini.GetString(THEMECONTROL, ThemeClass::Base_Name(theme), "", buffer);
-        base::Tokenizer tokens(buffer, ",");
+        std::string value =
+            ini.GetString(THEMECONTROL, ThemeClass::Base_Name(theme), "");
+        base::Tokenizer tokens(value.data(), ",");
         const char* token = tokens.Next();
         if (token != nullptr) {
           scen = base::ParseIntegerOr<int>(token, 0);

@@ -99,6 +99,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -3290,7 +3291,6 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(engine::file::IniFile& ini) {
-  char buf[128];
   game::DirType dir = game::DIR_N;
   TriggerTypeClass* tp = nullptr;
 
@@ -3301,12 +3301,12 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get an infantry entry
     */
-    ini.GetString(INI_Name(), entry, "", buf);
+    std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(buf, ",\n\r");
+    base::Tokenizer tokens(value.data(), ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {

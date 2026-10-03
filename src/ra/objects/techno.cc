@@ -151,6 +151,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -6566,18 +6567,16 @@ static inline int Scale_To_256(int val) {
  *=============================================================================================*/
 bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.HasSection(Name())) {
-    char buffer[256];
     const int id = ((static_cast<int>(RTTI) + 1) * 100) + ID;
 
-    ini.GetString(Name(), "Name", "", buffer);
-    if (!std::string_view(buffer).empty()) {
+    std::string name = ini.GetString(Name(), "Name", "");
+    if (!name.empty()) {
       if constexpr (!config::kIsEnglish) {
         for (int xx = 0; base::At(kNameOverrides, base::ToSize(xx)) != nullptr;
              xx++) {
           if ((std::string_view(base::At(kNameOverrides, base::ToSize(xx))) ==
-               buffer)) {
-            base::SafeCopy(buffer,
-                           base::At(kNameOverrides, base::ToSize(xx + 1)));
+               name)) {
+            name = base::At(kNameOverrides, base::ToSize(xx + 1));
             break;
           }
         }
@@ -6589,7 +6588,8 @@ bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
       for (int index = 0; index < std::ssize(TheWorld().name_override());
            index++) {
         if (base::At(std::span(TheWorld().name_override_id()), index) == 0) {
-          base::At(std::span(TheWorld().name_override()), index) = buffer;
+          base::At(std::span(TheWorld().name_override()), index) =
+              std::move(name);
           base::At(std::span(TheWorld().name_override_id()), index) = id;
           break;
         }
@@ -6629,7 +6629,7 @@ bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
     IsSelfHealing = ini.GetBool(Name(), "SelfHealing", IsSelfHealing);
     ROT = ini.GetInt(Name(), "ROT", ROT);
     MaxPassengers = ini.GetInt(Name(), "Passengers", MaxPassengers);
-    ini.GetString(Name(), "Image", GraphicName, GraphicName);
+    base::SafeCopy(GraphicName, ini.GetString(Name(), "Image", GraphicName));
     // TheKeyboard().Read();
 
     IsLeader = false;
