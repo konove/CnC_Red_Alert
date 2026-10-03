@@ -34,7 +34,6 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/fixed.h"
@@ -393,17 +392,8 @@ std::string IniFile::GetTextBlock(const std::string_view section) const {
 }
 
 bool IniFile::PutInt(const std::string_view section,
-                     const std::string_view entry, const int number,
-                     const int format) {
-  const auto bits = static_cast<unsigned int>(number);
-  switch (format) {
-    case 1:
-      return PutString(section, entry, absl::StrFormat("%Xh", bits));
-    case 2:
-      return PutString(section, entry, absl::StrFormat("$%X", bits));
-    default:
-      return PutString(section, entry, absl::StrCat(number));
-  }
+                     const std::string_view entry, const int number) {
+  return PutString(section, entry, absl::StrCat(number));
 }
 
 int IniFile::GetInt(const std::string_view section,
@@ -413,24 +403,6 @@ int IniFile::GetInt(const std::string_view section,
   return found == nullptr
              ? default_value
              : base::ParseIniIntegerOr(found->value, default_value);
-}
-
-bool IniFile::PutHex(const std::string_view section,
-                     const std::string_view entry, const int number) {
-  return PutString(section, entry,
-                   absl::StrFormat("%X", static_cast<unsigned int>(number)));
-}
-
-int IniFile::GetHex(const std::string_view section,
-                    const std::string_view entry,
-                    const int default_value) const {
-  if (const Entry* found = FindEntry(section, entry)) {
-    // All 32 bits are kept, so "FFFFFFFF" reads as -1.
-    if (const auto value = base::ParseHex<uint32_t>(found->value)) {
-      return static_cast<int>(*value);
-    }
-  }
-  return default_value;
 }
 
 bool IniFile::PutString(const std::string_view section,

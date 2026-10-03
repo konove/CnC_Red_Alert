@@ -45,10 +45,6 @@ TEST(IniFileTest, PreservesIntegerAndHexadecimalForms) {
   EXPECT_EQ(ini.GetInt("Values", "Number", 73), -1);
   ASSERT_TRUE(ini.PutString("Values", "Number", "10h"));
   EXPECT_EQ(ini.GetInt("Values", "Number", 73), 16);
-  ASSERT_TRUE(ini.PutString("Values", "Number", "0x80"));
-  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 128);
-  ASSERT_TRUE(ini.PutString("Values", "Number", "80garbage"));
-  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 73);
 }
 
 TEST(IniFileTest, ReplacingAnEntryKeepsTheOthersReachable) {
@@ -479,9 +475,9 @@ TEST(IniFileTest, TypedValuesRoundTrip) {
   IniFile ini;
   ASSERT_TRUE(ini.PutBool("S", "Yes", true));
   ASSERT_TRUE(ini.PutBool("S", "No", false));
-  ASSERT_TRUE(ini.PutHex("S", "Hex", 255));
-  ASSERT_TRUE(ini.PutInt("S", "TrailingH", 255, 1));
-  ASSERT_TRUE(ini.PutInt("S", "Dollar", 255, 2));
+  ASSERT_TRUE(ini.PutString("S", "Hex", "FF"));
+  ASSERT_TRUE(ini.PutString("S", "TrailingH", "FFh"));
+  ASSERT_TRUE(ini.PutString("S", "Dollar", "$FF"));
   ASSERT_TRUE(ini.PutFixed("S", "Fixed", Fixed::FromString("1.5")));
   EXPECT_EQ(ini.GetString("S", "Yes", ""), "yes");
   EXPECT_EQ(ini.GetString("S", "No", ""), "no");
@@ -492,8 +488,6 @@ TEST(IniFileTest, TypedValuesRoundTrip) {
   EXPECT_FALSE(ini.GetBool("S", "Hex", true));    // "FF"
   EXPECT_TRUE(ini.GetBool("S", "Dollar", true));  // "$FF"
   EXPECT_TRUE(ini.GetBool("S", "Missing", true));
-  EXPECT_EQ(ini.GetString("S", "Hex", ""), "FF");
-  EXPECT_EQ(ini.GetHex("S", "Hex", 0), 255);
   EXPECT_EQ(ini.GetString("S", "TrailingH", ""), "FFh");
   EXPECT_EQ(ini.GetInt("S", "TrailingH", 0), 255);
   EXPECT_EQ(ini.GetString("S", "Dollar", ""), "$FF");
@@ -603,14 +597,6 @@ TEST(IniFileTest, SaveWithDigestMatchesTheGoldenText) {
     text.push_back(static_cast<char>(byte));
   }
   EXPECT_EQ(text, kGoldenText);
-}
-
-TEST(IniFileTest, GetHexReadsBareDigitsAndRejectsTrailingText) {
-  IniFile ini;
-  ASSERT_TRUE(ini.PutString("Values", "Number", "ff"));
-  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 255);
-  ASSERT_TRUE(ini.PutString("Values", "Number", "fftail"));
-  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 73);
 }
 
 // A loose file in the current directory, where writes go and reads look first.

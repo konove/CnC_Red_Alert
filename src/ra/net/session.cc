@@ -796,7 +796,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
                   DialMethodCheck.at(SerialDefaults.DialMethod));
     ini.PutInt("SerialDefaults", "Baud", SerialDefaults.Baud ? 1 : 0);
     ini.PutInt("SerialDefaults", "IRQ", SerialDefaults.IRQ ? 1 : 0);
-    ini.PutInt("SerialDefaults", "Port", SerialDefaults.Port, 1);
+    ini.PutInt("SerialDefaults", "Port", SerialDefaults.Port);
     ini.PutString("SerialDefaults", "ModemName", SerialDefaults.ModemName);
     ini.PutInt("SerialDefaults", "Compression",
                SerialDefaults.Compression ? 1 : 0);

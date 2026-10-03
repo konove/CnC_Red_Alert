@@ -166,9 +166,6 @@ class IniFile {
   // Reads decimal, "$FF", "0FFh" and "0xFF" forms.
   [[nodiscard]] int GetInt(std::string_view section, std::string_view entry,
                            int default_value = 0) const;
-  // Reads the value as hexadecimal digits, with or without a "0x" prefix.
-  [[nodiscard]] int GetHex(std::string_view section, std::string_view entry,
-                           int default_value = 0) const;
   // Decides by the first character: Y, T or 1 is true and N, F or 0 false, in
   // either case.
   [[nodiscard]] bool GetBool(std::string_view section, std::string_view entry,
@@ -201,13 +198,9 @@ class IniFile {
   // value, and a name containing '=' or starting with '[' does not survive.
   bool PutString(std::string_view section, std::string_view entry,
                  std::string_view value);
-  // `format` chooses the spelling, all of which GetInt() reads back: 0 is
-  // decimal, 1 hexadecimal with a trailing 'h', 2 hexadecimal with a leading
-  // '$'.
-  bool PutInt(std::string_view section, std::string_view entry, int number,
-              int format = 0);
-  // Writes bare hexadecimal digits, which GetHex() reads back.
-  bool PutHex(std::string_view section, std::string_view entry, int number);
+  // Writes decimal. GetInt() also reads the hexadecimal spellings of
+  // hand-edited and older files: a trailing 'h' or a leading '$'.
+  bool PutInt(std::string_view section, std::string_view entry, int number);
   // Writes "yes" or "no".
   bool PutBool(std::string_view section, std::string_view entry, bool value);
   // Writes "1.5" style text, which GetFixed() reads back.
