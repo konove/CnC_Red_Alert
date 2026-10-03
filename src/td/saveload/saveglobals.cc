@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <iterator>
 
-#include "base/array.h"
 #include "base/numeric.h"
 #include "engine/stream/archive.h"
 #include "td/ai/base.h"
@@ -18,6 +17,8 @@ void PrebuiltBase::Serialize(Archive& ar) {
   auto count = static_cast<int32_t>(std::ssize(nodes_));
   ar(house_, count);
   if constexpr (Archive::kIsReading) {
+    // One node per cell is a sanity bound against a corrupt save, not a limit
+    // the game enforces.
     if (!ar.ok() || house_ < HOUSE_NONE || house_ >= HOUSE_COUNT || count < 0 ||
         count > MAP_CELL_TOTAL) {
       ar.Fail("invalid saved base house or count");
@@ -25,19 +26,18 @@ void PrebuiltBase::Serialize(Archive& ar) {
     }
     nodes_.clear();
     nodes_.reserve(base::ToSize(count));
-  }
-  for (int32_t i = 0; i < count; ++i) {
-    BaseNode node;
-    if constexpr (!Archive::kIsReading) {
-      node = base::At(nodes_, i);
-    }
-    ar(node.type, node.coord);
-    if constexpr (Archive::kIsReading) {
+    for (int i = 0; i < count; ++i) {
+      BaseNode node;
+      ar(node.type, node.coord);
       if (!ar.ok() || node.type < STRUCT_WEAP || node.type >= STRUCT_COUNT) {
         ar.Fail("invalid saved base building type");
         return;
       }
       nodes_.push_back(node);
+    }
+  } else {
+    for (auto& [type, coord] : nodes_) {
+      ar(type, coord);
     }
   }
 }

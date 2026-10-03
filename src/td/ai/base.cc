@@ -48,6 +48,12 @@ bool FillsNode(const BuildingClass& building, const BaseNode& node) {
   return building.Class->Type == node.type && building.Coord == node.coord;
 }
 
+// Cell::Containing() does not mask an off-map coordinate, so its cell would
+// index past the map in FindBuilding().
+bool IsOnMap(const Coordinate coord) {
+  return coord.cell_x() < MAP_CELL_W && coord.cell_y() < MAP_CELL_H;
+}
+
 }  // namespace
 
 void PrebuiltBase::ReadIni(const char* ini_text) {
@@ -85,9 +91,7 @@ void PrebuiltBase::ReadIni(const char* ini_text) {
       continue;
     }
     const Coordinate coord = Coordinate::FromPacked(*packed);
-    // Cell::Containing() does not mask an off-map coordinate, so its cell
-    // would index past the map in FindBuilding().
-    if (coord.cell_x() >= MAP_CELL_W || coord.cell_y() >= MAP_CELL_H) {
+    if (!IsOnMap(coord)) {
       continue;
     }
 
