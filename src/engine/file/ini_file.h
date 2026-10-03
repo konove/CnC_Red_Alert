@@ -145,11 +145,6 @@ class IniFile {
   [[nodiscard]] std::string GetString(std::string_view section,
                                       std::string_view entry,
                                       std::string_view default_value) const;
-  // As above, copied into `buffer` and terminated; a value longer than the
-  // buffer is cut. Returns the length stored. `default_value` may be a view
-  // of `buffer`.
-  int GetString(std::string_view section, std::string_view entry,
-                std::string_view default_value, std::span<char> buffer) const;
   // Reads decimal, "$FF", "0FFh" and "0xFF" forms.
   [[nodiscard]] int GetInt(std::string_view section, std::string_view entry,
                            int default_value = 0) const;
@@ -164,15 +159,14 @@ class IniFile {
   // `default_value`.
   [[nodiscard]] Fixed GetFixed(std::string_view section, std::string_view entry,
                                Fixed default_value) const;
-  // Joins the values of every entry of `section`, in order and separated by
-  // single spaces, into `buffer`, terminated: the text PutTextBlock() stored.
-  // Text that does not fit is dropped. Returns the length stored.
-  int GetTextBlock(std::string_view section, std::span<char> buffer) const;
-  // Decodes the base64 text PutBase64Block() stored in `section` into `block`
-  // and returns the number of bytes decoded; data that does not fit is
-  // dropped, so a full buffer may mean a truncated block.
-  int GetBase64Block(std::string_view section,
-                     std::span<std::byte> block) const;
+  // Returns the values of every entry of `section`, in order and joined by
+  // single spaces: the text PutTextBlock() stored. Empty when there is no such
+  // section.
+  [[nodiscard]] std::string GetTextBlock(std::string_view section) const;
+  // Returns the bytes decoded from the base64 text PutBase64Block() stored in
+  // `section`; empty when there is no such section.
+  [[nodiscard]] std::vector<std::byte> GetBase64Block(
+      std::string_view section) const;
   // Returns the key held in [PublicKey] (the modulus) and [PrivateKey] (the
   // exponent). With `fast`, the exponent is the well-known public one and
   // only the modulus is read.

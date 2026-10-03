@@ -45,9 +45,11 @@
 
 #include "ra/objects/overlay.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <span>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "base/buffer.h"
@@ -285,12 +287,11 @@ bool OverlayClass::Mark(MarkType mark) {
  *=============================================================================================*/
 void OverlayClass::Read_INI(engine::file::IniFile& ini) {
   if (TheWorld().new_ini_format() > 1) {
-    const int len = ini.GetBase64Block("OverlayPack",
-                                       base::ObjectBytes(overlay_pack_buffer));
+    const std::vector<std::byte> overlay_pack =
+        ini.GetBase64Block("OverlayPack");
 
-    if (len > 0) {
-      SpanSource bpipe(std::as_bytes(
-          std::span(overlay_pack_buffer).first(base::ToSize(len))));
+    if (!overlay_pack.empty()) {
+      SpanSource bpipe(overlay_pack);
       LcwSource uncomp(CodecMode::kDecompress, bpipe);
 
       for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {

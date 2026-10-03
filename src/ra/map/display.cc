@@ -4109,8 +4109,8 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   /*
   **	Loop through all CellTrigger entries.
   */
-  int len = ini.EntryCount("CellTriggers");
-  for (int index = 0; index < len; index++) {
+  const int trigger_count = ini.EntryCount("CellTriggers");
+  for (int index = 0; index < trigger_count; index++) {
     /*
     **	Get a cell trigger and cell assignment.
     */
@@ -4133,9 +4133,8 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   **	Read the map template data.
   */
   static const char* const MAPPACK = "MapPack";
-  len = ini.GetBase64Block(MAPPACK, base::ObjectBytes(map_pack_buffer));
-  SpanSource bstraw(
-      std::as_bytes(std::span(map_pack_buffer).first(base::ToSize(len))));
+  const std::vector<std::byte> map_pack = ini.GetBase64Block(MAPPACK);
+  SpanSource bstraw(map_pack);
   TheMap().Read_Binary(bstraw);
 
   TheWorld().last_theater() = TheScenario().Theater;

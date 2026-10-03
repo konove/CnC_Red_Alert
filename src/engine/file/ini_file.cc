@@ -18,6 +18,7 @@
 
 #include "engine/file/ini_file.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -53,10 +54,10 @@
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/readline.h"
-#include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
+#include "engine/stream/vector_sink.h"
 
 namespace engine::file {
 
@@ -323,19 +324,19 @@ bool IniFile::PutBase64Block(const std::string_view section,
 
 // The entries are fetched by name, as the original did, so a section with a
 // duplicated entry name decodes the first of them twice.
-int IniFile::GetBase64Block(const std::string_view section,
-                            const std::span<std::byte> block) const {
-  SpanSink sink(block);
+std::vector<std::byte> IniFile::GetBase64Block(
+    const std::string_view section) const {
+  std::vector<std::byte> block;
+  VectorSink sink(block);
   Base64Sink decoder(Base64Mode::kDecode, sink);
 
   const int entry_count = EntryCount(section);
   for (int index = 0; index < entry_count; index++) {
-    char line[128];
-    const int length = GetString(section, EntryName(section, index), "=", line);
-    decoder.Write(std::as_bytes(std::span(line).first(base::ToSize(length))));
+    const std::string line = GetString(section, EntryName(section, index), "=");
+    decoder.Write(std::as_bytes(std::span(line)));
   }
   decoder.Finish();
-  return static_cast<int>(sink.bytes_written());
+  return block;
 }
 
 bool IniFile::PutTextBlock(const std::string_view section,
@@ -370,29 +371,17 @@ bool IniFile::PutTextBlock(const std::string_view section,
   return true;
 }
 
-int IniFile::GetTextBlock(const std::string_view section,
-                          std::span<char> buffer) const {
-  if (buffer.empty()) {
-    return 0;
-  }
-  buffer.front() = '\0';
-
+std::string IniFile::GetTextBlock(const std::string_view section) const {
+  std::string text;
   const int entry_count = EntryCount(section);
-  int total = 0;
-  for (int index = 0; index < entry_count && buffer.size() > 1; index++) {
+  for (int index = 0; index < entry_count; index++) {
     // One space stands for each line break PutTextBlock() made.
     if (index > 0) {
-      buffer.front() = ' ';
-      buffer = buffer.subspan(1);
-      total++;
+      text += ' ';
     }
-
-    const int length =
-        GetString(section, EntryName(section, index), "", buffer);
-    total += length;
-    buffer = buffer.subspan(base::ToSize(length));
+    text += GetString(section, EntryName(section, index), "");
   }
-  return total;
+  return text;
 }
 
 bool IniFile::PutInt(const std::string_view section,
@@ -473,24 +462,6 @@ std::string IniFile::GetString(const std::string_view section,
       found == nullptr ? default_value : std::string_view(found->value)));
 }
 
-int IniFile::GetString(const std::string_view section,
-                       const std::string_view entry,
-                       const std::string_view default_value,
-                       const std::span<char> buffer) const {
-  if (buffer.empty()) {
-    return 0;
-  }
-  const Entry* found = FindEntry(section, entry);
-  // A caller may use its output as the default. Copy before overwriting it.
-  const std::string value(found == nullptr ? default_value
-                                           : std::string_view(found->value));
-  // Cut to the buffer first and trim after, so a cut that ends in blanks
-  // loses them too.
-  base::SafeCopy(buffer, value);
-  strtrim(buffer);
-  return static_cast<int>(std::string_view(buffer.data()).size());
-}
-
 bool IniFile::PutBool(const std::string_view section,
                       const std::string_view entry, const bool value) {
   return PutString(section, entry, value ? "yes" : "no");
@@ -534,16 +505,16 @@ IniLoadResult IniFile::LoadVerified(ByteSource& source) {
     return IniLoadResult::kFailed;
   }
 
-  Sha1Digest embedded{};
-  if (GetBase64Block(kDigestSection, base::ObjectBytes(embedded)) <= 0) {
+  const std::vector<std::byte> embedded = GetBase64Block(kDigestSection);
+  if (embedded.empty()) {
     return IniLoadResult::kLoaded;
   }
 
   // The digest covers the data without its own section.
   Clear(kDigestSection);
   ComputeDigest();
-  return embedded == digest_ ? IniLoadResult::kLoaded
-                             : IniLoadResult::kDigestMismatch;
+  return std::ranges::equal(embedded, digest_) ? IniLoadResult::kLoaded
+                                               : IniLoadResult::kDigestMismatch;
 }
 
 bool IniFile::SaveWithDigest(ByteStream& stream) const {
@@ -612,23 +583,19 @@ void IniFile::RemoveSections(const std::string_view section) {
 
 PKey IniFile::GetPublicKey(const bool fast) const {
   PKey key;
-  unsigned char encoded[512];
 
   // The fast key's exponent is a known constant, so a database published
   // without [PrivateKey] still yields it.
   if (fast) {
+    unsigned char encoded[512];
     const BigInt exponent = PKey::Fast_Exponent();
     const auto length = exponent.DEREncode(encoded);
     key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
   } else {
-    const int length =
-        GetBase64Block(kPrivateKeySection, base::ObjectBytes(encoded));
-    key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
+    key.Decode_Exponent(GetBase64Block(kPrivateKeySection));
   }
 
-  const int length =
-      GetBase64Block(kPublicKeySection, base::ObjectBytes(encoded));
-  key.Decode_Modulus(base::ObjectBytes(encoded).first(base::ToSize(length)));
+  key.Decode_Modulus(GetBase64Block(kPublicKeySection));
 
   return key;
 }

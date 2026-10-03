@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <fstream>
 #include <ios>
-#include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
@@ -82,9 +81,7 @@ std::unique_ptr<IniFile> Parse(std::string_view text) {
 
 TEST(IniFileTest, NamesCompareWithoutCase) {
   const auto ini = Parse("[BASIC]\r\nPlayer=GoodGuy\r\n");
-  std::array<char, 32> buf{};
-  EXPECT_GT(ini->GetString("Basic", "PLAYER", "", buf), 0);
-  EXPECT_STREQ(buf.data(), "GoodGuy");
+  EXPECT_EQ(ini->GetString("Basic", "PLAYER", ""), "GoodGuy");
   EXPECT_TRUE(ini->HasSection("basic"));
   EXPECT_STREQ(ini->SectionName(0), "BASIC");  // stored spelling is kept
   EXPECT_EQ(ini->SectionName(1), nullptr);
@@ -93,8 +90,7 @@ TEST(IniFileTest, NamesCompareWithoutCase) {
 TEST(IniFileTest, LongLinesAreNotTruncated) {
   const std::string value(400, 'x');
   const auto ini = Parse("[TeamTypes]\nT1=" + value + "\n");
-  std::array<char, 500> buf{};
-  EXPECT_EQ(ini->GetString("TeamTypes", "T1", "", buf), 400);
+  EXPECT_EQ(ini->GetString("TeamTypes", "T1", ""), value);
 }
 
 TEST(IniFileTest, FirstDuplicateWins) {
@@ -443,47 +439,6 @@ TEST(IniFileTest, GetStringReturnsTheValueOrTheDefault) {
   EXPECT_EQ(ini.GetString("S", "Missing", ""), "");
 }
 
-TEST(IniFileTest, GetStringIntoABufferCutsAndReturnsTheLength) {
-  IniFile ini;
-  ASSERT_TRUE(ini.PutString("S", "K", " value "));
-  std::array<char, 16> buffer{};
-  EXPECT_EQ(ini.GetString("S", "K", "default", buffer), 5);
-  EXPECT_STREQ(buffer.data(), "value");
-  EXPECT_EQ(ini.GetString("S", "Missing", "default", buffer), 7);
-  EXPECT_STREQ(buffer.data(), "default");
-
-  // The terminator takes one char of the buffer, and blanks left at the cut
-  // are trimmed.
-  ASSERT_TRUE(ini.PutString("S", "Long", "abc  defgh"));
-  EXPECT_EQ(ini.GetString("S", "Long", "", std::span(buffer).first(6)), 3);
-  EXPECT_STREQ(buffer.data(), "abc");
-
-  EXPECT_EQ(ini.GetString("S", "K", "default", std::span<char>()), 0);
-}
-
-TEST(IniFileTest, GetStringAcceptsItsOwnBufferAsTheDefault) {
-  IniFile ini;
-  ASSERT_TRUE(ini.PutString("S", "K", "stored"));
-  std::array<char, 16> buffer{"previous"};
-  EXPECT_EQ(ini.GetString("S", "Missing", buffer.data(), buffer), 8);
-  EXPECT_STREQ(buffer.data(), "previous");
-  // A default that starts inside the buffer copies towards its front, which
-  // happens to work without a copy of the default.
-  EXPECT_EQ(ini.GetString("S", "Missing",
-                          std::string_view(buffer.data()).substr(2), buffer),
-            6);
-  EXPECT_STREQ(buffer.data(), "evious");
-  // A default that starts before the part of the buffer written to would be
-  // overwritten while it is read, were it not copied first.
-  std::array<char, 16> shifted{"previous"};
-  EXPECT_EQ(ini.GetString("S", "Missing", std::string_view(shifted.data()),
-                          std::span(shifted).subspan(2)),
-            8);
-  EXPECT_STREQ(shifted.data(), "prprevious");
-  EXPECT_EQ(ini.GetString("S", "K", buffer.data(), buffer), 6);
-  EXPECT_STREQ(buffer.data(), "stored");
-}
-
 TEST(IniFileTest, PutStringWithAnEmptyValueRemovesTheEntry) {
   IniFile ini;
   ASSERT_TRUE(ini.PutString("S", "K", "1"));
@@ -540,15 +495,8 @@ TEST(IniFileTest, TextBlockBreaksAtBlanksAndJoinsWithSpaces) {
   EXPECT_EQ(ini.GetString("Briefing", "1", ""), text.substr(0, 69));
   EXPECT_EQ(ini.GetString("Briefing", "2", ""), text.substr(70));
 
-  std::array<char, 256> buffer{};
-  EXPECT_EQ(ini.GetTextBlock("Briefing", buffer), std::ssize(text));
-  EXPECT_EQ(std::string_view(buffer.data()), text);
-
-  // A short buffer keeps what fits, terminated.
-  EXPECT_EQ(ini.GetTextBlock("Briefing", std::span(buffer).first(11)), 10);
-  EXPECT_EQ(std::string_view(buffer.data()), text.substr(0, 10));
-  EXPECT_EQ(ini.GetTextBlock("Missing", buffer), 0);
-  EXPECT_STREQ(buffer.data(), "");
+  EXPECT_EQ(ini.GetTextBlock("Briefing"), text);
+  EXPECT_EQ(ini.GetTextBlock("Missing"), "");
 }
 
 TEST(IniFileTest, Base64BlockRoundTrips) {
@@ -562,10 +510,8 @@ TEST(IniFileTest, Base64BlockRoundTrips) {
   EXPECT_EQ(ini.EntryCount("Pack"), 2);
   EXPECT_EQ(ini.GetString("Pack", "1", "").size(), 70U);
 
-  std::array<std::byte, 128> decoded{};
-  ASSERT_EQ(ini.GetBase64Block("Pack", decoded), 100);
-  EXPECT_TRUE(std::ranges::equal(std::span(decoded).first(100), block));
-  EXPECT_EQ(ini.GetBase64Block("Missing", decoded), 0);
+  EXPECT_TRUE(std::ranges::equal(ini.GetBase64Block("Pack"), block));
+  EXPECT_TRUE(ini.GetBase64Block("Missing").empty());
 
   // An empty block is refused and leaves the section as it was.
   EXPECT_FALSE(ini.PutBase64Block("Pack", {}));

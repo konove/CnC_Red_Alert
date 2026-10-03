@@ -2121,7 +2121,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Fetch the appropriate movie names from the INI file.
   */
   const char* const BASIC = "Basic";
-  ini.GetString(BASIC, "Name", "<none>", TheScenario().Description);
+  base::SafeCopy(TheScenario().Description,
+                 ini.GetString(BASIC, "Name", "<none>"));
   TheScenario().IntroMovie =
       GetVQType(ini, BASIC, "Intro", TheScenario().IntroMovie);
   TheScenario().BriefMovie =
@@ -2271,13 +2272,13 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   if (const auto fc = OpenGameFile("MISSION.INI")) {
     mini.Load(*fc);
   }
-  mini.GetTextBlock(fname, TheScenario().BriefingText);
+  base::SafeCopy(TheScenario().BriefingText, mini.GetTextBlock(fname));
 
   /*
   **	Read in any briefing text.
   */
   if (base::At(TheScenario().BriefingText, 0) == '\0') {
-    ini.GetTextBlock("Briefing", TheScenario().BriefingText);
+    base::SafeCopy(TheScenario().BriefingText, ini.GetTextBlock("Briefing"));
   }
   /*
   **	Perform a final overpass of the map. This handles smoothing of certain
