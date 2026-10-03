@@ -167,7 +167,7 @@ class TriggerClass {
   **	File I/O routines
   */
   static void Read_INI(const engine::file::IniFile& ini);
-  void Fill_In(const char* name, std::string_view entry);
+  void Fill_In(std::string_view name, std::string_view entry);
   static void Write_INI(engine::file::IniFile& ini, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
   // Field-wise saved-game support, defined in ioobj.cc.
@@ -193,7 +193,7 @@ class TriggerClass {
   [[nodiscard]] const char* Get_Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Name;
   }
-  void Set_Name(const char* buf) { base::SafeCopy(Name, buf); }
+  void Set_Name(const std::string_view buf) { base::SafeCopy(Name, buf); }
 
   /*
   **	Utility routines

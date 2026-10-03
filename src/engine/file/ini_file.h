@@ -30,6 +30,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/container/flat_hash_map.h"
 #include "base/fixed.h"
 #include "engine/crypto/pk.h"
@@ -121,20 +122,18 @@ class IniFile {
 
   // The number of sections, duplicates counted.
   [[nodiscard]] int SectionCount() const;
-  // Returns the name of section `index` in file order, or nullptr when out of
-  // range. The pointer is valid until the database is next changed.
-  [[nodiscard]] const char* SectionName(int index) const
-      [[clang::lifetimebound]];
+  // Returns the name of section `index` in file order, or an empty view when
+  // out of range. The view is valid until the database is next changed.
+  [[nodiscard]] std::string_view SectionName(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The number of entries in `section`; 0 when there is no such section.
   [[nodiscard]] int EntryCount(std::string_view section) const;
   // Returns the name (the text left of the '=') of entry `index` of `section`
-  // in file order, or nullptr when the section or the index does not exist.
-  // The pointer is valid until the database is next changed.
-  [[nodiscard]] const char* EntryName(std::string_view section, int index) const
-      // The analysis cannot follow the name through the section index.
-      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
-      [[clang::lifetimebound]];
+  // in file order, or an empty view when the section or the index does not
+  // exist. The view is valid until the database is next changed.
+  [[nodiscard]] std::string_view EntryName(
+      std::string_view section, int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The getters return the value of `entry` in `section`, or `default_value`
   // when the entry is missing or its text does not parse as the requested
@@ -245,7 +244,11 @@ class IniFile {
   };
 
   // Return the first section or entry of that name, or nullptr.
-  [[nodiscard]] Section* FindSection(std::string_view section) const;
+  [[nodiscard]] Section* FindSection(std::string_view section) const
+      // The index holds plain pointers to the sections `sections_` owns, which
+      // the analysis cannot connect to this object.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] const Entry* FindEntry(std::string_view section,
                                        std::string_view entry) const;
   // Removes every section named `section`, duplicates included.

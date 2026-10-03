@@ -350,7 +350,7 @@ bool OverlayClass::Mark(MarkType mark) {
 void OverlayClass::Read_INI(const engine::file::IniFile& ini) {
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
-    const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
+    const std::string_view key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(key, 0));
     const std::string value = ini.GetString(INI_Name(), key, "");
     base::Tokenizer tokens(value);

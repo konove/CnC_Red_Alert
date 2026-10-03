@@ -1165,7 +1165,7 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
   */
   const int count = ini.EntryCount(trigsection);
   for (int i = 0; i < count; ++i) {
-    const char* key = ini.EntryName(trigsection, i);  // Cell number.
+    const std::string_view key = ini.EntryName(trigsection, i);  // Cell number.
 
     /*
     **	Get a cell trigger assignment.

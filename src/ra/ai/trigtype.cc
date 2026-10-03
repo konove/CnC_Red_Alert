@@ -2069,7 +2069,7 @@ AttachType TriggerTypeClass::Attaches_To() const {
 void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.EntryName(INI_Name(), index);
+    const std::string_view entry = ini.EntryName(INI_Name(), index);
 
     /*
     **	Create a new trigger.
@@ -2129,7 +2129,7 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Fill_In(const char* name, std::string_view entry) {
+void TriggerTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   /*

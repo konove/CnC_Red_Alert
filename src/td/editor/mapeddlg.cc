@@ -3121,7 +3121,6 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
-  std::vector<const char*> trignames;             // list of INI trigger names
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
   /*........................................................................
@@ -3166,10 +3165,9 @@ int MapEditClass::Import_Triggers() {
   - Get the entry
   - Generate a string describing the trigger
   - Add that string to the list box
-  - Add a ptr to the INI entry name to our 'trignames' list
   ........................................................................*/
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-    const char* tbuffer =
+    const std::string_view tbuffer =
         master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
     const std::string entry =
         master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
@@ -3208,11 +3206,6 @@ int MapEditClass::Import_Triggers() {
     ** Add the item to the list box
     */
     triggerlist.Add_Item(item);
-
-    /*
-    ** Add the name to our internal name list
-    */
-    trignames.push_back(tbuffer);
   }
 
   /*
@@ -3307,7 +3300,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   if (!cancel) {
     for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-      const char* tbuffer =
+      const std::string_view tbuffer =
           master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
       /*
       ** If this item is checked on the list, create a new trigger
@@ -3331,7 +3324,6 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Clean up memory
   ........................................................................*/
-  trignames.clear();
   triggerlist.Clear();
 
   if (cancel) {
@@ -3416,7 +3408,6 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
-  std::vector<const char*> teamnames;    // list of INI team names
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
   int i = 0;
@@ -3461,10 +3452,9 @@ int MapEditClass::Import_Teams() {
   - Get the entry
   - Generate a string describing the team
   - Add that string to the list box
-  - Add a ptr to the INI entry name to our 'teamnames' list
   ........................................................................*/
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-    const char* tbuffer =
+    const std::string_view tbuffer =
         master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
     const std::string entry =
         master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
@@ -3505,10 +3495,6 @@ int MapEditClass::Import_Teams() {
     ** Add the item to the list box
     */
     teamlist.Add_Item(item);
-    /*
-    ** Add the name to our internal name list
-    */
-    teamnames.push_back(tbuffer);
   }
 
   /*
@@ -3603,7 +3589,7 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   if (!cancel) {
     for (int entry_index = 0; entry_index < entry_count; entry_index++) {
-      const char* tbuffer =
+      const std::string_view tbuffer =
           master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
       /*
       ** If this item is checked on the list, create a new team
@@ -3622,7 +3608,6 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Clean up memory
   ........................................................................*/
-  teamnames.clear();
   teamlist.Clear();
 
   if (cancel) {

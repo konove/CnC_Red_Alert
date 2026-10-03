@@ -72,12 +72,12 @@ std::string SaveToString(const IniFile& ini) {
 void ExpectSameContents(const IniFile& expected, const IniFile& actual) {
   ASSERT_EQ(actual.SectionCount(), expected.SectionCount());
   for (int s = 0; s < expected.SectionCount(); ++s) {
-    const std::string section = expected.SectionName(s);
-    ASSERT_STREQ(actual.SectionName(s), section.c_str());
+    const std::string section(expected.SectionName(s));
+    ASSERT_EQ(actual.SectionName(s), section);
     ASSERT_EQ(actual.EntryCount(section), expected.EntryCount(section));
     for (int e = 0; e < expected.EntryCount(section); ++e) {
-      const std::string entry = expected.EntryName(section, e);
-      EXPECT_STREQ(actual.EntryName(section, e), entry.c_str());
+      const std::string entry(expected.EntryName(section, e));
+      EXPECT_EQ(actual.EntryName(section, e), entry);
       EXPECT_EQ(actual.GetString(section, entry, "?"),
                 expected.GetString(section, entry, "!"))
           << "[" << section << "] " << entry;
@@ -137,7 +137,7 @@ TEST_F(ScenarioWriterTest, TeamTypesWriteBackWhatTheyRead) {
   TeamTypeClass::Write_INI(written, true);
 
   ASSERT_EQ(written.EntryCount("TeamTypes"), 1);
-  EXPECT_STREQ(written.EntryName("TeamTypes", 0), "alpha");
+  EXPECT_EQ(written.EntryName("TeamTypes", 0), "alpha");
   EXPECT_EQ(written.GetString("TeamTypes", "alpha", ""),
             scenario.GetString("TeamTypes", "alpha", "!"));
 }

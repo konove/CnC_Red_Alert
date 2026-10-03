@@ -629,8 +629,9 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
 void AircraftClass::Read_INI(engine::file::IniFile& ini) {
   const int counter = ini.EntryCount(INI_Name());
   for (int index = 0; index < counter; index++) {
-    const char* entry = ini.EntryName(INI_Name(), index);
-
+    // TODO: redundancy here: could be one call to ini.GetString(INI_Name(),
+    // index, "")
+    const std::string_view entry = ini.EntryName(INI_Name(), index);
     const std::string value = ini.GetString(INI_Name(), entry, "");
     base::Tokenizer tokens(value);
     const HousesType inhouse =

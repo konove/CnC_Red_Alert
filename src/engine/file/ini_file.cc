@@ -272,11 +272,11 @@ IniFile::Section* IniFile::FindSection(const std::string_view section) const {
 
 int IniFile::SectionCount() const { return static_cast<int>(sections_.size()); }
 
-const char* IniFile::SectionName(const int index) const {
+std::string_view IniFile::SectionName(const int index) const {
   if (index < 0 || index >= SectionCount()) {
-    return nullptr;
+    return {};
   }
-  return sections_.at(base::ToSize(index))->name.c_str();
+  return sections_.at(base::ToSize(index))->name;
 }
 
 int IniFile::EntryCount(const std::string_view section) const {
@@ -290,13 +290,13 @@ const IniFile::Entry* IniFile::FindEntry(const std::string_view section,
   return found == nullptr ? nullptr : found->FindEntry(entry);
 }
 
-const char* IniFile::EntryName(const std::string_view section,
-                               const int index) const {
+std::string_view IniFile::EntryName(const std::string_view section,
+                                    const int index) const {
   const Section* found = FindSection(section);
   if (found == nullptr || index < 0 || index >= std::ssize(found->entries)) {
-    return nullptr;
+    return {};
   }
-  return found->entries.at(base::ToSize(index))->name.c_str();
+  return found->entries.at(base::ToSize(index))->name;
 }
 
 bool IniFile::PutBase64Block(const std::string_view section,

@@ -338,7 +338,7 @@ void OverlayClass::Read_INI(engine::file::IniFile& ini) {
   if (TheWorld().new_ini_format() < 2 || ini.HasSection("Overlay")) {
     const int len = ini.EntryCount(INI_Name());
     for (int index = 0; index < len; index++) {
-      const char* entry = ini.EntryName(INI_Name(), index);
+      const std::string_view entry = ini.EntryName(INI_Name(), index);
       const Cell cell =
           Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
       const OverlayType classid =

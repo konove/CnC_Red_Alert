@@ -83,8 +83,8 @@ TEST(IniFileTest, NamesCompareWithoutCase) {
   const auto ini = Parse("[BASIC]\r\nPlayer=GoodGuy\r\n");
   EXPECT_EQ(ini->GetString("Basic", "PLAYER", ""), "GoodGuy");
   EXPECT_TRUE(ini->HasSection("basic"));
-  EXPECT_STREQ(ini->SectionName(0), "BASIC");  // stored spelling is kept
-  EXPECT_EQ(ini->SectionName(1), nullptr);
+  EXPECT_EQ(ini->SectionName(0), "BASIC");  // stored spelling is kept
+  EXPECT_TRUE(ini->SectionName(1).empty());
 }
 
 TEST(IniFileTest, LongLinesAreNotTruncated) {
@@ -167,7 +167,7 @@ TEST(IniFileTest, ACommentAfterAValueIsCutWithTheBlanksBeforeIt) {
 TEST(IniFileTest, ACommentAfterAHeaderIsNotPartOfTheSectionName) {
   const auto ini = Parse("[ Sec ] ; note\nK=1\n");
   ASSERT_EQ(ini->SectionCount(), 1);
-  EXPECT_STREQ(ini->SectionName(0), "Sec");
+  EXPECT_EQ(ini->SectionName(0), "Sec");
   EXPECT_EQ(ini->GetInt("Sec", "K", 0), 1);
 }
 
@@ -288,13 +288,13 @@ TEST(IniFileTest, ClearingASectionLeavesOneWithAChecksumTwinName) {
   }
 }
 
-// EntryName() and SectionName() point into the element a removal destroys.
+// EntryName() and SectionName() view the element a removal destroys.
 TEST(IniFileTest, RemovalAcceptsTheNameOfTheElementItRemoves) {
   IniFile ini;
   LoadText(ini, "[S]\nA=1\nKey=2\nB=3\nkey=4\nC=5\n[T]\nM=6\n[s]\nN=7\n");
   ASSERT_TRUE(ini.PutString("S", ini.EntryName("S", 1), "new"));
   EXPECT_EQ(ini.EntryCount("S"), 4);
-  EXPECT_STREQ(ini.EntryName("S", 3), "Key");
+  EXPECT_EQ(ini.EntryName("S", 3), "Key");
   EXPECT_EQ(ini.GetString("S", "KEY", ""), "new");
   ASSERT_TRUE(ini.Clear("S", ini.EntryName("S", 0)));
   EXPECT_EQ(ini.EntryCount("S"), 3);
@@ -321,7 +321,7 @@ TEST(IniFileTest, ALargeSectionKeepsEveryEntryThroughPutAndReplace) {
   EXPECT_EQ(ini.GetInt("Map", "Cell99", 0), 99);
   EXPECT_EQ(ini.GetInt("Map", "Cell4095", 0), 4095);
   // A replaced entry moves to the end.
-  EXPECT_STREQ(ini.EntryName("Map", kEntries - 1), "cell100");
+  EXPECT_EQ(ini.EntryName("Map", kEntries - 1), "cell100");
 }
 
 TEST(IniFileTest, UniqueIdFollowsEdits) {
@@ -422,11 +422,11 @@ TEST(IniFileTest, HasSectionAndHasEntryFindNamesWithoutCase) {
 TEST(IniFileTest, EntryNamesComeInFileOrder) {
   const auto ini = Parse("[S]\nB=1\nA=2\n");
   ASSERT_EQ(ini->EntryCount("s"), 2);
-  EXPECT_STREQ(ini->EntryName("S", 0), "B");
-  EXPECT_STREQ(ini->EntryName("S", 1), "A");
-  EXPECT_EQ(ini->EntryName("S", 2), nullptr);
-  EXPECT_EQ(ini->EntryName("S", -1), nullptr);
-  EXPECT_EQ(ini->EntryName("Missing", 0), nullptr);
+  EXPECT_EQ(ini->EntryName("S", 0), "B");
+  EXPECT_EQ(ini->EntryName("S", 1), "A");
+  EXPECT_TRUE(ini->EntryName("S", 2).empty());
+  EXPECT_TRUE(ini->EntryName("S", -1).empty());
+  EXPECT_TRUE(ini->EntryName("Missing", 0).empty());
   EXPECT_EQ(ini->EntryCount("Missing"), 0);
 }
 

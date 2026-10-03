@@ -1088,7 +1088,7 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
   */
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
-    const char* name = ini.EntryName(INI_Name(), i);  // Trigger ID.
+    const std::string_view name = ini.EntryName(INI_Name(), i);  // Trigger ID.
 
     /*
     **	Create a new trigger.
@@ -1148,7 +1148,7 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Fill_In(const char* name, std::string_view entry) {
+void TriggerClass::Fill_In(std::string_view name, std::string_view entry) {
   Validate();
 
   /*

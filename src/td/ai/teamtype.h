@@ -135,7 +135,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	File I/O routines
   */
   static void Read_INI(const engine::file::IniFile& ini);
-  void Fill_In(const char* name, std::string_view entry);
+  void Fill_In(std::string_view name, std::string_view entry);
   static void Write_INI(engine::file::IniFile& ini, bool refresh);
   static void Read_Old_INI(const engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }

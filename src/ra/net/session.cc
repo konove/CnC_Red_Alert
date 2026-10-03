@@ -898,11 +898,11 @@ void SessionClass::Read_Scenario_Descriptions() {
     const int count = ini.EntryCount("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
-      const char* fname = ini.EntryName("Missions", index);
+      const std::string fname(ini.EntryName("Missions", index));
       const std::string description = ini.GetString("Missions", fname, "");
-      Scenarios.Add(
-          std::make_unique<MultiMission>(fname, description.c_str(), nullptr,
-                                         true, IsMissionCounterstrike(fname)));
+      Scenarios.Add(std::make_unique<MultiMission>(
+          fname.c_str(), description.c_str(), nullptr, true,
+          IsMissionCounterstrike(fname)));
     }
   /*		//	ajw Copy file for viewing.
                   GameFile fileCopy( "msns_pkt.txt" );
@@ -928,12 +928,12 @@ void SessionClass::Read_Scenario_Descriptions() {
 
     const int count = ini.EntryCount("Missions");
     for (int index = 0; index < count; index++) {
-      const char* fname = ini.EntryName("Missions", index);
+      const std::string fname(ini.EntryName("Missions", index));
       const std::string description = ini.GetString("Missions", fname, "");
 
-      Scenarios.Add(
-          std::make_unique<MultiMission>(fname, description.c_str(), nullptr,
-                                         true, IsMissionCounterstrike(fname)));
+      Scenarios.Add(std::make_unique<MultiMission>(
+          fname.c_str(), description.c_str(), nullptr, true,
+          IsMissionCounterstrike(fname)));
     }
   }
 
@@ -952,10 +952,10 @@ void SessionClass::Read_Scenario_Descriptions() {
       const int count = ini.EntryCount("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        const char* fname = ini.EntryName("Missions", index);
+        const std::string fname(ini.EntryName("Missions", index));
         const std::string description = ini.GetString("Missions", fname, "");
         Scenarios.Add(std::make_unique<MultiMission>(
-            fname, description.c_str(), nullptr, true,
+            fname.c_str(), description.c_str(), nullptr, true,
             IsMissionCounterstrike(fname)));
       }
       /*ajw Copy file for viewing.
@@ -978,10 +978,10 @@ void SessionClass::Read_Scenario_Descriptions() {
       const int count = ini.EntryCount("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
-        const char* fname = ini.EntryName("Missions", index);
+        const std::string fname(ini.EntryName("Missions", index));
         const std::string description = ini.GetString("Missions", fname, "");
         Scenarios.Add(std::make_unique<MultiMission>(
-            fname, description.c_str(), nullptr, true,
+            fname.c_str(), description.c_str(), nullptr, true,
             IsMissionCounterstrike(fname)));
       }
     }

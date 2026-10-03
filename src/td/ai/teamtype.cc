@@ -176,7 +176,7 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
   */
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
-    const char* name = ini.EntryName(INI_Name(), i);  // Team name.
+    const std::string_view name = ini.EntryName(INI_Name(), i);  // Team name.
 
     /*
     ....................... Create a new team type ........................
@@ -226,7 +226,7 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
+void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   Validate();
   std::string_view p1;  // class or mission name
   std::string_view p2;  // its count or argument
@@ -513,7 +513,7 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   */
   const int count = ini.EntryCount("Teams");
   for (int i = 0; i < count; ++i) {
-    const char* name = ini.EntryName("Teams", i);  // Team name.
+    const std::string_view name = ini.EntryName("Teams", i);  // Team name.
 
     /*
     ........................ Create a new trigger .........................

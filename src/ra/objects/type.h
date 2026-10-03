@@ -123,7 +123,7 @@ class AbstractTypeClass {
   [[nodiscard]] const char* Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return IniName;
   }
-  void Set_Name(const char* buf) { base::SafeCopy(IniName, buf); }
+  void Set_Name(const std::string_view buf) { base::SafeCopy(IniName, buf); }
   // Returns a bit flag of houses allowed to own this type. Base allows all;
   // derived classes override to restrict ownership.
   [[nodiscard]] virtual uint32_t Get_Ownable() const;

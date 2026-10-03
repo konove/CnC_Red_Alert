@@ -3297,7 +3297,7 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
 
   const int len = ini.EntryCount(INI_Name());
   for (int index = 0; index < len; index++) {
-    const char* entry = ini.EntryName(INI_Name(), index);
+    const std::string_view entry = ini.EntryName(INI_Name(), index);
 
     /*
     **	Get an infantry entry

@@ -1761,7 +1761,7 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
   for (int index = 0; index < len; index++) {
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
-      const char* entry = ini.EntryName(INI_Name(), index);
+      const std::string_view entry = ini.EntryName(INI_Name(), index);
       const std::string value = ini.GetString(INI_Name(), entry, "");
       team->Fill_In(entry, value);
     }
@@ -1793,7 +1793,7 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
  * HISTORY: * 11/28/1994 BR : Created. * 11/29/1995 JLB : Revamped to use new
  *team class.                                          *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
+void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   /*

@@ -266,7 +266,7 @@ class AbstractTypeClass {
 
   [[nodiscard]] virtual Coordinate Coord_Fixup(Coordinate coord) const;
   [[nodiscard]] virtual int Full_Name() const;
-  void Set_Name(const char* buf) { base::SafeCopy(IniName, buf); }
+  void Set_Name(const std::string_view buf) { base::SafeCopy(IniName, buf); }
   [[nodiscard]] virtual uint16_t Get_Ownable() const;
 };
 
