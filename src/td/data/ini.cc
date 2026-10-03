@@ -347,7 +347,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   if (!ini) {
     return false;
   }
-  char* buffer = ini->data();
+  const char* buffer = ini->data();
 
   /*
   ** Init the Scenario CRC value
@@ -364,7 +364,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
   // The text ends at its first NUL, the end-of-file rule of the old readers. A
   // text with no section at all leaves the database empty, so every lookup
-  // returns its default, as the old text scans did.
+  // below returns its default, as the old text scans did.
   engine::file::IniFile scenario;
   SpanSource source(std::as_bytes(std::span(*ini)));
   scenario.Load(source);
@@ -372,16 +372,11 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
-  WWGetPrivateProfileString("Basic", "Intro", "x", TheWorld().intro_movie(),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Brief", "x", TheWorld().brief_movie(),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Win", "x", TheWorld().win_movie(),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Lose", "x", TheWorld().lose_movie(),
-                            buffer);
-  WWGetPrivateProfileString("Basic", "Action", "x", TheWorld().action_movie(),
-                            buffer);
+  scenario.GetString("Basic", "Intro", "x", TheWorld().intro_movie());
+  scenario.GetString("Basic", "Brief", "x", TheWorld().brief_movie());
+  scenario.GetString("Basic", "Win", "x", TheWorld().win_movie());
+  scenario.GetString("Basic", "Lose", "x", TheWorld().lose_movie());
+  scenario.GetString("Basic", "Action", "x", TheWorld().action_movie());
 
   /*
   **	For single-player scenarios, 'BuildLevel' is the scenario number.
@@ -393,8 +388,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     if (TheWorld().scenario() <= 15) {
       TheWorld().build_level() = TheWorld().scenario();
     } else {
-      TheWorld().build_level() = WWGetPrivateProfileInt(
-          "Basic", "BuildLevel", TheWorld().scenario(), buffer);
+      TheWorld().build_level() =
+          scenario.GetInt("Basic", "BuildLevel", TheWorld().scenario());
     }
 #else
     TheWorld().build_level() = TheWorld().scenario();
@@ -413,7 +408,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Fetch the transition theme for this scenario.
   */
   TheWorld().transit_theme() = THEME_NONE;
-  WWGetPrivateProfileString("Basic", "Theme", "No Theme", buf, buffer);
+  scenario.GetString("Basic", "Theme", "No Theme", buf);
   TheWorld().transit_theme() = ThemeClass::From_Name(buf);
 
   /*
@@ -437,15 +432,12 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   //	if (GameToPlay == GAME_NORMAL && (ScenPlayer == SCEN_PLAYER_GDI ||
   // ScenPlayer == SCEN_PLAYER_NOD)) {
   if (TheSession().type() == GAME_NORMAL) {
-    WWGetPrivateProfileString(
-        "Basic", "Player", "GoodGuy",
-        std::span(buf).first(static_cast<std::size_t>(127)), buffer);
+    scenario.GetString("Basic", "Player", "GoodGuy", buf);
     TheWorld().carry_over_percent() =
-        WWGetPrivateProfileInt("Basic", "CarryOverMoney", 100, buffer);
+        scenario.GetInt("Basic", "CarryOverMoney", 100);
     TheWorld().carry_over_percent() =
         base::CardinalToFixed(100, TheWorld().carry_over_percent());
-    carry_over_cap =
-        WWGetPrivateProfileInt("Basic", "carry_over_cap", -1, buffer);
+    carry_over_cap = scenario.GetInt("Basic", "carry_over_cap", -1);
 
     ThePlayer() = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
     ThePlayer()->IsHuman = true;
@@ -564,8 +556,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
     absl::SNPrintF(buff, sizeof(buff), "%d", index++);
     stage.front() = '\0';
-    WWGetPrivateProfileString("Briefing", buff, "",
-                              stage.first(stage.size() - 1), buffer);
+    scenario.GetString("Briefing", buff, "", stage.first(stage.size() - 1));
     if (std::string_view(stage.data()).empty()) {
       break;
     }
@@ -582,6 +573,9 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   if (base::At(TheWorld().briefing_text(), 0) == '\0') {
     const std::string mission =
         engine::file::ReadProfileFile("MISSION.INI").value_or("");
+    engine::file::IniFile mission_ini;
+    SpanSource mission_source(std::as_bytes(std::span(mission)));
+    mission_ini.Load(mission_source);
 
     std::span<char> work(TheWorld().briefing_text());
     int player_index = 1;
@@ -594,8 +588,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
       absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
       work.front() = '\0';
-      WWGetPrivateProfileString(root, buff, "", work.first(work.size() - 1),
-                                mission.c_str());
+      mission_ini.GetString(root, buff, "", work.first(work.size() - 1));
       if (std::string_view(work.data()).empty()) {
         break;
       }

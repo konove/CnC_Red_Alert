@@ -51,8 +51,10 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/enums.h"
@@ -62,7 +64,6 @@
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/data/ini.h"
-#include "td/data/profile.h"
 #include "td/data/text.h"
 #include "td/map/world.h"
 #include "td/screens/goptions.h"
@@ -194,7 +195,12 @@ bool Expansion_Dialog() {
       base::At(sbuffer, 1000 + 1) = '\n';
       base::At(sbuffer, 1000 + 2) = '\0';
 
-      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
+      // The text ends at its first NUL, as the old scan of it did.
+      const std::string_view text(sbuffer.data());
+      SpanSource source(std::as_bytes(std::span(text)));
+      engine::file::IniFile scenario;
+      scenario.Load(source);
+      scenario.GetString("Basic", "Name", "x", buffer);
       list.Add_Scenario(index, std::format("GDI: {}", buffer));
     }
   }
@@ -211,7 +217,12 @@ bool Expansion_Dialog() {
       base::At(sbuffer, 1000 + 1) = '\n';
       base::At(sbuffer, 1000 + 2) = '\0';
 
-      WWGetPrivateProfileString("Basic", "Name", "x", buffer, sbuffer.data());
+      // The text ends at its first NUL, as the old scan of it did.
+      const std::string_view text(sbuffer.data());
+      SpanSource source(std::as_bytes(std::span(text)));
+      engine::file::IniFile scenario;
+      scenario.Load(source);
+      scenario.GetString("Basic", "Name", "x", buffer);
       list.Add_Scenario(index, std::format("NOD: {}", buffer));
     }
   }
