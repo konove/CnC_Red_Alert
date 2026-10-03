@@ -151,11 +151,14 @@ void Carryover::Recreate() const {
   if (rtti_ == RTTI_INFANTRY) {
     TheWorld().scenario_init() = 0;
   }
-  // TODO: an object that cannot be placed stays in limbo and keeps its pool
-  // slot for the rest of the scenario.
-  techno->Unlimbo(cell_.Center());
+  const bool placed = techno->Unlimbo(cell_.Center());
   if (rtti_ == RTTI_INFANTRY) {
     TheWorld().scenario_init() = saved_scenario_init;
+  }
+  // The old cell may be off this map or occupied. An object left in limbo
+  // would hold its pool slot for the rest of the scenario.
+  if (!placed) {
+    base::DeletePooled(techno);
   }
 }
 

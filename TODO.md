@@ -209,14 +209,6 @@
     an empty list if someone dials. The old reader had the same shape
   - `Build_Init_String_Listbox()` (`td/net/nulldlg.cc`) sorts the list in place while the stored
     indexes stay, so a saved `InitStringIndex` can name a different string afterwards
-- Decide what `Carryover::Recreate()` does with an object it cannot place
-  - `ra/ai/carryover.cc:154` (marked with a TODO): when `Unlimbo()` fails because the old cell is
-    off the new map or occupied, the object built by `base::NewPooled` stays in limbo and keeps its
-    pool slot for the rest of the scenario. The original did the same. Options: `base::DeletePooled`
-    it on failure (3 lines; changes pool occupancy, so later allocations and a multiplayer or
-    recorded game can diverge), or leave it and replace the TODO with a comment saying why
-  - Found in the carryover modernization (`9931845f`..`fe837a37`); Tiberian Dawn has no carryover
-    objects
 - Check whether a captured object leaves stale threat in the houses' regions
   - An object adds its `Risk()` to the other houses' `Region`s on `MARK_DOWN` and subtracts it on
     `MARK_UP` (`ra/objects/object.cc:1668,1682`, via `CellClass::Adjust_Threat()` in
