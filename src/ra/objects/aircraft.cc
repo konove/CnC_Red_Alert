@@ -632,7 +632,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
     const std::string value = ini.GetString(INI_Name(), entry, "");
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
@@ -679,7 +679,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
             air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
                                                  Fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
+              air->Assign_Mission(Mission_From_Name(tokens.Next()));
             } else {
               base::DeletePooled(air);
             }

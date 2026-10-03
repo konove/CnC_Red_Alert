@@ -4714,7 +4714,7 @@ void UnitClass::Read_INI(engine::file::IniFile& ini) {
 
     const std::string value = ini.GetString(INI_Name(), entry, "");
 
-    base::Tokenizer tokens(value, ",\r\n");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {

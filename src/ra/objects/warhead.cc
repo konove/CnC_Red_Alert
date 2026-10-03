@@ -177,7 +177,7 @@ bool WarheadTypeClass::Read_INI(engine::file::IniFile& ini) {
     const std::string verses =
         ini.GetString(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%");
     if (!verses.empty()) {
-      base::Tokenizer tokens(verses, ",");
+      base::Tokenizer tokens(verses);
       for (const game::ArmorType armor :
            magic_enum::enum_values<game::ArmorType>()) {
         Modifier.at(armor) = Fixed::FromString(tokens.Next());

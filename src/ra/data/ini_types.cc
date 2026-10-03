@@ -215,7 +215,7 @@ uint32_t GetOwners(const engine::file::IniFile& ini, std::string_view section,
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
     ownable = 0;
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     for (std::string_view name = tokens.Next(); !name.empty();
          name = tokens.Next()) {
       ownable |= Owner_From_Name(name);
@@ -1175,7 +1175,7 @@ uint64_t GetBuildings(const engine::file::IniFile& ini,
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
     pre = 0;
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     for (std::string_view token = tokens.Next(); !token.empty();
          token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);

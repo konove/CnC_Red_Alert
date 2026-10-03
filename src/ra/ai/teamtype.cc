@@ -1801,7 +1801,7 @@ void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
   */
   Set_Name(name);
 
-  base::Tokenizer tokens(entry, ",");
+  base::Tokenizer tokens(entry);
   House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   uint32_t code = 0;

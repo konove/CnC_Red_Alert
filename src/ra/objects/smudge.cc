@@ -312,7 +312,7 @@ void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
     const std::string value = ini.GetString(INI_Name(), entry, "");
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {

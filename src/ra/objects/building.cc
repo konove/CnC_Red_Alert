@@ -5809,7 +5809,7 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 

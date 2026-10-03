@@ -698,7 +698,7 @@ bool RulesClass::Powerups(engine::file::IniFile& ini) {
         /*
         **	Share odds.
         */
-        base::Tokenizer tokens(value, ",");
+        base::Tokenizer tokens(value);
         std::string_view token = tokens.Next();
         if (!token.empty()) {
           crate_shares_.at(crate) = base::ParseIntegerOr<int>(token, 0);
@@ -801,7 +801,7 @@ bool RulesClass::Themes(engine::file::IniFile& ini) {
 
         const std::string value =
             ini.GetString(THEMECONTROL, ThemeClass::Base_Name(theme), "");
-        base::Tokenizer tokens(value, ",");
+        base::Tokenizer tokens(value);
         std::string_view token = tokens.Next();
         if (!token.empty()) {
           scen = base::ParseIntegerOr<int>(token, 0);

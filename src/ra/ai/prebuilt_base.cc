@@ -140,7 +140,7 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
       continue;
     }
 
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), -1));

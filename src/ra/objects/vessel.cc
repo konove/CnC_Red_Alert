@@ -1974,7 +1974,7 @@ void VesselClass::Read_INI(engine::file::IniFile& ini) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
     const std::string value = ini.GetString(INI_Name(), entry, "");
-    base::Tokenizer tokens(value, ",\r\n");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Vessel house.
     if (inhouse != HOUSE_NONE) {
