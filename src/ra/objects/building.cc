@@ -1734,7 +1734,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         */
         if (IsToRebuild && Class->Level != -1 &&
             TheWorld().base().house() == House->Class->House &&
-            TheWorld().base().FindNode(this) == nullptr) {
+            !TheWorld().base().HasNodeFor(this)) {
           //				if (IsToRebuild && Class->IsBuildable &&
           // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
           TheWorld().base().nodes().emplace_back(Class->Type,

@@ -18,6 +18,7 @@
 
 #include "ra/ai/base.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
 #include <string>
@@ -42,105 +43,65 @@
 
 namespace ra {
 
-bool BaseNode::operator==(const BaseNode& other) const {
-  return type == other.type && cell == other.cell;
+namespace {
+
+// The scenario INI section the base is stored in.
+constexpr char kIniSection[] = "Base";
+
+// Returns whether `building` is the one `node` asks for. A building of the
+// node's type that stands elsewhere and merely covers the node's cell is not.
+bool FillsNode(const BuildingClass& building, const BaseNode& node) {
+  return building.Class->Type == node.type &&
+         Cell::Containing(building.Coord) == node.cell;
 }
 
-bool BaseNode::operator!=(const BaseNode& node) const {
-  return !(*this == node);
-}
-
-bool BaseNode::operator>(const BaseNode& /*unused*/) { return true; }
-
-PrebuiltBase::~PrebuiltBase() { nodes_.clear(); }
+}  // namespace
 
 bool PrebuiltBase::IsBuilt(int node_index) const {
   return FindBuilding(node_index) != nullptr;
 }
 
 BuildingClass* PrebuiltBase::FindBuilding(int node_index) const {
-  const auto& node = base::At(nodes_, node_index);
-  const Cell target_cell = node.cell;
-
-  const auto& map_cell = TheMap().at(target_cell);
-
-  // Returns `candidate` as a building if it is the one this node asks for,
-  // nullptr otherwise.
-  const auto check_candidate = [&](ObjectClass* candidate) -> BuildingClass* {
-    if (!candidate) {
-      return nullptr;
-    }
-
-    if (candidate->What_Am_I() != RTTI_BUILDING) {
-      return nullptr;
-    }
-
-    auto* building = dynamic_cast<BuildingClass*>(candidate);
-
-    if (building->Class->Type != node.type) {
-      return nullptr;
-    }
-
-    // A building of this type that stands elsewhere and merely covers this
-    // cell does not fill the node.
-    if (Cell::Containing(building->Coord) != target_cell) {
-      return nullptr;
-    }
-
-    return building;
-  };
+  const BaseNode& node = base::At(nodes_, node_index);
+  const CellClass& map_cell = TheMap().at(node.cell);
 
   // A building occupies the cells of its foundation and only overlaps the
   // others its image covers. Its top-left cell can be either, so look in both
   // lists.
-  if (auto* match = check_candidate(map_cell.Cell_Building())) {
-    return match;
+  if (BuildingClass* occupier = map_cell.Cell_Building();
+      occupier != nullptr && FillsNode(*occupier, node)) {
+    return occupier;
   }
-
-  for (auto* overlapper : map_cell.Overlappers) {
-    if (auto* match = check_candidate(overlapper)) {
-      return match;
+  for (ObjectClass* overlapper : map_cell.Overlappers) {
+    if (auto* building = dynamic_cast<BuildingClass*>(overlapper);
+        building != nullptr && FillsNode(*building, node)) {
+      return building;
     }
   }
-
   return nullptr;
 }
 
-bool PrebuiltBase::HasNodeFor(const BuildingClass* building) {
-  return FindNode(building) != nullptr;
+bool PrebuiltBase::HasNodeFor(const BuildingClass* building) const {
+  return std::ranges::any_of(nodes_, [building](const BaseNode& node) {
+    return FillsNode(*building, node);
+  });
 }
 
 BaseNode* PrebuiltBase::FindNode(const BuildingClass* building) {
-  for (int i = 0; i < std::ssize(nodes_); i++) {
-    if (building->Class->Type == base::At(nodes_, i).type &&
-        Cell::Containing(building->Coord) == base::At(nodes_, i).cell) {
-      return &base::At(nodes_, i);
+  for (BaseNode& node : nodes_) {
+    if (FillsNode(*building, node)) {
+      return &node;
     }
   }
   return nullptr;
 }
 
-BaseNode* PrebuiltBase::Get_Node(Cell cell) {
-  for (int index = 0; index < std::ssize(nodes_); index++) {
-    if (cell == base::At(nodes_, index).cell) {
-      return &base::At(nodes_, index);
-    }
-  }
-  return nullptr;
-}
-
-BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) {
+const BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) const {
   for (int i = 0; i < std::ssize(nodes_); i++) {
+    const BaseNode& node = base::At(nodes_, i);
     // STRUCT_NONE asks for the first hole of any type.
-    if (type == STRUCT_NONE) {
-      if (!IsBuilt(i)) {
-        return &base::At(nodes_, i);
-      }
-
-    } else {
-      if (base::At(nodes_, i).type == type && !IsBuilt(i)) {
-        return &base::At(nodes_, i);
-      }
+    if ((type == STRUCT_NONE || node.type == type) && !IsBuilt(i)) {
+      return &node;
     }
   }
 
@@ -149,58 +110,56 @@ BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) {
   return nullptr;
 }
 
-void PrebuiltBase::ReadIni(CCINIClass& ini) {
-  char value[128];
-  BaseNode node;  // node to add to list
-
+void PrebuiltBase::ReadIni(const CCINIClass& ini) {
   // The scenario names the owner under "Player"; the human player's house is
   // only the fallback for a section that omits it.
-  house_ = ini.Get_HousesType(INI_Name(), "Player", ThePlayer()->Class->House);
+  house_ = ini.Get_HousesType(kIniSection, "Player", ThePlayer()->Class->House);
 
-  const int node_count = ini.Get_Int(INI_Name(), "Count", 0);
+  const int node_count = ini.Get_Int(kIniSection, "Count", 0);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
+    char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    ini.Get_String(INI_Name(), entry.c_str(), nullptr, value, sizeof(value));
+    ini.Get_String(kIniSection, entry.c_str(), nullptr, value, sizeof(value));
 
     base::Tokenizer tokens(value, ",");
-    node.type = BuildingTypeClass::From_Name(tokens.Next());
-
-    node.cell =
+    const StructType type = BuildingTypeClass::From_Name(tokens.Next());
+    const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), -1));
 
     // A missing or malformed entry would leave a node no building can fill:
     // FindBuilding() indexes the map with its cell, and a save holding its
     // STRUCT_NONE type is rejected when loaded.
-    if (node.type == STRUCT_NONE || node.cell.index() < 0 ||
-        node.cell.index() >= MAP_CELL_TOTAL) {
+    if (type == STRUCT_NONE || cell.index() < 0 ||
+        cell.index() >= MAP_CELL_TOTAL) {
       continue;
     }
 
-    nodes_.push_back(node);
+    nodes_.emplace_back(type, cell);
   }
 }
 
-void PrebuiltBase::WriteIni(CCINIClass& ini) {
-  ini.Clear(INI_Name());
+void PrebuiltBase::WriteIni(CCINIClass& ini) const {
+  ini.Clear(kIniSection);
 
-  if (house_ != HOUSE_NONE) {
-    ini.Put_HousesType(INI_Name(), "Player", house_);
+  if (house_ == HOUSE_NONE) {
+    return;
+  }
+  ini.Put_HousesType(kIniSection, "Player", house_);
 
-    // ReadIni() finds the entries by counting from "000" up to Count.
-    ini.Put_Int(INI_Name(), "Count", static_cast<int>(std::ssize(nodes_)));
+  // ReadIni() finds the entries by counting from "000" up to Count.
+  ini.Put_Int(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));
 
-    for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
-      const std::string entry = absl::StrFormat("%03td", i);
-      const std::string value = absl::StrFormat(
-          "%s,%d",
-          BuildingTypeClass::As_Reference(base::At(nodes_, i).type).IniName,
-          base::At(nodes_, i).cell.index());
+  for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
+    const BaseNode& node = base::At(nodes_, i);
+    const std::string entry = absl::StrFormat("%03td", i);
+    const std::string value = absl::StrFormat(
+        "%s,%d", BuildingTypeClass::As_Reference(node.type).IniName,
+        node.cell.index());
 
-      ini.Put_String(INI_Name(), entry.c_str(), value.c_str());
-    }
+    ini.Put_String(kIniSection, entry.c_str(), value.c_str());
   }
 }
 
@@ -229,8 +188,8 @@ void PrebuiltBase::Serialize(Archive& ar) {
       nodes_.push_back(node);
     }
   } else {
-    for (int i = 0; i < count; ++i) {
-      ar(base::At(nodes_, i).type, base::At(nodes_, i).cell);
+    for (BaseNode& node : nodes_) {
+      ar(node.type, node.cell);
     }
   }
 }

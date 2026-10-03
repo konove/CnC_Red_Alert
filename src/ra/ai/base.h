@@ -25,28 +25,21 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
+#include "ra/core/cell.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
-#include "ra/objects/object.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace ra {
 
+class BuildingClass;
+class CCINIClass;
+
 // One entry of the prebuilt base: a type of building and the cell its top-left
-// corner goes on.
-class BaseNode {
- public:
-  BaseNode() = default;
-  BaseNode(StructType building_type, Cell top_left)
-      : type(building_type), cell(top_left) {}
-  // Nodes are equal when they name the same building type on the same cell.
-  bool operator==(const BaseNode& other) const;
-  bool operator!=(const BaseNode& node) const;
-  // Always true: the nodes have no order.
-  bool operator>(const BaseNode& node);
+// corner goes on. Nodes are equal when both match.
+struct BaseNode {
+  bool operator==(const BaseNode&) const = default;
 
   StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
   Cell cell{};                    // The building's top-left cell.
@@ -57,11 +50,10 @@ class BaseNode {
 // building of its type stands on its cell, so a building placed by the
 // scenario's [STRUCTURES] section fills its node from the start, and one that
 // is destroyed leaves a hole the house builds again. A scenario has at most
-// one; the World owns it. (Despite its name, this is not a base class of
-// anything.)
+// one; the World owns it.
 //
 // Example:
-//   PrebuiltBase& base = TheWorld().base();
+//   const PrebuiltBase& base = TheWorld().base();
 //   if (const BaseNode* node = base.FirstUnbuiltNode()) {
 //     house.BuildStructure = node->type;
 //   }
@@ -70,13 +62,6 @@ class PrebuiltBase {
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar);
-
-  PrebuiltBase() = default;
-  virtual ~PrebuiltBase();
-  PrebuiltBase(const PrebuiltBase&) = delete;
-  PrebuiltBase& operator=(const PrebuiltBase&) = delete;
-  PrebuiltBase(PrebuiltBase&&) = delete;
-  PrebuiltBase& operator=(PrebuiltBase&&) = delete;
 
   // Empties the base and leaves it without an owner, as it is before a
   // scenario is read.
@@ -91,14 +76,11 @@ class PrebuiltBase {
   // NNN counting from 000 up to the section's Count; an entry that is missing,
   // names no building type or has a cell off the map is skipped. Call Clear()
   // first: the list is not cleared.
-  void ReadIni(CCINIClass& ini);
+  void ReadIni(const CCINIClass& ini);
 
   // Replaces the [Base] section of `ini` with this base. A base without an
   // owner (HOUSE_NONE) leaves the section empty.
-  void WriteIni(CCINIClass& ini);
-
-  // The name of the scenario INI section the base is stored in.
-  static const char* INI_Name() { return "Base"; }
+  void WriteIni(CCINIClass& ini) const;
 
   // Returns whether the building of node `node_index` stands on the map.
   [[nodiscard]] bool IsBuilt(int node_index) const;
@@ -111,23 +93,17 @@ class PrebuiltBase {
 
   // Returns whether the base has a node for `building`, which must not be
   // nullptr.
-  bool HasNodeFor(const BuildingClass* building);
+  [[nodiscard]] bool HasNodeFor(const BuildingClass* building) const;
 
   // Returns the first node with the type and top-left cell of `building`,
   // which must not be nullptr, or nullptr if the base has none.
   BaseNode* FindNode(const BuildingClass* building)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  // Returns node `index`, which must be a valid index into nodes().
-  BaseNode* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &base::At(nodes_, index);
-  }
-  // Returns the first node on `cell`, of any type, or nullptr if there is none.
-  BaseNode* Get_Node(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNode* FirstUnbuiltNode(StructType type = STRUCT_NONE)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const BaseNode* FirstUnbuiltNode(
+      StructType type = STRUCT_NONE) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed is not removed; a destroyed building flagged for
