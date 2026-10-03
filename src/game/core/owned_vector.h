@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <concepts>
 #include <memory>
-#include <span>
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/types.h"
 
@@ -32,11 +32,12 @@ class OwnedVector {
 
   // Returns the object at index, which must be in range. The list keeps
   // ownership.
-  [[nodiscard]] T* at(base::ssize index) {
-    return base::At(std::span(elements_), index).get();
+  [[nodiscard]] T* at(base::ssize index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(elements_, index).get();
   }
-  [[nodiscard]] const T* at(base::ssize index) const {
-    return base::At(std::span(elements_), index).get();
+  [[nodiscard]] const T* at(base::ssize index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(elements_, index).get();
   }
 
   // Appends an object, taking ownership, and returns it. `element` must not be
