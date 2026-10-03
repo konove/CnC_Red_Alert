@@ -63,6 +63,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
@@ -311,7 +315,7 @@ class BuildingClass final : public TechnoClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char* buffer);
+  static void Read_INI(const engine::file::IniFile& ini);
   static void Write_INI(std::string& buffer);
   static const char* INI_Name() { return "STRUCTURES"; }
   // Saves building state and checked references without scenario side effects.

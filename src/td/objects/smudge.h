@@ -55,6 +55,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 /******************************************************************************
@@ -97,7 +101,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(char* /*buffer*/);
+  static void Read_INI(const engine::file::IniFile& ini);
   static void Write_INI(std::string& /*buffer*/);
   static const char* INI_Name() { return "SMUDGE"; }
   // Field-wise saved-game support, defined in ioobj.cc.

@@ -502,7 +502,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	template data from the INI, for backward compatibility
   */
   if (fresh && (!MapEditClass::Read_Binary(root, &TheWorld().scenario_crc()))) {
-    TemplateClass::Read_INI(buffer);
+    TemplateClass::Read_INI(scenario);
   }
 
   Call_Back();
@@ -510,25 +510,25 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in and place the 3D terrain objects.
   */
-  TerrainClass::Read_INI(buffer);
+  TerrainClass::Read_INI(scenario);
   Call_Back();
 
   /*
   **	Read in and place the units (all sides).
   */
-  UnitClass::Read_INI(buffer);
+  UnitClass::Read_INI(scenario);
   Call_Back();
 
   /*
   **	Read in and place the infantry units (all sides).
   */
-  InfantryClass::Read_INI(buffer);
+  InfantryClass::Read_INI(scenario);
   Call_Back();
 
   /*
   **	Read in and place all the buildings on the map.
   */
-  BuildingClass::Read_INI(buffer);
+  BuildingClass::Read_INI(scenario);
   Call_Back();
 
   /*
@@ -540,13 +540,13 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in any normal overlay objects.
   */
-  OverlayClass::Read_INI(buffer);
+  OverlayClass::Read_INI(scenario);
   Call_Back();
 
   /*
   **	Read in any smudge overlays.
   */
-  SmudgeClass::Read_INI(buffer);
+  SmudgeClass::Read_INI(scenario);
   Call_Back();
 
   /*

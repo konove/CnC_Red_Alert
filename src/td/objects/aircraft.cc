@@ -123,6 +123,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/trig.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
@@ -504,7 +505,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *buffer           * specified. This is used by the scenario loader code to
  *interpret the INI file and        * create the specified objects therein. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the INI buffer. *
+ * INPUT:   ini      -- The parsed scenario INI file. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -512,19 +513,13 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Read_INI(char* buffer) {
+void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
   char buf[128];
 
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
-
-  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
-  while (*tbuffer != '\0') {
-    WWGetPrivateProfileString(
-        INI_Name(), tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+  const int count = ini.EntryCount(INI_Name());
+  for (int i = 0; i < count; ++i) {
+    const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
+    ini.GetString(INI_Name(), key, "", buf);
     base::Tokenizer tokens(buf, ",");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
@@ -561,8 +556,6 @@ void AircraftClass::Read_INI(char* buffer) {
         }
       }
     }
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 }
 
