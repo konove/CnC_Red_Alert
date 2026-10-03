@@ -1581,7 +1581,7 @@ bool Select_Game(bool fade) {
       TheWorld().score().ElapsedTime = static_cast<int64_t>(uint64_t{1} << 40);
       TheWorld().base().set_house(HOUSE_GOOD);
       TheWorld().base().nodes().clear();
-      BaseNodeClass node;
+      BaseNode node;
       node.type = STRUCT_POWER;
       node.coord = Cell::FromIndex(1000).Center();
       TheWorld().base().nodes().push_back(node);

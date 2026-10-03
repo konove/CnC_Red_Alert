@@ -1205,7 +1205,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
             auto* building = dynamic_cast<BuildingClass*>(
                 base::At(TheWorld().current_object(), 0));
             if (TheWorld().base().HasNodeFor(building)) {
-              BaseNodeClass* node = TheWorld().base().FindNode(
+              BaseNode* node = TheWorld().base().FindNode(
                   building);  // for removing from an AI Base
               base::EraseFirst(TheWorld().base().nodes(), *node);
             }

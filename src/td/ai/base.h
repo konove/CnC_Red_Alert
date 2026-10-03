@@ -38,15 +38,15 @@ namespace td {
 
 // One entry of the prebuilt base: a type of building and the coordinate it is
 // placed at, which is the coordinate the placed building reports.
-class BaseNodeClass {
+class BaseNode {
  public:
-  BaseNodeClass() = default;
+  BaseNode() = default;
   // Nodes are equal when they name the same building type at the same
   // coordinate.
-  bool operator==(const BaseNodeClass& other) const;
-  bool operator!=(const BaseNodeClass& node) const;
+  bool operator==(const BaseNode& other) const;
+  bool operator!=(const BaseNode& node) const;
   // Always true: the nodes have no order.
-  bool operator>(const BaseNodeClass& node);
+  bool operator>(const BaseNode& node);
 
   StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
   Coordinate coord{};             // Where the building is placed.
@@ -61,18 +61,18 @@ class BaseNodeClass {
 // anything.)
 //
 // Example:
-//   BaseClass& base = TheWorld().base();
-//   if (const BaseNodeClass* node = base.FirstUnbuiltNode()) {
+//   PrebuiltBase& base = TheWorld().base();
+//   if (const BaseNode* node = base.FirstUnbuiltNode()) {
 //     techno = &BuildingTypeClass::As_Reference(node->type);
 //   }
-class BaseClass {
+class PrebuiltBase {
  public:
-  BaseClass() = default;
-  virtual ~BaseClass();
-  BaseClass(const BaseClass&) = delete;
-  BaseClass& operator=(const BaseClass&) = delete;
-  BaseClass(BaseClass&&) = delete;
-  BaseClass& operator=(BaseClass&&) = delete;
+  PrebuiltBase() = default;
+  virtual ~PrebuiltBase();
+  PrebuiltBase(const PrebuiltBase&) = delete;
+  PrebuiltBase& operator=(const PrebuiltBase&) = delete;
+  PrebuiltBase(PrebuiltBase&&) = delete;
+  PrebuiltBase& operator=(PrebuiltBase&&) = delete;
 
   // Empties the node list. The owner stays: ReadIni() always sets it.
   void ClearNodes() { nodes_.clear(); }
@@ -112,25 +112,24 @@ class BaseClass {
 
   // Returns the first node with the type and coordinate of `building`, which
   // must not be nullptr, or nullptr if the base has none.
-  BaseNodeClass* FindNode(BuildingClass* building)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  BaseNode* FindNode(BuildingClass* building) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns node `index`, which must be a valid index into nodes().
-  BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  BaseNode* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return &base::At(nodes_, index);
   }
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNodeClass* FirstUnbuiltNode(StructType type = STRUCT_NONE)
+  BaseNode* FirstUnbuiltNode(StructType type = STRUCT_NONE)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed stays; one whose building type was sabotaged in the
   // previous mission is removed when the scenario starts.
-  std::vector<BaseNodeClass>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<BaseNode>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
   }
-  [[nodiscard]] const std::vector<BaseNodeClass>& nodes() const
+  [[nodiscard]] const std::vector<BaseNode>& nodes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
   }
@@ -140,12 +139,12 @@ class BaseClass {
   void set_house(HousesType house) { house_ = house; }
 
  private:
-  std::vector<BaseNodeClass> nodes_;
+  std::vector<BaseNode> nodes_;
   HousesType house_ = HOUSE_NONE;
 };
 
-extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void BaseClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void PrebuiltBase::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void PrebuiltBase::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace td
 

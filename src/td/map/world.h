@@ -67,7 +67,7 @@ class World {
   LogicClass& logic() ABSL_ATTRIBUTE_LIFETIME_BOUND { return logic_; }
 
   // The computer's record of what its base should look like.
-  BaseClass& base() ABSL_ATTRIBUTE_LIFETIME_BOUND { return base_; }
+  PrebuiltBase& base() ABSL_ATTRIBUTE_LIFETIME_BOUND { return base_; }
 
   // What the score screen shows when the scenario ends.
   ScoreClass& score() ABSL_ATTRIBUTE_LIFETIME_BOUND { return score_; }
@@ -175,7 +175,7 @@ class World {
   MapEditClass map_;
   HouseClass* player_ = nullptr;
   LogicClass logic_;
-  BaseClass base_;
+  PrebuiltBase base_;
   ScoreClass score_;
 
   std::vector<ObjectClass*> current_object_;

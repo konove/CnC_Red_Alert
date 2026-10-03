@@ -558,7 +558,7 @@ void Do_Win() {
     */
     for (int index = 0; index < std::ssize(TheWorld().base().nodes());
          index++) {
-      const BaseNodeClass* node = TheWorld().base().Get_Node(index);
+      const BaseNode* node = TheWorld().base().Get_Node(index);
 
       if (node && node->type == TheWorld().sabotaged_type()) {
         TheWorld().base().nodes().erase(TheWorld().base().nodes().begin() +

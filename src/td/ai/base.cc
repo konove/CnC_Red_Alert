@@ -36,20 +36,20 @@
 
 namespace td {
 
-bool BaseNodeClass::operator==(const BaseNodeClass& other) const {
+bool BaseNode::operator==(const BaseNode& other) const {
   return type == other.type && coord == other.coord;
 }
 
-bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
+bool BaseNode::operator!=(const BaseNode& node) const {
   return type != node.type || coord != node.coord;
 }
 
-bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
+bool BaseNode::operator>(const BaseNode& /*unused*/) { return true; }
 
-BaseClass::~BaseClass() { nodes_.clear(); }
+PrebuiltBase::~PrebuiltBase() { nodes_.clear(); }
 
-void BaseClass::ReadIni(const char* ini_text) {
-  BaseNodeClass node;  // node to add to list
+void PrebuiltBase::ReadIni(const char* ini_text) {
+  BaseNode node;  // node to add to list
 
   // The base belongs to whoever opposes the human player.
   char player[20];
@@ -99,7 +99,7 @@ void BaseClass::ReadIni(const char* ini_text) {
   }
 }
 
-void BaseClass::WriteIni(std::string& ini_text) {
+void PrebuiltBase::WriteIni(std::string& ini_text) {
   // Passing no entry deletes the whole section.
   WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, ini_text);
 
@@ -119,11 +119,11 @@ void BaseClass::WriteIni(std::string& ini_text) {
   }
 }
 
-bool BaseClass::IsBuilt(int node_index) {
+bool PrebuiltBase::IsBuilt(int node_index) {
   return FindBuilding(node_index) != nullptr;
 }
 
-BuildingClass* BaseClass::FindBuilding(int node_index) {
+BuildingClass* PrebuiltBase::FindBuilding(int node_index) {
   ObjectClass* obj[4];
 
   const Cell cell = Cell::Containing(base::At(nodes_, node_index).coord);
@@ -150,11 +150,11 @@ BuildingClass* BaseClass::FindBuilding(int node_index) {
   return bldg;
 }
 
-bool BaseClass::HasNodeFor(BuildingClass* building) {
+bool PrebuiltBase::HasNodeFor(BuildingClass* building) {
   return FindNode(building) != nullptr;
 }
 
-BaseNodeClass* BaseClass::FindNode(BuildingClass* building) {
+BaseNode* PrebuiltBase::FindNode(BuildingClass* building) {
   for (int i = 0; i < std::ssize(nodes_); i++) {
     if (building->Class->Type == base::At(nodes_, i).type &&
         building->Coord == base::At(nodes_, i).coord) {
@@ -164,7 +164,7 @@ BaseNodeClass* BaseClass::FindNode(BuildingClass* building) {
   return nullptr;
 }
 
-BaseNodeClass* BaseClass::FirstUnbuiltNode(StructType type) {
+BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) {
   for (int i = 0; i < std::ssize(nodes_); i++) {
     // STRUCT_NONE asks for the first hole of any type.
     if (type == STRUCT_NONE) {

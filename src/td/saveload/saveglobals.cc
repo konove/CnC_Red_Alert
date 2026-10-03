@@ -13,7 +13,7 @@
 namespace td {
 
 template <class Archive>
-void BaseClass::Serialize(Archive& ar) {
+void PrebuiltBase::Serialize(Archive& ar) {
   ar.Section(FourCC("BASE"));
   auto count = static_cast<int32_t>(std::ssize(nodes_));
   ar(house_, count);
@@ -27,7 +27,7 @@ void BaseClass::Serialize(Archive& ar) {
     nodes_.reserve(base::ToSize(count));
   }
   for (int32_t i = 0; i < count; ++i) {
-    BaseNodeClass node;
+    BaseNode node;
     if constexpr (!Archive::kIsReading) {
       node = base::At(nodes_, i);
     }
@@ -41,8 +41,8 @@ void BaseClass::Serialize(Archive& ar) {
     }
   }
 }
-template void BaseClass::Serialize(ArchiveWriter&);
-template void BaseClass::Serialize(ArchiveReader&);
+template void PrebuiltBase::Serialize(ArchiveWriter&);
+template void PrebuiltBase::Serialize(ArchiveReader&);
 
 template <class Archive>
 void LayerClass::Serialize(Archive& ar) {

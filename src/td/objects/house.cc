@@ -3536,7 +3536,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
     case RTTI_BUILDING:
     case RTTI_BUILDINGTYPE:
       if (CurBuildings < MaxBuilding) {
-        const BaseNodeClass* node = TheWorld().base().FirstUnbuiltNode();
+        const BaseNode* node = TheWorld().base().FirstUnbuiltNode();
         if (node) {
           techno = &BuildingTypeClass::As_Reference(node->type);
         }
