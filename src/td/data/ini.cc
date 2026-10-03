@@ -71,13 +71,11 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
-#include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
-#include "engine/stream/span_source.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "td/ai/prebuilt_base.h"
@@ -91,6 +89,7 @@
 #include "td/core/inline.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/data/ini_io.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -119,29 +118,6 @@ namespace td {
 // The most money a scenario lets the player carry over from the last one,
 // from its [Basic] CarryOverCap; negative means uncapped.
 static int carry_over_cap;
-
-namespace {
-
-// Fills `ini` from the text of the game file `name`. A file that does not
-// exist, or holds no section, leaves `ini` empty: the editor then starts the
-// scenario or the master list from scratch.
-void LoadIniFile(const char* name, engine::file::IniFile& ini) {
-  const std::optional<std::string> text = engine::file::ReadProfileFile(name);
-  if (text) {
-    SpanSource source(std::as_bytes(std::span(*text)));
-    ini.Load(source);
-  }
-}
-
-// Writes `ini` to the game file `name`, replacing it. A file that cannot be
-// opened or written is not reported, as the text writer it replaced did not.
-void SaveIniFile(const char* name, const engine::file::IniFile& ini) {
-  if (const auto stream = OpenGameFile(name, FileAccess::kWrite)) {
-    ini.Save(*stream);
-  }
-}
-
-}  // namespace
 
 /************************************* Prototypes
  * *********************************************/
@@ -389,8 +365,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   // text with no section at all leaves the database empty, so every lookup
   // below returns its default, as the old text scans did.
   engine::file::IniFile scenario;
-  SpanSource source(std::as_bytes(std::span(*ini)));
-  scenario.Load(source);
+  LoadIniText(*ini, scenario);
 
   /*
   **	Fetch the appropriate movie names from the INI file.
@@ -597,8 +572,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     const std::string mission =
         engine::file::ReadProfileFile("MISSION.INI").value_or("");
     engine::file::IniFile mission_ini;
-    SpanSource mission_source(std::as_bytes(std::span(mission)));
-    mission_ini.Load(mission_source);
+    LoadIniText(mission, mission_ini);
 
     std::span<char> work(TheWorld().briefing_text());
     int player_index = 1;
