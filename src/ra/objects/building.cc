@@ -142,7 +142,7 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/base.h"
+#include "ra/ai/prebuilt_base.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/assets/audio.h"

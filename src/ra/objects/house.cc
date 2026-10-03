@@ -169,7 +169,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/base.h"
+#include "ra/ai/prebuilt_base.h"
 #include "ra/ai/reinf.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"

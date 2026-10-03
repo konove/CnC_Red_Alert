@@ -19,8 +19,8 @@
 // File: The prebuilt base, the list of buildings a scenario tells the computer
 // to put up and to rebuild when they are destroyed.
 
-#ifndef CNC_RED_ALERT_RA_AI_BASE_H_
-#define CNC_RED_ALERT_RA_AI_BASE_H_
+#ifndef CNC_RED_ALERT_RA_AI_PREBUILT_BASE_H_
+#define CNC_RED_ALERT_RA_AI_PREBUILT_BASE_H_
 
 #include <vector>
 
@@ -129,4 +129,4 @@ extern template void PrebuiltBase::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_BASE_H_
+#endif  // CNC_RED_ALERT_RA_AI_PREBUILT_BASE_H_

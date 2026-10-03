@@ -57,7 +57,7 @@
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
-#include "ra/ai/base.h"
+#include "ra/ai/prebuilt_base.h"
 #include "ra/assets/screen.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

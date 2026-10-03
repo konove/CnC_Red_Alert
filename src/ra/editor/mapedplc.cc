@@ -74,7 +74,7 @@
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/base.h"
+#include "ra/ai/prebuilt_base.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"

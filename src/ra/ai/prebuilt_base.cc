@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/base.h"
+#include "ra/ai/prebuilt_base.h"
 
 #include <algorithm>
 #include <cstdint>
