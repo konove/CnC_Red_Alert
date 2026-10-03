@@ -56,6 +56,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/cps_image.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1061,14 +1062,14 @@ void Map_Selection() {
   if (house == HOUSE_GOOD) {
     if (const auto file =
             OpenGameFile(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS")) {
-      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                      TheScreen().sys_mem_page().bytes(), nullptr);
+      CopyPictureToPage(engine::gfx::ReadCpsImage(*file),
+                        TheScreen().sys_mem_page());
     }
   } else {
     if (const auto file =
             OpenGameFile(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS")) {
-      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                      TheScreen().sys_mem_page().bytes(), nullptr);
+      CopyPictureToPage(engine::gfx::ReadCpsImage(*file),
+                        TheScreen().sys_mem_page());
     }
     if (lastscenario) {
       attackxcoord = 200;

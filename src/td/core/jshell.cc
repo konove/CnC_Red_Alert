@@ -36,7 +36,6 @@
  *---------------------------------------------------------------------------------------------*
  * Functions:
  *   Load_Alloc_Data -- Allocates a buffer and loads the file into it.
- *   Load_Uncompress -- Loads and uncompresses data to a buffer.
  *   Set_Window -- Sets the window dimensions to that specified.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -44,22 +43,20 @@
 #include "td/core/jshell.h"
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/types.h"
-#include "engine/codec/compressed_block.h"
+#include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
-#include "engine/stream/seek_origin.h"
 
 namespace td {
 
@@ -91,84 +88,11 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
-
-/***********************************************************************************************
- * Load_Uncompress -- Loads and uncompresses data to a buffer. *
- *                                                                                             *
- *    This is the C++ counterpart to the Load_Uncompress function. It will load
- *the file       * specified into the graphic buffer indicated and uncompress
- *it.                           *
- *                                                                                             *
- * INPUT:   file     -- The file to load and uncompress. *
- *                                                                                             *
- *          uncomp_buff -- The graphic buffer that initial loading will use. *
- *                                                                                             *
- *          dest_buff   -- The buffer that will hold the uncompressed data. *
- *                                                                                             *
- *          reserved_data  -- This is an optional pointer to a buffer that will
- *hold any       * reserved data the compressed file may contain. This is *
- *                            typically a palette. *
- *                                                                                             *
- * OUTPUT:  Returns with the size of the uncompressed data in the destination
- *buffer.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                        std::span<uint8_t> dest_buff,
-                        engine::gfx::Palette* const palette) {
-  const auto decode = [&] -> int32_t {
-    uint16_t stored_size = 0;
-    CompressedBlockHeader header{};
-    if (!file.ReadObject(stored_size) || !file.ReadObject(header) ||
-        stored_size < sizeof(header)) {
-      return 0;
-    }
-    std::size_t size = stored_size - sizeof(header);
-    if (header.skip_bytes < 0 || base::ToSize(header.skip_bytes) > size) {
-      return 0;
-    }
-    if (header.skip_bytes != 0) {
-      size -= base::ToSize(header.skip_bytes);
-      if (palette != nullptr) {
-        std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
-        if (header.skip_bytes > engine::gfx::Palette::kFileSize ||
-            file.Read(std::span(vga), header.skip_bytes) != header.skip_bytes) {
-          return 0;
-        }
-        // A short palette replaces only the colors it holds whole.
-        const engine::gfx::Palette loaded = engine::gfx::Palette::FromVga(vga);
-        std::ranges::copy(
-            loaded.colors().first(base::ToSize(header.skip_bytes / 3)),
-            palette->colors().begin());
-      } else {
-        file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
-      }
-      header.skip_bytes = 0;
-    }
-    auto source = uncomp_buff;
-    const auto dest = dest_buff;
-    const auto packet_size = size + sizeof(header);
-    if (packet_size > source.size()) {
-      return 0;
-    }
-    if (source.data() == dest.data()) {
-      source = source.last(packet_size);
-    } else {
-      source = source.first(packet_size);
-    }
-    base::CopyBytes(std::as_writable_bytes(source), base::ObjectBytes(header),
-                    sizeof(header));
-    if (file.Read(source.subspan(sizeof(header))) !=
-        static_cast<base::ssize>(size)) {
-      return 0;
-    }
-    return static_cast<int32_t>(
-        UncompressBlock(std::as_bytes(source), std::as_writable_bytes(dest)));
-  };
-  return decode();
+void CopyPictureToPage(const engine::gfx::CpsImage& picture,
+                       PixelBuffer& page) {
+  const std::span<uint8_t> bytes = page.bytes();
+  CHECK_LE(picture.pixels.size(), bytes.size());
+  std::ranges::copy(picture.pixels, bytes.begin());
 }
 
 std::vector<std::byte> LoadAllocData(ByteStream& file) {

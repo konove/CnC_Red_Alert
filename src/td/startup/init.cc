@@ -79,6 +79,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1315,9 +1316,11 @@ bool Select_Game(bool fade) {
                             Call_Back);
             TheScreen().visible_page().view().Clear();
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                              TheScreen().sys_mem_page().bytes(),
-                              &ThePalettes().title_palette());
+              const engine::gfx::CpsImage picture =
+                  engine::gfx::ReadCpsImage(*file);
+              std::ranges::copy(picture.colors,
+                                ThePalettes().title_palette().colors().begin());
+              CopyPictureToPage(picture, TheScreen().sys_mem_page());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1339,9 +1342,11 @@ bool Select_Game(bool fade) {
                             Call_Back);
             TheScreen().visible_page().view().Clear();
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                              TheScreen().sys_mem_page().bytes(),
-                              &ThePalettes().title_palette());
+              const engine::gfx::CpsImage picture =
+                  engine::gfx::ReadCpsImage(*file);
+              std::ranges::copy(picture.colors,
+                                ThePalettes().title_palette().colors().begin());
+              CopyPictureToPage(picture, TheScreen().sys_mem_page());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1363,9 +1368,11 @@ bool Select_Game(bool fade) {
                             Call_Back);
             TheScreen().visible_page().view().Clear();
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                              TheScreen().sys_mem_page().bytes(),
-                              &ThePalettes().title_palette());
+              const engine::gfx::CpsImage picture =
+                  engine::gfx::ReadCpsImage(*file);
+              std::ranges::copy(picture.colors,
+                                ThePalettes().title_palette().colors().begin());
+              CopyPictureToPage(picture, TheScreen().sys_mem_page());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1386,9 +1393,11 @@ bool Select_Game(bool fade) {
                           Call_Back);
           TheScreen().visible_page().view().Clear();
           if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-            Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                            TheScreen().sys_mem_page().bytes(),
-                            &ThePalettes().title_palette());
+            const engine::gfx::CpsImage picture =
+                engine::gfx::ReadCpsImage(*file);
+            std::ranges::copy(picture.colors,
+                              ThePalettes().title_palette().colors().begin());
+            CopyPictureToPage(picture, TheScreen().sys_mem_page());
             TheScreen().sys_mem_page().view().Scale(
                 TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,

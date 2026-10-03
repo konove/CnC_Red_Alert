@@ -46,7 +46,8 @@
 #include <span>
 #include <vector>
 
-#include "engine/gfx/palette.h"
+#include "engine/gfx/cps_image.h"
+#include "engine/gfx/pixel_buffer.h"
 
 class ByteStream;
 
@@ -59,15 +60,10 @@ std::span<std::byte> Load_Alloc_Data(ByteStream& file);
 
 // Reads a file into owned byte storage.
 std::vector<std::byte> LoadAllocData(ByteStream& file);
-// Reads one compressed picture from `file` and uncompresses it into
-// `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer).
-// The bytes a picture reserves ahead of its data are its palette; the colors
-// they hold replace those of `*palette` when `palette` is not nullptr, and are
-// skipped otherwise.
-// Returns the uncompressed size, 0 on failure.
-int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                        std::span<uint8_t> dest_buff,
-                        engine::gfx::Palette* palette);
+
+// Copies `picture`'s pixels to the top of `page`, which must hold at least
+// that many: the system-memory page holds a whole picture.
+void CopyPictureToPage(const engine::gfx::CpsImage& picture, PixelBuffer& page);
 
 }  // namespace td
 
