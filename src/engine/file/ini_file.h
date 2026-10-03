@@ -142,9 +142,9 @@ class IniFile {
 
   // Returns the value without surrounding blanks; `default_value` is trimmed
   // the same way.
-  [[nodiscard]] std::string GetString(std::string_view section,
-                                      std::string_view entry,
-                                      std::string_view default_value) const;
+  [[nodiscard]] std::string GetString(
+      std::string_view section, std::string_view entry,
+      std::string_view default_value = "") const;
   // Reads decimal, "$FF", "0FFh" and "0xFF" forms.
   [[nodiscard]] int GetInt(std::string_view section, std::string_view entry,
                            int default_value = 0) const;
