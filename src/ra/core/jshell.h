@@ -31,6 +31,7 @@
 
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
+#include "engine/gfx/palette.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
@@ -56,7 +57,7 @@ FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
 // colors: colors 1..240 fade to the closest of colors 240..254, and color 0 and
 // colors 241..255 keep their own color. A shadow drawn over a shadow therefore
 // does not darken further, however many shapes overlap.
-FadingTable BuildShadowFadingTable(const PaletteClass& palette,
+FadingTable BuildShadowFadingTable(const engine::gfx::Palette& palette,
                                    int target_color, int ratio);
 
 // Returns the translucency table in which each `colors` entry's source_color
@@ -84,7 +85,7 @@ TranslucencyTable<N> BuildTranslucencyTableWith(
 // the whole of `palette`.
 template <std::size_t N>
 TranslucencyTable<N> BuildTranslucencyTable(
-    const PaletteClass& palette,
+    const engine::gfx::Palette& palette,
     const std::array<TranslucentColor, N>& colors) {
   return BuildTranslucencyTableWith(
       colors, [&palette](const TranslucentColor& entry) {
@@ -97,7 +98,7 @@ TranslucencyTable<N> BuildTranslucencyTable(
 // compound.
 template <std::size_t N>
 TranslucencyTable<N> BuildShadowTranslucencyTable(
-    const PaletteClass& palette,
+    const engine::gfx::Palette& palette,
     const std::array<TranslucentColor, N>& colors) {
   return BuildTranslucencyTableWith(
       colors, [&palette](const TranslucentColor& entry) {

@@ -67,6 +67,23 @@ TEST(BuildShadowFadingTableTest, StaysInsideTheShadowRange) {
   }
 }
 
+TEST(BuildShadowFadingTableTest, TiesGoToTheLowerColor) {
+  PaletteClass palette(PaletteColor(200, 200, 200));
+  palette.at(245) = PaletteColor(20, 20, 20);
+  palette.at(250) = PaletteColor(20, 20, 20);
+
+  const FadingTable table = BuildShadowFadingTable(palette, 0, 0);
+
+  EXPECT_EQ(table.at(1), 240);
+  EXPECT_EQ(table.at(245), 245);
+  EXPECT_EQ(table.at(250), 250);
+  // Color 240 is itself a candidate and the first of the equal ones.
+  EXPECT_EQ(table.at(240), 240);
+
+  const FadingTable dark = BuildShadowFadingTable(palette, 245, 255);
+  EXPECT_EQ(dark.at(1), 245);
+}
+
 }  // namespace
 
 }  // namespace ra
