@@ -182,8 +182,6 @@ static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
 static bool Need_To_Take(const AircraftClass* air) {
   if (*air == AIRCRAFT_YAK || *air == AIRCRAFT_MIG) {
     int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP);
-    //		int deficit = air->House->Get_Quantity(STRUCT_AIRSTRIP) -
-    //(air->House->Get_Quantity(AIRCRAFT_YAK)+air->House->Get_Quantity(AIRCRAFT_MIG));
 
     /*
     **	Loop through all aircraft and subtract all the ones that are NOT
@@ -790,10 +788,6 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         if (passenger != INFANTRY_NONE) {
           aircraft.Passenger = passenger != INFANTRY_NONE;
         }
-        //				if (Passenger == INFANTRY_TANYA) {
-        //					aircraft->Ammo = 1;
-        // aircraft->AttacksRemaining = 1;
-        //				}
       }
 
       /*
