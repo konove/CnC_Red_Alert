@@ -49,7 +49,7 @@ class Region {
   }
 
   // Adds `delta` to the region's threat; negative when an object leaves.
-  void AdjustThreat(int delta) { threat_ += delta; }
+  void AdjustThreat(const int delta) { threat_ += delta; }
 
   // The region's current threat; 0 when no enemy object is in or next to it.
   [[nodiscard]] int threat() const { return static_cast<int>(threat_); }
