@@ -66,6 +66,10 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 class DisplayClass : public MapClass {
@@ -138,7 +142,7 @@ class DisplayClass : public MapClass {
   //-------------------------------------------------------------------------
   DisplayClass();
 
-  virtual void Read_INI(char* buffer);
+  virtual void Read_INI(const engine::file::IniFile& ini);
   virtual void Write_INI(std::string& buffer);
 
   /*

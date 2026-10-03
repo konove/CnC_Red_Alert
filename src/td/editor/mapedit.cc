@@ -75,6 +75,7 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
@@ -318,7 +319,7 @@ void MapEditClass::Init_IO() {
  * certain values every time a new INI is read.                            *
  *                                                                         *
  * INPUT:                                                                  *
- *      buffer      INI staging area                                       *
+ *      ini         parsed scenario INI file                               *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -329,13 +330,13 @@ void MapEditClass::Init_IO() {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Read_INI(char* buffer) {
+void MapEditClass::Read_INI(const engine::file::IniFile& ini) {
   /*
   ------------------------ Invoke parent's Read_INI ------------------------
   */
-  MouseClass::Read_INI(buffer);
+  MouseClass::Read_INI(ini);
 
-  BasePercent = WWGetPrivateProfileInt("Basic", "Percent", 0, buffer);
+  BasePercent = ini.GetInt("Basic", "Percent", 0);
   BaseGauge->Set_Value(BasePercent);
 }
 

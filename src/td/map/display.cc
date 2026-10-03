@@ -113,6 +113,7 @@
 #include "base/strings/number_parse.h"
 #include "base/types.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/font.h"
@@ -1083,7 +1084,7 @@ Cell DisplayClass::Click_Cell_Calc(int x, int y) {
  *                                                                                             *
  *    This routine is used to read the map control data from the INI * file. *
  *                                                                                             *
- * INPUT:   buffer   -- Pointer to the loaded INI file data. *
+ * INPUT:   ini      -- The parsed scenario INI file. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -1092,7 +1093,7 @@ Cell DisplayClass::Click_Cell_Calc(int x, int y) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Read_INI(char* buffer) {
+void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
   char name[16];
   const char* trigsection = "CellTriggers";
   char buf[20];  // trigger name for a cell
@@ -1100,20 +1101,17 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the map dimensions.
   */
-  Set_Map_Dimensions(
-      WWGetPrivateProfileInt("MAP", "X", 1, buffer),
-      WWGetPrivateProfileInt("MAP", "Y", 1, buffer),
-      WWGetPrivateProfileInt("MAP", "Width", MAP_CELL_W - 2, buffer),
-      WWGetPrivateProfileInt("MAP", "Height", MAP_CELL_H - 2, buffer));
+  Set_Map_Dimensions(ini.GetInt("MAP", "X", 1), ini.GetInt("MAP", "Y", 1),
+                     ini.GetInt("MAP", "Width", MAP_CELL_W - 2),
+                     ini.GetInt("MAP", "Height", MAP_CELL_H - 2));
 
   /*
   **	The theater is determined at this point. There is specific data that
   **	is custom to this data. Load the custom data (as it related to terrain)
   **	at this point.
   */
-  WWGetPrivateProfileString("MAP", "Theater", Theaters.at(THEATER_DESERT).Name,
-                            std::span(name).first(static_cast<std::size_t>(13)),
-                            buffer);
+  ini.GetString("MAP", "Theater", Theaters.at(THEATER_DESERT).Name,
+                std::span(name).first(static_cast<std::size_t>(13)));
   Theater = Theater_From_Name(name);
 
   /*
@@ -1143,7 +1141,7 @@ void DisplayClass::Read_INI(char* buffer) {
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
     base::At(TheWorld().waypoint(), i) =
-        Cell::FromIndex(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
+        Cell::FromIndex(ini.GetInt("Waypoints", buf, -1));
     if (base::At(TheWorld().waypoint(), i) != Cell::None()) {
       (*this).at(base::At(TheWorld().waypoint(), i)).IsWaypoint = true;
     }
@@ -1166,32 +1164,22 @@ void DisplayClass::Read_INI(char* buffer) {
   /*
   **	Read the cell trigger names, and assign TriggerClass pointers
   */
-  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
-  auto key_cursor = std::span(key_storage);
-  char* tbuffer = key_cursor.data();  // Accumulation buffer of Trigger names.
-                                      // // tbuffer is after the INI data
-
-  /*
-  **	Read all entry names into 'tbuffer'.
-  */
-  WWGetPrivateProfileString(trigsection, nullptr, nullptr, key_cursor, buffer);
-
   /*
   **	Loop through all CellTrigger entries.
   */
-  while (*tbuffer != '\0') {
+  const int count = ini.EntryCount(trigsection);
+  for (int i = 0; i < count; ++i) {
+    const char* key = ini.EntryName(trigsection, i);  // Cell number.
+
     /*
     **	Get a cell trigger assignment.
     */
-    WWGetPrivateProfileString(
-        trigsection, tbuffer, nullptr,
-        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
-        buffer);
+    ini.GetString(trigsection, key, "", buf);
 
     /*
     **	Get cell # from entry name.
     */
-    const int cell = base::ParseIntegerOr<int>(tbuffer, 0);
+    const int cell = base::ParseIntegerOr<int>(key, 0);
     if (cell > 0 && cell < MAP_CELL_TOTAL &&
         !(*this).at(Cell::FromIndex(cell)).IsTrigger) {
       /*
@@ -1206,12 +1194,6 @@ void DisplayClass::Read_INI(char* buffer) {
         }
       }
     }
-
-    /*
-    **	Step to next entry name.
-    */
-    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
-    tbuffer = key_cursor.data();
   }
 }
 

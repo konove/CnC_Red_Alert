@@ -494,7 +494,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the map control values. This includes dimensions
   **	as well as theater information.
   */
-  TheMap().Read_INI(buffer);
+  TheMap().Read_INI(scenario);
   Call_Back();
 
   /*

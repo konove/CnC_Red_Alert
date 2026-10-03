@@ -75,6 +75,10 @@
 #include "td/ui/textbtn.h"
 #include "td/ui/txtlabel.h"
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 /*
@@ -202,7 +206,7 @@ class MapEditClass : public MouseClass {
   bool Scroll_Map(game::DirType facing, int& distance,
                   bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
-  void Read_INI(char* buffer) override;
+  void Read_INI(const engine::file::IniFile& ini) override;
   void Write_INI(std::string& buffer) override;
   void Detach(ObjectClass* object) override;
   void Clear_List();
