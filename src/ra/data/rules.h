@@ -44,7 +44,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/installed.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/mission.h"

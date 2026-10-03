@@ -63,7 +63,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "td/assets/screen.h"
 #include "td/assets/window_rect.h"

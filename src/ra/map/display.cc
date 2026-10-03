@@ -137,7 +137,7 @@
 #include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"

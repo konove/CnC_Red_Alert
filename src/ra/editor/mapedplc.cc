@@ -68,7 +68,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"

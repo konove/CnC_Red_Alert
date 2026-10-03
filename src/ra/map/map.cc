@@ -88,7 +88,7 @@
 #include "engine/gfx/tile.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"

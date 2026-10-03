@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "base/array.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"

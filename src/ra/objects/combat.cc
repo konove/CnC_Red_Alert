@@ -49,7 +49,7 @@
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"

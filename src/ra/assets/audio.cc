@@ -41,7 +41,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/assets.h"
 #include "ra/core/config.h"

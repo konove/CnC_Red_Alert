@@ -85,7 +85,7 @@
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"

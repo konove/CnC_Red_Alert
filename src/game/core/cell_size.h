@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_
-#define CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_CELL_SIZE_H_
+#define CNC_RED_ALERT_GAME_CORE_CELL_SIZE_H_
 
 // File: The size of a map cell in pixels and in leptons, shared by the
 // two games' map display, coordinate conversion and rules defaults.
@@ -23,4 +23,4 @@ inline constexpr int kLeptonsPerPixel = kCellWidthLeptons / kCellWidthPixels;
 
 }  // namespace game
 
-#endif  // CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_CELL_SIZE_H_

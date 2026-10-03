@@ -63,7 +63,7 @@
 #include <cstdlib>
 
 #include "base/cardinal.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "td/core/coord.h"

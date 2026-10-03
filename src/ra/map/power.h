@@ -47,7 +47,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"

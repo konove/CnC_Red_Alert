@@ -62,7 +62,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/path_overlap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"

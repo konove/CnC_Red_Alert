@@ -98,7 +98,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/utracker.h"

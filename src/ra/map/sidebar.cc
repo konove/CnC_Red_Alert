@@ -112,7 +112,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"

@@ -85,7 +85,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/archive.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"

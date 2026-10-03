@@ -118,7 +118,7 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/trigtype.h"

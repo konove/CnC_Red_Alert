@@ -166,7 +166,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"

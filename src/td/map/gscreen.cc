@@ -63,7 +63,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"

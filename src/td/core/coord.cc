@@ -57,7 +57,7 @@
 #include "base/array.h"
 #include "base/cardinal.h"
 #include "base/trig.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"

@@ -65,7 +65,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
-#include "game/core/display_constants.h"
+#include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
