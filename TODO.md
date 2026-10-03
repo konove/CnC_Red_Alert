@@ -217,6 +217,41 @@
     lines) changes computer path choices, so it is a simulation change to decide on
   - Tiberian Dawn has the same code (`td/objects/object.cc:1396,1409`). Found in the region
     modernization (`805bd6ba`..`1ad6409d`)
+- Decide whether `HouseKeepsAircraft()` should count the owning house's aircraft
+  - `ra/ai/reinforcements.cc:102` (was `Need_To_Take()`) decides whether a reinforcement Yak or MiG
+    is kept or is a loaner by subtracting, from the house's airstrips, every kept Yak/MiG with
+    `IsOwnedByPlayer`: the human player's, whichever house the new aircraft belongs to. A computer
+    house with one airstrip therefore keeps every Yak/MiG it is sent
+  - `other->House == aircraft->House` is a one-line change, but it changes which reinforcement
+    aircraft leave the map, so it needs a sync check. Found in the reinforcements modernization
+    (`ef09a028`..`47b4ae18`)
+- Decide which way a reinforcement group should face when it enters the map
+  - `DeliverReinforcements()` (`ra/ai/reinforcements.cc:314`) takes the facing from the edge
+    (`SourceType * 2`), so a group from the north edge starts facing north, off the map; the
+    original comment called it the "facing to enter map", which suggests the opposite was meant.
+    Tiberian Dawn's `Do_Reinforcements()` (`td/ai/reinf.cc`) does the same
+  - A house edge of `SOURCE_AIR` gives 8 there, which `AsFacing()` wraps to north;
+    `Calculated_Cell()` treats it as north too, so it is harmless today
+  - Turning the facing round changes the first frames of every edge reinforcement in both games
+- Check a transport's room before infantry reinforcements are loaded into it
+  - `FindHostNear()` (`ra/ai/reinforcements.cc:223`) accepts any vehicle next to the origin waypoint
+    with `Max_Passengers() > 0`, and `SendGroupOutOf()` (`:74`) attaches the whole group to it
+    without asking how much room is left, so an APC can be made to carry more than its limit for the
+    moment before it unloads. Options: skip a full transport in `FindHostNear()`, or load only what
+    fits and send the rest over the map edge; both change play
+- Stop the reinforcement placement loop when a member can never be placed
+  - `DeliverReinforcements()` (`ra/ai/reinforcements.cc:336`) retries a member from a neighbouring
+    edge cell whenever `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the
+    can-enter check and fails only when the object cannot be marked down, which a new cell does not
+    cure, so the loop can hop between two cells for ever. Latent: no case is known. A retry limit
+    (eight, one per neighbour) would bound it. The loop also treats cell index 0 as "no cell"
+    (`index() > 0`) where `Cell::None()` is -1. Tiberian Dawn's loop has the same shape
+- Balance `scenario_init` on the failure paths of `Read_Scenario()` and `Read_Scenario_INI()`
+  - `ra/ai/scenario.cc:514` returns false after the `++` at `:463` without the `--` at `:516`, and
+    `:2011` returns after the `++` at `:1898` (the `--` is at `:2319`). Both are masked by the
+    resets in `conquer.cc:231` and `saveload.cc:1073`. `ra/objects/unit.cc:2704-2711` assigns 1 and
+    then 0 instead of counting, which clobbers an outer level. The scoped guard under Refactoring
+    fixes all three; Tiberian Dawn's copies were not checked
 
 ## Features
 
@@ -698,6 +733,43 @@
   - `HouseClass::Adjust_Threat()` (`ra/objects/house.cc`, `td/objects/house.cc`) keeps its Westwood
     banner and the `static const` tables `_val`/`_div` (`_thr` in Tiberian Dawn), which could be
     `constexpr kNeighborOffsets`/`kNeighborDivisors`; it belongs to a pass over `house.cc`
+- Follow-ups from the `ra/ai/reinforcements.cc` modernization (`ef09a028`..`47b4ae18`)
+  - Give `World` a scoped `scenario_init` guard. The counter is raised and lowered by hand at about
+    40 sites in 20 files per game (`building.cc` alone has 37 references), nine of them with a
+    duplicated `--` before an early return (`building.cc:2428/2431`, `2452/2455`, `2468/2471`,
+    `2613/2616`, `2650/2653`, `2760/2763`, `bullet.cc:204/208`, `mapedplc.cc:1789/1792`,
+    `crate.cc:155/159`), and `2abc87b6` fixed one that had none. A `World::ScopedScenarioInit`, plus
+    a "suspend to 0" variant for `crate.cc:131`, `carryover.cc:54` and `scenario.cc:2286`, makes the
+    imbalance impossible; `reinforcements.cc` has five pairs to start with
+  - Give `Exit_Object()` an `enum class ExitResult` (refund 0, retry later 1, done 2). It is a
+    `virtual int` in `object.h:243`, `techno.h:452`, `building.h:319` and `aircraft.h:169`, with
+    about ten return sites, documented only in the banner above `building.cc:2397`; callers switch
+    on the literals (`building.cc:5981`), compare with 2 (`reinforcements.cc:77`) or test for
+    non-zero (`aircraft.cc:1255`, `house.cc:2815`, which must stay "not refunded"). Both games
+  - `CreateGroup()` could return a `std::vector<FootClass*>` (or a struct of transports and riders)
+    instead of a list through `ObjectClass::Next`, so that "delete what was not placed" is one loop
+    and cannot miss a member (`81867a0a` fixed two that were missed). About 60 lines in four
+    functions; keep the reverse creation order, which decides the placement cells
+  - `DeliverReinforcements()` gives a team type with no missions an attack-waypoint mission and
+    leaves it on the type (`:279`), which is why it takes a non-const `TeamTypeClass*` where
+    Tiberian Dawn's takes const. `house.cc:2521` sets its own, so only trigger teams rely on it.
+    Applying the default where team types are loaded (`teamtype.cc` ~1912) would let the parameter
+    be const but gives every mission-less type the mission: a behaviour change to decide on
+  - `LaunchAirStrike()`'s result is ignored by both callers (`house.cc:2556`, `:2569`); it could
+    return void, at the cost of the assertion in `ra_reinforcements_test`. Its `DCHECK`s range-check
+    two `enum class` values through `static_cast<unsigned>` (`:381`, `:384`)
+  - The unload-mission scan in `CreateGroup()` (`:124`) and the three-way ant comparison (`:322`,
+    repeated in `unit.cc:1141`) want a `TeamTypeClass::HasMission()` and a `UnitClass` ant predicate
+  - `house.cc:2543` holds a commented-out `LaunchAirStrike()` call for the paratroopers
+  - CLion's "can be replaced with structured bindings" on `entry` (`:140`) was left: binding
+    `TeamMemberClass` by position would break silently if its members were reordered
+  - Names to confirm: `DeliverReinforcements()` (or `BringInReinforcements()`), `riders` for the
+    non-transport list in `CreateGroup()` (or `passengers`), `FindHostNear()`
+- Modernize Tiberian Dawn's `td/ai/reinf.cc`
+  - It still has the Westwood banners and block comments and the old names. It differs from Red
+    Alert's: `Create_Special_Reinforcement()` is live there (`building.cc:2545`, `house.cc:1052`),
+    the team is created inline and placement switches on the source. Its twin fixes from the Red
+    Alert pass are in (`e5cf1691`, `73182098`); rename the file to `reinforcements` in that pass
 
 ## Testing
 
@@ -775,6 +847,16 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
+- Cover `DeliverReinforcements()` with tests
+  - `ra_reinforcements_test` builds a house and the aircraft types in a real `Game` and tests one
+    `LaunchAirStrike()` failure. The team path needs team and team type heaps, a unit type and a
+    house edge; with those, test a two-vehicle team entering from the edge, an infantry team leaving
+    a building at its origin waypoint, and the clean-up when no member can be placed (in a `Game`
+    that is not active nothing leaves limbo, but see the endless-retry entry under Bugs first). The
+    fixes in `2abc87b6` and `81867a0a` have no test
+  - `ReinforcementTest` and `CarryoverTest` (`ra/ai/carryover_test.cc`) share their eight set-up
+    lines; a third user should move them into a common fixture. Tiberian Dawn has no such fixture,
+    so `e5cf1691` and `73182098` are untested
 
 ## Debugging
 
