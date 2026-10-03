@@ -38,7 +38,6 @@
  *only.            *
  *   Load_Uncompress -- Loads and uncompresses data to a buffer. * Set_Window --
  *Sets the window dimensions to that specified.                               *
- *   Small_Icon -- Create a small icon from a big one. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -62,52 +61,9 @@
 #include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
-#include "ra/assets/compat.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
-
-/***********************************************************************************************
- * Small_Icon -- Create a small icon from a big one. *
- *                                                                                             *
- *    This routine will extract the specified icon from the icon data file and
- *convert that    * icon into a small (3x3) representation. Typical use of this
- *mini-icon is for the radar   * map. *
- *                                                                                             *
- * INPUT:   iconptr  -- Pointer to the icon data file. *
- *                                                                                             *
- *          iconnum  -- The embedded icon number to convert into a small image.
- **
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the small icon imagery. This is exactly 9
- *bytes long.    *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/11/1995 JLB : Created. *
- *=============================================================================================*/
-std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
-                                          int iconnum) {
-  static unsigned char icon[9];
-  const IconsetClass iconset(iconptr);
-  const auto map = iconset.Map_Data();
-  if (iconnum < 0 || static_cast<size_t>(iconnum) >= map.size()) {
-    return {};
-  }
-  const size_t offset =
-      static_cast<size_t>(base::At(map, static_cast<size_t>(iconnum))) * 24 *
-      24;
-  const auto pixels = iconset.Icon_Data();
-  if (offset > pixels.size() || pixels.size() - offset < size_t{24} * 24) {
-    return {};
-  }
-  for (int index = 0; index < 9; ++index) {
-    base::At(icon, index) = base::At(
-        pixels, offset + static_cast<size_t>((4 + (index % 3 * 8)) +
-                                             ((4 + (index / 3 * 8)) * 24)));
-  }
-  return icon;
-}
 
 /***********************************************************************************************
  * Set_Window -- Sets the window dimensions to that specified. *

@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
 #define CNC_RED_ALERT_RA_CORE_JSHELL_H_
 
-#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -70,8 +69,6 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
     const PaletteClass& palette,
     std::span<unsigned char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
     int frac);
-std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
-                                          int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 // Reads one compressed picture from `file` and uncompresses it into
 // `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer),
