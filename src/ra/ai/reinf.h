@@ -11,10 +11,10 @@
 
 namespace ra {
 
-// Creates a team of type `team` and brings it into play, announcing it when it
-// belongs to the player's house. The members follow the team's missions; a
-// team type with none is given one here, to attack its origin waypoint, and
-// keeps it.
+// Creates a team of type `team_type` and brings it into play, announcing it
+// when it belongs to the player's house. The members follow the team's
+// missions; a team type with none is given one here, to attack its origin
+// waypoint, and keeps it.
 //
 // A group of only infantry whose origin waypoint is on or next to a building or
 // a transport vehicle comes out of that. Any other group enters from the map
@@ -25,17 +25,17 @@ namespace ra {
 // object limit), or when none of the infantry could leave the building.
 // Members that find no room at the map edge are dropped and the result is still
 // true.
-bool Do_Reinforcements(TeamTypeClass* team);
+bool DeliverReinforcements(TeamTypeClass* team_type);
 
-// Launches an air strike: creates up to `number` aircraft of type `air` for
-// `house` at its map edge (north when it has none), each a loaner that leaves
-// the map when done, and gives each `mission`, the target `tarcom` and the
-// destination `navcom`; a default `Target{}` leaves that one unassigned.
+// Launches an air strike: creates up to `count` aircraft of `aircraft_type`
+// for `house` at its map edge (north when it has none), each a loaner that
+// leaves the map when done, and gives each `mission`, `target` and
+// `destination`; a default `Target{}` leaves that one unassigned.
 //
 // Stops at the first aircraft that cannot be created or placed. Returns the
 // number placed.
-int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, Target tarcom, Target navcom);
+int LaunchAirStrike(HouseClass* house, AircraftType aircraft_type, int count,
+                    MissionType mission, Target target, Target destination);
 
 }  // namespace ra
 

@@ -2537,10 +2537,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
           ttype->House = Class->House;
           TheScenario().Waypoint[ScenarioClass::kSpecialWaypoint] =
               TheMap().Nearby_Location(cell, SPEED_FOOT);
-          Do_Reinforcements(ttype);
+          DeliverReinforcements(ttype);
         }
 
-        //				Create_Air_Reinforcement(this,
+        //				LaunchAirStrike(this,
         // AIRCRAFT_BADGER, 1, MISSION_HUNT, Target::FromCell(cell), Target{},
         // INFANTRY_E1);
         if (this == ThePlayer()) {
@@ -2553,9 +2553,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
 
     case SPC_SPY_MISSION:
       if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
-        Create_Air_Reinforcement(this, AIRCRAFT_U2, 1, MISSION_HUNT,
-                                 Target::FromCell(cell),
-                                 Target::FromCell(cell));
+        LaunchAirStrike(this, AIRCRAFT_U2, 1, MISSION_HUNT,
+                        Target::FromCell(cell), Target::FromCell(cell));
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
         }
@@ -2566,9 +2565,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
 
     case SPC_PARA_BOMB:
       if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready()) {
-        Create_Air_Reinforcement(this, AIRCRAFT_BADGER,
-                                 TheRules().BadgerBombCount, MISSION_HUNT,
-                                 Target::FromCell(cell), Target{});
+        LaunchAirStrike(this, AIRCRAFT_BADGER, TheRules().BadgerBombCount,
+                        MISSION_HUNT, Target::FromCell(cell), Target{});
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
         }

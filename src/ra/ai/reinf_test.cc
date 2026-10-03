@@ -45,8 +45,8 @@ TEST_F(ReinforcementTest, AnAirStrikeThatCannotBePlacedCountsNoAircraft) {
   // Nothing leaves limbo while the game is not active.
   TheGameState().active() = false;
 
-  EXPECT_EQ(Create_Air_Reinforcement(house_, AIRCRAFT_BADGER, 2, MISSION_HUNT,
-                                     Target{}, Target{}),
+  EXPECT_EQ(LaunchAirStrike(house_, AIRCRAFT_BADGER, 2, MISSION_HUNT, Target{},
+                            Target{}),
             0);
   EXPECT_EQ(TheObjectHeaps().aircraft().Count(), 0);
 }

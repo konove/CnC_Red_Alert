@@ -732,7 +732,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Create a reinforcement of the team specified.
     */
     case TACTION_REINFORCEMENTS:
-      success = Do_Reinforcements(&*Team);
+      success = DeliverReinforcements(&*Team);
       break;
 
     /*
