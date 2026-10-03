@@ -70,16 +70,14 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
-#include <optional>
 #include <span>
-#include <string>
 #include <string_view>
 
 #include "base/array.h"
 #include "base/cardinal.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/crypto/key_phrase_hash.h"
-#include "engine/file/profile_buffer.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
@@ -88,7 +86,7 @@
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/core/defines.h"
-#include "td/data/profile.h"
+#include "td/data/ini_io.h"
 #include "td/net/session.h"
 #include "td/startup/game_state.h"
 
@@ -461,50 +459,47 @@ void OptionsClass::Adjust_Palette(const engine::gfx::Palette& oldpal,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Load_Settings() {
-  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
-  if (!ini) {
+  engine::file::IniFile ini;
+  if (!LoadIniFile("CONQUER.INI", ini)) {
     return;
   }
-  const char* buffer = ini->data();
+  ReadSettings(ini);
+  engine::audio::TheAudio().SetScoreVolume(ScoreVolume);
+}
 
+void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   /*
   **	Read in the Options values
   */
-  GameSpeed = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Options", "GameSpeed", 4, buffer));
-  ScrollRate = WWGetPrivateProfileInt("Options", "ScrollRate", 4, buffer);
+  GameSpeed = static_cast<unsigned>(ini.GetInt("Options", "GameSpeed", 4));
+  ScrollRate = ini.GetInt("Options", "ScrollRate", 4);
   // The file holds the stored values, not the slider positions the setters
   // take.
-  Brightness = static_cast<unsigned char>(
-      WWGetPrivateProfileInt("Options", "Brightness", 0x80, buffer));
-  Set_Sound_Volume(WWGetPrivateProfileInt("Options", "Volume", 0x66, buffer),
-                   false);
-  Set_Score_Volume(
-      WWGetPrivateProfileInt("Options", "ScoreVolume", 0x40, buffer));
-  Contrast = static_cast<unsigned char>(
-      WWGetPrivateProfileInt("Options", "Contrast", 0x80, buffer));
-  Color = static_cast<unsigned char>(
-      WWGetPrivateProfileInt("Options", "Color", 0x80, buffer));
-  Tint = static_cast<unsigned char>(
-      WWGetPrivateProfileInt("Options", "Tint", 0x80, buffer));
+  Brightness =
+      static_cast<unsigned char>(ini.GetInt("Options", "Brightness", 0x80));
+  Set_Sound_Volume(ini.GetInt("Options", "Volume", 0x66), false);
+  // Not Set_Score_Volume(): Load_Settings() hands the volume to the audio
+  // system once the file is read.
+  ScoreVolume = static_cast<unsigned char>(
+      std::clamp(ini.GetInt("Options", "ScoreVolume", 0x40), 0, 255));
+  Contrast =
+      static_cast<unsigned char>(ini.GetInt("Options", "Contrast", 0x80));
+  Color = static_cast<unsigned char>(ini.GetInt("Options", "Color", 0x80));
+  Tint = static_cast<unsigned char>(ini.GetInt("Options", "Tint", 0x80));
   ShowPalette();
-  AutoScroll =
-      WWGetPrivateProfileInt("Options", "AutoScroll", 1, buffer) != 0;
-  Set_Repeat(WWGetPrivateProfileInt("Options", "IsScoreRepeat", 0, buffer));
-  Set_Shuffle(WWGetPrivateProfileInt("Options", "IsScoreShuffle", 0, buffer));
-  IsDeathAnnounce =
-      WWGetPrivateProfileInt("Options", "DeathAnnounce", 0, buffer) != 0;
-  IsFreeScroll =
-      WWGetPrivateProfileInt("Options", "FreeScrolling", 0, buffer) != 0;
-  ThePalettes().set_slow_palette(
-      WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
+  AutoScroll = ini.GetInt("Options", "AutoScroll", 1) != 0;
+  Set_Repeat(ini.GetInt("Options", "IsScoreRepeat", 0));
+  Set_Shuffle(ini.GetInt("Options", "IsScoreShuffle", 0));
+  IsDeathAnnounce = ini.GetInt("Options", "DeathAnnounce", 0) != 0;
+  IsFreeScroll = ini.GetInt("Options", "FreeScrolling", 0) != 0;
+  ThePalettes().set_slow_palette(ini.GetInt("Options", "SlowPalette", 1) != 0);
 
   char workbuf[128];
 
   /*
   **	Check for and possible enable true object names.
   */
-  WWGetPrivateProfileString("Options", "TrueNames", "", workbuf, buffer);
+  ini.GetString("Options", "TrueNames", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_TRUENAME) {
     TheSpecial().IsNamed = true;
   }
@@ -512,7 +507,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable 6 player games if special flag is detected.
   */
-  WWGetPrivateProfileString("Options", "Players", "", workbuf, buffer);
+  ini.GetString("Options", "Players", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_6PLAYER) {
     TheSession().max_players() = 6;
   }
@@ -520,7 +515,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable three point turning logic as indicated.
   */
-  WWGetPrivateProfileString("Options", "Rotation", "", workbuf, buffer);
+  ini.GetString("Options", "Rotation", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_3POINT) {
     TheSpecial().IsThreePoint = true;
   }
@@ -528,7 +523,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow purchase of the helipad separately from the helicopter.
   */
-  WWGetPrivateProfileString("Options", "Helipad", "", workbuf, buffer);
+  ini.GetString("Options", "Helipad", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_HELIPAD) {
     TheSpecial().IsSeparate = true;
   }
@@ -536,7 +531,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow the MCV to undeploy rather than sell.
   */
-  WWGetPrivateProfileString("Options", "MCV", "", workbuf, buffer);
+  ini.GetString("Options", "MCV", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_MCV) {
     TheSpecial().IsMCVDeploy = true;
   }
@@ -545,7 +540,7 @@ void OptionsClass::Load_Settings() {
   **	Allow disabling of building bibs so that tigher building packing can
   *occur.
   */
-  WWGetPrivateProfileString("Options", "Bibs", "", workbuf, buffer);
+  ini.GetString("Options", "Bibs", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_BIB) {
     TheSpecial().IsRoad = true;
   }
@@ -553,7 +548,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow targeting of trees without having to hold down the shift key.
   */
-  WWGetPrivateProfileString("Options", "TreeTarget", "", workbuf, buffer);
+  ini.GetString("Options", "TreeTarget", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_TREETARGET) {
     TheSpecial().IsTreeTarget = true;
   }
@@ -562,7 +557,7 @@ void OptionsClass::Load_Settings() {
   **	Allow infantry to fire while moving. Attacker gets advantage with this
   *flag.
   */
-  WWGetPrivateProfileString("Options", "Combat", "", workbuf, buffer);
+  ini.GetString("Options", "Combat", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_COMBAT) {
     TheSpecial().IsDefenderAdvantage = false;
   }
@@ -570,7 +565,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Allow custom scores.
   */
-  WWGetPrivateProfileString("Options", "Scores", "", workbuf, buffer);
+  ini.GetString("Options", "Scores", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_SCORE) {
     TheSpecial().IsVariation = true;
   }
@@ -581,7 +576,7 @@ void OptionsClass::Load_Settings() {
   *upon. Infantry will run from an *	incoming explosive (grenade or napalm)
   *or damage that can't be directly addressed.
   */
-  WWGetPrivateProfileString("Options", "CombatIQ", "", workbuf, buffer);
+  ini.GetString("Options", "CombatIQ", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_IQ) {
     TheSpecial().IsSmartDefense = true;
     TheSpecial().IsScatter = true;
@@ -590,7 +585,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable the infantry squish marks when run over by a vehicle.
   */
-  WWGetPrivateProfileString("Options", "Overrun", "", workbuf, buffer);
+  ini.GetString("Options", "Overrun", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_SQUISH) {
     TheSpecial().IsGross = true;
   }
@@ -598,7 +593,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Enable the human generated sound effects.
   */
-  WWGetPrivateProfileString("Options", "Sounds", "", workbuf, buffer);
+  ini.GetString("Options", "Sounds", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_HUMAN) {
     TheSpecial().IsJuvenile = true;
   }
@@ -606,7 +601,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Scrolling is disabled over the tabs with this option.
   */
-  WWGetPrivateProfileString("Options", "Scrolling", "", workbuf, buffer);
+  ini.GetString("Options", "Scrolling", "", workbuf);
   if (HashKeyPhrase(workbuf) == PARM_SCROLLING) {
     TheSpecial().IsScrollMod = true;
   }
@@ -624,27 +619,31 @@ void OptionsClass::Load_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  std::string ini = engine::file::ReadProfileFile("CONQUER.INI").value_or("");
+  // The file may hold entries and sections this routine does not write, which
+  // loading it first carries over.
+  engine::file::IniFile ini;
+  LoadIniFile("CONQUER.INI", ini);
+  WriteSettings(ini);
+  SaveIniFile("CONQUER.INI", ini);
+}
 
+void OptionsClass::WriteSettings(engine::file::IniFile& ini) const {
   /*
   **	Save Options settings
   */
-  WWWritePrivateProfileInt("Options", "GameSpeed", static_cast<int>(GameSpeed),
-                           ini);
-  WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate, ini);
-  WWWritePrivateProfileInt("Options", "Brightness", Brightness, ini);
-  WWWritePrivateProfileInt("Options", "Volume", Volume, ini);
-  WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume, ini);
-  WWWritePrivateProfileInt("Options", "Contrast", Contrast, ini);
-  WWWritePrivateProfileInt("Options", "Color", Color, ini);
-  WWWritePrivateProfileInt("Options", "Tint", Tint, ini);
-  WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll, ini);
-  WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat, ini);
-  WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle, ini);
-  WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce, ini);
-  WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll, ini);
-
-  engine::file::WriteProfileFile("CONQUER.INI", ini);
+  ini.PutInt("Options", "GameSpeed", static_cast<int>(GameSpeed));
+  ini.PutInt("Options", "ScrollRate", ScrollRate);
+  ini.PutInt("Options", "Brightness", Brightness);
+  ini.PutInt("Options", "Volume", Volume);
+  ini.PutInt("Options", "ScoreVolume", ScoreVolume);
+  ini.PutInt("Options", "Contrast", Contrast);
+  ini.PutInt("Options", "Color", Color);
+  ini.PutInt("Options", "Tint", Tint);
+  ini.PutInt("Options", "AutoScroll", AutoScroll);
+  ini.PutInt("Options", "IsScoreRepeat", IsScoreRepeat);
+  ini.PutInt("Options", "IsScoreShuffle", IsScoreShuffle);
+  ini.PutInt("Options", "DeathAnnounce", IsDeathAnnounce);
+  ini.PutInt("Options", "FreeScrolling", IsFreeScroll);
 }
 
 /***********************************************************************************************

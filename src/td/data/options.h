@@ -45,6 +45,10 @@
 
 #include "engine/gfx/palette.h"
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace td {
 
 class OptionsClass {
@@ -75,8 +79,17 @@ class OptionsClass {
   /*
   ** File I/O routines
   */
+  // Reads CONQUER.INI and applies it; leaves every setting alone when the file
+  // does not exist.
   void Load_Settings();
+  // Writes the settings into CONQUER.INI, keeping whatever else the file holds.
   void Save_Settings() const;
+  // Sets every setting from `ini`; one it does not hold gets its default.
+  // Does not touch the audio system; Load_Settings() applies the score volume.
+  void ReadSettings(const engine::file::IniFile& ini);
+  // Stores every setting in `ini`, which keeps the sections and entries it
+  // already holds.
+  void WriteSettings(engine::file::IniFile& ini) const;
 
   void Set();
 
