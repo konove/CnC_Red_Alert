@@ -382,6 +382,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
         }
       }
       if (found) {
+        TheWorld().scenario_init()--;
         continue;
       }
       newcell = Cell::None();
