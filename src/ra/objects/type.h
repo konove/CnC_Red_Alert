@@ -53,13 +53,13 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/strings/safe_string.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/core/packed.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
 namespace ra {
@@ -198,7 +198,7 @@ class HouseTypeClass : public AbstractTypeClass {
   static void One_Time();
   static void Init_Heap();
 
-  virtual bool Read_INI(CCINIClass& ini);
+  virtual bool Read_INI(engine::file::IniFile& ini);
 };
 
 /***************************************************************************
@@ -604,7 +604,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] int Time_To_Build() const override;
   [[nodiscard]] uint32_t Get_Ownable() const override;
-  virtual bool Read_INI(CCINIClass& ini);
+  virtual bool Read_INI(engine::file::IniFile& ini);
 
   /*
   **	This is a pointer to the wake shape (as needed by the gunboat).
@@ -805,7 +805,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   [[nodiscard]] int Height(bool bib = false) const;
 
   [[nodiscard]] int Full_Name() const override;
-  bool Read_INI(CCINIClass& ini) override;
+  bool Read_INI(engine::file::IniFile& ini) override;
   bool Flush_For_Placement(Cell cell, HouseClass* house) const;
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
@@ -992,7 +992,7 @@ class UnitTypeClass : public TechnoTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  bool Read_INI(CCINIClass& ini) override;
+  bool Read_INI(engine::file::IniFile& ini) override;
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
@@ -1228,7 +1228,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  bool Read_INI(CCINIClass& ini) override;
+  bool Read_INI(engine::file::IniFile& ini) override;
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
@@ -1502,7 +1502,7 @@ class BulletTypeClass : public ObjectTypeClass {
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
 
-  virtual bool Read_INI(CCINIClass& ini);
+  virtual bool Read_INI(engine::file::IniFile& ini);
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   bool Create_And_Place(Cell /*unused*/,

@@ -125,6 +125,7 @@
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/font.h"
@@ -162,7 +163,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -4033,7 +4034,7 @@ void DisplayClass::Shroud_Cell(Cell cell /*KO, bool shadeit*/) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Read_INI(CCINIClass& ini) {
+void DisplayClass::Read_INI(engine::file::IniFile& ini) {
   /*
   **	Read the map dimensions.
   */
@@ -4051,7 +4052,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	at this point.
   */
   TheScenario().Theater =
-      ini.Get_TheaterType(name, "Theater", THEATER_TEMPERATE);
+      GetTheaterType(ini, name, "Theater", THEATER_TEMPERATE);
 
   /*
   **	Now that the theater is known, init the entire map hierarchy
@@ -4114,7 +4115,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     **	Get a cell trigger and cell assignment.
     */
     const char* cellentry = ini.Get_Entry("CellTriggers", index);
-    TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
+    TriggerTypeClass* tp = GetTriggerType(ini, "CellTriggers", cellentry);
     const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(cellentry, 0));
 
@@ -4156,7 +4157,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Write_INI(CCINIClass& ini) {
+void DisplayClass::Write_INI(engine::file::IniFile& ini) {
   char entry[20];
 
   /*
@@ -4164,7 +4165,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   */
   static const char* const NAME = "Map";
   ini.Clear(NAME);
-  ini.Put_TheaterType(NAME, "Theater", TheScenario().Theater);
+  PutTheaterType(ini, NAME, "Theater", TheScenario().Theater);
   ini.Put_Int(NAME, "X", MapCellX);
   ini.Put_Int(NAME, "Y", MapCellY);
   ini.Put_Int(NAME, "Width", MapCellWidth);
@@ -4200,7 +4201,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
         /*
         **	Save entry.
         */
-        ini.Put_TriggerType(CELLTRIG, entry, tp->Class);
+        PutTriggerType(ini, CELLTRIG, entry, tp->Class);
       }
     }
   }

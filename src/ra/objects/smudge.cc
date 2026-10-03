@@ -58,11 +58,11 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/objects/cell.h"
@@ -304,7 +304,7 @@ void SmudgeClass::Disown(Cell cell) {
  * HISTORY: * 09/01/1994 JLB : Created. * 07/24/1995 JLB : Sets the smudge data
  *value as well.                                      *
  *=============================================================================================*/
-void SmudgeClass::Read_INI(CCINIClass& ini) {
+void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];  // Working string staging buffer.
 
   const int len = ini.Entry_Count(INI_Name());
@@ -347,7 +347,7 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Write_INI(CCINIClass& ini) {
+void SmudgeClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing template data from the ini file.
   */

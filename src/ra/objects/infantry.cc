@@ -111,6 +111,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
@@ -134,7 +135,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -3289,7 +3289,7 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Read_INI(CCINIClass& ini) {
+void InfantryClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
   game::DirType dir = game::DIR_N;
   TriggerTypeClass* tp = nullptr;
@@ -3409,7 +3409,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Write_INI(CCINIClass& ini) {
+void InfantryClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing infantry data from the ini file.
   */

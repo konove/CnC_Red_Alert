@@ -31,10 +31,13 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
+
 namespace ra {
 
 class BuildingClass;
-class CCINIClass;
 
 // One entry of the prebuilt base: a type of building and the cell its top-left
 // corner goes on. Nodes are equal when both match.
@@ -76,11 +79,11 @@ class PrebuiltBase {
   // NNN counting from 000 up to the section's Count; an entry that is missing,
   // names no building type or has a cell off the map is skipped. Call Clear()
   // first: the list is not cleared.
-  void ReadIni(const CCINIClass& ini);
+  void ReadIni(const engine::file::IniFile& ini);
 
   // Replaces the [Base] section of `ini` with this base. A base without an
   // owner (HOUSE_NONE) leaves the section empty.
-  void WriteIni(CCINIClass& ini) const;
+  void WriteIni(engine::file::IniFile& ini) const;
 
   // Returns the building that fills `node`: one of the node's type whose
   // top-left cell is the node's cell, whichever house owns it. Returns nullptr

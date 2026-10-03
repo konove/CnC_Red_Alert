@@ -50,12 +50,12 @@
 #include <filesystem>
 
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/objects/type.h"
 
@@ -233,7 +233,7 @@ BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool BulletTypeClass::Read_INI(CCINIClass& ini) {
+bool BulletTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     Arming = ini.Get_Int(Name(), "Arm", Arming);
     ROT = static_cast<unsigned char>(ini.Get_Int(Name(), "ROT", ROT));

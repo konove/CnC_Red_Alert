@@ -132,6 +132,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/cell_size.h"
@@ -153,7 +154,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
@@ -5794,7 +5794,7 @@ void BuildingClass::Update_Radar_Spied() {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Read_INI(CCINIClass& ini) {
+void BuildingClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -5906,7 +5906,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Write_INI(CCINIClass& ini) {
+void BuildingClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing building data from the ini file.
   */

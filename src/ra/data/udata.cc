@@ -64,6 +64,7 @@
 #include "base/array.h"
 #include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -75,7 +76,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -1315,7 +1315,7 @@ void UnitTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool UnitTypeClass::Read_INI(CCINIClass& ini) {
+bool UnitTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsNoFireWhileMoving =
         ini.Get_Bool(IniName, "NoMovingFire", IsNoFireWhileMoving);

@@ -129,7 +129,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -480,9 +480,8 @@ bool Read_Scenario(char* name) {
           EmergencyExit(EXIT_FAILURE);
         }
       }
-      CCINIClass ini;
-      if (const auto fc = OpenGameFile("MPLAYER.INI");
-          fc && ini.Load(*fc, false)) {
+      engine::file::IniFile ini;
+      if (const auto fc = OpenGameFile("MPLAYER.INI"); fc && ini.Load(*fc)) {
         TheRules().General(ini);
         TheRules().Recharge(ini);
         TheRules().AI(ini);
@@ -2033,16 +2032,18 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Create scenario filename and read the file.
   */
   //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-  CCINIClass ini;
+  engine::file::IniFile ini;
   //	file.Cache();
 
   const auto file = OpenGameFile(fname);
-  if (!file || !ini.Load(*file, true)) {
+  if (!file ||
+      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {
     return false;
   }
 
-  // CCINIClass::Load reports a bad digest as a plain failure, so the old
-  // "digest wrong" (result 2) exception for multiplayer maps 1-24 is gone.
+  // A digest mismatch is accepted: LoadVerified still loads the data. The
+  // original rejected tampered official scenarios here and exempted
+  // multiplayer maps 1-24.
 
   /*
   **	Reset the rules values to their initial settings.
@@ -2123,14 +2124,14 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   ini.Get_String(BASIC, "Name", "<none>", TheScenario().Description,
                  sizeof(TheScenario().Description));
   TheScenario().IntroMovie =
-      ini.Get_VQType(BASIC, "Intro", TheScenario().IntroMovie);
+      GetVQType(ini, BASIC, "Intro", TheScenario().IntroMovie);
   TheScenario().BriefMovie =
-      ini.Get_VQType(BASIC, "Brief", TheScenario().BriefMovie);
-  TheScenario().WinMovie = ini.Get_VQType(BASIC, "Win", TheScenario().WinMovie);
+      GetVQType(ini, BASIC, "Brief", TheScenario().BriefMovie);
+  TheScenario().WinMovie = GetVQType(ini, BASIC, "Win", TheScenario().WinMovie);
   TheScenario().LoseMovie =
-      ini.Get_VQType(BASIC, "Lose", TheScenario().LoseMovie);
+      GetVQType(ini, BASIC, "Lose", TheScenario().LoseMovie);
   TheScenario().ActionMovie =
-      ini.Get_VQType(BASIC, "Action", TheScenario().ActionMovie);
+      GetVQType(ini, BASIC, "Action", TheScenario().ActionMovie);
   TheScenario().IsToCarryOver =
       ini.Get_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
   TheScenario().IsToInherit =
@@ -2141,7 +2142,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       ini.Get_Bool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
   TheScenario().IsTanyaEvac =
       ini.Get_Bool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
-  TheScenario().TransitTheme = ini.Get_ThemeType(BASIC, "Theme", THEME_NONE);
+  TheScenario().TransitTheme = GetThemeType(ini, BASIC, "Theme", THEME_NONE);
   TheWorld().new_ini_format() = ini.Get_Int(BASIC, "NewINIFormat", 0);
   TheScenario().CarryOverPercent =
       ini.Get_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
@@ -2182,7 +2183,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   if (TheSession().Type == GAME_NORMAL) {
     ThePlayer() = HouseClass::As_Pointer(
-        ini.Get_HousesType(BASIC, "Player", HOUSE_GREECE));
+        GetHousesType(ini, BASIC, "Player", HOUSE_GREECE));
     ThePlayer()->Assign_Handicap(TheScenario().Difficulty);
     int carryover = 0;
     if (TheScenario().CarryOverCap != -1) {
@@ -2364,7 +2365,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
  *=============================================================================================*/
 void Write_Scenario_INI(const char* fname) {
   if constexpr (config::kCheatKeysEnabled) {
-    CCINIClass ini;
+    engine::file::IniFile ini;
 
     /*
     **	Preload the old scenario if it is present because there may
@@ -2373,19 +2374,19 @@ void Write_Scenario_INI(const char* fname) {
     **	maintained entries.
     */
     if (const auto file = OpenGameFile(fname)) {
-      ini.Load(*file, true);
+      ini.LoadVerified(*file);
     }
 
     static const char* const BASIC = "Basic";
     ini.Clear(BASIC);
     ini.Put_String(BASIC, "Name", TheScenario().Description);
-    ini.Put_VQType(BASIC, "Intro", TheScenario().IntroMovie);
-    ini.Put_VQType(BASIC, "Brief", TheScenario().BriefMovie);
-    ini.Put_VQType(BASIC, "Win", TheScenario().WinMovie);
-    ini.Put_VQType(BASIC, "Lose", TheScenario().LoseMovie);
-    ini.Put_VQType(BASIC, "Action", TheScenario().ActionMovie);
-    ini.Put_HousesType(BASIC, "Player", ThePlayer()->Class->House);
-    ini.Put_ThemeType(BASIC, "Theme", TheScenario().TransitTheme);
+    PutVQType(ini, BASIC, "Intro", TheScenario().IntroMovie);
+    PutVQType(ini, BASIC, "Brief", TheScenario().BriefMovie);
+    PutVQType(ini, BASIC, "Win", TheScenario().WinMovie);
+    PutVQType(ini, BASIC, "Lose", TheScenario().LoseMovie);
+    PutVQType(ini, BASIC, "Action", TheScenario().ActionMovie);
+    PutHousesType(ini, BASIC, "Player", ThePlayer()->Class->House);
+    PutThemeType(ini, BASIC, "Theme", TheScenario().TransitTheme);
     ini.Put_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
     ini.Put_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
     ini.Put_Bool(BASIC, "ToInherit", TheScenario().IsToInherit);
@@ -2421,7 +2422,7 @@ void Write_Scenario_INI(const char* fname) {
     }
     //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
     if (const auto rawfile = OpenDiskFile(fname, FileAccess::kWrite)) {
-      ini.Save(*rawfile, true);
+      ini.SaveWithDigest(*rawfile);
     }
   }
 }

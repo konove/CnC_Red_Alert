@@ -64,6 +64,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/stream/readline.h"
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
@@ -73,7 +74,7 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/map/vortex.h"
 #include "ra/map/world.h"
 #include "ra/objects/anim.h"
@@ -226,8 +227,8 @@ RulesClass::RulesClass()
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-static void Difficulty_Get(const CCINIClass& ini, DifficultyClass& diff,
-                           const char* section) {
+static void Difficulty_Get(const engine::file::IniFile& ini,
+                           DifficultyClass& diff, const char* section) {
   if (ini.Is_Present(section)) {
     diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", Fixed(1));
     diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", Fixed(1));
@@ -260,7 +261,7 @@ static void Difficulty_Get(const CCINIClass& ini, DifficultyClass& diff,
  *                                                                                             *
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Process(CCINIClass& ini) {
+bool RulesClass::Process(engine::file::IniFile& ini) {
   General(ini);
   MPlayer(ini);
   Recharge(ini);
@@ -291,7 +292,7 @@ bool RulesClass::Process(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::General(CCINIClass& ini) {
+bool RulesClass::General(engine::file::IniFile& ini) {
   static const char* const GENERAL = "General";
   static const char* const AFTERMATH = "Aftermath";
 
@@ -336,7 +337,7 @@ bool RulesClass::General(CCINIClass& ini) {
     SoloCrateMoney = ini.Get_Int(GENERAL, "SoloCrateMoney", SoloCrateMoney);
     ParaBombTechLevel = ini.Get_Int(GENERAL, "ParabombTech", ParaBombTechLevel);
     GPSTechLevel = ini.Get_Int(GENERAL, "GPSTechLevel", GPSTechLevel);
-    UnitCrateType = ini.Get_UnitType(GENERAL, "UnitCrateType", UnitCrateType);
+    UnitCrateType = GetUnitType(ini, GENERAL, "UnitCrateType", UnitCrateType);
     IsExplosiveHarvester = ini.Get_Fixed(GENERAL, "OreExplosive",
                                          Fixed(IsExplosiveHarvester ? 1 : 0))
                                .ToInt() != 0;
@@ -347,13 +348,13 @@ bool RulesClass::General(CCINIClass& ini) {
     GameSpeedBias = ini.Get_Fixed(GENERAL, "GameSpeedBias", GameSpeedBias);
     NervousBias = ini.Get_Fixed(GENERAL, "BaseBias", NervousBias);
     ExplosionSpread = ini.Get_Fixed(GENERAL, "ExpSpread", ExplosionSpread);
-    SupressRadius = ini.Get_Lepton(GENERAL, "FireSupress", SupressRadius);
+    SupressRadius = GetLepton(ini, GENERAL, "FireSupress", SupressRadius);
     ParaInfantryTechLevel =
         ini.Get_Int(GENERAL, "ParaTech", ParaInfantryTechLevel);
     SpyPlaneTechLevel = ini.Get_Int(GENERAL, "SpyPlaneTech", SpyPlaneTechLevel);
-    SilverCrate = ini.Get_CrateType(GENERAL, "SilverCrate", SilverCrate);
-    WoodCrate = ini.Get_CrateType(GENERAL, "WoodCrate", WoodCrate);
-    WaterCrate = ini.Get_CrateType(GENERAL, "WaterCrate", WaterCrate);
+    SilverCrate = GetCrateType(ini, GENERAL, "SilverCrate", SilverCrate);
+    WoodCrate = GetCrateType(ini, GENERAL, "WoodCrate", WoodCrate);
+    WaterCrate = GetCrateType(ini, GENERAL, "WaterCrate", WaterCrate);
     CrateMinimum = ini.Get_Int(GENERAL, "CrateMinimum", CrateMinimum);
     CrateMaximum = ini.Get_Int(GENERAL, "CrateMaximum", CrateMaximum);
     IsScatter = ini.Get_Bool(GENERAL, "PlayerScatter", IsScatter);
@@ -365,7 +366,7 @@ bool RulesClass::General(CCINIClass& ini) {
     IsMineAware = ini.Get_Bool(GENERAL, "MineAware", IsMineAware);
     IsTreeTarget = ini.Get_Bool(GENERAL, "TreeTargeting", IsTreeTarget);
     IsSeparate = ini.Get_Bool(GENERAL, "SeparateAircraft", IsSeparate);
-    DropZoneRadius = ini.Get_Lepton(GENERAL, "DropZoneRadius", DropZoneRadius);
+    DropZoneRadius = GetLepton(ini, GENERAL, "DropZoneRadius", DropZoneRadius);
     MessageDelay = ini.Get_Fixed(GENERAL, "MessageDelay", MessageDelay);
     SavourDelay = ini.Get_Fixed(GENERAL, "SavourDelay", SavourDelay);
     AVMineDamage = ini.Get_Int(GENERAL, "AVMineDamage", AVMineDamage);
@@ -375,7 +376,7 @@ bool RulesClass::General(CCINIClass& ini) {
     SuspendPriority = ini.Get_Int(GENERAL, "SuspendPriority", SuspendPriority);
     SuspendDelay = ini.Get_Fixed(GENERAL, "SuspendDelay", SuspendDelay);
     SurvivorFraction = ini.Get_Fixed(GENERAL, "SurvivorRate", SurvivorFraction);
-    RadarJamRadius = ini.Get_Lepton(GENERAL, "RadarJamRadius", RadarJamRadius);
+    RadarJamRadius = GetLepton(ini, GENERAL, "RadarJamRadius", RadarJamRadius);
     ReloadRate = ini.Get_Fixed(GENERAL, "ReloadRate", ReloadRate);
     RandomAnimateTime =
         ini.Get_Fixed(GENERAL, "IdleActionFrequency", RandomAnimateTime);
@@ -384,23 +385,23 @@ bool RulesClass::General(CCINIClass& ini) {
     AtomDamage = ini.Get_Int(GENERAL, "AtomDamage", AtomDamage);
     BailCount = ini.Get_Int(GENERAL, "BailCount", BailCount);
     BallisticScatter =
-        ini.Get_Lepton(GENERAL, "BallisticScatter", BallisticScatter);
+        GetLepton(ini, GENERAL, "BallisticScatter", BallisticScatter);
     BridgeStrength = ini.Get_Int(GENERAL, "BridgeStrength", BridgeStrength);
     BuildSpeedBias = ini.Get_Fixed(GENERAL, "BuildSpeed", BuildSpeedBias);
     ConditionGreen = Fixed(1);
     ConditionRed = ini.Get_Fixed(GENERAL, "ConditionRed", ConditionRed);
     ConditionYellow =
         ini.Get_Fixed(GENERAL, "ConditionYellow", ConditionYellow);
-    CrateRadius = ini.Get_Lepton(GENERAL, "CrateRadius", CrateRadius);
-    CrushDistance = ini.Get_Lepton(GENERAL, "Crush", CrushDistance);
+    CrateRadius = GetLepton(ini, GENERAL, "CrateRadius", CrateRadius);
+    CrushDistance = GetLepton(ini, GENERAL, "Crush", CrushDistance);
     DamageDelay = ini.Get_Fixed(GENERAL, "DamageDelay", DamageDelay);
     GapShroudRadius = ini.Get_Int(GENERAL, "GapRadius", GapShroudRadius);
     GemValue = ini.Get_Int(GENERAL, "GemValue", GemValue);
     GoldValue = ini.Get_Int(GENERAL, "GoldValue", GoldValue);
     Gravity = ini.Get_Int(GENERAL, "Gravity", Gravity);
     GrowthRate = ini.Get_Fixed(GENERAL, "GrowthRate", GrowthRate);
-    HomingScatter = ini.Get_Lepton(GENERAL, "HomingScatter", HomingScatter);
-    Incoming = ini.Get_MPHType(GENERAL, "Incoming", game::MPH_IMMOBILE);
+    HomingScatter = GetLepton(ini, GENERAL, "HomingScatter", HomingScatter);
+    Incoming = GetMPHType(ini, GENERAL, "Incoming", game::MPH_IMMOBILE);
     IronCurtainDuration =
         ini.Get_Fixed(GENERAL, "IronCurtain", IronCurtainDuration);
     IsAllyReveal = ini.Get_Bool(GENERAL, "AllyReveal", IsAllyReveal);
@@ -420,15 +421,15 @@ bool RulesClass::General(CCINIClass& ini) {
     RepairRate = ini.Get_Fixed(GENERAL, "RepairRate", RepairRate);
     ShroudRate = ini.Get_Fixed(GENERAL, "ShroudRate", ShroudRate);
     SpeakDelay = ini.Get_Fixed(GENERAL, "SpeakDelay", SpeakDelay);
-    StrayDistance = ini.Get_Lepton(GENERAL, "Stray", StrayDistance);
+    StrayDistance = GetLepton(ini, GENERAL, "Stray", StrayDistance);
     CloseEnoughDistance =
-        ini.Get_Lepton(GENERAL, "CloseEnough", CloseEnoughDistance);
+        GetLepton(ini, GENERAL, "CloseEnough", CloseEnoughDistance);
     TimerWarning = ini.Get_Fixed(GENERAL, "TimerWarning", TimerWarning);
     MovieTime = ini.Get_Fixed(GENERAL, "MovieTime", MovieTime);
     C4Delay = ini.Get_Fixed(GENERAL, "C4Delay", C4Delay);
     ChronoTechLevel = ini.Get_Int(GENERAL, "ChronoTechLevel", ChronoTechLevel);
     CrateTime = ini.Get_Fixed(GENERAL, "CrateRegen", CrateTime);
-    VortexRange = ini.Get_Lepton(GENERAL, "VortexRange", VortexRange);
+    VortexRange = GetLepton(ini, GENERAL, "VortexRange", VortexRange);
     VortexSpeed = static_cast<game::MPHType>(Scale_To_256(
         ini.Get_Int(GENERAL, "VortexSpeed", static_cast<int>(VortexSpeed))));
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
@@ -464,7 +465,7 @@ bool RulesClass::General(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::MPlayer(CCINIClass& ini) {
+bool RulesClass::MPlayer(engine::file::IniFile& ini) {
   static const char* const MPLAYER = "MultiplayerDefaults";
   if (ini.Is_Present(MPLAYER)) {
     MPDefaultMoney = ini.Get_Int(MPLAYER, "Money", MPDefaultMoney);
@@ -494,7 +495,7 @@ bool RulesClass::MPlayer(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Recharge(CCINIClass& ini) {
+bool RulesClass::Recharge(engine::file::IniFile& ini) {
   static const char* const RECHARGE = "Recharge";
   if (ini.Is_Present(RECHARGE)) {
     SonarTime = ini.Get_Fixed(RECHARGE, "Sonar", SonarTime);
@@ -526,7 +527,7 @@ bool RulesClass::Recharge(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Heap_Maximums(CCINIClass& ini) {
+bool RulesClass::Heap_Maximums(engine::file::IniFile& ini) {
   /*
   **	Heap maximum values.
   */
@@ -632,7 +633,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::AI(CCINIClass& ini) {
+bool RulesClass::AI(engine::file::IniFile& ini) {
   static const char* const AI = "AI";
   if (ini.Is_Present(AI)) {
     AttackInterval = ini.Get_Fixed(AI, "AttackInterval", AttackInterval);
@@ -640,8 +641,8 @@ bool RulesClass::AI(CCINIClass& ini) {
     PatrolTime = ini.Get_Fixed(AI, "PatrolScan", PatrolTime);
     RepairThreshhold = ini.Get_Int(AI, "CreditReserve", RepairThreshhold);
     PathDelay = ini.Get_Fixed(AI, "PathDelay", PathDelay);
-    TiberiumShortScan = ini.Get_Lepton(AI, "OreNearScan", TiberiumShortScan);
-    TiberiumLongScan = ini.Get_Lepton(AI, "OreFarScan", TiberiumLongScan);
+    TiberiumShortScan = GetLepton(ini, AI, "OreNearScan", TiberiumShortScan);
+    TiberiumLongScan = GetLepton(ini, AI, "OreFarScan", TiberiumLongScan);
     AutocreateTime = ini.Get_Fixed(AI, "AutocreateTime", AutocreateTime);
     InfantryReserve = ini.Get_Int(AI, "InfantryReserve", InfantryReserve);
     InfantryBaseMult = ini.Get_Int(AI, "InfantryBaseMult", InfantryBaseMult);
@@ -687,7 +688,7 @@ bool RulesClass::AI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Powerups(CCINIClass& ini) {
+bool RulesClass::Powerups(engine::file::IniFile& ini) {
   static const char* const POWERUPS = "Powerups";
   if (ini.Is_Present(POWERUPS)) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
@@ -747,7 +748,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/08/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Land_Types(CCINIClass& ini) {
+bool RulesClass::Land_Types(engine::file::IniFile& ini) {
   /*
   **	Fetch the movement characteristic data for terrain types.
   */
@@ -790,7 +791,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/11/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Themes(CCINIClass& ini) {
+bool RulesClass::Themes(engine::file::IniFile& ini) {
   static const char* const THEMECONTROL = "ThemeControl";
 
   if (ini.Is_Present(THEMECONTROL)) {
@@ -838,7 +839,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 08/11/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::IQ(CCINIClass& ini) {
+bool RulesClass::IQ(engine::file::IniFile& ini) {
   static const char* const IQCONTROL = "IQ";
   if (ini.Is_Present(IQCONTROL)) {
     MaxIQ = ini.Get_Int(IQCONTROL, "MaxIQLevels", MaxIQ);
@@ -872,7 +873,7 @@ bool RulesClass::IQ(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 09/10/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Objects(CCINIClass& ini) {
+bool RulesClass::Objects(engine::file::IniFile& ini) {
   /*
   **	Fetch the game object values from the rules file.
   */
@@ -942,7 +943,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 09/10/1996 JLB : Created. *
  *=============================================================================================*/
-bool RulesClass::Difficulty(CCINIClass& ini) {
+bool RulesClass::Difficulty(engine::file::IniFile& ini) {
   Difficulty_Get(ini, Diff[static_cast<int>(DIFF_EASY)], "Easy");
   Difficulty_Get(ini, Diff[static_cast<int>(DIFF_NORMAL)], "Normal");
   Difficulty_Get(ini, Diff[static_cast<int>(DIFF_HARD)], "Difficult");

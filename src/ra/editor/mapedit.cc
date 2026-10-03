@@ -77,6 +77,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -98,7 +99,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
 #include "ra/debug/debug_state.h"
@@ -2126,7 +2126,7 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Read_INI(CCINIClass& ini) {
+void MapEditClass::Read_INI(engine::file::IniFile& ini) {
   DLOG(INFO) << "Map editor reading scenario INI";
 
   MouseClass::Read_INI(ini);

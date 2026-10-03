@@ -46,10 +46,10 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/enum_step.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 
@@ -160,9 +160,9 @@ class TeamTypeClass : public AbstractTypeClass {
   **	File I/O routines
   */
   void Build_INI_Entry(std::string& buf);
-  static void Read_INI(CCINIClass& ini);
+  static void Read_INI(engine::file::IniFile& ini);
   void Fill_In(const char* name, char* entry);
-  static void Write_INI(CCINIClass& ini);
+  static void Write_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>

@@ -26,6 +26,7 @@
 
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -34,7 +35,6 @@
 #include "game/sim/direction.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/map/layer.h"
 #include "ra/map/map.h"
 #include "ra/objects/house.h"
@@ -115,8 +115,8 @@ class DisplayClass : public MapClass {
   //-------------------------------------------------------------------------
   DisplayClass();
 
-  virtual void Read_INI(CCINIClass& ini);
-  void Write_INI(CCINIClass& ini);
+  virtual void Read_INI(engine::file::IniFile& ini);
+  void Write_INI(engine::file::IniFile& ini);
 
   /*
   ** Initialization

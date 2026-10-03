@@ -29,10 +29,11 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
+#include "engine/file/ini_file.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/map/map.h"
 #include "ra/map/world.h"
 #include "ra/objects/building.h"
@@ -123,10 +124,10 @@ const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {
   return nullptr;
 }
 
-void PrebuiltBase::ReadIni(const CCINIClass& ini) {
+void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // The scenario names the owner under "Player"; the human player's house is
   // only the fallback for a section that omits it.
-  house_ = ini.Get_HousesType(kIniSection, "Player", ThePlayer()->Class->House);
+  house_ = GetHousesType(ini, kIniSection, "Player", ThePlayer()->Class->House);
 
   const int node_count = ini.Get_Int(kIniSection, "Count", 0);
 
@@ -156,13 +157,13 @@ void PrebuiltBase::ReadIni(const CCINIClass& ini) {
   }
 }
 
-void PrebuiltBase::WriteIni(CCINIClass& ini) const {
+void PrebuiltBase::WriteIni(engine::file::IniFile& ini) const {
   ini.Clear(kIniSection);
 
   if (house_ == HOUSE_NONE) {
     return;
   }
-  ini.Put_HousesType(kIniSection, "Player", house_);
+  PutHousesType(ini, kIniSection, "Player", house_);
 
   // ReadIni() finds the entries by counting from "000" up to Count.
   ini.Put_Int(kIniSection, "Count", static_cast<int>(std::ssize(nodes_)));

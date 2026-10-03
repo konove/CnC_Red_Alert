@@ -124,6 +124,7 @@
 #include "base/strings/tokenizer.h"
 #include "base/trig.h"
 #include "base/types.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/cell_size.h"
@@ -145,7 +146,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/display.h"
@@ -624,7 +624,7 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Read_INI(CCINIClass& ini) {
+void AircraftClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
   const int counter = ini.Entry_Count(INI_Name());

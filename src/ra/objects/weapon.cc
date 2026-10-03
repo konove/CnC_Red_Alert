@@ -53,13 +53,14 @@
 #include <cstddef>
 
 #include "absl/strings/match.h"
+#include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 
 namespace ra {
 
@@ -195,16 +196,16 @@ WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
+bool WeaponTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     IsSupressed = ini.Get_Bool(Name(), "Supress", IsSupressed);
     Burst = ini.Get_Int(Name(), "Burst", Burst);
     Attack = ini.Get_Int(Name(), "Damage", Attack);
-    MaxSpeed = ini.Get_MPHType(Name(), "Speed", MaxSpeed);
+    MaxSpeed = GetMPHType(ini, Name(), "Speed", MaxSpeed);
     ROF = ini.Get_Int(Name(), "ROF", ROF);
-    Range = ini.Get_Lepton(Name(), "Range", Range);
-    Sound = ini.Get_VocType(Name(), "Report", Sound);
-    Anim = ini.Get_AnimType(Name(), "Anim", Anim);
+    Range = GetLepton(ini, Name(), "Range", Range);
+    Sound = GetVocType(ini, Name(), "Report", Sound);
+    Anim = GetAnimType(ini, Name(), "Anim", Anim);
     IsCamera = ini.Get_Bool(Name(), "Camera", IsCamera);
     IsElectric = ini.Get_Bool(Name(), "Charges", IsElectric);
     IsTurboBoosted = ini.Get_Bool(Name(), "TurboBoost", IsTurboBoosted);
@@ -212,7 +213,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
     WarheadType wtype = WarheadPtr != nullptr
                             ? static_cast<WarheadType>(WarheadPtr->ID)
                             : WARHEAD_NONE;
-    wtype = ini.Get_WarheadType(Name(), "Warhead", wtype);
+    wtype = GetWarheadType(ini, Name(), "Warhead", wtype);
     if (wtype != WARHEAD_NONE) {
       WarheadPtr = WarheadTypeClass::As_Pointer(wtype);
       //			WarheadPtr = &Warheads[wtype];
@@ -222,7 +223,7 @@ bool WeaponTypeClass::Read_INI(CCINIClass& ini) {
 
     BulletType btype =
         Bullet != nullptr ? static_cast<BulletType>(Bullet->ID) : BULLET_NONE;
-    btype = ini.Get_BulletType(Name(), "Projectile", btype);
+    btype = GetBulletType(ini, Name(), "Projectile", btype);
     if (btype != BULLET_NONE) {
       Bullet = &BulletTypeClass::As_Reference(btype);
     } else {

@@ -51,7 +51,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
 class ArchiveReader;

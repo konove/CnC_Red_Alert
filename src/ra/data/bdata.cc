@@ -81,6 +81,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -97,7 +98,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -3751,7 +3751,7 @@ bool BuildingTypeClass::Flush_For_Placement(Cell cell,
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Read_INI(CCINIClass& ini) {
+bool BuildingTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     Speed = ini.Get_Bool(Name(), "WaterBound", Speed == SPEED_FLOAT)
                 ? SPEED_FLOAT

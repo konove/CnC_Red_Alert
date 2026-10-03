@@ -49,6 +49,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
@@ -56,7 +57,6 @@
 #include "ra/ai/region.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 #include "ra/objects/super.h"
 #include "ra/objects/type.h"
@@ -830,8 +830,8 @@ class HouseClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass& ini);
-  static void Write_INI(CCINIClass& ini);
+  static void Read_INI(engine::file::IniFile& ini);
+  static void Write_INI(engine::file::IniFile& ini);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
   // Saved-game support; defined in ioobj.cc.

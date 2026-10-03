@@ -55,10 +55,10 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "base/fixed.h"
+#include "engine/file/ini_file.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/objects/object.h"
 
@@ -488,7 +488,7 @@ const char* MissionControlClass::Name() const {
   return Missions.at(Mission);
 }
 
-bool MissionControlClass::Read_INI(CCINIClass& ini) {
+bool MissionControlClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     IsNoThreat = ini.Get_Bool(Name(), "NoThreat", IsNoThreat);
     IsZombie = ini.Get_Bool(Name(), "Zombie", IsZombie);

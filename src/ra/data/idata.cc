@@ -64,6 +64,7 @@
 #include "absl/strings/match.h"
 #include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -74,7 +75,6 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -1334,7 +1334,7 @@ InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool InfantryTypeClass::Read_INI(CCINIClass& ini) {
+bool InfantryTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (TechnoTypeClass::Read_INI(ini)) {
     IsFraidyCat = ini.Get_Bool(Name(), "Fraidycat", IsFraidyCat);
     IsCapture = ini.Get_Bool(Name(), "Infiltrate", IsCapture);

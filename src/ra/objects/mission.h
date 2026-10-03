@@ -41,10 +41,10 @@
 #define CNC_RED_ALERT_RA_OBJECTS_MISSION_H_
 
 #include "base/fixed.h"
+#include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
 namespace ra {
@@ -159,7 +159,7 @@ class MissionControlClass {
  public:
   MissionControlClass();
 
-  bool Read_INI(CCINIClass& ini);
+  bool Read_INI(engine::file::IniFile& ini);
   [[nodiscard]] int Normal_Delay() const { return kTicksPerMinute * Rate; }
   [[nodiscard]] int AA_Delay() const { return kTicksPerMinute * AARate; }
 

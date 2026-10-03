@@ -44,11 +44,11 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/tevent.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
@@ -137,8 +137,8 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	File I/O routines
   */
-  static void Read_INI(CCINIClass& ini);
-  static void Write_INI(CCINIClass& ini);
+  static void Read_INI(engine::file::IniFile& ini);
+  static void Write_INI(engine::file::IniFile& ini);
   void Fill_In(const char* name, char* entry);
   void Build_INI_Entry(std::string& buffer) const;
 

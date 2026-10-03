@@ -159,6 +159,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -189,7 +190,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
@@ -6563,7 +6564,7 @@ static inline int Scale_To_256(int val) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
+bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     char buffer[256];
     const int id = ((static_cast<int>(RTTI) + 1) * 100) + ID;
@@ -6596,22 +6597,22 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     }
 
     IsDoubleOwned = ini.Get_Bool(Name(), "DoubleOwned", IsDoubleOwned);
-    ThreatRange = ini.Get_Lepton(Name(), "GuardRange", ThreatRange);
+    ThreatRange = GetLepton(ini, Name(), "GuardRange", ThreatRange);
     IsExploding = ini.Get_Bool(Name(), "Explodes", IsExploding);
-    PrimaryWeapon = WeaponTypeClass::As_Pointer(ini.Get_WeaponType(
-        Name(), "Primary",
+    PrimaryWeapon = WeaponTypeClass::As_Pointer(GetWeaponType(
+        ini, Name(), "Primary",
         PrimaryWeapon != nullptr ? static_cast<WeaponType>(PrimaryWeapon->ID)
                                  : WEAPON_NONE));
     SecondaryWeapon = WeaponTypeClass::As_Pointer(
-        ini.Get_WeaponType(Name(), "Secondary",
-                           SecondaryWeapon != nullptr
-                               ? static_cast<WeaponType>(SecondaryWeapon->ID)
-                               : WEAPON_NONE));
+        GetWeaponType(ini, Name(), "Secondary",
+                      SecondaryWeapon != nullptr
+                          ? static_cast<WeaponType>(SecondaryWeapon->ID)
+                          : WEAPON_NONE));
     IsCloakable = ini.Get_Bool(Name(), "Cloakable", IsCloakable);
     IsCrushable = ini.Get_Bool(Name(), "Crushable", IsCrushable);
     IsScanner = ini.Get_Bool(Name(), "Sensors", IsScanner);
-    Armor = ini.Get_ArmorType(Name(), "Armor", Armor);
-    Prerequisite = ini.Get_Buildings(Name(), "Prerequisite", Prerequisite);
+    Armor = GetArmorType(ini, Name(), "Armor", Armor);
+    Prerequisite = GetBuildings(ini, Name(), "Prerequisite", Prerequisite);
     MaxStrength = static_cast<int16_t>(
         ini.Get_Int(Name(), "Strength", MaxStrength));
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
@@ -6621,7 +6622,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     Cost = ini.Get_Int(Name(), "Cost", Cost);
     MaxAmmo = ini.Get_Int(Name(), "Ammo", MaxAmmo);
     Risk = Reward = Points = ini.Get_Int(Name(), "Points", Points);
-    Ownable = ini.Get_Owners(Name(), "Owner", Ownable);
+    Ownable = GetOwners(ini, Name(), "Owner", Ownable);
     IsCrew = ini.Get_Bool(Name(), "Crewed", IsCrew);
     IsRepairable = ini.Get_Bool(Name(), "Repairable", IsRepairable);
     IsInvisible = ini.Get_Bool(Name(), "Invisible", IsInvisible);

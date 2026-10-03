@@ -134,7 +134,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/language.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -311,7 +310,7 @@ bool Init_Game() {
   **	Find and process any rules for this game.
   */
   if (const auto fc = OpenGameFile("RULES.INI");
-      fc && TheRules().rule_ini().Load(*fc, false)) {
+      fc && TheRules().rule_ini().Load(*fc)) {
     TheRules().Process(TheRules().rule_ini());
   }
   //  Aftermath runtime change 9/29/98
@@ -319,8 +318,7 @@ bool Init_Game() {
   // this ini.
   if (Is_Aftermath_Installed()) {
     if (const auto aftermath_ini = OpenGameFile("AFTRMATH.INI");
-        aftermath_ini &&
-        TheRules().aftermath_ini().Load(*aftermath_ini, false)) {
+        aftermath_ini && TheRules().aftermath_ini().Load(*aftermath_ini)) {
       TheRules().Process(TheRules().aftermath_ini());
     }
   }

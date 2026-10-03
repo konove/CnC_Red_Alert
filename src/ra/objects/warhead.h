@@ -45,8 +45,8 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "engine/file/ini_file.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 
 namespace ra {
 
@@ -66,7 +66,7 @@ class WarheadTypeClass {
   void operator delete(void* pointer);
 
   [[nodiscard]] const char* Name() const { return IniName; }
-  bool Read_INI(CCINIClass& ini);
+  bool Read_INI(engine::file::IniFile& ini);
   static WarheadTypeClass* As_Pointer(WarheadType warhead);
 
   /*

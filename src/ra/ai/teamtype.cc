@@ -86,6 +86,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -108,7 +109,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
 #include "ra/editor/mapedit.h"
@@ -1752,7 +1752,7 @@ void TeamTypeClass::Detach(Target target, bool /*unused*/) {
  *   12/07/1994 BR : Created.                                              *
  *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
  *=========================================================================*/
-void TeamTypeClass::Read_INI(CCINIClass& ini) {
+void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[500];        // INI entry buffer
 
   const int len = ini.Entry_Count(INI_Name());
@@ -1953,7 +1953,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Write_INI(CCINIClass& ini) {
+void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
   ini.Clear("TeamTypes");
   ini.Clear(INI_Name());
 

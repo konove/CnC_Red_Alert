@@ -44,9 +44,9 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/installed.h"
+#include "engine/file/ini_file.h"
 #include "game/core/cell_size.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/mission.h"
 
 namespace ra {
@@ -73,23 +73,25 @@ class RulesClass {
  public:
   RulesClass();
 
-  bool Process(CCINIClass& ini);
-  bool General(CCINIClass& ini);
-  bool MPlayer(CCINIClass& ini);
-  bool Recharge(CCINIClass& ini);
-  bool Heap_Maximums(CCINIClass& ini);
-  bool AI(CCINIClass& ini);
-  bool Powerups(CCINIClass& ini);
-  bool Land_Types(CCINIClass& ini);
-  static bool Themes(CCINIClass& ini);
-  bool IQ(CCINIClass& ini);
-  bool Objects(CCINIClass& ini);
-  bool Difficulty(CCINIClass& ini);
+  bool Process(engine::file::IniFile& ini);
+  bool General(engine::file::IniFile& ini);
+  bool MPlayer(engine::file::IniFile& ini);
+  bool Recharge(engine::file::IniFile& ini);
+  bool Heap_Maximums(engine::file::IniFile& ini);
+  bool AI(engine::file::IniFile& ini);
+  bool Powerups(engine::file::IniFile& ini);
+  bool Land_Types(engine::file::IniFile& ini);
+  static bool Themes(engine::file::IniFile& ini);
+  bool IQ(engine::file::IniFile& ini);
+  bool Objects(engine::file::IniFile& ini);
+  bool Difficulty(engine::file::IniFile& ini);
 
   // The rules files, kept open for the rest of the process: loading a saved
   // game reads the rules again rather than restoring them.
-  CCINIClass& rule_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND { return rule_ini_; }
-  CCINIClass& aftermath_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::file::IniFile& rule_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return rule_ini_;
+  }
+  engine::file::IniFile& aftermath_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return aftermath_ini_;
   }
 
@@ -985,8 +987,8 @@ class RulesClass {
   int UnitBuildPenalty{100};
 
  private:
-  CCINIClass rule_ini_;
-  CCINIClass aftermath_ini_;
+  engine::file::IniFile rule_ini_;
+  engine::file::IniFile aftermath_ini_;
   base::EnumArray<LandType, GroundType> ground_{};
   base::EnumArray<MissionType, MissionControlClass> mission_control_{};
 

@@ -43,11 +43,11 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 #include "ra/objects/stage.h"
 #include "ra/objects/techno.h"
@@ -157,8 +157,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass& ini);
-  static void Write_INI(CCINIClass& ini);
+  static void Read_INI(engine::file::IniFile& ini);
+  static void Write_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "TERRAIN"; }
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>

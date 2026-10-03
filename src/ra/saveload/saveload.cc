@@ -76,6 +76,7 @@
 #include "engine/file/disk_stream.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/search_paths.h"
 #include "engine/platform/env.h"
 #include "engine/platform/platform.h"
@@ -105,7 +106,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/data/ccini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -1085,9 +1085,9 @@ bool Load_Game(int id) {
   /*
   **	Rescan the scenario file for any rules updates.
   */
-  CCINIClass ini;
+  engine::file::IniFile ini;
   if (const auto fc = OpenGameFile(TheScenario().ScenarioName)) {
-    ini.Load(*fc, true);
+    ini.LoadVerified(*fc);
   }
 
   /*
@@ -1153,9 +1153,9 @@ bool Load_Game(int id) {
           EmergencyExit(EXIT_FAILURE);
         }
       }
-      CCINIClass mpini;
+      engine::file::IniFile mpini;
       if (const auto mplayer_ini = OpenGameFile("MPLAYER.INI");
-          mplayer_ini && mpini.Load(*mplayer_ini, false)) {
+          mplayer_ini && mpini.Load(*mplayer_ini)) {
         TheRules().General(mpini);
         TheRules().Recharge(mpini);
         TheRules().AI(mpini);

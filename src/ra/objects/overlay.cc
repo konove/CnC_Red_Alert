@@ -57,6 +57,7 @@
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lcw_sink.h"
 #include "engine/codec/lcw_source.h"
+#include "engine/file/ini_file.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/object_heap.h"
@@ -64,7 +65,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"
@@ -282,7 +283,7 @@ bool OverlayClass::Mark(MarkType mark) {
  *   09/01/1994 JLB : Created. * 07/24/1995 JLB : Specifically forbid manual
  *crates in multiplayer scenarios.              *
  *=============================================================================================*/
-void OverlayClass::Read_INI(CCINIClass& ini) {
+void OverlayClass::Read_INI(engine::file::IniFile& ini) {
   if (TheWorld().new_ini_format() > 1) {
     const int len =
         ini.Get_UUBlock("OverlayPack", base::ObjectBytes(overlay_pack_buffer),
@@ -341,7 +342,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       const Cell cell =
           Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
       const OverlayType classid =
-          ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
+          GetOverlayType(ini, INI_Name(), entry, OVERLAY_NONE);
 
       /*
       **	Don't allow placement of crates in the multiplayer scenarios.
@@ -379,7 +380,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
   }
 }
 
-void OverlayClass::Write_INI(CCINIClass& ini) {
+void OverlayClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing unit data from the ini file.
   */

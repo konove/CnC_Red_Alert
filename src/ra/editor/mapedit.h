@@ -56,6 +56,7 @@
 #include <array>
 #include <memory>
 
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
@@ -63,7 +64,6 @@
 #include "game/ui/gadget.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/map/mouse.h"
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
@@ -191,7 +191,7 @@ class MapEditClass : public MouseClass {
   void Draw_It(PixelView& view, bool forced = true) override;
   bool Scroll_Map(game::DirType facing, int& distance,
                   bool really = true) override;
-  void Read_INI(CCINIClass& ini) override;
+  void Read_INI(engine::file::IniFile& ini) override;
   void Detach(ObjectClass* object) override;
   using MouseClass::Detach;
   void Clear_List();

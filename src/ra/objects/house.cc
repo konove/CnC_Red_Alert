@@ -160,6 +160,7 @@
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/types.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/ipxmgr.h"
 #include "game/core/cell_size.h"
@@ -188,7 +189,7 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -7097,7 +7098,7 @@ int HouseClass::Get_Quantity(StructType building) {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
  *=============================================================================================*/
-void HouseClass::Read_INI(CCINIClass& ini) {
+void HouseClass::Read_INI(engine::file::IniFile& ini) {
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     const char* hname = HouseTypeClass::As_Reference(index)
                             .IniName;  //	Pointer to house name.
@@ -7126,11 +7127,11 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     }
     p->IQ = p->Control.IQ = iq;
 
-    p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
+    p->Control.Edge = GetSourceType(ini, hname, "Edge", SOURCE_NORTH);
     p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
 
     const uint32_t owners =
-        ini.Get_Owners(hname, "Allies", base::Bit<uint32_t>(HOUSE_NEUTRAL));
+        GetOwners(ini, hname, "Allies", base::Bit<uint32_t>(HOUSE_NEUTRAL));
     p->Make_Ally(index);
     p->Make_Ally(HOUSE_NEUTRAL);
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -7156,7 +7157,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Write_INI(CCINIClass& ini) {
+void HouseClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	The identity house control object. Only if the house value differs from
   *the *	identity, will the data be written out.
@@ -7180,7 +7181,7 @@ void HouseClass::Write_INI(CCINIClass& ini) {
       }
 
       if (p->Control.Edge != control.Edge) {
-        ini.Put_SourceType(name, "Edge", p->Control.Edge);
+        PutSourceType(ini, name, "Edge", p->Control.Edge);
       }
 
       if (p->Control.MaxUnit > 0 && p->Control.MaxUnit != control.MaxUnit) {
@@ -7214,10 +7215,9 @@ void HouseClass::Write_INI(CCINIClass& ini) {
         ini.Put_Bool(name, "PlayerControl", p->IsPlayerControl);
       }
 
-      ini.Put_Owners(
-          name, "Allies",
-          p->Control.Allies & ~(base::Bit<uint32_t>(p->Class->House) |
-                                base::Bit<uint32_t>(HOUSE_NEUTRAL)));
+      PutOwners(ini, name, "Allies",
+                p->Control.Allies & ~(base::Bit<uint32_t>(p->Class->House) |
+                                      base::Bit<uint32_t>(HOUSE_NEUTRAL)));
     }
   }
 }

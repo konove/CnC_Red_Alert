@@ -43,8 +43,8 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/file/ini_file.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 
@@ -72,7 +72,7 @@ class WeaponTypeClass {
   void operator delete(void* pointer);
 
   [[nodiscard]] const char* Name() const { return IniName; }
-  bool Read_INI(CCINIClass& ini);
+  bool Read_INI(engine::file::IniFile& ini);
   static WeaponTypeClass* As_Pointer(WeaponType weapon);
   [[nodiscard]] ThreatType Allowed_Threats() const;
   [[nodiscard]] bool Is_Wall_Destroyer() const;

@@ -84,6 +84,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
@@ -102,7 +103,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/gscreen.h"
@@ -1967,7 +1967,7 @@ bool VesselClass::Is_Allowed_To_Recloak() const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Read_INI(CCINIClass& ini) {
+void VesselClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -2057,7 +2057,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Write_INI(CCINIClass& ini) {
+void VesselClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing vessel data from the ini file.
   */

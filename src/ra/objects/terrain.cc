@@ -74,6 +74,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -87,7 +88,7 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
+#include "ra/data/ini_types.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
@@ -723,13 +724,13 @@ Coordinate TerrainClass::Target_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Read_INI(CCINIClass& ini) {
+void TerrainClass::Read_INI(engine::file::IniFile& ini) {
   const int len = ini.Entry_Count(INI_Name());
 
   for (int index = 0; index < len; index++) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     const TerrainType terrain =
-        ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
+        GetTerrainType(ini, INI_Name(), entry, TERRAIN_NONE);
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
 
     if (terrain != TERRAIN_NONE) {
@@ -755,7 +756,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Write_INI(CCINIClass& ini) {
+void TerrainClass::Write_INI(engine::file::IniFile& ini) {
   /*
   **	First, clear out all existing terrain data from the ini file.
   */
@@ -770,7 +771,7 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
       char uname[10];
       absl::SNPrintF(uname, sizeof(uname), "%d",
                      Cell::Containing(terrain->Coord).index());
-      ini.Put_TerrainType(INI_Name(), uname, *terrain);
+      PutTerrainType(ini, INI_Name(), uname, *terrain);
     }
   }
 }

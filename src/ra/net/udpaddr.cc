@@ -22,6 +22,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -34,7 +35,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/net/network.h"
 #include "ra/net/wsproto.h"
@@ -130,10 +130,10 @@ bool Get_Broadcast_Addresses() {
   /*
   ** Add all the ip addresses from the ini file to the list box.
   */
-  CCINIClass ip_ini;
+  engine::file::IniFile ip_ini;
   int res = 0;
 
-  if (const auto fc = OpenGameFile("IP.INI"); fc && ip_ini.Load(*fc, false)) {
+  if (const auto fc = OpenGameFile("IP.INI"); fc && ip_ini.Load(*fc)) {
     int entry = 0;
     char entry_name[16];
     do {

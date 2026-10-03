@@ -75,6 +75,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -97,7 +98,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
 #include "ra/map/world.h"
@@ -2053,7 +2053,7 @@ AttachType TriggerTypeClass::Attaches_To() const {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Read_INI(CCINIClass& ini) {
+void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   char buf[128];
 
   const int len = ini.Entry_Count(INI_Name());
@@ -2157,7 +2157,7 @@ void TriggerTypeClass::Fill_In(const char* name, char* entry) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Write_INI(CCINIClass& ini) {
+void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
   ini.Clear("Triggers");
   ini.Clear(INI_Name());
 

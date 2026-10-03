@@ -178,7 +178,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/data/ccini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"

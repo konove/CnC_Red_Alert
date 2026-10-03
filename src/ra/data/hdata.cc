@@ -55,12 +55,12 @@
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
+#include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/objects/type.h"
 
@@ -478,7 +478,7 @@ std::span<const unsigned char> HouseTypeClass::Remap_Table() const {
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-bool HouseTypeClass::Read_INI(CCINIClass& ini) {
+bool HouseTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     FirepowerBias = ini.Get_Fixed(Name(), "Firepower", FirepowerBias);
     GroundspeedBias = ini.Get_Fixed(Name(), "Groundspeed", GroundspeedBias);

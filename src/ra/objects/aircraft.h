@@ -45,13 +45,13 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
 #include "ra/core/defines.h"
-#include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/fly.h"
 #include "ra/objects/foot.h"
@@ -210,7 +210,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	File I/O.
   */
-  static void Read_INI(CCINIClass& ini);
+  static void Read_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "AIRCRAFT"; }
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>

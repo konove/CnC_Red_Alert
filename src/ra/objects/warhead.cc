@@ -48,12 +48,12 @@
 #include <cstring>
 
 #include "base/strings/tokenizer.h"
+#include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
-#include "ra/data/ccini.h"
 
 namespace ra {
 
@@ -164,7 +164,7 @@ WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
+bool WarheadTypeClass::Read_INI(engine::file::IniFile& ini) {
   if (ini.Is_Present(Name())) {
     SpreadFactor = ini.Get_Int(Name(), "Spread", SpreadFactor);
     IsWallDestroyer = ini.Get_Bool(Name(), "Wall", IsWallDestroyer);
