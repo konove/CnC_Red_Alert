@@ -61,8 +61,6 @@ struct TLucentType {
   unsigned char reserved;
 };
 
-std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
-                                          int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
 // Returns ownership of the buffer. Caller must delete[].
