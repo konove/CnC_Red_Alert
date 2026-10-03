@@ -46,14 +46,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string_view>
-#include <vector>
 
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
 #include "ra/assets/palette.h"
-
-class ByteStream;
 
 namespace ra {
 
@@ -64,17 +60,6 @@ struct TLucentType {
   unsigned char reserved;
 };
 
-// A picture is one full screen, kPictureWidth by kPictureHeight pixels.
-inline constexpr int kPictureWidth = 320;
-inline constexpr int kPictureHeight = 200;
-
-// Returns the pixels of the compressed (.CPS) picture `file` holds at its
-// position, without the palette it may carry, or an empty vector if it is
-// damaged or larger than a screen.
-std::vector<uint8_t> ReadPicture(ByteStream& file);
-
-// Like ReadPicture(), for the game file `name`; empty if there is no such file.
-std::vector<uint8_t> LoadPicture(std::string_view name);
 void Set_Window(int window, int x, int y, int w, int h);
 
 // Returns the table that fades every palette color toward `color` by `frac`

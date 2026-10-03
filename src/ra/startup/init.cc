@@ -97,6 +97,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -130,7 +131,6 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
@@ -1709,11 +1709,13 @@ static void Init_Color_Remaps() {
   ** after that are the remap colors.
   */
 
-  const std::vector<uint8_t> picture = LoadPicture("PALETTE.CPS");
+  const auto file = OpenGameFile("PALETTE.CPS");
+  const std::vector<uint8_t> picture =
+      file ? engine::gfx::ReadCpsImage(*file).pixels : std::vector<uint8_t>{};
   // A picture that is missing or short reads as color 0, as the cleared page
   // it used to be decoded onto did.
   const auto pixel = [&picture](int x, int y) -> uint8_t {
-    const auto offset = base::ToSize((y * kPictureWidth) + x);
+    const auto offset = base::ToSize((y * engine::gfx::kCpsWidth) + x);
     return offset < picture.size() ? base::At(picture, offset) : 0;
   };
   for (const PlayerColorType pcolor :

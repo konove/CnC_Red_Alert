@@ -40,23 +40,13 @@
 
 #include "ra/core/jshell.h"
 
-#include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <span>
-#include <string_view>
-#include <utility>
-#include <vector>
 
 #include "base/array.h"
-#include "base/buffer.h"
-#include "engine/codec/compressed_block.h"
-#include "engine/file/game_file.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/text_window.h"
-#include "engine/stream/byte_stream.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
@@ -87,36 +77,6 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowHeight) = h;
   base::At(base::At(WindowList, window), kWindowX) = x;
   base::At(base::At(WindowList, window), kWindowY) = y;
-}
-
-std::vector<uint8_t> ReadPicture(ByteStream& file) {
-  // The file holds the block's size, then the block: its header, the skipped
-  // area holding the palette, and the data. UncompressBlock() skips the area.
-  uint16_t block_size = 0;
-  CompressedBlockHeader header{};
-  if (!file.ReadObject(block_size) || !file.ReadObject(header) ||
-      block_size < sizeof(header) ||
-      std::cmp_greater(header.uncompressed_bytes,
-                       kPictureWidth * kPictureHeight)) {
-    return {};
-  }
-  std::vector<std::byte> block(block_size);
-  std::ranges::copy(base::ObjectBytes(header), block.begin());
-  const auto rest = std::span(block).subspan(sizeof(header));
-  if (file.Read(rest) != std::ssize(rest)) {
-    return {};
-  }
-  std::vector<uint8_t> pixels(header.uncompressed_bytes);
-  if (UncompressBlock(block, std::as_writable_bytes(std::span(pixels))) !=
-      std::ssize(pixels)) {
-    pixels.clear();
-  }
-  return pixels;
-}
-
-std::vector<uint8_t> LoadPicture(std::string_view name) {
-  const auto file = OpenGameFile(name);
-  return file ? ReadPicture(*file) : std::vector<uint8_t>{};
 }
 
 FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
