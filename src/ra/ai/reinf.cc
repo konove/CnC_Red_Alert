@@ -220,12 +220,13 @@ static bool IsAllInfantry(const FootClass* group) {
 // Returns something at `origin` or in one of the eight cells around it that
 // infantry can come out of: a transport vehicle if there is one, otherwise a
 // building; nullptr when there is neither.
-static TechnoClass* FindHostNear(Cell origin) {
-  CellClass& origin_cell = TheMap().at(origin);
+static TechnoClass* FindHostNear(const Cell origin) {
+  const CellClass& origin_cell = TheMap().at(origin);
   TechnoClass* building_host = nullptr;
 
   // Returns the transport in `cell`, and remembers its building otherwise.
-  const auto transport_in = [&building_host](CellClass& cell) -> UnitClass* {
+  const auto transport_in =
+      [&building_host](const CellClass& cell) -> UnitClass* {
     BuildingClass* building = cell.Cell_Building();
     if (building != nullptr && building->Strength > 0) {
       building_host = building;
@@ -253,7 +254,7 @@ static TechnoClass* FindHostNear(Cell origin) {
 
 // Returns the first cell around `cell` that is off the visible map and that
 // `member` can enter, or Cell::None() when there is none.
-static Cell FindEdgeCellNextTo(Cell cell, const FootClass& member) {
+static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
   for (const game::FacingType direction :
        magic_enum::enum_values<game::FacingType>()) {
     const Cell neighbor = Adjacent_Cell(cell, direction);
@@ -373,8 +374,9 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   return true;
 }
 
-int LaunchAirStrike(HouseClass* house, AircraftType aircraft_type, int count,
-                    MissionType mission, Target target, Target destination) {
+int LaunchAirStrike(HouseClass* house, const AircraftType aircraft_type,
+                    const int count, const MissionType mission,
+                    const Target target, const Target destination) {
   DCHECK(house != nullptr);
   DCHECK(static_cast<unsigned>(aircraft_type) <
          magic_enum::enum_count<AircraftType>());
