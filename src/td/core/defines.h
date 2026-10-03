@@ -2413,21 +2413,6 @@ struct MPlayerScoreType {
   int Color;
 };
 
-//--------------------------------------------------------------------
-// New Config structure for .CFG files
-//--------------------------------------------------------------------
-struct NewConfigType {
-  unsigned DigitCard;      // SoundCardType.
-  unsigned Port;           // SoundCardType.
-  unsigned IRQ;            // SoundCardType.
-  unsigned DMA;            // SoundCardType.
-  unsigned BitsPerSample;  // bits per sound sample
-  unsigned Channels;       // stereo/mono sound card
-  unsigned Speed;          // stereo/mono sound card
-  bool Reverse;            // Reverse left/right speakers
-  char Language[4];
-};
-
 /****************************************************************************
 **	These are the types of dialogs that can pop up outside of the main loop,
 ** an call the game in the background.
