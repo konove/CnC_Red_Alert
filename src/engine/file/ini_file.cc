@@ -66,7 +66,6 @@ namespace {
 // two that hold a public key.
 constexpr std::string_view kDigestSection = "Digest";
 constexpr std::string_view kPublicKeySection = "PublicKey";
-constexpr std::string_view kPrivateKeySection = "PrivateKey";
 
 // The longest line PutTextBlock() stores, and the base64 characters
 // PutBase64Block() puts in one entry.
@@ -561,19 +560,15 @@ void IniFile::RemoveSections(const std::string_view section) {
   });
 }
 
-PKey IniFile::GetPublicKey(const bool fast) const {
+PKey IniFile::GetPublicKey() const {
   PKey key;
 
   // The fast key's exponent is a known constant, so a database published
   // without [PrivateKey] still yields it.
-  if (fast) {
-    unsigned char encoded[512];
-    const BigInt exponent = PKey::Fast_Exponent();
-    const auto length = exponent.DEREncode(encoded);
-    key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
-  } else {
-    key.Decode_Exponent(GetBase64Block(kPrivateKeySection));
-  }
+  unsigned char encoded[512];
+  const BigInt exponent = PKey::Fast_Exponent();
+  const auto length = exponent.DEREncode(encoded);
+  key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
 
   key.Decode_Modulus(GetBase64Block(kPublicKeySection));
 

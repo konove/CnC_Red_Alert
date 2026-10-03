@@ -2409,7 +2409,7 @@ static void Init_Keys() {
   engine::file::IniFile ini;
   ini.Load(source);
 
-  TheAssets().set_mix_key(ini.GetPublicKey(true));
+  TheAssets().set_mix_key(ini.GetPublicKey());
 }
 
 /***************************************************************************

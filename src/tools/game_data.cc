@@ -33,7 +33,7 @@ constexpr std::string_view kArchives[] = {
     "UPDATEC.MIX",  "LANGUAGE.MIX", "MOVIES.MIX",   "ZOUNDS.MIX"};
 
 // The public half of the key the archives are indexed with, as ra/core/const.h
-// embeds it and IniFile::GetPublicKey(true) reads it. The exponent is the known
+// embeds it and IniFile::GetPublicKey() reads it. The exponent is the known
 // fast constant rather than anything stored.
 constexpr std::string_view kMixPublicKey =
     "AihRvNoIbTn85FZRYNZRcT+i6KpU+maCsEqr3Q5q+LDB5tH7Tz2qQ38V";

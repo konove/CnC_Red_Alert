@@ -182,10 +182,9 @@ class IniFile {
   // `section`; empty when there is no such section.
   [[nodiscard]] std::vector<std::byte> GetBase64Block(
       std::string_view section) const;
-  // Returns the key held in [PublicKey] (the modulus) and [PrivateKey] (the
-  // exponent). With `fast`, the exponent is the well-known public one and
-  // only the modulus is read.
-  [[nodiscard]] PKey GetPublicKey(bool fast) const;
+  // Returns the public key whose modulus [PublicKey] holds. The exponent is
+  // the well-known fast one, not read from the database.
+  [[nodiscard]] PKey GetPublicKey() const;
 
   // The setters store a value under `entry` in `section`, creating the
   // section and replacing an existing entry (and every duplicate of it); a new
