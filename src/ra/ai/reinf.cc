@@ -381,11 +381,11 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
           break;
         }
       }
+      TheWorld().scenario_init()--;
       if (found) {
-        TheWorld().scenario_init()--;
         continue;
       }
-      newcell = Cell::None();
+      break;
     }
     TheWorld().scenario_init()--;
 
@@ -396,7 +396,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     }
   }
 
-  // Delete the members that could not be placed.
+  // Delete the members that could not be placed: the one the loop stopped at
+  // and the rest of the list.
+  base::DeletePooled(object);
   if (o != nullptr) {
     while (o != nullptr) {
       FootClass* old = o;
