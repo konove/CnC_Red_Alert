@@ -1580,14 +1580,10 @@ bool Select_Game(bool fade) {
       TheWorld().score().CHarvested = 10;
       TheWorld().score().ElapsedTime = static_cast<int64_t>(uint64_t{1} << 40);
       TheWorld().base().set_house(HOUSE_GOOD);
-      TheWorld().base().nodes().clear();
-      BaseNode node;
-      node.type = STRUCT_POWER;
-      node.coord = Cell::FromIndex(1000).Center();
-      TheWorld().base().nodes().push_back(node);
-      node.type = STRUCT_REFINERY;
-      node.coord = Cell::FromIndex(1200).Center();
-      TheWorld().base().nodes().push_back(node);
+      TheWorld().base().ClearNodes();
+      TheWorld().base().AddNode(STRUCT_POWER, Cell::FromIndex(1000).Center());
+      TheWorld().base().AddNode(STRUCT_REFINERY,
+                                Cell::FromIndex(1200).Center());
       TheWorld().current_object().clear();
       if (TheObjectHeaps().unit().Count() < 2) {
         return false;

@@ -18,14 +18,16 @@
 
 #include "td/ai/base.h"
 
+#include <algorithm>
 #include <iterator>
-#include <span>
 #include <string>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "base/types.h"
+#include "td/core/coordinate.h"
 #include "td/core/defines.h"
 #include "td/data/profile.h"
 #include "td/map/world.h"
@@ -36,46 +38,41 @@
 
 namespace td {
 
-bool BaseNode::operator==(const BaseNode& other) const {
-  return type == other.type && coord == other.coord;
+namespace {
+
+// The scenario INI section the base is stored in.
+constexpr char kIniSection[] = "Base";
+
+// Returns whether `building` is the one `node` asks for.
+bool FillsNode(const BuildingClass& building, const BaseNode& node) {
+  return building.Class->Type == node.type && building.Coord == node.coord;
 }
 
-bool BaseNode::operator!=(const BaseNode& node) const {
-  return type != node.type || coord != node.coord;
-}
-
-bool BaseNode::operator>(const BaseNode& /*unused*/) { return true; }
-
-PrebuiltBase::~PrebuiltBase() { nodes_.clear(); }
+}  // namespace
 
 void PrebuiltBase::ReadIni(const char* ini_text) {
-  BaseNode node;  // node to add to list
-
   // The base belongs to whoever opposes the human player.
   char player[20];
   WWGetPrivateProfileString("BASIC", "Player", "GoodGuy", player, ini_text);
-  if (HouseTypeClass::From_Name(player) == HOUSE_GOOD) {
-    house_ = HOUSE_BAD;
-  } else {
-    house_ = HOUSE_GOOD;
-  }
+  house_ =
+      HouseTypeClass::From_Name(player) == HOUSE_GOOD ? HOUSE_BAD : HOUSE_GOOD;
 
   const int node_count =
-      WWGetPrivateProfileInt(INI_Name(), "Count", 0, ini_text);
+      WWGetPrivateProfileInt(kIniSection, "Count", 0, ini_text);
 
   // The entries are named by their number so that they are read in the order
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
     char value[128];
     const std::string entry = absl::StrFormat("%03d", i);
-    WWGetPrivateProfileString(INI_Name(), entry.c_str(), nullptr, value,
+    WWGetPrivateProfileString(kIniSection, entry.c_str(), nullptr, value,
                               ini_text);
 
     base::Tokenizer tokens(value, ",");
-    node.type = BuildingTypeClass::From_Name(tokens.Next());
+    const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.
-    if (node.type == STRUCT_NONE) {
+    if (type == STRUCT_NONE) {
       continue;
     }
 
@@ -83,99 +80,102 @@ void PrebuiltBase::ReadIni(const char* ini_text) {
     if (coordinate_text == nullptr) {
       continue;
     }
-    const auto coordinate = base::ParseDecimalBits(coordinate_text);
-    if (!coordinate) {
+    const auto packed = base::ParseDecimalBits(coordinate_text);
+    if (!packed) {
       continue;
     }
-    node.coord = Coordinate::FromPacked(*coordinate);
+    const Coordinate coord = Coordinate::FromPacked(*packed);
     // Cell::Containing() does not mask an off-map coordinate, so its cell
     // would index past the map in FindBuilding().
-    if (node.coord.cell_x() >= MAP_CELL_W ||
-        node.coord.cell_y() >= MAP_CELL_H) {
+    if (coord.cell_x() >= MAP_CELL_W || coord.cell_y() >= MAP_CELL_H) {
       continue;
     }
 
-    nodes_.push_back(node);
+    AddNode(type, coord);
   }
 }
 
-void PrebuiltBase::WriteIni(std::string& ini_text) {
+void PrebuiltBase::WriteIni(std::string& ini_text) const {
   // Passing no entry deletes the whole section.
-  WWWritePrivateProfileString(INI_Name(), nullptr, nullptr, ini_text);
+  WWWritePrivateProfileString(kIniSection, nullptr, nullptr, ini_text);
 
   // ReadIni() finds the entries by counting from "000" up to Count.
-  WWWritePrivateProfileInt(INI_Name(), "Count",
+  WWWritePrivateProfileInt(kIniSection, "Count",
                            static_cast<int>(std::ssize(nodes_)), ini_text);
 
-  for (int i = 0; i < std::ssize(nodes_); i++) {
-    const std::string entry = absl::StrFormat("%03d", i);
-    const std::string value = absl::StrFormat(
-        "%s,%d",
-        BuildingTypeClass::As_Reference(base::At(nodes_, i).type).IniName,
-        static_cast<int>(base::At(nodes_, i).coord.packed()));
+  for (base::ssize i = 0; i < std::ssize(nodes_); i++) {
+    const auto& [type, coord] = base::At(nodes_, i);
+    const std::string entry = absl::StrFormat("%03td", i);
+    const std::string value =
+        absl::StrFormat("%s,%d", BuildingTypeClass::As_Reference(type).IniName,
+                        static_cast<int>(coord.packed()));
 
-    WWWritePrivateProfileString(INI_Name(), entry.c_str(), value.c_str(),
+    WWWritePrivateProfileString(kIniSection, entry.c_str(), value.c_str(),
                                 ini_text);
   }
 }
 
-bool PrebuiltBase::IsBuilt(int node_index) {
-  return FindBuilding(node_index) != nullptr;
-}
-
-BuildingClass* PrebuiltBase::FindBuilding(int node_index) {
-  ObjectClass* obj[4];
-
-  const Cell cell = Cell::Containing(base::At(nodes_, node_index).coord);
+BuildingClass* PrebuiltBase::FindBuilding(const BaseNode& node) {
+  const CellClass& map_cell = TheMap().at(Cell::Containing(node.coord));
 
   // A building occupies the cells of its foundation and only overlaps the
   // others its image covers. The node's cell can be either, so look in both
   // lists.
-  base::At(obj, 0) = TheMap().at(cell).Cell_Building();
-  base::At(obj, 1) = base::At(TheMap().at(cell).Overlappers, 0);
-  base::At(obj, 2) = base::At(TheMap().at(cell).Overlappers, 1);
-  base::At(obj, 3) = base::At(TheMap().at(cell).Overlappers, 2);
-
-  BuildingClass* bldg = nullptr;
-  for (auto& i : obj) {
-    if (i && i->Coord == base::At(nodes_, node_index).coord &&
-        i->What_Am_I() == RTTI_BUILDING &&
-        dynamic_cast<BuildingClass*>(i)->Class->Type ==
-            base::At(nodes_, node_index).type) {
-      bldg = dynamic_cast<BuildingClass*>(i);
-      break;
-    }
+  if (BuildingClass* occupier = map_cell.Cell_Building();
+      occupier != nullptr && FillsNode(*occupier, node)) {
+    return occupier;
   }
-
-  return bldg;
-}
-
-bool PrebuiltBase::HasNodeFor(BuildingClass* building) {
-  return FindNode(building) != nullptr;
-}
-
-BaseNode* PrebuiltBase::FindNode(BuildingClass* building) {
-  for (int i = 0; i < std::ssize(nodes_); i++) {
-    if (building->Class->Type == base::At(nodes_, i).type &&
-        building->Coord == base::At(nodes_, i).coord) {
-      return &base::At(nodes_, i);
+  for (ObjectClass* overlapper : map_cell.Overlappers) {
+    if (auto* building = dynamic_cast<BuildingClass*>(overlapper);
+        building != nullptr && FillsNode(*building, node)) {
+      return building;
     }
   }
   return nullptr;
 }
 
-BaseNode* PrebuiltBase::FirstUnbuiltNode(StructType type) {
-  for (int i = 0; i < std::ssize(nodes_); i++) {
-    // STRUCT_NONE asks for the first hole of any type.
-    if (type == STRUCT_NONE) {
-      if (!IsBuilt(i)) {
-        return &base::At(nodes_, i);
-      }
+bool PrebuiltBase::HasNodeFor(const BuildingClass& building) const {
+  return std::ranges::any_of(nodes_, [&building](const BaseNode& node) {
+    return FillsNode(building, node);
+  });
+}
 
-    } else {
-      if (base::At(nodes_, i).type == type && !IsBuilt(i)) {
-        return &base::At(nodes_, i);
-      }
+BaseNode* PrebuiltBase::FindNode(const BuildingClass& building) {
+  for (BaseNode& node : nodes_) {
+    if (FillsNode(building, node)) {
+      return &node;
+    }
+  }
+  return nullptr;
+}
+
+void PrebuiltBase::AddNode(const StructType type, const Coordinate coord) {
+  nodes_.emplace_back(type, coord);
+}
+
+void PrebuiltBase::RemoveNodeFor(const BuildingClass& building) {
+  const auto node =
+      std::ranges::find_if(nodes_, [&building](const BaseNode& candidate) {
+        return FillsNode(building, candidate);
+      });
+  if (node != nodes_.end()) {
+    nodes_.erase(node);
+  }
+}
+
+void PrebuiltBase::RemoveFirstNodeOfType(const StructType type) {
+  const auto node = std::ranges::find(nodes_, type, &BaseNode::type);
+  if (node != nodes_.end()) {
+    nodes_.erase(node);
+  }
+}
+
+const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {
+  for (const BaseNode& node : nodes_) {
+    // STRUCT_NONE asks for the first hole of any type.
+    if ((type == STRUCT_NONE || node.type == type) &&
+        FindBuilding(node) == nullptr) {
+      return &node;
     }
   }
 

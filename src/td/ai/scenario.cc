@@ -54,7 +54,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iterator>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
@@ -556,16 +555,7 @@ void Do_Win() {
     /*
     **	Remove the building from the prebuild list.
     */
-    for (int index = 0; index < std::ssize(TheWorld().base().nodes());
-         index++) {
-      const BaseNode* node = TheWorld().base().Get_Node(index);
-
-      if (node && node->type == TheWorld().sabotaged_type()) {
-        TheWorld().base().nodes().erase(TheWorld().base().nodes().begin() +
-                                        index);
-        break;
-      }
-    }
+    TheWorld().base().RemoveFirstNodeOfType(TheWorld().sabotaged_type());
   }
   TheWorld().sabotaged_type() = STRUCT_NONE;
 

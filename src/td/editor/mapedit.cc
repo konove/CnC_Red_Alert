@@ -71,7 +71,6 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
-#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/cardinal.h"
 #include "base/numeric.h"
@@ -1202,13 +1201,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
           */
           if (base::At(TheWorld().current_object(), 0)->What_Am_I() ==
               RTTI_BUILDING) {
-            auto* building = dynamic_cast<BuildingClass*>(
-                base::At(TheWorld().current_object(), 0));
-            if (TheWorld().base().HasNodeFor(building)) {
-              BaseNode* node = TheWorld().base().FindNode(
-                  building);  // for removing from an AI Base
-              base::EraseFirst(TheWorld().base().nodes(), *node);
-            }
+            TheWorld().base().RemoveNodeFor(dynamic_cast<const BuildingClass&>(
+                *base::At(TheWorld().current_object(), 0)));
           }
 
           /*

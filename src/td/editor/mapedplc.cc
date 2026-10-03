@@ -982,7 +982,6 @@ void MapEditClass::Start_Placement() {
 int MapEditClass::Place_Object() {
   Cell template_cell{};      // cell being checked for template
   Coordinate obj_coord{};    // coord of occupier object
-  BaseNode node;             // for adding to an AI Base
 
   /*------------------------------------------------------------------------
   Placing a template:
@@ -1174,9 +1173,9 @@ int MapEditClass::Place_Object() {
     ** If we're building a base, add this building to the base's Node list.
     */
     if (BaseBuilding && PendingObject->What_Am_I() == RTTI_BUILDINGTYPE) {
-      node.type = dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type;
-      node.coord = PendingObjectPtr->Coord;
-      TheWorld().base().nodes().push_back(node);
+      TheWorld().base().AddNode(
+          dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
+          PendingObjectPtr->Coord);
     }
 
     PendingObjectPtr = nullptr;
@@ -1950,10 +1949,9 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < std::ssize(TheWorld().base().nodes()); i++) {
-    if (TheWorld().base().IsBuilt(i)) {
-      obj = TheWorld().base().FindBuilding(i);
-      base::DeletePooled(obj);
+  for (const BaseNode& node : TheWorld().base().nodes()) {
+    if (BuildingClass* building = PrebuiltBase::FindBuilding(node)) {
+      base::DeletePooled(building);
     }
   }
 

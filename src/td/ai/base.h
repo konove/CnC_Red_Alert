@@ -22,31 +22,25 @@
 #ifndef CNC_RED_ALERT_TD_AI_BASE_H_
 #define CNC_RED_ALERT_TD_AI_BASE_H_
 
-#include <span>
 #include <string>
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
+#include "td/core/coordinate.h"
 #include "td/core/defines.h"
-#include "td/objects/building.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace td {
 
+class BuildingClass;
+
 // One entry of the prebuilt base: a type of building and the coordinate it is
-// placed at, which is the coordinate the placed building reports.
-class BaseNode {
- public:
-  BaseNode() = default;
-  // Nodes are equal when they name the same building type at the same
-  // coordinate.
-  bool operator==(const BaseNode& other) const;
-  bool operator!=(const BaseNode& node) const;
-  // Always true: the nodes have no order.
-  bool operator>(const BaseNode& node);
+// placed at, which is the coordinate the placed building reports. Nodes are
+// equal when both match.
+struct BaseNode {
+  bool operator==(const BaseNode&) const = default;
 
   StructType type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
   Coordinate coord{};             // Where the building is placed.
@@ -57,22 +51,19 @@ class BaseNode {
 // while a building of its type stands at its coordinate, so a building placed
 // by the scenario's [STRUCTURES] section fills its node from the start, and one
 // that is destroyed leaves a hole the house builds again. A scenario has at
-// most one; the World owns it. (Despite its name, this is not a base class of
-// anything.)
+// most one; the World owns it.
 //
 // Example:
-//   PrebuiltBase& base = TheWorld().base();
+//   const PrebuiltBase& base = TheWorld().base();
 //   if (const BaseNode* node = base.FirstUnbuiltNode()) {
 //     techno = &BuildingTypeClass::As_Reference(node->type);
 //   }
 class PrebuiltBase {
  public:
-  PrebuiltBase() = default;
-  virtual ~PrebuiltBase();
-  PrebuiltBase(const PrebuiltBase&) = delete;
-  PrebuiltBase& operator=(const PrebuiltBase&) = delete;
-  PrebuiltBase(PrebuiltBase&&) = delete;
-  PrebuiltBase& operator=(PrebuiltBase&&) = delete;
+  // Field-wise saved-game state; read and write share this field list. Defined
+  // in td/saveload/saveglobals.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
 
   // Empties the node list. The owner stays: ReadIni() always sets it.
   void ClearNodes() { nodes_.clear(); }
@@ -88,47 +79,39 @@ class PrebuiltBase {
 
   // Replaces the [Base] section of the INI text in `ini_text` with this base's
   // nodes. The owner is not written.
-  void WriteIni(std::string& ini_text);
+  void WriteIni(std::string& ini_text) const;
 
-  // The name of the scenario INI section the base is stored in.
-  static const char* INI_Name() { return "Base"; }
+  // Returns the building that fills `node`: one of the node's type at the
+  // node's coordinate, whichever house owns it. Returns nullptr if the node is
+  // a hole. The node's coordinate must be on the map.
+  [[nodiscard]] static BuildingClass* FindBuilding(const BaseNode& node);
 
-  // Field-wise saved-game state; read and write share this field list. Defined
-  // in td/saveload/saveglobals.cc.
-  template <class Archive>
-  void Serialize(Archive& ar);
+  // Returns whether the base has a node for `building`: one with its type and
+  // coordinate.
+  [[nodiscard]] bool HasNodeFor(const BuildingClass& building) const;
 
-  // Returns whether the building of node `node_index` stands on the map.
-  bool IsBuilt(int node_index);
+  // Returns the first node for `building`, or nullptr if the base has none.
+  BaseNode* FindNode(const BuildingClass& building)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
-  // Returns the building that fills node `node_index`: one of the node's type
-  // at the node's coordinate, whichever house owns it. Returns nullptr if the
-  // node is a hole. `node_index` must be a valid index into nodes().
-  BuildingClass* FindBuilding(int node_index);
+  // Appends a node for a building of `type` placed at `coord`, which must be
+  // on the map.
+  void AddNode(StructType type, Coordinate coord);
 
-  // Returns whether the base has a node for `building`, which must not be
-  // nullptr.
-  bool HasNodeFor(BuildingClass* building);
+  // Removes the first node for `building`, if the base has one.
+  void RemoveNodeFor(const BuildingClass& building);
 
-  // Returns the first node with the type and coordinate of `building`, which
-  // must not be nullptr, or nullptr if the base has none.
-  BaseNode* FindNode(BuildingClass* building) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  // Returns node `index`, which must be a valid index into nodes().
-  BaseNode* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &base::At(nodes_, index);
-  }
+  // Removes the first node of `type`, if the base has one.
+  void RemoveFirstNodeOfType(StructType type);
 
   // Returns the first node that is not built: of type `type`, or of any type
   // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
-  BaseNode* FirstUnbuiltNode(StructType type = STRUCT_NONE)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const BaseNode* FirstUnbuiltNode(
+      StructType type = STRUCT_NONE) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // The buildings of the base, in the order the house builds them. A node whose
   // building is destroyed stays; one whose building type was sabotaged in the
   // previous mission is removed when the scenario starts.
-  std::vector<BaseNode>& nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return nodes_;
-  }
   [[nodiscard]] const std::vector<BaseNode>& nodes() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return nodes_;
