@@ -172,7 +172,15 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
 
     node.Cell =
-        Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0));
+        Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), -1));
+
+    // A missing or malformed entry would leave a node no building can fill:
+    // Get_Building() indexes the map with its cell, and a save holding its
+    // STRUCT_NONE type is rejected when loaded.
+    if (node.Type == STRUCT_NONE || node.Cell.index() < 0 ||
+        node.Cell.index() >= MAP_CELL_TOTAL) {
+      continue;
+    }
 
     Nodes.push_back(node);
   }

@@ -88,8 +88,9 @@ class BaseClass {
   // Appends the nodes of the scenario's [Base] section, in the order the
   // section numbers them, and takes the owner from its Player entry; without
   // one the owner is the human player's house. An entry is "NNN=TYPE,cell",
-  // NNN counting from 000 up to the section's Count. Call Init() first: the
-  // list is not cleared.
+  // NNN counting from 000 up to the section's Count; an entry that is missing,
+  // names no building type or has a cell off the map is skipped. Call Init()
+  // first: the list is not cleared.
   void Read_INI(CCINIClass& ini);
 
   // Replaces the [Base] section of `ini` with this base. A base without an
