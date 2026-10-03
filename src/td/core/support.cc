@@ -7,27 +7,25 @@
 #include <cstring>
 #include <span>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 
 namespace td {
 
-std::span<uint8_t> Conquer_Build_Fading_Table(
-    const engine::gfx::Palette& palette, std::span<uint8_t> dest, int color,
-    int frac) {
+FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
+                                    int color, int frac) {
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
 
-  if (dest.size() < 256 || color < 0 || color >= 256) {
-    return dest;
-  }
-
-  // Fractions above 255 become 255.
+  CHECK(color >= 0 && color < 256) << "color " << color;
   frac = std::min(frac, 255);
+  FadingTable table{};
 
   // Record the target components.
   const engine::gfx::PaletteColor& target = palette.at(color);
@@ -35,15 +33,8 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
   const int targetgreen = target.green();
   const int targetblue = target.blue();
 
-  // Main loop
-
-  size_t output = 0;
-
-  // Transparent black never gets remapped.
-  base::At(dest, output++) = 0;
-
-  int remap_index = 0;
-  for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
+  // Entry 0 stays 0: transparent black never gets remapped.
+  for (int remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
     const engine::gfx::PaletteColor& orig = palette.at(remap_index);
     const int origred = orig.red();
     const int origgreen = orig.green();
@@ -94,16 +85,15 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
     }
 
     // When the loop exits, we have found the closest match.
-    base::At(dest, output++) = static_cast<uint8_t>(matchcolor);
+    base::At(table, remap_index) = static_cast<uint8_t>(matchcolor);
   }
 
-  // Fill the remainder of the remap table with values
-  // that will remap the color to itself.
-  for (; remap_index < 256; remap_index++) {
-    base::At(dest, output++) = static_cast<uint8_t>(remap_index);
+  // The candidate colors remap to themselves.
+  for (int remap_index = ALLOWED_START; remap_index < 256; remap_index++) {
+    base::At(table, remap_index) = static_cast<uint8_t>(remap_index);
   }
 
-  return dest;
+  return table;
 }
 
 void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color,

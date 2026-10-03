@@ -89,12 +89,6 @@ FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac);
 FadingTable ConquerBuildFadingTable(const PaletteClass& palette, int color,
                                     int frac);
 
-// A translucency table: 256 bytes giving each palette color the index of the
-// fading table it is drawn through (255 for an opaque color), followed by
-// those `N` fading tables. Shapes drawn with ShapeFlags::kGhost read it.
-template <std::size_t N>
-using TranslucencyTable = std::array<uint8_t, 256 * (N + 1)>;
-
 // Returns the translucency table in which each `control` entry's SourceColor
 // is drawn through `fade(entry)` and every other color is opaque.
 template <std::size_t N, std::invocable<const TLucentType&> MakeFade>

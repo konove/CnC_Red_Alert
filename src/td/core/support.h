@@ -3,19 +3,22 @@
 
 #include <cstdint>
 #include <source_location>
-#include <span>
 
-#include "absl/base/attributes.h"
 #include "absl/log/check.h"
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/config.h"
 
 namespace td {
 
-std::span<uint8_t> Conquer_Build_Fading_Table(
-    const engine::gfx::Palette& palette,
-    std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
+// Returns a fading table toward `color` by `frac` (0..255; larger values
+// count as 255) that stays inside the shadow range, the last 16 palette
+// colors: colors 1..239 fade to the closest of colors 240..255, which keep
+// their own color, as does color 0. A shadow drawn over a shadow therefore
+// does not darken further. `color` must be a palette index (0..255).
+FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
+                                    int color, int frac);
 void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color, int size);
 void strtrim(char* buffer);
 

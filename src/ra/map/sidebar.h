@@ -45,12 +45,12 @@
 #include <span>
 
 #include "base/enum_array.h"
+#include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/map/power.h"
 #include "ra/objects/stage.h"
 #include "ra/ui/shapebtn.h"

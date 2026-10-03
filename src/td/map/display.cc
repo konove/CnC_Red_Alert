@@ -187,15 +187,15 @@ base::EnumArray<HousesType, unsigned char[3][256], kHouseCount>
 FadingTable DisplayClass::FadingGreen;
 FadingTable DisplayClass::FadingYellow;
 FadingTable DisplayClass::FadingRed;
-unsigned char DisplayClass::TranslucentTable[(MAGIC_COL_COUNT + 1) * 256];
-unsigned char DisplayClass::WhiteTranslucentTable[(1 + 1) * 256];
-unsigned char DisplayClass::MouseTranslucentTable[(4 + 1) * 256];
+TranslucencyTable<MAGIC_COL_COUNT> DisplayClass::TranslucentTable;
+TranslucencyTable<1> DisplayClass::WhiteTranslucentTable;
+TranslucencyTable<4> DisplayClass::MouseTranslucentTable;
 std::span<const std::byte> DisplayClass::TransIconset;
-unsigned char DisplayClass::UnitShadow[(USHADOW_COL_COUNT + 1) * 256];
-unsigned char DisplayClass::SpecialGhost[2 * 256];
+TranslucencyTable<USHADOW_COL_COUNT> DisplayClass::UnitShadow;
+TranslucencyTable<1> DisplayClass::SpecialGhost;
 
 std::span<const std::byte> DisplayClass::ShadowShapes;
-unsigned char DisplayClass::ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
+TranslucencyTable<SHADOW_COL_COUNT> DisplayClass::ShadowTrans;
 
 /*
 ** Bit array of cell redraw flags
@@ -481,11 +481,10 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Create the shadow color used by aircraft.
   */
-  Conquer_Build_Fading_Table(ThePalettes().game_palette(),
-                             base::Suffix(SpecialGhost, 256), kBlack, 100);
-  for (int index = 0; index < 256; index++) {
-    base::At(SpecialGhost, index) = 0;
-  }
+  SpecialGhost = {};
+  std::ranges::copy(
+      ConquerBuildFadingTable(ThePalettes().game_palette(), kBlack, 100),
+      std::span(SpecialGhost).subspan(256).begin());
 
   FadingBrighten = BuildFadingTable(ThePalettes().game_palette(), kWhite, 25);
 
