@@ -33,7 +33,7 @@ bool Do_Reinforcements(TeamTypeClass* team);
 // destination `navcom`; a default `Target{}` leaves that one unassigned.
 //
 // Stops at the first aircraft that cannot be created or placed. Returns the
-// number placed, or one less than that when the stop was a failed placement.
+// number placed.
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, Target tarcom, Target navcom);
 
