@@ -45,72 +45,33 @@
 
 namespace ra {
 
-// Makes every member of the linked list `group` come out of `host`: walking
-// out of a building, or loaded into a transport that is then told to unload.
-// Members that cannot come out are deleted. Returns whether any did.
+// Makes every member of the linked list `group` come out of `host`, a building
+// or a transport vehicle: walking out of the building, or loaded into the
+// transport, which is then told to unload. Members that cannot come out are
+// deleted. Returns whether any did.
 static bool SendGroupOutOf(FootClass* group, TechnoClass* host) {
   DCHECK(group != nullptr && host != nullptr);
+  const bool is_building = host->What_Am_I() == RTTI_BUILDING;
+  DCHECK(is_building || host->What_Am_I() == RTTI_UNIT);
   int emerged_count = 0;
 
   // Take the members off the list one at a time: a transport chains its cargo
   // through Next as well.
   while (group != nullptr) {
-    TechnoClass* member = group;
+    FootClass* member = group;
     group = dynamic_cast<FootClass*>(group->Next);
     member->Next = nullptr;
 
-    switch (host->What_Am_I()) {
-      // Infantry walks out of a building. Any result but 2, a completed exit,
-      // leaves the soldier in limbo, so it is deleted.
-      case RTTI_BUILDING:
-        if (host->Exit_Object(member) != 2) {
-          base::DeletePooled(member);
-        } else {
-          ++emerged_count;
-        }
-        break;
-
-      // Infantry is loaded into a transport, which then unloads it. Nothing
-      // checks that the transport has room.
-      case RTTI_UNIT:
-      case RTTI_VESSEL:
-      case RTTI_AIRCRAFT:
-        host->Attach(dynamic_cast<FootClass*>(member));
-        host->Assign_Mission(MISSION_UNLOAD);
-        ++emerged_count;
-        break;
-
-      case RTTIType::RTTI_NONE:
-      case RTTIType::RTTI_AIRCRAFTTYPE:
-      case RTTIType::RTTI_ANIM:
-      case RTTIType::RTTI_ANIMTYPE:
-      case RTTIType::RTTI_BUILDINGTYPE:
-      case RTTIType::RTTI_BULLET:
-      case RTTIType::RTTI_BULLETTYPE:
-      case RTTIType::RTTI_CELL:
-      case RTTIType::RTTI_FACTORY:
-      case RTTIType::RTTI_HOUSE:
-      case RTTIType::RTTI_HOUSETYPE:
-      case RTTIType::RTTI_INFANTRY:
-      case RTTIType::RTTI_INFANTRYTYPE:
-      case RTTIType::RTTI_OVERLAY:
-      case RTTIType::RTTI_OVERLAYTYPE:
-      case RTTIType::RTTI_SMUDGE:
-      case RTTIType::RTTI_SMUDGETYPE:
-      case RTTIType::RTTI_SPECIAL:
-      case RTTIType::RTTI_TEAM:
-      case RTTIType::RTTI_TEAMTYPE:
-      case RTTIType::RTTI_TEMPLATE:
-      case RTTIType::RTTI_TEMPLATETYPE:
-      case RTTIType::RTTI_TERRAIN:
-      case RTTIType::RTTI_TERRAINTYPE:
-      case RTTIType::RTTI_TRIGGER:
-      case RTTIType::RTTI_TRIGGERTYPE:
-      case RTTIType::RTTI_UNITTYPE:
-      case RTTIType::RTTI_VESSELTYPE:
-      default:
-        base::DeletePooled(member);
-        break;
+    if (!is_building) {
+      // Nothing checks that the transport has room.
+      host->Attach(member);
+      host->Assign_Mission(MISSION_UNLOAD);
+      ++emerged_count;
+    } else if (host->Exit_Object(member) == 2) {
+      ++emerged_count;
+    } else {
+      // Any result but 2, a completed exit, leaves the soldier in limbo.
+      base::DeletePooled(member);
     }
   }
 
@@ -121,27 +82,24 @@ static bool SendGroupOutOf(FootClass* group, TechnoClass* host) {
 // borrowing it for one sortie. Only a Yak or a MiG can be kept, and only while
 // the house has an airstrip that no other one is using.
 static bool HouseKeepsAircraft(const AircraftClass* aircraft) {
-  if (*aircraft == AIRCRAFT_YAK || *aircraft == AIRCRAFT_MIG) {
-    int free_airstrips = aircraft->House->Get_Quantity(STRUCT_AIRSTRIP);
+  if (*aircraft != AIRCRAFT_YAK && *aircraft != AIRCRAFT_MIG) {
+    return false;
+  }
 
-    // Each Yak or MiG that is already kept uses up one airstrip. Only the human
-    // player's aircraft are counted, whichever house `aircraft` belongs to.
-    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-      const AircraftClass* other = TheObjectHeaps().aircraft().ActiveAt(index);
-      if ((*other == AIRCRAFT_YAK || *other == AIRCRAFT_MIG) &&
-          other->IsOwnedByPlayer && !other->IsALoaner && other != aircraft) {
-        free_airstrips -= 1;
-        if (free_airstrips == 0) {
-          break;
-        }
+  // Each Yak or MiG that is already kept uses up one airstrip. Only the human
+  // player's aircraft are counted, whichever house `aircraft` belongs to.
+  int free_airstrips = aircraft->House->Get_Quantity(STRUCT_AIRSTRIP);
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    const AircraftClass* other = TheObjectHeaps().aircraft().ActiveAt(index);
+    if ((*other == AIRCRAFT_YAK || *other == AIRCRAFT_MIG) &&
+        other->IsOwnedByPlayer && !other->IsALoaner && other != aircraft) {
+      free_airstrips -= 1;
+      if (free_airstrips == 0) {
+        break;
       }
     }
-
-    if (free_airstrips > 0) {
-      return true;
-    }
   }
-  return false;
+  return free_airstrips > 0;
 }
 
 // Creates the team for `team_type` and all its members, in limbo. Returns the
@@ -235,11 +193,7 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
   }
 
   // Without a transport the group is the members themselves.
-  if (transports == nullptr) {
-    return riders;
-  }
-
-  return transports;
+  return transports != nullptr ? transports : riders;
 }
 
 // Returns whether every member of the list `group` is infantry. Only such a
@@ -259,23 +213,31 @@ static bool IsAllInfantry(const FootClass* group) {
 // infantry can come out of: a transport vehicle if there is one, otherwise a
 // building; nullptr when there is neither.
 static TechnoClass* FindHostNear(Cell origin) {
-  CellClass* origin_cell = &TheMap().at(origin);
+  CellClass& origin_cell = TheMap().at(origin);
   TechnoClass* building_host = nullptr;
 
-  for (int facing = -1; facing < 8; facing++) {
-    CellClass* cell = origin_cell;
-    if (facing != -1) {
-      cell = &cell->Adjacent_Cell(static_cast<game::FacingType>(facing));
-    }
-
-    BuildingClass* building = cell->Cell_Building();
-    if (building && building->Strength > 0) {
+  // Returns the transport in `cell`, and remembers its building otherwise.
+  const auto transport_in = [&building_host](CellClass& cell) -> UnitClass* {
+    BuildingClass* building = cell.Cell_Building();
+    if (building != nullptr && building->Strength > 0) {
       building_host = building;
     }
-
-    UnitClass* unit = cell->Cell_Unit();
-    if (unit && unit->Strength && unit->Class->Max_Passengers() > 0) {
+    UnitClass* unit = cell.Cell_Unit();
+    if (unit != nullptr && unit->Strength != 0 &&
+        unit->Class->Max_Passengers() > 0) {
       return unit;
+    }
+    return nullptr;
+  };
+
+  if (UnitClass* transport = transport_in(origin_cell)) {
+    return transport;
+  }
+  for (const game::FacingType facing :
+       magic_enum::enum_values<game::FacingType>()) {
+    if (UnitClass* transport =
+            transport_in(origin_cell.Adjacent_Cell(facing))) {
+      return transport;
     }
   }
   return building_host;
@@ -285,7 +247,7 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   DCHECK(team_type != nullptr);
 
   // A type with no members has nothing to bring on.
-  if (!team_type || !team_type->ClassCount) {
+  if (team_type->ClassCount == 0) {
     return false;
   }
 
@@ -300,14 +262,14 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   FootClass* member = CreateGroup(team_type);
 
   // Nothing could be created, most likely because the object limit was reached.
-  if (!member) {
+  if (member == nullptr) {
     return false;
   }
 
   // Infantry with an origin waypoint comes out of a building or a transport
   // there, if there is one. This relies on infantry never being a transport, so
   // the head of the list is a member and not a carrier.
-  if (member != nullptr && team_type->Origin != -1 && IsAllInfantry(member)) {
+  if (team_type->Origin != -1 && IsAllInfantry(member)) {
     TechnoClass* host =
         FindHostNear(base::At(TheScenario().Waypoint, team_type->Origin));
 
@@ -405,14 +367,12 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   // Delete the members that could not be placed: the one the loop stopped at
   // and the rest of the list.
   base::DeletePooled(member);
-  if (remaining != nullptr) {
-    while (remaining != nullptr) {
-      FootClass* unplaced = remaining;
-      remaining = dynamic_cast<FootClass*>(remaining->Next);
-      unplaced->Next = nullptr;
+  while (remaining != nullptr) {
+    FootClass* unplaced = remaining;
+    remaining = dynamic_cast<FootClass*>(remaining->Next);
+    unplaced->Next = nullptr;
 
-      base::DeletePooled(unplaced);
-    }
+    base::DeletePooled(unplaced);
   }
 
   // Announce the reinforcements to the player they belong to.
@@ -431,66 +391,49 @@ int LaunchAirStrike(HouseClass* house, AircraftType aircraft_type, int count,
   DCHECK(count != 0);
   DCHECK(static_cast<unsigned>(mission) <
          magic_enum::enum_count<MissionType>());
-  const TechnoTypeClass* type_class = static_cast<TechnoTypeClass*>(
-      &AircraftTypeClass::As_Reference(aircraft_type));
+  const AircraftTypeClass& type_class =
+      AircraftTypeClass::As_Reference(aircraft_type);
 
   // Create and place the aircraft one at a time.
   int placed_count = 0;
-  for (placed_count = 0; placed_count < count; placed_count++) {
+  for (; placed_count < count; placed_count++) {
     // Creation fails when the aircraft pool is full.
     TheWorld().scenario_init()++;
     auto* aircraft =
-        dynamic_cast<TechnoClass*>(type_class->Create_One_Of(house));
+        dynamic_cast<TechnoClass*>(type_class.Create_One_Of(house));
     TheWorld().scenario_init()--;
-    if (!aircraft) {
+    if (aircraft == nullptr) {
       return placed_count;
     }
 
     // Strike aircraft are always loaners: they leave the map when done.
     aircraft->IsALoaner = true;
 
-    // Enter from the house's map edge, or from the north when it has none.
-    SourceType edge = house->Control.Edge;
-    switch (edge) {
-      case SOURCE_NORTH:
-      case SOURCE_EAST:
-      case SOURCE_SOUTH:
-      case SOURCE_WEST:
-        break;
-
-      case SourceType::SOURCE_NONE:
-      case SourceType::SOURCE_AIR:
-      default:
-        edge = SOURCE_NORTH;
-        break;
-    }
-    const Cell entry_cell =
-        TheMap().Calculated_Cell(edge, -1, Cell::None(), SPEED_WINGED);
+    // Enter from the house's map edge; Calculated_Cell() uses the north one
+    // when the house has none.
+    const Cell entry_cell = TheMap().Calculated_Cell(
+        house->Control.Edge, -1, Cell::None(), SPEED_WINGED);
 
     // scenario_init places the aircraft on the edge cell without asking whether
     // it can enter it.
     TheWorld().scenario_init()++;
     const bool placed = aircraft->Unlimbo(entry_cell.Center(), game::DIR_N);
     TheWorld().scenario_init()--;
-    if (placed) {
-      // The aircraft is on the map: give it its orders. A default Target means
-      // that none was given.
-      aircraft->Assign_Mission(mission);
-
-      if (destination != Target{}) {
-        aircraft->Assign_Destination(destination);
-      }
-
-      if (target != Target{}) {
-        aircraft->Assign_Target(target);
-      }
-
-      // Start the aircraft into action.
-      aircraft->Commence();
-    } else {
+    if (!placed) {
       base::DeletePooled(aircraft);
       return placed_count;
     }
+
+    // The aircraft is on the map: give it its orders. A default Target means
+    // that none was given.
+    aircraft->Assign_Mission(mission);
+    if (destination != Target{}) {
+      aircraft->Assign_Destination(destination);
+    }
+    if (target != Target{}) {
+      aircraft->Assign_Target(target);
+    }
+    aircraft->Commence();
   }
   return placed_count;
 }

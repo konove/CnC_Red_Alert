@@ -4,12 +4,13 @@
 #ifndef CNC_RED_ALERT_RA_AI_REINF_H_
 #define CNC_RED_ALERT_RA_AI_REINF_H_
 
-#include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
-#include "ra/objects/house.h"
-#include "ra/objects/type.h"
+#include "ra/core/target.h"
 
 namespace ra {
+
+class HouseClass;
+class TeamTypeClass;
 
 // Creates a team of type `team_type` and brings it into play, announcing it
 // when it belongs to the player's house. The members follow the team's
