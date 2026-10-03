@@ -52,6 +52,7 @@
 #include <string_view>
 
 #include "absl/base/no_destructor.h"
+#include "absl/strings/match.h"
 #include "base/buffer.h"  // IWYU pragma: keep (used only with an entry point)
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/ini_file.h"
@@ -84,7 +85,6 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
-#include "absl/strings/match.h"
 #include "base/numeric.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
@@ -383,8 +383,9 @@ static int Run(int argc, char* argv[])
       ** Regardless of whether we should run it or not, here we're
       ** gonna change it to say "no" in the future.
       */
-      conquer_ini.PutString("Intro", "PlayIntro", "No");
-      SaveIniFile("CONQUER.INI", conquer_ini);
+      if (MarkIntroPlayed(conquer_ini)) {
+        SaveIniFile("CONQUER.INI", conquer_ini);
+      }
 
 #ifdef _WIN32
       CCDebugString(
@@ -505,6 +506,18 @@ void Read_Setup_Options(ByteStream& config_file,
   engine::file::IniFile ini;
   LoadIniText(engine::file::ReadProfileText(config_file), ini);
   ApplySetupOptions(ini, options);
+}
+
+bool MarkIntroPlayed(engine::file::IniFile& ini) {
+  // Compared as the reader in Run() does: the first three characters, without
+  // case.
+  char value[4];
+  ini.GetString("Intro", "PlayIntro", "Yes", value);
+  if (absl::EqualsIgnoreCase(value, "No")) {
+    return false;
+  }
+  ini.PutString("Intro", "PlayIntro", "No");
+  return true;
 }
 
 void ApplySetupOptions(const engine::file::IniFile& ini,

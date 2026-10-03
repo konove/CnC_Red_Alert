@@ -22,6 +22,11 @@ void ShutDownEngine();
 // pages exist.
 void ShutDown();
 
+// Makes `ini` say the intro movie has been shown ([Intro] PlayIntro=No).
+// Returns whether that changed it; false when it already said "No" in any
+// case, so the caller can leave a file it would only normalize alone.
+bool MarkIntroPlayed(engine::file::IniFile& ini);
+
 // Applies the settings CONQUER.INI holds that the game needs before it opens
 // its window: the screen height, the 1.07 compatibility flag, the IPX socket
 // and the bridge network. What the command line asked for in `options` wins
