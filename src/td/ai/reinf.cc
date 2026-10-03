@@ -356,7 +356,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           if (found) {
             continue;
           }
-          newcell = Cell::None();
+          break;
         }
 
         object = o;
@@ -368,8 +368,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
       /*
       **	If there are still objects that could not be placed, then delete
-      *them.
+      **	them: the one the loop stopped at and the rest of the list.
       */
+      base::DeletePooled(object);
       if (o) {
         while (o) {
           FootClass* old = o;
