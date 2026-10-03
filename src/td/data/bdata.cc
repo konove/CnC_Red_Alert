@@ -282,8 +282,9 @@ static const BuildingTypeClass ClassWeapon(
     TXT_WEAPON_FACTORY,  // NAME:			Short name of the
                          // structure.
     "WEAP",              // NAME:			Short name of the structure.
-    Pixel_Offset_Coord(10 + (CELL_PIXEL_W / 2),
-                       ((CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2)) -
+    Pixel_Offset_Coord(10 + (game::kCellWidthPixels / 2),
+                       ((game::kCellHeightPixels * 3) -
+                        (game::kCellHeightPixels / 2)) -
                            21),  // Exit point for produced units.
     2,                           // Build level.
     kStructFlagRefinery,         // Building prerequisite.
@@ -4121,9 +4122,9 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
   static const base::EnumArray<game::BSizeType, Dimension> _dimensions = {
       {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {2, 3}, {3, 2}, {3, 3}, {4, 2}, {5, 5}}};
 
-  width = _dimensions.at(Size).Width * ICON_PIXEL_W;
+  width = _dimensions.at(Size).Width * game::kCellWidthPixels;
   width -= width / 5;
-  height = _dimensions.at(Size).Height * ICON_PIXEL_H;
+  height = _dimensions.at(Size).Height * game::kCellHeightPixels;
   height -= height / 5;
 }
 

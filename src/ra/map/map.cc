@@ -642,7 +642,7 @@ void MapClass::Sight_From(Cell cell, int sightrange, HouseClass* house,
       continue;
     }
     if (Distance(newcell.Center(), cell.Center()) >
-        sightrange * CELL_LEPTON_W) {
+        sightrange * game::kCellWidthLeptons) {
       continue;
     }
 
@@ -716,7 +716,8 @@ void MapClass::Jam_From(Cell cell, int jamrange, HouseClass* house) {
     if (xdiff > jamrange) {
       continue;
     }
-    if (Distance(newcell.Center(), cell.Center()) > jamrange * CELL_LEPTON_W) {
+    if (Distance(newcell.Center(), cell.Center()) >
+        jamrange * game::kCellWidthLeptons) {
       continue;
     }
 
@@ -730,8 +731,8 @@ void MapClass::Jam_From(Cell cell, int jamrange, HouseClass* house) {
 
   //	PlayerPtr->IsToLook = true;
   if (!house->IsPlayerControl) {
-    MapEditClass::Constrained_Look(cell.Center(),
-                                   TheRules().GapShroudRadius * CELL_LEPTON_W);
+    MapEditClass::Constrained_Look(
+        cell.Center(), TheRules().GapShroudRadius * game::kCellWidthLeptons);
   }
 }
 
@@ -794,7 +795,8 @@ void MapClass::UnJam_From(Cell cell, int jamrange, HouseClass* house) {
     if (xdiff > jamrange) {
       continue;
     }
-    if (Distance(newcell.Center(), cell.Center()) > jamrange * CELL_LEPTON_W) {
+    if (Distance(newcell.Center(), cell.Center()) >
+        jamrange * game::kCellWidthLeptons) {
       continue;
     }
 

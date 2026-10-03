@@ -2716,8 +2716,8 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     **	Scan outward in a series of concentric rings up to certain distance
     **	in cells.
     */
-    for (int radius = 0; radius < TheRules().LZScanRadius / CELL_LEPTON_W;
-         radius++) {
+    for (int radius = 0;
+         radius < TheRules().LZScanRadius / game::kCellWidthLeptons; radius++) {
       const game::FacingType modifier =
           Random_Pick(game::FACING_N, game::FACING_NW);
       Cell lastcell = Cell::None();
@@ -2728,9 +2728,9 @@ Target AircraftClass::New_LZ(Target oldlz) const {
       */
       for (const game::FacingType facing :
            magic_enum::enum_values<game::FacingType>()) {
-        const Cell newcell = Cell::Containing(
-            Coord_Move(coord, game::Facing_Dir(facing + modifier),
-                       static_cast<uint16_t>(radius * ICON_LEPTON_W)));
+        const Cell newcell = Cell::Containing(Coord_Move(
+            coord, game::Facing_Dir(facing + modifier),
+            static_cast<uint16_t>(radius * game::kCellWidthLeptons)));
         if (TheMap().In_Radar(newcell)) {
           const Target newtarget = Target::FromCell(newcell);
 

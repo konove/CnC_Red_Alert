@@ -395,7 +395,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
   // Scrolls the tactical map in the direction specified.
-  int distance = CELL_LEPTON_W;
+  int distance = game::kCellWidthLeptons;
   if (key != 0 && key == TheOptions().KeyScrollLeft) {
     TheMap().Scroll_Map(game::DIR_W, distance, true);
     input = KN_NONE;

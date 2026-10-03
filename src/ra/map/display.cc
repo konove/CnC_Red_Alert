@@ -252,7 +252,8 @@ DisplayClass::DisplayClass() {
   ShadowShapes = {};
   TransIconset = {};
 
-  Update_View_Dimensions(0, 8, 320 / CELL_PIXEL_W, 200 / CELL_PIXEL_H, false);
+  Update_View_Dimensions(0, 8, 320 / game::kCellWidthPixels,
+                         200 / game::kCellHeightPixels, false);
 }
 
 /***********************************************************************************************
@@ -522,7 +523,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     // TPF_NOSHADOW.
     int len =
         StringPixelWidth(TextFontStyle(FontType::kMap, TPF_NOSHADOW), text) +
-        CELL_PIXEL_W;
+        game::kCellWidthPixels;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*
@@ -611,27 +612,30 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   } else {
     // The view size is kept as a 16-bit lepton word, wrapping as it always
     // has; Pixel_To_Lepton() above wraps the same way.
-    TacLeptonWidth = static_cast<uint16_t>(width * CELL_LEPTON_W);
+    TacLeptonWidth = static_cast<uint16_t>(width * game::kCellWidthLeptons);
   }
 
   if (height == -1) {
-    height = (TheScreen().visible_view().height() - y) / CELL_PIXEL_H;
+    height =
+        (TheScreen().visible_view().height() - y) / game::kCellHeightPixels;
   }
-  TacLeptonHeight = static_cast<uint16_t>(height * CELL_LEPTON_H);
+  TacLeptonHeight = static_cast<uint16_t>(height * game::kCellHeightLeptons);
 
   /*
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  int xx = TacticalCoord.x() - (MapCellX * CELL_LEPTON_W);
-  int yy = TacticalCoord.y() - (MapCellY * CELL_LEPTON_H);
+  int xx = TacticalCoord.x() - (MapCellX * game::kCellWidthLeptons);
+  int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);
 
   ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
-              MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
+              MapCellWidth * game::kCellWidthLeptons,
+              MapCellHeight * game::kCellHeightLeptons);
 
   if (reposition) {
-    Set_Tactical_Position(Coordinate::FromLeptons(
-        xx + (MapCellX * CELL_LEPTON_W), yy + (MapCellY * CELL_LEPTON_H)));
+    Set_Tactical_Position(
+        Coordinate::FromLeptons(xx + (MapCellX * game::kCellWidthLeptons),
+                                yy + (MapCellY * game::kCellHeightLeptons)));
   }
 
   TacPixelX = x;
@@ -867,7 +871,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
       if (obj != nullptr && !obj->IsInLimbo &&
           obj->House->Class->House == house && obj->Class->IsBase) {
         int centdist = Distance(obj->Center_Coord(), cell.Center());
-        centdist /= CELL_LEPTON_W;
+        centdist /= game::kCellWidthLeptons;
         centdist -= (obj->Class->Width() + obj->Class->Height()) / 2;
         if (centdist <= building->Adjacent) {
           retval = 1;
@@ -1596,7 +1600,7 @@ bool DisplayClass::Map_Cell(Cell cell, HouseClass* house) {
  *inline functions to extract coord components.                       *
  *   08/09/1995 JLB : Uses new coordinate system. *
  *=============================================================================================*/
-#define EDGE_ZONE (CELL_LEPTON_W * 2)
+#define EDGE_ZONE (game::kCellWidthLeptons * 2)
 bool DisplayClass::Coord_To_Pixel(Coordinate coord, int& x, int& y) const {
   if (coord) {
     const int xtac = Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.x()));
@@ -1611,8 +1615,8 @@ bool DisplayClass::Coord_To_Pixel(Coordinate coord, int& x, int& y) const {
       yoff = yoff + EDGE_ZONE - ytac;
       if (static_cast<unsigned>(yoff) <=
           static_cast<unsigned>(TacLeptonHeight + (EDGE_ZONE * 2))) {
-        x = Lepton_To_Pixel(xoff) - (CELL_PIXEL_W * 2);
-        y = Lepton_To_Pixel(yoff) - (CELL_PIXEL_H * 2);
+        x = Lepton_To_Pixel(xoff) - (game::kCellWidthPixels * 2);
+        y = Lepton_To_Pixel(yoff) - (game::kCellHeightPixels * 2);
         return true;
       }
     }
@@ -1824,9 +1828,9 @@ void DisplayClass::RenderObjects(PixelView& view) {
 void DisplayClass::Redraw_Icons(PixelView& view) {
   IsShadowPresent = false;
   for (int y = -TacticalCoord.sub_y(); std::cmp_less_equal(y, TacLeptonHeight);
-       y += CELL_LEPTON_H) {
+       y += game::kCellHeightLeptons) {
     for (int x = -TacticalCoord.sub_x(); std::cmp_less_equal(x, TacLeptonWidth);
-         x += CELL_LEPTON_W) {
+         x += game::kCellWidthLeptons) {
       Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
       const Cell cell = Cell::Containing(coord);
       coord = cell.Center().Whole();
@@ -1881,9 +1885,11 @@ void DisplayClass::Redraw_Icons(PixelView& view) {
 void DisplayClass::Redraw_Shadow(PixelView& view) {
   if (IsShadowPresent) {
     for (int y = -TacticalCoord.sub_y();
-         std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
+         std::cmp_less_equal(y, TacLeptonHeight);
+         y += game::kCellHeightLeptons) {
       for (int x = -TacticalCoord.sub_x();
-           std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
+           std::cmp_less_equal(x, TacLeptonWidth);
+           x += game::kCellWidthLeptons) {
         Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
         const Cell cell = Cell::Containing(coord);
         coord = cell.Center().Whole();
@@ -1910,8 +1916,8 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
                             {}, ShadowTrans);
             } else {
               if (shadow != -1) {
-                int ww = CELL_PIXEL_W;
-                int hh = CELL_PIXEL_H;
+                int ww = game::kCellWidthPixels;
+                int hh = game::kCellHeightPixels;
 
                 if (ClipRect(xpixel, ypixel, ww, hh,
                              Lepton_To_Pixel(TacLeptonWidth),
@@ -2424,7 +2430,8 @@ void DisplayClass::Refresh_Band() {
     }
 
     Cell cell{};
-    for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
+    for (int y = y1; y <= y2 + game::kCellHeightPixels;
+         y += game::kCellHeightPixels) {
       cell = Click_Cell_Calc(
           x1, std::clamp(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
       if (cell != Cell::None()) {
@@ -2438,7 +2445,8 @@ void DisplayClass::Refresh_Band() {
       }
     }
 
-    for (int x = x1; x <= x2 + CELL_PIXEL_W; x += CELL_PIXEL_W) {
+    for (int x = x1; x <= x2 + game::kCellWidthPixels;
+         x += game::kCellWidthPixels) {
       cell = Click_Cell_Calc(
           std::clamp(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y1);
       if (cell != Cell::None()) {
@@ -3774,11 +3782,11 @@ bool DisplayClass::In_View(Cell cell) const {
   const Coordinate tcoord = TacticalCoord.Whole();
 
   if (static_cast<unsigned>(coord.x() - tcoord.x()) >
-      static_cast<unsigned>(TacLeptonWidth + CELL_LEPTON_W - 1)) {
+      static_cast<unsigned>(TacLeptonWidth + game::kCellWidthLeptons - 1)) {
     return false;
   }
   if (static_cast<unsigned>(coord.y() - tcoord.y()) >
-      static_cast<unsigned>(TacLeptonHeight + CELL_LEPTON_H - 1)) {
+      static_cast<unsigned>(TacLeptonHeight + game::kCellHeightLeptons - 1)) {
     return false;
   }
   return true;
@@ -4265,7 +4273,8 @@ void DisplayClass::Constrained_Look(Coordinate center, int distance) {
       if (tech->House->IsPlayerControl) {
         if (tech->IsDiscoveredByPlayer &&
             Distance(tech->Center_Coord(), center) <=
-                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
+                (tech->Techno_Type_Class()->SightRange *
+                 game::kCellWidthLeptons) +
                     range) {
           object->Look();
         }
@@ -4273,7 +4282,8 @@ void DisplayClass::Constrained_Look(Coordinate center, int distance) {
         if (tech->What_Am_I() == RTTI_BUILDING && TheRules().IsAllyReveal &&
             tech->House->Is_Ally(ThePlayer()) &&
             Distance(tech->Center_Coord(), center) <=
-                (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
+                (tech->Techno_Type_Class()->SightRange *
+                 game::kCellWidthLeptons) +
                     range) {
           tech->Look();
         }

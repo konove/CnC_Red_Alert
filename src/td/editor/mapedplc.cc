@@ -1829,8 +1829,8 @@ void MapEditClass::Place_Trigger(int x, int y) {
   /*
   ............... Convert x,y to offset from cell upper-left ...............
   */
-  x = (x - TacPixelX) % ICON_PIXEL_W;
-  y = (y - TacPixelY) % ICON_PIXEL_H;
+  x = (x - TacPixelX) % game::kCellWidthPixels;
+  y = (y - TacPixelY) % game::kCellHeightPixels;
 
   /*
   ......................... Get object at that x,y .........................

@@ -332,7 +332,7 @@ class RulesClass {
   /*
   **	Controls the Chronal vortex characteristics.
   */
-  int VortexRange{10 * CELL_LEPTON_W};
+  int VortexRange{10 * game::kCellWidthLeptons};
   game::MPHType VortexSpeed{static_cast<game::MPHType>(10)};
   int VortexDamage{200};
   Fixed VortexChance;
@@ -351,7 +351,7 @@ class RulesClass {
   **	weapons will supress firing on enemies if they are in close proximity
   **	to allied buildings.
   */
-  int SupressRadius{CELL_LEPTON_W};
+  int SupressRadius{game::kCellWidthLeptons};
 
   /*
   **	This is the tech level that para infantry are granted free to the owner
@@ -455,7 +455,7 @@ class RulesClass {
   /*
   **	Landing zone maximum alternate zone scan radius.
   */
-  int LZScanRadius{16 * CELL_LEPTON_W};
+  int LZScanRadius{16 * game::kCellWidthLeptons};
 
   /*
   **	Multiplayer default settings.
@@ -472,7 +472,7 @@ class RulesClass {
   /*
   **	Drop zone reveal radius.
   */
-  int DropZoneRadius{4 * CELL_LEPTON_W};
+  int DropZoneRadius{4 * game::kCellWidthLeptons};
 
   /*
   **	This is the delay that multiplayer messages will remain on the screen.
@@ -750,7 +750,7 @@ class RulesClass {
   /*
   **	Mobile radar jammer radius of effect.
   */
-  int RadarJamRadius{10 * CELL_LEPTON_W};
+  int RadarJamRadius{10 * game::kCellWidthLeptons};
 
   /*
   **	The speed at which a projectile that travels at or slower will cause

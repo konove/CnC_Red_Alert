@@ -527,7 +527,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     // The one caller is the help text, printed in this font.
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     std::span<int16_t> ptr(_list);
-    int len = StringPixelWidth(font, text) + CELL_PIXEL_W;
+    int len = StringPixelWidth(font, text) + game::kCellWidthPixels;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*
@@ -614,14 +614,16 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  int xx = TacticalCoord.x() - (MapCellX * CELL_LEPTON_W);
-  int yy = TacticalCoord.y() - (MapCellY * CELL_LEPTON_H);
+  int xx = TacticalCoord.x() - (MapCellX * game::kCellWidthLeptons);
+  int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);
 
   ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
-              MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
+              MapCellWidth * game::kCellWidthLeptons,
+              MapCellHeight * game::kCellHeightLeptons);
 
-  Set_Tactical_Position(Coordinate::FromLeptons(
-      xx + (MapCellX * CELL_LEPTON_W), yy + (MapCellY * CELL_LEPTON_H)));
+  Set_Tactical_Position(
+      Coordinate::FromLeptons(xx + (MapCellX * game::kCellWidthLeptons),
+                              yy + (MapCellY * game::kCellHeightLeptons)));
 
   TacPixelX = x;
   TacPixelY = y;
@@ -1631,7 +1633,7 @@ bool DisplayClass::Map_Cell(Cell cell, HouseClass* house) {
  *inline functions to extract coord components.                       *
  *   08/09/1995 JLB : Uses new coordinate system. *
  *=============================================================================================*/
-#define EDGE_ZONE (CELL_LEPTON_W * 2)
+#define EDGE_ZONE (game::kCellWidthLeptons * 2)
 bool DisplayClass::Coord_To_Pixel(Coordinate coord, int& x, int& y) const {
   if (coord) {
     const int xtac = Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.x()));
@@ -1646,8 +1648,8 @@ bool DisplayClass::Coord_To_Pixel(Coordinate coord, int& x, int& y) const {
       yoff = yoff + EDGE_ZONE - ytac;
       if (static_cast<unsigned>(yoff) <=
           static_cast<unsigned>(TacLeptonHeight + (EDGE_ZONE * 2))) {
-        x = Lepton_To_Pixel(xoff) - (CELL_PIXEL_W * 2);
-        y = Lepton_To_Pixel(yoff) - (CELL_PIXEL_H * 2);
+        x = Lepton_To_Pixel(xoff) - (game::kCellWidthPixels * 2);
+        y = Lepton_To_Pixel(yoff) - (game::kCellHeightPixels * 2);
         return true;
       }
     }
@@ -1853,9 +1855,9 @@ void DisplayClass::RenderObjects(PixelView& view) {
 void DisplayClass::Redraw_Icons(PixelView& view, int draw_flags) {
   IsShadowPresent = false;
   for (int y = -TacticalCoord.sub_y(); y <= TacLeptonHeight;
-       y += CELL_LEPTON_H) {
+       y += game::kCellHeightLeptons) {
     for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
-         x += CELL_LEPTON_W) {
+         x += game::kCellWidthLeptons) {
       Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
       const Cell cell = Cell::Containing(coord);
       coord = cell.Center().Whole();
@@ -1910,9 +1912,9 @@ void DisplayClass::Redraw_Icons(PixelView& view, int draw_flags) {
 void DisplayClass::Redraw_Shadow(PixelView& view) {
   if (IsShadowPresent) {
     for (int y = -TacticalCoord.sub_y(); y <= TacLeptonHeight;
-         y += CELL_LEPTON_H) {
+         y += game::kCellHeightLeptons) {
       for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
-           x += CELL_LEPTON_W) {
+           x += game::kCellWidthLeptons) {
         Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
         const Cell cell = Cell::Containing(coord);
         coord = cell.Center().Whole();
@@ -1960,9 +1962,9 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
 void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
   if (IsShadowPresent) {
     for (int y = -TacticalCoord.sub_y(); y <= TacLeptonHeight;
-         y += CELL_LEPTON_H) {
+         y += game::kCellHeightLeptons) {
       for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
-           x += CELL_LEPTON_W) {
+           x += game::kCellWidthLeptons) {
         Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
         const Cell cell = Cell::Containing(coord);
         coord = cell.Center().Whole();
@@ -1978,8 +1980,8 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
             const CellClass* cellptr = &(*this).at(Cell::Containing(coord));
 
             if ((!cellptr->IsMapped) && (!cellptr->IsVisible)) {
-              int ww = CELL_PIXEL_W;
-              int hh = CELL_PIXEL_H;
+              int ww = game::kCellWidthPixels;
+              int hh = game::kCellHeightPixels;
 
               if (ClipRect(xpixel, ypixel, ww, hh,
                            Lepton_To_Pixel(TacLeptonWidth),
@@ -2500,7 +2502,8 @@ void DisplayClass::Refresh_Band() {
     }
 
     Cell cell{};
-    for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
+    for (int y = y1; y <= y2 + game::kCellHeightPixels;
+         y += game::kCellHeightPixels) {
       cell = Click_Cell_Calc(
           x1, std::clamp(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
       if (cell != Cell::None()) {
@@ -2514,7 +2517,8 @@ void DisplayClass::Refresh_Band() {
       }
     }
 
-    for (int x = x1; x <= x2 + CELL_PIXEL_W; x += CELL_PIXEL_W) {
+    for (int x = x1; x <= x2 + game::kCellWidthPixels;
+         x += game::kCellWidthPixels) {
       cell = Click_Cell_Calc(
           std::clamp(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y1);
       if (cell != Cell::None()) {
@@ -2586,7 +2590,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
       //			int xxx = x +
       // Lepton_To_Pixel(Map.TacticalCoord.sub_x());
       // int yyy = y + Lepton_To_Pixel(Map.TacticalCoord.sub_y());
-      // object = Map.Cell_Object(cell, xxx % CELL_PIXEL_W, yyy % CELL_PIXEL_H);
+      // object = Map.Cell_Object(cell, xxx % game::kCellWidthPixels, yyy %
+      // game::kCellHeightPixels);
       object = TheMap().Close_Object(coord);
 
       /*

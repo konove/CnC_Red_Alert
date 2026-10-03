@@ -613,7 +613,7 @@ bool DriveClass::While_Moving() {
     actual = SpeedAccum + static_cast<int>(maxspeed) * Fixed(Speed, 256);
   }
 
-  if (actual > PIXEL_LEPTON_W) {
+  if (actual > game::kLeptonsPerPixel) {
     int tracknum = 0;  // The track number being processed.
 
     const TurnTrackType* track = base::Suffix(TrackControl, TrackNumber)
@@ -645,9 +645,8 @@ bool DriveClass::While_Moving() {
     **	flag the unit accordingly.
     */
     Mark(MARK_UP);
-    while (actual > PIXEL_LEPTON_W) {
-
-      actual -= PIXEL_LEPTON_W;
+    while (actual > game::kLeptonsPerPixel) {
+      actual -= game::kLeptonsPerPixel;
 
       const Coordinate offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {

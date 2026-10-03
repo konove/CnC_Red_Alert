@@ -1042,8 +1042,9 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
       **	Tiberium they are carrying.
       */
       if (Tiberium > 0 && TheRules().IsExplosiveHarvester) {
-        Wide_Area_Damage(Coord, CELL_LEPTON_W + (CELL_LEPTON_W / 2),
-                         Credit_Load() + Class->MaxStrength, this, WARHEAD_HE);
+        Wide_Area_Damage(
+            Coord, game::kCellWidthLeptons + (game::kCellWidthLeptons / 2),
+            Credit_Load() + Class->MaxStrength, this, WARHEAD_HE);
       }
 
       /*
@@ -2897,7 +2898,8 @@ int UnitClass::Mission_Harvest() {
         ArchiveTarget = Target{};
       }
       IsHarvesting = false;
-      if (Goto_Tiberium(TheRules().TiberiumLongScan / CELL_LEPTON_W)) {
+      if (Goto_Tiberium(TheRules().TiberiumLongScan /
+                        game::kCellWidthLeptons)) {
         IsHarvesting = true;
         Set_Rate(2);
         Set_Stage(0);
@@ -2952,7 +2954,8 @@ int UnitClass::Mission_Harvest() {
           Status = kFindhome;
           ArchiveTarget = Target::FromCell(Cell::Containing(Coord));
         } else {
-          if (!Goto_Tiberium(TheRules().TiberiumShortScan / CELL_LEPTON_W) &&
+          if (!Goto_Tiberium(TheRules().TiberiumShortScan /
+                             game::kCellWidthLeptons) &&
               !NavCom) {
             ArchiveTarget = Target{};
             Status = kFindhome;
@@ -3108,13 +3111,13 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  int size = ICON_PIXEL_W;
+  int size = game::kCellWidthPixels;
 
   if (redraw && (IsSelected || IsFiring)) {
     size += 24;
   }
   if (Class->IsGigundo || IsAnimAttached) {
-    size = ICON_PIXEL_W * 2;
+    size = game::kCellWidthPixels * 2;
   }
 
   return Coord_Spillage_List(Coord, size).subspan(1);
@@ -4464,7 +4467,7 @@ void UnitClass::Overrun_Square(Cell cell, bool threaten) {
       bool crushed = false;
       while (object != nullptr) {
         if (object->Class_Of().IsCrushable && !House->Is_Ally(object) &&
-            Distance(object->Center_Coord()) < CELL_LEPTON_W / 2) {
+            Distance(object->Center_Coord()) < game::kCellWidthLeptons / 2) {
           ObjectClass* next = object->Next;
           crushed = true;
 
@@ -5037,7 +5040,7 @@ void UnitClass::Shroud_Regen() {
     }
 
     if (!House->IsPlayerControl) {
-      MapEditClass::Constrained_Look(Coord, 5 * CELL_LEPTON_W);
+      MapEditClass::Constrained_Look(Coord, 5 * game::kCellWidthLeptons);
       //			PlayerPtr->IsToLook = true;
     }
   }
@@ -5080,7 +5083,7 @@ int UnitClass::Mission_Guard_Area() {
       if (infantry != nullptr && infantry->IsActive && !infantry->IsInLimbo &&
           infantry->Strength > 0 && infantry->House == House &&
           !infantry->TarCom && !infantry->NavCom &&
-          Distance(infantry) < 7 * CELL_LEPTON_W &&
+          Distance(infantry) < 7 * game::kCellWidthLeptons &&
           (infantry->Mission == MISSION_GUARD ||
            infantry->Mission == MISSION_GUARD_AREA)) {
         infantry->Assign_Mission(MISSION_ENTER);

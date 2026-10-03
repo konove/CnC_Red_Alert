@@ -325,9 +325,10 @@ static inline int Scale_To_256(int val) {
 int CCINIClass::Get_Lepton(const char* section, const char* entry,
                            int defvalue) const {
   const Fixed result = Get_Fixed(
-      section, entry, Fixed(static_cast<uint16_t>(defvalue), CELL_LEPTON_W));
+      section, entry,
+      Fixed(static_cast<uint16_t>(defvalue), game::kCellWidthLeptons));
   // An 8.8 Fixed times 256 is its raw 16-bit word, so this is 0..65535.
-  return result * CELL_LEPTON_W;
+  return result * game::kCellWidthLeptons;
 }
 
 /***********************************************************************************************
@@ -349,8 +350,9 @@ int CCINIClass::Get_Lepton(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_Lepton(const char* section, const char* entry, int value) {
-  return Put_Fixed(section, entry,
-                   Fixed(static_cast<uint16_t>(value), CELL_LEPTON_W));
+  return Put_Fixed(
+      section, entry,
+      Fixed(static_cast<uint16_t>(value), game::kCellWidthLeptons));
 }
 
 /***********************************************************************************************

@@ -47,6 +47,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
@@ -99,7 +100,7 @@ class PowerClass : public RadarClass {
   */
   static PowerButtonClass PowerButton;
 
-  static constexpr int kPowerX = 10 * ICON_PIXEL_W;
+  static constexpr int kPowerX = 10 * game::kCellWidthPixels;
   static constexpr int kPowerY = 7 + 70 + 13;
   static constexpr int kPowerHeight = 200 - (7 + 70 + 13);
   static constexpr int kPowerWidth = 8;

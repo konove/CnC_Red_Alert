@@ -135,9 +135,9 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
   */
   if (damage) {
     if (!whead->SpreadFactor) {
-      distance /= PIXEL_LEPTON_W / 4;
+      distance /= game::kLeptonsPerPixel / 4;
     } else {
-      distance /= whead->SpreadFactor * (PIXEL_LEPTON_W / 2);
+      distance /= whead->SpreadFactor * (game::kLeptonsPerPixel / 2);
     }
     distance = std::clamp(distance, 0, 16);
     if (distance) {
@@ -199,9 +199,9 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
 
   const WarheadTypeClass* whead = WarheadTypeClass::As_Pointer(warhead);
   //	WarheadTypeClass const * whead = &Warheads[warhead];
-  //	range = ICON_LEPTON_W*2;
-  const int range =
-      ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
+  //	range = game::kCellWidthLeptons*2;
+  const int range = game::kCellWidthLeptons +
+                    (game::kCellWidthLeptons / 2);  // Damage effect radius.
   const Cell cell = Cell::Containing(coord);  // Cell number under explosion.
   if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return;
@@ -453,7 +453,8 @@ void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
   // The radius was a 16-bit lepton word; an exploding unit's strength times
   // the explosion spread still wraps the way it always did.
   const int cell_radius =
-      (static_cast<uint16_t>(radius) + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
+      (static_cast<uint16_t>(radius) + game::kCellWidthLeptons - 1) /
+      game::kCellWidthLeptons;
   const Cell cell = Cell::Containing(coord);
 
   for (int x = -cell_radius; x <= cell_radius; x++) {

@@ -328,8 +328,8 @@ void SmudgeTypeClass::Display(PixelView& view, int x, int y,
   if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
-        CC_Draw_Shape(view, ptr, 0, x + (w * ICON_PIXEL_W),
-                      y + (h * ICON_PIXEL_H), WINDOW_TACTICAL,
+        CC_Draw_Shape(view, ptr, 0, x + (w * game::kCellWidthPixels),
+                      y + (h * game::kCellHeightPixels), WINDOW_TACTICAL,
                       engine::gfx::ShapeFlags::kNone);
       }
     }

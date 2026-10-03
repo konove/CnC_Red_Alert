@@ -76,7 +76,7 @@ FlyClass::~FlyClass() = default;
 ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
   if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
-    const std::div_t result = std::div(actual, PIXEL_LEPTON_W);
+    const std::div_t result = std::div(actual, game::kLeptonsPerPixel);
     SpeedAccum = result.rem;
     actual -= result.rem;
     const Coordinate old = coord;

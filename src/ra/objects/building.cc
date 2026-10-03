@@ -3565,7 +3565,8 @@ Coordinate BuildingClass::Docking_Coord() const {
     return Coord + XYP_Coord(24, 18);
   }
   if (*this == STRUCT_AIRSTRIP) {
-    return Coord + XYP_Coord(ICON_PIXEL_W + (ICON_PIXEL_W / 2), 28);
+    return Coord +
+           XYP_Coord(game::kCellWidthPixels + (game::kCellWidthPixels / 2), 28);
   }
   return TechnoClass::Docking_Coord();
 }
@@ -3896,7 +3897,7 @@ Coordinate BuildingClass::Sort_Y() const {
   *drawn *	before any objects that might overlap them.
   */
   if (*this == STRUCT_AVMINE || *this == STRUCT_APMINE) {
-    return Coord_Move(Center_Coord(), game::DIR_N, CELL_LEPTON_H);
+    return Coord_Move(Center_Coord(), game::DIR_N, game::kCellHeightLeptons);
   }
 
   return Center_Coord() + Coordinate::FromLeptons(0, Class->Height() * 256 / 3);

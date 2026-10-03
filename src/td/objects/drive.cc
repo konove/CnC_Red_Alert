@@ -618,7 +618,7 @@ bool DriveClass::While_Moving() {
              base::FixedToCardinal(static_cast<int>(Class->MaxSpeed), Speed);
   }
 
-  if (actual > PIXEL_LEPTON_W) {
+  if (actual > game::kLeptonsPerPixel) {
     int tracknum = 0;  // The track number being processed.
 
     const TurnTrackType* track = base::Suffix(TrackControl, TrackNumber)
@@ -649,9 +649,8 @@ bool DriveClass::While_Moving() {
     **	flag the unit accordingly.
     */
     Mark(MARK_UP);
-    while (actual > PIXEL_LEPTON_W) {
-
-      actual -= PIXEL_LEPTON_W;
+    while (actual > game::kLeptonsPerPixel) {
+      actual -= game::kLeptonsPerPixel;
 
       const Coordinate offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {
@@ -881,7 +880,7 @@ bool DriveClass::Start_Of_Move() {
       (NavCom.kind() == KIND_UNIT || NavCom.kind() == KIND_INFANTRY)) {
     const int dist = Lepton_To_Cell(Distance(NavCom));
 
-    //			if (dist > CELL_LEPTON_W ||
+    //			if (dist > game::kCellWidthLeptons ||
     //				!NavCom.AsTechno()->Techno_Type_Class()->IsCrushable
     //|| 				!Class->IsCrusher) {
 

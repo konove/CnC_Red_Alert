@@ -120,7 +120,7 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
   **	For mondo-enourmo-gigundo objects, use a prebuilt mammoth table
   **	that covers a 5x5 square region.
   */
-  if (maxsize > ICON_PIXEL_W * 2) {
+  if (maxsize > game::kCellWidthPixels * 2) {
     static const int16_t _gigundo[] = {
         -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
         -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
@@ -143,11 +143,11 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
   *consuming, but *	not nearly as time consuming as drawing even a single
   *cell unnecessarily.
   */
-  if (maxsize > ICON_PIXEL_W) {
-    maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
+  if (maxsize > game::kCellWidthPixels) {
+    maxsize = std::min(maxsize, game::kCellWidthPixels * 2) / 2;
 
-    x = base::FixedToCardinal(ICON_PIXEL_W, coord.sub_x());
-    y = base::FixedToCardinal(ICON_PIXEL_H, coord.sub_y());
+    x = base::FixedToCardinal(game::kCellWidthPixels, coord.sub_x());
+    y = base::FixedToCardinal(game::kCellHeightPixels, coord.sub_y());
     const int left = x - maxsize;
     const int right = x + maxsize;
     const int top = y - maxsize;
@@ -157,25 +157,25 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
     if (left < 0) {
       base::At(_manual, index++) = -1;
     }
-    if (right >= ICON_PIXEL_W) {
+    if (right >= game::kCellWidthPixels) {
       base::At(_manual, index++) = 1;
     }
     if (top < 0) {
       base::At(_manual, index++) = -MAP_CELL_W;
     }
-    if (bottom >= ICON_PIXEL_H) {
+    if (bottom >= game::kCellHeightPixels) {
       base::At(_manual, index++) = MAP_CELL_W;
     }
     if (left < 0 && top < 0) {
       base::At(_manual, index++) = -(MAP_CELL_W + 1);
     }
-    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
+    if (right >= game::kCellWidthPixels && bottom >= game::kCellHeightPixels) {
       base::At(_manual, index++) = MAP_CELL_W + 1;
     }
-    if (left < 0 && bottom >= ICON_PIXEL_H) {
+    if (left < 0 && bottom >= game::kCellHeightPixels) {
       base::At(_manual, index++) = MAP_CELL_W - 1;
     }
-    if (right >= ICON_PIXEL_H && top < 0) {
+    if (right >= game::kCellHeightPixels && top < 0) {
       base::At(_manual, index++) = -(MAP_CELL_W - 1);
     }
     base::At(_manual, index) = REFRESH_EOL;
@@ -185,7 +185,8 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
   /*
   **	Determine the number of leptons "leeway" allowed this unit.
   */
-  const int posval = base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
+  const int posval =
+      base::At(Pixel2Lepton, (game::kCellWidthPixels - maxsize) / 2);
 
   x = coord.sub_x() - 0x0080;
   y = coord.sub_y() - 0x0080;

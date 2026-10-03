@@ -434,7 +434,8 @@ bool RulesClass::General(CCINIClass& ini) {
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.Get_Fixed(GENERAL, "VortexChance", VortexChance);
 
-    TheWorld().chronal_vortex().Set_Range(VortexRange / CELL_LEPTON_W);
+    TheWorld().chronal_vortex().Set_Range(VortexRange /
+                                          game::kCellWidthLeptons);
     TheWorld().chronal_vortex().Set_Speed(static_cast<int>(VortexSpeed));
     TheWorld().chronal_vortex().Set_Damage(VortexDamage);
 

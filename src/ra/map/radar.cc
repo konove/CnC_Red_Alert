@@ -697,12 +697,13 @@ void RadarClass::Render_Infantry(PixelView& view, Cell cell, int x, int y,
 
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY:
-          xoff = (obj->Coord.sub_x() / (CELL_LEPTON_W / (size + 1))) -
+          xoff = (obj->Coord.sub_x() / (game::kCellWidthLeptons / (size + 1))) -
                  (subsize / 2);
           xoff = std::max(xoff, 0);
           xoff = std::min(xoff, size - subsize);
-          yoff = (obj->Coord.sub_y() / (CELL_LEPTON_H / (size + 1))) -
-                 (subsize / 2);
+          yoff =
+              (obj->Coord.sub_y() / (game::kCellHeightLeptons / (size + 1))) -
+              (subsize / 2);
           yoff = std::max(yoff, 0);
           yoff = std::min(yoff, size - subsize);
 

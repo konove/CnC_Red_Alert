@@ -2426,9 +2426,9 @@ Target AircraftClass::New_LZ(Target oldlz) const {
       */
       for (const game::FacingType facing :
            magic_enum::enum_values<game::FacingType>()) {
-        const Cell newcell = Cell::Containing(
-            Coord_Move(coord, game::Facing_Dir(facing + modifier),
-                       static_cast<uint16_t>(radius * ICON_LEPTON_W)));
+        const Cell newcell = Cell::Containing(Coord_Move(
+            coord, game::Facing_Dir(facing + modifier),
+            static_cast<uint16_t>(radius * game::kCellWidthLeptons)));
         if (TheMap().In_Radar(newcell)) {
           const Target newtarget = Target::FromCellIndex(newcell);
 
@@ -3333,7 +3333,7 @@ int AircraftClass::Threat_Range(int control) const {
     return -1;
   }
 
-  int range = 20 * ICON_LEPTON_W;
+  int range = 20 * game::kCellWidthLeptons;
   if (control == 1) {
     range *= 2;
   }

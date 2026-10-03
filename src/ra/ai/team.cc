@@ -2004,7 +2004,8 @@ void TeamClass::Coordinate_Move() {
 
           } else {
             if (unit->Mission == MISSION_MOVE &&
-                (!unit->NavCom || Distance(unit->NavCom) < CELL_LEPTON_W)) {
+                (!unit->NavCom ||
+                 Distance(unit->NavCom) < game::kCellWidthLeptons)) {
               unit->Assign_Destination(ra::Target{});
               unit->Enter_Idle_Mode();
             }

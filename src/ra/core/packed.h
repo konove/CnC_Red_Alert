@@ -42,23 +42,26 @@ constexpr int Cell_To_Lepton(int cell_distance) noexcept {
 // distance keeps its low 16 bits, so -1 is 0xFFFF and rounds to 256 cells.
 constexpr int Lepton_To_Cell(int lepton_distance) noexcept {
   return Lepton_Cell(lepton_distance) +
-         (Lepton_Fraction(lepton_distance) >= CELL_LEPTON_W / 2 ? 1 : 0);
+         (Lepton_Fraction(lepton_distance) >= game::kCellWidthLeptons / 2 ? 1
+                                                                          : 0);
 }
 
 // Converts a lepton distance to the nearest whole number of pixels. The
 // distance keeps its low 16 bits, read as signed, so 0xFFFF is -1 lepton.
 // Precision is lost: a value converted to pixels and back usually differs.
 constexpr int Lepton_To_Pixel(int lepton) noexcept {
-  return ((static_cast<int>(static_cast<int16_t>(lepton)) * ICON_PIXEL_W) +
-          (ICON_LEPTON_W / 2)) /
-         ICON_LEPTON_W;
+  return ((static_cast<int>(static_cast<int16_t>(lepton)) *
+           game::kCellWidthPixels) +
+          (game::kCellWidthLeptons / 2)) /
+         game::kCellWidthLeptons;
 }
 
 // Converts a pixel distance to the nearest lepton distance, as a 16-bit
 // lepton word in 0..65535: a negative pixel count wraps.
 constexpr int Pixel_To_Lepton(int pixel) noexcept {
-  return static_cast<uint16_t>(((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) /
-                               ICON_PIXEL_W);
+  return static_cast<uint16_t>(
+      ((pixel * game::kCellWidthLeptons) + (game::kCellWidthPixels / 2)) /
+      game::kCellWidthPixels);
 }
 
 }  // namespace ra

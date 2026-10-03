@@ -956,7 +956,8 @@ bool SidebarClass::Activate(int control) {
     *then *	activate it on the left side of the screen.
     */
     if (IsSidebarActive /*&& X*/) {
-      Set_View_Dimensions(0, 16, (320 - kSideWidth) / ICON_PIXEL_W * 2);
+      Set_View_Dimensions(0, 16,
+                          (320 - kSideWidth) / game::kCellWidthPixels * 2);
       IsSidebarToRedraw = true;
       Help_Text(TXT_NONE);
       Repair.Zap();

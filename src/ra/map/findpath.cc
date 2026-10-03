@@ -1318,17 +1318,11 @@ int FootClass::Passable_Cell(Cell cell, game::FacingType face, int threat,
     return 0;
   }
 
-  if (TheSession().Type == GAME_NORMAL) {
-    if (threat != -1) {
-      if (ra::Distance(cell.Center(), DestLocation.Center()) >
-          THREAT_THRESHOLD * CELL_LEPTON_W) {
-        //			if (Map.Cell_Distance(cell, DestLocation) >
-        // THREAT_THRESHOLD) {
-        if (MapEditClass::Cell_Threat(cell, Owner()) > threat) {
-          return 0;
-        }
-      }
-    }
+  if (TheSession().Type == GAME_NORMAL && threat != -1 &&
+      ra::Distance(cell.Center(), DestLocation.Center()) >
+          THREAT_THRESHOLD * game::kCellWidthLeptons &&
+      MapEditClass::Cell_Threat(cell, Owner()) > threat) {
+    return 0;
   }
 
   static constexpr base::EnumArray<game::MoveType, int> _value = {

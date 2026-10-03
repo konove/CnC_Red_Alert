@@ -4339,7 +4339,7 @@ void HouseClass::Recalc_Center() {
           radius += Distance(Center, b->Center_Coord());
         }
       }
-      Radius = std::max(radius / count, 2 * CELL_LEPTON_W);
+      Radius = std::max(radius / count, 2 * game::kCellWidthLeptons);
 
       /*
       **	Determine the relative strength of each base defense zone.
@@ -7689,7 +7689,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_NORTH:
       maxdist =
           std::min(Radius * 3, Center.y() - Cell_To_Lepton(TheMap().MapCellY) -
-                                   CELL_LEPTON_H);
+                                   game::kCellHeightLeptons);
       if (maxdist < 0) {
         break;
       }
@@ -7704,7 +7704,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_EAST:
       maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellX +
                                                     TheMap().MapCellWidth) -
-                                         Center.x() - CELL_LEPTON_W);
+                                         Center.x() - game::kCellWidthLeptons);
       if (maxdist < 0) {
         break;
       }
@@ -7717,7 +7717,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_SOUTH:
       maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellY +
                                                     TheMap().MapCellHeight) -
-                                         Center.y() - CELL_LEPTON_H);
+                                         Center.y() - game::kCellHeightLeptons);
       if (maxdist < 0) {
         break;
       }
@@ -7730,7 +7730,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
     case ZONE_WEST:
       maxdist =
           std::min(Radius * 3, Center.x() - Cell_To_Lepton(TheMap().MapCellX) -
-                                   CELL_LEPTON_W);
+                                   game::kCellWidthLeptons);
       if (maxdist < 0) {
         break;
       }

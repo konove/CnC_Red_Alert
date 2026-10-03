@@ -879,7 +879,7 @@ Coordinate BulletClass::Target_Coord() const {
 Coordinate BulletClass::Sort_Y() const {
   DCHECK(IsActive);
 
-  return Coord_Move(Coord, game::DIR_S, CELL_LEPTON_H / 2);
+  return Coord_Move(Coord, game::DIR_S, game::kCellHeightLeptons / 2);
 }
 
 /***********************************************************************************************
@@ -944,7 +944,7 @@ bool BulletClass::Is_Forced_To_Explode(Coordinate& coord) const {
     const int d =
         ra::Distance(coord.Fraction(), Coordinate::CellCenterOffset());
     if (cellptr->Land_Type() != LAND_WATER ||
-        (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
+        (d < game::kCellWidthLeptons / 3 && cellptr->Cell_Techno() != nullptr &&
          cellptr->Cell_Techno() != Payback)) {
       /*
       **	Force explosion to be at center of techno object if one is

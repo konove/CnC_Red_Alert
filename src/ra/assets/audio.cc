@@ -318,7 +318,8 @@ void PlaySoundEffectAt(const VocType voc, const Coordinate coord,
         TheMap().TacticalCoord +
         Coordinate::FromLeptons(TheMap().TacLeptonWidth / 2,
                                 TheMap().TacLeptonHeight / 2);
-    const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
+    const int distance_cells =
+        Distance(coord, view_center) / game::kCellWidthLeptons;
     auto fade = Fixed(distance_cells, 128 + 64);
     fade.SaturateBelow(1);
     volume = Fixed(1) - fade;

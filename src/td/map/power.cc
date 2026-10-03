@@ -180,7 +180,8 @@ void PowerClass::One_Time() {
 void PowerClass::Draw_It(PixelView& view, bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
-  //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
+  //		PowX = TacPixelX + TacWidth*game::kCellWidthPixels;	// X
+  // position of
   // upper left corner of power bar.
   if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {

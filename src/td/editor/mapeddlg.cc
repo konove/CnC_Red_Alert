@@ -1035,12 +1035,12 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         view.Lock();
         view.DrawRect(kBordX1, kBordY1, kBordX2, kBordY2, kCcGreenShadow);
         for (int index = kBordX1; index < kBordX2;
-             index += (320 / ICON_PIXEL_W)) {
+             index += (320 / game::kCellWidthPixels)) {
           view.PutPixel(index, kBordY1 - 1, kCcGreenShadow);
           view.PutPixel(index, kBordY2 + 1, kCcGreenShadow);
         }
         for (int index = kBordY1; index < kBordY2 - 8;
-             index += (200 / ICON_PIXEL_H)) {
+             index += (200 / game::kCellHeightPixels)) {
           view.PutPixel(kBordX1 - 1, index, kCcGreenShadow);
           view.PutPixel(kBordX2 + 1, index, kCcGreenShadow);
         }

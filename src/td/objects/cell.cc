@@ -941,11 +941,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
   */
   if (TheDebugState().show_cell_info()) {
     view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                  TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
-                  TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
+                  TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
+                  TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
     Fancy_Text_Print(view, "%d\r%2X%c\r%02X.%02X",
-                     TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1),
+                     TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
                      TheMap().TacPixelY + y, kWhite, kTBlack, FontType::k6Point,
                      TPF_NOSHADOW | TPF_CENTER, cell.index(), Flag.Composite,
                      Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
@@ -983,7 +983,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                        WindowRect(WINDOW_TACTICAL));
         if (!remap.empty()) {
           view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                     ICON_PIXEL_W, ICON_PIXEL_H, remap);
+                     game::kCellWidthPixels, game::kCellHeightPixels, remap);
         }
       }
 
@@ -997,8 +997,9 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
         if (TheDebugState().map_editor_active() &&
             TheWorld().current_cell() == Cell_Number()) {
           view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                        TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
-                        TheMap().TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
+                        TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
+                        TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
+                        kYellow);
         }
       }
 
@@ -1048,8 +1049,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       if (Overlay != OVERLAY_NONE) {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
-                      x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                      WINDOW_TACTICAL,
+                      x + (game::kCellWidthPixels / 2),
+                      y + (game::kCellHeightPixels / 2), WINDOW_TACTICAL,
                       ShapeFlags::kCentered | ShapeFlags::kGhost, {},
                       MouseClass::UnitShadow);
       }
@@ -1075,23 +1076,25 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                 base::At(waypt, 0) = static_cast<char>('A' + i);
                 base::At(waypt, 1) = 0;
                 Fancy_Text_Print(
-                    view, waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
-                    TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3, kYellow,
-                    kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_CENTER);
+                    view, waypt,
+                    TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+                    TheMap().TacPixelY + y + (game::kCellHeightPixels / 2) - 3,
+                    kYellow, kTBlack, FontType::k6Point,
+                    TPF_NOSHADOW | TPF_CENTER);
                 break;
               }
             }
             if (base::At(TheWorld().waypoint(), kWayptHome) == Cell_Number()) {
-              Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
-                               TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
-                               kWhite, kTBlack, FontType::k6Point,
-                               TPF_NOSHADOW);
+              Fancy_Text_Print(
+                  view, "Home", TheMap().TacPixelX + x,
+                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7, kWhite,
+                  kTBlack, FontType::k6Point, TPF_NOSHADOW);
             }
             if (base::At(TheWorld().waypoint(), kWayptReinf) == Cell_Number()) {
-              Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
-                               TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
-                               kWhite, kTBlack, FontType::k6Point,
-                               TPF_NOSHADOW);
+              Fancy_Text_Print(
+                  view, "Reinf", TheMap().TacPixelX + x,
+                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7, kWhite,
+                  kTBlack, FontType::k6Point, TPF_NOSHADOW);
             }
           }
         }
@@ -1199,8 +1202,9 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(
             view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-            static_cast<int>(game::CurrentFrame() % 14), x + (ICON_PIXEL_W / 2),
-            y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+            static_cast<int>(game::CurrentFrame() % 14),
+            x + (game::kCellWidthPixels / 2), y + (game::kCellHeightPixels / 2),
+            WINDOW_TACTICAL,
             ShapeFlags::kCentered | ShapeFlags::kGhost | ShapeFlags::kFading,
             const_remap, MouseClass::UnitShadow);
       }

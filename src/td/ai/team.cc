@@ -1251,7 +1251,8 @@ void TeamClass::Coordinate_Move() {
             IsLagging = true;
             finished = false;
           } else {
-            if (unit->Distance(Target) / ICON_LEPTON_W > STRAY_DISTANCE ||
+            if (unit->Distance(Target) / game::kCellWidthLeptons >
+                    STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
                  base::At(Class->MissionList, CurrentMission + 1).Mission !=

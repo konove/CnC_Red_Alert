@@ -18,10 +18,10 @@ namespace td {
 // leptons (XYP_Coord rounds instead). Negative offsets wrap in their 16-bit
 // component, as the packed sum always did.
 constexpr Coordinate Pixel_Offset_Coord(int x, int y) noexcept {
-  const auto x_lepton =
-      static_cast<uint32_t>((x * ICON_LEPTON_W) / CELL_PIXEL_W);
-  const auto y_lepton =
-      static_cast<uint32_t>((y * ICON_LEPTON_H) / CELL_PIXEL_H);
+  const auto x_lepton = static_cast<uint32_t>((x * game::kCellWidthLeptons) /
+                                              game::kCellWidthPixels);
+  const auto y_lepton = static_cast<uint32_t>((y * game::kCellHeightLeptons) /
+                                              game::kCellHeightPixels);
   return Coordinate::FromPacked((y_lepton << 16) + x_lepton);
 }
 inline int Cell_To_Lepton(int cell) { return cell * 256; }
@@ -29,8 +29,9 @@ inline int Lepton_To_Cell(int lepton) {
   return static_cast<unsigned>(lepton + 0x0080) >> 8;
 }
 inline Coordinate XYPixel_Coord(int x, int y) {
-  return Coordinate::FromLeptons(x * ICON_LEPTON_W / ICON_PIXEL_W,
-                                 y * ICON_LEPTON_H / ICON_PIXEL_H);
+  return Coordinate::FromLeptons(
+      x * game::kCellWidthLeptons / game::kCellWidthPixels,
+      y * game::kCellHeightLeptons / game::kCellHeightPixels);
 }
 inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
   return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
@@ -62,10 +63,12 @@ inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
   return cell.Offset(AdjacentCell.at(game::Dir_Facing(dir)));
 }
 inline int Lepton_To_Pixel(int lepton) {
-  return ((lepton * ICON_PIXEL_W) + (ICON_LEPTON_W / 2)) / ICON_LEPTON_W;
+  return ((lepton * game::kCellWidthPixels) + (game::kCellWidthLeptons / 2)) /
+         game::kCellWidthLeptons;
 }
 inline int Pixel_To_Lepton(int pixel) {
-  return ((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) / ICON_PIXEL_W;
+  return ((pixel * game::kCellWidthLeptons) + (game::kCellWidthPixels / 2)) /
+         game::kCellWidthPixels;
 }
 inline Coordinate XYP_Coord(int x, int y) {
   return Coordinate::FromLeptons(Pixel_To_Lepton(x), Pixel_To_Lepton(y));

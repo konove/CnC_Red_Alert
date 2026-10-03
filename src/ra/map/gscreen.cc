@@ -391,7 +391,7 @@ void GScreenClass::Render() {
     */
     if (TheSession().Messages.Num_Messages() > 0) {
       TheSession().Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
-                                      ICON_PIXEL_W);
+                                      game::kCellWidthPixels);
     }
     TheSession().Messages.Draw(view);
 

@@ -2730,12 +2730,12 @@ std::span<const int16_t> UnitClass::Overlap_List() const {
     return _gunboat;
   }
 
-  int size = ICON_PIXEL_W;
+  int size = game::kCellWidthPixels;
   if (IsSelected || IsFiring) {
     size += 24;
   }
   if (IsSelected || Class->IsGigundo || IsAnimAttached) {
-    size = ICON_PIXEL_W * 2;
+    size = game::kCellWidthPixels * 2;
   }
   return Coord_Spillage_List(Coord, size).subspan(1);
 }

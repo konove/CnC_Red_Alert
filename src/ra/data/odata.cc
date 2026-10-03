@@ -855,9 +855,9 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   CC_Draw_Shape(view, Get_Image_Data(), data,
-                TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
-                TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                ShapeFlags::kCentered | ShapeFlags::kGhost, {},
+                TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+                TheMap().TacPixelY + y + (game::kCellHeightPixels / 2),
+                WINDOW_MAIN, ShapeFlags::kCentered | ShapeFlags::kGhost, {},
                 MouseClass::UnitShadow);
 }
 

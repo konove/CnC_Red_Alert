@@ -169,7 +169,7 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
   int y = 0;
 
   // Objects larger than 2 tiles use a prebuilt 5x5 cell region.
-  if (maxsize > ICON_PIXEL_W * 2) {
+  if (maxsize > game::kCellWidthPixels * 2) {
     static constexpr int16_t _gigundo[] = {
         -((2 * MAP_CELL_W) - 2), -((2 * MAP_CELL_W) - 1),
         -(2 * MAP_CELL_W),       -((2 * MAP_CELL_W) + 1),
@@ -189,11 +189,11 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
 
   // Objects between 1-2 tiles: compute overlap by checking which cell
   // boundaries the bounding box crosses. Cheaper than redundant redraws.
-  if (maxsize > ICON_PIXEL_W) {
-    maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
+  if (maxsize > game::kCellWidthPixels) {
+    maxsize = std::min(maxsize, game::kCellWidthPixels * 2) / 2;
 
-    x = ICON_PIXEL_W * coord.sub_x() / ICON_LEPTON_W;
-    y = ICON_PIXEL_H * coord.sub_y() / ICON_LEPTON_H;
+    x = game::kCellWidthPixels * coord.sub_x() / game::kCellWidthLeptons;
+    y = game::kCellHeightPixels * coord.sub_y() / game::kCellHeightLeptons;
     const int left = x - maxsize;
     const int right = x + maxsize;
     const int top = y - maxsize;
@@ -203,25 +203,25 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
     if (left < 0) {
       base::At(computed_offsets, index++) = -1;
     }
-    if (right >= ICON_PIXEL_W) {
+    if (right >= game::kCellWidthPixels) {
       base::At(computed_offsets, index++) = 1;
     }
     if (top < 0) {
       base::At(computed_offsets, index++) = -MAP_CELL_W;
     }
-    if (bottom >= ICON_PIXEL_H) {
+    if (bottom >= game::kCellHeightPixels) {
       base::At(computed_offsets, index++) = MAP_CELL_W;
     }
     if (left < 0 && top < 0) {
       base::At(computed_offsets, index++) = -(MAP_CELL_W + 1);
     }
-    if (right >= ICON_PIXEL_W && bottom >= ICON_PIXEL_H) {
+    if (right >= game::kCellWidthPixels && bottom >= game::kCellHeightPixels) {
       base::At(computed_offsets, index++) = MAP_CELL_W + 1;
     }
-    if (left < 0 && bottom >= ICON_PIXEL_H) {
+    if (left < 0 && bottom >= game::kCellHeightPixels) {
       base::At(computed_offsets, index++) = MAP_CELL_W - 1;
     }
-    if (right >= ICON_PIXEL_H && top < 0) {
+    if (right >= game::kCellHeightPixels && top < 0) {
       base::At(computed_offsets, index++) = -(MAP_CELL_W - 1);
     }
     base::At(computed_offsets, index) = kRefreshEol;
@@ -230,7 +230,7 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
 
   // Lepton threshold: how far from cell center before spilling into neighbors.
   const int spill_threshold =
-      base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
+      base::At(Pixel2Lepton, (game::kCellWidthPixels - maxsize) / 2);
 
   x = coord.sub_x() - 0x0080;
   y = coord.sub_y() - 0x0080;

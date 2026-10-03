@@ -128,7 +128,7 @@ namespace ra {
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
 ChronalVortexClass::ChronalVortexClass()
-    : RenderBuffer(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4) {}
+    : RenderBuffer(game::kCellWidthPixels * 4, game::kCellHeightPixels * 4) {}
 
 /***********************************************************************************************
  * CVC::~ChronalVortexClass -- vortex class destructor *
@@ -467,28 +467,32 @@ void ChronalVortexClass::Movement() {
   /*
   ** Reverse the direction of the vortex if its drifting off the map.
   */
-  if (x > CELL_LEPTON_W * (TheMap().MapCellX + TheMap().MapCellWidth - 4)) {
+  if (x > game::kCellWidthLeptons *
+              (TheMap().MapCellX + TheMap().MapCellWidth - 4)) {
     newpick = false;
     if (DesiredXDir > 0) {
       DesiredXDir = -DesiredXDir;
     }
   }
 
-  if (y > CELL_LEPTON_H * (TheMap().MapCellY + TheMap().MapCellHeight - 4)) {
+  if (y > game::kCellHeightLeptons *
+              (TheMap().MapCellY + TheMap().MapCellHeight - 4)) {
     newpick = false;
     if (DesiredYDir > 0) {
       DesiredYDir = -DesiredYDir;
     }
   }
 
-  if (x < (CELL_LEPTON_W * TheMap().MapCellX) + (2 * CELL_LEPTON_W)) {
+  if (x < (game::kCellWidthLeptons * TheMap().MapCellX) +
+              (2 * game::kCellWidthLeptons)) {
     newpick = false;
     if (DesiredXDir < 0) {
       DesiredXDir = -DesiredXDir;
     }
   }
 
-  if (y < (CELL_LEPTON_H * TheMap().MapCellY) + (2 * CELL_LEPTON_W)) {
+  if (y < (game::kCellHeightLeptons * TheMap().MapCellY) +
+              (2 * game::kCellWidthLeptons)) {
     newpick = false;
     if (DesiredYDir < 0) {
       DesiredYDir = -DesiredYDir;
@@ -606,7 +610,7 @@ void ChronalVortexClass::Attack() {
     if (obj->Is_Techno() && obj->Strength > 0) {
       distance = Distance(obj->Center_Coord(), here);
 
-      if (distance <= CELL_LEPTON_W * 2) {
+      if (distance <= game::kCellWidthLeptons * 2) {
         Set_Target(obj);
         break;
       }
@@ -638,9 +642,9 @@ void ChronalVortexClass::Attack() {
     if (obj && obj->Is_Techno()) {
       distance = Distance(obj->Center_Coord(), Position);
 
-      if (distance < CELL_LEPTON_W * Range) {
+      if (distance < game::kCellWidthLeptons * Range) {
         chance = Random_Pick(0, distance);
-        if (chance < CELL_LEPTON_W) {
+        if (chance < game::kCellWidthLeptons) {
           Set_Target(obj);
           break;
         }
@@ -875,9 +879,9 @@ void ChronalVortexClass::Render(PixelView& view) {
             ** Draw the template
             */
             if (!ttype->Get_Image_Data().empty()) {
-              RenderBuffer.view().DrawStamp(ttype->Get_Image_Data(), icon,
-                                            x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                            {}, WindowRect(WINDOW_MAIN));
+              RenderBuffer.view().DrawStamp(
+                  ttype->Get_Image_Data(), icon, x * game::kCellWidthPixels,
+                  y * game::kCellHeightPixels, {}, WindowRect(WINDOW_MAIN));
             }
 
             /*
@@ -885,8 +889,8 @@ void ChronalVortexClass::Render(PixelView& view) {
             */
             if (cellptr->Smudge != SMUDGE_NONE) {
               SmudgeTypeClass::As_Reference(cellptr->Smudge)
-                  .Draw_It(RenderBuffer.view(), x * CELL_PIXEL_W,
-                           y * CELL_PIXEL_H, cellptr->SmudgeData);
+                  .Draw_It(RenderBuffer.view(), x * game::kCellWidthPixels,
+                           y * game::kCellHeightPixels, cellptr->SmudgeData);
             }
 
             /*
@@ -895,14 +899,15 @@ void ChronalVortexClass::Render(PixelView& view) {
             if (cellptr->Overlay != OVERLAY_NONE) {
               const OverlayTypeClass& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
-              CC_Draw_Shape(RenderBuffer.view(), otype.Get_Image_Data(),
-                            cellptr->OverlayData,
-                            (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
-                            (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
-                            WINDOW_TACTICAL,
-                            engine::gfx::ShapeFlags::kCentered |
-                                engine::gfx::ShapeFlags::kGhost,
-                            {}, DisplayClass::UnitShadow);
+              CC_Draw_Shape(
+                  RenderBuffer.view(), otype.Get_Image_Data(),
+                  cellptr->OverlayData,
+                  (x * game::kCellWidthPixels) + (game::kCellWidthPixels / 2),
+                  (y * game::kCellHeightPixels) + (game::kCellHeightPixels / 2),
+                  WINDOW_TACTICAL,
+                  engine::gfx::ShapeFlags::kCentered |
+                      engine::gfx::ShapeFlags::kGhost,
+                  {}, DisplayClass::UnitShadow);
             }
           }
         }
@@ -931,8 +936,8 @@ void ChronalVortexClass::Render(PixelView& view) {
       *tactical map so *	we can blit it to the hid page.
       */
       // Position.Whole();
-      const Coordinate render_pos =
-          Coordinate::FromLeptons(xc * CELL_LEPTON_W, yc * CELL_LEPTON_H);
+      const Coordinate render_pos = Coordinate::FromLeptons(
+          xc * game::kCellWidthLeptons, yc * game::kCellHeightLeptons);
 
       const int xtac =
           Pixel_To_Lepton(Lepton_To_Pixel(TheMap().TacticalCoord.x()));

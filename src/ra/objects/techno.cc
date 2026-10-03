@@ -1328,7 +1328,7 @@ bool TechnoClass::In_Range(Target target, int which) const {
     const BuildingClass* building = target.AsBuilding();
     if (building != nullptr) {
       range += (building->Class->Width() + building->Class->Height()) *
-               (ICON_LEPTON_W / 4);
+               (game::kCellWidthLeptons / 4);
     }
 
     if (ra::Distance(Fire_Coord(which), target.AsCoordinate()) <= range) {
@@ -1365,7 +1365,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
     if (target->What_Am_I() == RTTI_BUILDING) {
       const auto* building = dynamic_cast<const BuildingClass*>(target);
       range += (building->Class->Width() + building->Class->Height()) *
-               (ICON_LEPTON_W / 4);
+               (game::kCellWidthLeptons / 4);
     }
 
     if (ra::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
@@ -1946,11 +1946,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   if (value) {
     //	if (rawval) {
 
-    value = value * 32000 / ((dist / ICON_LEPTON_W) + 1);
+    value = value * 32000 / ((dist / game::kCellWidthLeptons) + 1);
     //		value = (value * 32000) /
-    //(((dist/ICON_LEPTON_W)*(dist/ICON_LEPTON_W))+1);
+    //(((dist/game::kCellWidthLeptons)*(dist/game::kCellWidthLeptons))+1);
 
-    //		if (value < MAP_CELL_W*2) value = dist/ICON_LEPTON_W;
+    //		if (value < MAP_CELL_W*2) value = dist/game::kCellWidthLeptons;
     value = std::max(value, 1);
     return true;
   }
@@ -2251,9 +2251,10 @@ Target TechnoClass::Greatest_Threat(ThreatType method)  // const
   if (base::Any(method & (THREAT_AREA | THREAT_RANGE))) {
     const int range = Threat_Range(base::Any(method & THREAT_RANGE) ? 0 : 1);
 
-    int crange = range / ICON_LEPTON_W;
+    int crange = range / game::kCellWidthLeptons;
     if (range == 0) {
-      crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
+      crange =
+          std::max(Weapon_Range(0), Weapon_Range(1)) / game::kCellWidthLeptons;
       crange++;
     }
     const Cell cell = Cell::Containing(Fire_Coord(0));

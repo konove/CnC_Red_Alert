@@ -127,7 +127,7 @@ bool FuseClass::Fuse_Checkup(Coordinate newlocation) {
     if (proximity < 0x0010) {
       return true;
     }
-    if (proximity < ICON_LEPTON_W && proximity > Proximity) {
+    if (proximity < game::kCellWidthLeptons && proximity > Proximity) {
       return true;
     }
     Proximity = static_cast<int16_t>(proximity);

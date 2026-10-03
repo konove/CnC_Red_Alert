@@ -519,8 +519,8 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
   */
   if (*this == ANIM_LZ_SMOKE) {
     TheMap().Sight_From(Cell::Containing(coord),
-                        TheRules().DropZoneRadius / CELL_LEPTON_W, ThePlayer(),
-                        false);
+                        TheRules().DropZoneRadius / game::kCellWidthLeptons,
+                        ThePlayer(), false);
   }
 
   Loops = static_cast<unsigned char>(std::max(loop, 1) * Class->Loops);
@@ -1135,8 +1135,8 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, Cell cell) {
     rawdamage = TheRules().AtomDamage / 5;
   }
 
-  Wide_Area_Damage(cell.Center(), radius * CELL_LEPTON_W, rawdamage, building,
-                   WARHEAD_FIRE);
+  Wide_Area_Damage(cell.Center(), radius * game::kCellWidthLeptons, rawdamage,
+                   building, WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (TheSession().Type == GAME_NORMAL) {
     ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);

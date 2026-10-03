@@ -162,8 +162,8 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   }
 
   const WarheadTypeClass* whead = &Warheads.at(warhead);
-  const int range =
-      ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
+  const int range = game::kCellWidthLeptons +
+                    (game::kCellWidthLeptons / 2);  // Damage effect radius.
   const Cell cell = Cell::Containing(coord);  // Cell number under explosion.
   if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return;

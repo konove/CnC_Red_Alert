@@ -449,10 +449,11 @@ static const BuildingTypeClass ClassWeapon(
                          // structure.
     "WEAP",              // NAME:			Short name of the structure.
     game::FACING_NONE,   // Foundation direction from center of building.
-    Coordinate::FromLeptons(CELL_LEPTON_W + (CELL_LEPTON_W / 2),
-                            CELL_LEPTON_H),  // Exit point for produced units.
-    REMAP_ALTERNATE,                         // Sidebar remap logic.
-    0x0000,                                  //	Vertical offset.
+    Coordinate::FromLeptons(
+        game::kCellWidthLeptons + (game::kCellWidthLeptons / 2),
+        game::kCellHeightLeptons),  // Exit point for produced units.
+    REMAP_ALTERNATE,                // Sidebar remap logic.
+    0x0000,                         //	Vertical offset.
     0x0000,          // Primary weapon offset along turret centerline.
     0x0000,          // Primary weapon lateral offset along turret centerline.
     false,           // Is this building a fake (decoy?)
@@ -480,12 +481,13 @@ static const BuildingTypeClass ClassShipYard(
     TXT_SHIP_YARD,      // NAME:			Short name of the structure.
     "SYRD",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_Coord(22 + (CELL_PIXEL_W / 2),
-              (CELL_PIXEL_H * 2) -
-                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
-    REMAP_ALTERNATE,                    // Sidebar remap logic.
-    0x0000,                             //	Vertical offset.
-    0x0000,           // Primary weapon offset along turret centerline.
+    XYP_Coord(22 + (game::kCellWidthPixels / 2),
+              (game::kCellHeightPixels * 2) -
+                  (game::kCellHeightPixels /
+                   2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,     // Sidebar remap logic.
+    0x0000,              //	Vertical offset.
+    0x0000,              // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     false,            // Is this building a fake (decoy?)
     false,            // Animation rate is regulated for constant speed?
@@ -512,12 +514,13 @@ static const BuildingTypeClass ClassSubPen(
     TXT_SUB_PEN,        // NAME:			Short name of the structure.
     "SPEN",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_Coord(22 + (CELL_PIXEL_W / 2),
-              (CELL_PIXEL_H * 2) -
-                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
-    REMAP_ALTERNATE,                    // Sidebar remap logic.
-    0x0000,                             //	Vertical offset.
-    0x0000,           // Primary weapon offset along turret centerline.
+    XYP_Coord(22 + (game::kCellWidthPixels / 2),
+              (game::kCellHeightPixels * 2) -
+                  (game::kCellHeightPixels /
+                   2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,     // Sidebar remap logic.
+    0x0000,              //	Vertical offset.
+    0x0000,              // Primary weapon offset along turret centerline.
     0x0000,           // Primary weapon lateral offset along turret centerline.
     false,            // Is this building a fake (decoy?)
     false,            // Animation rate is regulated for constant speed?
@@ -785,8 +788,8 @@ static const BuildingTypeClass ClassFakeWeapon(
     TXT_FAKE_WEAP,      // NAME:			Short name of the structure.
     "WEAF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_Coord(10 + (CELL_PIXEL_W / 2),
-              (CELL_PIXEL_H * 3) - (CELL_PIXEL_H / 2) -
+    XYP_Coord(10 + (game::kCellWidthPixels / 2),
+              (game::kCellHeightPixels * 3) - (game::kCellHeightPixels / 2) -
                   21),  // Exit point for produced units.
     REMAP_ALTERNATE,    // Sidebar remap logic.
     0x0000,             //	Vertical offset.
@@ -1303,12 +1306,13 @@ static const BuildingTypeClass ClassFakeShipYard(
     TXT_FAKE_YARD,      // NAME:			Short name of the structure.
     "SYRF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_Coord(22 + (CELL_PIXEL_W / 2),
-              (CELL_PIXEL_H * 2) -
-                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
-    REMAP_ALTERNATE,                    // Sidebar remap logic.
-    0x0000,                             //	Vertical offset.
-    0x0000,          // Primary weapon offset along turret centerline.
+    XYP_Coord(22 + (game::kCellWidthPixels / 2),
+              (game::kCellHeightPixels * 2) -
+                  (game::kCellHeightPixels /
+                   2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,     // Sidebar remap logic.
+    0x0000,              //	Vertical offset.
+    0x0000,              // Primary weapon offset along turret centerline.
     0x0000,          // Primary weapon lateral offset along turret centerline.
     true,            // Is this building a fake (decoy?)
     false,           // Animation rate is regulated for constant speed?
@@ -1335,12 +1339,13 @@ static const BuildingTypeClass ClassFakeSubPen(
     TXT_FAKE_PEN,       // NAME:			Short name of the structure.
     "SPEF",             // NAME:			Short name of the structure.
     game::FACING_NONE,  // Foundation direction from center of building.
-    XYP_Coord(22 + (CELL_PIXEL_W / 2),
-              (CELL_PIXEL_H * 2) -
-                  (CELL_PIXEL_H / 2)),  // Exit point for produced units.
-    REMAP_ALTERNATE,                    // Sidebar remap logic.
-    0x0000,                             //	Vertical offset.
-    0x0000,          // Primary weapon offset along turret centerline.
+    XYP_Coord(22 + (game::kCellWidthPixels / 2),
+              (game::kCellHeightPixels * 2) -
+                  (game::kCellHeightPixels /
+                   2)),  // Exit point for produced units.
+    REMAP_ALTERNATE,     // Sidebar remap logic.
+    0x0000,              //	Vertical offset.
+    0x0000,              // Primary weapon offset along turret centerline.
     0x0000,          // Primary weapon lateral offset along turret centerline.
     true,            // Is this building a fake (decoy?)
     false,           // Animation rate is regulated for constant speed?
@@ -3410,9 +3415,9 @@ void BuildingTypeClass::Init(TheaterType theater) {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Dimensions(int& width, int& height) const {
-  width = Width() * ICON_PIXEL_W;
+  width = Width() * game::kCellWidthPixels;
   width -= width / 5;
-  height = Height() * ICON_PIXEL_H;
+  height = Height() * game::kCellHeightPixels;
   height -= height / 5;
 }
 
@@ -3628,7 +3633,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Max_Pips() const {
-  const int maxpips = Width() * ICON_PIXEL_W / 4;
+  const int maxpips = Width() * game::kCellWidthPixels / 4;
   return std::clamp(Capacity / 100, 0, maxpips);
 }
 

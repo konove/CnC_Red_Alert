@@ -402,7 +402,7 @@ void GScreenClass::Render() {
     */
     if (TheSession().messages().Num_Messages() > 0) {
       TheSession().messages().Set_Width(
-          Lepton_To_Cell(TheMap().TacLeptonWidth) * ICON_PIXEL_W);
+          Lepton_To_Cell(TheMap().TacLeptonWidth) * game::kCellWidthPixels);
     }
     TheSession().messages().Draw(view);
 

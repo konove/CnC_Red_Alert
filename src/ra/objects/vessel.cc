@@ -1057,8 +1057,8 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
       Coordinate coord = Center_Coord();
       if (obj != nullptr) {
         int totaldist = ra::Distance(coord, obj->Center_Coord());
-        while (totaldist > CELL_LEPTON_W) {
-          coord = Coord_Move(coord, dir, CELL_LEPTON_W);
+        while (totaldist > game::kCellWidthLeptons) {
+          coord = Coord_Move(coord, dir, game::kCellWidthLeptons);
           if ((TheMap().at(coord).Land_Type() != LAND_WATER) &&
               (!isbridgetarget)) {
             return game::FIRE_RANGE;
@@ -1071,7 +1071,7 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
             return game::FIRE_RANGE;
           }
-          totaldist -= CELL_LEPTON_W;
+          totaldist -= game::kCellWidthLeptons;
         }
       }
     }
@@ -1766,7 +1766,8 @@ int VesselClass::Mission_Unload() {
               if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                 TheWorld().scenario_init()++;
                 passenger->Unlimbo(
-                    Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
+                    Coord_Move(Coord, newface, game::kCellWidthLeptons / 2),
+                    newface);
                 TheWorld().scenario_init()--;
                 passenger->Assign_Mission(MISSION_MOVE);
                 passenger->Assign_Destination(Target::FromCell(newcell));

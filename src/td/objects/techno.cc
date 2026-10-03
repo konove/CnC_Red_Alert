@@ -1052,7 +1052,7 @@ bool TechnoClass::In_Range(Target target, int which) const {
     const BuildingClass* building = target.AsBuilding();
     if (building) {
       range += (building->Class->Width() + building->Class->Height()) *
-               (ICON_LEPTON_W / 4);
+               (game::kCellWidthLeptons / 4);
     }
     if (td::Distance(Fire_Coord(which), target.AsCoordinate()) <= range) {
       return true;
@@ -1086,7 +1086,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
     if (target->What_Am_I() == RTTI_BUILDING) {
       const auto* building = dynamic_cast<const BuildingClass*>(target);
       range += (building->Class->Width() + building->Class->Height()) *
-               (ICON_LEPTON_W / 4);
+               (game::kCellWidthLeptons / 4);
     }
 
     if (td::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
@@ -1333,14 +1333,17 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	Lessen threat as a factor of distance.
   */
   if (rawval) {
-    value = (value * 32000) /
-            (((dist / ICON_LEPTON_W) * (dist / ICON_LEPTON_W)) + 1);
+    value =
+        (value * 32000) /
+        (((dist / game::kCellWidthLeptons) * (dist / game::kCellWidthLeptons)) +
+         1);
 
     // value = Fixed_To_Cardinal(value, Cardinal_To_Fixed(MAP_CELL_W*2,
-    // (MAP_CELL_W*2) - (dist/ICON_LEPTON_W))); value = std::max(value, 2);
+    // (MAP_CELL_W*2) - (dist/game::kCellWidthLeptons))); value =
+    // std::max(value, 2);
 
     if (value < MAP_CELL_W * 2) {
-      value = dist / ICON_LEPTON_W;
+      value = dist / game::kCellWidthLeptons;
     }
     value = std::max(value, 1);
     return (true);
@@ -1354,7 +1357,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	Lessen threat as a factor of distance.
   */
   int modifier = dist;
-  const int crange = range / ICON_LEPTON_W;
+  const int crange = range / game::kCellWidthLeptons;
   if (crange) {
     modifier /= crange;
   }
@@ -1499,9 +1502,10 @@ Target TechnoClass::Greatest_Threat(ThreatType method) const {
     //		if (!(method & THREAT_RANGE)) range *= 2;
     //		range = Bound(range, 0x0100, 0x1400);			// Limit
     // maximum scan distance.
-    int crange = range / ICON_LEPTON_W;
+    int crange = range / game::kCellWidthLeptons;
     if (range == 0) {
-      crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
+      crange =
+          std::max(Weapon_Range(0), Weapon_Range(1)) / game::kCellWidthLeptons;
       crange++;
     }
     const Cell cell = Cell::Containing(Fire_Coord(0));

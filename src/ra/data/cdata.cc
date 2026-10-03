@@ -2080,11 +2080,11 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
   const int h = std::clamp(static_cast<int>(Height), 1, 8);
   const bool scale = (w > 3 || h > 3);  // Should the template be half sized?
   if (scale) {
-    x -= (w * ICON_PIXEL_W) / 4;
-    y -= (h * ICON_PIXEL_H) / 4;
+    x -= (w * game::kCellWidthPixels) / 4;
+    y -= (h * game::kCellHeightPixels) / 4;
   } else {
-    x -= (w * ICON_PIXEL_W) / 2;
-    y -= (h * ICON_PIXEL_H) / 2;
+    x -= (w * game::kCellWidthPixels) / 2;
+    y -= (h * game::kCellHeightPixels) / 2;
   }
   x += base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
   y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
@@ -2099,14 +2099,16 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
                                           WindowRect(WINDOW_MAIN));
       if (scale) {
         TheScreen().hidden_view().Scale(
-            view, 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
-            y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2);
+            view, 0, 0, x + ((index % w) * (game::kCellWidthPixels / 2)),
+            y + ((index / w) * (game::kCellHeightPixels / 2)),
+            game::kCellWidthPixels, game::kCellHeightPixels,
+            game::kCellWidthPixels / 2, game::kCellHeightPixels / 2);
 
       } else {
         TheScreen().hidden_view().BlitTo(
-            view, 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
-            y + ((index / w) * (ICON_PIXEL_H)), ICON_PIXEL_W, ICON_PIXEL_H);
+            view, 0, 0, x + ((index % w) * game::kCellWidthPixels),
+            y + ((index / w) * game::kCellHeightPixels), game::kCellWidthPixels,
+            game::kCellHeightPixels);
       }
     }
   }
