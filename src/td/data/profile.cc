@@ -43,7 +43,6 @@
 
 #include "td/data/profile.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <string>
@@ -54,30 +53,8 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/profile_buffer.h"
-#include "td/core/defines.h"
 
 namespace td {
-
-bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
-  config->DigitCard = WWGetPrivateProfileHex("Sound", "Card", profile);
-  config->IRQ = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Sound", "IRQ", 0, profile));
-  config->DMA = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Sound", "DMA", 0, profile));
-  config->Port = WWGetPrivateProfileHex("Sound", "Port", profile);
-  config->BitsPerSample = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Sound", "BitsPerSample", 0, profile));
-  config->Channels = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Sound", "Channels", 0, profile));
-  config->Reverse = WWGetPrivateProfileInt("Sound", "Reverse", 0, profile) != 0;
-  config->Speed = static_cast<unsigned>(
-      WWGetPrivateProfileInt("Sound", "Speed", 0, profile));
-  WWGetPrivateProfileString(
-      "Language", "Language", nullptr,
-      std::span(config->Language).first(static_cast<std::size_t>(3)), profile);
-
-  return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
-}
 
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {

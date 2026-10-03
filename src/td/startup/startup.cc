@@ -47,13 +47,14 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
-#include <span>
-#include <string>
+#include <span>    // IWYU pragma: keep (used only with an entry point)
+#include <string>  // IWYU pragma: keep (used only with an entry point)
 #include <string_view>
 
 #include "absl/base/no_destructor.h"
-#include "base/buffer.h"
+#include "base/buffer.h"  // IWYU pragma: keep (used only with an entry point)
 #include "engine/audio/audio_mixer.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
@@ -63,7 +64,7 @@
 #include "td/assets/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/data/profile.h"
+#include "td/data/ini_io.h"
 #include "td/net/network.h"
 #include "td/net/nullmgr.h"
 #include "td/net/session.h"
@@ -351,31 +352,30 @@ static int Run(int argc, char* argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      std::string profile;
+      engine::file::IniFile conquer_ini;
       if (const auto config_read = OpenDiskFile("CONQUER.INI")) {
-        profile = engine::file::ReadProfileText(*config_read);
+        LoadIniText(engine::file::ReadProfileText(*config_read), conquer_ini);
       }
-      const char* buffer = profile.c_str();
 
       /*
       **	Check for forced intro movie run disabling. If the conquer
       **	configuration file says "no", then don't run the intro.
       */
       char tempbuff[5];
-      WWGetPrivateProfileString(
+      conquer_ini.GetString(
           "Intro", "PlayIntro", "Yes",
-          std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
+          std::span(tempbuff).first(static_cast<std::size_t>(4)));
       TheSpecial().IsFromInstall = !absl::EqualsIgnoreCase(tempbuff, "No") &&
                                    !TheGameState().spawned_from_chat();
       ThePalettes().set_slow_palette(
-          WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
+          conquer_ini.GetInt("Options", "SlowPalette", 1) != 0);
 
 #ifdef DEMO
       /*
       **	Check for override directory path for CD searches.
       */
       std::array<char, 128> cd_path{};
-      WWGetPrivateProfileString("CD", "Path", ".", cd_path.data(), buffer);
+      conquer_ini.GetString("CD", "Path", ".", cd_path);
       TheGameState().override_path() = cd_path.data();
 #endif
 
@@ -383,8 +383,8 @@ static int Run(int argc, char* argv[])
       ** Regardless of whether we should run it or not, here we're
       ** gonna change it to say "no" in the future.
       */
-      WWWritePrivateProfileString("Intro", "PlayIntro", "No", profile);
-      engine::file::WriteProfileFile("CONQUER.INI", profile);
+      conquer_ini.PutString("Intro", "PlayIntro", "No");
+      SaveIniFile("CONQUER.INI", conquer_ini);
 
 #ifdef _WIN32
       CCDebugString(
@@ -502,19 +502,22 @@ void ShutDown() {
  *=============================================================================================*/
 void Read_Setup_Options(ByteStream& config_file,
                         const StartupOptions& options) {
-  const std::string profile = engine::file::ReadProfileText(config_file);
-  const char* buffer = profile.c_str();
+  engine::file::IniFile ini;
+  LoadIniText(engine::file::ReadProfileText(config_file), ini);
+  ApplySetupOptions(ini, options);
+}
 
+void ApplySetupOptions(const engine::file::IniFile& ini,
+                       const StartupOptions& options) {
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.
   TheScreen().set_mode_height(
-      options.tall_screen ||
-              WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) != 0
+      options.tall_screen || ini.GetInt("Options", "Resolution", 0) != 0
           ? 480
           : Screen::kHeight);
   TheGameState().compatibility_v107() =
       options.compatibility_v107 ||
-      WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
+      ini.GetInt("Options", "Compatibility", 0) != 0;
 
   /*
   ** See if an alternative socket number has been specified
@@ -522,23 +525,19 @@ void Read_Setup_Options(ByteStream& config_file,
   if (options.socket.has_value()) {
     TheNetwork().ipx().Set_Socket(*options.socket);
   } else {
-    const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
+    const int socket = ini.GetInt("Options", "Socket", 0);
     if (socket > 0 && socket < 0x4000) {
       TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
   }
 
   /*
-  ** See if a destination network has been specified
+  ** See if a destination network has been specified. A missing or empty
+  ** DestNet gives the empty text, which ParseDestNet() rejects.
   */
   std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
-    char netbuf[512];
-    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
-    if (WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
-                                  buffer) != nullptr) {
-      bridge_net = ParseDestNet(netbuf);
-    }
+    bridge_net = ParseDestNet(ini.GetString("Options", "DestNet", ""));
   }
   if (bridge_net.has_value()) {
     TheNetwork().is_bridge() = 1;

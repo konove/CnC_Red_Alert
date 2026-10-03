@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "td/core/defines.h"  // NewConfigType.
 
 namespace td {
 
@@ -29,8 +28,6 @@ const char* WWGetPrivateProfileString(
 
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile);
-
-bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
 
 }  // namespace td
 
