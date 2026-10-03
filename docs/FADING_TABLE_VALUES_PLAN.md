@@ -43,7 +43,8 @@ an empty span that no caller takes and that leaks. Return the tables as values i
    `new[]` branch. The `DisplayClass` and sidebar statics and the control tables become
    `std::array`s. The vortex builder returns a `FadingTable` too, in its own commit.
 3. **RA picture.** `std::vector<uint8_t> LoadPicture(std::string_view name)` returns the decoded
-   pixels; `init.cc` reads the remap colors from them instead of going through the screen pages.
+   pixels, over `ReadPicture(ByteStream&)` for tests; `init.cc` reads the remap colors from them
+   instead of going through the screen pages.
 4. **TD.** Same as step 2 for `Conquer_Build_Fading_Table()` and the `DisplayClass` statics; delete
    the uncalled translucent builders (and `TLucentType` if nothing else uses it). Decide
    `Load_Uncompress()` case by case: its callers draw the picture on the screen page, so the page
@@ -65,6 +66,6 @@ One commit per step, each verified with the plain build, `ctest`, the strict bui
 | Step | Commit   | Notes                                                       |
 | ---- | -------- | ----------------------------------------------------------- |
 | 1    | 51ebbc35 | TD's uncalled translucent builders went first, in 17243647. |
-| 2    | 9ac94ea6 | Vortex builder in the next commit.                          |
+| 2    | 9ac94ea6 | Vortex builder in 64c902c6.                                 |
 | 3    |          |                                                             |
 | 4    |          |                                                             |

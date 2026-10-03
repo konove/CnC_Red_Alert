@@ -1,15 +1,19 @@
-// Tests the fading and translucency tables jshell builds.
+// Tests jshell's picture reader and the fading and translucency tables it
+// builds.
 
 #include "ra/core/jshell.h"
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
 #include "ra/assets/palette.h"
 
@@ -18,6 +22,47 @@ namespace ra {
 namespace {
 
 using engine::gfx::PaletteColor;
+
+// An uncompressed picture of `pixels` whose header claims `claimed` of them,
+// with a two-byte palette ahead of the data.
+std::vector<std::byte> Picture(const std::vector<uint8_t>& pixels,
+                               uint8_t claimed) {
+  // The stored size counts the 8-byte header, the palette and the data.
+  const auto stored = static_cast<uint8_t>(8 + 2 + pixels.size());
+  std::vector<uint8_t> bytes = {stored,  0,
+                                0,                 // NOCOMPRESS
+                                0,                 // pad
+                                claimed, 0, 0, 0,  // uncompressed_bytes
+                                2,       0,        // skip_bytes
+                                63,      63};      // palette
+  bytes.insert(bytes.end(), pixels.begin(), pixels.end());
+  std::vector<std::byte> out(bytes.size());
+  std::ranges::transform(bytes, out.begin(),
+                         [](uint8_t byte) { return std::byte{byte}; });
+  return out;
+}
+
+TEST(ReadPictureTest, SkipsThePalette) {
+  const std::vector<std::byte> file = Picture({9, 8, 7}, 3);
+  MemoryStream stream(file);
+
+  EXPECT_EQ(ReadPicture(stream), (std::vector<uint8_t>{9, 8, 7}));
+}
+
+TEST(ReadPictureTest, RejectsATruncatedFile) {
+  std::vector<std::byte> file = Picture({9, 8, 7}, 3);
+  file.pop_back();
+  MemoryStream stream(file);
+
+  EXPECT_TRUE(ReadPicture(stream).empty());
+}
+
+TEST(ReadPictureTest, RejectsMoreDataThanTheBlockHolds) {
+  const std::vector<std::byte> file = Picture({9, 8, 7}, 4);
+  MemoryStream stream(file);
+
+  EXPECT_TRUE(ReadPicture(stream).empty());
+}
 
 TEST(MakeTranslucencyTableTest, LooksUpEachSourceColorsFade) {
   constexpr auto kControl =

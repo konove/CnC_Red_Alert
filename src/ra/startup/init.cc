@@ -86,6 +86,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/fixed.h"
+#include "base/numeric.h"
 #include "base/random.h"
 #include "base/strings/number_parse.h"
 #include "base/types.h"
@@ -1708,12 +1709,16 @@ static void Init_Color_Remaps() {
   ** after that are the remap colors.
   */
 
-  TheScreen().sys_mem_page().view().Clear();
-  Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
-               TheScreen().sys_mem_page().bytes());
-  TheScreen().sys_mem_page().view().BlitTo(TheScreen().hidden_view());
+  const std::vector<uint8_t> picture = LoadPicture("PALETTE.CPS");
+  // A picture that is missing or short reads as color 0, as the cleared page
+  // it used to be decoded onto did.
+  const auto pixel = [&picture](int x, int y) -> uint8_t {
+    const auto offset = base::ToSize((y * kPictureWidth) + x);
+    return offset < picture.size() ? base::At(picture, offset) : 0;
+  };
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
+    const int row = static_cast<int>(pcolor);
     auto& ptr = ThePalettes().color_remaps().at(pcolor).RemapTable;
 
     for (int color = 0; color < 256; color++) {
@@ -1721,46 +1726,30 @@ static void Init_Color_Remaps() {
     }
 
     for (int index = 0; index < 16; index++) {
-      base::At(ptr, TheScreen().hidden_view().GetPixel(index, 0)) =
-          static_cast<unsigned char>(TheScreen().hidden_view().GetPixel(
-              index, static_cast<int>(pcolor)));
+      base::At(ptr, pixel(index, 0)) = pixel(index, row);
     }
     for (int index = 0; index < 6; index++) {
       base::At(ThePalettes().color_remaps().at(pcolor).FontRemap, 10 + index) =
-          static_cast<unsigned char>(TheScreen().hidden_view().GetPixel(
-              2 + index, static_cast<int>(pcolor)));
+          pixel(2 + index, row);
     }
     ThePalettes().color_remaps().at(pcolor).BrightColor = kWhite;
     //		ColorRemaps[pcolor].BrightColor = hidden_view.GetPixel(1,
     // static_cast<int>(pcolor));
-    ThePalettes().color_remaps().at(pcolor).Color = static_cast<unsigned char>(
-        TheScreen().hidden_view().GetPixel(4, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Color = pixel(4, row);
 
-    ThePalettes().color_remaps().at(pcolor).Shadow = static_cast<unsigned char>(
-        TheScreen().hidden_view().GetPixel(10, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Background =
-        static_cast<unsigned char>(
-            TheScreen().hidden_view().GetPixel(9, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Corners =
-        static_cast<unsigned char>(
-            TheScreen().hidden_view().GetPixel(7, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Highlight =
-        static_cast<unsigned char>(
-            TheScreen().hidden_view().GetPixel(4, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Bright = static_cast<unsigned char>(
-        TheScreen().hidden_view().GetPixel(0, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Underline =
-        static_cast<unsigned char>(
-            TheScreen().hidden_view().GetPixel(0, static_cast<int>(pcolor)));
-    ThePalettes().color_remaps().at(pcolor).Bar = static_cast<unsigned char>(
-        TheScreen().hidden_view().GetPixel(6, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Shadow = pixel(10, row);
+    ThePalettes().color_remaps().at(pcolor).Background = pixel(9, row);
+    ThePalettes().color_remaps().at(pcolor).Corners = pixel(7, row);
+    ThePalettes().color_remaps().at(pcolor).Highlight = pixel(4, row);
+    ThePalettes().color_remaps().at(pcolor).Bright = pixel(0, row);
+    ThePalettes().color_remaps().at(pcolor).Underline = pixel(0, row);
+    ThePalettes().color_remaps().at(pcolor).Bar = pixel(6, row);
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ThePalettes().color_remaps().at(pcolor).Box = static_cast<unsigned char>(
-        TheScreen().hidden_view().GetPixel(4, static_cast<int>(pcolor)));
+    ThePalettes().color_remaps().at(pcolor).Box = pixel(4, row);
   }
 
   /*
@@ -1770,10 +1759,8 @@ static void Init_Color_Remaps() {
     base::At(ThePalettes().grey_scheme().RemapTable, color) =
         static_cast<unsigned char>(color);
   }
-  // The palette index in the low byte of the pixel read from the grey row.
-  const auto GreyPixel = [](int x) {
-    return static_cast<uint8_t>(
-        TheScreen().hidden_view().GetPixel(x, static_cast<int>(PCOLOR_GREY)));
+  const auto GreyPixel = [&pixel](int x) {
+    return pixel(x, static_cast<int>(PCOLOR_GREY));
   };
   for (int index = 0; index < 6; index++) {
     base::At(ThePalettes().grey_scheme().FontRemap, 10 + index) =
@@ -1821,8 +1808,7 @@ static void Init_Color_Remaps() {
   */
   for (int colr = 0; colr < 16; colr++) {
     base::At(ThePalettes().color_remaps().at(PCOLOR_TYPE).FontRemap, colr) =
-        static_cast<unsigned char>(TheScreen().hidden_view().GetPixel(
-            colr, static_cast<int>(PCOLOR_TYPE)));
+        pixel(colr, static_cast<int>(PCOLOR_TYPE));
   }
 
   ThePalettes().color_remaps().at(PCOLOR_TYPE).Shadow = 11;

@@ -40,23 +40,23 @@
 
 #include "ra/core/jshell.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
 #include "engine/codec/compressed_block.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
-#include "engine/stream/seek_origin.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
@@ -89,62 +89,34 @@ void Set_Window(int window, int x, int y, int w, int h) {
   base::At(base::At(WindowList, window), kWindowY) = y;
 }
 
-namespace {
-
-// Reads one compressed picture from `file` and uncompresses it into
-// `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer),
-// skipping the palette it may carry. Returns the uncompressed size, 0 on
-// failure.
-int32_t LoadUncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                       std::span<uint8_t> dest_buff) {
-  const auto decode = [&] -> int32_t {
-    uint16_t stored_size = 0;
-    CompressedBlockHeader header{};
-    if (!file.ReadObject(stored_size) || !file.ReadObject(header) ||
-        stored_size < sizeof(header)) {
-      return 0;
-    }
-    std::size_t size = stored_size - sizeof(header);
-    if (header.skip_bytes < 0 || std::cmp_greater(header.skip_bytes, size)) {
-      return 0;
-    }
-    if (header.skip_bytes != 0) {
-      size -= base::ToSize(header.skip_bytes);
-      file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
-      header.skip_bytes = 0;
-    }
-    auto source = uncomp_buff;
-    const auto dest = dest_buff;
-    const auto packet_size = size + sizeof(header);
-    if (packet_size > source.size()) {
-      return 0;
-    }
-    if (source.data() == dest.data()) {
-      source = source.last(packet_size);
-    } else {
-      source = source.first(packet_size);
-    }
-    base::CopyBytes(std::as_writable_bytes(source), base::ObjectBytes(header),
-                    sizeof(header));
-    if (file.Read(source.subspan(sizeof(header))) !=
-        static_cast<base::ssize>(size)) {
-      return 0;
-    }
-    return static_cast<int32_t>(
-        UncompressBlock(std::as_bytes(source), std::as_writable_bytes(dest)));
-  };
-  return decode();
+std::vector<uint8_t> ReadPicture(ByteStream& file) {
+  // The file holds the block's size, then the block: its header, the skipped
+  // area holding the palette, and the data. UncompressBlock() skips the area.
+  uint16_t block_size = 0;
+  CompressedBlockHeader header{};
+  if (!file.ReadObject(block_size) || !file.ReadObject(header) ||
+      block_size < sizeof(header) ||
+      std::cmp_greater(header.uncompressed_bytes,
+                       kPictureWidth * kPictureHeight)) {
+    return {};
+  }
+  std::vector<std::byte> block(block_size);
+  std::ranges::copy(base::ObjectBytes(header), block.begin());
+  const auto rest = std::span(block).subspan(sizeof(header));
+  if (file.Read(rest) != std::ssize(rest)) {
+    return {};
+  }
+  std::vector<uint8_t> pixels(header.uncompressed_bytes);
+  if (UncompressBlock(block, std::as_writable_bytes(std::span(pixels))) !=
+      std::ssize(pixels)) {
+    pixels.clear();
+  }
+  return pixels;
 }
 
-}  // namespace
-
-int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf) {
-  const auto file = OpenGameFile(filename);
-  if (!file) {
-    return 0;
-  }
-  return LoadUncompress(*file, scratchbuf, destbuf) / 8000;
+std::vector<uint8_t> LoadPicture(std::string_view name) {
+  const auto file = OpenGameFile(name);
+  return file ? ReadPicture(*file) : std::vector<uint8_t>{};
 }
 
 FadingTable MakeFadingTable(const PaletteClass& palette, int color, int frac) {
