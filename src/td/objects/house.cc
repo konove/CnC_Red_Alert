@@ -156,7 +156,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/region.h"
 #include "td/ai/reinf.h"
 #include "td/ai/special.h"

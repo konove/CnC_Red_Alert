@@ -164,7 +164,7 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/reinf.h"
 #include "td/ai/special.h"
 #include "td/ai/teamtype.h"

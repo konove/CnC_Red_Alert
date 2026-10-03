@@ -77,7 +77,7 @@
 #include "engine/platform/timer.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
 #include "td/ai/teamtype.h"

@@ -117,7 +117,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/ui/input.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"

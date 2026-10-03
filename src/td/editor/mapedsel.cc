@@ -57,7 +57,7 @@
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"

@@ -4,7 +4,7 @@
 
 #include "base/numeric.h"
 #include "engine/stream/archive.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/core/defines.h"
 #include "td/map/layer.h"
 #include "td/saveload/serialize.h"

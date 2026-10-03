@@ -67,7 +67,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/object_heap.h"
 #include "game/ui/input.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"

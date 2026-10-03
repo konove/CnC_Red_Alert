@@ -61,7 +61,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"

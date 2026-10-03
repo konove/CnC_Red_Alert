@@ -72,7 +72,7 @@
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/trigger.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"

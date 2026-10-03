@@ -12,7 +12,7 @@
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "td/ai/base.h"
+#include "td/ai/prebuilt_base.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/editor/mapedit.h"
