@@ -43,6 +43,18 @@ option(STRICT_CHECKS "Enable clang-tidy and extra compiler warnings" ON)
 include(Speedup)
 
 # Fetch Abseil
+# Option to enable AddressSanitizer for debugging memory issues. It comes before
+# the dependencies so Abseil is instrumented too: under ASan its headers add
+# generation fields to the hash containers, and a library built without the
+# flag disagrees with the game about their layout.
+option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
+
+if (ENABLE_ASAN)
+    message(STATUS "AddressSanitizer enabled")
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+    add_link_options(-fsanitize=address)
+endif ()
+
 include(FetchContent)
 FetchContent_Declare(
         abseil-cpp
@@ -95,15 +107,6 @@ string(REGEX REPLACE "^channel = \"(.*)\"$" "\\1" RUST_TOOLCHAIN_CHANNEL
 set(Rust_TOOLCHAIN ${RUST_TOOLCHAIN_CHANNEL} CACHE STRING
         "The rustup toolchain (from rust-toolchain.toml)" FORCE)
 FetchContent_MakeAvailable(Corrosion)
-
-# Option to enable AddressSanitizer for debugging memory issues
-option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
-
-if (ENABLE_ASAN)
-    message(STATUS "AddressSanitizer enabled")
-    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
-    add_link_options(-fsanitize=address)
-endif ()
 
 if (STRICT_CHECKS)
     # Resolve the binary at configure time so a missing clang-tidy is one clear
