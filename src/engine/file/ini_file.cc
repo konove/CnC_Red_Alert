@@ -84,6 +84,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -337,6 +338,13 @@ bool IniFile::Save(ByteStream& file) const {
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool IniFile::Save(ByteSink& pipe) const {
+  WriteSections(pipe);
+  return pipe.Finish();
+}
+
+// Writes the sections without finishing the sink, so SaveWithDigest can
+// append a second database's sections before the one Finish().
+void IniFile::WriteSections(ByteSink& pipe) const {
   const auto put = [&pipe](std::string_view text) {
     pipe.Write(std::as_bytes(std::span(text)));
   };
@@ -366,7 +374,6 @@ bool IniFile::Save(ByteSink& pipe) const {
     */
     put("\r\n");
   }
-  return pipe.Finish();
 }
 
 /***********************************************************************************************
@@ -1130,7 +1137,10 @@ bool IniFile::SaveWithDigest(ByteSink& pipe) const {
   IniFile digest_section;
   digest_section.Put_UUBlock("Digest", base::ObjectBytes(Digest),
                              static_cast<int>(Digest.size()));
-  return Save(pipe) && digest_section.Save(pipe);
+  DCHECK(!Section_Present("Digest"));
+  WriteSections(pipe);
+  digest_section.WriteSections(pipe);
+  return pipe.Finish();
 }
 
 int IniFile::Get_Unique_ID() const {

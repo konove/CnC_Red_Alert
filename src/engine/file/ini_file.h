@@ -94,7 +94,8 @@ class IniFile {
   IniLoadResult LoadVerified(ByteSource& file);
   // Saves the database followed by a [Digest] section holding the SHA-1 of the
   // data. The database itself is left unchanged; it must not already hold a
-  // [Digest] section, which LoadVerified() always removes.
+  // [Digest] section (LoadVerified() removes one that decodes to a non-empty
+  // block).
   bool SaveWithDigest(ByteStream& file) const;
   bool SaveWithDigest(ByteSink& pipe) const;
 
@@ -227,6 +228,8 @@ class IniFile {
       SectionIndex;  // By CRC of the name.
 
  private:
+  // Writes every section to `pipe` without finishing it.
+  void WriteSections(ByteSink& pipe) const;
   void Calculate_Message_Digest() const;
   void Invalidate_Message_Digest() { IsDigestPresent = false; }
 

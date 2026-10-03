@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "absl/strings/str_cat.h"
+#include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
@@ -152,6 +153,71 @@ TEST(IniFileTest, LoadVerifiedAcceptsDataWithoutADigest) {
   SpanSource source(bytes);
   EXPECT_EQ(loaded.LoadVerified(source), IniLoadResult::kLoaded);
   EXPECT_EQ(loaded.Get_Int("S", "K", 0), 1);
+}
+
+// Records the order of calls reaching the end of a chain.
+class RecordingSink : public ByteSink {
+ public:
+  RecordingSink() = default;
+  ~RecordingSink() override;
+  RecordingSink(const RecordingSink&) = delete;
+  RecordingSink& operator=(const RecordingSink&) = delete;
+  RecordingSink(RecordingSink&&) = delete;
+  RecordingSink& operator=(RecordingSink&&) = delete;
+  bool Write(std::span<const std::byte> bytes) override {
+    if (finishes_ > 0) {
+      ++writes_after_finish_;
+    }
+    bytes_.insert(bytes_.end(), bytes.begin(), bytes.end());
+    return true;
+  }
+  bool Finish() override {
+    ++finishes_;
+    return true;
+  }
+  int finishes_ = 0;
+  int writes_after_finish_ = 0;
+  std::vector<std::byte> bytes_;
+};
+
+RecordingSink::~RecordingSink() = default;
+
+TEST(IniFileTest, SaveWithDigestFinishesTheSinkOnce) {
+  IniFile ini;
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  RecordingSink sink;
+  ASSERT_TRUE(ini.SaveWithDigest(sink));
+  EXPECT_EQ(sink.finishes_, 1);
+  EXPECT_EQ(sink.writes_after_finish_, 0);
+  EXPECT_FALSE(sink.bytes_.empty());
+}
+
+// The wire format and the unique ID of "[S] K=1" are pinned: the text was
+// produced by SaveWithDigest and the ID by Get_Unique_ID() before the parser
+// and writer changed.
+constexpr std::string_view kGoldenText =
+    "[S]\r\nK=1\r\n\r\n[Digest]\r\n1=0/u5ncnzgsS6A6G73V7Pib2M4ew=\r\n\r\n";
+constexpr int kGoldenUniqueId = -289688347;
+
+TEST(IniFileTest, GoldenDigestTextVerifies) {
+  IniFile ini;
+  SpanSource source(std::as_bytes(std::span(kGoldenText)));
+  EXPECT_EQ(ini.LoadVerified(source), IniLoadResult::kLoaded);
+  EXPECT_FALSE(ini.Section_Present("Digest"));
+  EXPECT_EQ(ini.Get_Int("S", "K", 0), 1);
+  EXPECT_EQ(ini.Get_Unique_ID(), kGoldenUniqueId);
+}
+
+TEST(IniFileTest, SaveWithDigestMatchesTheGoldenText) {
+  IniFile ini;
+  ASSERT_TRUE(ini.Put_Int("S", "K", 1));
+  RecordingSink sink;
+  ASSERT_TRUE(ini.SaveWithDigest(sink));
+  std::string text;
+  for (const std::byte byte : sink.bytes_) {
+    text.push_back(static_cast<char>(byte));
+  }
+  EXPECT_EQ(text, kGoldenText);
 }
 
 }  // namespace
