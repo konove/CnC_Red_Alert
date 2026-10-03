@@ -16,27 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\base.h_v   1.12   16 Oct 1995 16:46:38
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : BASE.H *
- *                                                                                             *
- *                   Programmer : Bill Randolph
- **
- *                                                                                             *
- *                   Start Date : 03/27/95 *
- *                                                                                             *
- *                  Last Update : March 27, 1995
- **
- *                                                                                             *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: The prebuilt base, the list of buildings a scenario tells the computer
+// to put up and to rebuild when they are destroyed.
 
 #ifndef CNC_RED_ALERT_TD_AI_BASE_H_
 #define CNC_RED_ALERT_TD_AI_BASE_H_
@@ -55,30 +36,37 @@ class ArchiveWriter;
 
 namespace td {
 
-/****************************************************************************
-** This class defines one "node" in the pre-built base list.  Each node
-** contains a type of building to build, and the COORD to build it at.
-*/
+// One entry of the prebuilt base: a type of building and the coordinate it is
+// placed at, which is the coordinate the placed building reports.
 class BaseNodeClass {
  public:
   BaseNodeClass() = default;
+  // Nodes are equal when they name the same building type at the same
+  // coordinate.
   bool operator==(const BaseNodeClass& node) const;
   bool operator!=(const BaseNodeClass& node) const;
+  // Always true: the nodes have no order.
   bool operator>(const BaseNodeClass& node);
 
-  StructType Type = STRUCT_NONE;
-  Coordinate Coord{};
+  StructType Type = STRUCT_NONE;  // STRUCT_NONE until a node is filled in.
+  Coordinate Coord{};             // Where the building is placed.
 };
 
-/****************************************************************************
-** This is the class that defines a pre-built base for the computer AI.
-** (Despite its name, this is NOT the "base" class for C&C's class hierarchy!)
-*/
+// The prebuilt base of a single-player scenario: the buildings the computer
+// house puts up, in list order, each at a fixed coordinate. A node is "built"
+// while a building of its type stands at its coordinate, so a building placed
+// by the scenario's [STRUCTURES] section fills its node from the start, and one
+// that is destroyed leaves a hole the house builds again. A scenario has at
+// most one; the World owns it. (Despite its name, this is not a base class of
+// anything.)
+//
+// Example:
+//   BaseClass& base = TheWorld().base();
+//   if (const BaseNodeClass* node = base.Next_Buildable()) {
+//     techno = &BuildingTypeClass::As_Reference(node->Type);
+//   }
 class BaseClass {
  public:
-  /**********************************************************************
-  ** Constructor/Destructor
-  */
   BaseClass() = default;
   virtual ~BaseClass();
   BaseClass(const BaseClass&) = delete;
@@ -86,59 +74,59 @@ class BaseClass {
   BaseClass(BaseClass&&) = delete;
   BaseClass& operator=(BaseClass&&) = delete;
 
-  /**********************************************************************
-  ** Initialization
-  */
+  // Empties the node list. The owner stays: Read_INI() always sets it.
   void Init() { Nodes.clear(); }
 
-  /**********************************************************************
-  ** The standard suite of load/save support routines
-  */
+  // Appends the nodes of the [Base] section of the scenario INI text in
+  // `buffer`, in the order the section numbers them. An entry is
+  // "NNN=TYPE,coordinate", NNN counting from 000 up to the section's Count; an
+  // entry that is missing or names no building type is skipped. The owner
+  // becomes the house opposing the [BASIC] Player: HOUSE_BAD against GoodGuy,
+  // HOUSE_GOOD against anyone else. Call Init() first: the list is not cleared.
   void Read_INI(char* buffer);
+
+  // Replaces the [Base] section of the INI text in `buffer` with this base's
+  // nodes. The owner is not written.
   void Write_INI(std::string& buffer);
+
+  // The name of the scenario INI section the base is stored in.
   static const char* INI_Name() { return "Base"; }
+
+  // Field-wise saved-game state; read and write share this field list. Defined
+  // in td/saveload/saveglobals.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  /**********************************************************************
-  ** Tells if the given node has been built or not
-  */
+  // Returns whether the building of node `index` stands on the map.
   bool Is_Built(int index);
 
-  /**********************************************************************
-  ** Returns a pointer to the object for the given node
-  */
+  // Returns the building that fills node `index`: one of the node's type at
+  // the node's coordinate, whichever house owns it. Returns nullptr if the node
+  // is a hole. `index` must be a valid index into Nodes.
   BuildingClass* Get_Building(int index);
 
-  /**********************************************************************
-  ** Tells if the given building ptr is a node in this base's list.
-  */
+  // Returns whether the base has a node for `obj`, which must not be nullptr.
   bool Is_Node(BuildingClass* obj);
 
-  /**********************************************************************
-  ** Returns a pointer to the requested node.
-  */
+  // Returns the first node with the type and coordinate of `obj`, which must
+  // not be nullptr, or nullptr if the base has none.
   BaseNodeClass* Get_Node(BuildingClass* obj) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // Returns node `index`, which must be a valid index into Nodes.
   BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return &base::At(Nodes, index);
   }
 
-  /**********************************************************************
-  ** Returns a pointer to the next "hole" in the Nodes list.
-  */
+  // Returns the first node that is not built: of type `type`, or of any type
+  // when `type` is STRUCT_NONE. Returns nullptr when every such node is built.
   BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
-  /**********************************************************************
-  ** This is the list of "nodes" that define the base.  Portions of this
-  ** list can be pre-built by simply saving those buildings in the INI
-  ** along with non-base buildings, so Is_Built will return true for them.
-  */
+  // The buildings of the base, in the order the house builds them. A node whose
+  // building is destroyed stays; one whose building type was sabotaged in the
+  // previous mission is removed when the scenario starts.
   std::vector<BaseNodeClass> Nodes;
 
-  /**********************************************************************
-  ** This is the house this base belongs to.
-  */
+  // The house that builds the base; HOUSE_NONE before a scenario is read.
   HousesType House = HOUSE_NONE;
 };
 
