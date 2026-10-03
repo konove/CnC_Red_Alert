@@ -117,7 +117,7 @@ class PrebuiltBase {
 
   // The house that builds the base; HOUSE_NONE if the scenario has none.
   [[nodiscard]] HousesType house() const { return house_; }
-  void set_house(HousesType house) { house_ = house; }
+  void set_house(const HousesType house) { house_ = house; }
 
  private:
   std::vector<BaseNode> nodes_;
