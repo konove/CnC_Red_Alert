@@ -49,7 +49,7 @@ class Region {
   // Field-wise saved-game state; read and write share this field list.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(Threat);
+    ar(threat_);
   }
 
   // Byte-wise comparisons, which order regions by the raw bytes of the threat
@@ -72,25 +72,25 @@ class Region {
   }
 
   // Forgets all threat in the region.
-  void Reset_Threat() { Threat = 0; }
+  void Reset_Threat() { threat_ = 0; }
 
   // Adds `threat` to the region, or subtracts it when `neg` is set. `threat`
   // is the magnitude, so callers pass it non-negative.
-  void Adjust_Threat(int threat, bool neg) {
+  void AdjustThreat(int threat, bool neg) {
     if (neg) {
-      Threat -= threat;
+      threat_ -= threat;
     } else {
-      Threat += threat;
+      threat_ += threat;
     }
   }
 
   // The region's current threat; 0 when no enemy object is in or next to it.
-  [[nodiscard]] int Threat_Value() const { return static_cast<int>(Threat); }
+  [[nodiscard]] int threat() const { return static_cast<int>(threat_); }
 
  protected:
   // Summed threat ratings; 0 for an empty region. Saved as 64 bits, though the
   // sum of a map's worth of ratings fits an int.
-  int64_t Threat = 0;
+  int64_t threat_ = 0;
 };
 
 }  // namespace ra

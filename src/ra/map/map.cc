@@ -1310,7 +1310,7 @@ int MapClass::Cell_Threat(Cell cell, HousesType house) {
   int threat =
       base::At(HouseClass::As_Pointer(house)->Regions,
                MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
-          .Threat_Value();
+          .threat();
   if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;
   }

@@ -2214,7 +2214,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
 
   for (int lp = 0; lp < 9; lp++) {
     base::At(Regions, region + base::At(_val, lp))
-        .Adjust_Threat(threat / base::At(_div, lp), neg);
+        .AdjustThreat(threat / base::At(_div, lp), neg);
   }
 }
 
