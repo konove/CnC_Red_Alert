@@ -2207,9 +2207,13 @@ void HouseClass::Adjust_Threat(int region, int threat) {
   // Division truncates toward zero, so lifting an object takes away exactly
   // the shares that placing it added.
   for (int lp = 0; lp < 9; lp++) {
-    base::At(Regions, region + base::At(_val, lp))
-        .AdjustThreat(threat / base::At(_div, lp));
+    base::At(RegionThreat, region + base::At(_val, lp)) +=
+        threat / base::At(_div, lp);
   }
+}
+
+int HouseClass::RegionThreatAt(const int region) const {
+  return static_cast<int>(base::At(RegionThreat, region));
 }
 
 /***********************************************************************************************

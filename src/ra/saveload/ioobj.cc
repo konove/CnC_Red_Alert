@@ -586,7 +586,7 @@ void HouseClass::Serialize(Archive& ar) {
      RadarSpied, PointTotal, PreferredTarget, BQuantity, UQuantity, IQuantity,
      AQuantity, VQuantity, Attack, Enemy, AITimer, UnitToTeleport,
      BuildStructure, BuildUnit, BuildInfantry, BuildAircraft, BuildVessel,
-     Regions, NukeDest, Allies, DamageTime, TeamTime, TriggerTime,
+     RegionThreat, NukeDest, Allies, DamageTime, TeamTime, TriggerTime,
      SpeakAttackDelay, SpeakPowerDelay, SpeakMoneyDelay, SpeakMaxedDelay,
      RemapColor, IniName, InitialName);
   IsActive = is_active;

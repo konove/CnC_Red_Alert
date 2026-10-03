@@ -92,7 +92,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/region.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
 #include "ra/core/coord.h"
@@ -1307,10 +1306,8 @@ int MapClass::Cell_Region(Cell cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(Cell cell, HousesType house) {
-  int threat =
-      base::At(HouseClass::As_Pointer(house)->Regions,
-               MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
-          .threat();
+  int threat = HouseClass::As_Pointer(house)->RegionThreatAt(
+      MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()));
   if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;
   }

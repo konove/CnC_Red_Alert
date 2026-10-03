@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_HOUSE_H_
 #define CNC_RED_ALERT_RA_OBJECTS_HOUSE_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -54,7 +55,6 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/utracker.h"
-#include "ra/ai/region.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/objects/object.h"
@@ -774,7 +774,12 @@ class HouseClass {
   [[nodiscard]] Fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
   TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  // Adds `threat` to `region` and a share of it to the eight regions around
+  // it; negative when an object leaves.
   void Adjust_Threat(int region, int threat);
+  // The threat this house sees in `region`; 0 when no enemy object is in or
+  // next to it.
+  [[nodiscard]] int RegionThreatAt(int region) const;
   void Tracking_Remove(const TechnoClass* techno);
   void Tracking_Add(const TechnoClass* techno);
   void Active_Remove(const TechnoClass* techno);
@@ -843,11 +848,21 @@ class HouseClass {
   */
   void Detach(Target target, bool all);
 
-  /*
-  **	This vector holds the recorded status of the map regions. It is through
-  **	this region information that team paths are calculated.
-  */
-  Region Regions[kMapTotalRegions];
+  // The threat this house sees in each map region: the summed risk ratings of
+  // the other houses' ground objects standing in the region, plus half of
+  // those in the regions beside it and a quarter of those diagonal to it
+  // (Adjust_Threat() does the spreading). A computer house counts every other
+  // house's objects, a human house only those it is not allied with
+  // (CellClass::Adjust_Threat()). Path finding and team routing read it
+  // through MapClass::Cell_Threat() to steer around defended ground.
+  //
+  // Only the campaign tracks threat; in a multiplayer game every region stays
+  // 0. An object adds its rating when it is placed on the map and subtracts
+  // the same amount when it is lifted, so the two calls must be given equal
+  // amounts or a region drifts.
+  //
+  // Saved as 64 bits, though the sum of a map's worth of ratings fits an int.
+  std::array<int64_t, kMapTotalRegions> RegionThreat{};
 
   /*
   **	This count down timer class decrements and then changes
