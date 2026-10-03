@@ -122,7 +122,7 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
+#include "ra/core/fading_table_builders.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"

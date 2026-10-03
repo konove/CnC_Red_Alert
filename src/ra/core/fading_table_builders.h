@@ -19,8 +19,8 @@
 // File: The builders of the fading and translucency tables Red Alert's
 // theaters draw through.
 
-#ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
-#define CNC_RED_ALERT_RA_CORE_JSHELL_H_
+#ifndef CNC_RED_ALERT_RA_CORE_FADING_TABLE_BUILDERS_H_
+#define CNC_RED_ALERT_RA_CORE_FADING_TABLE_BUILDERS_H_
 
 #include <algorithm>
 #include <array>
@@ -109,4 +109,4 @@ TranslucencyTable<N> BuildShadowTranslucencyTable(
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_CORE_JSHELL_H_
+#endif  // CNC_RED_ALERT_RA_CORE_FADING_TABLE_BUILDERS_H_

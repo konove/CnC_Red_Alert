@@ -1,6 +1,6 @@
-// Tests the fading and translucency tables jshell builds.
+// Tests the fading and translucency table builders.
 
-#include "ra/core/jshell.h"
+#include "ra/core/fading_table_builders.h"
 
 #include <algorithm>
 #include <array>

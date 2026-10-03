@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/core/jshell.h"
+#include "ra/core/fading_table_builders.h"
 
 #include <algorithm>
 #include <cstdint>

@@ -164,11 +164,11 @@ add_gtest(
 target_compile_definitions(ra_palette_test PRIVATE RA_NO_ENTRY_POINT=1)
 
 add_gtest(
-    NAME ra_jshell_test
-    SOURCES core/jshell_test.cc startup/startup.cc
+    NAME ra_fading_table_builders_test
+    SOURCES core/fading_table_builders_test.cc startup/startup.cc
     LIBS ra_engine
 )
-target_compile_definitions(ra_jshell_test PRIVATE RA_NO_ENTRY_POINT=1)
+target_compile_definitions(ra_fading_table_builders_test PRIVATE RA_NO_ENTRY_POINT=1)
 
 add_gtest(
     NAME ra_screen_test
