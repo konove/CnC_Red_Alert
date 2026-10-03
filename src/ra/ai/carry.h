@@ -38,7 +38,7 @@ namespace ra {
 // game, since the inheriting scenario may be several missions away.
 //
 // Example:
-//   TheWorld().carryover().emplace_back(building);  // as the scenario ends
+//   TheWorld().carryover().emplace_back(*building);  // as the scenario ends
 //   ...
 //   for (const auto& object : TheWorld().carryover()) object.Recreate();
 class Carryover {
@@ -47,19 +47,19 @@ class Carryover {
   template <class Archive>
   void Serialize(Archive& ar);
 
+  // An empty record (RTTI_NONE), for the saved-game loader to fill.
+  Carryover() = default;
+
   // Records `techno`, which must be a building, vehicle, infantry or vessel to
   // be carried over; any other kind is recorded but Recreate() ignores it.
-  // nullptr gives an empty record, which is what the saved-game loader fills.
-  explicit Carryover(TechnoClass* techno = nullptr);
+  explicit Carryover(const TechnoClass& techno);
 
   // Builds the recorded object and places it on the current map at its old
   // cell. Nothing is placed when the object pool is full or the cell cannot
-  // take the object (the new map may differ from the old one). Always returns
-  // false, whether or not the object was placed.
-  // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Recreate() const;
+  // take the object (the new map may differ from the old one).
+  void Recreate() const;
 
- protected:
+ private:
   // The kind of object, which selects the member of `type_` in use. RTTI_NONE
   // for an empty record.
   RTTIType rtti_{RTTI_NONE};

@@ -956,7 +956,7 @@ void Do_Win() {
           TheObjectHeaps().building().ActiveAt(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
-        TheWorld().carryover().emplace_back(building);
+        TheWorld().carryover().emplace_back(*building);
       }
     }
     for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
@@ -964,7 +964,7 @@ void Do_Win() {
       UnitClass* unit = TheObjectHeaps().unit().ActiveAt(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-        TheWorld().carryover().emplace_back(unit);
+        TheWorld().carryover().emplace_back(*unit);
       }
     }
     for (int infantry_index = 0;
@@ -974,7 +974,7 @@ void Do_Win() {
           TheObjectHeaps().infantry().ActiveAt(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-        TheWorld().carryover().emplace_back(infantry);
+        TheWorld().carryover().emplace_back(*infantry);
       }
     }
     for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
@@ -982,7 +982,7 @@ void Do_Win() {
       VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-        TheWorld().carryover().emplace_back(vessel);
+        TheWorld().carryover().emplace_back(*vessel);
       }
     }
   }

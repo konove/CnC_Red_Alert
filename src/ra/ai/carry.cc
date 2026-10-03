@@ -32,66 +32,62 @@
 
 namespace ra {
 
-Carryover::Carryover(TechnoClass* techno) {
-  if (techno) {
-    rtti_ = techno->What_Am_I();
+Carryover::Carryover(const TechnoClass& techno)
+    : rtti_(techno.What_Am_I()),
+      cell_(Cell::Containing(techno.Coord)),
+      strength_(techno.Strength),
+      house_(techno.Owner()) {
+  switch (rtti_) {
+    case RTTI_UNIT:
+      type_.unit = dynamic_cast<const UnitClass&>(techno).Class->Type;
+      break;
 
-    switch (rtti_) {
-      case RTTI_UNIT:
-        type_.unit = dynamic_cast<UnitClass*>(techno)->Class->Type;
-        break;
+    case RTTI_BUILDING:
+      type_.building = dynamic_cast<const BuildingClass&>(techno).Class->Type;
+      break;
 
-      case RTTI_BUILDING:
-        type_.building = dynamic_cast<BuildingClass*>(techno)->Class->Type;
-        break;
+    case RTTI_INFANTRY:
+      type_.infantry = dynamic_cast<const InfantryClass&>(techno).Class->Type;
+      break;
 
-      case RTTI_INFANTRY:
-        type_.infantry = dynamic_cast<InfantryClass*>(techno)->Class->Type;
-        break;
+    case RTTI_VESSEL:
+      type_.vessel = dynamic_cast<const VesselClass&>(techno).Class->Type;
+      break;
 
-      case RTTI_VESSEL:
-        type_.vessel = dynamic_cast<VesselClass*>(techno)->Class->Type;
-        break;
-
-      case RTTIType::RTTI_NONE:
-      case RTTIType::RTTI_AIRCRAFT:
-      case RTTIType::RTTI_AIRCRAFTTYPE:
-      case RTTIType::RTTI_ANIM:
-      case RTTIType::RTTI_ANIMTYPE:
-      case RTTIType::RTTI_BUILDINGTYPE:
-      case RTTIType::RTTI_BULLET:
-      case RTTIType::RTTI_BULLETTYPE:
-      case RTTIType::RTTI_CELL:
-      case RTTIType::RTTI_FACTORY:
-      case RTTIType::RTTI_HOUSE:
-      case RTTIType::RTTI_HOUSETYPE:
-      case RTTIType::RTTI_INFANTRYTYPE:
-      case RTTIType::RTTI_OVERLAY:
-      case RTTIType::RTTI_OVERLAYTYPE:
-      case RTTIType::RTTI_SMUDGE:
-      case RTTIType::RTTI_SMUDGETYPE:
-      case RTTIType::RTTI_SPECIAL:
-      case RTTIType::RTTI_TEAM:
-      case RTTIType::RTTI_TEAMTYPE:
-      case RTTIType::RTTI_TEMPLATE:
-      case RTTIType::RTTI_TEMPLATETYPE:
-      case RTTIType::RTTI_TERRAIN:
-      case RTTIType::RTTI_TERRAINTYPE:
-      case RTTIType::RTTI_TRIGGER:
-      case RTTIType::RTTI_TRIGGERTYPE:
-      case RTTIType::RTTI_UNITTYPE:
-      case RTTIType::RTTI_VESSELTYPE:
-      default:
-        break;
-    }
-
-    house_ = techno->Owner();
-    strength_ = techno->Strength;
-    cell_ = Cell::Containing(techno->Coord);
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFT:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
   }
 }
 
-bool Carryover::Recreate() const {
+void Carryover::Recreate() const {
   TechnoClass* techno = nullptr;
 
   switch (rtti_) {
@@ -142,25 +138,25 @@ bool Carryover::Recreate() const {
       break;
   }
 
-  if (techno) {
-    // Infantry are placed under the in-game rules rather than the lenient ones
-    // that apply while a scenario is being read: with scenario_init set, the
-    // check against standing outside the playable map is skipped, and the old
-    // cell is not known to be good on this map.
-    const int saved_scenario_init = TheWorld().scenario_init();
-    techno->Strength = static_cast<int16_t>(strength_);
-    if (rtti_ == RTTI_INFANTRY) {
-      TheWorld().scenario_init() = 0;
-    }
-    // TODO: an object that cannot be placed stays in limbo and keeps its pool
-    // slot for the rest of the scenario.
-    techno->Unlimbo(cell_.Center());
-    if (rtti_ == RTTI_INFANTRY) {
-      TheWorld().scenario_init() = saved_scenario_init;
-    }
+  if (techno == nullptr) {
+    return;
   }
 
-  return false;
+  // Infantry are placed under the in-game rules rather than the lenient ones
+  // that apply while a scenario is being read: with scenario_init set, the
+  // check against standing outside the playable map is skipped, and the old
+  // cell is not known to be good on this map.
+  const int saved_scenario_init = TheWorld().scenario_init();
+  techno->Strength = static_cast<int16_t>(strength_);
+  if (rtti_ == RTTI_INFANTRY) {
+    TheWorld().scenario_init() = 0;
+  }
+  // TODO: an object that cannot be placed stays in limbo and keeps its pool
+  // slot for the rest of the scenario.
+  techno->Unlimbo(cell_.Center());
+  if (rtti_ == RTTI_INFANTRY) {
+    TheWorld().scenario_init() = saved_scenario_init;
+  }
 }
 
 }  // namespace ra
