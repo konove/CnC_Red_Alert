@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -254,6 +255,14 @@ class IniFile {
   mutable bool digest_valid_ = false;
   mutable Sha1Digest digest_{};
 };
+
+// Returns the text of stream from its current position to its end, or up to
+// its first NUL, which ends INI text for the legacy readers.
+std::string ReadIniText(ByteStream& stream);
+
+// Returns the text of the game file name (see OpenGameFile and ReadIniText),
+// or nullopt if it is found nowhere.
+std::optional<std::string> ReadIniFile(std::string_view name);
 
 }  // namespace engine::file
 

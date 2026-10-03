@@ -64,7 +64,6 @@
 #include "engine/file/disk_stream.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
-#include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/stream/byte_stream.h"
@@ -134,7 +133,7 @@ void Check_From_WChat(const char* wchat_name) {
   if (wchat_name) {
     wchat_file = OpenDiskFile(wchat_name);
     if (wchat_file) {
-      LoadIniText(engine::file::ReadProfileText(*wchat_file), ini);
+      LoadIniText(engine::file::ReadIniText(*wchat_file), ini);
     }
   } else {
 #ifdef _WIN32
@@ -244,7 +243,7 @@ int Read_Game_Options(const char* name) {
     }
   }
   if (name) {
-    LoadIniText(engine::file::ReadProfileText(*file), ini);
+    LoadIniText(engine::file::ReadIniText(*file), ini);
   } else {
 #ifdef _WIN32
     // No packet from the DDE server leaves the database empty, so every

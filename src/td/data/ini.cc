@@ -73,7 +73,6 @@
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
-#include "engine/file/profile_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "game/sim/direction.h"
@@ -342,7 +341,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
 
   absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-  std::optional<std::string> ini = engine::file::ReadProfileFile(fname);
+  std::optional<std::string> ini = engine::file::ReadIniFile(fname);
   if (!ini) {
     return false;
   }
@@ -570,7 +569,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   if (base::At(TheWorld().briefing_text(), 0) == '\0') {
     const std::string mission =
-        engine::file::ReadProfileFile("MISSION.INI").value_or("");
+        engine::file::ReadIniFile("MISSION.INI").value_or("");
     engine::file::IniFile mission_ini;
     LoadIniText(mission, mission_ini);
 

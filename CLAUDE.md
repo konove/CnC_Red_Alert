@@ -178,7 +178,7 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                PKey (target `engine_crypto`; sibling of engine/codec/, neither includes the other)
                [depends: engine_stream]
   file/      → Disk files, game files, MIX archives, search paths, the string table and the INI
-               profile buffer (target `engine_file`) [depends: engine_codec, engine_crypto]
+               database (target `engine_file`) [depends: engine_codec, engine_crypto]
   net/       → Packets and sockets; net/serial/ holds the null-modem driver (target `engine_net`;
                wsock32 and ws2_32 on Windows) [depends: engine_platform]
   gfx/       → Pixel buffers and everything that draws into them: bitmap, font, shape, stamp, tile,

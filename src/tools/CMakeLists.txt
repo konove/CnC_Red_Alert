@@ -17,9 +17,3 @@ target_link_libraries(vqaplay PRIVATE tool_game_data engine_video base
 add_executable(lcw_bench lcw_bench.cc
         ${CMAKE_SOURCE_DIR}/src/engine/codec/lcw_reference_test_util.cc)
 target_link_libraries(lcw_bench PRIVATE engine_codec base absl::str_format)
-
-# Checks IniFile against the profile reader on real INI files. Temporary: the
-# plan deletes it once Tiberian Dawn reads its INI files through IniFile.
-add_executable(ini_compare ini_compare.cc)
-target_link_libraries(ini_compare PRIVATE engine_file base absl::str_format
-                      absl::strings)

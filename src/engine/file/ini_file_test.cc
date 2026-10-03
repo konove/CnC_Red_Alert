@@ -4,8 +4,12 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <filesystem>
+#include <fstream>
+#include <ios>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -465,6 +469,44 @@ TEST(IniFileTest, SaveWithDigestMatchesTheGoldenText) {
     text.push_back(static_cast<char>(byte));
   }
   EXPECT_EQ(text, kGoldenText);
+}
+
+TEST(IniFileTest, GetHexReadsBareDigitsAndRejectsTrailingText) {
+  IniFile ini;
+  ASSERT_TRUE(ini.PutString("Values", "Number", "ff"));
+  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 255);
+  ASSERT_TRUE(ini.PutString("Values", "Number", "fftail"));
+  EXPECT_EQ(ini.GetHex("Values", "Number", 73), 73);
+}
+
+// A loose file in the current directory, where writes go and reads look first.
+constexpr const char* kIniTextFileName = "INI_FILE_TEST.INI";
+
+class ReadIniFileTest : public testing::Test {
+ protected:
+  void TearDown() override { std::filesystem::remove(kIniTextFileName); }
+
+  static void WriteFile(std::string_view text) {
+    std::ofstream file(kIniTextFileName, std::ios::binary);
+    file << text;
+  }
+};
+
+TEST_F(ReadIniFileTest, ReadOfMissingFileIsNullopt) {
+  EXPECT_EQ(ReadIniFile(kIniTextFileName), std::nullopt);
+}
+
+TEST_F(ReadIniFileTest, ReadsBackTheWholeText) {
+  const std::string text = "[S]\r\nA=" + std::string(100000, 'v') + "\r\n";
+  WriteFile(text);
+  EXPECT_EQ(ReadIniFile(kIniTextFileName), text);
+}
+
+TEST_F(ReadIniFileTest, ReadStopsAtNul) {
+  constexpr std::string_view kText("[S]\r\nA=1\r\n\0stale", 16);
+  WriteFile(kText);
+  EXPECT_EQ(std::filesystem::file_size(kIniTextFileName), kText.size());
+  EXPECT_EQ(ReadIniFile(kIniTextFileName), "[S]\r\nA=1\r\n");
 }
 
 }  // namespace

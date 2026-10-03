@@ -1,10 +1,11 @@
+#include "ra/data/profile.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
 #include "base/buffer.h"
 #include "gtest/gtest.h"
-#include "ra/data/profile.h"
 
 namespace ra {
 

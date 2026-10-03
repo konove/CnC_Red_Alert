@@ -33,8 +33,7 @@
  *                  Last Update : September 10, 1993   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * WWGetPrivateProfileInt -- Fetches integer value from INI. *
- *   WWGetPrivateProfileString -- Fetch string from INI. *
+ * Functions: * Read_Bin_* / Write_Bin_* -- Bounded binary buffer access. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -42,46 +41,14 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
 #include <span>
 #include <string_view>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/strings/number_parse.h"
-#include "base/strings/safe_string.h"
-#include "engine/file/profile_buffer.h"
 
 namespace ra {
-
-unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
-                                const char* profile) {
-  char buffer[16];
-  WWGetPrivateProfileString(section, entry, "0", buffer, profile);
-  return base::ParseHexOr<uint32_t>(buffer, 0);
-}
-
-int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
-                           const char* profile) {
-  char buffer[16];
-  absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
-  WWGetPrivateProfileString(section, entry, buffer, buffer, profile);
-  return base::ParseIntegerOr<int>(buffer, def);
-}
-
-const char* WWGetPrivateProfileString(const char* section, const char* key,
-                                     const char* def, std::span<char> dest,
-                                     const char* ini_data) {
-  if (ini_data == nullptr || section == nullptr) {
-    base::SafeCopy(dest, def);
-    return dest.data();
-  }
-  const std::string_view text(ini_data);
-  const auto found = engine::file::ReadProfile(text, section, key, def, dest);
-  return found ? text.substr(*found).data() : nullptr;
-}
 
 namespace {
 std::span<char> write_bin_buffer;

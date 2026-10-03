@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -46,6 +47,7 @@
 #include "engine/crypto/pk.h"
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_sink.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
@@ -626,6 +628,22 @@ Fixed IniFile::GetFixed(const std::string_view section,
 bool IniFile::PutFixed(const std::string_view section,
                        const std::string_view entry, const Fixed value) {
   return PutString(section, entry, value.ToString());
+}
+
+std::string ReadIniText(ByteStream& stream) {
+  std::string text = stream.ReadString(stream.Size() - stream.Tell());
+  if (const auto nul = text.find('\0'); nul != std::string::npos) {
+    text.resize(nul);
+  }
+  return text;
+}
+
+std::optional<std::string> ReadIniFile(std::string_view name) {
+  const auto file = OpenGameFile(name);
+  if (!file) {
+    return std::nullopt;
+  }
+  return ReadIniText(*file);
 }
 
 }  // namespace engine::file

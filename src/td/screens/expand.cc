@@ -54,6 +54,7 @@
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/stream/byte_stream.h"
 #include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -75,6 +76,29 @@
 #include "td/ui/textbtn.h"
 
 namespace td {
+
+namespace {
+
+// Stores the [Basic] Name of the scenario file `file` in `name`, "x" when it
+// has none. Only the head of the file is read, which is where the section is.
+void ReadScenarioName(ByteStream& file, std::span<char> name) {
+  // The head of the file, plus a line end and the terminator.
+  constexpr int kHeadSize = 1000;
+  std::array<char, kHeadSize + 3> head{};
+  file.Read(std::span<char>(head), kHeadSize);
+  base::At(head, kHeadSize) = '\r';
+  base::At(head, kHeadSize + 1) = '\n';
+  base::At(head, kHeadSize + 2) = '\0';
+
+  // The text ends at its first NUL, as the old scan of it did.
+  const std::string_view text(head.data());
+  SpanSource source(std::as_bytes(std::span(text)));
+  engine::file::IniFile scenario;
+  scenario.Load(source);
+  scenario.GetString("Basic", "Name", "x", name);
+}
+
+}  // namespace
 
 using enum engine::window::KeyNumber;
 
@@ -179,10 +203,6 @@ bool Expansion_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  // The start of each scenario file, where its [Basic] Name is, plus a line
-  // end and the terminator.
-  std::array<char, 1000 + 3> header{};
-  const std::span<char> sbuffer(header);
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
@@ -190,17 +210,7 @@ bool Expansion_Dialog() {
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
-      file->Read(sbuffer, 1000);
-      base::At(sbuffer, 1000) = '\r';
-      base::At(sbuffer, 1000 + 1) = '\n';
-      base::At(sbuffer, 1000 + 2) = '\0';
-
-      // The text ends at its first NUL, as the old scan of it did.
-      const std::string_view text(sbuffer.data());
-      SpanSource source(std::as_bytes(std::span(text)));
-      engine::file::IniFile scenario;
-      scenario.Load(source);
-      scenario.GetString("Basic", "Name", "x", buffer);
+      ReadScenarioName(*file, buffer);
       list.Add_Scenario(index, std::format("GDI: {}", buffer));
     }
   }
@@ -212,17 +222,7 @@ bool Expansion_Dialog() {
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
-      file->Read(sbuffer, 1000);
-      base::At(sbuffer, 1000) = '\r';
-      base::At(sbuffer, 1000 + 1) = '\n';
-      base::At(sbuffer, 1000 + 2) = '\0';
-
-      // The text ends at its first NUL, as the old scan of it did.
-      const std::string_view text(sbuffer.data());
-      SpanSource source(std::as_bytes(std::span(text)));
-      engine::file::IniFile scenario;
-      scenario.Load(source);
-      scenario.GetString("Basic", "Name", "x", buffer);
+      ReadScenarioName(*file, buffer);
       list.Add_Scenario(index, std::format("NOD: {}", buffer));
     }
   }

@@ -56,7 +56,6 @@
 #include "base/buffer.h"  // IWYU pragma: keep (used only with an entry point)
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/ini_file.h"
-#include "engine/file/profile_buffer.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/stream/byte_stream.h"
@@ -354,7 +353,7 @@ static int Run(int argc, char* argv[])
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
       engine::file::IniFile conquer_ini;
       if (const auto config_read = OpenDiskFile("CONQUER.INI")) {
-        LoadIniText(engine::file::ReadProfileText(*config_read), conquer_ini);
+        LoadIniText(engine::file::ReadIniText(*config_read), conquer_ini);
       }
 
       /*
@@ -504,7 +503,7 @@ void ShutDown() {
 void Read_Setup_Options(ByteStream& config_file,
                         const StartupOptions& options) {
   engine::file::IniFile ini;
-  LoadIniText(engine::file::ReadProfileText(config_file), ini);
+  LoadIniText(engine::file::ReadIniText(config_file), ini);
   ApplySetupOptions(ini, options);
 }
 

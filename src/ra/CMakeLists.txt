@@ -88,8 +88,8 @@ install(TARGETS rasdl)
 # Tests
 include(Testing)
 add_gtest(
-    NAME ra_profile_buffer_test
-    SOURCES data/profile_buffer_test.cc data/profile.cc
+    NAME ra_profile_test
+    SOURCES data/profile_test.cc data/profile.cc
     LIBS engine_file absl::strings absl::check absl::log magic_enum::magic_enum
 )
 

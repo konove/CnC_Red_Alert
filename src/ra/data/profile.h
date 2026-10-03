@@ -5,22 +5,7 @@
 #include <span>
 #include <string_view>
 
-#include "absl/base/attributes.h"
-
 namespace ra {
-
-int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
-                           const char* profile);
-
-// Reads a value into bounded output, or enumerates keys when key is nullptr.
-// Returns the key-line pointer (section body for enumeration), or nullptr when
-// absent. Null section/input initializes output from def and returns its data.
-const char* WWGetPrivateProfileString(const char* section, const char* key,
-                                     const char* def, std::span<char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                     const char* ini_data);
-
-unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
-                                const char* profile);
 
 char* Read_Bin_Buffer();
 bool Read_Bin_Init(std::span<char> buffer);

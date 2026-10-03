@@ -3536,63 +3536,26 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   //	The following is based on Read_Game_Options()...
 
-  //	WWGetPrivateProfileString("Options", "Handle", "Noname",
-  // Session.Handle,
-  // sizeof(Session.Handle), buffer);
-
   base::SafeCopy(TheSession().Handle, pWO->szMyName);
 
   //	GameName will be the host's name...
   base::SafeCopy(TheSession().GameName, pWO->pGameHostName());
   //	debugprint( "Session.GameName is %s\n", Session.GameName );
 
-  //	gotit	Session.ColorIdx = (PlayerColorType)
-  // WWGetPrivateProfileInt("Options", "Color", 0, buffer); 	gotit
-  // Session.PrefColor = Session.ColorIdx; 	gotit	int temp =
-  // WWGetPrivateProfileInt("Options", "Side", 0, buffer); 	gotit
-  // Session.House = (HousesType) ((int)HOUSE_USSR + temp);
-
-  //	gotit	Session.Options.Credits = WWGetPrivateProfileInt("Options",
-  //"Credits", 0, buffer); 	gotit	Session.Options.Bases =
-  // WWGetPrivateProfileInt("Options", "Bases", 0, buffer); 	gotit
-  // Session.Options.Tiberium = WWGetPrivateProfileInt("Options",
-  // "Tiberium", 0, buffer); 	gotit	Session.Options.Goodies =
-  // WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
-  // Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
-  // buffer); 	gotit	BuildLevel =
-  // WWGetPrivateProfileInt("Options",
-  //"BuildLevel", 0, buffer); 	gotit
-  // Session.Options.UnitCount =
-  // WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit
-  // Seed = WWGetPrivateProfileInt("Options", "Seed",
-  // 0, buffer); 	gotit Special.IsCaptureTheFlag =
-  // WWGetPrivateProfileInt("Options", "CapFlag", 0, buffer);
-
-  //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
-  // buffer);
   if (bSlowUnitBuildRate) {
     TheRules().UnitBuildPenalty = 250;
   } else {
     TheRules().UnitBuildPenalty = 100;
   }
 
-  // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet",
-  // "GameID", 0, buffer);
   TheNetwork().westwood_game_id() =
       static_cast<uint32_t>(pWO->pChatSink->iGameID);
 
   //	Reset ChatSink's iGameID.
   pWO->pChatSink->iGameID = 0;
 
-  // PlanetWestwoodStartTime = WWGetPrivateProfileInt ("Internet",
-  // "StartTime", 0, buffer);
   TheNetwork().westwood_start_time() = static_cast<uint32_t>(time(nullptr));
-  // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
-  // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 
-  //	gotit	Session.Options.AIPlayers =
-  // WWGetPrivateProfileInt("Options", "AI", 0, buffer);		//Number
-  // of AI players
   if (TheSession().Options.AIPlayers) {
     TheSession().Options.Ghosts = 1;
   }
@@ -3783,18 +3746,6 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	debugprint( "Session.ScenarioFileName is %s.\n",
   // Session.ScenarioFileName );
 
-  /*
-  ** Read the scenario name from the .INI and try to match it with a scenario
-  *file in our list.
-  */
-  //	gotit		WWGetPrivateProfileString("Options", "Scenario",
-  //"SCM01EA.INI",
-  // Session.Options.ScenarioDescription,
-  // sizeof (Session.Options.ScenarioDescription),
-  // buffer); WWDebugString ("RA95I -
-  // Scenario is "); WWDebugString (Session.Options.ScenarioDescription);
-  // WWDebugString ("\n");
-
   if (!bHost)  //	Else ScenarioIndex is already set.
   {
     if (bRequestedScenarioDownload) {
@@ -3871,9 +3822,6 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   TheOptions().GameSpeed = 0;
 
-  // Session.MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
-  // "MaxAhead", 9, buffer); Session.FrameSendRate = WChatSendRate =
-  // WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
   TheSession().MaxAhead = 15;  // 9;
   // Session.FrameSendRate = 5;	//3;
   TheSession().FrameSendRate = 3;  // 3;

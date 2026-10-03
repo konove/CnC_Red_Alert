@@ -1,4 +1,4 @@
-// Tests legacy INI defaults and team count validation through game readers.
+// Tests team type count validation through the game readers.
 #include <string>
 
 #include "base/pooled.h"
@@ -6,23 +6,10 @@
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"
 #include "td/core/object_heaps.h"
-#include "td/data/profile.h"
 
 namespace td {
 
 namespace {
-
-TEST(TdNumberParseTest, InvalidProfileNumbersKeepTheDefault) {
-  // The legacy profile reader expects DOS line endings, as in the game data.
-  char profile[] =
-      "[Values]\r\nBad=12tail\r\nBig=2147483648\r\nValid=-42\r\nHex=ff\r\n"
-      "BadHex=fftail\r\n";
-  EXPECT_EQ(WWGetPrivateProfileInt("Values", "Bad", 73, profile), 73);
-  EXPECT_EQ(WWGetPrivateProfileInt("Values", "Big", 73, profile), 73);
-  EXPECT_EQ(WWGetPrivateProfileInt("Values", "Valid", 73, profile), -42);
-  EXPECT_EQ(WWGetPrivateProfileHex("Values", "Hex", profile), 255U);
-  EXPECT_EQ(WWGetPrivateProfileHex("Values", "BadHex", profile), 0U);
-}
 
 // Team types validate that they live in the TeamTypes heap, so the tests
 // allocate them there rather than on the stack.

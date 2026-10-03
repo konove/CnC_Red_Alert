@@ -43,6 +43,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -51,9 +52,12 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
@@ -66,7 +70,6 @@
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/data/profile.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/world.h"
 #include "ra/startup/conquer.h"
@@ -80,6 +83,29 @@
 namespace ra {
 
 // #define CS_DEBUG
+
+namespace {
+
+// Stores the [Basic] Name of the scenario file `file` in `name`, "x" when it
+// has none. Only the head of the file is read, which is where the section is.
+void ReadScenarioName(ByteStream& file, std::span<char> name) {
+  // The head of the file, plus a line end and the terminator.
+  constexpr int kHeadSize = 2000;
+  std::array<char, kHeadSize + 3> head{};
+  file.Read(std::span<char>(head), kHeadSize);
+  base::At(head, kHeadSize) = '\r';
+  base::At(head, kHeadSize + 1) = '\n';
+  base::At(head, kHeadSize + 2) = '\0';
+
+  // The text ends at its first NUL, as the old scan of it did.
+  const std::string_view text(head.data());
+  SpanSource source(std::as_bytes(std::span(text)));
+  engine::file::IniFile scenario;
+  scenario.Load(source);
+  scenario.GetString("Basic", "Name", "x", name);
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * Expansion_CS_Present -- Is the Counterstrike expansion available? *
@@ -361,10 +387,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   */
   char buffer[128];
   char buffer2[128];
-  // The start of each scenario file, where its [Basic] Name is, plus a line
-  // end and the terminator.
-  std::array<char, 2000 + 3> header{};
-  const std::span<char> sbuffer(header);
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
     base::SafeCopy(buffer, base::At(ExpandNames, index - 20));
@@ -394,12 +416,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       switch (buffer[2]) {
         case 'G':
         case 'g':
-          file->Read(sbuffer, 2000);
-          base::At(sbuffer, 2000) = '\r';
-          base::At(sbuffer, 2000 + 1) = '\n';
-          base::At(sbuffer, 2000 + 2) = '\0';
-          WWGetPrivateProfileString("Basic", "Name", "x", buffer,
-                                    sbuffer.data());
+          ReadScenarioName(*file, buffer);
           if constexpr (config::kIsEnglish) {
             base::SafeCopy(obj.Name, buffer);
           } else {
@@ -415,12 +432,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
         case 'U':
         case 'u':
-          file->Read(sbuffer, 2000);
-          base::At(sbuffer, 2000) = '\r';
-          base::At(sbuffer, 2000 + 1) = '\n';
-          base::At(sbuffer, 2000 + 2) = '\0';
-          WWGetPrivateProfileString("Basic", "Name", "x", buffer,
-                                    sbuffer.data());
+          ReadScenarioName(*file, buffer);
           if constexpr (config::kIsEnglish) {
             base::SafeCopy(obj.Name, buffer);
           } else {

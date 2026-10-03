@@ -71,7 +71,6 @@
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
-#include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/stream/span_source.h"
@@ -3155,7 +3154,7 @@ int MapEditClass::Import_Triggers() {
   Read the file into the staging buffer
   ........................................................................*/
   const std::optional<std::string> master =
-      engine::file::ReadProfileFile("MASTER.INI");
+      engine::file::ReadIniFile("MASTER.INI");
   if (!master) {
     return (-1);
   }
@@ -3458,7 +3457,7 @@ int MapEditClass::Import_Teams() {
   Read the file into the staging buffer
   ........................................................................*/
   const std::optional<std::string> master =
-      engine::file::ReadProfileFile("MASTER.INI");
+      engine::file::ReadIniFile("MASTER.INI");
   if (!master) {
     return (-1);
   }
