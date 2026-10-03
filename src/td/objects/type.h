@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -211,7 +212,7 @@ class HouseTypeClass {
       std::span<const unsigned char> remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
       char prefix) noexcept;
 
-  static HousesType From_Name(const char* name);
+  static HousesType From_Name(std::string_view name);
   static const HouseTypeClass& As_Reference(HousesType house);
 
  private:
@@ -757,7 +758,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   operator StructType() const { return Type; }
 
   static const BuildingTypeClass& As_Reference(StructType type);
-  static StructType From_Name(const char* name);
+  static StructType From_Name(std::string_view name);
   static void Init(TheaterType theater);
   static void One_Time();
   static void Prep_For_Add();
@@ -984,7 +985,7 @@ class UnitTypeClass : public TechnoTypeClass {
                 int toffset, MissionType order) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
-  static UnitType From_Name(const char* name);
+  static UnitType From_Name(std::string_view name);
   static const UnitTypeClass& As_Reference(UnitType type);
   static void Init(TheaterType /*theater*/);
   static void One_Time();
@@ -1099,7 +1100,7 @@ class InfantryTypeClass : public TechnoTypeClass {
     return RTTI_INFANTRYTYPE;
   }
 
-  static InfantryType From_Name(const char* name);
+  static InfantryType From_Name(std::string_view name);
   static const InfantryTypeClass& As_Reference(InfantryType type) {
     return *Pointers.at(type);
   }
@@ -1349,7 +1350,7 @@ class TerrainTypeClass : public ObjectTypeClass {
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
 
-  static TerrainType From_Name(const char* name);
+  static TerrainType From_Name(std::string_view name);
   static const TerrainTypeClass& As_Reference(TerrainType type) {
     return *Pointers.at(type);
   }
@@ -1428,7 +1429,7 @@ class TemplateTypeClass : public ObjectTypeClass {
     return RTTI_TEMPLATETYPE;
   }
 
-  static TemplateType From_Name(const char* name);
+  static TemplateType From_Name(std::string_view name);
   static const TemplateTypeClass& As_Reference(TemplateType type) {
     return *Pointers.at(type);
   }
@@ -1683,7 +1684,7 @@ class AircraftTypeClass : public TechnoTypeClass {
 
   // Returns the AircraftType matching the given INI name (case-insensitive),
   // or AIRCRAFT_NONE if no match is found.
-  static AircraftType From_Name(const char* name);
+  static AircraftType From_Name(std::string_view name);
   static const AircraftTypeClass& As_Reference(AircraftType a) {
     return *Pointers.at(a);
   }
@@ -1824,7 +1825,7 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool walltype, bool iscrate) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_OVERLAYTYPE; }
 
-  static OverlayType From_Name(const char* name);
+  static OverlayType From_Name(std::string_view name);
   static const OverlayTypeClass& As_Reference(OverlayType type) {
     return *Pointers.at(type);
   }
@@ -1897,7 +1898,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
                   int width, int height, bool isbib, bool iscrater) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_SMUDGETYPE; }
 
-  static SmudgeType From_Name(const char* name);
+  static SmudgeType From_Name(std::string_view name);
   static const SmudgeTypeClass& As_Reference(SmudgeType type) {
     return *Pointers.at(type);
   }

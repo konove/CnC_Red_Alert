@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_MISSION_H_
 #define CNC_RED_ALERT_RA_OBJECTS_MISSION_H_
 
+#include <string_view>
+
 #include "base/fixed.h"
 #include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
@@ -135,7 +137,7 @@ class MissionClass : public ObjectClass {
   static bool Is_Recruitable_Mission(MissionType mission);
 
   static const char* Mission_Name(MissionType mission);
-  static MissionType Mission_From_Name(const char* name);
+  static MissionType Mission_From_Name(std::string_view name);
   virtual void Override_Mission(MissionType mission, Target /*unused*/,
                                 Target /*unused*/);
   virtual bool Restore_Mission();

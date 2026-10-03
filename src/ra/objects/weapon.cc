@@ -51,6 +51,7 @@
 #include "ra/objects/weapon.h"
 
 #include <cstddef>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "engine/file/ini_file.h"
@@ -250,8 +251,8 @@ bool WeaponTypeClass::Read_INI(engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-WeaponType Weapon_From_Name(const char* name) {
-  if (!name) {
+WeaponType Weapon_From_Name(const std::string_view name) {
+  if (name.empty()) {
     return WEAPON_NONE;
   }
 
@@ -281,8 +282,8 @@ WeaponType Weapon_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-game::ArmorType Armor_From_Name(const char* name) {
-  if (!name) {
+game::ArmorType Armor_From_Name(const std::string_view name) {
+  if (name.empty()) {
     return game::ARMOR_NONE;
   }
 

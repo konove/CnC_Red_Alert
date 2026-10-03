@@ -1735,11 +1735,11 @@ void HouseClass::Read_INI(const engine::file::IniFile& ini) {
     }
 
     if (TheSession().type() == GAME_NORMAL) {
-      std::string allies = ini.GetString(hname, "Allies", "");
+      const std::string allies = ini.GetString(hname, "Allies", "");
       if (!allies.empty()) {
-        base::Tokenizer tokens(allies.data(), ", \t");
-        const char* tok = tokens.Next();
-        while (tok) {
+        base::Tokenizer tokens(allies, ", \t");
+        std::string_view tok = tokens.Next();
+        while (!tok.empty()) {
           const HousesType h = HouseTypeClass::From_Name(tok);
           p->Make_Ally(h);
           tok = tokens.Next();

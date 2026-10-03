@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -161,7 +162,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   void Build_INI_Entry(std::string& buf);
   static void Read_INI(engine::file::IniFile& ini);
-  void Fill_In(const char* name, char* entry);
+  void Fill_In(const char* name, std::string_view entry);
   static void Write_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }
   // Saved-game support; defined in ioobj.cc.
@@ -171,7 +172,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass* As_Pointer(const char* name);
+  static TeamTypeClass* As_Pointer(std::string_view name);
 
   /*
   **	Processing routines
@@ -188,13 +189,13 @@ class TeamTypeClass : public AbstractTypeClass {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
   static const char* Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(const char* name);
+  static TeamMissionType Mission_From_Name(std::string_view name);
   static TeamTypeClass* Suggested_New_Team(HouseClass* house,
                                                  uint64_t atypes,
                                                  uint64_t utypes,
                                                  uint64_t itypes,
                                                  uint64_t vtypes, bool alerted);
-  static TeamTypeClass* From_Name(const char* name);
+  static TeamTypeClass* From_Name(std::string_view name);
   bool Edit();
   [[nodiscard]] const char* Member_Description() const;
   [[nodiscard]] const char* Description() const;

@@ -292,18 +292,18 @@ void SmudgeClass::Read_INI(const engine::file::IniFile& ini) {
   const int count = ini.EntryCount(INI_Name());
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
-    std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value.data(), ",");
+    const std::string value = ini.GetString(INI_Name(), key, "");
+    base::Tokenizer tokens(value, ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {
-      const char* ptr = tokens.Next();
-      if (ptr) {
+      std::string_view ptr = tokens.Next();
+      if (!ptr.empty()) {
         int data = 0;
         const Cell cell =
             Cell::FromIndex(base::ParseIntegerOr<int16_t>(ptr, 0));
         ptr = tokens.Next();
-        if (ptr) {
+        if (!ptr.empty()) {
           data = base::ParseIntegerOr<int>(ptr, 0);
         }
         base::NewPooled<SmudgeClass>(smudge, cell.Center());

@@ -52,6 +52,8 @@
 
 #include "ra/objects/mission.h"
 
+#include <string_view>
+
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "base/fixed.h"
@@ -369,8 +371,8 @@ void MissionClass::Assign_Mission(MissionType order) {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/22/1994 JLB : Converted to static
  *member function.                                     *
  *=============================================================================================*/
-MissionType MissionClass::Mission_From_Name(const char* name) {
-  if (name) {
+MissionType MissionClass::Mission_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const MissionType order : magic_enum::enum_values<MissionType>()) {
       if (absl::EqualsIgnoreCase(Missions.at(order), name)) {
         return order;

@@ -42,6 +42,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "engine/file/ini_file.h"
@@ -139,7 +140,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   */
   static void Read_INI(engine::file::IniFile& ini);
   static void Write_INI(engine::file::IniFile& ini);
-  void Fill_In(const char* name, char* entry);
+  void Fill_In(const char* name, std::string_view entry);
   void Build_INI_Entry(std::string& buffer) const;
 
   static const char* INI_Name() { return "Trigs"; }
@@ -160,7 +161,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   */
   void Detach(Target target, bool all = true);
   [[nodiscard]] AttachType Attaches_To() const;
-  static TriggerTypeClass* From_Name(const char* name);
+  static TriggerTypeClass* From_Name(std::string_view name);
   bool Edit();
   [[nodiscard]] const char* Description() const;
   // legacy C interfaces take the object where a pointer or name is expected.

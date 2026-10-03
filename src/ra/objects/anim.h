@@ -43,6 +43,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/fixed.h"
@@ -190,7 +191,7 @@ class AnimClass final : public ObjectClass, public StageClass {
 };
 
 void Shorten_Attached_Anims(const ObjectClass* obj);
-AnimType Anim_From_Name(const char* name);
+AnimType Anim_From_Name(std::string_view name);
 
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);

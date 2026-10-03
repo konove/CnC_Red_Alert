@@ -4712,9 +4712,9 @@ void UnitClass::Read_INI(engine::file::IniFile& ini) {
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    std::string value = ini.GetString(INI_Name(), entry, "");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
 
-    base::Tokenizer tokens(value.data(), ",\r\n");
+    base::Tokenizer tokens(value, ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {

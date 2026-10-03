@@ -115,6 +115,7 @@
 #include <iterator>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -630,8 +631,8 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
   for (int index = 0; index < counter; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    std::string value = ini.GetString(INI_Name(), entry, "");
-    base::Tokenizer tokens(value.data(), ",");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
+    base::Tokenizer tokens(value, ",");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
@@ -649,15 +650,15 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
           /*
           **	Read the raw data.
           */
-          const char* token = tokens.Next();
-          if (token) {
+          std::string_view token = tokens.Next();
+          if (!token.empty()) {
             strength = base::ParseIntegerOr<int>(token, 0);
           } else {
             strength = 0;
           }
 
           token = tokens.Next();
-          if (token) {
+          if (!token.empty()) {
             coord = Cell::FromIndex(base::ParseIntegerOr<int16_t>(token, 0))
                         .Center();
           } else {
@@ -665,7 +666,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
           }
 
           token = tokens.Next();
-          if (token) {
+          if (!token.empty()) {
             dir =
                 static_cast<game::DirType>(base::ParseIntegerOr<int>(token, 0));
           } else {

@@ -60,6 +60,7 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/pooled.h"
@@ -374,8 +375,8 @@ void AircraftTypeClass::Init_Heap() {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-AircraftType AircraftTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+AircraftType AircraftTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const AircraftType classid : magic_enum::enum_values<AircraftType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

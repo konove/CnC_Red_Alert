@@ -496,7 +496,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
  *Typical use of this is    * when parsing the INI file for theme control
  *values.                                      *
  *                                                                                             *
- * INPUT:   name  -- Pointer to base filename of theme or a partial substring of
+ * INPUT:   name  -- Base filename of theme or a partial substring of
  *the full      * theme name. *
  *                                                                                             *
  * OUTPUT:  Returns with the matching theme number. If no match could be found,
@@ -507,8 +507,8 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-ThemeType ThemeClass::From_Name(const char* name) {
-  if (name && !std::string_view(name).empty()) {
+ThemeType ThemeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     /*
     **	First search for an exact name match with the filename
     **	of the theme. This is guaranteed to be unique.

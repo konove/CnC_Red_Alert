@@ -26,12 +26,12 @@ TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
     ASSERT_NE(heap_team, nullptr);
     TeamTypeClass& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
-    team.Fill_In(name, entry.data());
+    team.Fill_In(name, entry);
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
 
     entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,0,"} + count;
-    team.Fill_In(name, entry.data());
+    team.Fill_In(name, entry);
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
     base::DeletePooled(heap_team);

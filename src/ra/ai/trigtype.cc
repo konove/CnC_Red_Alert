@@ -68,6 +68,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
@@ -112,6 +113,18 @@
 namespace ra {
 
 using enum engine::window::KeyNumber;
+
+namespace {
+
+// Returns the name selected in `list`, or an empty view when the list has no
+// items: Current_Item() is null then, which a string_view cannot hold.
+std::string_view SelectedName(
+    DropListClass& list ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+  const char* const name = list.Current_Item();
+  return name != nullptr ? name : std::string_view();
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -1631,7 +1644,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TEAM:
-            Event1.Team = TeamTypeClass::From_Name(ttype1list.Current_Item());
+            Event1.Team = TeamTypeClass::From_Name(SelectedName(ttype1list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_THEME:
@@ -1689,7 +1702,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_TEAM:
-            Event2.Team = TeamTypeClass::As_Pointer(ttype2list.Current_Item());
+            Event2.Team = TeamTypeClass::As_Pointer(SelectedName(ttype2list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_THEME:
@@ -1723,11 +1736,11 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_TRIGGER:
             Action1.Trigger =
-                TriggerTypeClass::From_Name(trtype1list.Current_Item());
+                TriggerTypeClass::From_Name(SelectedName(trtype1list));
             break;
 
           case NEED_TEAM:
-            Action1.Team = TeamTypeClass::From_Name(ttype3list.Current_Item());
+            Action1.Team = TeamTypeClass::From_Name(SelectedName(ttype3list));
             break;
 
           case NEED_NUMBER:
@@ -1794,11 +1807,11 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_TRIGGER:
             Action2.Trigger =
-                TriggerTypeClass::From_Name(trtype2list.Current_Item());
+                TriggerTypeClass::From_Name(SelectedName(trtype2list));
             break;
 
           case NEED_TEAM:
-            Action2.Team = TeamTypeClass::From_Name(ttype4list.Current_Item());
+            Action2.Team = TeamTypeClass::From_Name(SelectedName(ttype4list));
             break;
 
           case NEED_NUMBER:
@@ -2067,12 +2080,12 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get the trigger entry.
     */
-    std::string value = ini.GetString(INI_Name(), entry, "");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In(entry, value.data());
+    trigger->Fill_In(entry, value);
   }
 
   if (TheWorld().new_ini_format() < 2) {
@@ -2087,7 +2100,7 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
       for (TActionClass* action :
            {&indexed_trigger->Action1, &indexed_trigger->Action2}) {
         if (!action->PendingTriggerName.empty()) {
-          action->Trigger = From_Name(action->PendingTriggerName.c_str());
+          action->Trigger = From_Name(action->PendingTriggerName);
           action->PendingTriggerName.clear();
         }
       }
@@ -2116,7 +2129,7 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Fill_In(const char* name, char* entry) {
+void TriggerTypeClass::Fill_In(const char* name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   /*
@@ -2309,8 +2322,8 @@ void TriggerTypeClass::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass* TriggerTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+TriggerTypeClass* TriggerTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {
       if (absl::EqualsIgnoreCase(

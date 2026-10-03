@@ -52,6 +52,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -1304,7 +1305,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *ASCII representation. The scenario loader uses this routine * to construct the
  *map from the INI control file.                                          *
  *                                                                                             *
- * INPUT:   name  -- Pointer to the ASCII name of the template. *
+ * INPUT:   name  -- The ASCII name of the template. *
  *                                                                                             *
  * OUTPUT:  Returns with the template number. If the name had no match, * then
  *returns with TEMPLATE_NONE. *
@@ -1313,8 +1314,8 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateType TemplateTypeClass::From_Name(const char* name) {
-  if (name) {
+TemplateType TemplateTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT;
          index++) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {

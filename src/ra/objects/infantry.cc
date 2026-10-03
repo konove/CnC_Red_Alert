@@ -100,6 +100,7 @@
 #include <iterator>
 #include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -3301,12 +3302,12 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get an infantry entry
     */
-    std::string value = ini.GetString(INI_Name(), entry, "");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value.data(), ",\n\r");
+    base::Tokenizer tokens(value, ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
@@ -3344,16 +3345,11 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
           */
           const MissionType mission =
               Mission_From_Name(tokens.Next());
-          char* validation = tokens.Next();
-          if (validation) {
+          const std::string_view validation = tokens.Next();
+          if (!validation.empty()) {
             dir = static_cast<game::DirType>(
                 base::ParseIntegerOr<int>(validation, 0));
-            validation = tokens.Next();
-            if (validation) {
-              tp = TriggerTypeClass::From_Name(validation);
-            } else {
-              tp = nullptr;
-            }
+            tp = TriggerTypeClass::From_Name(tokens.Next());
           } else {
             dir = static_cast<game::DirType>(0);
             tp = nullptr;

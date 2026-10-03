@@ -57,6 +57,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -1782,8 +1783,8 @@ void InfantryTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryType InfantryTypeClass::From_Name(const char* name) {
-  if (name) {
+InfantryType InfantryTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (InfantryType classid = INFANTRY_E1; classid < INFANTRY_COUNT;
          classid++) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {

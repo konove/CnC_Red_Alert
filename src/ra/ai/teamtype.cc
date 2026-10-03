@@ -245,8 +245,8 @@ void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
-  if (name) {
+TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
+  if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
               name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
@@ -272,8 +272,8 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
-  if (name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
          order++) {
       if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
@@ -485,8 +485,8 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
  *                                                                                             *
  * HISTORY: * 01/26/1996 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass* TeamTypeClass::From_Name(const char* name) {
-  if (name) {
+TeamTypeClass* TeamTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
               name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
@@ -1762,8 +1762,8 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
     auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
       const char* entry = ini.EntryName(INI_Name(), index);
-      std::string value = ini.GetString(INI_Name(), entry, "");
-      team->Fill_In(entry, value.data());
+      const std::string value = ini.GetString(INI_Name(), entry, "");
+      team->Fill_In(entry, value);
     }
   }
 }
@@ -1793,7 +1793,7 @@ void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
  * HISTORY: * 11/28/1994 BR : Created. * 11/29/1995 JLB : Revamped to use new
  *team class.                                          *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(const char* name, char* entry) {
+void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   /*
@@ -1854,9 +1854,9 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     return;
   }
   for (int index = 0; index < ClassCount; index++) {
-    const char* p1 = tokens.Next(",:");
-    const char* p2 = tokens.Next(",:");
-    if (p1 == nullptr || p2 == nullptr) {
+    const std::string_view p1 = tokens.Next(",:");
+    const std::string_view p2 = tokens.Next(",:");
+    if (p1.empty() || p2.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;

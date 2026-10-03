@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -59,8 +60,8 @@ bool IsOnMap(const Coordinate coord) {
 void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // The base belongs to whoever opposes the human player.
   const std::string player = ini.GetString("BASIC", "Player", "GoodGuy");
-  house_ = HouseTypeClass::From_Name(player.c_str()) == HOUSE_GOOD ? HOUSE_BAD
-                                                                   : HOUSE_GOOD;
+  house_ =
+      HouseTypeClass::From_Name(player) == HOUSE_GOOD ? HOUSE_BAD : HOUSE_GOOD;
 
   const int node_count = ini.GetInt(kIniSection, "Count", 0);
 
@@ -68,9 +69,9 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
     const std::string entry = absl::StrFormat("%03d", i);
-    std::string value = ini.GetString(kIniSection, entry, "");
+    const std::string value = ini.GetString(kIniSection, entry, "");
 
-    base::Tokenizer tokens(value.data(), ",");
+    base::Tokenizer tokens(value, ",");
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.
@@ -78,8 +79,8 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
       continue;
     }
 
-    const char* coordinate_text = tokens.Next();
-    if (coordinate_text == nullptr) {
+    const std::string_view coordinate_text = tokens.Next();
+    if (coordinate_text.empty()) {
       continue;
     }
     const auto packed = base::ParseDecimalBits(coordinate_text);

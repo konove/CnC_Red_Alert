@@ -51,6 +51,7 @@
 #include <cstring>
 #include <format>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/strings/match.h"
@@ -658,7 +659,7 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 void TEventClass::Read_INI(base::Tokenizer& tokens) {
-  const char* token = nullptr;
+  std::string_view token;
   switch (TheWorld().new_ini_format()) {
     default:
       Event =
@@ -671,14 +672,14 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
     case 1:
       token = tokens.Next();
       Event = TEVENT_NONE;
-      if (token) {
+      if (!token.empty()) {
         Event = static_cast<TEventType>(base::ParseIntegerOr<int>(token, 0));
       }
 
       token = tokens.Next();
       Team = nullptr;
       Data.Value = -1;
-      if (token) {
+      if (!token.empty()) {
         if (Event_Needs(Event) == NEED_TEAM) {
           Team = TheObjectHeaps().team_type().Slot(
               base::ParseIntegerOr<int>(token, 0));
@@ -785,8 +786,8 @@ NeedType Event_Needs(TEventType event) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TEventType Event_From_Name(const char* name) {
-  if (name) {
+TEventType Event_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
       if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
         return i;

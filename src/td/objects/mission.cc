@@ -68,6 +68,8 @@
  *=============================================================================================*/
 #include "td/objects/mission.h"
 
+#include <string_view>
+
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
@@ -322,9 +324,8 @@ void MissionClass::Assign_Mission(MissionType order) {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/22/1994 JLB : Converted to static
  *member function.                                     *
  *=============================================================================================*/
-MissionType MissionClass::Mission_From_Name(const char* name) {
-
-  if (name) {
+MissionType MissionClass::Mission_From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (MissionType order = MISSION_SLEEP; order < MISSION_COUNT; order++) {
       if (absl::EqualsIgnoreCase(Missions.at(order), name)) {
         return order;

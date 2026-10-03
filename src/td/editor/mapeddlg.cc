@@ -3171,17 +3171,17 @@ int MapEditClass::Import_Triggers() {
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
     const char* tbuffer =
         master_ini.EntryName(TriggerClass::INI_Name(), entry_index);
-    std::string entry =
+    const std::string entry =
         master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
 
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(entry.data(), ",");
-    char* eventptr = tokens.Next();
-    char* actionptr = tokens.Next();
+    base::Tokenizer tokens(entry, ",");
+    const std::string_view eventptr = tokens.Next();
+    const std::string_view actionptr = tokens.Next();
     tokens.Next();  // data, unused
-    char* houseptr = tokens.Next();
+    const std::string_view houseptr = tokens.Next();
 
     /*
     ** Generate the descriptive string
@@ -3314,12 +3314,12 @@ int MapEditClass::Import_Triggers() {
       ** and fill it in.
       */
       if (triggerlist.Is_Checked(entry_index)) {
-        std::string entry =
+        const std::string entry =
             master_ini.GetString(TriggerClass::INI_Name(), tbuffer, "");
 
         auto* trigger =
             base::NewPooled<TriggerClass>();  // Working trigger pointer.
-        trigger->Fill_In(tbuffer, entry.data());
+        trigger->Fill_In(tbuffer, entry);
 
         if (trigger->House != HOUSE_NONE) {
           TheWorld().house_triggers().at(trigger->House).push_back(trigger);
@@ -3466,14 +3466,14 @@ int MapEditClass::Import_Teams() {
   for (int entry_index = 0; entry_index < entry_count; entry_index++) {
     const char* tbuffer =
         master_ini.EntryName(TeamTypeClass::INI_Name(), entry_index);
-    std::string entry =
+    const std::string entry =
         master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
 
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(entry.data(), ",");
-    char* houseptr = tokens.Next();
+    base::Tokenizer tokens(entry, ",");
+    const std::string_view houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused
     }
@@ -3491,10 +3491,9 @@ int MapEditClass::Import_Teams() {
     }
     base::SafeAppend(item, "\t");
 
-    char* classptr = tokens.Next();
+    std::string_view classptr = tokens.Next();
     for (i = 0; i < numclasses; i++) {
-      if (std::string_view(item).size() + std::string_view(classptr).size() <
-          kItemSize) {
+      if (std::string_view(item).size() + classptr.size() < kItemSize) {
         base::SafeAppend(item, classptr);
         classptr = tokens.Next();
       } else {
@@ -3611,11 +3610,11 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(entry_index)) {
-        std::string entry =
+        const std::string entry =
             master_ini.GetString(TeamTypeClass::INI_Name(), tbuffer, "");
 
         auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
-        team->Fill_In(tbuffer, entry.data());
+        team->Fill_In(tbuffer, entry);
       }
     }
   }

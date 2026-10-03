@@ -68,6 +68,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -3785,8 +3786,8 @@ void BuildingTypeClass::One_Time() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-StructType BuildingTypeClass::From_Name(const char* name) {
-  if (name) {
+StructType BuildingTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (StructType classid = STRUCT_WEAP; classid < STRUCT_COUNT; classid++) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

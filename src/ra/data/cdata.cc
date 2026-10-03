@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -1968,8 +1969,8 @@ LandType TemplateTypeClass::Land_Type(int icon) const {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateType TemplateTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+TemplateType TemplateTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const TemplateType index : magic_enum::enum_values<TemplateType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;

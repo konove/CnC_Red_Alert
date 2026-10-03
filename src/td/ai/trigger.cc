@@ -1104,12 +1104,12 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get the trigger entry.
     */
-    std::string entry = ini.GetString(INI_Name(), name, "");
+    const std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     **	Fill in the trigger.
     */
-    trigger->Fill_In(name, entry.data());
+    trigger->Fill_In(name, entry);
 
     /*
     **	Add 'trigger' to the House's list.
@@ -1148,7 +1148,7 @@ void TriggerClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Fill_In(const char* name, char* entry) {
+void TriggerClass::Fill_In(const char* name, std::string_view entry) {
   Validate();
 
   /*
@@ -1190,8 +1190,8 @@ void TriggerClass::Fill_In(const char* name, char* entry) {
   ** 6th token: IsPersistant.  This token was added later, so we must check
   ** for its existence.
   */
-  char* p = tokens.Next();
-  if (p) {
+  const std::string_view p = tokens.Next();
+  if (!p.empty()) {
     IsPersistant = static_cast<PersistantType>(base::ParseIntegerOr<int>(p, 0));
   } else {
     IsPersistant = VOLATILE;
@@ -1271,8 +1271,8 @@ void TriggerClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass* TriggerClass::As_Pointer(const char* name) {
-  if (name == nullptr) {
+TriggerClass* TriggerClass::As_Pointer(std::string_view name) {
+  if (name.empty()) {
     return nullptr;
   }
 
@@ -1335,9 +1335,8 @@ void TriggerClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-EventType TriggerClass::Event_From_Name(const char* name) {
-
-  if (name == nullptr) {
+EventType TriggerClass::Event_From_Name(std::string_view name) {
+  if (name.empty()) {
     return EVENT_NONE;
   }
 
@@ -1377,9 +1376,8 @@ const char* TriggerClass::Name_From_Event(EventType event) {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::ActionType TriggerClass::Action_From_Name(const char* name) {
-
-  if (name == nullptr) {
+TriggerClass::ActionType TriggerClass::Action_From_Name(std::string_view name) {
+  if (name.empty()) {
     return ACTION_NONE;
   }
 

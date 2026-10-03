@@ -53,6 +53,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -222,7 +223,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  *    This converts an ASCII name into a smudge type number. This is typically
  *necessary       * when processing scenario INI files and not used otherwise. *
  *                                                                                             *
- * INPUT:   name  -- Pointer to the name to convert. *
+ * INPUT:   name  -- The name to convert. *
  *                                                                                             *
  * OUTPUT:  Returns with the SmudgeType number that matches the name supplied.
  *If no match     * was found, then SMUDGE_NONE is returned. *
@@ -231,8 +232,8 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeType SmudgeTypeClass::From_Name(const char* name) {
-  if (name) {
+SmudgeType SmudgeTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;

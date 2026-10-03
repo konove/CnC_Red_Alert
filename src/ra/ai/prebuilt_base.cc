@@ -135,12 +135,12 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
   // they were written; the list order is the build order.
   for (int i = 0; i < node_count; i++) {
     const std::string entry = absl::StrFormat("%03d", i);
-    std::string value = ini.GetString(kIniSection, entry, "");
+    const std::string value = ini.GetString(kIniSection, entry);
     if (value.empty()) {
       continue;
     }
 
-    base::Tokenizer tokens(value.data(), ",");
+    base::Tokenizer tokens(value, ",");
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), -1));

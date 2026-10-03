@@ -107,7 +107,7 @@ enum class TActionType {
 };
 using enum TActionType;
 
-TActionType Action_From_Name(const char* name);
+TActionType Action_From_Name(std::string_view name);
 const char* Name_From_Action(TActionType action);
 NeedType Action_Needs(TActionType action);
 

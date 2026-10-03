@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_MISSION_H_
 #define CNC_RED_ALERT_TD_OBJECTS_MISSION_H_
 
+#include <string_view>
+
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
@@ -119,7 +121,7 @@ class MissionClass : public ObjectClass {
   virtual void Set_Mission(MissionType mission);
 
   static const char* Mission_Name(MissionType mission);
-  static MissionType Mission_From_Name(const char* name);
+  static MissionType Mission_From_Name(std::string_view name);
   virtual void Override_Mission(MissionType mission, Target /*unused*/,
                                 Target /*unused*/);
   virtual bool Restore_Mission();

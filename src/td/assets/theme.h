@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_ASSETS_THEME_H_
 #define CNC_RED_ALERT_TD_ASSETS_THEME_H_
 
+#include <string_view>
+
 #include "base/enum_array.h"
 #include "base/installed.h"
 #include "td/core/defines.h"
@@ -73,7 +75,7 @@ class ThemeClass {
  public:
   ThemeClass();
 
-  static ThemeType From_Name(const char* name);
+  static ThemeType From_Name(std::string_view name);
   static int Track_Length(ThemeType theme);
   static int Max_Themes() { return kThemeCount; }
   [[nodiscard]] static const char* Full_Name(ThemeType theme);

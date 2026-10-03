@@ -49,6 +49,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
@@ -699,9 +700,8 @@ void TerrainTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainType TerrainTypeClass::From_Name(const char* name) {
-
-  if (name) {
+TerrainType TerrainTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
       if (absl::EqualsIgnoreCase(name, Pointers.at(index)->IniName)) {
         return index;

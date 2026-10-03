@@ -98,19 +98,18 @@ UtcDate TodayUtc() {
 constexpr int kMessageMax = 512;
 
 //	A server's conndata is "something;host;port". The first field is not
-//	used, and a truncated one leaves host or port empty. Parses a copy, so
-//	the list wolapi handed us is not written to. Returns false when either
-//	field is missing.
+//	used, and a truncated one leaves host or port empty. The view stops at
+//	the array's end even if wolapi left out the terminator. Returns false
+//	when either field is missing.
 template <int N, int M>
 bool ParseHostAndPort(const unsigned char (&conndata)[N], char (&host)[M],
                       int& port) {
-  char buffer[N];
-  base::SafeCopy(buffer, WolText(conndata));
-  base::Tokenizer tokens(buffer, ";");
+  const std::string_view text(WolText(conndata), N);
+  base::Tokenizer tokens(text.substr(0, text.find('\0')), ";");
   tokens.Next();  // label, unused
-  const char* const host_text = tokens.Next();
-  const char* const port_text = tokens.Next();
-  if (host_text == nullptr || port_text == nullptr) {
+  const std::string_view host_text = tokens.Next();
+  const std::string_view port_text = tokens.Next();
+  if (host_text.empty() || port_text.empty()) {
     return false;
   }
   base::SafeCopy(host, host_text);

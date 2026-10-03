@@ -60,6 +60,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/pooled.h"
@@ -1223,8 +1224,8 @@ void InfantryTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-InfantryType InfantryTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+InfantryType InfantryTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const InfantryType classid : magic_enum::enum_values<InfantryType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

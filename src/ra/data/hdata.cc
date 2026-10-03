@@ -50,6 +50,7 @@
 
 #include <cstring>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/fixed.h"
@@ -400,8 +401,8 @@ void HouseTypeClass::Init_Heap() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+HousesType HouseTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(house).IniName, name)) {
         return house;

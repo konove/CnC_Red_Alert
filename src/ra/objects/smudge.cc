@@ -53,6 +53,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -310,18 +311,18 @@ void SmudgeClass::Read_INI(engine::file::IniFile& ini) {
   for (int index = 0; index < len; index++) {
     const char* entry = ini.EntryName(INI_Name(), index);
 
-    std::string value = ini.GetString(INI_Name(), entry, "");
-    base::Tokenizer tokens(value.data(), ",");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
+    base::Tokenizer tokens(value, ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {
-      const char* ptr = tokens.Next();
-      if (ptr != nullptr) {
+      std::string_view ptr = tokens.Next();
+      if (!ptr.empty()) {
         int data = 0;
         const Cell cell =
             Cell::FromIndex(base::ParseIntegerOr<int16_t>(ptr, 0));
         ptr = tokens.Next();
-        if (ptr != nullptr) {
+        if (!ptr.empty()) {
           data = base::ParseIntegerOr<int>(ptr, 0);
         }
         base::NewPooled<SmudgeClass>(smudge, cell.Center());

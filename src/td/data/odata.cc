@@ -56,6 +56,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
@@ -685,7 +686,7 @@ void OverlayTypeClass::One_Time() {}
  *representation. The scenario loader uses this routine * to construct the map
  *from the INI control file.                                          *
  *                                                                                             *
- * INPUT:   name  -- Pointer to the ASCII name of the overlay. *
+ * INPUT:   name  -- The ASCII name of the overlay. *
  *                                                                                             *
  * OUTPUT:  Returns with the overlay number. If the name had no match, * then
  *returns with OVERLAY_NONE. *
@@ -694,8 +695,8 @@ void OverlayTypeClass::One_Time() {}
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayType OverlayTypeClass::From_Name(const char* name) {
-  if (name) {
+OverlayType OverlayTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;

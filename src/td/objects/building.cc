@@ -3501,12 +3501,12 @@ void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get a building entry.
     */
-    std::string value = ini.GetString(INI_Name(), key, "");
+    const std::string value = ini.GetString(INI_Name(), key, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value.data(), ",");
+    base::Tokenizer tokens(value, ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
@@ -3536,9 +3536,10 @@ void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
           base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
-      **	6th token: triggername (can be NULL).
+      **	6th token: triggername (can be missing).
       */
-      char* trigname = tokens.Next();  // building's trigger's name
+      const std::string_view trigname =
+          tokens.Next();  // building's trigger's name
 
       auto* b = base::NewPooled<BuildingClass>(
           classid, bhouse);  // Working unit pointer.

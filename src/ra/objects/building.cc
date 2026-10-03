@@ -122,6 +122,7 @@
 #include <cstring>
 #include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -5803,12 +5804,12 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
     /*
     **	Get a building entry.
     */
-    std::string value = ini.GetString(INI_Name(), entry, "");
+    const std::string value = ini.GetString(INI_Name(), entry, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value.data(), ",");
+    base::Tokenizer tokens(value, ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
@@ -5838,19 +5839,19 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
           base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
-      **	6th token: triggername (can be nullptr).
+      **	6th token: triggername (can be empty).
       */
-      char* trigname = tokens.Next();  // building's trigger's name
+      const std::string_view trigname = tokens.Next();
 
       bool sellable = false;
-      const char* token_pointer = tokens.Next();
-      if (token_pointer) {
+      std::string_view token_pointer = tokens.Next();
+      if (!token_pointer.empty()) {
         sellable = base::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 
       bool rebuild = false;
       token_pointer = tokens.Next();
-      if (token_pointer) {
+      if (!token_pointer.empty()) {
         rebuild = base::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 

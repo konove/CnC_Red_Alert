@@ -155,19 +155,19 @@ bool PutCrateType(engine::file::IniFile& ini, std::string_view section,
 // Converts an INI owner specification into a house bitfield, one bit per
 // HousesType. The names "soviet", "allies" and "allied" expand to every house
 // on that side rather than to a single house.
-uint32_t Owner_From_Name(const char* text);
+uint32_t Owner_From_Name(std::string_view text);
 
 // Converts an ASCII crate name into a crate type, defaulting to CRATE_MONEY
 // when the name is unrecognized.
-CrateType Crate_From_Name(const char* name);
+CrateType Crate_From_Name(std::string_view name);
 
 // Converts a theater name from the scenario INI into a theater number, or
 // THEATER_NONE if it matches nothing.
-TheaterType Theater_From_Name(const char* name);
+TheaterType Theater_From_Name(std::string_view name);
 
 // Converts a reinforcement source name from the scenario INI into a
 // SourceType, or SOURCE_NONE if it matches nothing.
-SourceType Source_From_Name(const char* name);
+SourceType Source_From_Name(std::string_view name);
 
 }  // namespace ra
 

@@ -3091,12 +3091,12 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	Get an infantry entry
     */
-    std::string value = ini.GetString(INI_Name(), key, "");
+    const std::string value = ini.GetString(INI_Name(), key, "");
 
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value.data(), ",\n\r");
+    base::Tokenizer tokens(value, ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {

@@ -33,13 +33,11 @@
   - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
     table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
 - Decide what a warhead with fewer than five `Verses` entries should get
-  - `ra/objects/warhead.cc:173-177` reads each missing entry as `Fixed::FromString(nullptr)`, i.e.
-    0%, so that armor takes no damage from the warhead; keeping the previous modifier instead would
-    change how such a modded rules file plays
+  - `ra/objects/warhead.cc` reads each missing entry as `Fixed::FromString()` of an empty token,
+    i.e. 0%, so that armor takes no damage from the warhead; keeping the previous modifier instead
+    would change how such a modded rules file plays
   - The default `"100%%,..."` there is a leftover printf escape; it reads as 100% only because the
     percentage parse stops at the first `%`
-  - Once the warhead (or `base::Tokenizer::Next()`, returning a `std::string_view`) handles the
-    missing token, `Fixed::FromString(const char*)` can go: it exists only for that null
 - Decide how `Fixed::FromString()` (`base/fixed.cc`) should read "12.5%" and oversized numbers
   - "12.5%" reads as 12%, since the percentage takes only the leading digits; the original read it
     as the decimal 12.5, because it counted a `%` only right after the digits. A whole part past
@@ -669,6 +667,21 @@
   - `IniFile::LoadVerified()` reports `kDigestMismatch`; `Read_Scenario_INI()` (`ra/ai/scenario.cc`)
     accepts it, as it has since the port. The original refused tampered official scenarios and
     exempted multiplayer maps 1-24
+
+- Leftovers from the `base::Tokenizer` move to `std::string_view` (2026-10-03)
+  - Delete the `const char*` overloads of `ParseInteger`, `ParseHex`, `ParseIntegerOr` and
+    `ParseHexOr` (`base/strings/number_parse.h`) and of `Fixed::FromString` (`base/fixed.h`) once no
+    caller can pass null. They existed for the null token `Tokenizer::Next()` used to return at the
+    end of the text; it returns an empty view now
+  - Check that no Red Alert type, team type or trigger type can have an empty name. The converted
+    `From_Name()`/`As_Pointer()` lookups return none for `""` without scanning, where they used to
+    compare it against every entry (Tiberian Dawn's callers were checked)
+  - Return a `std::string_view` from `DropListClass::Current_Item()`. It returns null for an empty
+    list, so `ra/ai/trigtype.cc` wraps it in a file-local `SelectedName()`
+  - Three callees still need a NUL-terminated `const char*`, so their callers pass
+    `std::string(token).c_str()`: `IconListClass::Add_Item_Detail()` (`ra/ui/iconlist`, virtual,
+    stores the pointer), Tiberian Dawn's `NullModemClass::Send_Modem_Command()`, and the `name`
+    parameter of the team and trigger `Fill_In()`, which feeds `Set_Name()`
 
 ## Testing
 

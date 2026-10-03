@@ -45,6 +45,7 @@
 #include <cstring>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -166,7 +167,7 @@ class TriggerClass {
   **	File I/O routines
   */
   static void Read_INI(const engine::file::IniFile& ini);
-  void Fill_In(const char* name, char* entry);
+  void Fill_In(const char* name, std::string_view entry);
   static void Write_INI(engine::file::IniFile& ini, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
   // Field-wise saved-game support, defined in ioobj.cc.
@@ -176,7 +177,7 @@ class TriggerClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give the mnemonic
   */
-  static TriggerClass* As_Pointer(const char* name);
+  static TriggerClass* As_Pointer(std::string_view name);
 
   /*
   **	Data Access routines
@@ -202,9 +203,9 @@ class TriggerClass {
   static bool Event_Need_House(EventType event);
   static bool Event_Need_Data(EventType event);
   static bool Action_Need_Team(ActionType action);
-  static EventType Event_From_Name(const char* name);
+  static EventType Event_From_Name(std::string_view name);
   static const char* Name_From_Event(EventType event);
-  static ActionType Action_From_Name(const char* name);
+  static ActionType Action_From_Name(std::string_view name);
   static const char* Name_From_Action(ActionType action);
 
   /*

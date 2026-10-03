@@ -45,6 +45,7 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -193,7 +194,7 @@ class HouseTypeClass : public AbstractTypeClass {
   }
   void operator delete(void* ptr);
 
-  static HousesType From_Name(const char* name);
+  static HousesType From_Name(std::string_view name);
   static HouseTypeClass& As_Reference(HousesType house);
   static void One_Time();
   static void Init_Heap();
@@ -796,7 +797,7 @@ class BuildingTypeClass : public TechnoTypeClass {
 
   static void Init_Heap();
   static BuildingTypeClass& As_Reference(StructType type);
-  static StructType From_Name(const char* name);
+  static StructType From_Name(std::string_view name);
   static void Init(TheaterType theater);
   static void One_Time();
   static void Prep_For_Add();
@@ -986,7 +987,7 @@ class UnitTypeClass : public TechnoTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static UnitType From_Name(const char* name);
+  static UnitType From_Name(std::string_view name);
   static UnitTypeClass& As_Reference(UnitType type);
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1083,7 +1084,7 @@ class VesselTypeClass : public TechnoTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static VesselType From_Name(const char* name);
+  static VesselType From_Name(std::string_view name);
   static VesselTypeClass& As_Reference(VesselType type);
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1222,7 +1223,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static InfantryType From_Name(const char* name);
+  static InfantryType From_Name(std::string_view name);
   static InfantryTypeClass& As_Reference(InfantryType type);
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1314,7 +1315,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static AircraftType From_Name(const char* name);
+  static AircraftType From_Name(std::string_view name);
   static AircraftTypeClass& As_Reference(AircraftType a);
   static void Init(TheaterType /*unused*/) {}
   static void One_Time();
@@ -1559,7 +1560,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static TerrainType From_Name(const char* name);
+  static TerrainType From_Name(std::string_view name);
   static TerrainTypeClass& As_Reference(TerrainType type);
   static void Init(TheaterType theater = THEATER_TEMPERATE);
   static void One_Time();
@@ -1619,7 +1620,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   void operator delete(void* ptr);
 
   static void Init_Heap();
-  static TemplateType From_Name(const char* name);
+  static TemplateType From_Name(std::string_view name);
   static TemplateTypeClass& As_Reference(TemplateType type);
   static void Init(TheaterType theater);
   static void One_Time();
@@ -1913,7 +1914,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static OverlayType From_Name(const char* name);
+  static OverlayType From_Name(std::string_view name);
   static OverlayTypeClass& As_Reference(OverlayType type);
   static void Init(TheaterType /*theater*/);
   static void One_Time();
@@ -1984,7 +1985,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   void operator delete(void* pointer);
 
   static void Init_Heap();
-  static SmudgeType From_Name(const char* name);
+  static SmudgeType From_Name(std::string_view name);
   static SmudgeTypeClass& As_Reference(SmudgeType type);
   static void Init(TheaterType /*theater*/);
   static void One_Time();

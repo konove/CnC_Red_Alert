@@ -54,6 +54,7 @@
 #include <format>
 #include <span>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -325,16 +326,14 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
       Action =
           static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-      const char* ptr = tokens.Next();
-      Team = TeamTypeClass::From_Name(ptr);
+      Team = TeamTypeClass::From_Name(tokens.Next());
       DCHECK(Action_Needs(Action) != NEED_TEAM || Team != nullptr);
 
       /*
       **	Since triggers refer to other triggers, only record a copy of
       *the trigger text *	name. This will be fixed up later.
       */
-      const char* trig_name = tokens.Next();
-      PendingTriggerName = trig_name != nullptr ? trig_name : "";
+      PendingTriggerName = tokens.Next();
 
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
@@ -843,8 +842,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-TActionType Action_From_Name(const char* name) {
-  if (name == nullptr) {
+TActionType Action_From_Name(const std::string_view name) {
+  if (name.empty()) {
     return TACTION_NONE;
   }
 

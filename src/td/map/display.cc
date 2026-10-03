@@ -1182,7 +1182,7 @@ void DisplayClass::Read_INI(const engine::file::IniFile& ini) {
       **	Assign trigger pointer using trigger name.
       */
       base::At(TheWorld().cell_triggers(), cell) =
-          TriggerClass::As_Pointer(trigger_name.c_str());
+          TriggerClass::As_Pointer(trigger_name);
       if (base::At(TheWorld().cell_triggers(), cell)) {
         (*this).at(Cell::FromIndex(cell)).IsTrigger = true;
         if (base::At(TheWorld().cell_triggers(), cell)) {

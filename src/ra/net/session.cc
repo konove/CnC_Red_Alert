@@ -575,13 +575,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
       auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
       //	Read the entire entry in
-      std::string phone_text =
+      const std::string phone_text =
           ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
 
       //	Extract name, phone # & serial port settings
-      base::Tokenizer tokens(phone_text.data(), "|");
-      char* tokenptr = tokens.Next();  // ptr to token
-      if (tokenptr) {
+      base::Tokenizer tokens(phone_text, "|");
+      std::string_view tokenptr = tokens.Next();
+      if (!tokenptr.empty()) {
         base::SafeCopy(phone->Name, tokenptr);
         std::ranges::transform(base::MutableCString(phone->Name), phone->Name,
                                absl::ascii_toupper);
@@ -590,7 +590,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         base::SafeCopy(phone->Number, tokenptr);
         std::ranges::transform(base::MutableCString(phone->Number),
                                phone->Number, absl::ascii_toupper);
@@ -599,7 +599,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         if (const auto value = base::ParseHex<int>(tokenptr)) {
           phone->Settings.Port = *value;
         }
@@ -608,14 +608,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         phone->Settings.IRQ = base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.IRQ = -1;
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         phone->Settings.Baud = base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.Baud = -1;
@@ -630,7 +630,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       ** then we need to skip this section.
       */
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         base::SafeCopy(buf, tokenptr);
 
         // find dial method
@@ -656,13 +656,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
               base::ParseIntegerOr<int>(tokenptr, 0) != 0;
 
           tokenptr = tokens.Next();
-          if (tokenptr) {
+          if (!tokenptr.empty()) {
             phone->Settings.ErrorCorrection =
                 base::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
 
           tokenptr = tokens.Next();
-          if (tokenptr) {
+          if (!tokenptr.empty()) {
             phone->Settings.HardwareFlowControl =
                 base::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
@@ -671,7 +671,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
         }
       }
 
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         base::SafeCopy(buf, tokenptr);
 
         //	find dial method
@@ -692,7 +692,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         phone->Settings.InitStringIndex =
             base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
@@ -700,7 +700,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         phone->Settings.CallWaitStringIndex =
             base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
@@ -708,7 +708,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       tokenptr = tokens.Next();
-      if (tokenptr) {
+      if (!tokenptr.empty()) {
         base::SafeCopy(phone->Settings.CallWaitString, tokenptr);
       } else {
         phone->Settings.CallWaitString[0] = 0;

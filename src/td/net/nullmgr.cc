@@ -66,7 +66,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -379,31 +378,25 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   if (settings->InitStringIndex == -1) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
-    const size_t str_length =
-        2 + std::string_view(TheNetwork()
-                                 .init_strings()
-                                 .at(base::ToSize(settings->InitStringIndex))
-                                 .get())
-                .size();
     /*
     ** Split up the init string into seperate strings if it contains one or more
     *'|' characters.
     ** This character acts as a carriage return/pause.
     */
-    std::vector<char> istr(str_length);
-    base::SafeCopy(istr, TheNetwork()
-                             .init_strings()
-                             .at(base::ToSize(settings->InitStringIndex))
-                             .get());
+    const std::string_view init_string =
+        TheNetwork()
+            .init_strings()
+            .at(base::ToSize(settings->InitStringIndex))
+            .get();
 
     /*
     ** Tokenise the string and send it in chunks
     */
-    base::Tokenizer tokens(istr.data(), "|");
-    char* tokenptr = tokens.Next();
-    while (tokenptr) {
-      status =
-          Send_Modem_Command(tokenptr, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
+    base::Tokenizer tokens(init_string, "|");
+    std::string_view tokenptr = tokens.Next();
+    while (!tokenptr.empty()) {
+      status = Send_Modem_Command(std::string(tokenptr).c_str(), '\r', buffer,
+                                  81, DEFAULT_TIMEOUT, 1);
       /*
       ** Handle error case.
       */

@@ -107,7 +107,7 @@ enum class TEventType {
 };
 using enum TEventType;
 
-TEventType Event_From_Name(const char* name);
+TEventType Event_From_Name(std::string_view name);
 NeedType Event_Needs(TEventType event);
 const char* Name_From_Event(TEventType event);
 

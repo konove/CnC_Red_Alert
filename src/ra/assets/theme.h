@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_ASSETS_THEME_H_
 #define CNC_RED_ALERT_RA_ASSETS_THEME_H_
 
+#include <string_view>
+
 #include "base/enum_array.h"
 #include "base/installed.h"
 #include "ra/core/defines.h"
@@ -72,7 +74,7 @@ class ThemeClass {
  public:
   ThemeClass();
 
-  static ThemeType From_Name(const char* name);
+  static ThemeType From_Name(std::string_view name);
   [[nodiscard]] static ThemeType Next_Song(ThemeType theme);
   [[nodiscard]] ThemeType What_Is_Playing() const { return Score; }
   [[nodiscard]] static bool Is_Allowed(ThemeType index);

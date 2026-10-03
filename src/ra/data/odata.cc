@@ -61,6 +61,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/numeric.h"
@@ -675,8 +676,8 @@ void OverlayTypeClass::One_Time() {}
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayType OverlayTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+OverlayType OverlayTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;

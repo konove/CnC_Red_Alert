@@ -75,6 +75,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -3204,8 +3205,8 @@ void BuildingTypeClass::One_Time() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-StructType BuildingTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+StructType BuildingTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const StructType classid : magic_enum::enum_values<StructType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

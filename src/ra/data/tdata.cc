@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/numeric.h"
@@ -559,8 +560,8 @@ void TerrainTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainType TerrainTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+TerrainType TerrainTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
       if (absl::EqualsIgnoreCase(name, As_Reference(index).IniName)) {
         return index;

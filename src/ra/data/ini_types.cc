@@ -212,11 +212,12 @@ bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
 uint32_t GetOwners(const engine::file::IniFile& ini, std::string_view section,
                    std::string_view entry, uint32_t defvalue) {
   uint32_t ownable = defvalue;
-  std::string value = ini.GetString(section, entry, "");
+  const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
     ownable = 0;
-    base::Tokenizer tokens(value.data(), ",");
-    while (const char* name = tokens.Next()) {
+    base::Tokenizer tokens(value, ",");
+    for (std::string_view name = tokens.Next(); !name.empty();
+         name = tokens.Next()) {
       ownable |= Owner_From_Name(name);
     }
   }
@@ -305,8 +306,7 @@ bool PutOwners(engine::file::IniFile& ini, std::string_view section,
 game::ArmorType GetArmorType(const engine::file::IniFile& ini,
                              std::string_view section, std::string_view entry,
                              game::ArmorType defvalue) {
-  return Armor_From_Name(
-      ini.GetString(section, entry, ArmorName.at(defvalue)).c_str());
+  return Armor_From_Name(ini.GetString(section, entry, ArmorName.at(defvalue)));
 }
 
 /***********************************************************************************************
@@ -409,8 +409,7 @@ bool PutVocType(engine::file::IniFile& ini, std::string_view section,
  *=============================================================================================*/
 AnimType GetAnimType(const engine::file::IniFile& ini, std::string_view section,
                      std::string_view entry, AnimType defvalue) {
-  return Anim_From_Name(
-      ini.GetString(section, entry, Anim_Name(defvalue)).c_str());
+  return Anim_From_Name(ini.GetString(section, entry, Anim_Name(defvalue)));
 }
 
 /***********************************************************************************************
@@ -447,7 +446,7 @@ UnitType GetUnitType(const engine::file::IniFile& ini, std::string_view section,
   if (defvalue != UNIT_NONE) {
     def = UnitTypeClass::As_Reference(defvalue).Name();
   }
-  return UnitTypeClass::From_Name(ini.GetString(section, entry, def).c_str());
+  return UnitTypeClass::From_Name(ini.GetString(section, entry, def));
 }
 
 bool PutUnitType(engine::file::IniFile& ini, std::string_view section,
@@ -485,7 +484,7 @@ WeaponType GetWeaponType(const engine::file::IniFile& ini,
                          WeaponType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return Weapon_From_Name(value.c_str());
+    return Weapon_From_Name(value);
   }
   return defvalue;
 }
@@ -606,7 +605,7 @@ OverlayType GetOverlayType(const engine::file::IniFile& ini,
                            OverlayType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return OverlayTypeClass::From_Name(value.c_str());
+    return OverlayTypeClass::From_Name(value);
   }
   return defvalue;
 }
@@ -733,7 +732,7 @@ HousesType GetHousesType(const engine::file::IniFile& ini,
                          HousesType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return HouseTypeClass::From_Name(value.c_str());
+    return HouseTypeClass::From_Name(value);
   }
   return defvalue;
 }
@@ -848,7 +847,7 @@ TheaterType GetTheaterType(const engine::file::IniFile& ini,
                            TheaterType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return Theater_From_Name(value.c_str());
+    return Theater_From_Name(value);
   }
   return defvalue;
 }
@@ -899,7 +898,7 @@ TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
                                  std::string_view entry) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return TriggerTypeClass::From_Name(value.c_str());
+    return TriggerTypeClass::From_Name(value);
   }
   return nullptr;
 }
@@ -952,7 +951,7 @@ ThemeType GetThemeType(const engine::file::IniFile& ini,
                        ThemeType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return ThemeClass::From_Name(value.c_str());
+    return ThemeClass::From_Name(value);
   }
   return defvalue;
 }
@@ -1008,7 +1007,7 @@ SourceType GetSourceType(const engine::file::IniFile& ini,
                          SourceType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return Source_From_Name(value.c_str());
+    return Source_From_Name(value);
   }
   return defvalue;
 }
@@ -1063,7 +1062,7 @@ CrateType GetCrateType(const engine::file::IniFile& ini,
                        CrateType defvalue) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return Crate_From_Name(value.c_str());
+    return Crate_From_Name(value);
   }
   return defvalue;
 }
@@ -1115,10 +1114,9 @@ bool PutCrateType(engine::file::IniFile& ini, std::string_view section,
 TerrainType GetTerrainType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            TerrainType defvalue) {
-  std::string value = ini.GetString(section, entry, "");
+  const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return TerrainTypeClass::From_Name(
-        base::Tokenizer(value.data(), ",").Next());
+    return TerrainTypeClass::From_Name(base::Tokenizer(value, ",").Next());
   }
   return defvalue;
 }
@@ -1174,11 +1172,12 @@ uint64_t GetBuildings(const engine::file::IniFile& ini,
                       std::string_view section, std::string_view entry,
                       uint64_t defvalue) {
   uint64_t pre = 0;
-  std::string value = ini.GetString(section, entry, "");
+  const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
     pre = 0;
-    base::Tokenizer tokens(value.data(), ",");
-    while (const char* token = tokens.Next()) {
+    base::Tokenizer tokens(value, ",");
+    for (std::string_view token = tokens.Next(); !token.empty();
+         token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {
         pre |= base::Bit<uint64_t>(building);
@@ -1248,7 +1247,7 @@ bool PutBuildings(engine::file::IniFile& ini, std::string_view section,
   return true;
 }
 
-uint32_t Owner_From_Name(const char* text) {
+uint32_t Owner_From_Name(const std::string_view text) {
   uint32_t ownable = 0;
   if (absl::EqualsIgnoreCase(text, "soviet")) {
     ownable |= kHouseFlagSoviet;
@@ -1266,8 +1265,8 @@ uint32_t Owner_From_Name(const char* text) {
   return ownable;
 }
 
-CrateType Crate_From_Name(const char* name) {
-  if (name != nullptr) {
+CrateType Crate_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
       if (absl::EqualsIgnoreCase(name, CrateNames.at(crate))) {
         return crate;
@@ -1277,8 +1276,8 @@ CrateType Crate_From_Name(const char* name) {
   return CRATE_MONEY;
 }
 
-TheaterType Theater_From_Name(const char* name) {
-  if (name != nullptr) {
+TheaterType Theater_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const TheaterType index : magic_enum::enum_values<TheaterType>()) {
       if (absl::EqualsIgnoreCase(name, Theaters.at(index).Name)) {
         return index;
@@ -1288,8 +1287,8 @@ TheaterType Theater_From_Name(const char* name) {
   return THEATER_NONE;
 }
 
-SourceType Source_From_Name(const char* name) {
-  if (name) {
+SourceType Source_From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (absl::EqualsIgnoreCase(SourceName.at(source), name)) {
         return source;

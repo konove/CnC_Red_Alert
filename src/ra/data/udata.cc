@@ -59,6 +59,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -980,8 +981,8 @@ void UnitTypeClass::Init_Heap() {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+UnitType UnitTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const UnitType classid : magic_enum::enum_values<UnitType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

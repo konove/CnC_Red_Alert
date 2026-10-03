@@ -45,6 +45,7 @@
 */
 #include <cstring>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -262,8 +263,8 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
  * HISTORY: * 10/07/1992 JLB : Created. * 05/21/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-HousesType HouseTypeClass::From_Name(const char* name) {
-  if (name) {
+HousesType HouseTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
       if (absl::EqualsIgnoreCase(Pointers.at(house)->IniName, name)) {
         return house;

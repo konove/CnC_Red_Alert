@@ -60,13 +60,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <string_view>
 
+#include "absl/strings/ascii.h"
 #include "base/enum_array.h"
 #include "base/strings/number_parse.h"
-#include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
-#include "engine/stream/readline.h"
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
@@ -692,16 +692,15 @@ bool RulesClass::Powerups(engine::file::IniFile& ini) {
   static const char* const POWERUPS = "Powerups";
   if (ini.HasSection(POWERUPS)) {
     for (const CrateType crate : magic_enum::enum_values<CrateType>()) {
-      std::string value =
+      const std::string value =
           ini.GetString(POWERUPS, CrateNames.at(crate), "0,NONE");
       if (!value.empty()) {
         /*
         **	Share odds.
         */
-        base::Tokenizer tokens(value.data(), ",");
-        char* token = tokens.Next();
-        if (token) {
-          strtrim(base::MutableCString(token));
+        base::Tokenizer tokens(value, ",");
+        std::string_view token = tokens.Next();
+        if (!token.empty()) {
           crate_shares_.at(crate) = base::ParseIntegerOr<int>(token, 0);
         }
 
@@ -709,21 +708,20 @@ bool RulesClass::Powerups(engine::file::IniFile& ini) {
         **	Animation to use.
         */
         token = tokens.Next();
-        if (token) {
-          strtrim(base::MutableCString(token));
-          crate_anims_.at(crate) = Anim_From_Name(token);
+        if (!token.empty()) {
+          crate_anims_.at(crate) =
+              Anim_From_Name(absl::StripAsciiWhitespace(token));
         }
 
         /*
         **	Optional data number.
         */
         token = tokens.Next();
-        if (token != nullptr) {
-          if ((std::string_view(token).contains('.') ||
-               std::string_view(token).contains('%'))) {
-            crate_data_.at(crate) = Fixed::FromString(token) * 256;
+        if (!token.empty()) {
+          if (token.contains('.') || token.contains('%')) {
+            crate_data_.at(crate) =
+                Fixed::FromString(absl::StripAsciiWhitespace(token)) * 256;
           } else {
-            strtrim(base::MutableCString(token));
             crate_data_.at(crate) = base::ParseIntegerOr<int>(token, 0);
           }
         }
@@ -801,16 +799,16 @@ bool RulesClass::Themes(engine::file::IniFile& ini) {
         uint32_t owners =
             kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 
-        std::string value =
+        const std::string value =
             ini.GetString(THEMECONTROL, ThemeClass::Base_Name(theme), "");
-        base::Tokenizer tokens(value.data(), ",");
-        const char* token = tokens.Next();
-        if (token != nullptr) {
+        base::Tokenizer tokens(value, ",");
+        std::string_view token = tokens.Next();
+        if (!token.empty()) {
           scen = base::ParseIntegerOr<int>(token, 0);
         }
 
         token = tokens.Next();
-        if (token != nullptr) {
+        if (!token.empty()) {
           owners = Owner_From_Name(token);
         }
 

@@ -57,6 +57,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/cardinal.h"
@@ -1361,8 +1362,8 @@ std::span<const int16_t> UnitTypeClass::Occupy_List(bool /*placement*/) const {
  * HISTORY: * 10/07/1992 JLB : Created. * 05/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-UnitType UnitTypeClass::From_Name(const char* name) {
-  if (name) {
+UnitType UnitTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (UnitType classid = UNIT_HTANK; classid < UNIT_COUNT; classid++) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {
         return classid;

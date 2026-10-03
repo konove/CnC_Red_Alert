@@ -62,6 +62,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string_view>
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
@@ -120,8 +121,8 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-AnimType Anim_From_Name(const char* name) {
-  if (name == nullptr) {
+AnimType Anim_From_Name(const std::string_view name) {
+  if (name.empty()) {
     return ANIM_NONE;
   }
 

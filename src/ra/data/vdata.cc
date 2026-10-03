@@ -60,6 +60,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/pooled.h"
@@ -630,8 +631,8 @@ std::span<const int16_t> VesselTypeClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-VesselType VesselTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+VesselType VesselTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const VesselType classid : magic_enum::enum_values<VesselType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(classid).IniName, name)) {
         return classid;

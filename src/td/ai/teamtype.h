@@ -40,6 +40,7 @@
 #include <cstddef>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -134,7 +135,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	File I/O routines
   */
   static void Read_INI(const engine::file::IniFile& ini);
-  void Fill_In(const char* name, char* entry);
+  void Fill_In(const char* name, std::string_view entry);
   static void Write_INI(engine::file::IniFile& ini, bool refresh);
   static void Read_Old_INI(const engine::file::IniFile& ini);
   static const char* INI_Name() { return "TeamTypes"; }
@@ -145,7 +146,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	As_Pointer gets a pointer to the trigger object give its name
   */
-  static TeamTypeClass* As_Pointer(const char* name);
+  static TeamTypeClass* As_Pointer(std::string_view name);
 
   /*
   **	Processing routines
@@ -160,7 +161,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Utility routines
   */
   static const char* Name_From_Mission(TeamMissionType order);
-  static TeamMissionType Mission_From_Name(const char* name);
+  static TeamMissionType Mission_From_Name(std::string_view name);
   static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
                                                  uint64_t utypes,
                                                  uint64_t itypes, bool alerted);

@@ -2637,7 +2637,7 @@ void WOL_GameSetupDialog::SendParams() {
 }
 
 //***********************************************************************************************
-bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
+bool WOL_GameSetupDialog::AcceptParams(const char* szParams) {
   if (szParams == nullptr) {
     return false;
   }
@@ -2650,47 +2650,45 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
 
   base::Tokenizer tokens(szParams, " ");
 
-  const char* szToken = tokens.Next();
+  std::string_view szToken = tokens.Next();
   nGuestLastParamID = base::ParseIntegerOr<int>(szToken, 0);
 
   //	Read in length of following string.
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   int iLen = base::ParseIntegerOr<int>(szToken, -1);
   //	The string follows the 3-digit length and may contain spaces, so it is
   //	read from the unparsed text rather than as a token.
-  char* const szRemaining = tokens.Remaining();
-  if (std::string_view(szToken).size() != 3 || iLen < 0 ||
+  const std::string_view szRemaining = tokens.Remaining();
+  if (szToken.size() != 3 || iLen < 0 ||
       std::cmp_greater_equal(
           iLen, sizeof(TheSession().Options.ScenarioDescription)) ||
-      static_cast<size_t>(iLen) >= std::string_view(szRemaining).size()) {
+      static_cast<size_t>(iLen) >= szRemaining.size()) {
     return false;
   }
   //	Read in string.
   base::SafeCopy(TheSession().Options.ScenarioDescription,
-                 std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
+                 szRemaining.substr(0, base::ToSize(iLen)));
   //	Null-terminate.
   base::At(TheSession().Options.ScenarioDescription, iLen) = 0;
   //	Resume parsing after the string.
-  tokens = base::Tokenizer(
-      base::MutableCString(szRemaining).subspan(base::ToSize(iLen) + 1).data(),
-      " ");
+  tokens = base::Tokenizer(szRemaining.substr(base::ToSize(iLen) + 1), " ");
 
   // debugprint( "scenario description is '%s'\n",
   // Session.Options.ScenarioDescription ); debugprint( "remaining:
   // '%s'\n", szRemaining );
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().ScenarioFileLength =
       static_cast<unsigned int>(base::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   base::SafeCopy(TheSession().ScenarioFileName, szToken);
@@ -2703,7 +2701,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	Method changed.
   //	Check if there is a digest.
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   iLen = base::ParseIntegerOr<int>(
@@ -2723,149 +2721,148 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     //	There is a digest.
     szToken = tokens.Next();  //	(Digests can't have spaces in the them.)
                               // debugprint( "digest: '%s'\n", szToken );
-    if (!szToken) {
+    if (szToken.empty()) {
       return false;
     }
     std::ranges::fill(TheSession().ScenarioDigest, 0);
-    std::ranges::copy(std::string_view(szToken).substr(
-                          0, sizeof(TheSession().ScenarioDigest)),
+    std::ranges::copy(szToken.substr(0, sizeof(TheSession().ScenarioDigest)),
                       std::begin(TheSession().ScenarioDigest));
   }
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().ScenarioIsOfficial = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.Credits = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.Bases = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.Tiberium = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.Goodies = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheWorld().build_level() = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.UnitCount = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSession().Options.AIPlayers = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheWorld().seed() = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsShadowGrow =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsSpeedBuild =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsFromInstall =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsCaptureTheFlag =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsInert = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsThreePoint =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsTGrowth = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheSpecial().IsTSpread = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   TheOptions().GameSpeed =
       static_cast<unsigned int>(base::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   //	"Version"	= atoi( szToken );
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   bAftermathUnits = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   bSlowUnitBuildRate = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
-  if (!szToken) {
+  if (szToken.empty()) {
     return false;
   }
   const int iRulesID = base::ParseIntegerOr<int>(szToken, 0);
@@ -3270,7 +3267,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
 }
 
 //***********************************************************************************************
-void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
+void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(const char* szMsg) {
   if (szMsg == nullptr) {
     return;
   }
@@ -3278,10 +3275,10 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   //	szMsg has already been stripped of 2 bytes header.
   base::Tokenizer tokens(szMsg, " ");
 
-  const char* szToken = tokens.Next();
+  std::string_view szToken = tokens.Next();
   const auto player_count = base::ParseInteger<int>(szToken);
   if (!player_count || *player_count < 0 || *player_count > 8 ||
-      std::string_view(szToken).size() != 2) {
+      szToken.size() != 2) {
     return;
   }
   const auto nPlayers = static_cast<unsigned int>(*player_count);
@@ -3292,25 +3289,20 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     const int iLen = base::ParseIntegerOr<int>(szToken, -1);
     //	The name follows the 2-digit length and may contain spaces, so it is
     //	read from the unparsed text rather than as a token.
-    char* const szRemaining = tokens.Remaining();
-    if (szToken == nullptr || std::string_view(szToken).size() != 2 ||
-        iLen < 0 || iLen >= 50 ||
-        static_cast<size_t>(iLen) >= std::string_view(szRemaining).size()) {
+    const std::string_view szRemaining = tokens.Remaining();
+    if (szToken.size() != 2 || iLen < 0 || iLen >= 50 ||
+        static_cast<size_t>(iLen) >= szRemaining.size()) {
       return;
     }
 
     //	Read in string.
     char szPlayerName[50];
-    base::SafeCopy(szPlayerName,
-                   std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
+    base::SafeCopy(szPlayerName, szRemaining.substr(0, base::ToSize(iLen)));
     //	Null-terminate.
     base::At(szPlayerName, iLen) = 0;
 
     //	Resume parsing after the name.
-    tokens = base::Tokenizer(base::MutableCString(szRemaining)
-                                 .subspan(base::ToSize(iLen) + 1)
-                                 .data(),
-                             " ");
+    tokens = base::Tokenizer(szRemaining.substr(base::ToSize(iLen) + 1), " ");
 
     //	Read color.
     szToken = tokens.Next();
@@ -3517,7 +3509,7 @@ void WOL_GameSetupDialog::HostSaysGo() {
 }
 
 //***********************************************************************************************
-void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
+void WOL_GameSetupDialog::TriggerGameStart(const char* szGoMessage) {
   //	Last function before dialog is exited for game start. (Which must occur
   // now.) 	Host or guest is about to start a game using final data in
   // szGoMessage.
@@ -3604,7 +3596,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   base::Tokenizer tokens(szGoMessage, " ");
   char szPlayerName[WOL_NAME_LEN_MAX];
 
-  while (const char* szToken = tokens.Next()) {
+  for (std::string_view szToken = tokens.Next(); !szToken.empty();
+       szToken = tokens.Next()) {
     base::SafeCopy(szPlayerName, szToken);
 
     const auto Color = static_cast<PlayerColorType>(

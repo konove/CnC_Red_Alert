@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
@@ -292,8 +293,8 @@ void SmudgeTypeClass::Init_Heap() {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-SmudgeType SmudgeTypeClass::From_Name(const char* name) {
-  if (name != nullptr) {
+SmudgeType SmudgeTypeClass::From_Name(const std::string_view name) {
+  if (!name.empty()) {
     for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       if (absl::EqualsIgnoreCase(As_Reference(index).IniName, name)) {
         return index;

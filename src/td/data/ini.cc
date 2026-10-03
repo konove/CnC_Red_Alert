@@ -409,8 +409,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Fetch the transition theme for this scenario.
   */
   TheWorld().transit_theme() = THEME_NONE;
-  TheWorld().transit_theme() = ThemeClass::From_Name(
-      scenario.GetString("Basic", "Theme", "No Theme").c_str());
+  TheWorld().transit_theme() =
+      ThemeClass::From_Name(scenario.GetString("Basic", "Theme", "No Theme"));
 
   /*
   **	Read in the team-type data. The team types must be created before any
@@ -440,8 +440,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
         base::CardinalToFixed(100, TheWorld().carry_over_percent());
     carry_over_cap = scenario.GetInt("Basic", "carry_over_cap", -1);
 
-    ThePlayer() =
-        HouseClass::As_Pointer(HouseTypeClass::From_Name(player.c_str()));
+    ThePlayer() = HouseClass::As_Pointer(HouseTypeClass::From_Name(player));
     ThePlayer()->IsHuman = true;
     int carryover = 0;
     // Any negative cap, not just the -1 default, means uncapped; the original

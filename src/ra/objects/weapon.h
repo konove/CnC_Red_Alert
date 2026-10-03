@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_OBJECTS_WEAPON_H_
 
 #include <cstddef>
+#include <string_view>
 
 #include "absl/base/attributes.h"
 #include "engine/file/ini_file.h"
@@ -174,8 +175,8 @@ class WeaponTypeClass {
   AnimType Anim{ANIM_NONE};
 };
 
-WeaponType Weapon_From_Name(const char* name);
-game::ArmorType Armor_From_Name(const char* name);
+WeaponType Weapon_From_Name(std::string_view name);
+game::ArmorType Armor_From_Name(std::string_view name);
 
 }  // namespace ra
 

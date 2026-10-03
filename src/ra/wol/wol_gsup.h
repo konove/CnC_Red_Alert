@@ -122,10 +122,10 @@ class WOL_GameSetupDialog {
 
   bool bParamsUnfresh();
   void SendParams();
-  bool AcceptParams(char* szParams);
+  bool AcceptParams(const char* szParams);
   void SetGParamsToCurrent(GAMEPARAMS& GParams) const;
 
-  void AcceptNewGuestPlayerInfo(char* szMsg);
+  void AcceptNewGuestPlayerInfo(const char* szMsg);
 
   bool RequestPlayerColor(PlayerColorType Color);
   bool InformAboutPlayerColor(const char* szName, PlayerColorType Color,
@@ -144,7 +144,7 @@ class WOL_GameSetupDialog {
   void GuestIsReadyToPlay(const char* szName, const char* szReadyState);
   bool bNeedScenarioDownload();
   void HostSaysGo();
-  void TriggerGameStart(char* szGoMessage);
+  void TriggerGameStart(const char* szGoMessage);
 
   enum class SCENARIO_GAMEKIND {
     SCENARIO_RA = 0,

@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/match.h"
 #include "base/cardinal.h"
@@ -282,8 +283,8 @@ AircraftTypeClass::AircraftTypeClass(
       ROT(static_cast<unsigned char>(rot)),
       Mission(deforder) {}
 
-AircraftType AircraftTypeClass::From_Name(const char* name) {
-  if (name) {
+AircraftType AircraftTypeClass::From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (AircraftType classid = AIRCRAFT_TRANSPORT; classid < AIRCRAFT_COUNT;
          classid++) {
       if (absl::EqualsIgnoreCase(Pointers.at(classid)->IniName, name)) {

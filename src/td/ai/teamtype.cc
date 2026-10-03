@@ -186,12 +186,12 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     ......................... Get the team entry ..........................
     */
-    std::string entry = ini.GetString(INI_Name(), name, "");
+    const std::string entry = ini.GetString(INI_Name(), name, "");
 
     /*
     .......................... Fill the team in ...........................
     */
-    team->Fill_In(name, entry.data());
+    team->Fill_In(name, entry);
   }
 
   /*
@@ -226,10 +226,10 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Fill_In(const char* name, char* entry) {
+void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
   Validate();
-  char* p1 = nullptr;  // parsing pointer
-  char* p2 = nullptr;  // parsing pointer
+  std::string_view p1;  // class or mission name
+  std::string_view p2;  // its count or argument
   TeamMissionStruct mission;
 
   /*
@@ -309,7 +309,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   for (int i = 0; i < num_classes; i++) {
     p1 = tokens.Next(",:");
     p2 = tokens.Next(",:");
-    if (p1 == nullptr || p2 == nullptr) {
+    if (p1.empty() || p2.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;
@@ -364,7 +364,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   for (int i = 0; i < MissionCount; i++) {
     p1 = tokens.Next(",:");
     p2 = tokens.Next(",:");
-    if (p1 == nullptr || p2 == nullptr) {
+    if (p1.empty() || p2.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;
@@ -374,12 +374,12 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     base::At(MissionList, i) = mission;
   }
 
-  const char* ptr = tokens.Next();
-  if (ptr) {
+  std::string_view ptr = tokens.Next();
+  if (!ptr.empty()) {
     IsReinforcable = base::ParseIntegerOr<int>(ptr, 0) != 0;
   }
   ptr = tokens.Next();
-  if (ptr) {
+  if (!ptr.empty()) {
     IsPrebuilt = base::ParseIntegerOr<int>(ptr, 0) != 0;
   }
 }
@@ -528,12 +528,12 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     /*
     ......................... Get the team entry ..........................
     */
-    std::string entry = ini.GetString("Teams", name, "");
+    const std::string entry = ini.GetString("Teams", name, "");
 
     /*
     .......................... 1st token: House ...........................
     */
-    base::Tokenizer tokens(entry.data(), ",");
+    base::Tokenizer tokens(entry, ",");
     team->House = HouseTypeClass::From_Name(tokens.Next());
 
     /*
@@ -587,9 +587,9 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     ............ Loop through entries, setting class ptr & num ............
     */
     int index = 0;
-    char* p1 = tokens.Next(",:");  // parsing pointer
-    char* p2 = tokens.Next(",:");  // parsing pointer
-    while (p1 && p2 && index < kMaxTeamClasscount) {
+    std::string_view p1 = tokens.Next(",:");  // class name
+    std::string_view p2 = tokens.Next(",:");  // its count
+    while (!p1.empty() && !p2.empty() && index < kMaxTeamClasscount) {
       const TechnoTypeClass* otype = nullptr;  // ptr to type of object
 
       /*
@@ -655,8 +655,8 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
-  if (name == nullptr) {
+TeamTypeClass* TeamTypeClass::As_Pointer(std::string_view name) {
+  if (name.empty()) {
     return nullptr;
   }
 
@@ -719,9 +719,8 @@ void TeamTypeClass::Remove() {
  * HISTORY:                                                                *
  *   12/13/1994 BR : Created.                                              *
  *=========================================================================*/
-TeamMissionType TeamTypeClass::Mission_From_Name(const char* name) {
-
-  if (name) {
+TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
+  if (!name.empty()) {
     for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
          order++) {
       if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {

@@ -130,8 +130,8 @@ void TemplateClass::Read_INI(const engine::file::IniFile& ini) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(
         base::ParseIntegerOr<int16_t>(key, 0));  // Cell of building.
-    std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value.data(), ",\r\n");
+    const std::string value = ini.GetString(INI_Name(), key, "");
+    base::Tokenizer tokens(value, ",\r\n");
     const TemplateType temp =
         TemplateTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (temp != TEMPLATE_NONE) {

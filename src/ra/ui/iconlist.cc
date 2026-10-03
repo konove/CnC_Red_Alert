@@ -215,8 +215,9 @@ int IconListClass::Add_Item(
       //	Each break character causes a line to be added to list.
       base::Tokenizer tokens(szText.data(), "\r\n\v\f");
       std::size_t next_char = 0;
-      while (const char* szToken = tokens.Next()) {
-        while (std::cmp_less(next_char, szToken - szText.data())) {
+      for (std::string_view szToken = tokens.Next(); !szToken.empty();
+           szToken = tokens.Next()) {
+        while (std::cmp_less(next_char, szToken.data() - szText.data())) {
           //	We expected szToken to begin at szNextChar. Since it doesn't,
           // extra break 	characters must have been removed by the tokenizer as
           // they were adjacent. We want 	a line break for every break
@@ -228,15 +229,15 @@ int IconListClass::Add_Item(
                           pIcon2, IconKind2, pFixedIcon, FixedIconKind,
                           iXFixedIcon, iYFixedIcon, iFixedIconWidth);
         }
-        iRetVal = Add_Item_Detail(szToken, szHelp, pIcon0, IconKind0,
-                                  szExtraDataString, pvExtraDataPtr,
+        iRetVal = Add_Item_Detail(std::string(szToken).c_str(), szHelp, pIcon0,
+                                  IconKind0, szExtraDataString, pvExtraDataPtr,
                                   pColorRemap, pIcon1, IconKind1, pIcon2,
                                   IconKind2, pFixedIcon, FixedIconKind,
                                   iXFixedIcon, iYFixedIcon, iFixedIconWidth);
 
         //	Expect next token two chars after the end of this one.
-        next_char = static_cast<std::size_t>(szToken - szText.data()) +
-                    std::string_view(szToken).size() + 1;
+        next_char = static_cast<std::size_t>(szToken.data() - szText.data()) +
+                    szToken.size() + 1;
       }
       return iRetVal;  //	Last value returned by ListClass::Add_Item
     }  //	Add one item to list.

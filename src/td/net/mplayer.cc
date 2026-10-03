@@ -576,15 +576,15 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     /*.....................................................................
     Read the entire entry in
     .....................................................................*/
-    std::string listing =
+    const std::string listing =
         ini.GetString("PhoneBook", ini.EntryName("PhoneBook", index), "");
 
     /*.....................................................................
     Extract name, phone # & serial port settings
     .....................................................................*/
-    base::Tokenizer tokens(listing.data(), "|");
-    char* tokenptr = tokens.Next();  // ptr to token
-    if (tokenptr) {
+    base::Tokenizer tokens(listing, "|");
+    std::string_view tokenptr = tokens.Next();  // current field
+    if (!tokenptr.empty()) {
       base::SafeCopy(phone->Name, tokenptr);
       std::ranges::transform(base::MutableCString(phone->Name), phone->Name,
                              absl::ascii_toupper);
@@ -593,7 +593,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       base::SafeCopy(phone->Number, tokenptr);
       std::ranges::transform(base::MutableCString(phone->Number), phone->Number,
                              absl::ascii_toupper);
@@ -602,7 +602,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       if (const auto value = base::ParseHex<int>(tokenptr)) {
         phone->Settings.Port = *value;
       }
@@ -611,28 +611,28 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.IRQ = base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.IRQ = -1;
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.Baud = base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.Baud = -1;
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.Compression = base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
       phone->Settings.Compression = false;
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.ErrorCorrection =
           base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
@@ -640,7 +640,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.HardwareFlowControl =
           base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
@@ -648,7 +648,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       // find dial method
 
       for (i = 0; i < kDialMethods; i++) {
@@ -670,7 +670,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.InitStringIndex =
           ValidInitStringIndex(base::ParseIntegerOr<int>(tokenptr, 0));
     } else {
@@ -678,7 +678,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       phone->Settings.CallWaitStringIndex =
           base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
@@ -686,7 +686,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
     }
 
     tokenptr = tokens.Next();
-    if (tokenptr) {
+    if (!tokenptr.empty()) {
       base::SafeCopy(phone->Settings.CallWaitString, tokenptr);
     } else {
       base::At(phone->Settings.CallWaitString, 0) = 0;
@@ -1015,7 +1015,7 @@ void Computer_Message() {
 static void Garble_Message(std::span<char> buf) {
   char txt[80];
   char punct[20];   // for punctuation
-  char* words[40];  // ptrs to various words in the phrase
+  std::string_view words[40];  // the words of the phrase; empty once used
 
   /*------------------------------------------------------------------------
   Pull off any trailing punctuation
@@ -1032,10 +1032,6 @@ static void Garble_Message(std::span<char> buf) {
   base::SafeCopy(punct, message.substr(punctuation));
   base::At(buf, punctuation) = '\0';
 
-  for (auto& word : words) {
-    word = nullptr;
-  }
-
   /*------------------------------------------------------------------------
   Copy the original buffer
   ------------------------------------------------------------------------*/
@@ -1045,9 +1041,9 @@ static void Garble_Message(std::span<char> buf) {
   Split it up into words
   ------------------------------------------------------------------------*/
   base::Tokenizer tokens(txt, " ");
-  char* p = tokens.Next();
+  std::string_view p = tokens.Next();
   int numwords = 0;  // # words in the phrase
-  while (p) {
+  while (!p.empty()) {
     base::At(words, numwords) = p;
     numwords++;
     p = tokens.Next();
@@ -1061,13 +1057,13 @@ static void Garble_Message(std::span<char> buf) {
   base::At(buf, 0) = 0;
   for (int i = 0; i < numwords; i++) {
     const int j = Sim_IRandom(0, numwords);
-    if (base::At(words, j) == nullptr) {  // this word has been used already
+    if (base::At(words, j).empty()) {  // this word has been used already
       i--;
       continue;
     }
     base::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH),
                      base::At(words, j));
-    base::At(words, j) = nullptr;
+    base::At(words, j) = {};
     if (i < numwords - 1) {
       base::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), " ");
     }
