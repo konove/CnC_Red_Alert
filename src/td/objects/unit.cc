@@ -3519,12 +3519,12 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value, ",\r\n");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
-        HouseTypeClass::From_Name(tokens.Next(","));  // Unit house.
+        HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
       const UnitType classid =
-          UnitTypeClass::From_Name(tokens.Next(","));  // Unit class.
+          UnitTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != UNIT_NONE) {
         auto* unit = base::NewPooled<UnitClass>(
@@ -3539,7 +3539,7 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
                   .Center();
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
-          const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
+          const MissionType mission = Mission_From_Name(tokens.Next());
           unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;

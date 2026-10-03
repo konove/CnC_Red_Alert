@@ -3177,7 +3177,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(entry, ",");
+    base::Tokenizer tokens(entry);
     const std::string_view eventptr = tokens.Next();
     const std::string_view actionptr = tokens.Next();
     tokens.Next();  // data, unused
@@ -3472,7 +3472,7 @@ int MapEditClass::Import_Teams() {
     /*
     ** Parse the INI entry
     */
-    base::Tokenizer tokens(entry, ",");
+    base::Tokenizer tokens(entry);
     const std::string_view houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused

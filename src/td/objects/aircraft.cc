@@ -516,7 +516,7 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
   for (int i = 0; i < count; ++i) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
@@ -544,7 +544,7 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
             air->Strength = static_cast<int16_t>(
                 base::FixedToCardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
+              air->Assign_Mission(Mission_From_Name(tokens.Next()));
             } else {
               base::DeletePooled(air);
             }

@@ -784,7 +784,7 @@ void TerrainClass::Read_INI(const engine::file::IniFile& ini) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(key, 0));
     const std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const TerrainType terrain =
         TerrainTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (terrain != TERRAIN_NONE) {

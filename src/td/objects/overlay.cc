@@ -353,7 +353,7 @@ void OverlayClass::Read_INI(const engine::file::IniFile& ini) {
     const char* key = ini.EntryName(INI_Name(), i);  // Entry key.
     const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(key, 0));
     const std::string value = ini.GetString(INI_Name(), key, "");
-    base::Tokenizer tokens(value, ",\n\r");
+    base::Tokenizer tokens(value);
     const OverlayType classid = OverlayTypeClass::From_Name(tokens.Next());
 
     /*

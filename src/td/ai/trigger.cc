@@ -1156,7 +1156,7 @@ void TriggerClass::Fill_In(const char* name, std::string_view entry) {
   */
   Set_Name(name);
 
-  base::Tokenizer tokens(entry, ",");
+  base::Tokenizer tokens(entry);
 
   /*
   **	1st token: Event.

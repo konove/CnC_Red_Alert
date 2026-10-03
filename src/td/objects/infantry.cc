@@ -3096,7 +3096,7 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
     /*
     **	1st token: house name.
     */
-    base::Tokenizer tokens(value, ",\n\r");
+    base::Tokenizer tokens(value);
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
@@ -3125,10 +3125,11 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
           /*
           **	5th token: cell sub-location.
           */
-          coord = coord.Whole() + base::At(StoppingCoordAbs,
-                                           std::clamp(base::ParseIntegerOr<int>(
-                                                          tokens.Next(","), 0),
-                                                      0, 4));
+          coord =
+              coord.Whole() +
+              base::At(StoppingCoordAbs,
+                       std::clamp(base::ParseIntegerOr<int>(tokens.Next(), 0),
+                                  0, 4));
 
           /*
           **	Fetch the mission and facing.

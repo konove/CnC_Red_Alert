@@ -71,7 +71,7 @@ void PrebuiltBase::ReadIni(const engine::file::IniFile& ini) {
     const std::string entry = absl::StrFormat("%03d", i);
     const std::string value = ini.GetString(kIniSection, entry, "");
 
-    base::Tokenizer tokens(value, ",");
+    base::Tokenizer tokens(value);
     const StructType type = BuildingTypeClass::From_Name(tokens.Next());
     // A node without a type is one no building can fill, and a game saved
     // with it is rejected when loaded.

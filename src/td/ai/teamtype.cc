@@ -237,7 +237,7 @@ void TeamTypeClass::Fill_In(const char* name, std::string_view entry) {
   */
   Set_Name(name);
 
-  base::Tokenizer tokens(entry, ",");
+  base::Tokenizer tokens(entry);
 
   /*
   ---------------------------- 1st token: House ----------------------------
@@ -533,7 +533,7 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     /*
     .......................... 1st token: House ...........................
     */
-    base::Tokenizer tokens(entry, ",");
+    base::Tokenizer tokens(entry);
     team->House = HouseTypeClass::From_Name(tokens.Next());
 
     /*
