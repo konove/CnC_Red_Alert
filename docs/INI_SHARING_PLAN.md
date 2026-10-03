@@ -6,6 +6,13 @@
 
 Written 2026-10-02 against `main` at 578e1d94.
 
+**Status: complete (2026-10-03)**, 583feb2b..83c358c4, except the checks that need a display or a
+second machine (see Outcome). Both games read and write every INI file through
+`engine::file::IniFile`; `INIClass`, `CCINIClass`, the `WWGetPrivateProfile*` wrappers and the
+`ReadProfile`/`WriteProfile` text scanner are gone. Headless frame logs of both games match the
+pre-plan binary line for line, and no shipped INI file of either game reads differently. The task
+text below is the plan as written; where execution departed from it, the Outcome section says how.
+
 **Goal:** One INI database class, `engine::file::IniFile`, used by both games: Red Alert's
 `INIClass` moves to the engine, `CCINIClass` dissolves into free functions, and Tiberian Dawn's
 `WWGetPrivateProfile*` text scanning is replaced by it.
@@ -816,6 +823,116 @@ Task 2.
   profile calls inside them; convert them by reading, or leave them for the language-ifdef cleanup,
   and say which in the Task 9 outcome.
 
-## Progress
+## Outcome
 
-(Record each task's commits, measurements and decisions here as they land.)
+### Commits
+
+| Task                                    | Commits                                                              |
+| --------------------------------------- | -------------------------------------------------------------------- |
+| 1. `INIClass` → `engine::file::IniFile` | 583feb2b, 6c58a4f9                                                   |
+| 2. Dissolve `CCINIClass`                | 9902cb8f, 57bffc8b, 511c8d17                                         |
+| 3. Case, line length, duplicates        | 92c7bcdc                                                             |
+| 4. `ini_compare`                        | 98b42753, 1d3f2ca7 (tool deleted again in 775b0a11)                  |
+| 5. Google-style names                   | 2614bce5, e19e8618, db318487, 4508196d, 826c31fc                     |
+| 6. TD scenario reading                  | 88cf160e, 209ecca8, 8751ec50, 15789994, 97560cf4, 877f528e, 98b36d13 |
+| 7. TD scenario writing                  | 6d9a8d7e, 266de234                                                   |
+| 8. TD configuration files               | f1e69e8e, 9a7517ad, 7611cced, dde94525, 2603318b, 9a8c35ff, e827238a |
+| 9. Delete the profile reader            | 775b0a11                                                             |
+| Whole-branch review fixes               | f9b7db72, 83c358c4                                                   |
+
+### Measurements
+
+- **`ini_compare` over the shipped Tiberian Dawn files** (Task 4): 82 files (26 SCG, 33 SCB, 16 SCM,
+  5 SCJ, `MISSION.INI`, `CONQUER.INI`), 1,847 sections, 45,164 keys. Value differences 0, order
+  differences 0. Two keys with an empty value (`CONQUER.INI` `[Options] Socket=` and `DestNet=`) and
+  93 entry-less sections (`[SMUDGE]` 52, `[REINFORCEMENTS]` 8, `[CellTriggers]` 7, `[Teams]` 7,
+  `[STRUCTURES]` 5, `[TEMPLATE]` 5, `[UNITS]` 4, `[OVERLAY]` 3, `[INFANTRY]` 2), which `IniFile`
+  drops and the old reader found; both read the same either way. No file ends without a newline.
+- **Line lengths**: no line over 127 characters in Red Alert's `RULES.INI` (longest 122) or
+  `SCU05EA.INI`; Tiberian Dawn's longest value is 191 characters (a `[TeamTypes]` entry).
+- **Name collisions under the old checksum** (review fix): 0 over 91 shipped files of both games
+  (2,235 sections, 49,446 entries).
+- **Headless frame logs against the pre-plan binary** (578e1d94 built with the same `.env`), at each
+  of Tasks 6-9 and at the final commit: Tiberian Dawn SCG01EA 67,914 lines, SCB01EA 89,713, SCG15EA
+  159,555, each with 0 differing lines and 0 noise between two old runs; Red Alert SCU05EA 24,600
+  lines, 0 differing.
+- **Settings**: with a `CONQUER.INI` that has an `[Options]` section, old and new Tiberian Dawn
+  binaries produce identical frame logs (70,184 lines, different from the default-settings run) and
+  leave the same 14 `section/key=value` triples behind. A hand-edited file with a comment, an
+  unknown section, an unknown key and the two empty keys is byte-identical after a run.
+- **Tests**: 1,153 before the plan, 1,215 after, in both the GCC and the strict clang build; the
+  save/load smoke scripts of both games pass.
+
+### Where execution departed from the plan
+
+- **Task 1, duplicates.** The plan re-pointed the index at the next duplicate when an entry was
+  removed, which made a `Put` not read back. Instead `PutString()`, `Clear(section)` and
+  `Clear(section, entry)` remove every element of that name.
+- **Decision 3, how names are compared.** The plan kept the lookup by a checksum of the name. That
+  checksum (`CrcEngine`, a rotate-and-add) collides for names such as `gdi13`/`hdi11` and
+  `TEAM3`/`UEAM1`; Red Alert always had that, but for Tiberian Dawn it would have been new. The
+  indexes are keyed by the name itself, compared without ASCII case.
+- **Task 2, `SaveWithDigest()`** writes the data and the digest section through one non-finishing
+  helper and finishes the sink once. `ra/ai/scenario.cc` loads with `LoadVerified()` and accepts a
+  mismatch, as before.
+- **Task 5, names.** `LineCount()` and `SavedSize()` do not exist: the old `Line_Count()` and
+  `Size()` were declared and never defined. `GetTextBlock()`, `GetBase64Block()` and
+  `PutBase64Block()` take the span alone. `Clear()` is three overloads, and no name parameter can be
+  null. `PutPublicKey()` was deleted as unused.
+- **Task 6, an unterminated last line** is parsed (in `IniFile::Load()`, for both games); the
+  original Red Alert reader dropped it and Tiberian Dawn's read it. Every shipped file of both games
+  ends in a newline.
+- **Tasks 6-8, loading.** Tiberian Dawn loads every `IniFile` from the text `ReadIniFile()` /
+  `ReadIniText()` return, which ends at the first NUL as the old readers' text did, through
+  `td/data/ini_io.{h,cc}`. Red Alert loads from the stream.
+- **Task 6, buffers.** Where the old call reserved one byte (`first(sizeof(buf) - 1)`), the whole
+  buffer is passed, so a value may be one character longer.
+- **Task 7, order.** New entries are appended to their section (the old writer inserted at the top,
+  so the editor saved lists in descending order); an updated key moves to the end of its section,
+  and a cleared and rewritten section to the end of the file.
+- **Task 8, startup.** `CONQUER.INI` is saved at startup only when `[Intro] PlayIntro` is not
+  already `No`, so a normal launch leaves a hand-edited file untouched.
+- **Task 8, init strings.** An empty or blank modem init string cannot be stored, so the Add button
+  refuses one and the reader validates the stored indexes. A file the old binary wrote with an empty
+  init string may select a different string after its first load.
+- **Task 8.** `Read_Private_Config_Struct()` had no caller and was deleted with `NewConfigType`.
+- **Task 9.** `ReadIniText()` and `ReadIniFile()` (the old `ReadProfileText()`/`ReadProfileFile()`)
+  live in `engine/file/ini_file.h`; Tiberian Dawn's scenario CRC still hashes that text.
+- **Tiberian Dawn's `#ifdef FRENCH`/`GERMAN` branches** held no profile calls in the converted
+  functions; the final grep for the old names over `src/` is empty.
+
+### Known reader differences for Tiberian Dawn
+
+None of these occurs in a shipped file.
+
+- A `;` anywhere in a value starts a comment and the value is cut there, on every load. The old
+  reader kept it. A custom mission's briefing line or a stored handle containing `;` reads
+  truncated. Left as is; see `TODO.md` for the decision.
+- A line starting with `#` is an entry, not a comment; a section header is recognized after trimming
+  blanks and needs its `]`; an `=value` line is skipped instead of ending an enumeration.
+- `GetInt()` also accepts `$FF` and `0FFh` and no longer cuts a number at 15 characters; a number
+  followed by `; comment` now parses.
+- A file the game rewrites loses its comments, its blank-value keys, later duplicates of a key and
+  any text before the first section. Unknown sections and keys are kept.
+
+### Open checks
+
+Recorded in `TODO.md`:
+
+- Tiberian Dawn's scenario editor: load SCG01EA, save it under a new name and compare. No automated
+  run reaches `Write_Scenario_Ini()`, and the unit, infantry, building, terrain, aircraft and house
+  writers have no test.
+- Tiberian Dawn's options dialog and the `DEMO`/Windows-only branches, `Check_From_WChat()` and
+  `Read_Game_Options()`, which were converted by reading.
+- A two-player Red Alert lobby, for matching `rules.ini` IDs.
+
+### Found on the way, not fixed here
+
+- `td/data/ini.cc` reads and writes `[Basic] "carry_over_cap"` where the key is `CarryOverCap`
+  (b2135cdf renamed the variable and the string with it). The pre-plan binary has the same bug, and
+  fixing it would have changed behaviour against the comparison baseline.
+- `td/net/mplayer.cc`'s phone-book reader overwrites the buffer it is tokenizing, so the fields
+  after `DialMethod` always read as defaults.
+- Headless comparisons: the games read `CONQUER.INI` from the directory of the executable. A stray
+  settings file beside one binary (with `GameSpeed=0`) made identical sources look different from
+  frame 2. Compare copies of the binaries in clean directories with the same settings file.
