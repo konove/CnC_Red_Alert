@@ -77,6 +77,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/net/ipxmgr.h"
@@ -91,7 +92,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/data/ini.h"
 #include "ra/data/mission_id.h"
 #include "ra/map/map.h"
 #include "ra/map/world.h"
@@ -486,7 +486,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
   PhoneBook.Clear();
 
   //	Create filename and read the file.
-  INIClass ini;
+  engine::file::IniFile ini;
   if (const auto fc = OpenDiskFile(kConfigFileName); fc && ini.Load(*fc)) {
     //	Get the player's last-used Handle
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
@@ -769,8 +769,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
 void SessionClass::Write_MultiPlayer_Settings() {
-
-  INIClass ini;
+  engine::file::IniFile ini;
   bool loaded = false;
   if (const auto file = OpenDiskFile(kConfigFileName)) {
     loaded = ini.Load(*file);
@@ -891,7 +890,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   **	Fetch the main multiplayer scenario packet data.
   */
   if (const auto file = OpenGameFile("MISSIONS.PKT")) {
-    INIClass ini;
+    engine::file::IniFile ini;
     ini.Load(*file);
     const int count = ini.Entry_Count("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
@@ -919,7 +918,7 @@ void SessionClass::Read_Scenario_Descriptions() {
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );
-    INIClass ini;
+    engine::file::IniFile ini;
     if (const auto mission_file = OpenGameFile(found.name)) {
       ini.Load(*mission_file);
     }
@@ -945,7 +944,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   */
   if (Is_Counterstrike_Installed()) {
     if (const auto file2 = OpenGameFile("CSTRIKE.PKT")) {
-      INIClass ini;
+      engine::file::IniFile ini;
       ini.Load(*file2);
       const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
@@ -971,7 +970,7 @@ void SessionClass::Read_Scenario_Descriptions() {
   // Aftermath scenarios are now in their own pkt file.
   if (Is_Aftermath_Installed()) {
     if (const auto file2 = OpenGameFile("AFTMATH.PKT")) {
-      INIClass ini;
+      engine::file::IniFile ini;
       ini.Load(*file2);
       const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
@@ -995,7 +994,7 @@ void SessionClass::Read_Scenario_Descriptions() {
 
   for (const FoundFile& found : FindFiles("*.MPR")) {
     // debugprint( "Found MPR '%s'\n", file_name );
-    INIClass ini;
+    engine::file::IniFile ini;
     if (const auto mission_file = OpenGameFile(found.name)) {
       ini.Load(*mission_file);
     }

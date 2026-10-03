@@ -4,6 +4,7 @@
 #include "ra/data/options.h"
 
 #include "base/fixed.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
@@ -11,7 +12,6 @@
 #include "gtest/gtest.h"
 #include "ra/assets/palette.h"
 #include "ra/core/defines.h"
-#include "ra/data/ini.h"
 
 namespace ra {
 
@@ -19,7 +19,7 @@ namespace {
 
 // Values from the [WinHotkeys] section of a Steam install's REDALERT.INI.
 TEST(OptionsHotkeysTest, LoadsWindowsKeyCodes) {
-  INIClass ini;
+  engine::file::IniFile ini;
   ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyForceMove1", 18));  // VK_MENU
   ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyStop", 83));        // 'S'
   ASSERT_TRUE(ini.Put_Int("WinHotkeys", "KeyTeam1", 49));       // '1'
@@ -39,7 +39,7 @@ TEST(OptionsHotkeysTest, LoadsWindowsKeyCodes) {
 }
 
 TEST(OptionsHotkeysTest, MissingEntriesKeepTheDefaults) {
-  const INIClass ini;
+  const engine::file::IniFile ini;
   OptionsClass options;
   options.LoadHotkeys(ini);
 
@@ -48,7 +48,7 @@ TEST(OptionsHotkeysTest, MissingEntriesKeepTheDefaults) {
 }
 
 TEST(OptionsHotkeysTest, SavesWindowsKeyCodes) {
-  INIClass ini;
+  engine::file::IniFile ini;
   const OptionsClass options;
   options.SaveHotkeys(ini);
 
@@ -61,7 +61,7 @@ TEST(OptionsHotkeysTest, SavesWindowsKeyCodes) {
 
 // Writing the bindings and reading them back changes none of them.
 TEST(OptionsHotkeysTest, RoundTripsEveryDefault) {
-  INIClass ini;
+  engine::file::IniFile ini;
   const OptionsClass defaults;
   defaults.SaveHotkeys(ini);
 

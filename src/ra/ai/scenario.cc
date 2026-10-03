@@ -92,6 +92,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
@@ -129,7 +130,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/ccini.h"
-#include "ra/data/ini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -2267,7 +2267,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	If the briefing text could not be found in the INI file, then search
   **	the mission.ini file.  VG 10/17/96
   */
-  INIClass mini;
+  engine::file::IniFile mini;
   if (const auto fc = OpenGameFile("MISSION.INI")) {
     mini.Load(*fc);
   }

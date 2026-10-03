@@ -47,12 +47,15 @@
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "ra/core/cell.h"
 #include "ra/core/defines.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace ra {
+
+class ObjectClass;
 
 /*
 **	This class holds the information about the current game being played.
@@ -397,6 +400,14 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
 extern template void ScenarioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScenarioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+void Write_Scenario_INI(const char* fname);
+bool Read_Scenario_INI(const char* fname, bool fresh = true);
+void Assign_Houses();
+
+// Places `obj` on `cell` or the nearest free cell around it. Returns whether
+// it was placed.
+bool Scan_Place_Object(ObjectClass* obj, Cell cell);
 
 }  // namespace ra
 

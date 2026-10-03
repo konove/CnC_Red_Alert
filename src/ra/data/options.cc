@@ -77,6 +77,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/window/keyboard.h"
@@ -85,7 +86,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/data/ini.h"
 #include "ra/net/session.h"
 
 namespace ra {
@@ -545,7 +545,7 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  INIClass ini;
+  engine::file::IniFile ini;
   if (const auto file = OpenGameFile(kConfigFileName)) {
     ini.Load(*file);
   }
@@ -592,7 +592,7 @@ void OptionsClass::Load_Settings() {
  *hotkeys.                                                         *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  INIClass ini;
+  engine::file::IniFile ini;
 
   /*
   **	Load any existing options file because it may contain entries that won't
@@ -633,7 +633,7 @@ void OptionsClass::Save_Settings() const {
   }
 }
 
-void OptionsClass::LoadHotkeys(const INIClass& ini) {
+void OptionsClass::LoadHotkeys(const engine::file::IniFile& ini) {
   for (const auto& [name, key] : kHotkeys) {
     // No Windows code is negative, so -1 marks a missing entry.
     if (const int windows_key = ini.Get_Int(HotkeyName, name, -1);
@@ -643,7 +643,7 @@ void OptionsClass::LoadHotkeys(const INIClass& ini) {
   }
 }
 
-void OptionsClass::SaveHotkeys(INIClass& ini) const {
+void OptionsClass::SaveHotkeys(engine::file::IniFile& ini) const {
   for (const auto& [name, key] : kHotkeys) {
     ini.Put_Int(HotkeyName, name,
                 engine::window::WindowsKeyFromKey(this->*key));

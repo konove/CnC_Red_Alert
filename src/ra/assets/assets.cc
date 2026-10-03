@@ -10,10 +10,10 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
-#include "ra/data/ini.h"
 
 namespace ra {
 
@@ -59,7 +59,7 @@ void Assets::LoadStrings() {
 }
 
 void Assets::LoadTutorialText() {
-  INIClass ini;
+  engine::file::IniFile ini;
   if (const auto file = OpenGameFile("TUTORIAL.INI")) {
     ini.Load(*file);
   }

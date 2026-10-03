@@ -88,8 +88,8 @@ install(TARGETS rasdl)
 # Tests
 include(Testing)
 add_gtest(
-    NAME ra_ini_number_test
-    SOURCES data/ini_number_test.cc data/ini.cc data/profile_buffer_test.cc data/profile.cc
+    NAME ra_profile_buffer_test
+    SOURCES data/profile_buffer_test.cc data/profile.cc
     LIBS engine_file absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
@@ -138,7 +138,7 @@ apply_language_setting(ra_text_style_test)
 
 add_gtest(
     NAME ra_assets_test
-    SOURCES assets/assets_test.cc assets/assets.cc data/ini.cc
+    SOURCES assets/assets_test.cc assets/assets.cc
     LIBS base engine_file magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
@@ -206,13 +206,6 @@ add_gtest(
     LIBS base engine_gfx absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
-
-add_gtest(
-    NAME ra_search_test
-    SOURCES core/search_test.cc
-    LIBS base absl::check absl::log magic_enum::magic_enum
-)
-apply_language_setting(ra_search_test)
 
 add_gtest(
     NAME ra_packed_test

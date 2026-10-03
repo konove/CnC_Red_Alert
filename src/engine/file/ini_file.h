@@ -37,40 +37,39 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_DATA_INI_H_
-#define CNC_RED_ALERT_RA_DATA_INI_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_INI_FILE_H_
+#define CNC_RED_ALERT_ENGINE_FILE_INI_FILE_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <span>
 #include <string>
 #include <vector>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/fixed.h"
 #include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
-#include "ra/core/defines.h"
-#include "ra/core/search.h"
-#include "ra/objects/object.h"
 
-namespace ra {
+namespace engine::file {
 
 /*
 **	This is an INI database handler class. It handles a database with a disk
 *format identical *	to the INI files commonly used by Windows.
 */
-class INIClass {
+class IniFile {
  public:
-  INIClass() = default;
-  ~INIClass();
-  INIClass(const INIClass&) = delete;
-  INIClass& operator=(const INIClass&) = delete;
-  INIClass(INIClass&&) = delete;
-  INIClass& operator=(INIClass&&) = delete;
+  IniFile() = default;
+  ~IniFile();
+  IniFile(const IniFile&) = delete;
+  IniFile& operator=(const IniFile&) = delete;
+  IniFile(IniFile&&) = delete;
+  IniFile& operator=(IniFile&&) = delete;
 
   /*
   **	Fetch and store INI data.
@@ -147,16 +146,16 @@ class INIClass {
   **	The value entries for the INI file are stored as objects of this type.
   **	The entry identifier and value string are combined into this object.
   */
-  struct INIEntry {
-    explicit INIEntry(const char* entry = "", const char* value = "")
+  struct IniEntry {
+    explicit IniEntry(const char* entry = "", const char* value = "")
         : Entry(entry), Value(value) {}
-    ~INIEntry();
-    INIEntry(const INIEntry&) = delete;
-    INIEntry& operator=(const INIEntry&) = delete;
-    INIEntry(INIEntry&&) = delete;
-    INIEntry& operator=(INIEntry&&) = delete;
-    [[nodiscard]] int Index_ID() const {
-      return static_cast<int>(CrcEngine::Compute(Entry));
+    ~IniEntry();
+    IniEntry(const IniEntry&) = delete;
+    IniEntry& operator=(const IniEntry&) = delete;
+    IniEntry(IniEntry&&) = delete;
+    IniEntry& operator=(IniEntry&&) = delete;
+    [[nodiscard]] uint32_t Index_ID() const {
+      return CrcEngine::Compute(Entry);
     }
 
     std::string Entry;
@@ -167,43 +166,45 @@ class INIClass {
   **	Each section (bracketed) is represented by an object of this type. All
   *entries *	subordinate to this section are attached.
   */
-  struct INISection {
-    explicit INISection(const char* section) : Section(section) {}
-    ~INISection();
-    INISection(const INISection&) = delete;
-    INISection& operator=(const INISection&) = delete;
-    INISection(INISection&&) = delete;
-    INISection& operator=(INISection&&) = delete;
-    INIEntry* Find_Entry(const char* entry) const;
-    [[nodiscard]] int Index_ID() const {
-      return static_cast<int>(CrcEngine::Compute(Section));
+  struct IniSection {
+    explicit IniSection(const char* section) : Section(section) {}
+    ~IniSection();
+    IniSection(const IniSection&) = delete;
+    IniSection& operator=(const IniSection&) = delete;
+    IniSection(IniSection&&) = delete;
+    IniSection& operator=(IniSection&&) = delete;
+    IniEntry* Find_Entry(const char* entry) const;
+    // Removes `entry` from the list and the index. If a later entry has the
+    // same name, the index is re-pointed at it so lookups still find it.
+    void Remove_Entry(const IniEntry* entry);
+    [[nodiscard]] uint32_t Index_ID() const {
+      return CrcEngine::Compute(Section);
     }
 
     std::string Section;
-    std::vector<std::unique_ptr<INIEntry>> EntryList;  // In file order.
-    IndexClass<INIEntry*> EntryIndex;
+    std::vector<std::unique_ptr<IniEntry>> EntryList;     // In file order.
+    absl::flat_hash_map<uint32_t, IniEntry*> EntryIndex;  // By CRC of the name.
   };
 
   /*
   **	Utility routines to help find the appropriate section and entry objects.
   */
-  INISection* Find_Section(const char* section) const;
-  INIEntry* Find_Entry(const char* section, const char* entry) const;
+  IniSection* Find_Section(const char* section) const;
+  IniEntry* Find_Entry(const char* section, const char* entry) const;
+  // Removes `section` from the list and the index, re-pointing the index at
+  // a later section of the same name if there is one.
+  void Remove_Section(const IniSection* section);
   static void Strip_Comments(std::span<char> buffer);
 
   /*
   **	This is the list of all sections within this INI file.
   */
-  std::vector<std::unique_ptr<INISection>> SectionList;  // In file order.
+  std::vector<std::unique_ptr<IniSection>> SectionList;  // In file order.
 
-  IndexClass<INISection*> SectionIndex;
+  absl::flat_hash_map<uint32_t, IniSection*>
+      SectionIndex;  // By CRC of the name.
 };
 
-void Write_Scenario_INI(const char* fname);
-bool Read_Scenario_INI(const char* fname, bool fresh = true);
-bool Scan_Place_Object(ObjectClass* obj, Cell cell);
-void Assign_Houses();
+}  // namespace engine::file
 
-}  // namespace ra
-
-#endif  // CNC_RED_ALERT_RA_DATA_INI_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_INI_FILE_H_

@@ -113,6 +113,7 @@
 #include "engine/crypto/crc.h"
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_sink.h"
+#include "engine/file/ini_file.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
@@ -127,7 +128,6 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/data/adata.h"
-#include "ra/data/ini.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
@@ -139,7 +139,7 @@ namespace ra {
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *
  *    This routine will load the database from the file specified in much the
- *same manner      * that the INIClass load function works. However, this class
+ *same manner      * that the IniFile load function works. However, this class
  *will examine the message      * digest (if present) and compare it to the
  *actual digest. If they differ, a special       * return value is used. This
  *will allow verification of the integrity of the ini data.     *
@@ -184,7 +184,7 @@ bool CCINIClass::Load(ByteStream& file, bool withdigest) {
  *digest control.                                          *
  *=============================================================================================*/
 bool CCINIClass::Load(ByteSource& file, bool withdigest) {
-  const bool ok = INIClass::Load(file);
+  const bool ok = engine::file::IniFile::Load(file);
 
   Invalidate_Message_Digest();
   if (ok && withdigest) {
@@ -261,7 +261,7 @@ bool CCINIClass::Save(ByteStream& file, bool withdigest) {
  *=============================================================================================*/
 bool CCINIClass::Save(ByteSink& pipe, bool withdigest) {
   if (!withdigest) {
-    return INIClass::Save(pipe);
+    return engine::file::IniFile::Save(pipe);
   }
 
   /*
@@ -283,7 +283,7 @@ bool CCINIClass::Save(ByteSink& pipe, bool withdigest) {
   /*
   **	Output the database to the pipe specified.
   */
-  const bool saved = INIClass::Save(pipe);
+  const bool saved = engine::file::IniFile::Save(pipe);
 
   /*
   **	Remove the digest from the database. It shouldn't stick around as if it
@@ -1531,7 +1531,7 @@ void CCINIClass::Calculate_Message_Digest() const {
   */
   NullSink discard;
   Sha1Sink sha(discard);
-  INIClass::Save(sha);
+  engine::file::IniFile::Save(sha);
   Digest = sha.digest();
   IsDigestPresent = true;
 }

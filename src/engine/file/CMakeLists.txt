@@ -23,14 +23,14 @@ target_sources(engine_file PUBLIC
 
 target_link_libraries(engine_file
         PUBLIC engine_codec engine_crypto absl::core_headers absl::no_destructor
-        PRIVATE absl::check absl::strings
+        PRIVATE absl::check absl::flat_hash_map absl::strings
 )
 
 # Tests
 include(Testing)
 add_gtest(
         NAME engine_file_test
-        SOURCES disk_file_test.cc disk_stream_test.cc game_file_test.cc mix_archive_test.cc
+        SOURCES disk_file_test.cc disk_stream_test.cc game_file_test.cc ini_file_test.cc mix_archive_test.cc
             profile_buffer_test.cc search_paths_test.cc
         LIBS engine_file absl::strings
 )

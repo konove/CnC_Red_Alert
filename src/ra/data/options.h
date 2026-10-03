@@ -47,9 +47,11 @@
 class ArchiveReader;
 class ArchiveWriter;
 
-namespace ra {
+namespace engine::file {
+class IniFile;
+}  // namespace engine::file
 
-class INIClass;
+namespace ra {
 
 class OptionsClass {
  public:
@@ -94,11 +96,11 @@ class OptionsClass {
 
   // Reads the [WinHotkeys] bindings from `ini`, translating the Windows
   // virtual-key codes stored there. A binding the file lacks keeps its value.
-  void LoadHotkeys(const INIClass& ini);
+  void LoadHotkeys(const engine::file::IniFile& ini);
 
   // Writes the hotkey bindings to `ini`'s [WinHotkeys] as Windows virtual-key
   // codes, the form the original Windows game reads.
-  void SaveHotkeys(INIClass& ini) const;
+  void SaveHotkeys(engine::file::IniFile& ini) const;
 
   void Set();
 

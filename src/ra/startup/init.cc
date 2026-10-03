@@ -95,6 +95,7 @@
 #include "engine/file/disk_stream.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/cps_image.h"
@@ -134,7 +135,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
-#include "ra/data/ini.h"
 #include "ra/data/language.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -1206,7 +1206,7 @@ static constexpr char kLogoPlayedSection[] = "Intro";
 static constexpr char kLogoPlayedEntry[] = "LogoPlayed";
 
 static bool LogoAlreadyPlayed() {
-  INIClass ini;
+  engine::file::IniFile ini;
   if (const auto file = OpenGameFile(kConfigFileName)) {
     ini.Load(*file);
   }
@@ -1219,7 +1219,7 @@ static void MarkLogoPlayed() {
   if (bNoMovies) {
     return;
   }
-  INIClass ini;
+  engine::file::IniFile ini;
   // Keep every other setting in the file.
   if (const auto file = OpenGameFile(kConfigFileName)) {
     ini.Load(*file);
@@ -2408,7 +2408,7 @@ static void Init_Bulk_Data() {
 static void Init_Keys() {
   const std::string keys = GetKeys();
   SpanSource source(std::as_bytes(std::span(keys)));
-  INIClass ini;
+  engine::file::IniFile ini;
   ini.Load(source);
 
   TheAssets().set_mix_key(ini.Get_PKey(true));

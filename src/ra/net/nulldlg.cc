@@ -78,6 +78,7 @@
 #include "base/unaligned.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
@@ -107,7 +108,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/data/ccini.h"
-#include "ra/data/ini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -4385,7 +4385,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
           /*
           ** Possible rejection on the basis of digest
           */
-          INIClass ini;
+          engine::file::IniFile ini;
           ini.Load(*file);
           ini.Get_String("Digest", "1", "No digest here mate. Nope.",
                          digest_buffer, sizeof(digest_buffer));

@@ -43,11 +43,11 @@
 #include <cstdint>
 
 #include "engine/crypto/sha.h"
+#include "engine/file/ini_file.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/core/defines.h"
-#include "ra/data/ini.h"
 
 namespace ra {
 
@@ -58,7 +58,7 @@ class TriggerTypeClass;
 *expansion types and *	identifiers. In addition, it automatically stores a
 *message digest with the INI data *	so that verification can occur.
 */
-class CCINIClass : public INIClass {
+class CCINIClass : public engine::file::IniFile {
  public:
   CCINIClass() = default;
 

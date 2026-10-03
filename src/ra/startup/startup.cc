@@ -59,6 +59,7 @@
 #include "base/numeric.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
+#include "engine/file/ini_file.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
@@ -74,7 +75,6 @@
 #include "ra/assets/installation.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/data/ini.h"
 #include "ra/data/language.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/world.h"
@@ -176,7 +176,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
 // Reads the config-file options that have to be known before the window and
 // the network exist: the screen height, the IPX socket and a bridge network.
 // The command line wins wherever it asked for the same thing.
-static void ReadConfigOptions(const INIClass& ini,
+static void ReadConfigOptions(const engine::file::IniFile& ini,
                               const StartupOptions& options) {
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.
@@ -338,7 +338,7 @@ static int Run(const int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  INIClass ini;
+  engine::file::IniFile ini;
   if (const auto config_file = OpenDiskFile(kConfigFileName)) {
     ini.Load(*config_file);
   }
