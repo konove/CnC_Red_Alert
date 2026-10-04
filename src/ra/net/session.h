@@ -56,7 +56,7 @@
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "game/core/owned_vector.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/net/event.h"

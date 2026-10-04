@@ -2,7 +2,7 @@
 // from a difficulty level to the player's and the computer's settings. The
 // two dialogs need the display and the input loop and are not covered here.
 
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 
 #include <stdexcept>
 

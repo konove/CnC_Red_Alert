@@ -72,7 +72,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/screen.h"

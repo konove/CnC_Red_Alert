@@ -119,7 +119,7 @@
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/graphics_loader.h"

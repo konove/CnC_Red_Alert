@@ -49,7 +49,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"

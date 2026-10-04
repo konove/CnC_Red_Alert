@@ -53,7 +53,7 @@
 #include <algorithm>
 
 #include "base/fixed.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/audio.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"

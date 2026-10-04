@@ -17,7 +17,7 @@
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
 #include "gtest/gtest.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/core/defines.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"

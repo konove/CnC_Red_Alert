@@ -21,8 +21,8 @@
 // developer options dialog. Also declares that dialog and the difficulty
 // prompt shown before a campaign.
 
-#ifndef CNC_RED_ALERT_RA_AI_SPECIAL_H_
-#define CNC_RED_ALERT_RA_AI_SPECIAL_H_
+#ifndef CNC_RED_ALERT_RA_AI_SPECIAL_OPTIONS_H_
+#define CNC_RED_ALERT_RA_AI_SPECIAL_OPTIONS_H_
 
 #include "base/installed.h"
 #include "ra/core/defines.h"
@@ -120,4 +120,4 @@ inline SpecialOptions& TheSpecialOptions() {
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_SPECIAL_H_
+#endif  // CNC_RED_ALERT_RA_AI_SPECIAL_OPTIONS_H_

@@ -33,7 +33,7 @@
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"

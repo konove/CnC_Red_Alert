@@ -11,7 +11,7 @@
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"

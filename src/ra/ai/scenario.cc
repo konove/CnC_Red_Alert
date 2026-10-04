@@ -109,7 +109,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/carryover.h"
 #include "ra/ai/prebuilt_base.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"

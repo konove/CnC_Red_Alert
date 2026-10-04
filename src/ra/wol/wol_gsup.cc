@@ -55,7 +55,7 @@
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/dib.h"
 #include "ra/assets/installation.h"

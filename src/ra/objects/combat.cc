@@ -53,7 +53,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

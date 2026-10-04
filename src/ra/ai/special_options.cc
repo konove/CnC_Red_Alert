@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 
 #include <array>
 #include <cstddef>

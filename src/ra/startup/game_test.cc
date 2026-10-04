@@ -8,7 +8,7 @@
 #include "base/installed.h"
 #include "engine/audio/audio_mixer.h"
 #include "gtest/gtest.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"

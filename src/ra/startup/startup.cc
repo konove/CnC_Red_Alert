@@ -70,7 +70,7 @@
 #include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/assets/installation.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"

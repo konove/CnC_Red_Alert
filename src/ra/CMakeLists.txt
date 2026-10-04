@@ -148,13 +148,13 @@ apply_dotenv_settings(ra_options_test)
 apply_language_setting(ra_options_test)
 
 add_gtest(
-    NAME ra_special_test
-    SOURCES ai/special_test.cc startup/startup.cc
+    NAME ra_special_options_test
+    SOURCES ai/special_options_test.cc startup/startup.cc
     LIBS ra_engine base
 )
-target_compile_definitions(ra_special_test PRIVATE RA_NO_ENTRY_POINT=1)
-apply_dotenv_settings(ra_special_test)
-apply_language_setting(ra_special_test)
+target_compile_definitions(ra_special_options_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_special_options_test)
+apply_language_setting(ra_special_options_test)
 
 add_gtest(
     NAME ra_text_style_test

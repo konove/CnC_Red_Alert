@@ -7,7 +7,7 @@
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/data/options.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"

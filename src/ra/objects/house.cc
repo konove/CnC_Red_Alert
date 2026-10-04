@@ -173,7 +173,7 @@
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/reinforcements.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special.h"
+#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
