@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, IDE inspections, and the file name - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, unit-test coverage, IDE inspections, and the file name - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -27,12 +27,16 @@ Each stage makes the next one cheaper or more accurate:
 6. **Namespace** once the names are final and the dead code is gone, so every caller is qualified
    once, with the name it keeps, and nothing about to be deleted gets a qualifier. Only for
    `src/engine` files; `src/ra` and `src/td` stay global.
-7. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
+7. **Coverage** once the interface is final, so each test is written once: against the names, types
+   and namespace the code keeps, and for none of the code stages 1 and 5 deleted. It comes before
+   the polish because tests are the last thing likely to change the code - they find bugs, and the
+   lines no test can reach are often dead.
+8. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
    stage would change what the IDE flags.
-8. **The file name** after the code is final, alone in its commit, so git's rename detection holds
+9. **The file name** after the code is final, alone in its commit, so git's rename detection holds
    and every earlier commit reads under the path reviewers know.
-9. **Leftovers to `TODO.md`** at the very end, once the ledger has stopped growing and every entry
-   can name the file by its final path.
+10. **Leftovers to `TODO.md`** at the very end, once the ledger has stopped growing and every entry
+    can name the file by its final path.
 
 ## Before starting
 
@@ -40,13 +44,13 @@ Each stage makes the next one cheaper or more accurate:
   open. Note the twin in the other game (`src/ra` ↔ `src/td`): bug fixes go to it, nothing else
   does.
 - `git status`: unrelated changes stay in the tree and out of every commit (stage by path).
-- Ask the user once, now, to open **both** files (the `.h` too) in CLion. Stage 7 needs them; CLion
+- Ask the user once, now, to open **both** files (the `.h` too) in CLion. Stage 8 needs them; CLion
   only answers for open files, and a mid-run question stalls the run for nothing.
 - Keep a ledger in the scratchpad (`modernize-<file>.md`) with three lists: **bugs**, **noticed**
   (unused or constant parameters, redundant checks, tables that could be `constexpr`, functions
   doing two jobs), and **for the user** (anything that changes simulation behaviour, names you were
   unsure of). Every stage appends to it; later stages read it. It is what makes the stages add up
-  instead of each rediscovering the same things, and at the end it is the source for stage 9. Put
+  instead of each rediscovering the same things, and at the end it is the source for stage 10. Put
   everything on it, including what lies outside the files' scope and what a subagent reported: an
   item that is only in the conversation is lost when the run ends.
 
@@ -57,7 +61,7 @@ not been verified, splits RA and TD, and writes the message). A stage that finds
 commit and one line in the final report. Do not stop between stages to ask; the user asked for the
 whole run.
 
-**The full strict build runs once, not once per stage.** A run edits the same header seven times,
+**The full strict build runs once, not once per stage.** A run edits the same header eight times,
 and each edit re-analyzes everything that includes it - four minutes for an
 `engine/gfx/pixel_buffer.h`-sized fan-out, half an hour over a run. So during the stages, verify
 with `tools/strict_tu.py <touched files>` (the same clang-tidy pass and clang compile, on the
@@ -65,10 +69,10 @@ objects those files build, in seconds) and tell `/commit` the full pass is defer
 `cmake --build build --parallel 22` still runs every stage: it is what catches a rename that missed
 a call site anywhere in the tree.
 
-Then run `cmake --build build-strict --parallel 14` once, in the foreground, after stage 7 and
-before stage 8's commit - the last point where the code is final. What it reports is fixed there and
+Then run `cmake --build build-strict --parallel 14` once, in the foreground, after stage 8 and
+before stage 9's commit - the last point where the code is final. What it reports is fixed there and
 then: amend the stage commit it belongs to if that commit is still the tip, otherwise give the fix
-its own commit naming the stage it came from. Do not start stage 8 with findings outstanding, and do
+its own commit naming the stage it came from. Do not start stage 9 with findings outstanding, and do
 not end a run without that pass having been clean.
 
 **1. Dead code** - `/remove-dead-code <files>` in sweep mode. Unused parameters it notices go on the
@@ -84,9 +88,9 @@ behaviour are not applied: they go to **for the user**.
 then fix it at the end of this stage.
 
 **4. Names** - `/rename-google-style <files>`, **identifiers only**: stop before its file-rename
-step, which is stage 8. Identifiers means all of them - the types the files declare (including
+step, which is stage 9. Identifiers means all of them - the types the files declare (including
 dropping a `Class` suffix and picking a better name than the one under it), the parameters, and the
-locals, not just the functions and members. Settling the type name here is what lets stage 8 name
+locals, not just the functions and members. Settling the type name here is what lets stage 9 name
 the file once instead of twice. Leave out of the table anything the ledger already marks as going in
 stage 5 (a derivable member, a static that belongs elsewhere); renaming what is about to be deleted
 is churn in two commits. Its "noticed" and "unsure" lists go on the ledger.
@@ -105,24 +109,34 @@ mode: the siblings it lists as now qualifying names they will drop later go on t
 `tools/strict_tu.py` on every file it touched, like the other stages. Hooks it keeps global and any
 it would rather move go to **for the user**.
 
-**7. IDE** - `/fix-ide-issues <files>`. If CLion still times out, say so in the report and skip
-rather than guess.
+**7. Coverage** - `/cover-files <files>`, to every line a test can reach. The tests are one commit
+("Cover ..."); a new test target's `CMakeLists.txt` entry goes with them. What the tests turn up
+follows this run's rules rather than waiting for the user: a bug is fixed at the end of the stage
+under the rule below (the test that found it is its failing test), and a line no caller can reach is
+removed through `/remove-dead-code`, each as its own commit. The lines left uncovered, with the
+reason for each, and the branch sides not worth a test go on the ledger's **noticed** list. A file
+that needs the display, the main loop or game data throughout may end the stage with no tests: say
+what seam would make it testable on the **for the user** list, and make no commit.
 
-**8. File name** - the file-rename step of `/rename-google-style` (its section 5, step 7, and the
-naming rules under "The file name is part of the pass"). If the name already fits, record why and
-make no commit.
+**8. IDE** - `/fix-ide-issues <files>`, the test file included. If CLion still times out, say so in
+the report and skip rather than guess.
 
-**9. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
+**9. File name** - the file-rename step of `/rename-google-style` (its section 5, step 7, and the
+naming rules under "The file name is part of the pass"). The `_test.cc` and its test target are
+renamed with the pair. If the name already fits, record why and make no commit.
+
+**10. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
 `/add-todo` for wording and section: bugs not fixed (behaviour-changing, out of scope, twin not
 done), **noticed** items not acted on, **for the user** decisions, design ideas `/simplify` raised
-but did not apply, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and
-things spotted outside the files' scope. Give each entry what it takes to act without re-reading the
-run: the files and lines, what is wrong or possible, the options with their size, and the run's
-commit range. Before adding, grep `TODO.md` for an entry that already covers it (an existing item
-may only need the new file name or an extra detail); delete entries this run finished (a "move X
-into its namespace" item the namespace stage closed). Run Prettier on `TODO.md` (the pre-commit hook
-rejects it otherwise) and commit it alone, as `c8a9d6c4` did: "Add the <file> modernization's
-leftovers to TODO.md". A run whose ledger ends empty says so in the report and makes no commit.
+but did not apply, lines stage 7 left uncovered and what would make them testable, stages skipped (a
+CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things spotted outside the files' scope.
+Give each entry what it takes to act without re-reading the run: the files and lines, what is wrong
+or possible, the options with their size, and the run's commit range. Before adding, grep `TODO.md`
+for an entry that already covers it (an existing item may only need the new file name or an extra
+detail); delete entries this run finished (a "move X into its namespace" item the namespace stage
+closed). Run Prettier on `TODO.md` (the pre-commit hook rejects it otherwise) and commit it alone,
+as `c8a9d6c4` did: "Add the <file> modernization's leftovers to TODO.md". A run whose ledger ends
+empty says so in the report and makes no commit.
 
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
@@ -130,15 +144,16 @@ confirm against the callers, failing test first where the code is reachable from
 twin fixed separately.
 
 If a stage cannot be made to build or pass the strict checks, stop there: report what was committed,
-what is left in the tree, and the error. That includes the full strict pass before stage 8: a run
+what is left in the tree, and the error. That includes the full strict pass before stage 9: a run
 that ends with it unclean is a failed run, however many stages committed.
 
 ## Report
 
 - One line per stage: the commit(s) it made (`git log --oneline <base>..HEAD`), or why there was
-  none, and what the full strict pass before stage 8 turned up.
+  none, and what the full strict pass before stage 9 turned up.
 - Bugs fixed, each with its commit and whether the twin got it.
+- Coverage of each file before and after stage 7, and the lines still uncovered.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
-- The `TODO.md` commit from stage 9, with its entries in one line each.
+- The `TODO.md` commit from stage 10, with its entries in one line each.
 - What is still uncommitted, if anything, and why.

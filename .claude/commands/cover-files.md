@@ -122,9 +122,10 @@ as covered to the next person. A listed exception in the report is the honest re
    clang-tidy checks as the rest; GoogleTest's macros need the `NOLINTNEXTLINE` forms the existing
    tests use (see `game/core/owned_vector_test.cc` for `EXPECT_DEATH`).
 
-Do not commit unless asked. When the user says "commit", `/commit` applies; tests go in one commit
-with a subject that names what is now covered ("Cover the rest of Red Alert's reinforcement
-deliveries"), and each bug fix or dead-code removal in its own.
+Do not commit unless asked (`/modernize-file` asks: it commits each stage). When the user says
+"commit", `/commit` applies; tests go in one commit with a subject that names what is now covered
+("Cover the rest of Red Alert's reinforcement deliveries"), and each bug fix or dead-code removal in
+its own.
 
 ## 6. Report
 
