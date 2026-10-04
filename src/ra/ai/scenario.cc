@@ -638,9 +638,9 @@ void Fill_In_Data() {
        index++) {
     const TriggerTypeClass* tp =
         TheObjectHeaps().trigger_type().ActiveAt(index);
-    if (tp->Action1.Action == TACTION_ALLOWWIN ||
+    if (tp->Action1.type == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
-         tp->Action2.Action == TACTION_ALLOWWIN)) {
+         tp->Action2.type == TACTION_ALLOWWIN)) {
       HouseClass::As_Pointer(tp->House)->Blockage++;
     }
   }
@@ -1862,11 +1862,11 @@ void DropUnfilledTypeReferences() {
       DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
                      "event team");
     }
-    for (TActionClass* action :
+    for (TriggerAction* action :
          {&trigger_type.Action1, &trigger_type.Action2}) {
-      DropIfUnfilled(action->Team, team_types, trigger_type.Name(),
+      DropIfUnfilled(action->team_type, team_types, trigger_type.Name(),
                      "action team");
-      DropIfUnfilled(action->Trigger, trigger_types, trigger_type.Name(),
+      DropIfUnfilled(action->trigger_type, trigger_types, trigger_type.Name(),
                      "action trigger");
     }
   }

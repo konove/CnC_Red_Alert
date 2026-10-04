@@ -17,8 +17,8 @@
 */
 
 // The action half of a scenario trigger: what happens when the trigger springs
-// (TActionClass), the kinds of action there are (TActionType), and the entries
-// the scenario editor lists them with (ActionChoiceClass).
+// (TriggerAction), the kinds of action there are (TriggerActionType), and the
+// entries the scenario editor lists them with (ActionChoice).
 
 #ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
 #define CNC_RED_ALERT_RA_AI_TACTION_H_
@@ -43,7 +43,7 @@ namespace ra {
 
 // What a trigger action does. Scenario INI files and saved games store the
 // number, so the order is fixed.
-enum class TActionType {
+enum class TriggerActionType {
   TACTION_NONE,
 
   TACTION_WIN,               // player wins!
@@ -90,58 +90,58 @@ enum class TActionType {
 
   TACTION_COUNT,
 };
-using enum TActionType;
+using enum TriggerActionType;
 
 // Returns the action the scenario editor lists as `name`, ignoring case, or
 // TACTION_NONE when there is none (or `name` is empty).
-TActionType Action_From_Name(std::string_view name);
+TriggerActionType Action_From_Name(std::string_view name);
 
 // Returns the scenario editor's name for `action`.
-const char* Name_From_Action(TActionType action);
+const char* ActionName(TriggerActionType action);
 
-// Returns the kind of value `action` takes in TActionClass::Data, which the
+// Returns the kind of value `action` takes in TriggerAction::data, which the
 // scenario editor prompts for; NEED_NONE when it takes none. NEED_TEAM and
-// NEED_TRIGGER mean the Team or Trigger member instead.
-NeedType Action_Needs(TActionType action);
+// NEED_TRIGGER mean the team_type or trigger_type member instead.
+NeedType ActionNeed(TriggerActionType action);
 
 // One action of a trigger type: the action and the data it needs. A trigger
 // type holds two, and carries them out by calling them when it springs.
-struct TActionClass {
-  TActionType Action{TACTION_NONE};  // Action to perform.
+struct TriggerAction {
+  TriggerActionType type{TACTION_NONE};  // Action to perform.
 
-  TeamTypeClass* Team = nullptr;  // Team type for this action (if needed).
+  TeamTypeClass* team_type = nullptr;  // Team type for this action (if needed).
 
   // Trigger type for this action (if needed).
-  TriggerTypeClass* Trigger = nullptr;
+  TriggerTypeClass* trigger_type = nullptr;
 
-  // The action's value, read through the member Action_Needs() names. The INI
-  // file and saved games store Value; the one-byte members read its low byte,
+  // The action's value, read through the member ActionNeed() names. The INI
+  // file and saved games store `value`; the one-byte members read its low byte,
   // which is what the shipped scenarios rely on (see taction_test.cc).
   union {
-    ThemeType Theme;            // Musical theme.
-    VocType Sound;              // Sound effect.
-    VoxType Speech;             // Speech identifier.
-    HousesType House;           // House to be affected.
-    SpecialWeaponType Special;  // Special weapon ability.
-    QuarryType Quarry;          // Preferred target for attack.
-    VQType Movie;               // The movie to play.
-    bool Bool;                  // Boolean value.
-    int Value;  // Waypoint, global, text ID or timer tenths of a
+    ThemeType theme;            // Musical theme.
+    VocType sound;              // Sound effect.
+    VoxType speech;             // Speech identifier.
+    HousesType house;           // House to be affected.
+    SpecialWeaponType special;  // Special weapon ability.
+    QuarryType quarry;          // Preferred target for attack.
+    VQType movie;               // The movie to play.
+    bool flag;                  // Boolean value.
+    int value;  // Waypoint, global, text ID or timer tenths of a
                 // minute; -1 when unset.
-  } Data{};
+  } data{};
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
-  // that load later. TriggerTypeClass::Read_INI resolves it into Trigger once
-  // every trigger exists; empty otherwise. Not saved.
-  std::string PendingTriggerName;
+  // that load later. TriggerTypeClass::Read_INI resolves it into trigger_type
+  // once every trigger exists; empty otherwise. Not saved.
+  std::string pending_trigger_name;
 
-  TActionClass() {
-    Data.Theme = THEME_NONE;
-    Data.Value = -1;
+  TriggerAction() {
+    data.theme = THEME_NONE;
+    data.value = -1;
   }
 
-  // Clears Team or Trigger when `target` is the team type or trigger type it
-  // points to; called when that type is being destroyed.
+  // Clears team_type or trigger_type when `target` is the team type or trigger
+  // type it points to; called when that type is being destroyed.
   void Detach(Target target);
 
   // Saved-game support; defined in ioobj.cc. The union travels through its
@@ -151,61 +151,58 @@ struct TActionClass {
 
   // Reads the action fields from the trigger entry `tokens` is parsing: the
   // action number, the team, the trigger and the value. The counterpart of
-  // Build_INI_Entry().
-  void Read_INI(base::Tokenizer& tokens);
+  // ToIniEntry().
+  void ReadIni(base::Tokenizer& tokens);
 
   // Returns the action in the scenario INI's current format:
   // "action,team,trigger,value", the middle two as positions in their type
   // lists (-1 for none).
-  [[nodiscard]] std::string Build_INI_Entry() const;
+  [[nodiscard]] std::string ToIniEntry() const;
 
   // Carries out the action for the trigger that sprang. `house` is the
-  // trigger's owner, which the house actions without a Data.House act on.
+  // trigger's owner, which the house actions without a data.house act on.
   // `object` is what the trigger was attached to and sprang on, or nullptr.
-  // `id` is the springing trigger's slot in the trigger heap, or -1 for none.
-  // `cell` is the cell the trigger is attached to; cell 0 means none.
+  // `trigger_id` is the springing trigger's slot in the trigger heap, or -1 for
+  // none. `cell` is the cell the trigger is attached to; cell 0 means none.
   // Returns false when the action could not be done (no reinforcements could
   // be created, nothing to destroy), so the trigger is not counted as used.
-  bool operator()(HousesType house, ObjectClass* object, int id, Cell cell);
+  bool operator()(HousesType house, ObjectClass* object, int trigger_id,
+                  Cell cell);
 };
 
 // An action as an entry of the scenario editor's action drop lists, which
 // sort by description and draw each entry through Draw_It().
-class ActionChoiceClass {
+class ActionChoice {
  public:
   // Implicit: choice tables are brace lists of action types.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  ActionChoiceClass(TActionType event = TACTION_NONE) noexcept
-      : Action(event) {}
+  ActionChoice(TriggerActionType action = TACTION_NONE) noexcept
+      : action_(action) {}
 
   // Implicit: choices compare directly against their action type.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TActionType() const { return Action; }
-  bool operator==(const ActionChoiceClass& rvalue) const {
-    return Action == rvalue.Action;
+  operator TriggerActionType() const { return action_; }
+  bool operator==(const ActionChoice& other) const {
+    return action_ == other.action_;
   }
-  bool operator!=(const ActionChoiceClass& rvalue) const {
-    return Action != rvalue.Action;
+  bool operator!=(const ActionChoice& other) const {
+    return action_ != other.action_;
   }
-  bool operator>(const ActionChoiceClass& rvalue) const {
-    return rvalue < *this;
-  }
+  bool operator>(const ActionChoice& other) const { return other < *this; }
   // Orders by description, ignoring case.
-  bool operator<(const ActionChoiceClass& rvalue) const {
+  bool operator<(const ActionChoice& other) const {
     return std::ranges::lexicographical_compare(
-        std::string_view(Description()), std::string_view(rvalue.Description()),
+        std::string_view(Description()), std::string_view(other.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
   }
-  bool operator<=(const ActionChoiceClass& rvalue) const {
-    return Action == rvalue.Action || *this < rvalue;
+  bool operator<=(const ActionChoice& other) const {
+    return action_ == other.action_ || *this < other;
   }
-  bool operator>=(const ActionChoiceClass& rvalue) const {
-    return Action == rvalue.Action || rvalue < *this;
+  bool operator>=(const ActionChoice& other) const {
+    return action_ == other.action_ || other < *this;
   }
   // The editor's name for the action.
-  [[nodiscard]] const char* Description() const {
-    return Name_From_Action(Action);
-  }
+  [[nodiscard]] const char* Description() const { return ActionName(action_); }
 
   // Draws the description as a list box entry in the box at (`x`, `y`) of
   // `width` by `height` pixels, highlighted when `selected`. The index of the
@@ -213,20 +210,21 @@ class ActionChoiceClass {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
-  TActionType Action;
+ private:
+  TriggerActionType action_;
 };
 
 // The choice for every action, indexed by action.
-extern base::EnumArray<TActionType, ActionChoiceClass,
+extern base::EnumArray<TriggerActionType, ActionChoice,
                        static_cast<int>(TACTION_COUNT)>
-    ActionChoices;
+    action_choices;
 
-extern template void TActionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TActionClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
 template <>
-inline constexpr bool base::kIsSteppableEnum<ra::TActionType> = true;
+inline constexpr bool base::kIsSteppableEnum<ra::TriggerActionType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TACTION_H_

@@ -112,8 +112,8 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	This is the action to perform when the trigger event occurs.
   */
-  TActionClass Action1;
-  TActionClass Action2;
+  TriggerAction Action1;
+  TriggerAction Action2;
   MultiStyleType ActionControl = MULTI_ONLY;
 
   TriggerTypeClass();

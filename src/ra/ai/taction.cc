@@ -85,95 +85,96 @@
 namespace ra {
 
 // The scenario editor's name for each action. A name ending in "..." tells the
-// designer the action takes a value (see Action_Needs()).
-static base::EnumArray<TActionType, const char*,
-                       static_cast<int>(TACTION_COUNT)>
-    ActionText = {"-No Action-",
-                  "Winner is...",
-                  "Loser is...",
-                  "Production Begins",
-                  "Create Team...",
-                  "Destroy All Teams",
-                  "All to Hunt...",
-                  "Reinforcement (team)...",
-                  "Drop Zone Flare (waypoint)...",
-                  "Fire Sale...",
-                  "Play Movie...",
-                  "Text Trigger (ID num)...",
-                  "Destroy Trigger...",
-                  "Autocreate Begins...",
-                  "~don't use~",
-                  "Allow Win",
-                  "Reveal all map",
-                  "Reveal around waypoint...",
-                  "Reveal zone of waypoint...",
-                  "Play sound effect...",
-                  "Play music theme...",
-                  "Play speech...",
-                  "Force Trigger...",
-                  "Timer Start",
-                  "Timer Stop",
-                  "Timer Extend (1/10th min)...",
-                  "Timer Shorten (1/10th min)...",
-                  "Timer Set (1/10th min)...",
-                  "Global Set...",
-                  "Global Clear...",
-                  "Auto Base Building...",
-                  "Grow shroud one 'step'",
-                  "Destroy attached building",
-                  "Add 1-time special weapon...",
-                  "Add repeating special weapon...",
-                  "Preferred target...",
-                  "Launch Nukes"};
+// designer the action takes a value (see ActionNeed()).
+static constexpr base::EnumArray<TriggerActionType, const char*,
+                                 static_cast<int>(TACTION_COUNT)>
+    kActionNames = {"-No Action-",
+                    "Winner is...",
+                    "Loser is...",
+                    "Production Begins",
+                    "Create Team...",
+                    "Destroy All Teams",
+                    "All to Hunt...",
+                    "Reinforcement (team)...",
+                    "Drop Zone Flare (waypoint)...",
+                    "Fire Sale...",
+                    "Play Movie...",
+                    "Text Trigger (ID num)...",
+                    "Destroy Trigger...",
+                    "Autocreate Begins...",
+                    "~don't use~",
+                    "Allow Win",
+                    "Reveal all map",
+                    "Reveal around waypoint...",
+                    "Reveal zone of waypoint...",
+                    "Play sound effect...",
+                    "Play music theme...",
+                    "Play speech...",
+                    "Force Trigger...",
+                    "Timer Start",
+                    "Timer Stop",
+                    "Timer Extend (1/10th min)...",
+                    "Timer Shorten (1/10th min)...",
+                    "Timer Set (1/10th min)...",
+                    "Global Set...",
+                    "Global Clear...",
+                    "Auto Base Building...",
+                    "Grow shroud one 'step'",
+                    "Destroy attached building",
+                    "Add 1-time special weapon...",
+                    "Add repeating special weapon...",
+                    "Preferred target...",
+                    "Launch Nukes"};
 
 // One choice per action, in enum order. The editor's drop lists hold pointers
 // to these, so they need storage that outlives the dialog.
-base::EnumArray<TActionType, ActionChoiceClass, static_cast<int>(TACTION_COUNT)>
-    ActionChoices = {{{TACTION_NONE},
-                      {TACTION_WIN},
-                      {TACTION_LOSE},
-                      {TACTION_BEGIN_PRODUCTION},
-                      {TACTION_CREATE_TEAM},
-                      {TACTION_DESTROY_TEAM},
-                      {TACTION_ALL_HUNT},
-                      {TACTION_REINFORCEMENTS},
-                      {TACTION_DZ},
-                      {TACTION_FIRE_SALE},
-                      {TACTION_PLAY_MOVIE},
-                      {TACTION_TEXT_TRIGGER},
-                      {TACTION_DESTROY_TRIGGER},
-                      {TACTION_AUTOCREATE},
-                      {TACTION_WINLOSE},
-                      {TACTION_ALLOWWIN},
-                      {TACTION_REVEAL_ALL},
-                      {TACTION_REVEAL_SOME},
-                      {TACTION_REVEAL_ZONE},
-                      {TACTION_PLAY_SOUND},
-                      {TACTION_PLAY_MUSIC},
-                      {TACTION_PLAY_SPEECH},
-                      {TACTION_FORCE_TRIGGER},
-                      {TACTION_START_TIMER},
-                      {TACTION_STOP_TIMER},
-                      {TACTION_ADD_TIMER},
-                      {TACTION_SUB_TIMER},
-                      {TACTION_SET_TIMER},
-                      {TACTION_SET_GLOBAL},
-                      {TACTION_CLEAR_GLOBAL},
-                      {TACTION_BASE_BUILDING},
-                      {TACTION_CREEP_SHADOW},
-                      {TACTION_DESTROY_OBJECT},
-                      {TACTION_1_SPECIAL},
-                      {TACTION_FULL_SPECIAL},
-                      {TACTION_PREFERRED_TARGET},
-                      {TACTION_LAUNCH_NUKES}}};
+base::EnumArray<TriggerActionType, ActionChoice,
+                static_cast<int>(TACTION_COUNT)>
+    action_choices = {{{TACTION_NONE},
+                       {TACTION_WIN},
+                       {TACTION_LOSE},
+                       {TACTION_BEGIN_PRODUCTION},
+                       {TACTION_CREATE_TEAM},
+                       {TACTION_DESTROY_TEAM},
+                       {TACTION_ALL_HUNT},
+                       {TACTION_REINFORCEMENTS},
+                       {TACTION_DZ},
+                       {TACTION_FIRE_SALE},
+                       {TACTION_PLAY_MOVIE},
+                       {TACTION_TEXT_TRIGGER},
+                       {TACTION_DESTROY_TRIGGER},
+                       {TACTION_AUTOCREATE},
+                       {TACTION_WINLOSE},
+                       {TACTION_ALLOWWIN},
+                       {TACTION_REVEAL_ALL},
+                       {TACTION_REVEAL_SOME},
+                       {TACTION_REVEAL_ZONE},
+                       {TACTION_PLAY_SOUND},
+                       {TACTION_PLAY_MUSIC},
+                       {TACTION_PLAY_SPEECH},
+                       {TACTION_FORCE_TRIGGER},
+                       {TACTION_START_TIMER},
+                       {TACTION_STOP_TIMER},
+                       {TACTION_ADD_TIMER},
+                       {TACTION_SUB_TIMER},
+                       {TACTION_SET_TIMER},
+                       {TACTION_SET_GLOBAL},
+                       {TACTION_CLEAR_GLOBAL},
+                       {TACTION_BASE_BUILDING},
+                       {TACTION_CREEP_SHADOW},
+                       {TACTION_DESTROY_OBJECT},
+                       {TACTION_1_SPECIAL},
+                       {TACTION_FULL_SPECIAL},
+                       {TACTION_PREFERRED_TARGET},
+                       {TACTION_LAUNCH_NUKES}}};
 
-void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                                int width, int height, bool selected,
-                                FontType font, TextPrintType flags) const {
+void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                           int width, int height, bool selected, FontType font,
+                           TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   // Tab stops in pixels; the action names hold no tabs, so they only matter to
   // the shared print call.
-  static constexpr std::array<int, 2> _tabs = {13, 40};
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
   if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
@@ -185,61 +186,62 @@ void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
     }
 
     Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                            flags, width, _tabs);
+                            flags, width, kTabStops);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, font, flags, width, _tabs);
+        kTBlack, font, flags, width, kTabStops);
   }
 }
 
-void TActionClass::Detach(Target target) {
-  if (target.kind() == RTTI_TEAMTYPE && Team == target.AsTeamType()) {
-    Team = nullptr;
+void TriggerAction::Detach(Target target) {
+  if (target.kind() == RTTI_TEAMTYPE && team_type == target.AsTeamType()) {
+    team_type = nullptr;
   }
-  if (target.kind() == RTTI_TRIGGERTYPE && Trigger == target.AsTriggerType()) {
-    Trigger = nullptr;
+  if (target.kind() == RTTI_TRIGGERTYPE &&
+      trigger_type == target.AsTriggerType()) {
+    trigger_type = nullptr;
   }
 }
 
-std::string TActionClass::Build_INI_Entry() const {
-  return std::format("{},{},{},{}", std::to_underlying(Action),
-                     TheObjectHeaps().team_type().PositionOf(Team),
-                     TheObjectHeaps().trigger_type().PositionOf(Trigger),
-                     Data.Value);
+std::string TriggerAction::ToIniEntry() const {
+  return std::format("{},{},{},{}", std::to_underlying(type),
+                     TheObjectHeaps().team_type().PositionOf(team_type),
+                     TheObjectHeaps().trigger_type().PositionOf(trigger_type),
+                     data.value);
 }
 
-void TActionClass::Read_INI(base::Tokenizer& tokens) {
+void TriggerAction::ReadIni(base::Tokenizer& tokens) {
   switch (TheWorld().new_ini_format()) {
     // Format 2 and later: the team and the trigger are positions in their
-    // type lists (Build_INI_Entry() writes this form).
+    // type lists (ToIniEntry() writes this form).
     default: {
-      Action =
-          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team = TheObjectHeaps().team_type().SlotOrNull(
+      type = static_cast<TriggerActionType>(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
+      team_type = TheObjectHeaps().team_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      trigger_type = TheObjectHeaps().trigger_type().SlotOrNull(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
+      data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
     }
 
     // The shipped scenarios: the team and the trigger are given by name.
     case 1:
     case 0:
-      Action =
-          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      type = static_cast<TriggerActionType>(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-      Team = TeamTypeClass::From_Name(tokens.Next());
-      DCHECK(Action_Needs(Action) != NEED_TEAM || Team != nullptr);
+      team_type = TeamTypeClass::From_Name(tokens.Next());
+      DCHECK(ActionNeed(type) != NEED_TEAM || team_type != nullptr);
 
       // The named trigger may not have been read yet, so keep the name;
       // TriggerTypeClass::Read_INI() resolves it once every trigger exists.
-      PendingTriggerName = tokens.Next();
+      pending_trigger_name = tokens.Next();
 
-      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
   }
 
@@ -249,27 +251,28 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
   // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
   // Data members - Movie, Special, Speech, House - still get it from the
   // union.)
-  if (Action == TACTION_PLAY_SOUND &&
-      (Data.Value < 0 ||
-       std::cmp_greater_equal(Data.Value, magic_enum::enum_count<VocType>()))) {
-    const int fixed =
-        static_cast<int>(static_cast<uint32_t>(Data.Value) & 0xFFU);
-    if (fixed >= 0 && std::cmp_less(fixed, magic_enum::enum_count<VocType>())) {
-      DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
-                    << " -> " << fixed;
-      Data.Value = fixed;
+  if (type == TACTION_PLAY_SOUND &&
+      (data.value < 0 ||
+       std::cmp_greater_equal(data.value, magic_enum::enum_count<VocType>()))) {
+    const int low_byte =
+        static_cast<int>(static_cast<uint32_t>(data.value) & 0xFFU);
+    if (low_byte >= 0 &&
+        std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
+      DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << data.value
+                    << " -> " << low_byte;
+      data.value = low_byte;
     }
   }
 }
 
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
-                              Cell cell) {
-  HouseClass* hptr = HouseClass::As_Pointer(house);
-  TriggerClass* trig = nullptr;
-  if (id != -1) {
-    trig = TheObjectHeaps().trigger().Slot(id);
+bool TriggerAction::operator()(HousesType house, ObjectClass* object,
+                               int trigger_id, Cell cell) {
+  HouseClass* owner = HouseClass::As_Pointer(house);
+  TriggerClass* sprung_trigger = nullptr;
+  if (trigger_id != -1) {
+    sprung_trigger = TheObjectHeaps().trigger().Slot(trigger_id);
   }
   bool success = true;
 
@@ -279,11 +282,11 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     object = nullptr;
   }
 
-  switch (Action) {
+  switch (type) {
     // Display a line of the mission's tutorial text over the tactical map.
     // An ID with no text displays nothing.
     case TACTION_TEXT_TRIGGER: {
-      const char* message = TheAssets().tutorial_text(Data.Value);
+      const char* message = TheAssets().tutorial_text(data.value);
       if (message == nullptr) {
         break;
       }
@@ -298,9 +301,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_LAUNCH_NUKES: {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(index);
-        if (*bldg == STRUCT_MSLO) {
-          bldg->Assign_Mission(MISSION_MISSILE);
+        BuildingClass* silo = TheObjectHeaps().building().ActiveAt(index);
+        if (*silo == STRUCT_MSLO) {
+          silo->Assign_Mission(MISSION_MISSILE);
         }
       }
       break;
@@ -308,8 +311,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Set the preferred target for the house.
     case TACTION_PREFERRED_TARGET:
-      if (hptr) {
-        hptr->PreferredTarget = Data.Quarry;
+      if (owner) {
+        owner->PreferredTarget = data.quarry;
       }
       break;
 
@@ -317,8 +320,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // builds bases and units. As for every house action here, a house the
     // scenario does not have (or HOUSE_NONE) is left alone.
     case TACTION_BASE_BUILDING:
-      if (hptr != nullptr) {
-        hptr->IsBaseBuilding = Data.Bool;
+      if (owner != nullptr) {
+        owner->IsBaseBuilding = data.flag;
       }
       break;
 
@@ -329,19 +332,19 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Set a scenario global.
     case TACTION_SET_GLOBAL:
-      TheScenario().Set_Global_To(Data.Value, true);
+      TheScenario().Set_Global_To(data.value, true);
       break;
 
     // Clear a scenario global.
     case TACTION_CLEAR_GLOBAL:
-      TheScenario().Set_Global_To(Data.Value, false);
+      TheScenario().Set_Global_To(data.value, false);
       break;
 
     // Reveal the map around the waypoint to the player. Nothing to do once the
     // player sees everything.
     case TACTION_REVEAL_SOME:
       if (!ThePlayer()->IsVisionary) {
-        TheMap().Sight_From(base::At(TheScenario().Waypoint, Data.Value),
+        TheMap().Sight_From(base::At(TheScenario().Waypoint, data.value),
                             TheRules().GapShroudRadius, ThePlayer(), false);
       }
       break;
@@ -353,7 +356,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_REVEAL_ZONE:
       if (!ThePlayer()->IsVisionary) {
         const int zone = TheMap()
-                             .at(base::At(TheScenario().Waypoint, Data.Value))
+                             .at(base::At(TheScenario().Waypoint, data.value))
                              .Zones.at(MZONE_CRUSHER);
 
         for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
@@ -399,25 +402,25 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // for the two actions below.
     case TACTION_ADD_TIMER:
       TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
-                                     (Data.Value * (kTicksPerMinute / 10)));
+                                     (data.value * (kTicksPerMinute / 10)));
       TheMap().Redraw_Tab();
       break;
 
     // Remove time from the mission timer, stopping at zero.
     case TACTION_SUB_TIMER:
       if (TheScenario().MissionTimer.Remaining() <=
-          Data.Value * (kTicksPerMinute / 10)) {
+          data.value * (kTicksPerMinute / 10)) {
         TheScenario().MissionTimer.Set(0);
       } else {
         TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() -
-                                       (Data.Value * (kTicksPerMinute / 10)));
+                                       (data.value * (kTicksPerMinute / 10)));
       }
       TheMap().Redraw_Tab();
       break;
 
     // Set the mission timer to the value specified.
     case TACTION_SET_TIMER:
-      TheScenario().MissionTimer.Set(Data.Value * (kTicksPerMinute / 10));
+      TheScenario().MissionTimer.Set(data.value * (kTicksPerMinute / 10));
       TheScenario().MissionTimer.Start();
       TheMap().Redraw_Tab();
       break;
@@ -428,7 +431,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_PLAY_MOVIE:
       game::TheMouse().Hide();
       TheScreen().visible_view().Clear();
-      Play_Movie(Data.Movie, THEME_NONE, true);
+      Play_Movie(data.movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
       TheMap().Flag_To_Redraw(true);
       game::TheMouse().Show();
@@ -436,31 +439,31 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Play a sound effect.
     case TACTION_PLAY_SOUND:
-      PlaySoundEffect(Data.Sound);
+      PlaySoundEffect(data.sound);
       break;
 
     // Play a musical theme.
     case TACTION_PLAY_MUSIC:
-      TheTheme().Queue_Song(Data.Theme);
+      TheTheme().Queue_Song(data.theme);
       break;
 
     // Play the speech data specified.
     case TACTION_PLAY_SPEECH:
-      Speak(Data.Speech);
+      Speak(data.speech);
       break;
 
     // Give the special weapon to the house, for one use or for good, and put
     // its button on the player's sidebar.
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
-      if (hptr == nullptr) {
+      if (owner == nullptr) {
         break;
       }
-      hptr->SuperWeapon.at(Data.Special)
-          .Enable(Action == TACTION_1_SPECIAL, false);
+      owner->SuperWeapon.at(data.special)
+          .Enable(type == TACTION_1_SPECIAL, false);
 
-      if (ThePlayer() == hptr) {
-        TheMap().Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
+      if (ThePlayer() == owner) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(data.special));
         TheMap().Column[1].Flag_To_Redraw();
       }
       break;
@@ -471,10 +474,11 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // springing trigger may be among them; TriggerClass::Spring() checks for
     // that when this returns.
     case TACTION_DESTROY_TRIGGER:
-      if (Trigger != nullptr) {
+      if (trigger_type != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
-          if (TheObjectHeaps().trigger().ActiveAt(index)->Class == Trigger) {
+          if (TheObjectHeaps().trigger().ActiveAt(index)->Class ==
+              trigger_type) {
             Detach_This_From_All(
                 TheObjectHeaps().trigger().ActiveAt(index)->As_Target());
             base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(index));
@@ -488,21 +492,22 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // create a trigger of that type and then force it to be sprung. Nothing
     // is sprung when the trigger heap is full and none could be made.
     case TACTION_FORCE_TRIGGER:
-      if (TriggerClass* forced = Find_Or_Make(Trigger); forced != nullptr) {
-        forced->Spring(TEVENT_ANY, nullptr, Cell{}, true);
+      if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type);
+          forced_trigger != nullptr) {
+        forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
       }
       break;
 
     // Place a smoke marker at the waypoint specified.
     case TACTION_DZ:
       base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, Data.Value).Center());
+          ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, data.value).Center());
       break;
 
     // Flag the house specified as the winner. Only the player is ever flagged:
     // the house says whether the player is the one who won or lost.
     case TACTION_WIN:
-      if (Data.House == ThePlayer()->Class->House) {
+      if (data.house == ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
         ThePlayer()->Flag_To_Lose();
@@ -511,7 +516,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Flag the house specified as the loser; the mirror image of the above.
     case TACTION_LOSE:
-      if (Data.House != ThePlayer()->Class->House) {
+      if (data.house != ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
         ThePlayer()->Flag_To_Lose();
@@ -520,7 +525,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // This will enable production to begin for the house specified.
     case TACTION_BEGIN_PRODUCTION:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->Begin_Production();
       }
@@ -529,7 +534,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // Cause all buildings to be sold and all units to go into hunt mode. The
     // house's AI does both once it is in the endgame state.
     case TACTION_FIRE_SALE:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->State = STATE_ENDGAME;
       }
@@ -537,7 +542,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Begin the team autocreate logic for the house specified.
     case TACTION_AUTOCREATE:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->IsAlerted = true;
       }
@@ -545,31 +550,31 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // Manually create the team specified. Counting as scenario setup makes
     // Create_One_Of() ignore the type's limit on how many teams may exist.
-    // Team is null when the INI named a team that does not exist; the three
-    // team actions then do nothing.
+    // team_type is null when the INI named a team that does not exist; the
+    // three team actions then do nothing.
     case TACTION_CREATE_TEAM:
-      if (Team != nullptr) {
+      if (team_type != nullptr) {
         TheWorld().scenario_init()++;
-        Team->Create_One_Of();
+        team_type->Create_One_Of();
         TheWorld().scenario_init()--;
       }
       break;
 
     // Destroy all teams of the type specified.
     case TACTION_DESTROY_TEAM:
-      if (Team != nullptr) {
-        Team->Destroy_All_Of();
+      if (team_type != nullptr) {
+        team_type->Destroy_All_Of();
       }
       break;
 
     // Create a reinforcement of the team specified.
     case TACTION_REINFORCEMENTS:
-      success = Team != nullptr && DeliverReinforcements(&*Team);
+      success = team_type != nullptr && DeliverReinforcements(&*team_type);
       break;
 
     // Force all units of the house specified to go into hunt mode.
     case TACTION_ALL_HUNT:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->Do_All_To_Hunt();
       }
@@ -600,48 +605,44 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       // in the heap's in-use list, and the loop then steps over the object
       // that moved into it. Stepping back (as TACTION_DESTROY_TRIGGER does)
       // would kill objects that survive today.
-      if (trig) {
-        for (int u_index = 0; u_index < TheObjectHeaps().unit().Count();
-             u_index++) {
-          UnitClass* unit = TheObjectHeaps().unit().ActiveAt(u_index);
+      if (sprung_trigger) {
+        for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+          UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
-          if (unit && unit->Trigger == trig) {
+          if (unit && unit->Trigger == sprung_trigger) {
             unit->Trigger = nullptr;
             int damage = unit->Strength;
             unit->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
-        for (int i_index = 0; i_index < TheObjectHeaps().infantry().Count();
-             i_index++) {
-          InfantryClass* infantry =
-              TheObjectHeaps().infantry().ActiveAt(i_index);
+        for (int index = 0; index < TheObjectHeaps().infantry().Count();
+             index++) {
+          InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
-          if (infantry && infantry->Trigger == trig) {
+          if (infantry && infantry->Trigger == sprung_trigger) {
             infantry->Trigger = nullptr;
             int damage = infantry->Strength;
             infantry->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
-        for (int a_index = 0; a_index < TheObjectHeaps().aircraft().Count();
-             a_index++) {
-          AircraftClass* aircraft =
-              TheObjectHeaps().aircraft().ActiveAt(a_index);
+        for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+             index++) {
+          AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
 
-          if (aircraft && aircraft->Trigger == trig) {
+          if (aircraft && aircraft->Trigger == sprung_trigger) {
             aircraft->Trigger = nullptr;
             int damage = aircraft->Strength;
             aircraft->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
           }
         }
 
-        for (int b_index = 0; b_index < TheObjectHeaps().building().Count();
-             b_index++) {
-          BuildingClass* building =
-              TheObjectHeaps().building().ActiveAt(b_index);
+        for (int index = 0; index < TheObjectHeaps().building().Count();
+             index++) {
+          BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
-          if (building && building->Trigger == trig) {
+          if (building && building->Trigger == sprung_trigger) {
             building->Trigger = nullptr;
             int damage = building->Strength;
             building->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
@@ -653,22 +654,22 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // No action. TACTION_ALLOWWIN is not carried out here: TriggerClass and
     // the scenario's win check look for it by type.
     case TACTION_NONE:
-    case TActionType::TACTION_WINLOSE:
-    case TActionType::TACTION_ALLOWWIN:
-    case TActionType::TACTION_COUNT:
+    case TriggerActionType::TACTION_WINLOSE:
+    case TriggerActionType::TACTION_ALLOWWIN:
+    case TriggerActionType::TACTION_COUNT:
     default:
       break;
   }
   return success;
 }
 
-TActionType Action_From_Name(const std::string_view name) {
+TriggerActionType Action_From_Name(const std::string_view name) {
   if (name.empty()) {
     return TACTION_NONE;
   }
 
-  for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
-    if (absl::EqualsIgnoreCase(name, ActionText.at(i))) {
+  for (TriggerActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
+    if (absl::EqualsIgnoreCase(name, kActionNames.at(i))) {
       return i;
     }
   }
@@ -676,11 +677,11 @@ TActionType Action_From_Name(const std::string_view name) {
   return TACTION_NONE;
 }
 
-const char* Name_From_Action(TActionType action) {
-  return ActionText.at(action);
+const char* ActionName(TriggerActionType action) {
+  return kActionNames.at(action);
 }
 
-NeedType Action_Needs(TActionType action) {
+NeedType ActionNeed(TriggerActionType action) {
   switch (action) {
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
@@ -734,16 +735,16 @@ NeedType Action_Needs(TActionType action) {
     case TACTION_PREFERRED_TARGET:
       return NEED_QUARRY;
 
-    case TActionType::TACTION_NONE:
-    case TActionType::TACTION_WINLOSE:
-    case TActionType::TACTION_ALLOWWIN:
-    case TActionType::TACTION_REVEAL_ALL:
-    case TActionType::TACTION_START_TIMER:
-    case TActionType::TACTION_STOP_TIMER:
-    case TActionType::TACTION_CREEP_SHADOW:
-    case TActionType::TACTION_DESTROY_OBJECT:
-    case TActionType::TACTION_LAUNCH_NUKES:
-    case TActionType::TACTION_COUNT:
+    case TriggerActionType::TACTION_NONE:
+    case TriggerActionType::TACTION_WINLOSE:
+    case TriggerActionType::TACTION_ALLOWWIN:
+    case TriggerActionType::TACTION_REVEAL_ALL:
+    case TriggerActionType::TACTION_START_TIMER:
+    case TriggerActionType::TACTION_STOP_TIMER:
+    case TriggerActionType::TACTION_CREEP_SHADOW:
+    case TriggerActionType::TACTION_DESTROY_OBJECT:
+    case TriggerActionType::TACTION_LAUNCH_NUKES:
+    case TriggerActionType::TACTION_COUNT:
     default:
       break;
   }
