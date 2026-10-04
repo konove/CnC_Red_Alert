@@ -579,7 +579,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
 
     case ACTION_REINFORCEMENTS:
       if (Team) {
-        success = Do_Reinforcements(Team);
+        success = DeliverReinforcements(Team);
       }
       break;
 
@@ -765,7 +765,7 @@ bool TriggerClass::Spring(EventType event, Cell cell) {
 
     case ACTION_REINFORCEMENTS:
       if (Team) {
-        success = Do_Reinforcements(Team);
+        success = DeliverReinforcements(Team);
       }
       break;
 
@@ -957,7 +957,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
 
     case ACTION_REINFORCEMENTS:
       if (Team) {
-        success = Do_Reinforcements(Team);
+        success = DeliverReinforcements(Team);
       }
       break;
 

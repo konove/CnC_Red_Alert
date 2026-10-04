@@ -229,7 +229,7 @@
   - `DeliverReinforcements()` (`ra/ai/reinforcements.cc:314`) takes the facing from the edge
     (`SourceType * 2`), so a group from the north edge starts facing north, off the map; the
     original comment called it the "facing to enter map", which suggests the opposite was meant.
-    Tiberian Dawn's `Do_Reinforcements()` (`td/ai/reinf.cc`) does the same
+    Tiberian Dawn's `DeliverReinforcements()` (`td/ai/reinf.cc`) does the same
   - A house edge of `SOURCE_AIR` gives 8 there, which `AsFacing()` wraps to north;
     `Calculated_Cell()` treats it as north too, so it is harmless today
   - Turning the facing round changes the first frames of every edge reinforcement in both games
@@ -240,12 +240,12 @@
     moment before it unloads. Options: skip a full transport in `FindHostNear()`, or load only what
     fits and send the rest over the map edge; both change play
 - Stop Tiberian Dawn's reinforcement placement loop when a member can never be placed
-  - `Do_Reinforcements()` (`td/ai/reinf.cc`) retries a member from a neighbouring edge cell whenever
-    `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the can-enter check and fails
-    only when the object cannot be marked down, which a new cell does not cure, so the loop can hop
-    between two cells for ever. Red Alert's `DeliverReinforcements()` now gives up after eight
-    retries (`ReinforcementTest.GivesUpOnATeamThatNoEdgeCellTakes`); Tiberian Dawn needs the same
-    bound, and a test fixture first (see Testing)
+  - `DeliverReinforcements()` (`td/ai/reinf.cc`) retries a member from a neighbouring edge cell
+    whenever `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the can-enter check
+    and fails only when the object cannot be marked down, which a new cell does not cure, so the
+    loop can hop between two cells for ever. Red Alert's `DeliverReinforcements()` now gives up
+    after eight retries (`ReinforcementTest.GivesUpOnATeamThatNoEdgeCellTakes`); Tiberian Dawn needs
+    the same bound, and a test fixture first (see Testing)
   - Both loops treat cell index 0 as "no cell" (`index() > 0`) where `Cell::None()` is -1
 - Balance `scenario_init` on the failure paths of `Read_Scenario()` and `Read_Scenario_INI()`
   - `ra/ai/scenario.cc:514` returns false after the `++` at `:463` without the `--` at `:516`, and
@@ -848,7 +848,7 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover Tiberian Dawn's `Do_Reinforcements()` with tests
+- Cover Tiberian Dawn's `DeliverReinforcements()` with tests
   - Red Alert's `ra_reinforcements_test` delivers teams in a real `Game` (edge entry, infantry
     leaving a building, the clean-up and the retry limit). Tiberian Dawn has no such fixture, so
     `e5cf1691` and `73182098` are untested. The Red Alert fixture shows what a `Game` without data

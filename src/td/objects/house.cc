@@ -1049,7 +1049,7 @@ void HouseClass::AI() {
     */
     if (IsFreeHarvester && FreeHarvester.IsFinished()) {
       IsFreeHarvester = false;
-      Create_Special_Reinforcement(
+      DeliverSpecialReinforcement(
           this, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr);
     }
 
@@ -2571,8 +2571,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell) {
         } else {
           strike = std::clamp(TheSession().unit_count() / 5, 1, 3);
         }
-        Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
-                                 Target::FromCellIndex(cell), Target{});
+        LaunchAirStrike(this, AIRCRAFT_A10, strike, MISSION_HUNT,
+                        Target::FromCellIndex(cell), Target{});
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = 0;
         }

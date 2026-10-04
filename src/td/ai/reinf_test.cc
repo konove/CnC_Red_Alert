@@ -34,7 +34,7 @@ class ReinforcementTest : public ::testing::Test {
     TheObjectHeaps().team().Reset(2);
     TheObjectHeaps().team_type().Reset(2);
     house_ = base::NewPooled<HouseClass>(HOUSE_GOOD);
-    // Do_Reinforcements() announces the player's own reinforcements.
+    // DeliverReinforcements() announces the player's own reinforcements.
     ThePlayer() = house_;
     // The map layer alone: the display layers above it load game data.
     TheMap().MapClass::One_Time();
@@ -84,8 +84,8 @@ class ReinforcementTest : public ::testing::Test {
 };
 
 TEST_F(ReinforcementTest, AnAirStrikeThatCannotBePlacedCountsNoAircraft) {
-  EXPECT_EQ(Create_Air_Reinforcement(house_, AIRCRAFT_A10, 2, MISSION_HUNT,
-                                     Target{}, Target{}),
+  EXPECT_EQ(LaunchAirStrike(house_, AIRCRAFT_A10, 2, MISSION_HUNT, Target{},
+                            Target{}),
             0);
   EXPECT_EQ(ObjectCount(), 0);
 }
@@ -95,7 +95,7 @@ TEST_F(ReinforcementTest, ATeamThatCannotBePlacedAtTheEdgeIsDeleted) {
   TeamTypeClass& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
-  EXPECT_TRUE(Do_Reinforcements(&team_type));
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   EXPECT_EQ(ObjectCount(), 0);
   EXPECT_EQ(TheWorld().scenario_init(), 0);
@@ -107,7 +107,7 @@ TEST_F(ReinforcementTest, AVehicleGroupEntersFromTheHouseEdge) {
   TeamTypeClass& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
-  EXPECT_TRUE(Do_Reinforcements(&team_type));
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 2);
   for (int index = 0; index < 2; index++) {
@@ -128,7 +128,7 @@ TEST_F(ReinforcementTest, AHovercraftWithNoBeachToLandOnIsDeleted) {
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_HOVER), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
 
-  Do_Reinforcements(&team_type);
+  DeliverReinforcements(&team_type);
 
   EXPECT_EQ(ObjectCount(), 0);
 }
@@ -138,7 +138,7 @@ TEST_F(ReinforcementTest, AGroupForAHouseEdgeThatIsNoEdgeIsDeleted) {
   TeamTypeClass& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
-  Do_Reinforcements(&team_type);
+  DeliverReinforcements(&team_type);
 
   EXPECT_EQ(ObjectCount(), 0);
 }
@@ -149,7 +149,7 @@ TEST_F(ReinforcementTest, TheGroundMembersOfAnAirGroupAreDeleted) {
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_A10), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
 
-  Do_Reinforcements(&team_type);
+  DeliverReinforcements(&team_type);
 
   EXPECT_EQ(ObjectCount(), 0);
 }
@@ -158,7 +158,7 @@ TEST_F(ReinforcementTest, EveryGunboatThatCannotBePlacedIsDeleted) {
   TeamTypeClass& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_GUNBOAT), 2);
 
-  EXPECT_FALSE(Do_Reinforcements(&team_type));
+  EXPECT_FALSE(DeliverReinforcements(&team_type));
 
   EXPECT_EQ(ObjectCount(), 0);
 }
@@ -167,7 +167,7 @@ TEST_F(ReinforcementTest, AFailedSpecialReinforcementLeavesNoTeamType) {
   // No room for the harvester, so the delivery fails after making its team.
   TheObjectHeaps().unit().Reset(0);
 
-  EXPECT_FALSE(Create_Special_Reinforcement(
+  EXPECT_FALSE(DeliverSpecialReinforcement(
       house_, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr));
 
   EXPECT_EQ(TheObjectHeaps().team_type().Count(), 0);
@@ -177,8 +177,8 @@ TEST_F(ReinforcementTest, AFailedSpecialReinforcementLeavesNoTeamType) {
 TEST_F(ReinforcementTest, ATeamTypeWithoutMembersDeliversNothing) {
   const TeamTypeClass& team_type = MakeTeamType();
 
-  EXPECT_FALSE(Do_Reinforcements(&team_type));
-  EXPECT_FALSE(Do_Reinforcements(nullptr));
+  EXPECT_FALSE(DeliverReinforcements(&team_type));
+  EXPECT_FALSE(DeliverReinforcements(nullptr));
 
   EXPECT_EQ(ObjectCount(), 0);
 }
