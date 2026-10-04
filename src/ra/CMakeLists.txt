@@ -103,6 +103,12 @@ target_compile_definitions(ra_trigger_action_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_trigger_action_test)
 apply_language_setting(ra_trigger_action_test)
 
+add_gtest(
+    NAME ra_waypoint_name_test
+    SOURCES ai/waypoint_name_test.cc ai/waypoint_name.cc
+    LIBS absl::strings
+)
+
 # Reads, writes and detaches trigger types in a real Game.
 add_gtest(
     NAME ra_trigtype_test
