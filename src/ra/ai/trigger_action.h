@@ -19,8 +19,8 @@
 // The action half of a scenario trigger: what happens when the trigger springs
 // (TriggerAction) and the kinds of action there are (TriggerActionType).
 
-#ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
-#define CNC_RED_ALERT_RA_AI_TACTION_H_
+#ifndef CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
+#define CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 
 #include <string>
 
@@ -107,7 +107,7 @@ struct TriggerAction {
 
   // The action's value, read through the member ActionNeed() names. The INI
   // file and saved games store `value`; the one-byte members read its low byte,
-  // which is what the shipped scenarios rely on (see taction_test.cc).
+  // which is what the shipped scenarios rely on (see trigger_action_test.cc).
   union {
     ThemeType theme;            // Musical theme.
     VocType sound;              // Sound effect.
@@ -161,4 +161,4 @@ extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_TACTION_H_
+#endif  // CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_

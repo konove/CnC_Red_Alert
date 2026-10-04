@@ -86,10 +86,10 @@
 - Check that Red Alert's scenario INI numbers team and trigger types the same way both ways
   - The writers emit a type's position in its heap's in-use list (`PositionOf()`), the readers
     resolve the number as a slot index (`SlotOrNull()`): `ra/ai/tevent.cc` (~651 write, ~674 read),
-    `ra/ai/taction.cc` (~293, ~319), `ra/ai/teamtype.cc` (~2007, ~1841 and ~1937). They agree only
-    while the type heaps have no holes, which holds after a fresh INI load; a type deleted in the
-    scenario editor leaves one. The original game had the same pairing. Either write `SlotIndexOf()`
-    or check that the editor saves its types in slot order
+    `ra/ai/trigger_action.cc` (~161, ~174), `ra/ai/teamtype.cc` (~2007, ~1841 and ~1937). They agree
+    only while the type heaps have no holes, which holds after a fresh INI load; a type deleted in
+    the scenario editor leaves one. The original game had the same pairing. Either write
+    `SlotIndexOf()` or check that the editor saves its types in slot order
 - Decide whether Red Alert's lepton distances should still wrap at 16 bits
   - Leptons became `int` in stage B1 of `docs/COORDINATE_TYPES_PLAN.md`, which kept every old
     `uint16_t` wrap explicitly. Three of them turn a large value into a small one:

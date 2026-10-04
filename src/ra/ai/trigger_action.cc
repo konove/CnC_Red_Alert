@@ -19,7 +19,7 @@
 // The actions a scenario trigger performs when it springs: carrying them out,
 // reading and writing them in the scenario INI, and naming them in the editor.
 
-#include "ra/ai/taction.h"
+#include "ra/ai/trigger_action.h"
 
 #include <algorithm>
 #include <cstdint>

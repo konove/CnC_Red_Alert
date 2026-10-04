@@ -95,13 +95,13 @@ add_gtest(
 
 # Carries out trigger actions in a real Game.
 add_gtest(
-    NAME ra_taction_test
-    SOURCES ai/taction_test.cc startup/game_test_util.cc startup/startup.cc
+    NAME ra_trigger_action_test
+    SOURCES ai/trigger_action_test.cc startup/game_test_util.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
-target_compile_definitions(ra_taction_test PRIVATE RA_NO_ENTRY_POINT=1)
-apply_dotenv_settings(ra_taction_test)
-apply_language_setting(ra_taction_test)
+target_compile_definitions(ra_trigger_action_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_trigger_action_test)
+apply_language_setting(ra_trigger_action_test)
 
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(

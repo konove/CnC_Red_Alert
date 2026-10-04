@@ -1,7 +1,7 @@
 // Tests for how a trigger action's data reads the values scenario INI files
 // store, and for carrying the actions out in a real Game with no game data.
 
-#include "ra/ai/taction.h"
+#include "ra/ai/trigger_action.h"
 
 #include <string_view>
 
