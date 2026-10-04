@@ -16,29 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/SPECIAL.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : SPECIAL.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 05/27/95 *
- *                                                                                             *
- *                  Last Update : August 20, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Fetch_Difficulty -- Fetches the difficulty setting desired. *
- *   Special_Dialog -- Handles the special options dialog. * SpecialClass::Init
- *-- Initialize the special class of options.                            *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "ra/ai/special.h"
 
 #include <cstring>
@@ -77,27 +54,12 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
+// The options dialog, centred on the 640x400 screen.
 #define kOptionWidth (236 * 2)
 #define kOptionHeight (162 * 2)
 #define kOptionX ((640 - kOptionWidth) / 2)
 #define kOptionY ((400 - kOptionHeight) / 2)
 
-/***********************************************************************************************
- * SpecialClass::Init -- Initialize the special class of options. *
- *                                                                                             *
- *    This initialization function is required (as opposed to using a
- *constructor) because     * the SpecialClass is declared as part of a union. A
- *union cannot have a member with a     * constructor. Other than this anomoly,
- *the function serves the same purpose as a          * normal constructor. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/20/1996 JLB : Created. *
- *=============================================================================================*/
 void SpecialClass::Init() {
   IsShadowGrow = false;
   IsSpeedBuild = false;
@@ -109,23 +71,12 @@ void SpecialClass::Init() {
   IsTSpread = true;
 }
 
-/***********************************************************************************************
- * Special_Dialog -- Handles the special options dialog. *
- *                                                                                             *
- *    This dialog is used when setting the special game options. It does not
- *appear in the     * final version of the game. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/21/1995 JLB : Created. *
- *=============================================================================================*/
 void Special_Dialog(bool simple) {
+  // A copy the dialog edits; the installed flags change only on OK.
   SpecialClass oldspecial = TheSpecial();
   game::GadgetClass* buttons = nullptr;
+  // The flags the dialog offers, each named by the text ID of its label.
+  // Setting follows the check box and is what OK applies.
   struct {
     int Description;
     bool Setting;
@@ -143,6 +94,8 @@ void Special_Dialog(bool simple) {
   buttons = &ok;
   cancel.Add(*buttons);
 
+  // Check box IDs are 100 plus the option's index; the input loop maps an ID
+  // back to its option the same way.
   for (int index = 0; index < std::ssize(_options); index++) {
     base::At(_options, index).Button = std::make_unique<CheckBoxClass>(
         static_cast<unsigned>(100 + index), kOptionX + 34,
@@ -177,6 +130,9 @@ void Special_Dialog(bool simple) {
   bool display = true;
   bool process = true;
   while (process) {
+    // A multiplayer game cannot pause for a dialog: the other players' frames
+    // keep coming, so the game runs on behind it. RunFrame() returns true when
+    // that game is over, which closes the dialog without applying anything.
     if (TheSession().Type == GAME_NORMAL) {
       ServiceRealTime();
     } else {
@@ -221,6 +177,8 @@ void Special_Dialog(bool simple) {
               break;
           }
         }
+        // Queued as an event rather than assigned, so that every machine
+        // changes its flags on the same frame.
         if (!simple) {
           TheNetwork().out_list().Add(EventClass(oldspecial));
         } else {
@@ -235,6 +193,8 @@ void Special_Dialog(bool simple) {
       case KN_NONE:
         break;
 
+      // A check box was toggled, or a key was pressed. The unsigned compare
+      // rejects the negative index that an ID below 100 gives.
       default:
         const int index = ButtonId(input) - 100;
         if (static_cast<unsigned>(index) <
@@ -254,21 +214,6 @@ void Special_Dialog(bool simple) {
   }
 }
 
-/***********************************************************************************************
- * Fetch_Difficulty -- Fetches the difficulty setting desired. *
- *                                                                                             *
- *    This will display a dialog box that requests the player to specify a
- *difficulty          * setting. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a difficulty setting of 0 for easiest and 4 for
- *hardest.              *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/13/1996 JLB : Created. *
- *=============================================================================================*/
 int Fetch_Difficulty(bool amath) {
   const int w = 500;
   const int h = 160;
@@ -276,14 +221,12 @@ int Fetch_Difficulty(bool amath) {
   const int y = (400 / 2) - (h / 2);
   const int bwidth = 60;
 
-  /*
-  **	Fill the description buffer with the description text. Break
-  **	the text into appropriate spacing.
-  */
+  // Format_Window_String() breaks the prompt into lines by writing into it,
+  // so work on a copy of the string table's text.
   char buffer[512];
   base::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
-  // If it's an aftermath mission, trim the sentence to get rid of the campaign
-  // stuff.
+  // An expansion mission is not part of a campaign: keep only the first
+  // sentence, since the rest of the prompt talks about the campaign.
   if (amath) {
     int index = 0;
     while (base::At(buffer, index) && base::At(buffer, index) != '.') {
@@ -299,16 +242,13 @@ int Fetch_Difficulty(bool amath) {
   Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
                        buffer, w - 120, width, height);
 
-  /*
-  **	Create the OK button.
-  */
+  // The OK button is gadget 1 and the slider gadget 2.
   TextButtonClass okbutton(1, TXT_OK, kButtonFont, kButtonFlags,
                            x + w - (bwidth + 40), y + h - 36, bwidth);
   game::GadgetClass* buttonlist = &okbutton;
 
-  /*
-  **	Create the slider button.
-  */
+  // Five stops when the rules ask for fine difficulty, otherwise three; either
+  // way the slider starts in the middle, on normal.
   SliderClass slider(2, x + 40, y + h - 58, w - 80, 16, true);
   if (TheRules().IsFineDifficulty) {
     slider.Set_Maximum(5);
@@ -319,30 +259,20 @@ int Fetch_Difficulty(bool amath) {
   }
   slider.Add(*buttonlist);
 
-  /*
-  **	Main Processing Loop.
-  */
   bool redraw = true;
   bool process = true;
   while (process) {
     if (redraw) {
       redraw = false;
 
-      /*
-      **	Draw the background of the dialog.
-      */
       game::TheMouse().Hide();
       Dialog_Box(x, y, w, h);
 
-      /*
-      **	Draw the body of the message.
-      */
+      // The prompt.
       Fancy_Text_Print(view, buffer, x + 40, y + 30, Get_Color_Scheme(),
                        kTBlack, FontType::k6PointGradient, TPF_NOSHADOW);
 
-      /*
-      **	Display the descripton of the slider range.
-      */
+      // Label the slider's ends and its middle.
       Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
                        Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
                        TPF_RIGHT | TPF_DROPSHADOW);
@@ -353,23 +283,15 @@ int Fetch_Difficulty(bool amath) {
                        slider.Y - 18, Get_Color_Scheme(), kTBlack,
                        FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
 
-      /*
-      **	Redraw the buttons.
-      */
       if (buttonlist) {
         buttonlist->Draw_All(view);
       }
       game::TheMouse().Show();
     }
 
-    /*
-    **	Invoke game callback.
-    */
+    // Keeps the music, the timers and the window serviced while waiting.
     ServiceRealTime();
 
-    /*
-    **	Fetch and process input.
-    */
     const engine::window::KeyNumber input = buttonlist->Input(view).key;
 
     switch (static_cast<int>(input)) {
@@ -383,6 +305,7 @@ int Fetch_Difficulty(bool amath) {
     }
   }
 
+  // The coarse slider's 0..2 is spread over the same 0..4 scale.
   return slider.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
 }
 
