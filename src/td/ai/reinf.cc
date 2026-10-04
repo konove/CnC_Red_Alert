@@ -40,7 +40,6 @@
 #include "td/objects/object.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
-#include "td/objects/unit.h"
 
 namespace td {
 
@@ -91,8 +90,8 @@ static void EnterFromEdge(FootClass* group, const SourceType edge,
   // SourceType counts the four edges clockwise from north and FacingType the
   // eight compass points, hence the factor of two. The facing is the edge's
   // own compass point, so the members start out facing off the map.
-  const auto entry_facing =
-      static_cast<game::FacingType>(static_cast<int>(edge) * 2);
+  const game::FacingType entry_facing =
+      game::AsFacing(static_cast<int>(edge) * 2);
   const game::DirType facing = game::Facing_Dir(entry_facing);
 
   // `member` is the one being placed and `group` the rest of the list. A cell
@@ -281,8 +280,7 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
       // Add the member to the team, transports included; scenario_init makes
       // the team accept a member that is still in limbo. The hovercraft is the
       // exception: it never joins, since it leaves once it has unloaded.
-      const auto* unit = dynamic_cast<UnitClass*>(member);
-      if (team != nullptr && (unit == nullptr || *unit != UNIT_HOVER)) {
+      if (team != nullptr && !IsUnitType(*member_type, UNIT_HOVER)) {
         TheWorld().scenario_init()++;
         team->Add(member);
         TheWorld().scenario_init()--;
@@ -295,7 +293,7 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
         // An aircraft that carries the others is a loaner: it only delivers
         // them and then leaves the map. A transport that arrives empty is
         // itself the reinforcement, and a ground transport is always kept.
-        if (!only_transports && member->What_Am_I() != RTTI_UNIT) {
+        if (!only_transports && member_type->What_Am_I() != RTTI_UNITTYPE) {
           member->IsALoaner = true;
         }
         member->Next = transports;
@@ -320,23 +318,19 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
     return false;
   }
 
+  // A cargo plane with a load is not announced when it is created; the
+  // announcement comes when it unloads at the airstrip.
+  const auto* plane = dynamic_cast<AircraftClass*>(transports);
+  const bool announce =
+      riders == nullptr || plane == nullptr || *plane != AIRCRAFT_CARGO;
+
   // The list that goes on the map is the transports, with everything else
   // loaded into the first one, or the members themselves when the type has no
   // transport.
-  bool announce = true;
-  FootClass* group = riders;
-  if (transports != nullptr) {
-    if (riders != nullptr) {
-      // A cargo plane with a load is not announced when it is created; the
-      // announcement comes when it unloads at the airstrip.
-      const auto* plane = dynamic_cast<AircraftClass*>(transports);
-      if (plane != nullptr && *plane == AIRCRAFT_CARGO) {
-        announce = false;
-      }
-      transports->Attach(riders);
-    }
-    group = transports;
+  if (transports != nullptr && riders != nullptr) {
+    transports->Attach(riders);
   }
+  FootClass* group = transports != nullptr ? transports : riders;
 
   // Put the list on the map, in the way its source calls for.
   switch (source) {
@@ -347,7 +341,8 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
     case SOURCE_SHIPPING: {
       FootClass* gunboat = PopHead(group);
       DeleteGroup(group);
-      const Cell lane_cell = TheMap().Calculated_Cell(source, team_type->House);
+      const Cell lane_cell =
+          TheMap().Calculated_Cell(SOURCE_SHIPPING, team_type->House);
       gunboat->IsALoaner = true;
       if (!gunboat->Unlimbo(lane_cell.Center(), game::DIR_W)) {
         base::DeletePooled(team);
@@ -374,16 +369,16 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
 
       // `placed` is the result for the last aircraft only, so the team goes
       // when that one failed, even if earlier ones are on the map.
+      //
+      // The campaign then reports the failure, so that the caller can delete
+      // the team type it made for this: that prevents "phantom" teams and
+      // team types from being left around. A multiplayer game goes on to
+      // announce the reinforcement and reports success.
       if (!placed) {
         base::DeletePooled(team);
-      }
-
-      // Report the failure, so that the caller can delete the team type it
-      // made for this: that prevents "phantom" teams and team types from
-      // being left around. Only the campaign does; a multiplayer game goes on
-      // to announce the reinforcement and reports success.
-      if (TheSession().type() == GAME_NORMAL && !placed) {
-        return false;
+        if (TheSession().type() == GAME_NORMAL) {
+          return false;
+        }
       }
     } break;
 
