@@ -1220,7 +1220,7 @@ static void SerializeMultiplayer(Archive& ar) {
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
   ar(TheSession(), TheWorld().build_level(), unshroud, TheWorld().seed(),
-     TheWorld().whom(), TheSpecial(), TheOptions());
+     TheWorld().whom(), TheSpecialOptions(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
   }

@@ -200,7 +200,7 @@ static void RunPendingDialog() {
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   switch (dialog) {
     case SDLG_SPECIAL:
-      Special_Dialog();
+      RunSpecialOptionsDialog();
       break;
 
     case SDLG_OPTIONS:

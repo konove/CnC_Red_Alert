@@ -336,7 +336,7 @@ struct SerialPacketType {
       unsigned char UnitCount;            // max # units
       unsigned char AIPlayers;            // # of AI players allowed
       int Seed;                           // random number seed
-      SpecialClass Special;               // command-line options
+      SpecialOptions Special;             // command-line options
       unsigned int GameSpeed;             // Game Speed
       int32_t ResponseTime;               // packet response time
       unsigned int FileLength;  // Length of scenario file to expect from host.
@@ -409,7 +409,7 @@ struct GlobalPacketType {
       unsigned char UnitCount;   // max # units
       unsigned char AIPlayers;   // # of AI players allowed
       int Seed;                  // random number seed
-      SpecialClass Special;      // command-line options
+      SpecialOptions Special;    // command-line options
       unsigned int GameSpeed;    // Game Speed
       uint32_t Version;          // version # common to all players
       unsigned int FileLength;   // Length of scenario file to expect from host.

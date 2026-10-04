@@ -105,7 +105,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (TheSpecial().IsInert || !damage || warhead == WARHEAD_NONE) {
+  if (TheSpecialOptions().inert_weapons || !damage || warhead == WARHEAD_NONE) {
     return 0;
   }
 
@@ -193,7 +193,8 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
   int distance = 0;          // Distance to unit.
 
-  if (!strength || TheSpecial().IsInert || warhead == WARHEAD_NONE) {
+  if (!strength || TheSpecialOptions().inert_weapons ||
+      warhead == WARHEAD_NONE) {
     return;
   }
 

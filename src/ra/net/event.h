@@ -145,7 +145,7 @@ class EventClass {
   */
   union {
     struct {
-      SpecialClass Data;  // The special option flags.
+      SpecialOptions Data;  // The special option flags.
     } Options;
     struct {
       ra::Cell Cell;  // The cell to sell wall at.
@@ -256,7 +256,7 @@ class EventClass {
   // Member initializers cannot reach padding. Every other defined constructor
   // delegates here to clear IsExecuted and all unused payload bytes.
   EventClass() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass)); }
-  explicit EventClass(SpecialClass data);
+  explicit EventClass(SpecialOptions data);
   EventClass(EventType type, ra::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);

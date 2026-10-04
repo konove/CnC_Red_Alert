@@ -76,30 +76,30 @@ template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void SpecialClass::Serialize(Archive& ar) {
+void SpecialOptions::Serialize(Archive& ar) {
   uint8_t flags = 0;
-  flags |= static_cast<uint8_t>(IsShadowGrow << 0);
-  flags |= static_cast<uint8_t>(IsSpeedBuild << 1);
-  flags |= static_cast<uint8_t>(IsFromInstall << 2);
-  flags |= static_cast<uint8_t>(IsCaptureTheFlag << 3);
-  flags |= static_cast<uint8_t>(IsInert << 4);
-  flags |= static_cast<uint8_t>(IsThreePoint << 5);
-  flags |= static_cast<uint8_t>(IsTGrowth << 6);
-  flags |= static_cast<uint8_t>(IsTSpread << 7);
+  flags |= static_cast<uint8_t>(shroud_regrows << 0);
+  flags |= static_cast<uint8_t>(speed_build << 1);
+  flags |= static_cast<uint8_t>(from_install << 2);
+  flags |= static_cast<uint8_t>(capture_the_flag << 3);
+  flags |= static_cast<uint8_t>(inert_weapons << 4);
+  flags |= static_cast<uint8_t>(three_point_turns << 5);
+  flags |= static_cast<uint8_t>(ore_grows << 6);
+  flags |= static_cast<uint8_t>(ore_spreads << 7);
   ar(flags);
   if constexpr (Archive::kIsReading) {
-    IsShadowGrow = (flags & (1U << 0)) != 0;
-    IsSpeedBuild = (flags & (1U << 1)) != 0;
-    IsFromInstall = (flags & (1U << 2)) != 0;
-    IsCaptureTheFlag = (flags & (1U << 3)) != 0;
-    IsInert = (flags & (1U << 4)) != 0;
-    IsThreePoint = (flags & (1U << 5)) != 0;
-    IsTGrowth = (flags & (1U << 6)) != 0;
-    IsTSpread = (flags & (1U << 7)) != 0;
+    shroud_regrows = (flags & (1U << 0)) != 0;
+    speed_build = (flags & (1U << 1)) != 0;
+    from_install = (flags & (1U << 2)) != 0;
+    capture_the_flag = (flags & (1U << 3)) != 0;
+    inert_weapons = (flags & (1U << 4)) != 0;
+    three_point_turns = (flags & (1U << 5)) != 0;
+    ore_grows = (flags & (1U << 6)) != 0;
+    ore_spreads = (flags & (1U << 7)) != 0;
   }
 }
-template void SpecialClass::Serialize(ArchiveWriter&);
-template void SpecialClass::Serialize(ArchiveReader&);
+template void SpecialOptions::Serialize(ArchiveWriter&);
+template void SpecialOptions::Serialize(ArchiveReader&);
 
 template <class Archive>
 void OptionsClass::Serialize(Archive& ar) {

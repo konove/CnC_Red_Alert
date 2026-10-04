@@ -1975,7 +1975,7 @@ bool MapClass::Base_Region(Cell cell, HousesType& house, ZoneType& zone) const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Destroy_Bridge_At(Cell cell) {
-  if (In_Radar(cell) && !TheSpecial().IsCaptureTheFlag) {
+  if (In_Radar(cell) && !TheSpecialOptions().capture_the_flag) {
     const CellClass* cellptr = &(*this).at(cell);
     TemplateType ttype = cellptr->TType;
 

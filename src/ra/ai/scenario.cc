@@ -2021,7 +2021,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   TheWorld().name_override() = {};
   TheWorld().name_override_id() = {};
   if (TheSession().Type == GAME_NORMAL) {
-    TheSpecial().IsShadowGrow = false;
+    TheSpecialOptions().shroud_regrows = false;
   }
 
   TheSession().Messages.Reset();
@@ -2874,7 +2874,7 @@ static void Create_Units(bool official) {
       if (obj != nullptr) {
         hptr->FlagHome = Cell{};
         hptr->FlagLocation = Target{};
-        if (TheSpecial().IsCaptureTheFlag) {
+        if (TheSpecialOptions().capture_the_flag) {
           hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
         }
       }

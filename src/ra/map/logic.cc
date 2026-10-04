@@ -160,7 +160,7 @@ void LogicClass::AI() {
   /*
   **	Shadow creeping back over time is handled here.
   */
-  if (TheSpecial().IsShadowGrow && TheRules().ShroudRate != 0 &&
+  if (TheSpecialOptions().shroud_regrows && TheRules().ShroudRate != 0 &&
       TheScenario().ShroudTimer.IsFinished()) {
     TheScenario().ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
     TheMap().Encroach_Shadow();

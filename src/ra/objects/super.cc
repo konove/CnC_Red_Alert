@@ -207,7 +207,7 @@ bool SuperClass::Recharge(bool player) {
     Control.Set(RechargeTime);
 
     if constexpr (config::kCheatKeysEnabled) {
-      if (TheSpecial().IsSpeedBuild) {
+      if (TheSpecialOptions().speed_build) {
         Control.Set(1);
       }
     }

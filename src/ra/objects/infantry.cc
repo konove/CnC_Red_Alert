@@ -3235,7 +3235,7 @@ ActionType InfantryClass::What_Action(Cell cell) const {
   **	Demolitioners may destroy a bridge
   */
   if (Class->IsBomber && action == ACTION_MOVE &&
-      !TheSpecial().IsCaptureTheFlag) {
+      !TheSpecialOptions().capture_the_flag) {
     const TemplateType bridge_type = TheMap().at(cell).TType;
     if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
         bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||

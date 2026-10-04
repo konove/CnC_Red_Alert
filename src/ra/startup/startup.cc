@@ -155,9 +155,9 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_check_map(options.check_map);
   debug_state.set_check_heaps(options.check_heaps);
 
-  TheSpecial().IsFromInstall = options.from_install;
-  TheSpecial().IsInert = options.inert_weapons;
-  TheSpecial().IsSpeedBuild = options.speed_build;
+  TheSpecialOptions().from_install = options.from_install;
+  TheSpecialOptions().inert_weapons = options.inert_weapons;
+  TheSpecialOptions().speed_build = options.speed_build;
 
   TheSession().NetStealth = options.net_stealth;
   TheSession().NetProtect = !options.outside_messages;
@@ -299,7 +299,7 @@ static int Run(const int argc, char* argv[])
   // The parser writes no game state, so these defaults come first and
   // ApplyStartupOptions() lays the command line over them.
   TheWorld().whom() = HOUSE_GOOD;
-  TheSpecial().Init();
+  TheSpecialOptions().Reset();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (!options.has_value()) {
@@ -371,11 +371,11 @@ static int Run(const int argc, char* argv[])
   SearchPaths::SetCdDrive(-1);
   SearchPaths::SetCdProbe(&Get_CD_Index);
 
-  // IsFromInstall means "first launch after installing": play the intro
+  // from_install means "first launch after installing": play the intro
   // movie. The installer used to write PlayIntro=yes; with no entry it
   // still defaults to yes, so a fresh install sees the movie once.
-  if (!TheSpecial().IsFromInstall) {
-    TheSpecial().IsFromInstall = ini.GetBool("Intro", "PlayIntro", true);
+  if (!TheSpecialOptions().from_install) {
+    TheSpecialOptions().from_install = ini.GetBool("Intro", "PlayIntro", true);
   }
   ThePalettes().set_slow_palette(ini.GetBool("Options", "SlowPalette", false));
 
@@ -383,7 +383,7 @@ static int Run(const int argc, char* argv[])
   // PlayIntro=no so later launches go straight to the menu. Tiberian
   // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
   // shipped allowing it.
-  if (TheSpecial().IsFromInstall) {
+  if (TheSpecialOptions().from_install) {
     TheGameState().breakout_allowed() = true;
     ini.PutBool("Intro", "PlayIntro", false);
     if (const auto config_file =

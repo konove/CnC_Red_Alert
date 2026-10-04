@@ -181,7 +181,7 @@ base::EnumArray<EventClass::EventType, const char*,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(SpecialClass data) : EventClass() {
+EventClass::EventClass(SpecialOptions data) : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -593,7 +593,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      TheSpecial() = Data.Options.Data;
+      TheSpecialOptions() = Data.Options.Data;
       const HouseClass* house = TheObjectHeaps().house().Slot(ID);
 
       // The format string comes from the localized string table, so verify the

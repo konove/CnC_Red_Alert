@@ -265,7 +265,7 @@ bool Init_Game() {
   */
   Init_CDROM_Access();
 
-  if (TheSpecial().IsFromInstall) {
+  if (TheSpecialOptions().from_install) {
     Load_Prolog_Page();
   }
 
@@ -334,7 +334,7 @@ bool Init_Game() {
   /*
   **	Play the startup animation.
   */
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialOptions().from_install) {
     TheScreen().visible_page().view().Clear();
     if (!LogoAlreadyPlayed()) {
       Play_Intro();
@@ -365,7 +365,7 @@ bool Init_Game() {
   **	If not automatically launching into the intro, then display the title
   **	page while the bulk data is cached.
   */
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialOptions().from_install) {
     Load_Title_Page(true);
 
     game::TheMouse().Hide();
@@ -579,7 +579,7 @@ bool Select_Game(bool /*fade*/) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (TheSpecial().IsFromInstall) {
+      if (TheSpecialOptions().from_install) {
         selection = kSelStartNewGame;
       }
 
@@ -658,7 +658,7 @@ bool Select_Game(bool /*fade*/) {
             }
           }
 
-          switch (Fetch_Difficulty(cdcheck >= 3)) {
+          switch (PromptForDifficulty(cdcheck >= 3)) {
             case 0:
               TheScenario().CDifficulty = DIFF_HARD;
               TheScenario().Difficulty = DIFF_EASY;
@@ -701,11 +701,11 @@ bool Select_Game(bool /*fade*/) {
         **	SEL_START_NEW_GAME: Play the game
         */
         case kSelStartNewGame:
-          if (TheSpecial().IsFromInstall) {
+          if (TheSpecialOptions().from_install) {
             TheScenario().CDifficulty = DIFF_NORMAL;
             TheScenario().Difficulty = DIFF_NORMAL;
           } else {
-            switch (Fetch_Difficulty()) {
+            switch (PromptForDifficulty()) {
               case 0:
                 TheScenario().CDifficulty = DIFF_HARD;
                 TheScenario().Difficulty = DIFF_EASY;
@@ -740,7 +740,7 @@ bool Select_Game(bool /*fade*/) {
           TheWorld().save_tanya() = false;
           TheWorld().whom() = HOUSE_GOOD;
 
-          if (!TheSpecial().IsFromInstall) {
+          if (!TheSpecialOptions().from_install) {
             if (TheWorld().ants_enabled()) {
               TheScenario().Set_Scenario_Name("SCA01EA.INI");
             } else {
@@ -1131,10 +1131,10 @@ bool Select_Game(bool /*fade*/) {
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
-    if (TheSpecial().IsFromInstall) {
+    if (TheSpecialOptions().from_install) {
       game::TheMouse().Show();
     }
-    TheSpecial().IsFromInstall = false;
+    TheSpecialOptions().from_install = false;
   }
 
   /*
@@ -2457,7 +2457,7 @@ static void SerializeRecording(Archive& ar) {
   bool unshroud = TheDebugState().unshroud();
   ar(TheWorld().build_level(), unshroud, TheWorld().seed(),
      TheScenario().Scenario, TheScenario().ScenarioName, TheWorld().whom(),
-     TheSpecial(), TheOptions());
+     TheSpecialOptions(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
     TheScenario().ScenarioName[sizeof(TheScenario().ScenarioName) - 1] = '\0';

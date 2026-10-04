@@ -145,7 +145,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
         TheGameState().special_dialog() = SDLG_SPECIAL;
         input = KN_NONE;
       } else {
-        Special_Dialog();
+        RunSpecialOptionsDialog();
       }
     }
   }

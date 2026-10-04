@@ -46,7 +46,7 @@ struct StartupOptions {
   bool check_map = false;     // -CHECKMAP
   bool check_heaps = false;   // -CHECKHEAPS
 
-  // -XI and -XH: SpecialClass flags that the options dialog can change later.
+  // -XI and -XH: SpecialOptions flags that the options dialog can change later.
   bool inert_weapons = false;
   bool speed_build = false;
 

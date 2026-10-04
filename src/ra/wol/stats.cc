@@ -336,13 +336,13 @@ void Send_Statistics_Packet() {
     ** Shadow regrowth enabled
     */
     stats.Add_Field(FIELD_SHADOW_REGROWS,
-                    TheSpecial().IsShadowGrow ? "ON" : "OFF");
+                    TheSpecialOptions().shroud_regrows ? "ON" : "OFF");
 
     /*
     ** Capture the flag mode (On/Off)
     */
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
-                    TheSpecial().IsCaptureTheFlag ? "ON" : "OFF");
+                    TheSpecialOptions().capture_the_flag ? "ON" : "OFF");
 
     /*
     ** Start unit count

@@ -3408,7 +3408,7 @@ void HouseClass::MPlayer_Defeated() {
   /*
   **	Remove this house's flag & flag home cell
   */
-  if (TheSpecial().IsCaptureTheFlag) {
+  if (TheSpecialOptions().capture_the_flag) {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {

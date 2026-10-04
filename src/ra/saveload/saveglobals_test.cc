@@ -36,7 +36,7 @@ namespace {
 // An elapsed time that needs more than 32 bits: 2^40 ticks.
 constexpr int64_t kLargeElapsedTime = 1'099'511'627'776;
 
-static_assert(std::is_trivially_default_constructible_v<SpecialClass>);
+static_assert(std::is_trivially_default_constructible_v<SpecialOptions>);
 
 class GlobalsSink : public ByteSink {
  public:
@@ -63,7 +63,7 @@ bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
 TEST(SaveGlobalsTest, SpecialFlagsUseExactlyOneByteForEveryCombination) {
   for (int flags = 0; flags < 256; ++flags) {
     const std::vector<uint8_t> bytes{static_cast<uint8_t>(flags)};
-    SpecialClass special{};
+    SpecialOptions special{};
     ASSERT_TRUE(ReadValue(special, bytes));
     GlobalsSink pipe;
     ArchiveWriter writer(pipe);

@@ -619,7 +619,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       pTextBtnAcceptStart->Disable();
     }
 
-    TheSpecial().IsCaptureTheFlag =
+    TheSpecialOptions().capture_the_flag =
         TheRules().IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
     if (bHost) {
       TheSession().Options.Credits =
@@ -638,10 +638,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //------------------------------------------------------------------------
     //	Init other scenario parameters
     //------------------------------------------------------------------------
-    TheSpecial().IsTGrowth = static_cast<unsigned>(
+    TheSpecialOptions().ore_grows = static_cast<unsigned>(
         TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
     TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-    TheSpecial().IsTSpread = static_cast<unsigned>(
+    TheSpecialOptions().ore_spreads = static_cast<unsigned>(
         TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
     TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
@@ -1565,13 +1565,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       // If 'Bases' gets toggled, we have to change the range of the
       // UnitCount slider.
       // Also, if Tiberium gets toggled, we have to set the flags
-      // in SpecialClass.
+      // in SpecialOptions.
       //..................................................................
       case engine::window::ButtonKey(kButtonParams):
         bRetractHouseDropDown = true;
-        if ((TheSpecial().IsCaptureTheFlag != 0) !=
+        if ((TheSpecialOptions().capture_the_flag != 0) !=
                 pCheckListOptions->Is_Checked(3) &&
-            !TheSpecial().IsCaptureTheFlag) {
+            !TheSpecialOptions().capture_the_flag) {
           pCheckListOptions->Check_Item(0, true);
         }
         if ((TheSession().Options.Bases != 0) !=
@@ -1604,17 +1604,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         TheSession().Options.Tiberium =
             pCheckListOptions->Is_Checked(1) ? 1 : 0;
-        TheSpecial().IsTGrowth = static_cast<unsigned>(
+        TheSpecialOptions().ore_grows = static_cast<unsigned>(
             TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
         TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-        TheSpecial().IsTSpread = static_cast<unsigned>(
+        TheSpecialOptions().ore_spreads = static_cast<unsigned>(
             TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
         TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
         TheSession().Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
-        TheSpecial().IsCaptureTheFlag = pCheckListOptions->Is_Checked(
+        TheSpecialOptions().capture_the_flag = pCheckListOptions->Is_Checked(
             3);  //	Ugh. Use of "Special" global.
-        TheSpecial().IsShadowGrow = pCheckListOptions->Is_Checked(
+        TheSpecialOptions().shroud_regrows = pCheckListOptions->Is_Checked(
             4);  //	Ugh. Use of "Special" global.
 
         bSlowUnitBuildRate = pCheckListOptions->Is_Checked(5);
@@ -1746,9 +1746,11 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   pCheckListOptions->Check_Item(1, TheSession().Options.Tiberium != 0);
   pCheckListOptions->Check_Item(2, TheSession().Options.Goodies != 0);
   pCheckListOptions->Check_Item(
-      3, TheSpecial().IsCaptureTheFlag);  //	Ugh. Use of "Special" global.
+      3, TheSpecialOptions()
+             .capture_the_flag);  //	Ugh. Use of "Special" global.
   pCheckListOptions->Check_Item(
-      4, TheSpecial().IsShadowGrow);  //	Ugh. Use of "Special" global.
+      4,
+      TheSpecialOptions().shroud_regrows);  //	Ugh. Use of "Special" global.
 
   pCheckListOptions->Check_Item(
       5, bSlowUnitBuildRate);  //	Ugh. Use of "Special" global.
@@ -2616,14 +2618,14 @@ void WOL_GameSetupDialog::SendParams() {
       GParamsLastSent.GPacket.ScenarioInfo.UnitCount,
       GParamsLastSent.GPacket.ScenarioInfo.AIPlayers,
       GParamsLastSent.GPacket.ScenarioInfo.Seed,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsShadowGrow,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsSpeedBuild,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsFromInstall,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsCaptureTheFlag,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsInert,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsThreePoint,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsTGrowth,
-      GParamsLastSent.GPacket.ScenarioInfo.Special.IsTSpread,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.shroud_regrows,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.speed_build,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.from_install,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.capture_the_flag,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.inert_weapons,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.three_point_turns,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.ore_grows,
+      GParamsLastSent.GPacket.ScenarioInfo.Special.ore_spreads,
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.GameSpeed),
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.Version),
       GParamsLastSent.bAftermathUnits ? 1 : 0,  //	Not currently used.
@@ -2787,54 +2789,57 @@ bool WOL_GameSetupDialog::AcceptParams(const char* szParams) {
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsShadowGrow =
+  TheSpecialOptions().shroud_regrows =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsSpeedBuild =
+  TheSpecialOptions().speed_build =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsFromInstall =
+  TheSpecialOptions().from_install =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsCaptureTheFlag =
+  TheSpecialOptions().capture_the_flag =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsInert = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
-
-  szToken = tokens.Next();
-  if (szToken.empty()) {
-    return false;
-  }
-  TheSpecial().IsThreePoint =
+  TheSpecialOptions().inert_weapons =
       (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsTGrowth = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecialOptions().three_point_turns =
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
     return false;
   }
-  TheSpecial().IsTSpread = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecialOptions().ore_grows =
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+
+  szToken = tokens.Next();
+  if (szToken.empty()) {
+    return false;
+  }
+  TheSpecialOptions().ore_spreads =
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (szToken.empty()) {
@@ -2909,7 +2914,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   GParams.GPacket.ScenarioInfo.AIPlayers =
       static_cast<unsigned char>(TheSession().Options.AIPlayers);
   GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
-  GParams.GPacket.ScenarioInfo.Special = TheSpecial();
+  GParams.GPacket.ScenarioInfo.Special = TheSpecialOptions();
   GParams.GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
   GParams.GPacket.ScenarioInfo.Version = TheVersion().Get_Clipped_Version();
 
@@ -2954,21 +2959,22 @@ bool operator==(const GlobalPacketType& gp1, const GlobalPacketType& gp2) {
       gp1.ScenarioInfo.UnitCount == gp2.ScenarioInfo.UnitCount &&
       gp1.ScenarioInfo.AIPlayers == gp2.ScenarioInfo.AIPlayers &&
       gp1.ScenarioInfo.Seed == gp2.ScenarioInfo.Seed &&
-      gp1.ScenarioInfo.Special.IsShadowGrow ==
-          gp2.ScenarioInfo.Special.IsShadowGrow &&
-      gp1.ScenarioInfo.Special.IsSpeedBuild ==
-          gp2.ScenarioInfo.Special.IsSpeedBuild &&
-      gp1.ScenarioInfo.Special.IsFromInstall ==
-          gp2.ScenarioInfo.Special.IsFromInstall &&
-      gp1.ScenarioInfo.Special.IsCaptureTheFlag ==
-          gp2.ScenarioInfo.Special.IsCaptureTheFlag &&
-      gp1.ScenarioInfo.Special.IsInert == gp2.ScenarioInfo.Special.IsInert &&
-      gp1.ScenarioInfo.Special.IsThreePoint ==
-          gp2.ScenarioInfo.Special.IsThreePoint &&
-      gp1.ScenarioInfo.Special.IsTGrowth ==
-          gp2.ScenarioInfo.Special.IsTGrowth &&
-      gp1.ScenarioInfo.Special.IsTSpread ==
-          gp2.ScenarioInfo.Special.IsTSpread &&
+      gp1.ScenarioInfo.Special.shroud_regrows ==
+          gp2.ScenarioInfo.Special.shroud_regrows &&
+      gp1.ScenarioInfo.Special.speed_build ==
+          gp2.ScenarioInfo.Special.speed_build &&
+      gp1.ScenarioInfo.Special.from_install ==
+          gp2.ScenarioInfo.Special.from_install &&
+      gp1.ScenarioInfo.Special.capture_the_flag ==
+          gp2.ScenarioInfo.Special.capture_the_flag &&
+      gp1.ScenarioInfo.Special.inert_weapons ==
+          gp2.ScenarioInfo.Special.inert_weapons &&
+      gp1.ScenarioInfo.Special.three_point_turns ==
+          gp2.ScenarioInfo.Special.three_point_turns &&
+      gp1.ScenarioInfo.Special.ore_grows ==
+          gp2.ScenarioInfo.Special.ore_grows &&
+      gp1.ScenarioInfo.Special.ore_spreads ==
+          gp2.ScenarioInfo.Special.ore_spreads &&
       gp1.ScenarioInfo.GameSpeed == gp2.ScenarioInfo.GameSpeed &&
       gp1.ScenarioInfo.Version == gp2.ScenarioInfo.Version) {
     return true;
@@ -3026,14 +3032,14 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
                                 gp1.ScenarioInfo.UnitCount,
                                 gp1.ScenarioInfo.AIPlayers,
                                 gp1.ScenarioInfo.Seed,
-                                gp1.ScenarioInfo.Special.IsShadowGrow,
-                                gp1.ScenarioInfo.Special.IsSpeedBuild,
-                                gp1.ScenarioInfo.Special.IsFromInstall,
-                                gp1.ScenarioInfo.Special.IsCaptureTheFlag,
-                                gp1.ScenarioInfo.Special.IsInert,
-                                gp1.ScenarioInfo.Special.IsThreePoint,
-                                gp1.ScenarioInfo.Special.IsTGrowth,
-                                gp1.ScenarioInfo.Special.IsTSpread,
+                                gp1.ScenarioInfo.Special.shroud_regrows,
+                                gp1.ScenarioInfo.Special.speed_build,
+                                gp1.ScenarioInfo.Special.from_install,
+                                gp1.ScenarioInfo.Special.capture_the_flag,
+                                gp1.ScenarioInfo.Special.inert_weapons,
+                                gp1.ScenarioInfo.Special.three_point_turns,
+                                gp1.ScenarioInfo.Special.ore_grows,
+                                gp1.ScenarioInfo.Special.ore_spreads,
                                 gp1.ScenarioInfo.GameSpeed,
                                 gp1.ScenarioInfo.Version );
 }
@@ -3553,11 +3559,11 @@ void WOL_GameSetupDialog::TriggerGameStart(const char* szGoMessage) {
   }
 
   if (TheSession().Options.Tiberium) {
-    TheSpecial().IsTGrowth = 1;
-    TheSpecial().IsTSpread = 1;
+    TheSpecialOptions().ore_grows = 1;
+    TheSpecialOptions().ore_spreads = 1;
   } else {
-    TheSpecial().IsTGrowth = 0;
-    TheSpecial().IsTSpread = 0;
+    TheSpecialOptions().ore_grows = 0;
+    TheSpecialOptions().ore_spreads = 0;
   }
 
   //	The preceding was based on Read_Game_Options()...

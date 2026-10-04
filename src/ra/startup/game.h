@@ -100,8 +100,8 @@ class Game {
   base::Installed<GameState>::Scope game_state_scope_{game_state_};
   GameOptionsClass options_;
   base::Installed<GameOptionsClass>::Scope options_scope_{options_};
-  SpecialClass special_{};
-  base::Installed<SpecialClass>::Scope special_scope_{special_};
+  SpecialOptions special_{};
+  base::Installed<SpecialOptions>::Scope special_scope_{special_};
   // The mixer comes before the music player, which plays through it.
   engine::audio::AudioMixer audio_;
   base::Installed<engine::audio::AudioMixer>::Scope audio_scope_{audio_};
