@@ -31,6 +31,7 @@
 #include "td/assets/audio.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
+#include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -554,12 +555,14 @@ bool Create_Special_Reinforcement(const HouseClass* house,
         base::At(team->DesiredNum, 1) = 1;
       }
 
-      // TODO: when Do_Reinforcements() fails after making its team, deleting
-      // that team has already deleted the transient type, and this deletes it
-      // a second time. Multiplayer games skip the delete, so there a type
-      // whose team could not be made is never freed.
+      // A delivery that fails after making its team deletes the team, and the
+      // team takes its transient type with it; the type is left over only
+      // when the team could not be made. Multiplayer games skip the delete,
+      // so there such a type is never freed.
+      const int slot = TheObjectHeaps().team_type().SlotIndexOf(team);
       const bool ok = Do_Reinforcements(team);
-      if (!ok && TheSession().type() == GAME_NORMAL) {
+      if (!ok && TheSession().type() == GAME_NORMAL &&
+          TheObjectHeaps().team_type().IsAllocated(slot)) {
         base::DeletePooled(team);
       }
       return ok;
