@@ -17,7 +17,7 @@ namespace {
 // A Game with one team type and one trigger type.
 class TriggerTypeTest : public GameFixture {
  protected:
-  TriggerTypeTest() {
+  void SetUp() override {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     team_type_ = base::NewPooled<TeamTypeClass>();
