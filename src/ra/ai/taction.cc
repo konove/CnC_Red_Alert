@@ -397,7 +397,6 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     trig = TheObjectHeaps().trigger().Slot(id);
   }
   bool success = true;
-  //	TeamTypeClass * ttype = Team;
 
   /*
   **	Ensure that the specified object is not actually dead. A dead object
@@ -612,8 +611,6 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_FULL_SPECIAL:
       hptr->SuperWeapon.at(Data.Special)
           .Enable(Action == TACTION_1_SPECIAL, false);
-      //			hptr->SuperWeapon[Data.Special].Forced_Charge(PlayerPtr
-      //== hptr);
 
       if (ThePlayer() == hptr) {
         TheMap().Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
