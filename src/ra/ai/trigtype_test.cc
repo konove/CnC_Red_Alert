@@ -247,7 +247,7 @@ TEST_F(TriggerTypeTest, ReadIniDropsTheEntriesTheHeapHasNoRoomFor) {
 
 TEST_F(TriggerTypeTest, ReadIniOfAnEmptySectionCreatesNothing) {
   TriggerType::DestroyAll();
-  engine::file::IniFile ini;
+  const engine::file::IniFile ini;
 
   TriggerType::ReadIni(ini);
 

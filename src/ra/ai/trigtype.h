@@ -124,7 +124,7 @@ class TriggerType : public AbstractTypeClass {
   // up as they are read. The objects, cells and houses that carry a trigger
   // find its type by name afterwards, so this runs before their sections are
   // read.
-  static void ReadIni(engine::file::IniFile& ini);
+  static void ReadIni(const engine::file::IniFile& ini);
 
   // Replaces the [Trigs] section of `ini` with one entry per trigger type, and
   // clears the [Triggers] section the pre-Red Alert format used.

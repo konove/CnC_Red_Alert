@@ -75,7 +75,7 @@ void TriggerType::operator delete(void* memory) {
   TheObjectHeaps().trigger_type().Free(static_cast<TriggerType*>(memory));
 }
 
-void TriggerType::Detach(Target target) {
+void TriggerType::Detach(const Target target) {
   if (target.kind() == RTTI_TEAMTYPE) {
     for (TEventClass* event : {&event1, &event2}) {
       if (event->Team == target.AsTeamType()) {
@@ -187,9 +187,9 @@ AttachType TriggerType::AttachesTo() const {
   return attach;
 }
 
-void TriggerType::ReadIni(engine::file::IniFile& ini) {
+void TriggerType::ReadIni(const engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(kIniSection)) {
-    auto* trigger_type = base::NewPooled<TriggerType>();
+    auto* const trigger_type = base::NewPooled<TriggerType>();
     // The scenario lists more trigger types than the heap holds; the rest
     // are dropped.
     if (trigger_type == nullptr) {
@@ -218,7 +218,8 @@ void TriggerType::ReadIni(engine::file::IniFile& ini) {
   }
 }
 
-void TriggerType::ReadIniEntry(std::string_view name, std::string_view entry) {
+void TriggerType::ReadIniEntry(const std::string_view name,
+                               const std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   Set_Name(name);
@@ -273,8 +274,9 @@ std::string TriggerType::ToIniEntry() const {
   return entry;
 }
 
-void TriggerType::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                          int width, int height, bool selected, FontType font,
+void TriggerType::Draw_It(PixelView& view, int /*unused*/, const int x,
+                          const int y, const int width, const int height,
+                          const bool selected, const FontType font,
                           TextPrintType flags) const {
   if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
     return;
