@@ -906,20 +906,23 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover the rest of the reinforcement deliveries with tests
-  - `td_reinforcements_test` (`td/ai/reinforcements_test.cc`) delivers team types in a real `Game`
-    without data: the edge entry, the clean-ups of `73182098` and `1336193b`, the air strike count
-    and a failed special reinforcement. Not covered in Tiberian Dawn: a group with a team, a
-    hovercraft landing and a gunboat (both need water on the map), aircraft that are placed, a cargo
-    plane lining up with its airstrip, and what `DeliverSpecialReinforcement()` picks for its
-    transport and mission
-  - Each test builds its own `Game`, about 0.8 s; building it once per suite would save some 6 s
-    here and as much in Red Alert's two suites, if the per-test resets cover what a test leaves on
-    the map
-  - `ReinforcementTest` and `CarryoverTest` (`ra/ai/carryover_test.cc`) share their eight set-up
-    lines; a third user should move them into a common fixture
-  - Not covered in Red Alert: a team with a transport, infantry loaded into a transport vehicle at
-    the origin, the ant-hill entry, and `HouseKeepsAircraft()`
+- Send a Tiberian Dawn group without a team onto the map
+  - `EnterFromEdge()` (`td/ai/reinforcements.cc`) tells a member that has no team to move to the
+    next cell in the entry facing, and that facing is the edge's own compass point: the destination
+    lies further off the map, and from the west edge it wraps to the last cell of the row above. The
+    original does the same under the comment "Facing to enter map", so the opposite facing was
+    meant. `AGroupWithoutATeamMovesOnInItsEntryFacing` in `td_reinforcements_test` pins what happens
+    today; find out what brings such a group onto the map in a scenario before changing it
+- Share the set-up of Red Alert's `Game` test fixtures
+  - `ReinforcementTest` (`ra/ai/reinforcements_test.cc`) and `CarryoverTest`
+    (`ra/ai/carryover_test.cc`) share their eight set-up lines; a third user should move them into a
+    common fixture
+  - `CarryoverTest` calls `MapClass::One_Time()` but not `Init_Cells()`, so its cells do not know
+    their own numbers (`CellClass::ID`); harmless until a test there asks a cell for its neighbours
+- Check the other `do { } while (--count)` loops in `engine/gfx/pixel_buffer.cc`
+  - `PixelView::ClearLocked()` ran 2^32 times on a view with no lines, 0.8 s per test that built a
+    `Game` in Tiberian Dawn. The 16 other loops of that shape have not been checked for a count of
+    zero
 
 ## Debugging
 
