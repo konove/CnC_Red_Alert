@@ -41,7 +41,6 @@
 #define CNC_RED_ALERT_RA_AI_SPECIAL_H_
 
 #include "base/installed.h"
-#include "ra/data/text_ids.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -105,7 +104,6 @@ class SpecialClass {
 };
 
 void Special_Dialog(bool simple = false);
-const char* Fetch_Password(int caption, int message, int btext = TXT_OK);
 int Fetch_Difficulty(bool amath = false);
 
 extern template void SpecialClass::Serialize<ArchiveWriter>(ArchiveWriter&);

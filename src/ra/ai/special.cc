@@ -34,8 +34,6 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * Fetch_Difficulty -- Fetches the difficulty setting desired. *
- *   Fetch_Password -- Prompts for a password entry from client. *
- *   PWEditClass::Draw_Text -- Draws password style obscured text. *
  *   Special_Dialog -- Handles the special options dialog. * SpecialClass::Init
  *-- Initialize the special class of options.                            *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,26 +41,20 @@
 
 #include "ra/ai/special.h"
 
-#include <algorithm>
 #include <cstring>
 #include <iterator>
 #include <memory>
 #include <span>
 #include <string_view>
-#include <utility>
 
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/strings/safe_string.h"
-#include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "ra/assets/assets.h"
-#include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -78,7 +70,6 @@
 #include "ra/ui/checkbox.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/edit.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
@@ -261,215 +252,6 @@ void Special_Dialog(bool simple) {
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
   }
-}
-
-/*
-**	Derived from the edit class, this class allows entry of passwords style
-*text *	as an edit box. This style is characterized by "*" being displayed for
-*every *	real character entered.
-*/
-class PWEditClass : public EditClass {
- public:
-  PWEditClass(int id, std::span<char> text, int max_len, FontType font,
-              TextPrintType flags, int x, int y, int w = -1, int h = -1)
-      : EditClass(id, text, max_len, font, flags, x, y, w, h, kAlphanumeric) {}
-
- protected:
-  void Draw_Text(PixelView& view, const char* text) override;
-};
-
-/***********************************************************************************************
- * PWEditClass::Draw_Text -- Draws password style obscured text. *
- *                                                                                             *
- *    This routine is used by the password style edit box in order to display
- *the entered      * text. The text will be displayed as asterisks instead of
- *the actual characters the       * edit box may contain. This is necessary to
- *obscure the password entry from glancing      * eyes. *
- *                                                                                             *
- * INPUT:   text  -- Pointer to the text that is to be rendered. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/27/1995 JLB : Created. *
- *=============================================================================================*/
-void PWEditClass::Draw_Text(PixelView& view, const char* text) {
-  char buffer[80];
-
-  base::FillBytes(base::ObjectBytes(buffer), '\0', sizeof(buffer));
-  base::FillBytes(base::ObjectBytes(buffer), '*',
-                  std::min(std::string_view(text).size(), sizeof(buffer) - 1));
-
-  const FontStyle font = TextFontStyle(TextFont, TextFlags);
-  if (font.font.data().data() ==
-      TheAssets().font(FontType::k6PointGradient).data()) {
-    const TextPrintType flags =
-        Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
-
-    Conquer_Clip_Text_Print(view, buffer, X + 1, Y + 1, Color, kTBlack,
-                            TextFont, TextFlags | flags, Width - 2);
-
-    if (Has_Focus() &&
-        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, buffer),
-                              Y + 1, Color, kTBlack, TextFont,
-                              TextFlags | flags);
-    }
-  } else {
-    Conquer_Clip_Text_Print(
-        view, buffer, X + 1, Y + 1,
-        Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                    : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, TextFont, TextFlags, Width - 2);
-
-    if (Has_Focus() &&
-        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print(
-          view, "_", X + 1 + StringPixelWidth(font, buffer), Y + 1,
-          &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
-          TextFont, TextFlags);
-    }
-  }
-}
-
-/***********************************************************************************************
- * Fetch_Password -- Prompts for a password entry from client. *
- *                                                                                             *
- *    This routine will prompt for and return a password entry from the player.
- **
- *                                                                                             *
- * INPUT:   caption  -- The  caption to use for the top of the prompt dialog. *
- *                                                                                             *
- *          message  -- The body of the message to display in the dialog. *
- *                                                                                             *
- *          btext    -- The button text to use to finish the dialog box entry. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the password text entered. This pointer is
- *valid         * only until the next time that this routine is called. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/27/1995 JLB : Created. *
- *=============================================================================================*/
-#define BUFFSIZE (511)
-const char* Fetch_Password(int caption, int message, int btext) {
-  char buffer[BUFFSIZE];
-  const TextButtonClass ok;
-
-  if (btext == TXT_NONE) {
-    btext = TXT_OK;
-  }
-
-  PixelView& view = TheScreen().visible_view();
-
-  /*
-  **	Examine the optional button parameters. Fetch the width and starting
-  **	characters for each.
-  */
-
-  /*
-  **	Build the button list.
-  */
-  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
-  const int bheight = FontLineHeight(font) + 4;  // button width and height
-  const int bwidth =
-      std::max(StringPixelWidth(font, Text_String(btext)) + 16, 30 * 2);
-
-  /*
-  **	Determine the dimensions of the text to be used for the dialog box.
-  **	These dimensions will control how the dialog box looks.
-  */
-  base::SafeCopy(buffer, Text_String(message));
-  int width = 0;
-  int height = 0;
-  Format_Window_String(font, buffer, 255, width, height);
-
-  width = std::max(width, 100);
-  width += 80;
-  height += (60 + 25) * 2;
-
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
-
-  /*
-  **	Create the "ok" and password edit buttons.
-  */
-  TextButtonClass button1(1, btext, kButtonFont, kButtonFlags,
-                          x + ((width - bwidth) / 2),
-                          y + height - (bheight + 10), bwidth);
-
-  static char pbuffer[45];
-  base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
-  const int editx = x + 52;
-  const int editwidth = ((TheScreen().visible_view().width() / 2) - editx) * 2;
-  PWEditClass button2(2, pbuffer, sizeof(pbuffer), FontType::k6PointGradient,
-                      TPF_NOSHADOW, editx, y + height - 70, editwidth, 20);
-
-  TextButtonClass* buttonlist = nullptr;
-
-  /*
-  **	Add and initialize the buttons to the button list.
-  */
-  buttonlist = &button1;
-  button2.Add(*buttonlist);
-
-  /*
-  **	Draw the background of the dialog.
-  */
-  game::TheMouse().Hide();
-  Dialog_Box(x, y, width, height);
-  Draw_Caption(view, caption, x, y, width);
-
-  /*
-  **	Draw the body of the message box.
-  */
-  Fancy_Text_Print(view, buffer, x + 40, y + 50, Get_Color_Scheme(), kTBlack,
-                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-  /*
-  **	Redraw the buttons.
-  */
-  if (buttonlist) {
-    buttonlist->Draw_All(view);
-  }
-  game::TheMouse().Show();
-
-  /*
-  **	Main Processing Loop.
-  */
-  bool process = true;  // loop while true
-  bool first = true;
-  while (process) {
-    /*
-    **	Invoke game callback.
-    */
-    ServiceRealTime();
-
-    /*
-    **	Fetch and process input.
-    */
-    const engine::window::KeyNumber input =
-        buttonlist->Input(view).key;  // user input
-    if (first) {
-      button2.Set_Focus();
-      button2.Flag_To_Redraw();
-      first = false;
-    }
-    switch (static_cast<int>(input)) {
-      case 1U | kButtonFlag:
-      case KN_ESC:
-      case 2U | kButtonFlag:
-      case KN_RETURN:
-        process = false;
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  return pbuffer;
 }
 
 /***********************************************************************************************
