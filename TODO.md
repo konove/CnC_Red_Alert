@@ -571,8 +571,6 @@
   - It is still `int`, so three sites per game wrap it in `Cell::FromIndex()`; check its saved width
     first
 - Tidy up after `docs/TEXT_PRINT_SPLIT_PLAN.md`
-  - `ra/ai/special.cc` (~306, `PWEditClass::Draw_Text`) finds the gradient font by comparing font
-    data pointers; `TextFont == FontType::k6PointGradient` says the same, as TD's skin now does
   - Collapse the double blank line before the `HasGradientFontBits()` comment in `ra/ui/dialog.h`
     (~97) and `td/ui/dialog.h` (~76)
   - `TextButtonClass::Set_Style(font, style)` (`game/ui/textbtn.h`) has no callers; delete it
@@ -829,6 +827,46 @@
     is only there for its lifetime), as it would Red Alert's
   - Names to confirm: `DeliverSpecialReinforcement()` (or `DeliverUnplannedReinforcement()`),
     `EnterFromEdge()` and `FlyIn()`, `arrives_by_hovercraft`, `riders`
+- Finish what the `ra/ai/special_options` modernization left (`2d3c8713..820577e9`)
+  - Decide what to do with `SpecialOptions::three_point_turns` (`ra/ai/special_options.h` ~65):
+    nothing in Red Alert reads it, so its check box in `RunSpecialOptionsDialog()`
+    (`special_options.cc` ~83) does nothing. Either drop the check box (one file, changes the
+    developer dialog) or wire the flag into the unit turning code as TD does (a simulation change)
+  - `ore_grows` and `ore_spreads` are written at about 14 sites in `ra/net/netdlg.cc`,
+    `ra/net/nulldlg.cc` and `ra/wol/wol_gsup.cc` beside the rules' `IsTGrowth`/`IsTSpread`, and only
+    the rules' copies are read. Turning the three unread flags into reserved bits and deleting the
+    writers keeps the layout but changes bits 5-7 of the saved byte and of the game-options packet,
+    so it needs a multiplayer check
+  - The flags stay `unsigned x : 1` (8 bits, `sizeof` 4): `EventClass`'s union and the packets in
+    `ra/net/session.h` (~339, ~412) send the struct raw, so `bool x : 1` would be a wire change
+  - Replace `SpecialOptions::Reset()` with an initializer at the owner:
+    `SpecialOptions special_{.ore_grows = true, .ore_spreads = true};` in `ra/startup/game.h` and no
+    call in `ra/startup/startup.cc` (~302). Four files; test-built `Game`s would then start with the
+    ore bits set, and `-Wmissing-designated-field-initializers` may object. Default member
+    initializers are not an option: `EventClass`'s `Data{}` would set bits 6-7 in every event
+  - Split the header: the flag struct is included by about 20 files, the two dialogs by three, and
+    none of it is AI. The struct could be a header under `ra/core/` or `ra/data/`, the options
+    dialog and `PromptForDifficulty()` (campaign start, no relation to the flags) files under
+    `ra/screens/`; about 25 include sites
+  - `RunSpecialOptionsDialog()` applies the boxes on Escape as well as on OK (TD's
+    `Special_Dialog()` does the same); decide whether Escape should cancel
+  - Its `redraw` flag is one-shot like the one `PromptForDifficulty()` lost, but hoisting the draw
+    would move it in front of the first `RunFrame()`
+  - Give TD's twin the same pass: `td/ai/special.cc` still has `SpecialClass`, `TheSpecial()`, the
+    label-keyed `_options` table with its `Setting` mirror, raw `Button` pointers and the
+    always-true `if (Button)`
+  - Names to confirm: `SpecialOptions` (or `SpecialFlags`), `shroud_regrows` (or `shadow_grows`, as
+    in the rules' `IsMPShadowGrow`), `PromptForDifficulty()` (or `AskDifficulty()`)
+  - `special_options_test.cc` (~40): CLion warns that the RAII `Installed<>::Scope` local is unused;
+    a false positive, the same form as in `ra/saveload/saveglobals_test.cc`
+- Return the measurements from `Format_Window_String()` (`ra/ui/dialog.h` ~30, 16 callers)
+  - It fills `int& width, int& height` and returns the line count; `PromptForDifficulty()` passes
+    two locals it never reads. A small struct `{lines, width, height}` removes them
+- Consider a shared modal dialog loop and `ToggleClass::Set(bool)`
+  - Every dialog hand-rolls the same `redraw`/`process` loop around `Input()`; nothing in `ra/ui/`,
+    `game/ui/` or `ra/screens/` offers one
+  - `ToggleClass` (`game/ui/toggle.h`) has only `Turn_On()`/`Turn_Off()`, so callers write the same
+    if/else (`ra/screens/sounddlg.cc` ~249-262)
 
 ## Testing
 
@@ -906,6 +944,11 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
+- Cover the two dialogs in `ra/ai/special_options.cc` (20 of 141 lines covered)
+  - `RunSpecialOptionsDialog()` and `PromptForDifficulty()` need the screen, the mouse,
+    `ServiceRealTime()`/`RunFrame()` and input. Splitting out the pure parts would cover the logic:
+    the prompt trim as `DifficultyPrompt(text, is_expansion_mission)` and the slider's stops and
+    level scaling; the loops themselves need a fixture that can queue key presses
 
 ## Debugging
 
