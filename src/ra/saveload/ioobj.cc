@@ -47,7 +47,7 @@
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_action.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"

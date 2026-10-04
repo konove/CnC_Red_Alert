@@ -55,7 +55,7 @@
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/theme.h"
 #include "ra/core/const.h"

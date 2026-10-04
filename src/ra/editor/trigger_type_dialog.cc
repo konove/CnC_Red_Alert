@@ -44,7 +44,7 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/ai/waypoint_name.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"

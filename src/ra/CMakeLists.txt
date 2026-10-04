@@ -111,13 +111,13 @@ add_gtest(
 
 # Reads, writes and detaches trigger types in a real Game.
 add_gtest(
-    NAME ra_trigtype_test
-    SOURCES ai/trigtype_test.cc startup/game_test_util.cc startup/startup.cc
+    NAME ra_trigger_type_test
+    SOURCES ai/trigger_type_test.cc startup/game_test_util.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
-target_compile_definitions(ra_trigtype_test PRIVATE RA_NO_ENTRY_POINT=1)
-apply_dotenv_settings(ra_trigtype_test)
-apply_language_setting(ra_trigtype_test)
+target_compile_definitions(ra_trigger_type_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_trigger_type_test)
+apply_language_setting(ra_trigger_type_test)
 
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(

@@ -7,7 +7,7 @@
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"

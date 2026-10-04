@@ -113,7 +113,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/trigger.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/shape_draw.h"

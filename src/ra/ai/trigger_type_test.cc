@@ -2,7 +2,7 @@
 // what it drops when a type it refers to is destroyed, how it reads and writes
 // its scenario INI entry, and the summary the scenario editor lists.
 
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 
 #include <string>
 

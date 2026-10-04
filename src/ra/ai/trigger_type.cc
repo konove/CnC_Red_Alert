@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 
 #include <array>
 #include <cstddef>

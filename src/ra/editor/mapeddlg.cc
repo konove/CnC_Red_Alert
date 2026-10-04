@@ -77,7 +77,7 @@
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/tevent.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"

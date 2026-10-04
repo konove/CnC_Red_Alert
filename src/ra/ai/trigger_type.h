@@ -22,8 +22,8 @@
 // cells and houses attach to. The scenario editor's dialog for a trigger type
 // lives here too.
 
-#ifndef CNC_RED_ALERT_RA_AI_TRIGTYPE_H_
-#define CNC_RED_ALERT_RA_AI_TRIGTYPE_H_
+#ifndef CNC_RED_ALERT_RA_AI_TRIGGER_TYPE_H_
+#define CNC_RED_ALERT_RA_AI_TRIGGER_TYPE_H_
 
 #include <cstddef>
 #include <string>
@@ -185,4 +185,4 @@ extern template void TriggerType::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_TRIGTYPE_H_
+#endif  // CNC_RED_ALERT_RA_AI_TRIGGER_TYPE_H_

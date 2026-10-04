@@ -14,7 +14,7 @@
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
-#include "ra/ai/trigtype.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
