@@ -2216,10 +2216,10 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   Event2.Build_INI_Entry(buffer);
   buffer += ',';
 
-  Action1.Build_INI_Entry(buffer);
+  buffer += Action1.Build_INI_Entry();
   buffer += ',';
 
-  Action2.Build_INI_Entry(buffer);
+  buffer += Action2.Build_INI_Entry();
 }
 
 /***********************************************************************************************

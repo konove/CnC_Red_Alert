@@ -21,6 +21,7 @@
 
 #include "ra/ai/taction.h"
 
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -172,7 +173,7 @@ void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   RemapControlType* scheme = Get_Color_Scheme();
   // Tab stops in pixels; the action names hold no tabs, so they only matter to
   // the shared print call.
-  static const int _tabs[] = {13, 40};
+  static constexpr std::array<int, 2> _tabs = {13, 40};
   if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
@@ -203,11 +204,11 @@ void TActionClass::Detach(Target target) {
   }
 }
 
-void TActionClass::Build_INI_Entry(std::string& buffer) const {
-  buffer += std::format("{},{},{},{}", std::to_underlying(Action),
-                        TheObjectHeaps().team_type().PositionOf(Team),
-                        TheObjectHeaps().trigger_type().PositionOf(Trigger),
-                        Data.Value);
+std::string TActionClass::Build_INI_Entry() const {
+  return std::format("{},{},{},{}", std::to_underlying(Action),
+                     TheObjectHeaps().team_type().PositionOf(Team),
+                     TheObjectHeaps().trigger_type().PositionOf(Trigger),
+                     Data.Value);
 }
 
 void TActionClass::Read_INI(base::Tokenizer& tokens) {

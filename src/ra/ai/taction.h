@@ -154,10 +154,10 @@ struct TActionClass {
   // Build_INI_Entry().
   void Read_INI(base::Tokenizer& tokens);
 
-  // Appends the action to `buffer` in the scenario INI's current format:
+  // Returns the action in the scenario INI's current format:
   // "action,team,trigger,value", the middle two as positions in their type
   // lists (-1 for none).
-  void Build_INI_Entry(std::string& buffer) const;
+  [[nodiscard]] std::string Build_INI_Entry() const;
 
   // Carries out the action for the trigger that sprang. `house` is the
   // trigger's owner, which the house actions without a Data.House act on.
