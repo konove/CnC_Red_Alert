@@ -18,14 +18,12 @@
 
 #include "ra/ai/special.h"
 
-#include <cstring>
+#include <cstddef>
 #include <iterator>
 #include <memory>
-#include <span>
-#include <string_view>
+#include <string>
 
 #include "base/array.h"
-#include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
@@ -223,24 +221,20 @@ int Fetch_Difficulty(bool amath) {
 
   // Format_Window_String() breaks the prompt into lines by writing into it,
   // so work on a copy of the string table's text.
-  char buffer[512];
-  base::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
+  std::string prompt = Text_String(TXT_DIFFICULTY);
   // An expansion mission is not part of a campaign: keep only the first
   // sentence, since the rest of the prompt talks about the campaign.
   if (amath) {
-    int index = 0;
-    while (base::At(buffer, index) && base::At(buffer, index) != '.') {
-      index++;
-    }
-    if (base::At(buffer, index) == '.') {
-      base::At(buffer, index + 1) = 0;
+    const size_t period = prompt.find('.');
+    if (period != std::string::npos) {
+      prompt.erase(period + 1);
     }
   }
   PixelView& view = TheScreen().visible_view();
   int width = 0;
   int height = 0;
   Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
-                       buffer, w - 120, width, height);
+                       prompt, w - 120, width, height);
 
   // The OK button is gadget 1 and the slider gadget 2.
   TextButtonClass okbutton(1, TXT_OK, kButtonFont, kButtonFlags,
@@ -269,7 +263,7 @@ int Fetch_Difficulty(bool amath) {
       Dialog_Box(x, y, w, h);
 
       // The prompt.
-      Fancy_Text_Print(view, buffer, x + 40, y + 30, Get_Color_Scheme(),
+      Fancy_Text_Print(view, prompt.c_str(), x + 40, y + 30, Get_Color_Scheme(),
                        kTBlack, FontType::k6PointGradient, TPF_NOSHADOW);
 
       // Label the slider's ends and its middle.
