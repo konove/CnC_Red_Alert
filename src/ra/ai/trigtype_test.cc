@@ -66,6 +66,12 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
   EXPECT_EQ(trigger_type_->ID, 0);
 }
 
+TEST_F(TriggerTypeTest, AFullHeapGivesNoTriggerType) {
+  TheObjectHeaps().trigger_type().Reset(1);
+  ASSERT_NE(base::NewPooled<TriggerType>(), nullptr);
+  EXPECT_EQ(base::NewPooled<TriggerType>(), nullptr);
+}
+
 TEST_F(TriggerTypeTest, DeletingATriggerTypeFreesItsSlot) {
   base::DeletePooled(trigger_type_);
 
@@ -224,6 +230,19 @@ TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
   EXPECT_EQ(wave->action2.trigger_type, wave);
   EXPECT_EQ(dawn->action1.type, TACTION_WIN);
   EXPECT_EQ(dawn->event1.Data.Value, 5);
+}
+
+TEST_F(TriggerTypeTest, ReadIniDropsTheEntriesTheHeapHasNoRoomFor) {
+  TheObjectHeaps().trigger_type().Reset(1);
+  engine::file::IniFile ini;
+  ASSERT_TRUE(ini.PutString(TriggerType::kIniSection, "wave", kEntry));
+  ASSERT_TRUE(ini.PutString(TriggerType::kIniSection, "dawn", kEntry));
+
+  TriggerType::ReadIni(ini);
+
+  EXPECT_EQ(TheObjectHeaps().trigger_type().Count(), 1);
+  EXPECT_NE(TriggerType::FromName("wave"), nullptr);
+  EXPECT_EQ(TriggerType::FromName("dawn"), nullptr);
 }
 
 TEST_F(TriggerTypeTest, ReadIniOfAnEmptySectionCreatesNothing) {

@@ -106,7 +106,9 @@ class TriggerType : public AbstractTypeClass {
   TriggerType& operator=(TriggerType&&) = delete;
 
   // Takes a slot from the trigger type heap; returns nullptr when it is full.
-  void* operator new(std::size_t /*unused*/);
+  // noexcept is what makes `new` test for that instead of constructing at
+  // null.
+  void* operator new(std::size_t /*unused*/) noexcept;
   void* operator new(std::size_t /*unused*/,
                      void* memory ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return memory;

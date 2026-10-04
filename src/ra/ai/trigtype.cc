@@ -59,7 +59,7 @@ TriggerType::TriggerType()
 
 TriggerType::~TriggerType() = default;
 
-void* TriggerType::operator new(std::size_t /*unused*/) {
+void* TriggerType::operator new(std::size_t /*unused*/) noexcept {
   void* memory = TheObjectHeaps().trigger_type().Allocate();
   if (memory) {
     static_cast<TriggerType*>(memory)->is_active = true;
@@ -190,6 +190,11 @@ AttachType TriggerType::AttachesTo() const {
 void TriggerType::ReadIni(engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(kIniSection)) {
     auto* trigger_type = base::NewPooled<TriggerType>();
+    // The scenario lists more trigger types than the heap holds; the rest
+    // are dropped.
+    if (trigger_type == nullptr) {
+      break;
+    }
     trigger_type->ReadIniEntry(entry, value);
   }
 
