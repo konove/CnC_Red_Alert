@@ -25,6 +25,7 @@
 #define CNC_RED_ALERT_RA_AI_SPECIAL_H_
 
 #include "base/installed.h"
+#include "ra/core/defines.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -83,17 +84,30 @@ struct SpecialOptions {
 // keeps running behind the dialog in multiplayer, and the dialog also closes,
 // applying nothing, when that game ends.
 //
-// With "simple" false the new flags are queued as an event, so they take effect
-// on every machine on the same frame, and the map is redrawn on the way out.
-// With "simple" true they are written to TheSpecialOptions() at once and
-// nothing is redrawn, for a caller that has no game running.
-void RunSpecialOptionsDialog(bool simple = false);
-// Asks the player to pick a difficulty on a slider and blocks until OK or
-// Return. Returns 0 (easiest) to 4 (hardest); when the rules' IsFineDifficulty
-// is off the slider has three stops and the result is 0, 2 or 4.
-// "is_expansion_mission" selects the shorter prompt that leaves out the
-// sentences about the campaign.
-int PromptForDifficulty(bool is_expansion_mission = false);
+// The new flags are queued as an event, so they take effect on every machine on
+// the same frame, and the map is redrawn on the way out.
+void RunSpecialOptionsDialog();
+
+// The pair of difficulty settings a campaign is played at.
+struct DifficultyChoice {
+  DiffType player;    // How hard the game is on the player's side.
+  DiffType computer;  // How capable the computer's side is.
+
+  bool operator==(const DifficultyChoice&) const = default;
+};
+
+// Returns the settings for a difficulty level from 0, easiest for the player
+// (an easy game against a computer played at hard, which is the scale's own
+// naming for the handicaps), to 4, hardest; 2 is normal on both sides. `level`
+// must be in that range.
+DifficultyChoice DifficultyForLevel(int level);
+
+// Asks the player to pick a difficulty on a slider, blocks until OK or Return
+// and returns the settings for the level chosen. The slider has all five
+// levels when the rules' IsFineDifficulty is on, otherwise the three stops 0,
+// 2 and 4. "is_expansion_mission" selects the shorter prompt that leaves out
+// the sentences about the campaign.
+DifficultyChoice PromptForDifficulty(bool is_expansion_mission = false);
 
 extern template void SpecialOptions::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SpecialOptions::Serialize<ArchiveReader>(ArchiveReader&);

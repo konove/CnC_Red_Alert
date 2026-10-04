@@ -658,33 +658,11 @@ bool Select_Game(bool /*fade*/) {
             }
           }
 
-          switch (PromptForDifficulty(cdcheck >= 3)) {
-            case 0:
-              TheScenario().CDifficulty = DIFF_HARD;
-              TheScenario().Difficulty = DIFF_EASY;
-              break;
-
-            case 1:
-              TheScenario().CDifficulty = DIFF_HARD;
-              TheScenario().Difficulty = DIFF_NORMAL;
-              break;
-
-            case 2:
-              TheScenario().CDifficulty = DIFF_NORMAL;
-              TheScenario().Difficulty = DIFF_NORMAL;
-              break;
-
-            case 3:
-              TheScenario().CDifficulty = DIFF_EASY;
-              TheScenario().Difficulty = DIFF_NORMAL;
-              break;
-
-            case 4:
-              TheScenario().CDifficulty = DIFF_EASY;
-              TheScenario().Difficulty = DIFF_HARD;
-              break;
-            default:
-              break;
+          {
+            const DifficultyChoice difficulty =
+                PromptForDifficulty(cdcheck >= 3);
+            TheScenario().CDifficulty = difficulty.computer;
+            TheScenario().Difficulty = difficulty.player;
           }
           DLOG(INFO) << "Difficulty: player "
                      << magic_enum::enum_name(TheScenario().Difficulty)
@@ -705,34 +683,9 @@ bool Select_Game(bool /*fade*/) {
             TheScenario().CDifficulty = DIFF_NORMAL;
             TheScenario().Difficulty = DIFF_NORMAL;
           } else {
-            switch (PromptForDifficulty()) {
-              case 0:
-                TheScenario().CDifficulty = DIFF_HARD;
-                TheScenario().Difficulty = DIFF_EASY;
-                break;
-
-              case 1:
-                TheScenario().CDifficulty = DIFF_HARD;
-                TheScenario().Difficulty = DIFF_NORMAL;
-                break;
-
-              case 2:
-                TheScenario().CDifficulty = DIFF_NORMAL;
-                TheScenario().Difficulty = DIFF_NORMAL;
-                break;
-
-              case 3:
-                TheScenario().CDifficulty = DIFF_EASY;
-                TheScenario().Difficulty = DIFF_NORMAL;
-                break;
-
-              case 4:
-                TheScenario().CDifficulty = DIFF_EASY;
-                TheScenario().Difficulty = DIFF_HARD;
-                break;
-              default:
-                break;
-            }
+            const DifficultyChoice difficulty = PromptForDifficulty();
+            TheScenario().CDifficulty = difficulty.computer;
+            TheScenario().Difficulty = difficulty.player;
           }
           TheScenario().CarryOverMoney = 0;
           TheWorld().build_level() = 10;
