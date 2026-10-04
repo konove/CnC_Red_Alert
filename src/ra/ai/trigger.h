@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_AI_TRIGGER_H_
 
 #include <cstddef>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -102,7 +103,7 @@ class TriggerClass {
   **	Utility routines
   */
   [[nodiscard]] Target As_Target() const;
-  [[nodiscard]] const char* Description() const;
+  [[nodiscard]] std::string Description() const;
   void Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
                int height, bool selected, FontType font,
                TextPrintType flags) const;

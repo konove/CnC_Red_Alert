@@ -136,11 +136,11 @@ class TriggerTypeClass : public AbstractTypeClass {
   // enum numbers; a missing or unreadable one reads as 0.
   void Fill_In(std::string_view name, std::string_view entry);
 
-  // Replaces `buffer` with the INI value Fill_In() reads.
-  void Build_INI_Entry(std::string& buffer) const;
+  // Returns the INI value Fill_In() reads.
+  [[nodiscard]] std::string Build_INI_Entry() const;
 
   // The INI section the trigger types are stored in.
-  static const char* INI_Name() { return "Trigs"; }
+  static constexpr std::string_view INI_Name() { return "Trigs"; }
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
@@ -167,12 +167,9 @@ class TriggerTypeClass : public AbstractTypeClass {
 
   // Returns a one-line summary for the editor's trigger list: name, house,
   // persistence, event and action control marks, and the first event with its
-  // value. The text is in a static buffer that the next call overwrites. An
-  // empty string in builds without the cheat keys or the scenario editor.
-  [[nodiscard]] const char* Description() const;
-  // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() const { return Description(); }
+  // value. An empty string in builds without the cheat keys or the scenario
+  // editor.
+  [[nodiscard]] std::string Description() const;
 
   // Draws Description() as a list box entry in the box at (`x`, `y`) of
   // `width` by `height` pixels, highlighted when `selected`. The entry's

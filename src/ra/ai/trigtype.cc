@@ -1007,15 +1007,15 @@ bool TriggerTypeClass::Edit() {
   // The persistence list; the list index is the PersistantType, so the names
   // must stay in the enum's order.
   char perstext[kDescSize] = "";
-  static const char* _perstext[3] = {"Volatile", "Semi-persistent",
-                                     "Persistent"};
+  static constexpr std::array<const char*, 3> kPersistenceNames = {
+      "Volatile", "Semi-persistent", "Persistent"};
   DropListClass persbtn(kButtonPersistance, perstext, sizeof(perstext),
                         FontType::kEditor, TPF_NOSHADOW,
                         housebtn.X + housebtn.Width + 20, housebtn.Y, 105,
                         8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (auto& i : _perstext) {
-    persbtn.Add_Item(i);
+  for (const char* const name : kPersistenceNames) {
+    persbtn.Add_Item(name);
   }
   persbtn.Set_Selected_Index(static_cast<int>(IsPersistant));
 
@@ -1774,10 +1774,8 @@ bool TriggerTypeClass::Edit() {
   return false;
 }
 
-const char* TriggerTypeClass::Description() const {
+std::string TriggerTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    static char _buffer[128];
-
     // Marks for how the second event and action are used: '.' for unused.
     char special = 0;
     switch (EventControl) {
@@ -1805,13 +1803,10 @@ const char* TriggerTypeClass::Description() const {
     }
 
     // The first event's value, when it has one worth showing.
-    char tbuf[32];
-    const char* added = "";
+    std::string added;
     switch (Event_Needs(Event1.Event)) {
       case NEED_NUMBER:
-        absl::SNPrintF(tbuf, sizeof(tbuf), "%d",
-                       static_cast<int>(Event1.Data.Value));
-        added = tbuf;
+        added = absl::StrFormat("%d", Event1.Data.Value);
         break;
 
       case NEED_UNIT:
@@ -1836,14 +1831,11 @@ const char* TriggerTypeClass::Description() const {
 
       case NEED_WAYPOINT:
         if (Event1.Data.Value < 26) {
-          absl::SNPrintF(tbuf, sizeof(tbuf), "'%c'",
-                         static_cast<int>(Event1.Data.Value) + 'A');
+          added = absl::StrFormat("'%c'", Event1.Data.Value + 'A');
         } else {
-          absl::SNPrintF(tbuf, sizeof(tbuf), "'%c%c'",
-                         (Event1.Data.Value / 26) + 'A' - 1,
-                         (Event1.Data.Value % 26) + 'A');
+          added = absl::StrFormat("'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
+                                  (Event1.Data.Value % 26) + 'A');
         }
-        added = tbuf;
         break;
 
       case NeedType::NEED_NONE:
@@ -1874,12 +1866,12 @@ const char* TriggerTypeClass::Description() const {
       pers = 'P';
     }
 
-    absl::SNPrintF(_buffer, sizeof(_buffer), "%4.4s\t %s %c%c%c  %s%s", IniName,
-                   HouseTypeClass::As_Reference(House).Suffix, pers, special,
-                   special2, Name_From_Event(Event1.Event), added);
-    return _buffer;
+    return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
+                           HouseTypeClass::As_Reference(House).Suffix, pers,
+                           special, special2, Name_From_Event(Event1.Event),
+                           added);
   }
-  return "";
+  return {};
 }
 
 AttachType TriggerTypeClass::Attaches_To() const {
@@ -1945,34 +1937,30 @@ void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    std::string buf;
-    TriggerTypeClass* trigger = TheObjectHeaps().trigger_type().ActiveAt(index);
-
-    trigger->Build_INI_Entry(buf);
-    ini.PutString(INI_Name(), trigger->IniName, buf);
+    const TriggerTypeClass* trigger =
+        TheObjectHeaps().trigger_type().ActiveAt(index);
+    ini.PutString(INI_Name(), trigger->IniName, trigger->Build_INI_Entry());
   }
 }
 
-// LLVM 23 treats assignment as invalidating the string reference itself. No
-// pointer, reference or iterator into its old character storage is retained.
-// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
+std::string TriggerTypeClass::Build_INI_Entry() const {
   // The enums are stored as their numbers, which Fill_In() casts back.
-  buffer =
+  std::string entry =
       std::format("{},{},{},{},", std::to_underlying(IsPersistant),
                   std::to_underlying(House), std::to_underlying(EventControl),
                   std::to_underlying(ActionControl));
 
-  Event1.Build_INI_Entry(buffer);
-  buffer += ',';
+  Event1.Build_INI_Entry(entry);
+  entry += ',';
 
-  Event2.Build_INI_Entry(buffer);
-  buffer += ',';
+  Event2.Build_INI_Entry(entry);
+  entry += ',';
 
-  buffer += Action1.ToIniEntry();
-  buffer += ',';
+  entry += Action1.ToIniEntry();
+  entry += ',';
 
-  buffer += Action2.ToIniEntry();
+  entry += Action2.ToIniEntry();
+  return entry;
 }
 
 void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
@@ -1981,7 +1969,7 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     // Tab stops in pixels: Description() puts a tab after the name.
-    static const int _tabs[] = {13, 40};
+    static constexpr std::array<int, 2> kTabStops = {13, 40};
     if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
@@ -1992,14 +1980,14 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                              flags, width, _tabs);
+      Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
+                              kTBlack, font, flags, width, kTabStops);
     } else {
       Conquer_Clip_Text_Print(
-          view, Description(), x, y,
+          view, Description().c_str(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, font, flags, width, _tabs);
+          kTBlack, font, flags, width, kTabStops);
     }
   }
 }

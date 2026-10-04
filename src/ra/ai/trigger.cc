@@ -54,6 +54,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <string>
 
 #include "absl/log/check.h"
 #include "base/algorithm.h"
@@ -98,7 +99,7 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-const char* TriggerClass::Description() const { return Class->Description(); }
+std::string TriggerClass::Description() const { return Class->Description(); }
 
 /***********************************************************************************************
  * TriggerClass::Draw_It -- Draws this trigger as if it were part of a list box.
@@ -131,11 +132,11 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                              flags, width, _tabs);
+      Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
+                              kTBlack, font, flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          view, Description(), x, y,
+          view, Description().c_str(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, font, flags, width, _tabs);
