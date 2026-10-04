@@ -16,30 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\reinf.cpv   2.17   16 Oct 1995 16:48:58
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : REINF.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : May 24, 1994 *
- *                                                                                             *
- *                  Last Update : July 4, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Create_Air_Reinforcement -- Creates air strike reinforcement *
- *   Create_Special_Reinforcement -- Ad hoc reinforcement handler. *
- *   Do_Reinforcements -- Create and place a reinforcement team. *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "td/ai/reinf.h"
 
 #include <utility>
@@ -69,37 +45,15 @@
 
 namespace td {
 
-/***********************************************************************************************
- * Do_Reinforcements -- Create and place a reinforcement team. *
- *                                                                                             *
- *    This routine is called when a reinforcement team must be created and
- *placed on the map.  * It will create all members of the team and place them at
- *the location determined from    * the team composition. The reinforcement team
- *should follow team orders until overriden   * by AI or player intervention. *
- *                                                                                             *
- * INPUT:   teamtype -- Pointer to the team type to create as a reinforcement. *
- *                                                                                             *
- * OUTPUT:  Was the reinforcement successfully created and placed? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/08/1995 JLB : Created. * 05/18/1995 JLB : Returns success or
- *failure condition.                                    * 06/19/1995 JLB :
- *Announces reinforcements.                                                *
- *=============================================================================================*/
 bool Do_Reinforcements(const TeamTypeClass* teamtype) {
-  /*
-  **	preform some preliminary checks for validity.
-  */
+  // A missing type, or one with no members, has nothing to bring on.
   if (!teamtype || !teamtype->ClassCount) {
     return false;
   }
 
-  /*
-  **	Create the controlling team. All the objects are grouped
-  **	under this team control. If there are no missions for this team
-  **	then don't actually create the team -- it won't serve a purpose.
-  */
+  // The team that will control the members. A type without missions gets no
+  // team, since the team would have nothing to tell them: its members are
+  // given orders of their own when they are placed.
   TeamClass* team = nullptr;
   if (teamtype->MissionCount) {
     team = base::NewPooled<TeamClass>(teamtype,
@@ -110,17 +64,13 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     team->Force_Active();
   }
 
-  /*
-  **	Determine if this team contains its own transport. In such a case, the
-  **	transport is used as a loaner. This is only true, if there is other
-  **	objects to be transport. Without such cargo objects, then the transport
-  **	is presumed to be the reinforcement itself and thus should not be a
-  **	loaner.
-  */
-  bool okvoice = true;          // Presume ok to announce reinforcement?
-  bool airtransport = false;    // Transport can fly in?
-  bool watertransport = false;  // Transport needs a beach to land at?
-  bool onlytransport = true;    // Just transport is in reinforcement?
+  // Find out what the type is made of. Every aircraft counts as a transport
+  // here, whether or not it carries anything, because a group with an
+  // aircraft in it arrives by air.
+  bool okvoice = true;          // Announce the arrival to the player?
+  bool airtransport = false;    // Does the type have an aircraft?
+  bool watertransport = false;  // Is its last ground transport a hovercraft?
+  bool onlytransport = true;    // Is there nothing but transports and aircraft?
   for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
     if (base::At(teamtype->Class, index)->IsTransporter ||
         base::At(teamtype->Class, index)->What_Am_I() == RTTI_AIRCRAFTTYPE) {
@@ -136,10 +86,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	Now determine how the reinforcement should be delivered. This is largely
-  *determined *	by whether there is a transport with the reinforcements.
-  */
+  // Decide where the group comes from: by air with an aircraft, onto the beach
+  // with a hovercraft, otherwise over the house's map edge.
   SourceType source = SOURCE_NONE;
   if (airtransport) {
     source = SOURCE_AIR;
@@ -147,10 +95,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     if (watertransport) {
       source = SOURCE_BEACH;
     } else {
-      /*
-      **	Special case for the gunboat. It always arrives according to the
-      *shipping source.
-      */
+      // A gunboat sails the shipping lane instead. Only the first member is
+      // looked at.
       if (base::At(teamtype->Class, 0)->What_Am_I() == RTTI_UNITTYPE &&
           dynamic_cast<const UnitTypeClass*>(base::At(teamtype->Class, 0))
                   ->Type == UNIT_GUNBOAT) {
@@ -161,19 +107,17 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	If we can't determine where the reinforcement should come from, then
-  *delete it *	and return a failure condition.
-  */
+  // Without a source there is nowhere to put the group. The house's edge is
+  // never SOURCE_NONE once its INI entry is read, so this guards a house that
+  // was set up by hand.
   if (source == SOURCE_NONE) {
     base::DeletePooled(team);
     return false;
   }
 
-  /*
-  **	Now that the official source for the reinforcement has been determined,
-  *the *	objects themselves must be created.
-  */
+  // Create the members, in limbo, sorting them into two lists linked through
+  // Next: the transports, and everything else. They are created with
+  // scenario_init raised, like the objects a scenario starts with.
   TechnoClass* transport = nullptr;
   TechnoClass* object = nullptr;
   for (int index = 0; std::cmp_less(index, teamtype->ClassCount); index++) {
@@ -187,11 +131,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       TheWorld().scenario_init()--;
 
       if (temp) {
-        /*
-        **	Add the object to the team. This is true even for the
-        *transports. The one *	exception is for the hover lander which never
-        *becomes part of the team.
-        */
+        // Add the member to the team, transports included; scenario_init makes
+        // the team accept a member that is still in limbo. The hovercraft is
+        // the exception: it never joins, since it leaves once it has unloaded.
         const auto* unit = dynamic_cast<UnitClass*>(temp);
         if (team && (unit == nullptr || *unit != UNIT_HOVER)) {
           TheWorld().scenario_init()++;
@@ -199,38 +141,29 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           TheWorld().scenario_init()--;
         }
 
-        /*
-        **	Build the list of transporters and passengers.
-        */
+        // A transporter goes on the transport list. In a group that flies in,
+        // only the aircraft do: a ground transport rides along as cargo.
         if (tclass->IsTransporter &&
             (!airtransport || tclass->What_Am_I() == RTTI_AIRCRAFTTYPE)) {
-          /*
-          **	Transports are considered loaners if they are transporting
-          **	something. They are presumed to only serve as a delivery
-          **	agent.
-          */
+          // An aircraft that carries the others is a loaner: it only delivers
+          // them and then leaves the map. A transport that arrives empty is
+          // itself the reinforcement, and a ground transport is always kept.
           if (!onlytransport && temp->What_Am_I() != RTTI_UNIT) {
             temp->IsALoaner = true;
           }
 
-          /*
-          **	Link to the list of transports.
-          */
+          // Push it on the front of the transport list.
           temp->Next = transport;
           transport = temp;
         } else {
-          /*
-          **	A-10s are always considered loaners since the player should
-          **	never be allowed to control them.
-          */
+          // A-10s are always loaners, since the player must never get to
+          // control them.
           const auto* air = dynamic_cast<AircraftClass*>(temp);
           if (air != nullptr && *air == AIRCRAFT_A10) {
             temp->IsALoaner = true;
           }
 
-          /*
-          **	Link to the list of normal objects.
-          */
+          // Push it on the front of the list of other members.
           temp->Next = object;
           object = temp;
         }
@@ -238,27 +171,20 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     }
   }
 
-  /*
-  **	Bail on this reinforcement if no reinforcements could be created.
-  **	This is probably because the object maximum was reached.
-  */
+  // Nothing could be created, most likely because the object limit was
+  // reached.
   if (!object && !transport) {
     base::DeletePooled(team);
     return false;
   }
 
-  /*
-  **	Now it is time to place the objects on the map. If there is a transport,
-  *then the *	transported objects must be placed inside the transport at this
-  *time as well.
-  */
+  // Load everything else into the first transport. From here on `object` is
+  // the list that goes on the map: the transports when there are any,
+  // otherwise the members themselves.
   if (transport) {
     if (object) {
-      /*
-      **	For cargo planes that carry reinforcements, don't announce
-      *arrival *	when the transport is created. The announcement will
-      *occur when the *	transport unloads.
-      */
+      // A cargo plane with a load is not announced when it is created; the
+      // announcement comes when it unloads at the airstrip.
       if (transport->What_Am_I() == RTTI_AIRCRAFT &&
           *dynamic_cast<AircraftClass*>(transport) == AIRCRAFT_CARGO) {
         okvoice = false;
@@ -269,13 +195,16 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     object = transport;
   }
 
-  /*
-  **	Pick the location where the reinforcements appear and then place
-  **	them there.
-  */
+  // Put the list on the map, in the way its source calls for.
   bool placed = false;
   Cell cell{};
   switch (source) {
+    // The gunboat starts at the east end of the shipping lane and sails west
+    // to the map's left edge, along its own row. Calculated_Cell() returns
+    // cell 0 when the map has no lane.
+    //
+    // TODO: only the head of the list is placed; a type with more than one
+    // gunboat, or with other members, leaves the rest in limbo for good.
     case SOURCE_SHIPPING:
       cell = TheMap().Calculated_Cell(source, teamtype->House);
       object->IsALoaner = true;
@@ -290,12 +219,19 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       }
       break;
 
+    // The members drive or walk on from the map edge, one at a time.
     case SOURCE_NORTH:
     case SOURCE_SOUTH:
     case SOURCE_EAST:
     case SOURCE_WEST: {
-      const auto eface = static_cast<game::FacingType>(
-          static_cast<int>(source) * 2);  // Facing to enter map.
+      // SourceType counts the four edges clockwise from north and FacingType
+      // the eight compass points, hence the factor of two. The facing is the
+      // edge's own compass point, so the members start out facing off the map.
+      const auto eface =
+          static_cast<game::FacingType>(static_cast<int>(source) * 2);
+
+      // `airtransport` is never set here: a group with an aircraft has
+      // SOURCE_AIR as its source.
 
       if (airtransport) {
         TheWorld().scenario_init()++;
@@ -306,6 +242,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       }
       Cell newcell = cell;
 
+      // Place the members one at a time: `object` is the one being placed and
+      // `o` the rest of the list. A cell index of 0 or less means there is no
+      // cell. The aircraft branches below never run, for the reason above, so
+      // `ok` stays true.
       auto* o = dynamic_cast<FootClass*>(object->Next);
       object->Next = nullptr;
       bool ok = true;
@@ -316,11 +256,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         }
 
         if (ok && object->Unlimbo(newcell.Center(), desiredfacing)) {
-          /*
-          **	If this object is part of a team, then the mission for this
-          **	object will be guard. The team handler will assign the proper
-          **	mission that it should follow.
-          */
+          // The team handler assigns the mission a team member follows; until
+          // then it guards. Without a team the member moves one cell further
+          // in, which takes it onto the map.
           if (object->What_Am_I() == RTTI_AIRCRAFT) {
             ok = false;
           } else {
@@ -337,11 +275,15 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         } else {
           ok = true;
 
-          /*
-          **	Could not unlimbo at location specified so find an adjacent
-          *location that it can *	be unlimboed at. If this fails, then
-          *abort the whole placement process.
-          */
+          // The member could not be placed here, usually because the member
+          // before it stands on the cell. Place it again from the first cell
+          // next to this one that is off the visible map and that it can enter;
+          // the rest of the group follows from that cell. Without such a cell,
+          // give up on the rest of the group.
+          // TODO: nothing bounds the retries. A member whose Unlimbo() fails
+          // for a reason a new cell does not cure is handed between two edge
+          // cells for ever; Red Alert's DeliverReinforcements() gives up after
+          // eight.
           bool found = false;
           for (const game::FacingType adj :
                magic_enum::enum_values<game::FacingType>()) {
@@ -366,10 +308,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         }
       }
 
-      /*
-      **	If there are still objects that could not be placed, then delete
-      **	them: the one the loop stopped at and the rest of the list.
-      */
+      // Delete the members that could not be placed: the one the loop stopped
+      // at and the rest of the list.
       base::DeletePooled(object);
       if (o) {
         while (o) {
@@ -382,19 +322,22 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       }
     } break;
 
-    /*
-    **	Bring out the aircraft as separate "groups" of one.
-    */
+    // Each aircraft flies in on its own, from the house's map edge.
+    // TODO: a member that is not an aircraft ends the walk, and it and
+    // everything after it stay in limbo for good. That takes a type with an
+    // aircraft that is not a transport next to ground members, or a house
+    // whose edge is SOURCE_AIR.
     case SOURCE_AIR: {
       auto* thisone = dynamic_cast<AircraftClass*>(object);
       while (thisone) {
         auto* next = dynamic_cast<AircraftClass*>(thisone->Next);
 
-        /*
-        **	Find a suitable map entry location. Cargo planes will try to
-        *find a cell that *	exactly lines up with the airfield they will
-        *unload at.
-        */
+        // Pick the cell on the house's edge to enter at; scenario_init makes
+        // Calculated_Cell() accept a cell that ground units could not use. A
+        // cargo plane instead enters at the east edge, in the row of the
+        // airstrip it will unload at, so that it flies straight in. The 2 is
+        // added to the packed docking coordinate, which nudges it two leptons
+        // in X and so leaves the row alone.
         TheWorld().scenario_init()++;
         Cell newcell = TheMap().Calculated_Cell(
             HouseClass::As_Pointer(teamtype->House)->Edge, teamtype->House);
@@ -411,10 +354,15 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         }
         thisone->Next = nullptr;
 
+        // scenario_init places the aircraft on the edge cell without asking
+        // whether it can enter it.
         TheWorld().scenario_init()++;
         placed = thisone->Unlimbo(newcell.Center(), game::DIR_W);
         TheWorld().scenario_init()--;
         if (placed) {
+          // The team handler gives a team member its orders. Without a team,
+          // a fixed-wing aircraft hunts, and a helicopter flies to the
+          // reinforcement waypoint, where a loaded transport unloads.
           if (!team) {
             if (thisone->Class->IsFixedWing) {
               thisone->Assign_Mission(MISSION_HUNT);
@@ -436,21 +384,27 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
         thisone = next;
       }
+      // `placed` is the result for the last aircraft only, so the team goes
+      // when that one failed, even if earlier ones are on the map.
       if (!placed && team) {
         base::DeletePooled(team);
       }
 
-      /*
-      **	Fixes bug that can happen if the reinforcement cannot be
-      *created. *	This prevent "phantom" teams and team types from being
-      *left around.
-      */
+      // Report the failure, so that the caller can delete the team type it
+      // made for this: that prevents "phantom" teams and team types from
+      // being left around. Only the campaign does; a multiplayer game goes on
+      // to announce the reinforcement and reports success.
       if (TheSession().type() == GAME_NORMAL && !placed) {
         return false;
       }
 
     } break;
 
+    // The hovercraft starts below the bottom edge of the map, in the column
+    // of the beach cell it will land on.
+    //
+    // TODO: only the head of the list is placed, and when no beach cell is
+    // free nothing is: what is left stays in limbo for good.
     case SOURCE_OCEAN:
     case SOURCE_BEACH:
       cell = TheMap().Calculated_Cell(SOURCE_BEACH, teamtype->House);
@@ -460,6 +414,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
         placed = object->Unlimbo(edge.Center(), game::DIR_N);
         if (placed) {
+          // Without a team to order it, the hovercraft is sent to the beach
+          // to unload.
           if (!team) {
             object->IsLocked = false;
             object->Assign_Mission(MISSION_UNLOAD);
@@ -474,6 +430,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       }
       break;
 
+    // TODO: a house whose edge is one of these has its reinforcements left
+    // in limbo for good, and reported as delivered.
     case SourceType::SOURCE_NONE:
     case SourceType::SOURCE_VISIBLE:
     case SourceType::SOURCE_ENEMYBASE:
@@ -483,9 +441,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       break;
   }
 
-  /*
-  **	Announce when the reinforcements have arrived.
-  */
+  // Announce the reinforcements to the player they belong to. This does not
+  // depend on any member having reached the map.
   if (okvoice && teamtype->House == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
@@ -493,32 +450,6 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   return true;
 }
 
-/***********************************************************************************************
- * Create_Special_Reinforcement -- Ad hoc reinforcement handler. *
- *                                                                                             *
- *    Use this routine to bring on a reinforcement that hasn't been anticipated
- *by the trigger * system. An example of this would be replacement harvesters or
- *airfield ordered units.    * The appropriate transport is created (if
- *necessary) and a mission is assigned such that  * the object will legally
- *bring itself onto the playing field.                             *
- *                                                                                             *
- * INPUT:   house    -- The owner of this reinforcement. *
- *                                                                                             *
- *          type     -- The object to bring on. *
- *                                                                                             *
- *          another  -- This is reserved for the transport class in those cases
- *where the      * transport MUST be forced to a specific type. *
- *                                                                                             *
- *          mission  -- The mission to assign this reinforcement team. *
- *                                                                                             *
- *          argument -- Optional team mission argument (usually a waypoint). *
- *                                                                                             *
- * OUTPUT:  Was the special reinforcement created without error? *
- *                                                                                             *
- * WARNINGS:   This routine will fail if a team type cannot be created. *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Created. *
- *=============================================================================================*/
 bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
                                   const TechnoTypeClass* another,
@@ -527,18 +458,15 @@ bool Create_Special_Reinforcement(const HouseClass* house,
     auto* team = base::NewPooled<TeamTypeClass>();
 
     if (team) {
-      /*
-      **	If a ground based reinforcement is desired, but the edge of the
-      *map that the *	reinforcement will arrive at is completely covered with
-      *water, then add *	a hover lander for transport.
-      */
+      // A vehicle or soldier with no transport given drives on from the
+      // house's map edge, if it can.
       if (!another && (type->What_Am_I() == RTTI_UNITTYPE ||
                        type->What_Am_I() == RTTI_INFANTRYTYPE)) {
-        /*
-        **	Hover lander reinforcements can only arrive from the south. Yes,
-        *this is an *	arbitrary limitation, but that's the way it is (for
-        *now).
-        */
+        // Only the south edge is checked for a way in, because the hovercraft
+        // can only arrive from the south. Yes, this is an arbitrary limitation,
+        // but that's the way it is (for now). The way in is a column whose cell
+        // below the map and whose bottom map cell are both clear; the last
+        // column is not looked at.
         if (house->Edge == SOURCE_SOUTH) {
           bool found = false;
           for (int index = TheMap().MapCellX;
@@ -552,18 +480,19 @@ bool Create_Special_Reinforcement(const HouseClass* house,
             }
           }
 
-          /*
-          **	No land route was found for the reinforcement to drive itself
-          *onto the *	map. Assign it a hover lander. This presumes that if the
-          *south edge is *	non drivable, it will have water there instead.
-          *Risky, but is not a *	problem with the current C&C maps.
-          */
+          // No land route was found for the reinforcement to drive itself onto
+          // the map. Assign it a hovercraft. This presumes that if the south
+          // edge is non drivable, it will have water there instead. Risky, but
+          // is not a problem with the current C&C maps. The mission the caller
+          // asked for is dropped: the hovercraft delivers and that is all.
           if (!found) {
             mission = TMISSION_NONE;
             another = &UnitTypeClass::As_Reference(UNIT_HOVER);
           }
         }
 
+        // Otherwise it drives to the reinforcement waypoint, whatever mission
+        // the caller asked for.
         if (!another) {
           mission = TMISSION_MOVECELL;
           argument =
@@ -571,20 +500,20 @@ bool Create_Special_Reinforcement(const HouseClass* house,
         }
       }
 
-      /*
-      **	If there is no overridden mission assign to this special
-      *reinforcement, then *	we must assign something. If not, the
-      *reinforcement will just sit at the edge *	of the map.
-      */
+      // Anything else that comes without a transport and without a mission is
+      // sent to the reinforcement waypoint too. If not, the reinforcement will
+      // just sit at the edge of the map.
       if (!another && mission == TMISSION_NONE) {
         mission = TMISSION_MOVECELL;
         argument =
             TheMap().Calculated_Cell(SOURCE_AIR, house->Class->House).index();
       }
 
-      /*
-      **	Fill in the team characteristics.
-      */
+      // Fill in the team type: transient, so that it is deleted along with its
+      // last team. It always has one mission slot, so Do_Reinforcements()
+      // always makes a team for it. The slot stays TMISSION_NONE for a
+      // hovercraft delivery; any other transport without a mission unloads at
+      // the reinforcement waypoint.
       base::SafeCopy(team->IniName, "TEMP");
       team->IsReinforcable = false;
       team->IsTransient = true;
@@ -610,6 +539,10 @@ bool Create_Special_Reinforcement(const HouseClass* house,
         base::At(team->DesiredNum, 1) = 1;
       }
 
+      // TODO: when Do_Reinforcements() fails after making its team, deleting
+      // that team has already deleted the transient type, and this deletes it
+      // a second time. Multiplayer games skip the delete, so there a type
+      // whose team could not be made is never freed.
       const bool ok = Do_Reinforcements(team);
       if (!ok && TheSession().type() == GAME_NORMAL) {
         base::DeletePooled(team);
@@ -620,50 +553,15 @@ bool Create_Special_Reinforcement(const HouseClass* house,
   return false;
 }
 
-/***********************************************************************************************
- * Create_Air_Reinforcement -- Creates air strike reinforcement *
- *                                                                                             *
- *    This routine is used to launch an airstrike. It will create the necessary
- *aircraft and   * assign them to attack the target specified. This routine
- *bypasses the normal             * reinforcement logic since it doesn't need
- *the sophistication of unloading and following  * team mission lists. *
- *                                                                                             *
- * INPUT:   house    -- The purpetrator of this air strike. *
- *                                                                                             *
- *          air      -- The type of aircraft to make up this airstrike. *
- *                                                                                             *
- *          number   -- The number of aircraft in this airstrike. *
- *                                                                                             *
- *          mission  -- The mission to assign the aircraft. *
- *                                                                                             *
- *          tarcom   -- The target to assign these aircraft. *
- *                                                                                             *
- *          navcom   -- The navigation target to assign (if necessary). *
- *                                                                                             *
- * OUTPUT:  Returns the number of aircraft created for this airstrike. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/04/1995 JLB : Commented. *
- *=============================================================================================*/
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, Target tarcom,
                              Target navcom) {
-  /*
-  ** Get a pointer to the class of the object that we are going to create.
-  */
   const TechnoTypeClass* type = &AircraftTypeClass::As_Reference(air);
 
-  /*
-  ** Loop through the number of objects we are supposed to create and
-  ** 	create and place them on the map.
-  */
+  // Create and place the aircraft one at a time.
   int sub = 0;
   for (sub = 0; sub < number; sub++) {
-    /*
-    ** Create one of the required objects.  If this fails we could have
-    ** a real problem.
-    */
+    // Creation fails when the aircraft pool is full.
     TheWorld().scenario_init()++;
     auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
     TheWorld().scenario_init()--;
@@ -671,15 +569,11 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       return sub;
     }
 
-    /*
-    ** Flying objects always have the IsALoaner bit set.
-    */
+    // Strike aircraft are always loaners: they leave the map when done.
     obj->IsALoaner = true;
 
-    /*
-    ** Find a cell for the object to come in on.  This is stolen from the
-    ** the code that handles a SOURCE_AIR in the normal logic.
-    */
+    // Enter from the house's map edge, or the north one when its edge is not
+    // one of the four.
     SourceType source = house->Edge;
     switch (source) {
       case SOURCE_NORTH:
@@ -703,36 +597,24 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     }
     const Cell newcell = TheMap().Calculated_Cell(source, house->Class->House);
 
-    /*
-    ** Try and place the object onto the map.
-    */
+    // scenario_init places the aircraft on the edge cell without asking
+    // whether it can enter it.
     TheWorld().scenario_init()++;
     const bool placed = obj->Unlimbo(newcell.Center(), game::DIR_N);
     TheWorld().scenario_init()--;
     if (placed) {
-      /*
-      ** If we suceeded in placing the obj onto the map then
-      ** now we need to give it a mission and destination.
-      */
+      // The aircraft is on the map: give it its orders. A default Target
+      // means that none was given.
       obj->Assign_Mission(mission);
 
-      /*
-      ** If a navcom was specified then set it.
-      */
       if (navcom != Target{}) {
         obj->Assign_Destination(navcom);
       }
 
-      /*
-      ** If a tarcom was specified then set it.
-      */
       if (tarcom != Target{}) {
         obj->Assign_Target(tarcom);
       }
 
-      /*
-      ** Start the object into action.
-      */
       obj->Commence();
     } else {
       base::DeletePooled(obj);
