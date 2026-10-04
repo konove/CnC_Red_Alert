@@ -906,13 +906,6 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Send a Tiberian Dawn group without a team onto the map
-  - `EnterFromEdge()` (`td/ai/reinforcements.cc`) tells a member that has no team to move to the
-    next cell in the entry facing, and that facing is the edge's own compass point: the destination
-    lies further off the map, and from the west edge it wraps to the last cell of the row above. The
-    original does the same under the comment "Facing to enter map", so the opposite facing was
-    meant. `AGroupWithoutATeamMovesOnInItsEntryFacing` in `td_reinforcements_test` pins what happens
-    today; find out what brings such a group onto the map in a scenario before changing it
 
 ## Debugging
 

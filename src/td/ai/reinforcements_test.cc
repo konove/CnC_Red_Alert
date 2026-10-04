@@ -3,6 +3,8 @@
 
 #include "td/ai/reinforcements.h"
 
+#include <cstdlib>
+
 #include "base/array.h"
 #include "base/pooled.h"
 #include "game/sim/direction.h"
@@ -203,9 +205,13 @@ TEST_F(ReinforcementTest, EveryGunboatThatCannotBePlacedIsDeleted) {
   EXPECT_EQ(ObjectCount(), 0);
 }
 
-TEST_F(ReinforcementTest, AGroupWithoutATeamMovesOnInItsEntryFacing) {
+// The four map edges a ground group can enter from.
+class EdgeEntryTest : public ReinforcementTest,
+                      public ::testing::WithParamInterface<SourceType> {};
+
+TEST_P(EdgeEntryTest, AGroupWithoutATeamMovesOntoTheMap) {
   TheGameState().active() = true;
-  house_->Edge = SOURCE_WEST;
+  house_->Edge = GetParam();
   TeamTypeClass& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 1);
 
@@ -216,14 +222,20 @@ TEST_F(ReinforcementTest, AGroupWithoutATeamMovesOnInItsEntryFacing) {
   const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(0);
   EXPECT_EQ(unit->Team, nullptr);
   EXPECT_EQ(unit->Mission, MISSION_MOVE);
-  // The destination is the next cell in the entry facing, and a west edge
-  // faces west: not the first column of the map, but the cell before the one
-  // it entered at, which is the last cell of the row above.
+  // The member enters one cell off the visible map and is sent to the map
+  // cell straight across the edge from it.
   const Cell entry_cell = Cell::Containing(unit->Coord);
-  EXPECT_EQ(entry_cell.x(), 0);
-  EXPECT_EQ(unit->NavCom, Target::FromCellIndex(Cell::FromXY(
-                              MAP_CELL_W - 1, entry_cell.y() - 1)));
+  EXPECT_FALSE(TheMap().In_Radar(entry_cell));
+  const Cell destination = unit->NavCom.AsCell();
+  EXPECT_TRUE(TheMap().In_Radar(destination));
+  EXPECT_EQ(std::abs(destination.x() - entry_cell.x()) +
+                std::abs(destination.y() - entry_cell.y()),
+            1);
 }
+
+INSTANTIATE_TEST_SUITE_P(Edges, EdgeEntryTest,
+                         ::testing::Values(SOURCE_NORTH, SOURCE_EAST,
+                                           SOURCE_SOUTH, SOURCE_WEST));
 
 TEST_F(ReinforcementTest, AGroupWithATeamWaitsForItsOrders) {
   TheGameState().active() = true;

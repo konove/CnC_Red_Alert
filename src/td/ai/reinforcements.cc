@@ -93,6 +93,10 @@ static void EnterFromEdge(FootClass* group, const SourceType edge,
   const game::FacingType entry_facing =
       game::AsFacing(static_cast<int>(edge) * 2);
   const game::DirType facing = game::Facing_Dir(entry_facing);
+  // The opposite compass point, which leads from an edge cell onto the map.
+  const game::FacingType inward_facing = game::AsFacing(
+      (static_cast<int>(entry_facing) + 4) %
+      static_cast<int>(magic_enum::enum_count<game::FacingType>()));
 
   // `member` is the one being placed and `group` the rest of the list. A cell
   // index of 0 or less means there is no cell.
@@ -101,19 +105,16 @@ static void EnterFromEdge(FootClass* group, const SourceType edge,
   while (place_cell.index() > 0 && member != nullptr) {
     if (member->Unlimbo(place_cell.Center(), facing)) {
       // The team handler assigns the mission a team member follows; until
-      // then it guards. Without a team the member is told to move to the next
-      // cell in the entry facing.
-      //
-      // TODO: that cell is further off the map, not on it, since the entry
-      // facing points away from the map; from the west edge it is the last
-      // cell of the row above. The original does the same ("Facing to enter
-      // map"), so the intent was the opposite facing.
+      // then it guards. Without a team the member is told to move onto the
+      // map, to the cell across the edge from the one it was placed on. The
+      // original sent it the other way, further off the map, by using the
+      // entry facing here ("Facing to enter map").
       if (has_team) {
         member->Assign_Mission(MISSION_GUARD);
       } else {
         member->Assign_Mission(MISSION_MOVE);
         member->Assign_Destination(
-            Target::FromCellIndex(Adjacent_Cell(place_cell, entry_facing)));
+            Target::FromCellIndex(Adjacent_Cell(place_cell, inward_facing)));
       }
       member->Commence();
       member = PopHead(group);
