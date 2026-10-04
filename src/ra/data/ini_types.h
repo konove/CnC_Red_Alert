@@ -48,7 +48,7 @@
 
 namespace ra {
 
-class TriggerTypeClass;
+class TriggerType;
 
 // The game's typed values in an INI database, read and written by their INI
 // names. A getter returns `defvalue` when the entry is missing (GetTriggerType
@@ -91,9 +91,8 @@ TheaterType GetTheaterType(const engine::file::IniFile& ini,
 ThemeType GetThemeType(const engine::file::IniFile& ini,
                        std::string_view section, std::string_view entry,
                        ThemeType defvalue);
-TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
-                                 std::string_view section,
-                                 std::string_view entry);
+TriggerType* GetTriggerType(const engine::file::IniFile& ini,
+                            std::string_view section, std::string_view entry);
 VQType GetVQType(const engine::file::IniFile& ini, std::string_view section,
                  std::string_view entry, VQType defvalue);
 VocType GetVocType(const engine::file::IniFile& ini, std::string_view section,
@@ -142,7 +141,7 @@ bool PutTheaterType(engine::file::IniFile& ini, std::string_view section,
 bool PutThemeType(engine::file::IniFile& ini, std::string_view section,
                   std::string_view entry, ThemeType value);
 bool PutTriggerType(engine::file::IniFile& ini, std::string_view section,
-                    std::string_view entry, TriggerTypeClass* value);
+                    std::string_view entry, TriggerType* value);
 bool PutVocType(engine::file::IniFile& ini, std::string_view section,
                 std::string_view entry, VocType value);
 bool PutWarheadType(engine::file::IniFile& ini, std::string_view section,

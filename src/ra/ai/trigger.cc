@@ -95,7 +95,7 @@ namespace ra {
  *                                                                                             *
  * OUTPUT:  Returns with an ASCII description of this trigger. *
  *                                                                                             *
- * WARNINGS:   see TriggerTypeClass::Description() *
+ * WARNINGS:   see TriggerType::Description() *
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
@@ -155,7 +155,7 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
+TriggerClass::TriggerClass(TriggerType* trigtype)
     : RTTI(RTTI_TRIGGER),
       ID(TheObjectHeaps().trigger().SlotIndexOf(this)),
       Class(trigtype) {
@@ -303,7 +303,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     **	would include semi-persistent triggers that don't actually
     **	spring until all triggers have sprung.
     */
-    if (Class->IsPersistant == TriggerTypeClass::SEMIPERSISTANT) {
+    if (Class->IsPersistant == TriggerType::SEMIPERSISTANT) {
       /*
       ** Detach ourselves from the object and record that there
       **	is one less attachment to keep track of.
@@ -345,8 +345,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
           ok |= Class->Action1.Perform(hh, obj, ID, cell);
           break;
 
-        case MultiStyleType::MULTI_OR:
-        case MultiStyleType::MULTI_LINKED:
+        case MultiStyle::MULTI_OR:
+        case MultiStyle::MULTI_LINKED:
         default:
         case MULTI_AND:
           ok |= Class->Action1.Perform(hh, obj, ID, cell);
@@ -364,8 +364,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     **	necessary.
     */
     if (ok) {
-      if (Class->IsPersistant == TriggerTypeClass::VOLATILE ||
-          (Class->IsPersistant == TriggerTypeClass::SEMIPERSISTANT &&
+      if (Class->IsPersistant == TriggerType::VOLATILE ||
+          (Class->IsPersistant == TriggerType::SEMIPERSISTANT &&
            AttachCount <= 1)) {
         Detach_This_From_All(As_Target(), true);
         delete this;
@@ -464,7 +464,7 @@ Target TriggerClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
+TriggerClass* Find_Or_Make(TriggerType* trigtype) {
   if (!trigtype) {
     return nullptr;
   }

@@ -2560,7 +2560,7 @@ int MapEditClass::Load_Scenario() {
         /*
         **	Create a new trigger
         */
-        CurTrigger = base::NewPooled<TriggerTypeClass>();
+        CurTrigger = base::NewPooled<TriggerType>();
         if (CurTrigger) {
           /*
           **	delete it if user cancels
@@ -2696,7 +2696,7 @@ int MapEditClass::Load_Scenario() {
     */
     game::ControlClass* commands = nullptr;  // the button list
 
-    TListClass<TriggerTypeClass*> triggerlist(
+    TListClass<TriggerType*> triggerlist(
         kTriggerList, kDListX, kDListY, kDListW, kDListH, FontType::kEditor,
         TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
         MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -2721,7 +2721,7 @@ int MapEditClass::Load_Scenario() {
     }
 
     triggerlist.Sort(
-        [](const TriggerTypeClass* left, const TriggerTypeClass* right) {
+        [](const TriggerType* left, const TriggerType* right) {
           return std::ranges::lexicographical_compare(
               std::string_view(left->Name()), std::string_view(right->Name()),
               {}, absl::ascii_tolower, absl::ascii_tolower);

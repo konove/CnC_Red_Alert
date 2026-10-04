@@ -313,7 +313,7 @@ class MapEditClass : public MouseClass {
   /*
   **	The "current" trigger for point-and-click trigger setting
   */
-  TriggerTypeClass* CurTrigger;  // current trigger
+  TriggerType* CurTrigger;  // current trigger
 
   /*
   **	The "current" team type for editing & associating with a trigger

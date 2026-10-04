@@ -5849,7 +5849,7 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
       auto* b = base::NewPooled<BuildingClass>(
           classid, bhouse);  // Working unit pointer.
       if (b) {
-        TriggerTypeClass* tp = TriggerTypeClass::From_Name(trigname);
+        TriggerType* tp = TriggerType::From_Name(trigname);
         if (tp) {
           TriggerClass* tt = Find_Or_Make(tp);
           if (tt) {

@@ -279,7 +279,7 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Trigger to assign to each object as it joins this team.
   */
-  TriggerTypeClass* Trigger = nullptr;
+  TriggerType* Trigger = nullptr;
 
   /*
   **	This is the waypoint origin to use when creating this team or

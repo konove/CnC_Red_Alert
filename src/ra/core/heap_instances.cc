@@ -53,7 +53,7 @@ template class game::ObjectHeap<ra::SmudgeTypeClass>;
 template class game::ObjectHeap<ra::TeamTypeClass>;
 template class game::ObjectHeap<ra::TemplateTypeClass>;
 template class game::ObjectHeap<ra::TerrainTypeClass>;
-template class game::ObjectHeap<ra::TriggerTypeClass>;
+template class game::ObjectHeap<ra::TriggerType>;
 template class game::ObjectHeap<ra::UnitTypeClass>;
 template class game::ObjectHeap<ra::VesselTypeClass>;
 template class game::ObjectHeap<ra::WarheadTypeClass>;

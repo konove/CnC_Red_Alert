@@ -4110,7 +4110,7 @@ void DisplayClass::Read_INI(engine::file::IniFile& ini) {
     **	Get a cell trigger and cell assignment.
     */
     const std::string_view cellentry = ini.EntryName("CellTriggers", index);
-    TriggerTypeClass* tp = GetTriggerType(ini, "CellTriggers", cellentry);
+    TriggerType* tp = GetTriggerType(ini, "CellTriggers", cellentry);
     const Cell cell =
         Cell::FromIndex(base::ParseIntegerOr<int16_t>(cellentry, 0));
 

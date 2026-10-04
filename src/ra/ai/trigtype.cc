@@ -184,30 +184,30 @@ std::string_view SelectedName(
 
 }  // namespace
 
-TriggerTypeClass::TriggerTypeClass()
+TriggerType::TriggerType()
     : AbstractTypeClass(RTTI_TRIGGERTYPE,
                         TheObjectHeaps().trigger_type().SlotIndexOf(this),
                         TXT_NONE, "x") {}
 
-TriggerTypeClass::~TriggerTypeClass() = default;
+TriggerType::~TriggerType() = default;
 
-void* TriggerTypeClass::operator new(std::size_t /*unused*/) {
+void* TriggerType::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().trigger_type().Allocate();
   if (ptr) {
-    static_cast<TriggerTypeClass*>(ptr)->IsActive = true;
+    static_cast<TriggerType*>(ptr)->IsActive = true;
   }
 
   return ptr;
 }
 
-void TriggerTypeClass::operator delete(void* ptr) {
+void TriggerType::operator delete(void* ptr) {
   if (ptr) {
-    static_cast<TriggerTypeClass*>(ptr)->IsActive = false;
+    static_cast<TriggerType*>(ptr)->IsActive = false;
   }
-  TheObjectHeaps().trigger_type().Free(static_cast<TriggerTypeClass*>(ptr));
+  TheObjectHeaps().trigger_type().Free(static_cast<TriggerType*>(ptr));
 }
 
-void TriggerTypeClass::Detach(Target target, bool /*unused*/) {
+void TriggerType::Detach(Target target, bool /*unused*/) {
   if (target.kind() == RTTI_TEAMTYPE) {
     for (TEventClass* event : {&Event1, &Event2}) {
       if (event->Team == target.AsTeamType()) {
@@ -319,8 +319,7 @@ constexpr int kKbuttoncancel = 146;      // Cancel button - just exit.
 constexpr int kButtonAction = 147;       // Multiple action control button.
 constexpr int kButtonEvent = 148;        // Multiple event control button.
 
-bool TriggerTypeClass::Edit() {
-
+bool TriggerType::Edit() {
   RemapControlType* scheme = Get_Color_Scheme();
 
   // Head of the dialog's gadget list. Only the gadgets linked into it are
@@ -1004,7 +1003,7 @@ bool TriggerTypeClass::Edit() {
   }
   housebtn.Set_Selected_Index(static_cast<int>(House));
 
-  // The persistence list; the list index is the PersistantType, so the names
+  // The persistence list; the list index is the Persistence, so the names
   // must stay in the enum's order.
   char perstext[kDescSize] = "";
   static constexpr std::array<const char*, 3> kPersistenceNames = {
@@ -1019,7 +1018,7 @@ bool TriggerTypeClass::Edit() {
   }
   persbtn.Set_Selected_Index(static_cast<int>(IsPersistant));
 
-  // This button cycles through the four MultiStyleType values for the events;
+  // This button cycles through the four MultiStyle values for the events;
   // `eventflag` is the value as a number.
   int eventflag = static_cast<int>(EventControl);
   TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kEButtonFont,
@@ -1493,7 +1492,7 @@ bool TriggerTypeClass::Edit() {
       case KN_RETURN:
       case engine::window::ButtonKey(kButtonOk):
         House = HousesType(housebtn.Current_Index());
-        IsPersistant = PersistantType(persbtn.Current_Index());
+        IsPersistant = Persistence(persbtn.Current_Index());
         if (std::string_view(namebuf).empty()) {
           Set_Name("____");
         } else {
@@ -1501,7 +1500,7 @@ bool TriggerTypeClass::Edit() {
         }
 
         // The first event and its data.
-        EventControl = MultiStyleType(eventflag);
+        EventControl = MultiStyle(eventflag);
         Event1.Event = *event1list.Current_Item();
         switch (Event_Needs(Event1.Event)) {
           case NEED_HOUSE:
@@ -1616,7 +1615,7 @@ bool TriggerTypeClass::Edit() {
 
         // The first action and its data. `actionflag` converts to MULTI_ONLY
         // or MULTI_AND.
-        ActionControl = MultiStyleType(actionflag);
+        ActionControl = MultiStyle(actionflag);
         Action1.type = *action1list.Current_Item();
         switch (ActionNeed(Action1.type)) {
           case NEED_SPECIAL:
@@ -1629,7 +1628,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_TRIGGER:
             Action1.trigger_type =
-                TriggerTypeClass::From_Name(SelectedName(trtype1list));
+                TriggerType::From_Name(SelectedName(trtype1list));
             break;
 
           case NEED_TEAM:
@@ -1699,7 +1698,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_TRIGGER:
             Action2.trigger_type =
-                TriggerTypeClass::From_Name(SelectedName(trtype2list));
+                TriggerType::From_Name(SelectedName(trtype2list));
             break;
 
           case NEED_TEAM:
@@ -1774,7 +1773,7 @@ bool TriggerTypeClass::Edit() {
   return false;
 }
 
-std::string TriggerTypeClass::Description() const {
+std::string TriggerType::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // Marks for how the second event and action are used: '.' for unused.
     char special = 0;
@@ -1791,7 +1790,7 @@ std::string TriggerTypeClass::Description() const {
         special = '=';
         break;
 
-      case MultiStyleType::MULTI_ONLY:
+      case MultiStyle::MULTI_ONLY:
       default:
         special = '.';
         break;
@@ -1874,7 +1873,7 @@ std::string TriggerTypeClass::Description() const {
   return {};
 }
 
-AttachType TriggerTypeClass::Attaches_To() const {
+AttachType TriggerType::Attaches_To() const {
   AttachType attach = ra::Attaches_To(Event1.Event);
 
   if (EventControl != MULTI_ONLY) {
@@ -1883,9 +1882,9 @@ AttachType TriggerTypeClass::Attaches_To() const {
   return attach;
 }
 
-void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
+void TriggerType::Read_INI(engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    auto* trigger = base::NewPooled<TriggerTypeClass>();
+    auto* trigger = base::NewPooled<TriggerType>();
     trigger->Fill_In(entry, value);
   }
 
@@ -1895,7 +1894,7 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
     // the names now that every trigger type exists.
     for (int trig_index = 0;
          trig_index < TheObjectHeaps().trigger_type().Count(); trig_index++) {
-      TriggerTypeClass* indexed_trigger =
+      TriggerType* indexed_trigger =
           TheObjectHeaps().trigger_type().ActiveAt(trig_index);
 
       for (TriggerAction* action :
@@ -1909,19 +1908,19 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   }
 }
 
-void TriggerTypeClass::Fill_In(std::string_view name, std::string_view entry) {
+void TriggerType::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
   IsPersistant =
-      static_cast<PersistantType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<Persistence>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   EventControl =
-      static_cast<MultiStyleType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<MultiStyle>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   ActionControl =
-      static_cast<MultiStyleType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<MultiStyle>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   Event1.Read_INI(tokens);
   Event2.Read_INI(tokens);
@@ -1929,7 +1928,7 @@ void TriggerTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   Action2.ReadIni(tokens);
 }
 
-void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
+void TriggerType::Write_INI(engine::file::IniFile& ini) {
   // [Triggers] is where older formats kept them; a file with both would
   // describe the triggers twice.
   ini.Clear("Triggers");
@@ -1937,13 +1936,13 @@ void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    const TriggerTypeClass* trigger =
+    const TriggerType* trigger =
         TheObjectHeaps().trigger_type().ActiveAt(index);
     ini.PutString(INI_Name(), trigger->IniName, trigger->Build_INI_Entry());
   }
 }
 
-std::string TriggerTypeClass::Build_INI_Entry() const {
+std::string TriggerType::Build_INI_Entry() const {
   // The enums are stored as their numbers, which Fill_In() casts back.
   std::string entry =
       std::format("{},{},{},{},", std::to_underlying(IsPersistant),
@@ -1963,9 +1962,9 @@ std::string TriggerTypeClass::Build_INI_Entry() const {
   return entry;
 }
 
-void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                               int width, int height, bool selected,
-                               FontType font, TextPrintType flags) const {
+void TriggerType::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                          int width, int height, bool selected, FontType font,
+                          TextPrintType flags) const {
   if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     // Tab stops in pixels: Description() puts a tab after the name.
@@ -1992,9 +1991,9 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-void TriggerTypeClass::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
+void TriggerType::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
 
-TriggerTypeClass* TriggerTypeClass::From_Name(const std::string_view name) {
+TriggerType* TriggerType::From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {

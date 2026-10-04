@@ -197,15 +197,15 @@ template void TriggerAction::Serialize(ArchiveWriter&);
 template void TriggerAction::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TriggerTypeClass::Serialize(Archive& ar) {
+void TriggerType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
   bool is_active = IsActive;
   ar(is_active, IsPersistant, House, Event1, Event2, EventControl, Action1,
      Action2, ActionControl);
   IsActive = is_active;
 }
-template void TriggerTypeClass::Serialize(ArchiveWriter&);
-template void TriggerTypeClass::Serialize(ArchiveReader&);
+template void TriggerType::Serialize(ArchiveWriter&);
+template void TriggerType::Serialize(ArchiveReader&);
 
 template <class Archive>
 void BulletClass::Serialize(Archive& ar) {

@@ -310,7 +310,7 @@ TriggerClass* Target::AsTrigger() const {
                                 : nullptr;
 }
 
-TriggerTypeClass* Target::AsTriggerType() const {
+TriggerType* Target::AsTriggerType() const {
   return kind() == RTTI_TRIGGERTYPE
              ? TheObjectHeaps().trigger_type().Slot(value())
              : nullptr;

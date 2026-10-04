@@ -36,7 +36,7 @@ namespace ra {
 
 class ObjectClass;
 class TeamTypeClass;
-class TriggerTypeClass;
+class TriggerType;
 
 // What a trigger action does. Scenario INI files and saved games store the
 // number, so the order is fixed.
@@ -103,7 +103,7 @@ struct TriggerAction {
   TeamTypeClass* team_type = nullptr;  // Team type for this action (if needed).
 
   // Trigger type for this action (if needed).
-  TriggerTypeClass* trigger_type = nullptr;
+  TriggerType* trigger_type = nullptr;
 
   // The action's value, read through the member ActionNeed() names. The INI
   // file and saved games store `value`; the one-byte members read its low byte,
@@ -122,7 +122,7 @@ struct TriggerAction {
   } data{.value = -1};
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
-  // that load later. TriggerTypeClass::Read_INI resolves it into trigger_type
+  // that load later. TriggerType::Read_INI resolves it into trigger_type
   // once every trigger exists; empty otherwise. Not saved.
   std::string pending_trigger_name;
 

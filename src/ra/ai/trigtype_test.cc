@@ -21,11 +21,11 @@ class TriggerTypeTest : public GameFixture {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     team_type_ = base::NewPooled<TeamTypeClass>();
-    trigger_type_ = base::NewPooled<TriggerTypeClass>();
+    trigger_type_ = base::NewPooled<TriggerType>();
   }
 
   TeamTypeClass* team_type_ = nullptr;
-  TriggerTypeClass* trigger_type_ = nullptr;
+  TriggerType* trigger_type_ = nullptr;
 };
 
 TEST_F(TriggerTypeTest, DetachClearsTheTeamTypeOfItsEventsAndActions) {

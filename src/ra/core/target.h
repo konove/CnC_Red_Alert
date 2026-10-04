@@ -26,7 +26,7 @@ class TeamTypeClass;
 class TechnoClass;
 class TechnoTypeClass;
 class TriggerClass;
-class TriggerTypeClass;
+class TriggerType;
 class UnitClass;
 class VesselClass;
 
@@ -182,7 +182,7 @@ class Target {
   [[nodiscard]] TeamClass* AsTeam() const;
   [[nodiscard]] TeamTypeClass* AsTeamType() const;
   [[nodiscard]] TriggerClass* AsTrigger() const;
-  [[nodiscard]] TriggerTypeClass* AsTriggerType() const;
+  [[nodiscard]] TriggerType* AsTriggerType() const;
   [[nodiscard]] UnitClass* AsUnit() const;
   [[nodiscard]] VesselClass* AsVessel() const;
 

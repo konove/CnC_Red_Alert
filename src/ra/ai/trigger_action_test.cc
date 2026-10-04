@@ -109,7 +109,7 @@ TEST_F(TriggerActionTest, ForceTriggerDoesNothingWhenNoTriggerCanBeMade) {
   TheObjectHeaps().trigger().Reset(0);
   TriggerAction action;
   action.type = TACTION_FORCE_TRIGGER;
-  action.trigger_type = base::NewPooled<TriggerTypeClass>();
+  action.trigger_type = base::NewPooled<TriggerType>();
   ASSERT_NE(action.trigger_type, nullptr);
   EXPECT_TRUE(Perform(action));
 }
@@ -182,7 +182,7 @@ class TriggerActionGameTest : public TriggerActionTest {
     team_type_->Set_Name("tanks");
     team_type_->House = HOUSE_USSR;
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-    trigger_type_ = base::NewPooled<TriggerTypeClass>();
+    trigger_type_ = base::NewPooled<TriggerType>();
     trigger_type_->Set_Name("alarm");
   }
 
@@ -197,7 +197,7 @@ class TriggerActionGameTest : public TriggerActionTest {
 
   HouseClass* house_ = nullptr;
   TeamTypeClass* team_type_ = nullptr;
-  TriggerTypeClass* trigger_type_ = nullptr;
+  TriggerType* trigger_type_ = nullptr;
 };
 
 TEST_F(TriggerActionGameTest, DetachClearsOnlyTheTypeBeingDestroyed) {
@@ -223,7 +223,7 @@ TEST_F(TriggerActionGameTest, DetachLeavesAnotherTeamOrTriggerTypeAlone) {
   action.trigger_type = trigger_type_;
 
   action.Detach(base::NewPooled<TeamTypeClass>()->As_Target());
-  action.Detach(base::NewPooled<TriggerTypeClass>()->As_Target());
+  action.Detach(base::NewPooled<TriggerType>()->As_Target());
 
   EXPECT_EQ(action.team_type, team_type_);
   EXPECT_EQ(action.trigger_type, trigger_type_);
@@ -269,7 +269,7 @@ TEST_F(TriggerActionGameTest, TheOldFormatsNameTheTeamAndKeepTheTriggerName) {
 
     EXPECT_EQ(action.type, TACTION_CREATE_TEAM);
     EXPECT_EQ(action.team_type, team_type_);
-    // TriggerTypeClass::Read_INI() resolves the name later.
+    // TriggerType::Read_INI() resolves the name later.
     EXPECT_EQ(action.trigger_type, nullptr);
     EXPECT_EQ(action.pending_trigger_name, "alarm");
     EXPECT_EQ(action.data.value, 3);
@@ -391,7 +391,7 @@ TEST_F(TriggerActionGameTest, TheOtherHouseWinningMeansThePlayerLoses) {
 }
 
 TEST_F(TriggerActionGameTest, DestroyTriggerDeletesEveryTriggerOfTheType) {
-  auto* other_type = base::NewPooled<TriggerTypeClass>();
+  auto* other_type = base::NewPooled<TriggerType>();
   base::NewPooled<TriggerClass>(trigger_type_);
   const TriggerClass* kept = base::NewPooled<TriggerClass>(other_type);
   base::NewPooled<TriggerClass>(trigger_type_);

@@ -95,8 +95,7 @@ class ObjectHeaps {
   game::ObjectHeap<VesselClass>& vessel() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return vessel_;
   }
-  game::ObjectHeap<TriggerTypeClass>& trigger_type()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TriggerType>& trigger_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trigger_type_;
   }
 
@@ -123,7 +122,7 @@ class ObjectHeaps {
   game::ObjectHeap<TriggerClass> trigger_;
   game::ObjectHeap<UnitClass> unit_;
   game::ObjectHeap<VesselClass> vessel_;
-  game::ObjectHeap<TriggerTypeClass> trigger_type_;
+  game::ObjectHeap<TriggerType> trigger_type_;
 };
 
 // Returns the ObjectHeaps that Game installed. CHECK-fails outside a Game's

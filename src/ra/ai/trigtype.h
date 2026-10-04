@@ -45,7 +45,7 @@ namespace ra {
 
 // How a trigger type's second event or action relates to its first. Scenario
 // INI files and saved games store the number, so the order is fixed.
-enum class MultiStyleType {
+enum class MultiStyle {
   MULTI_ONLY,   // Only the first event or action counts.
   MULTI_AND,    // Both events must occur; both actions are performed.
   MULTI_OR,     // Events only: either event springs the trigger.
@@ -53,14 +53,14 @@ enum class MultiStyleType {
                 // performs just its own action (event 1 -> action 1, event 2
                 // -> action 2).
 };
-using enum MultiStyleType;
+using enum MultiStyle;
 
 // One trigger of a scenario, as its INI file describes it. Trigger types live
 // in the trigger type heap (TheObjectHeaps().trigger_type()): create one with
-// base::NewPooled<TriggerTypeClass>() and destroy it with base::DeletePooled().
+// base::NewPooled<TriggerType>() and destroy it with base::DeletePooled().
 // The name (IniName) is at most four characters in the editor and is how the
 // scenario's objects and cells name the trigger they carry.
-class TriggerTypeClass : public AbstractTypeClass {
+class TriggerType : public AbstractTypeClass {
  public:
   // True while the object occupies its heap slot. operator new sets this
   // before the constructor runs; the initializer must agree with it.
@@ -68,7 +68,7 @@ class TriggerTypeClass : public AbstractTypeClass {
 
   // Whether a trigger of this type survives going off. Scenario INI files and
   // saved games store the number.
-  enum class PersistantType {
+  enum class Persistence {
     // The trigger destroys itself as soon as it has gone off, detaching from
     // everything it is attached to.
     VOLATILE = 0,
@@ -78,9 +78,9 @@ class TriggerTypeClass : public AbstractTypeClass {
     // The trigger never goes away and springs every time its events occur.
     PERSISTANT = 2
   };
-  using enum PersistantType;
+  using enum Persistence;
 
-  PersistantType IsPersistant = VOLATILE;
+  Persistence IsPersistant = VOLATILE;
 
   // The house the trigger belongs to: the one its house events are about and
   // the one its actions affect when they name no house of their own.
@@ -90,20 +90,20 @@ class TriggerTypeClass : public AbstractTypeClass {
   // is not MULTI_ONLY.
   TEventClass Event1;
   TEventClass Event2;
-  MultiStyleType EventControl = MULTI_ONLY;
+  MultiStyle EventControl = MULTI_ONLY;
 
   // The actions performed when the trigger springs. Action2 is only performed
   // when ActionControl is MULTI_AND or EventControl is MULTI_LINKED.
   TriggerAction Action1;
   TriggerAction Action2;
-  MultiStyleType ActionControl = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
+  MultiStyle ActionControl = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
 
-  TriggerTypeClass();
-  ~TriggerTypeClass() override;
-  TriggerTypeClass(const TriggerTypeClass&) = delete;
-  TriggerTypeClass& operator=(const TriggerTypeClass&) = delete;
-  TriggerTypeClass(TriggerTypeClass&&) = delete;
-  TriggerTypeClass& operator=(TriggerTypeClass&&) = delete;
+  TriggerType();
+  ~TriggerType() override;
+  TriggerType(const TriggerType&) = delete;
+  TriggerType& operator=(const TriggerType&) = delete;
+  TriggerType(TriggerType&&) = delete;
+  TriggerType& operator=(TriggerType&&) = delete;
 
   // Takes a slot from the trigger type heap; returns nullptr when it is full.
   void* operator new(std::size_t /*unused*/);
@@ -157,7 +157,7 @@ class TriggerTypeClass : public AbstractTypeClass {
 
   // Returns the trigger type named `name`, ignoring case, or nullptr when
   // there is none or `name` is empty.
-  static TriggerTypeClass* From_Name(std::string_view name);
+  static TriggerType* From_Name(std::string_view name);
 
   // Runs the scenario editor's dialog on this trigger type. Returns true when
   // the user confirmed, with the dialog's values stored in the object; false
@@ -179,8 +179,8 @@ class TriggerTypeClass : public AbstractTypeClass {
                bool selected, FontType font, TextPrintType flags) const;
 };
 
-extern template void TriggerTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TriggerTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TriggerType::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TriggerType::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

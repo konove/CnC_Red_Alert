@@ -1996,8 +1996,7 @@ void VesselClass::Read_INI(engine::file::IniFile& ini) {
               Mission_From_Name(tokens.Next());
 
           vessel->Trigger = nullptr;
-          TriggerTypeClass* tp =
-              TriggerTypeClass::From_Name(tokens.Next());
+          TriggerType* tp = TriggerType::From_Name(tokens.Next());
           if (tp != nullptr) {
             TriggerClass* tt = Find_Or_Make(tp);
             if (tt != nullptr) {

@@ -575,7 +575,7 @@ void Fill_In_Data() {
   */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    TriggerTypeClass* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
+    TriggerType* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
 
     DCHECK(tp != nullptr);
 
@@ -636,8 +636,7 @@ void Fill_In_Data() {
   */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    const TriggerTypeClass* tp =
-        TheObjectHeaps().trigger_type().ActiveAt(index);
+    const TriggerType* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
     if (tp->Action1.type == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
          tp->Action2.type == TACTION_ALLOWWIN)) {
@@ -766,7 +765,7 @@ void Clear_Scenario() {
   TeamTypeClass::Init();
   TeamClass::Init();
   TriggerClass::Init();
-  TriggerTypeClass::Init();
+  TriggerType::Init();
   AircraftClass::Init();
   AnimClass::Init();
   BuildingClass::Init();
@@ -1857,7 +1856,7 @@ void DropUnfilledTypeReferences() {
                    "trigger");
   }
   for (int i = 0; i < trigger_types.Count(); i++) {
-    TriggerTypeClass& trigger_type = *trigger_types.ActiveAt(i);
+    TriggerType& trigger_type = *trigger_types.ActiveAt(i);
     for (TEventClass* event : {&trigger_type.Event1, &trigger_type.Event2}) {
       DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
                      "event team");
@@ -2175,7 +2174,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in the trigger data. The triggers must be created before any other
   **	objects can be initialized.
   */
-  TriggerTypeClass::Read_INI(ini);
+  TriggerType::Read_INI(ini);
   DropUnfilledTypeReferences();
   ServiceRealTime();
 
@@ -2374,7 +2373,7 @@ void Write_Scenario_INI(const char* fname) {
 
     HouseClass::Write_INI(ini);
     TeamTypeClass::Write_INI(ini);
-    TriggerTypeClass::Write_INI(ini);
+    TriggerType::Write_INI(ini);
     TheMap().Write_INI(ini);
     TerrainClass::Write_INI(ini);
     UnitClass::Write_INI(ini);

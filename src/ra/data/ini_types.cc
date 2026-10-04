@@ -893,12 +893,11 @@ bool PutTheaterType(engine::file::IniFile& ini, std::string_view section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
-                                 std::string_view section,
-                                 std::string_view entry) {
+TriggerType* GetTriggerType(const engine::file::IniFile& ini,
+                            std::string_view section, std::string_view entry) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return TriggerTypeClass::From_Name(value);
+    return TriggerType::From_Name(value);
   }
   return nullptr;
 }
@@ -923,7 +922,7 @@ TriggerTypeClass* GetTriggerType(const engine::file::IniFile& ini,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool PutTriggerType(engine::file::IniFile& ini, std::string_view section,
-                    std::string_view entry, TriggerTypeClass* value) {
+                    std::string_view entry, TriggerType* value) {
   return ini.PutString(section, entry, value->Name());
 }
 

@@ -61,7 +61,7 @@ class TriggerClass {
   RTTIType RTTI;
   int ID;
 
-  TriggerTypeClass* Class = nullptr;
+  TriggerType* Class = nullptr;
 
   /*
   **	Record of the "already sprung" flag for the events.
@@ -72,8 +72,7 @@ class TriggerClass {
   /*
   **	Constructor/Destructor
   */
-  explicit TriggerClass(
-      TriggerTypeClass* trigtype ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  explicit TriggerClass(TriggerType* trigtype ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~TriggerClass();
   TriggerClass(const TriggerClass&) = delete;
   TriggerClass& operator=(const TriggerClass&) = delete;
@@ -150,7 +149,7 @@ class TriggerClass {
   friend class game::ObjectHeap<TriggerClass>;
 };
 
-TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
+TriggerClass* Find_Or_Make(TriggerType* trigtype);
 
 extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);

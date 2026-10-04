@@ -3293,7 +3293,7 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  *=============================================================================================*/
 void InfantryClass::Read_INI(engine::file::IniFile& ini) {
   game::DirType dir = game::DIR_N;
-  TriggerTypeClass* tp = nullptr;
+  TriggerType* tp = nullptr;
 
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
     /*
@@ -3341,7 +3341,7 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
           if (!validation.empty()) {
             dir = static_cast<game::DirType>(
                 base::ParseIntegerOr<int>(validation, 0));
-            tp = TriggerTypeClass::From_Name(tokens.Next());
+            tp = TriggerType::From_Name(tokens.Next());
           } else {
             dir = static_cast<game::DirType>(0);
             tp = nullptr;
