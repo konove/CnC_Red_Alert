@@ -59,6 +59,8 @@
 
 #include "ra/ai/trigtype.h"
 
+#include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -69,8 +71,10 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
@@ -115,6 +119,101 @@ namespace ra {
 using enum engine::window::KeyNumber;
 
 namespace {
+
+// An action as an entry of the scenario editor's action drop lists, which
+// sort by description and draw each entry through Draw_It().
+class ActionChoice {
+ public:
+  // Implicit: choice tables are brace lists of action types.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  ActionChoice(TriggerActionType action = TACTION_NONE) noexcept
+      : action_(action) {}
+
+  // Implicit: choices compare directly against their action type.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator TriggerActionType() const { return action_; }
+  // Orders by description, ignoring case; the editor sorts its lists with it.
+  bool operator<(const ActionChoice& other) const {
+    return std::ranges::lexicographical_compare(
+        std::string_view(Description()), std::string_view(other.Description()),
+        {}, absl::ascii_tolower, absl::ascii_tolower);
+  }
+
+  // The editor's name for the action.
+  [[nodiscard]] const char* Description() const { return ActionName(action_); }
+
+  // Draws the description as a list box entry in the box at (`x`, `y`) of
+  // `width` by `height` pixels, highlighted when `selected`. The index of the
+  // entry in the list is not used.
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, FontType font, TextPrintType flags) const;
+
+ private:
+  TriggerActionType action_;
+};
+
+// One choice per action, in enum order. The editor's drop lists hold pointers
+// to these, so they need storage that outlives the dialog.
+base::EnumArray<TriggerActionType, ActionChoice> action_choices = {
+    {{TACTION_NONE},
+     {TACTION_WIN},
+     {TACTION_LOSE},
+     {TACTION_BEGIN_PRODUCTION},
+     {TACTION_CREATE_TEAM},
+     {TACTION_DESTROY_TEAM},
+     {TACTION_ALL_HUNT},
+     {TACTION_REINFORCEMENTS},
+     {TACTION_DZ},
+     {TACTION_FIRE_SALE},
+     {TACTION_PLAY_MOVIE},
+     {TACTION_TEXT_TRIGGER},
+     {TACTION_DESTROY_TRIGGER},
+     {TACTION_AUTOCREATE},
+     {TACTION_WINLOSE},
+     {TACTION_ALLOWWIN},
+     {TACTION_REVEAL_ALL},
+     {TACTION_REVEAL_SOME},
+     {TACTION_REVEAL_ZONE},
+     {TACTION_PLAY_SOUND},
+     {TACTION_PLAY_MUSIC},
+     {TACTION_PLAY_SPEECH},
+     {TACTION_FORCE_TRIGGER},
+     {TACTION_START_TIMER},
+     {TACTION_STOP_TIMER},
+     {TACTION_ADD_TIMER},
+     {TACTION_SUB_TIMER},
+     {TACTION_SET_TIMER},
+     {TACTION_SET_GLOBAL},
+     {TACTION_CLEAR_GLOBAL},
+     {TACTION_BASE_BUILDING},
+     {TACTION_CREEP_SHADOW},
+     {TACTION_DESTROY_OBJECT},
+     {TACTION_1_SPECIAL},
+     {TACTION_FULL_SPECIAL},
+     {TACTION_PREFERRED_TARGET},
+     {TACTION_LAUNCH_NUKES}}};
+
+void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                           int width, int height, bool selected, FontType font,
+                           TextPrintType flags) const {
+  RemapControlType* scheme = Get_Color_Scheme();
+  // Tab stops in pixels; the action names hold no tabs, so they only matter to
+  // the shared print call.
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
+    if (selected) {
+      flags = flags | TPF_BRIGHT_COLOR;
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+    } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+      flags = flags | TPF_MEDIUM_COLOR;
+    }
+  } else {
+    scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
+                                                       : PCOLOR_GREY);
+  }
+  Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                          flags, width, kTabStops);
+}
 
 // Returns the name selected in `list`, or an empty view when the list has no
 // items: Current_Item() is null then, which a string_view cannot hold.

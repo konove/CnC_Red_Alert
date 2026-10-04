@@ -17,8 +17,7 @@
 */
 
 // The action half of a scenario trigger: what happens when the trigger springs
-// (TriggerAction), the kinds of action there are (TriggerActionType), and the
-// entries the scenario editor lists them with (ActionChoice).
+// (TriggerAction) and the kinds of action there are (TriggerActionType).
 
 #ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
 #define CNC_RED_ALERT_RA_AI_TACTION_H_
@@ -157,41 +156,6 @@ struct TriggerAction {
   bool Perform(HousesType house, ObjectClass* object, int trigger_id,
                Cell cell);
 };
-
-// An action as an entry of the scenario editor's action drop lists, which
-// sort by description and draw each entry through Draw_It().
-class ActionChoice {
- public:
-  // Implicit: choice tables are brace lists of action types.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  ActionChoice(TriggerActionType action = TACTION_NONE) noexcept
-      : action_(action) {}
-
-  // Implicit: choices compare directly against their action type.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator TriggerActionType() const { return action_; }
-  // Orders by description, ignoring case; the editor sorts its lists with it.
-  bool operator<(const ActionChoice& other) const {
-    return std::ranges::lexicographical_compare(
-        std::string_view(Description()), std::string_view(other.Description()),
-        {}, absl::ascii_tolower, absl::ascii_tolower);
-  }
-
-  // The editor's name for the action.
-  [[nodiscard]] const char* Description() const { return ActionName(action_); }
-
-  // Draws the description as a list box entry in the box at (`x`, `y`) of
-  // `width` by `height` pixels, highlighted when `selected`. The index of the
-  // entry in the list is not used.
-  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, FontType font, TextPrintType flags) const;
-
- private:
-  TriggerActionType action_;
-};
-
-// The choice for every action, indexed by action.
-extern base::EnumArray<TriggerActionType, ActionChoice> action_choices;
 
 extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);

@@ -22,12 +22,10 @@
 #include "ra/ai/taction.h"
 
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
-#include <span>
 #include <string>
 #include <utility>
 
@@ -36,12 +34,10 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/core/object_heap.h"
@@ -74,8 +70,6 @@
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
 #include "ra/screens/movie.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
@@ -151,69 +145,6 @@ constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
     "Launch Nukes"};
 
 }  // namespace
-
-// One choice per action, in enum order. The editor's drop lists hold pointers
-// to these, so they need storage that outlives the dialog.
-base::EnumArray<TriggerActionType, ActionChoice> action_choices = {
-    {{TACTION_NONE},
-     {TACTION_WIN},
-     {TACTION_LOSE},
-     {TACTION_BEGIN_PRODUCTION},
-     {TACTION_CREATE_TEAM},
-     {TACTION_DESTROY_TEAM},
-     {TACTION_ALL_HUNT},
-     {TACTION_REINFORCEMENTS},
-     {TACTION_DZ},
-     {TACTION_FIRE_SALE},
-     {TACTION_PLAY_MOVIE},
-     {TACTION_TEXT_TRIGGER},
-     {TACTION_DESTROY_TRIGGER},
-     {TACTION_AUTOCREATE},
-     {TACTION_WINLOSE},
-     {TACTION_ALLOWWIN},
-     {TACTION_REVEAL_ALL},
-     {TACTION_REVEAL_SOME},
-     {TACTION_REVEAL_ZONE},
-     {TACTION_PLAY_SOUND},
-     {TACTION_PLAY_MUSIC},
-     {TACTION_PLAY_SPEECH},
-     {TACTION_FORCE_TRIGGER},
-     {TACTION_START_TIMER},
-     {TACTION_STOP_TIMER},
-     {TACTION_ADD_TIMER},
-     {TACTION_SUB_TIMER},
-     {TACTION_SET_TIMER},
-     {TACTION_SET_GLOBAL},
-     {TACTION_CLEAR_GLOBAL},
-     {TACTION_BASE_BUILDING},
-     {TACTION_CREEP_SHADOW},
-     {TACTION_DESTROY_OBJECT},
-     {TACTION_1_SPECIAL},
-     {TACTION_FULL_SPECIAL},
-     {TACTION_PREFERRED_TARGET},
-     {TACTION_LAUNCH_NUKES}}};
-
-void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected, FontType font,
-                           TextPrintType flags) const {
-  RemapControlType* scheme = Get_Color_Scheme();
-  // Tab stops in pixels; the action names hold no tabs, so they only matter to
-  // the shared print call.
-  static constexpr std::array<int, 2> kTabStops = {13, 40};
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-    } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-      flags = flags | TPF_MEDIUM_COLOR;
-    }
-  } else {
-    scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
-                                                       : PCOLOR_GREY);
-  }
-  Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                          flags, width, kTabStops);
-}
 
 void TriggerAction::Detach(Target target) {
   if (target.kind() == RTTI_TEAMTYPE && team_type == target.AsTeamType()) {
