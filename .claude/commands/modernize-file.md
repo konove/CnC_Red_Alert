@@ -19,8 +19,8 @@ Each stage makes the next one cheaper or more accurate:
    understood, and where the bugs surface. Everything after it leans on that understanding.
 3. **Types** once the values are understood. Choosing `int32_t` over `uint32_t` needs to know
    whether a value is a count or a bit pattern, and choosing `std::string_view` over `std::string`,
-   or a span over a vector, needs to know who owns the data - which is what the comment pass found
-   out.
+   a span over a vector, or a returned value over a filled buffer, needs to know who owns the data -
+   which is what the comment pass found out.
 4. **Names** after the types, so a name can carry the unit the type now states (`distance_cells`).
 5. **Simplify** what the earlier stages listed but kept out of their diffs - every one of them ends
    with "noticed but not changed", and the user always asks for those next.
@@ -84,8 +84,10 @@ comments and fix the bugs you find"). The comment pass is committed with the fix
 with; a fix in different lines, and each twin fix, is its own commit. Fixes that change simulation
 behaviour are not applied: they go to **for the user**.
 
-**3. Types** - `/migrate-types <files>`. A narrowing that was hiding an overflow is a bug: ledger,
-then fix it at the end of this stage.
+**3. Types** - `/migrate-types <files>`, all four families: its output-parameter section is where
+the files' functions stop filling a caller's buffer and return the result instead. A narrowing that
+was hiding an overflow is a bug: ledger, then fix it at the end of this stage. Output parameters it
+keeps because of a virtual chain or fan-out go on the **for the user** list.
 
 **4. Names** - `/rename-google-style <files>`, **identifiers only**: stop before its file-rename
 step, which is stage 9. Identifiers means all of them - the types the files declare (including

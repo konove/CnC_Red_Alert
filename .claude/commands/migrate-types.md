@@ -1,16 +1,19 @@
 ---
-description: 'Migrate the legacy data types in a file to modern C++: long/short/unsigned integers to fixed-width types, raw C strings (char*, char[N], strcpy/strcmp) to std::string and std::string_view, and raw arrays, new[] buffers and pointer+length pairs to std::array, std::vector and std::span - while leaving alone what a save game, network packet or file format depends on. Use whenever the user asks to migrate, modernize or convert the types, strings, char buffers, arrays or buffers in a file, "get rid of char*", "use spans/vectors/strings", or runs /migrate-types.'
+description: 'Migrate the legacy data types in a file to modern C++: long/short/unsigned integers to fixed-width types, raw C strings (char*, char[N], strcpy/strcmp) to std::string and std::string_view, raw arrays, new[] buffers and pointer+length pairs to std::array, std::vector and std::span, and output parameters (a dest buffer, a span the function fills, a bool plus an out pointer) to return values - while leaving alone what a save game, network packet or file format depends on. Use whenever the user asks to migrate, modernize or convert the types, strings, char buffers, arrays or buffers in a file, "get rid of char*", "use spans/vectors/strings", "return it instead of filling a buffer", "get rid of the out parameters / dest buffers", or runs /migrate-types.'
 ---
 
 Migrate the legacy data types in $ARGUMENTS: integers to fixed-width types, C strings to
-`std::string` / `std::string_view`, and raw arrays and buffers to `std::array` / `std::vector` /
-`std::span`.
+`std::string` / `std::string_view`, raw arrays and buffers to `std::array` / `std::vector` /
+`std::span`, and output parameters to return values.
 
 The point is that a type should carry what the code otherwise keeps in its head: the size of a
 buffer, who owns a string, whether a number can be negative. A `char* name` says none of that; a
-`std::string_view name` says "borrowed, bounded". Work through the three families below in order -
-integers, then strings, then arrays - because the later ones often change function signatures and it
-is easier to review them after the mechanical integer changes have settled.
+`std::string_view name` says "borrowed, bounded". Work through the four families below in order -
+integers, then strings, then arrays, then output parameters - because the later ones often change
+function signatures and it is easier to review them after the mechanical integer changes have
+settled. Read section 4 before converting any parameter in sections 2 and 3: a buffer the function
+only fills should not become a `std::span` or a `std::string&` on its way to becoming a return
+value.
 
 ## 0. What stays raw
 
@@ -108,8 +111,9 @@ convert inside the file only and list the signature in the report.
 
 | Legacy                                                             | Becomes                                                                     |
 | ------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `T* data, int count` parameter pair                                | `std::span<T>` (`std::span<const T>` when only read)                        |
-| `void* buffer, int size` for bytes                                 | `std::span<std::byte>` / `std::span<const std::byte>`; no `void*` I/O       |
+| `T* data, int count` parameter pair the function reads or edits    | `std::span<const T>` when only read, `std::span<T>` when edited in place    |
+| `void* buffer, int size` for bytes                                 | `std::span<const std::byte>` / `std::span<std::byte>`; no `void*` I/O       |
+| Either of the two above that the function only fills               | A return value; see section 4                                               |
 | `T arr[N]` local or non-serialized member                          | `std::array<T, N>`                                                          |
 | `T arr[N]` indexed by an enum                                      | `base::EnumArray<Enum, T>`                                                  |
 | `new T[n]` / `delete[]`, `malloc` / `free`, `realloc`-grown arrays | `std::vector<T>`                                                            |
@@ -135,13 +139,82 @@ Keep what the code relies on:
 - **Don't dress dead parameters up as spans.** A pointer parameter nobody reads is dead code
   (`a4259c88` dropped `argc`/`argv` rather than converting them); list it for `/remove-dead-code`.
 
+## 4. Output parameters
+
+A function that writes its result into storage the caller hands it - `char* dest`,
+`void* buffer, int size`, a `std::span<T>` it fills, a `T* out` beside a `bool` - is still a C
+signature after sections 2 and 3 have given that storage a bounded type. The caller has to guess a
+size, declare the object before it has a value (so it can never be `const`), and read the body to
+learn which arguments are results. Return the result instead, owned or borrowed according to where
+the data lives:
+
+| Legacy                                                                  | Becomes                                                                         |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Fills a buffer whose size is known at compile time                      | Returns `std::array<T, N>` (`51ebbc35`: `FadingTable BuildFadingTable(...)`)    |
+| Fills a buffer whose size depends on the input (decoded or loaded data) | Returns `std::vector<T>` (`5e581e48`, `624dd25c`: `ReadCpsImage()`)             |
+| Builds text into `char* dest` / `std::span<char>`                       | Returns `std::string`                                                           |
+| Copies out data that already lives somewhere that outlives the caller   | Returns `std::span<const T>` / `std::string_view` into it, and the copy goes    |
+| `bool` (or a 0 / -1 status) plus one out parameter                      | Returns `std::optional<T>` (`ParseInteger()`, `ParseDestNet()`)                 |
+| Byte count returned beside the buffer it filled                         | Returns the `std::vector`; its `.size()` is the count                           |
+| Several out parameters                                                  | Returns a small named struct (`CpsImage`); with a status, `std::optional` of it |
+| `T& out` / `T* out` for one value, `void` return                        | Returns `T`                                                                     |
+
+A parameter is an output when the body writes it without reading it first and the callers pass a
+fresh local or a scratch buffer they only look at afterwards. Check both: the callers are what tell
+an output from an in/out.
+
+**What stays a parameter:**
+
+- **The caller's storage is the point.** Drawing or decoding into a page, a blit destination, a
+  scratch buffer a per-frame path reuses: a return value there adds an allocation or a large copy
+  per call. Returning a `std::array` to initialize a local is free; assigning a big one over an
+  existing member every frame is not.
+- **Stream-style reads** - `ByteSource::Read(std::span<std::byte>)`, a socket `Read`. They fill part
+  of the buffer and the caller loops; that is the interface, not a legacy habit.
+- **In-place edits** (`memrev`, `CopyBytes`, a delta applied over the previous frame). The parameter
+  is an input too.
+- **A write at an offset into a larger buffer** the caller is assembling, such as a packet.
+- **Virtual chains and wide fan-out**, as in sections 0 and 2: the `Get_Packet` /
+  `Get_Private_Message` family runs through `engine/net` and both games, so it moves as one change
+  or not at all. List it in the report.
+
+A destination that is a serialized `char[]` member is not a reason to keep the parameter: return the
+`std::string` and let the one caller that owns the member copy it in with `base::SafeCopy`.
+
+**The traps:**
+
+- **The buffer size was a limit.** `dest` of 12 bytes truncated the result; a `std::string` does
+  not. If a caller relied on that (a name column, a save-game description), keep the cap where that
+  caller stores the value.
+- **An out parameter left alone on failure is a default.** `int value = 5; Get(&value);` becomes
+  `Get().value_or(5)`, not `*Get()`. Read what each caller does when the call fails before choosing
+  between `std::optional` and a plain value.
+- **`std::optional` holds one kind of failure.** If the status told callers why it failed and one of
+  them looks, keep that distinction (an enum result, or the status beside the value in a struct).
+  And do not make "empty" mean "failed" where an empty result was valid.
+- **A null out pointer meant "I don't want this one."** Return the whole struct anyway when it is
+  cheap to compute; split the function when it is not.
+- **A view must point at something that outlives the call**: the MIX data, a string table, a member
+  of an object the caller holds - never a local, and never a static buffer the next call overwrites
+  (section 2 turns that one into a `std::string`).
+- **A caller that passed one buffer to several calls** was accumulating or reusing it. Appending
+  becomes `absl::StrAppend` or `insert` at that caller; reuse in a loop may be the first bullet of
+  "what stays".
+
+Finish at the callers: the declaration and the call collapse into
+`const auto table = BuildFadingTable(...);`, and the local buffer, its size constant and any `count`
+argument that only described it go. A template over the array's size removes a `count` parameter the
+same way (`TranslucencyTable<N>`). Update the declaration comment: "fills `dest` with" becomes
+"returns", and says what an empty optional means.
+
 ## Process
 
-1. Read the file. List every candidate under sections 1-3 and strike those that section 0 keeps raw,
+1. Read the file. List every candidate under sections 1-4 and strike those that section 0 keeps raw,
    noting why.
 2. For each signature you will change, grep its declarations and callers (`grep -rn '\bName *('` in
    the owning game, or all of `src/` for a shared directory). Count the callers that need edits and
-   check which ones can pass null.
+   check which ones can pass null. For an output parameter, also read what each caller passes as the
+   destination and what it does with it when the call fails.
 3. Convert family by family. Change declarations, definitions and every caller together; fix the
    comments that describe the old type (a "pointer to buffer" parameter doc, a `-1 means none`
    sentinel that is now `.empty()`).
@@ -170,7 +243,9 @@ Keep what the code relies on:
 ## Report
 
 - Counts per conversion (`3x long -> int32_t`, `2x const char* -> std::string_view`,
-  `1x T* + count -> std::span<T>`).
+  `1x T* + count -> std::span<T>`, `2x out-span -> returned std::array`).
+- Output parameters kept, each with the reason from section 4 (caller's storage, stream read,
+  in-place, virtual chain).
 - What stayed raw and why, per section 0 - especially serialized members, which are a save-format
   change the user may want next.
 - Signatures left alone because of their fan-out, with the caller count.
