@@ -175,25 +175,13 @@ class ActionChoice {
   // Implicit: choices compare directly against their action type.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator TriggerActionType() const { return action_; }
-  bool operator==(const ActionChoice& other) const {
-    return action_ == other.action_;
-  }
-  bool operator!=(const ActionChoice& other) const {
-    return action_ != other.action_;
-  }
-  bool operator>(const ActionChoice& other) const { return other < *this; }
-  // Orders by description, ignoring case.
+  // Orders by description, ignoring case; the editor sorts its lists with it.
   bool operator<(const ActionChoice& other) const {
     return std::ranges::lexicographical_compare(
         std::string_view(Description()), std::string_view(other.Description()),
         {}, absl::ascii_tolower, absl::ascii_tolower);
   }
-  bool operator<=(const ActionChoice& other) const {
-    return action_ == other.action_ || *this < other;
-  }
-  bool operator>=(const ActionChoice& other) const {
-    return action_ == other.action_ || other < *this;
-  }
+
   // The editor's name for the action.
   [[nodiscard]] const char* Description() const { return ActionName(action_); }
 
