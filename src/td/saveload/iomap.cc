@@ -235,7 +235,7 @@ void DisplayClass::ResetTransientUiState() {
   IsTentative = false;
   IsShadowPresent = false;
   BandX = BandY = NewX = NewY = 0;
-  std::ranges::fill(CellRedraw, true);
+  CellRedraw.set();
 }
 
 void RadarClass::ResetTransientUiState() {

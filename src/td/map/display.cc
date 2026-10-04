@@ -91,6 +91,7 @@
 #include "td/map/display.h"
 
 #include <algorithm>
+#include <bitset>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -101,7 +102,6 @@
 #include <span>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -197,10 +197,7 @@ TranslucencyTable<1> DisplayClass::SpecialGhost;
 std::span<const std::byte> DisplayClass::ShadowShapes;
 TranslucencyTable<SHADOW_COL_COUNT> DisplayClass::ShadowTrans;
 
-/*
-** Bit array of cell redraw flags
-*/
-std::vector<bool> DisplayClass::CellRedraw;
+std::bitset<MAP_CELL_TOTAL> DisplayClass::CellRedraw;
 
 /*
 ** The main button that intercepts user input to the map
@@ -250,9 +247,6 @@ void DisplayClass::One_Time() {
   Set_View_Dimensions(0, TheMap().Get_Tab_Height());
 
   MapClass::One_Time();
-
-  // Sized here rather than in constructor to follow one-time init pattern.
-  CellRedraw.resize(MAP_CELL_TOTAL);
 
   for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
     Layer.at(layer).One_Time();
@@ -1729,7 +1723,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     }
   }
 
-  CellRedraw.assign(CellRedraw.size(), true);
+  CellRedraw.set();
 
   if (view.Lock()) {
     view.FillRect(TacPixelX, TacPixelY,
@@ -1747,7 +1741,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     view.Unlock();
   }
 
-  CellRedraw.assign(CellRedraw.size(), false);
+  CellRedraw.reset();
 
   if constexpr (config::kScenarioEditorEnabled) {
     // The object being placed in the editor, drawn at the cell under the
@@ -3599,7 +3593,7 @@ void DisplayClass::Center_Map() {
 void DisplayClass::Flag_Cell(Cell cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw.at(base::ToSize(cell.index())) = true;
+  CellRedraw.set(base::ToSize(cell.index()));
 }
 
 }  // namespace td
