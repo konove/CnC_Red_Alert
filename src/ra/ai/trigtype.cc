@@ -1736,8 +1736,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_QUARRY:
-            // TODO: reads the first action's list; should be qlist2.
-            Action2.data.quarry = QuarryType(qlist1.Current_Index());
+            Action2.data.quarry = QuarryType(qlist2.Current_Index());
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:
