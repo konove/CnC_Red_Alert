@@ -14,19 +14,17 @@
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
-#include "magic_enum/magic_enum.hpp"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/core/type_heaps.h"
 #include "ra/map/map.h"
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
-#include "ra/startup/game.h"
 #include "ra/startup/game_state.h"
+#include "ra/startup/game_test_util.h"
 
 namespace ra {
 namespace {
@@ -54,19 +52,10 @@ std::string Read(const std::vector<std::byte>& bytes, Carryover& record) {
   return std::string(reader.error());
 }
 
-class CarryoverTest : public ::testing::Test {
+class CarryoverTest : public GameFixture {
  protected:
   CarryoverTest() {
-    TheTypeHeaps().house().Reset(magic_enum::enum_count<HousesType>());
-    TheTypeHeaps().unit().Reset(magic_enum::enum_count<UnitType>());
-    HouseTypeClass::Init_Heap();
-    UnitTypeClass::Init_Heap();
-    TheObjectHeaps().house().Reset(2);
-    TheObjectHeaps().unit().Reset(4);
     base::NewPooled<HouseClass>(HOUSE_GREECE);
-    // The map layer alone: the display layers above it load game data.
-    TheMap().MapClass::One_Time();
-    TheMap().MapClass::Set_Map_Dimensions(1, 1, MAP_CELL_W - 2, MAP_CELL_H - 2);
     // Recreate() runs while a scenario is being read, in a running game.
     TheWorld().scenario_init() = 1;
     TheGameState().active() = true;
@@ -80,9 +69,6 @@ class CarryoverTest : public ::testing::Test {
     unit->Strength = 37;
     return *unit;
   }
-
- private:
-  Game game_;
 };
 
 TEST_F(CarryoverTest, WritesTheTypeAsATarget) {

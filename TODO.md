@@ -913,12 +913,6 @@
     original does the same under the comment "Facing to enter map", so the opposite facing was
     meant. `AGroupWithoutATeamMovesOnInItsEntryFacing` in `td_reinforcements_test` pins what happens
     today; find out what brings such a group onto the map in a scenario before changing it
-- Share the set-up of Red Alert's `Game` test fixtures
-  - `ReinforcementTest` (`ra/ai/reinforcements_test.cc`) and `CarryoverTest`
-    (`ra/ai/carryover_test.cc`) share their eight set-up lines; a third user should move them into a
-    common fixture
-  - `CarryoverTest` calls `MapClass::One_Time()` but not `Init_Cells()`, so its cells do not know
-    their own numbers (`CellClass::ID`); harmless until a test there asks a cell for its neighbours
 
 ## Debugging
 

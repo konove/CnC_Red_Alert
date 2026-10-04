@@ -19,9 +19,6 @@
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
-#include "ra/map/display.h"
-#include "ra/map/layer.h"
-#include "ra/map/map.h"
 #include "ra/map/world.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/building.h"
@@ -31,24 +28,20 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
-#include "ra/startup/game.h"
 #include "ra/startup/game_state.h"
+#include "ra/startup/game_test_util.h"
 
 namespace ra {
 namespace {
 
-class ReinforcementTest : public ::testing::Test {
+class ReinforcementTest : public GameFixture {
  protected:
   ReinforcementTest() {
-    TheTypeHeaps().house().Reset(magic_enum::enum_count<HousesType>());
     TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().unit().Reset(magic_enum::enum_count<UnitType>());
     TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
     TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
     TheTypeHeaps().tmplate().Reset(magic_enum::enum_count<TemplateType>());
-    HouseTypeClass::Init_Heap();
     AircraftTypeClass::Init_Heap();
-    UnitTypeClass::Init_Heap();
     InfantryTypeClass::Init_Heap();
     BuildingTypeClass::Init_Heap();
     TemplateTypeClass::Init_Heap();
@@ -67,9 +60,7 @@ class ReinforcementTest : public ::testing::Test {
     apc.MaxStrength = 200;
     apc.MaxPassengers = 5;
     AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT).MaxPassengers = 5;
-    TheObjectHeaps().house().Reset(2);
     TheObjectHeaps().aircraft().Reset(4);
-    TheObjectHeaps().unit().Reset(4);
     TheObjectHeaps().infantry().Reset(4);
     TheObjectHeaps().building().Reset(2);
     TheObjectHeaps().team().Reset(2);
@@ -77,20 +68,6 @@ class ReinforcementTest : public ::testing::Test {
     house_ = base::NewPooled<HouseClass>(HOUSE_USSR);
     // DeliverReinforcements() announces the player's own reinforcements.
     ThePlayer() = house_;
-    // The map layer alone: the display layers above it load game data.
-    TheMap().MapClass::One_Time();
-    // One_Time() only allocates the cells; a cell learns its own number, which
-    // finding its neighbours needs, when Init_Cells() builds it in place.
-    TheMap().MapClass::Init_Cells();
-    TheMap().MapClass::Set_Map_Dimensions(1, 1, MAP_CELL_W - 2, MAP_CELL_H - 2);
-  }
-
-  // The display layers are static and outlive the Game, so they would keep the
-  // objects a test put on the map.
-  void TearDown() override {
-    for (LayerClass& layer : DisplayClass::Layer) {
-      layer.Clear();
-    }
   }
 
   // A team type for the house of `count` objects of `member_type`, with no
@@ -135,9 +112,6 @@ class ReinforcementTest : public ::testing::Test {
   }
 
   HouseClass* house_ = nullptr;
-
- private:
-  Game game_;
 };
 
 TEST_F(ReinforcementTest, AnAirStrikeThatCannotBePlacedCountsNoAircraft) {

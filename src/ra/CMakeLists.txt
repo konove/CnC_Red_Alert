@@ -22,7 +22,7 @@ add_library(ra_engine OBJECT)
 file(GLOB_RECURSE RA_SOURCES
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
-list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
+list(FILTER RA_SOURCES EXCLUDE REGEX "_test(_util)?\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup.cc"
 )
@@ -112,7 +112,7 @@ apply_language_setting(ra_game_test)
 # Builds type objects, a house and a vehicle in a real Game.
 add_gtest(
     NAME ra_carryover_test
-    SOURCES ai/carryover_test.cc startup/startup.cc
+    SOURCES ai/carryover_test.cc startup/game_test_util.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -122,7 +122,7 @@ apply_language_setting(ra_carryover_test)
 # Delivers teams and launches an air strike in a real Game.
 add_gtest(
     NAME ra_reinforcements_test
-    SOURCES ai/reinforcements_test.cc startup/startup.cc
+    SOURCES ai/reinforcements_test.cc startup/game_test_util.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_reinforcements_test PRIVATE RA_NO_ENTRY_POINT=1)
