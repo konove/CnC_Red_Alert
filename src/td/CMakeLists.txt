@@ -94,6 +94,15 @@ add_gtest(
 target_compile_definitions(td_game_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_game_test)
 
+# Delivers teams and launches an air strike in a real Game.
+add_gtest(
+    NAME td_reinforcements_test
+    SOURCES ai/reinf_test.cc startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_reinforcements_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_reinforcements_test)
+
 add_gtest(
     NAME td_assets_test
     SOURCES assets/assets_test.cc assets/assets.cc

@@ -45,6 +45,17 @@
 
 namespace td {
 
+// Deletes every member of the list `group`, which is linked through Next. A
+// transport takes its cargo with it.
+static void DeleteGroup(ObjectClass* group) {
+  while (group != nullptr) {
+    ObjectClass* next = group->Next;
+    group->Next = nullptr;
+    base::DeletePooled(group);
+    group = next;
+  }
+}
+
 bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   // A missing type, or one with no members, has nothing to bring on.
   if (!teamtype || !teamtype->ClassCount) {
@@ -201,11 +212,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   switch (source) {
     // The gunboat starts at the east end of the shipping lane and sails west
     // to the map's left edge, along its own row. Calculated_Cell() returns
-    // cell 0 when the map has no lane.
-    //
-    // TODO: only the head of the list is placed; a type with more than one
-    // gunboat, or with other members, leaves the rest in limbo for good.
+    // cell 0 when the map has no lane. Only the head of the list sails;
+    // whatever else the type holds is dropped.
     case SOURCE_SHIPPING:
+      DeleteGroup(std::exchange(object->Next, nullptr));
       cell = TheMap().Calculated_Cell(source, teamtype->House);
       object->IsALoaner = true;
       if (object->Unlimbo(cell.Center(), game::DIR_W)) {
@@ -323,14 +333,20 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     } break;
 
     // Each aircraft flies in on its own, from the house's map edge.
-    // TODO: a member that is not an aircraft ends the walk, and it and
-    // everything after it stay in limbo for good. That takes a type with an
-    // aircraft that is not a transport next to ground members, or a house
-    // whose edge is SOURCE_AIR.
     case SOURCE_AIR: {
-      auto* thisone = dynamic_cast<AircraftClass*>(object);
-      while (thisone) {
-        auto* next = dynamic_cast<AircraftClass*>(thisone->Next);
+      ObjectClass* rest = object;
+      while (rest) {
+        ObjectClass* member = rest;
+        rest = member->Next;
+        member->Next = nullptr;
+
+        // Only aircraft can fly in. A ground member gets here when the type
+        // has an aircraft but no transport to carry it, and is dropped.
+        auto* thisone = dynamic_cast<AircraftClass*>(member);
+        if (!thisone) {
+          base::DeletePooled(member);
+          continue;
+        }
 
         // Pick the cell on the house's edge to enter at; scenario_init makes
         // Calculated_Cell() accept a cell that ground units could not use. A
@@ -352,8 +368,6 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
                     .cell_y());
           }
         }
-        thisone->Next = nullptr;
-
         // scenario_init places the aircraft on the edge cell without asking
         // whether it can enter it.
         TheWorld().scenario_init()++;
@@ -381,8 +395,6 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         } else {
           base::DeletePooled(thisone);
         }
-
-        thisone = next;
       }
       // `placed` is the result for the last aircraft only, so the team goes
       // when that one failed, even if earlier ones are on the map.
@@ -401,12 +413,12 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
     } break;
 
     // The hovercraft starts below the bottom edge of the map, in the column
-    // of the beach cell it will land on.
-    //
-    // TODO: only the head of the list is placed, and when no beach cell is
-    // free nothing is: what is left stays in limbo for good.
+    // of the beach cell it will land on. Only the head of the list lands;
+    // any further transport is dropped, and so is the whole group when no
+    // beach cell is free.
     case SOURCE_OCEAN:
     case SOURCE_BEACH:
+      DeleteGroup(std::exchange(object->Next, nullptr));
       cell = TheMap().Calculated_Cell(SOURCE_BEACH, teamtype->House);
       if (cell.index() != 0) {
         const Cell edge =
@@ -427,17 +439,20 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           base::DeletePooled(object);
           return false;
         }
+      } else {
+        base::DeletePooled(object);
       }
       break;
 
-    // TODO: a house whose edge is one of these has its reinforcements left
-    // in limbo for good, and reported as delivered.
+    // A house whose edge is one of these has nowhere to enter the map, so the
+    // group is dropped. It is still reported as delivered.
     case SourceType::SOURCE_NONE:
     case SourceType::SOURCE_VISIBLE:
     case SourceType::SOURCE_ENEMYBASE:
     case SourceType::SOURCE_HOMEBASE:
     case SourceType::SOURCE_COUNT:
     default:
+      DeleteGroup(object);
       break;
   }
 
