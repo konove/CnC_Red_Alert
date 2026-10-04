@@ -239,13 +239,14 @@
     without asking how much room is left, so an APC can be made to carry more than its limit for the
     moment before it unloads. Options: skip a full transport in `FindHostNear()`, or load only what
     fits and send the rest over the map edge; both change play
-- Stop the reinforcement placement loop when a member can never be placed
-  - `DeliverReinforcements()` (`ra/ai/reinforcements.cc:336`) retries a member from a neighbouring
-    edge cell whenever `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the
-    can-enter check and fails only when the object cannot be marked down, which a new cell does not
-    cure, so the loop can hop between two cells for ever. Latent: no case is known. A retry limit
-    (eight, one per neighbour) would bound it. The loop also treats cell index 0 as "no cell"
-    (`index() > 0`) where `Cell::None()` is -1. Tiberian Dawn's loop has the same shape
+- Stop Tiberian Dawn's reinforcement placement loop when a member can never be placed
+  - `Do_Reinforcements()` (`td/ai/reinf.cc`) retries a member from a neighbouring edge cell whenever
+    `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the can-enter check and fails
+    only when the object cannot be marked down, which a new cell does not cure, so the loop can hop
+    between two cells for ever. Red Alert's `DeliverReinforcements()` now gives up after eight
+    retries (`ReinforcementTest.GivesUpOnATeamThatNoEdgeCellTakes`); Tiberian Dawn needs the same
+    bound, and a test fixture first (see Testing)
+  - Both loops treat cell index 0 as "no cell" (`index() > 0`) where `Cell::None()` is -1
 - Balance `scenario_init` on the failure paths of `Read_Scenario()` and `Read_Scenario_INI()`
   - `ra/ai/scenario.cc:514` returns false after the `++` at `:463` without the `--` at `:516`, and
     `:2011` returns after the `++` at `:1898` (the `--` is at `:2319`). Both are masked by the
@@ -847,16 +848,16 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover `DeliverReinforcements()` with tests
-  - `ra_reinforcements_test` builds a house and the aircraft types in a real `Game` and tests one
-    `LaunchAirStrike()` failure. The team path needs team and team type heaps, a unit type and a
-    house edge; with those, test a two-vehicle team entering from the edge, an infantry team leaving
-    a building at its origin waypoint, and the clean-up when no member can be placed (in a `Game`
-    that is not active nothing leaves limbo, but see the endless-retry entry under Bugs first). The
-    fixes in `2abc87b6` and `81867a0a` have no test
+- Cover Tiberian Dawn's `Do_Reinforcements()` with tests
+  - Red Alert's `ra_reinforcements_test` delivers teams in a real `Game` (edge entry, infantry
+    leaving a building, the clean-up and the retry limit). Tiberian Dawn has no such fixture, so
+    `e5cf1691` and `73182098` are untested. The Red Alert fixture shows what a `Game` without data
+    needs: type strengths, a ground cost for the member's speed, `ThePlayer()`, and clearing the
+    static `DisplayClass::Layer` between tests
   - `ReinforcementTest` and `CarryoverTest` (`ra/ai/carryover_test.cc`) share their eight set-up
-    lines; a third user should move them into a common fixture. Tiberian Dawn has no such fixture,
-    so `e5cf1691` and `73182098` are untested
+    lines; a third user should move them into a common fixture
+  - Not covered in Red Alert: a team with a transport, infantry loaded into a transport vehicle at
+    the origin, the ant-hill entry, and `HouseKeepsAircraft()`
 
 ## Debugging
 

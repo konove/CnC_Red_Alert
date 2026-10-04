@@ -24,8 +24,8 @@ class TeamTypeClass;
 //
 // Returns false when the type has no members, when none could be created (the
 // object limit), or when none of the infantry could leave the building.
-// Members that find no room at the map edge are dropped and the result is still
-// true.
+// Members that find no room at the map edge, or that eight edge cells in a row
+// fail to take, are dropped and the result is still true.
 bool DeliverReinforcements(TeamTypeClass* team_type);
 
 // Launches an air strike: creates up to `count` aircraft of `aircraft_type`

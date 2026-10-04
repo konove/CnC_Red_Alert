@@ -119,7 +119,7 @@ target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_carryover_test)
 apply_language_setting(ra_carryover_test)
 
-# Launches an air strike in a real Game.
+# Delivers teams and launches an air strike in a real Game.
 add_gtest(
     NAME ra_reinforcements_test
     SOURCES ai/reinforcements_test.cc startup/startup.cc

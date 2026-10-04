@@ -331,6 +331,14 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   // Place the members one at a time: `member` is the one being placed and
   // `group` the rest of the list. A cell index of 0 or less means there is no
   // cell.
+  //
+  // A member that fails is tried again from a neighbouring cell, but only once
+  // per neighbour: with scenario_init raised the cell is not what makes
+  // Unlimbo() fail, so two edge cells next to each other would otherwise hand
+  // the member back and forth for ever.
+  constexpr int kMaxRetries =
+      static_cast<int>(magic_enum::enum_count<game::FacingType>());
+  int retries_left = kMaxRetries;
   FootClass* member = PopHead(group);
   bool any_placed = false;
   while (place_cell.index() > 0 && member != nullptr) {
@@ -351,11 +359,14 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
         member->Commence();
       }
       member = PopHead(group);
-    } else {
+      retries_left = kMaxRetries;
+    } else if (retries_left-- > 0) {
       // The member could not be placed here, so place it again from a cell next
       // to this one; the rest of the group follows from that cell. Without such
       // a cell, give up on the rest of the group.
       place_cell = FindEdgeCellNextTo(place_cell, *member);
+    } else {
+      place_cell = Cell::None();
     }
     TheWorld().scenario_init()--;
   }
