@@ -64,23 +64,46 @@
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"
-#include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"
-#include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
 #include "ra/objects/super.h"
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
-#include "ra/objects/unit.h"
 #include "ra/screens/movie.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
+
+namespace {
+
+// The unit of the timer actions' values, a tenth of a minute, in game ticks.
+constexpr int64_t kTicksPerTimerUnit = kTicksPerMinute / 10;
+
+// Destroys every object in `heap` that `trigger` is attached to. Each is
+// detached first so its death does not spring the trigger again.
+// TODO: an object that Take_Damage() deletes on the spot closes its gap in the
+// heap's in-use list, and the loop then steps over the object that moved into
+// it. Stepping back (as TACTION_DESTROY_TRIGGER does) would kill objects that
+// survive today.
+template <class Heap>
+void DestroyObjectsAttachedTo(Heap& heap, const TriggerClass* trigger) {
+  for (int index = 0; index < heap.Count(); index++) {
+    auto* object = heap.ActiveAt(index);
+    if (object->Trigger == trigger) {
+      object->Trigger = nullptr;
+      // Take_Damage() takes the damage by reference.
+      int damage = object->Strength;
+      object->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+    }
+  }
+}
+
+}  // namespace
 
 // The scenario editor's name for each action. A name ending in "..." tells the
 // designer the action takes a value (see ActionNeed()).
@@ -252,9 +275,8 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
        std::cmp_greater_equal(data.value, magic_enum::enum_count<VocType>()))) {
     const int low_byte =
         static_cast<int>(static_cast<uint32_t>(data.value) & 0xFFU);
-    if (low_byte >= 0 &&
-        std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
-      DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << data.value
+    if (std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
+      DLOG(WARNING) << "ReadIni: Fixed corrupted sound value " << data.value
                     << " -> " << low_byte;
       data.value = low_byte;
     }
@@ -398,25 +420,25 @@ bool TriggerAction::operator()(HousesType house, ObjectClass* object,
     // for the two actions below.
     case TACTION_ADD_TIMER:
       TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
-                                     (data.value * (kTicksPerMinute / 10)));
+                                     (data.value * kTicksPerTimerUnit));
       TheMap().Redraw_Tab();
       break;
 
     // Remove time from the mission timer, stopping at zero.
     case TACTION_SUB_TIMER:
       if (TheScenario().MissionTimer.Remaining() <=
-          data.value * (kTicksPerMinute / 10)) {
+          data.value * kTicksPerTimerUnit) {
         TheScenario().MissionTimer.Set(0);
       } else {
         TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() -
-                                       (data.value * (kTicksPerMinute / 10)));
+                                       (data.value * kTicksPerTimerUnit));
       }
       TheMap().Redraw_Tab();
       break;
 
     // Set the mission timer to the value specified.
     case TACTION_SET_TIMER:
-      TheScenario().MissionTimer.Set(data.value * (kTicksPerMinute / 10));
+      TheScenario().MissionTimer.Set(data.value * kTicksPerTimerUnit);
       TheScenario().MissionTimer.Start();
       TheMap().Redraw_Tab();
       break;
@@ -565,7 +587,7 @@ bool TriggerAction::operator()(HousesType house, ObjectClass* object,
 
     // Create a reinforcement of the team specified.
     case TACTION_REINFORCEMENTS:
-      success = team_type != nullptr && DeliverReinforcements(&*team_type);
+      success = team_type != nullptr && DeliverReinforcements(team_type);
       break;
 
     // Force all units of the house specified to go into hunt mode.
@@ -594,56 +616,12 @@ bool TriggerAction::operator()(HousesType house, ObjectClass* object,
         TheMap().Destroy_Bridge_At(cell);
       }
 
-      // Loop through and destroy all objects that have this trigger attached to
-      // them. Each is detached first so its death does not spring the trigger
-      // again.
-      // TODO: an object that Take_Damage() deletes on the spot closes its gap
-      // in the heap's in-use list, and the loop then steps over the object
-      // that moved into it. Stepping back (as TACTION_DESTROY_TRIGGER does)
-      // would kill objects that survive today.
-      if (sprung_trigger) {
-        for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-          UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
-
-          if (unit && unit->Trigger == sprung_trigger) {
-            unit->Trigger = nullptr;
-            int damage = unit->Strength;
-            unit->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-          }
-        }
-
-        for (int index = 0; index < TheObjectHeaps().infantry().Count();
-             index++) {
-          InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
-
-          if (infantry && infantry->Trigger == sprung_trigger) {
-            infantry->Trigger = nullptr;
-            int damage = infantry->Strength;
-            infantry->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-          }
-        }
-
-        for (int index = 0; index < TheObjectHeaps().aircraft().Count();
-             index++) {
-          AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
-
-          if (aircraft && aircraft->Trigger == sprung_trigger) {
-            aircraft->Trigger = nullptr;
-            int damage = aircraft->Strength;
-            aircraft->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-          }
-        }
-
-        for (int index = 0; index < TheObjectHeaps().building().Count();
-             index++) {
-          BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
-
-          if (building && building->Trigger == sprung_trigger) {
-            building->Trigger = nullptr;
-            int damage = building->Strength;
-            building->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-          }
-        }
+      // Destroy all objects that have this trigger attached to them.
+      if (sprung_trigger != nullptr) {
+        DestroyObjectsAttachedTo(TheObjectHeaps().unit(), sprung_trigger);
+        DestroyObjectsAttachedTo(TheObjectHeaps().infantry(), sprung_trigger);
+        DestroyObjectsAttachedTo(TheObjectHeaps().aircraft(), sprung_trigger);
+        DestroyObjectsAttachedTo(TheObjectHeaps().building(), sprung_trigger);
       }
       break;
 

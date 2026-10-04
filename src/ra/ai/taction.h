@@ -121,17 +121,12 @@ struct TriggerAction {
     bool flag;                  // Boolean value.
     int value;  // Waypoint, global, text ID or timer tenths of a
                 // minute; -1 when unset.
-  } data{};
+  } data{.value = -1};
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
   // that load later. TriggerTypeClass::Read_INI resolves it into trigger_type
   // once every trigger exists; empty otherwise. Not saved.
   std::string pending_trigger_name;
-
-  TriggerAction() {
-    data.theme = THEME_NONE;
-    data.value = -1;
-  }
 
   // Clears team_type or trigger_type when `target` is the team type or trigger
   // type it points to; called when that type is being destroyed.
