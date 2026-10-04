@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, unit-test coverage, IDE inspections, and the file name - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -33,8 +33,10 @@ Each stage makes the next one cheaper or more accurate:
    lines no test can reach are often dead.
 8. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
    stage would change what the IDE flags.
-9. **The file name** after the code is final, alone in its commit, so git's rename detection holds
-   and every earlier commit reads under the path reviewers know.
+9. **The file's name and folder** after the code is final, alone in its commit, so git's rename
+   detection holds and every earlier commit reads under the path reviewers know. Where a file
+   belongs is decided by what it holds, and that is only settled once the dead code is gone and the
+   stray functions have been moved out.
 10. **Leftovers to `TODO.md`** at the very end, once the ledger has stopped growing and every entry
     can name the file by its final path.
 
@@ -123,9 +125,12 @@ what seam would make it testable on the **for the user** list, and make no commi
 **8. IDE** - `/fix-ide-issues <files>`, the test file included. If CLion still times out, say so in
 the report and skip rather than guess.
 
-**9. File name** - the file-rename step of `/rename-google-style` (its section 5, step 7, and the
-naming rules under "The file name is part of the pass"). The `_test.cc` and its test target are
-renamed with the pair. If the name already fits, record why and make no commit.
+**9. File name and folder** - the file-rename step of `/rename-google-style` (its section 5, step 7,
+and the rules under "The file name is part of the pass" and "So is the folder"). A rename and a move
+are one `git mv` and one commit; the `_test.cc` and its test target go with the pair. A twin that
+moves with the file is its own commit. A move that step does not make - out of the game, across
+engine libraries, or a split - goes to **for the user** with what stands in the way, and so to
+stage 10. If the name and the folder already fit, record why and make no commit.
 
 **10. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
 `/add-todo` for wording and section: bugs not fixed (behaviour-changing, out of scope, twin not

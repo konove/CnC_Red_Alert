@@ -1,5 +1,5 @@
 ---
-description: Rename the identifiers a file declares to the Google C++ naming scheme and, while doing so, replace legacy names with ones that say what the code does - and rename the file itself when its name no longer says what it holds. Use whenever the user asks to rename things in a file "according to the Google style guide / naming guidelines", to "use better names", to modernize names in a .cc/.h pair, or pastes the styleguide Naming link, even if they only mention one of the two goals.
+description: Rename the identifiers a file declares to the Google C++ naming scheme and, while doing so, replace legacy names with ones that say what the code does - and rename the file itself when its name no longer says what it holds, or move it to the folder its contents belong in. Use whenever the user asks to rename things in a file "according to the Google style guide / naming guidelines", to "use better names", to modernize names in a .cc/.h pair, or pastes the styleguide Naming link, even if they only mention one of the two goals.
 ---
 
 Rename the identifiers declared in: $ARGUMENTS
@@ -157,6 +157,31 @@ because the file should be named after what it holds now:
   holds something else: `ra/audio_mixer.h` next to `engine/audio/audio_mixer.h` would mislead.
 - Tests follow their file: `wsa_test.cc` became `wsa_animation_test.cc`.
 
+**So is the folder.** The files were sorted into folders by their old names, in bulk, so a file can
+sit where its name pointed rather than where its contents belong. Decide the folder together with
+the name, from what the file holds now, against the folder descriptions in `CLAUDE.md`'s
+Architecture section:
+
+- Judge by what the code does and what it includes, not by the name or by who calls it. A file whose
+  functions build a dialog, draw gadgets and run an input loop is `screens/` or `ui/` wherever it
+  sits; a table of type data is `data/`; a file every folder includes for a small helper is `core/`.
+- **Between a game's own subfolders** (`ra/ai/` -> `ra/ui/`): move it. Those folders are navigation
+  only - same namespace, same library, sources globbed - so the move costs include paths, the guard
+  and the test's `CMakeLists.txt` line.
+- **Out of the game or across engine libraries** (`ra/` -> `game/sim/`, `engine/gfx/` ->
+  `engine/window/`): do not move it in this pass. That changes the namespace, the library and what
+  the file may include (`tools/check_layers.py`), and usually needs the twin merged or a dependency
+  cut first. Report it as a proposal with what stands in the way.
+- A file that holds two things belonging in two folders is a split, not a move: report it.
+- The twin in the other game moves to the same folder when it holds the same thing - both games keep
+  the same layout - as its own commit, keeping its name. If the twin holds something else, leave it
+  and say so.
+- Leave the file where it is when the fit is arguable. A move touches every includer; it has to buy
+  a reader finding the file where they look first. Put the doubtful ones in the report with the
+  alternative.
+- The name must be free in the new folder, and name and folder are read together: a move can make
+  part of the name redundant or a rename unnecessary.
+
 ## 4. Build the rename table first
 
 Before editing, write the table to the scratchpad: every name the files declare, its new name, and
@@ -205,20 +230,30 @@ Work from the narrowest scope outwards.
    function.
 6. **Everything that mentions the old name in prose:** the header's file comment, tests,
    `docs/*.md`, `CLAUDE.md` (its Key Files and examples name real functions), `TODO.md`.
-7. **The file rename, last** - after the type rename of section 1, since the file is named after its
-   type and doing it the other way round means renaming the file twice. `git mv` the `.h`, the `.cc`
-   and the `_test.cc` together, then:
-   - Rewrite the path-qualified includes over the whole scope of section 1 (`#include "ra/old.h"` ->
-     `"ra/new.h"`); for a shared directory that is all of `src/`. The shell is zsh, which does not
-     word-split `$files`, so pipe the list:
-     `git grep -lz '"ra/old.h"' -- src | xargs -0 sed -i 's#"ra/old.h"#"ra/new.h"#'`.
-   - Rename the include guard to match (`CNC_RED_ALERT_RA_NEW_H_`).
+7. **The file rename and move, last** - after the type rename of section 1, since the file is named
+   after its type and doing it the other way round means renaming the file twice. A new name and a
+   new folder are one `git mv` to the final path, not two. `git mv` the `.h`, the `.cc` and the
+   `_test.cc` together, then:
+   - Rewrite the path-qualified includes over the whole scope of section 1 (`#include "ra/ai/old.h"`
+     -> `"ra/ui/new.h"`); for a shared directory that is all of `src/`. The shell is zsh, which does
+     not word-split `$files`, so pipe the list:
+     `git grep -lz '"ra/ai/old.h"' -- src | xargs -0 sed -i 's#"ra/ai/old.h"#"ra/ui/new.h"#'`.
+   - Re-sort the include blocks the path change left out of order: a new folder moves the line
+     further than a new basename does, and `git clang-format` only sorts within the lines it is
+     given. Run it with `-f` on every file whose include changed.
+   - Rename the include guard to match the path (`CNC_RED_ALERT_RA_UI_NEW_H_`); `engine_layers_test`
+     fails on a guard that does not.
+   - After a move, run `ctest --test-dir build -R engine_layers_test`: it checks the guard and that
+     the file sits in a folder `tools/engine_layout.py` knows.
    - `git grep` the old basename, with and without extension, and fix what names the file:
      `CMakeLists.txt` files (sources are globbed, but tests, `optimize_in_debug()`, per-platform
      lists and glob exclusions name files), `cmake/`, `.iwyu_mappings`, `CLAUDE.md`, `TODO.md`,
      living `docs/`, `tools/` and `.claude/commands/`. Leave historical records alone - a baseline
      or a finished plan's log (`docs/MEMBER_INIT_BASELINE.tsv`) describes the tree as it was.
-   - Do not rename the other game's twin in the same pass; it gets its own.
+   - Grep the old folder-qualified path too (`ai/old`), not only the basename: a move with no rename
+     leaves the basename everywhere and only the path stale.
+   - Do not rename the other game's twin in the same pass; it gets its own. A twin that moves with
+     the file (see "So is the folder") is a separate `git mv` and a separate commit.
 
 This pass changes names only. Unused parameters, a parameter every caller passes the same value for,
 dead code and outright bugs will turn up while reading closely; the user nearly always wants them
@@ -244,14 +279,16 @@ it, in its own commit, and say so.
   quotes: `git diff -U0 | grep '^[-+]' | grep '"'`.
 
 Commit only when asked, through `/commit`: one commit per game, a type rename on its own, the file
-rename on its own after the identifier rename (a commit that only moves the file and fixes paths
-keeps git's rename detection, so `git log --follow` still finds the history; see `0073bcc3`), and a
-message that names the renames worth knowing about the way `615ce9a1` does.
+rename and move on its own after the identifier rename (a commit that only moves the file and fixes
+paths keeps git's rename detection, so `git log --follow` still finds the history; see `0073bcc3`),
+and a message that names the renames worth knowing about the way `615ce9a1` does.
 
 ## 7. Report
 
 - The rename table, non-mechanical rows first, each with its reason. The type renames, the parameter
   renames and the file rename are rows too, or a line each saying why they were left.
+- The folder: where the file moved and why, or why it stays; and any move not made - across
+  libraries, a split, an arguable fit - with what it would take.
 - Names deliberately left alone, and why (section 1, or "already accurate").
 - Names you were unsure of, with the alternative you considered.
 - What you noticed but did not change: unused or constant parameters, functions doing two jobs, dead
