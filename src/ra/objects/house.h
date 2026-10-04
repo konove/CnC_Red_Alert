@@ -608,7 +608,9 @@ class HouseClass {
   **	building is in construction, it will be reflected in this total.
   */
   base::EnumArray<StructType, int, kBuildingQuantityCount> BQuantity = {};
-  int UQuantity[kOriginalUnitCount - 3] = {};
+  // One slot for each original vehicle type, the ants included; Tracking_Add()
+  // folds the later types onto the first slots.
+  int UQuantity[kOriginalUnitCount] = {};
 
   int IQuantity[kOriginalInfantryCount] = {};
   base::EnumArray<AircraftType, int> AQuantity = {};
