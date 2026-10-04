@@ -21,6 +21,7 @@
 
 #include "ra/ai/taction.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdlib>
@@ -84,6 +85,13 @@ namespace {
 // The unit of the timer actions' values, a tenth of a minute, in game ticks.
 constexpr int64_t kTicksPerTimerUnit = kTicksPerMinute / 10;
 
+// Kills `object` with damage equal to its strength, which no armor reduces.
+void Destroy(ObjectClass& object) {
+  // Take_Damage() takes the damage by reference.
+  int damage = object.Strength;
+  object.Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+}
+
 // Destroys every object in `heap` that `trigger` is attached to. Each is
 // detached first so its death does not spring the trigger again.
 // TODO: an object that Take_Damage() deletes on the spot closes its gap in the
@@ -96,55 +104,53 @@ void DestroyObjectsAttachedTo(Heap& heap, const TriggerClass* trigger) {
     auto* object = heap.ActiveAt(index);
     if (object->Trigger == trigger) {
       object->Trigger = nullptr;
-      // Take_Damage() takes the damage by reference.
-      int damage = object->Strength;
-      object->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+      Destroy(*object);
     }
   }
 }
 
-}  // namespace
-
 // The scenario editor's name for each action. A name ending in "..." tells the
 // designer the action takes a value (see ActionNeed()).
-static constexpr base::EnumArray<TriggerActionType, const char*> kActionNames =
-    {"-No Action-",
-     "Winner is...",
-     "Loser is...",
-     "Production Begins",
-     "Create Team...",
-     "Destroy All Teams",
-     "All to Hunt...",
-     "Reinforcement (team)...",
-     "Drop Zone Flare (waypoint)...",
-     "Fire Sale...",
-     "Play Movie...",
-     "Text Trigger (ID num)...",
-     "Destroy Trigger...",
-     "Autocreate Begins...",
-     "~don't use~",
-     "Allow Win",
-     "Reveal all map",
-     "Reveal around waypoint...",
-     "Reveal zone of waypoint...",
-     "Play sound effect...",
-     "Play music theme...",
-     "Play speech...",
-     "Force Trigger...",
-     "Timer Start",
-     "Timer Stop",
-     "Timer Extend (1/10th min)...",
-     "Timer Shorten (1/10th min)...",
-     "Timer Set (1/10th min)...",
-     "Global Set...",
-     "Global Clear...",
-     "Auto Base Building...",
-     "Grow shroud one 'step'",
-     "Destroy attached building",
-     "Add 1-time special weapon...",
-     "Add repeating special weapon...",
-     "Preferred target...",
-     "Launch Nukes"};
+constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
+    "-No Action-",
+    "Winner is...",
+    "Loser is...",
+    "Production Begins",
+    "Create Team...",
+    "Destroy All Teams",
+    "All to Hunt...",
+    "Reinforcement (team)...",
+    "Drop Zone Flare (waypoint)...",
+    "Fire Sale...",
+    "Play Movie...",
+    "Text Trigger (ID num)...",
+    "Destroy Trigger...",
+    "Autocreate Begins...",
+    "~don't use~",
+    "Allow Win",
+    "Reveal all map",
+    "Reveal around waypoint...",
+    "Reveal zone of waypoint...",
+    "Play sound effect...",
+    "Play music theme...",
+    "Play speech...",
+    "Force Trigger...",
+    "Timer Start",
+    "Timer Stop",
+    "Timer Extend (1/10th min)...",
+    "Timer Shorten (1/10th min)...",
+    "Timer Set (1/10th min)...",
+    "Global Set...",
+    "Global Clear...",
+    "Auto Base Building...",
+    "Grow shroud one 'step'",
+    "Destroy attached building",
+    "Add 1-time special weapon...",
+    "Add repeating special weapon...",
+    "Preferred target...",
+    "Launch Nukes"};
+
+}  // namespace
 
 // One choice per action, in enum order. The editor's drop lists hold pointers
 // to these, so they need storage that outlives the dialog.
@@ -198,21 +204,15 @@ void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-    } else {
-      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
-      }
+    } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+      flags = flags | TPF_MEDIUM_COLOR;
     }
-
-    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                            flags, width, kTabStops);
   } else {
-    Conquer_Clip_Text_Print(
-        view, Description(), x, y,
-        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, font, flags, width, kTabStops);
+    scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
+                                                       : PCOLOR_GREY);
   }
+  Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                          flags, width, kTabStops);
 }
 
 void TriggerAction::Detach(Target target) {
@@ -233,42 +233,37 @@ std::string TriggerAction::ToIniEntry() const {
 }
 
 void TriggerAction::ReadIni(base::Tokenizer& tokens) {
-  switch (TheWorld().new_ini_format()) {
+  type = static_cast<TriggerActionType>(
+      base::ParseIntegerOr<int>(tokens.Next(), 0));
+
+  if (const int format = TheWorld().new_ini_format();
+      format != 0 && format != 1) {
     // Format 2 and later: the team and the trigger are positions in their
     // type lists (ToIniEntry() writes this form).
-    default: {
-      type = static_cast<TriggerActionType>(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
-      team_type = TheObjectHeaps().team_type().SlotOrNull(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
-      trigger_type = TheObjectHeaps().trigger_type().SlotOrNull(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
-      data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
-      break;
+    team_type = TheObjectHeaps().team_type().SlotOrNull(
+        base::ParseIntegerOr<int>(tokens.Next(), 0));
+    trigger_type = TheObjectHeaps().trigger_type().SlotOrNull(
+        base::ParseIntegerOr<int>(tokens.Next(), 0));
+  } else {
+    // The shipped scenarios: the team and the trigger are given by name.
+    team_type = TeamTypeClass::From_Name(tokens.Next());
+    if (ActionNeed(type) == NEED_TEAM && team_type == nullptr) {
+      DLOG(WARNING) << "ReadIni: " << ActionName(type)
+                    << " names a team that does not exist";
     }
 
-    // The shipped scenarios: the team and the trigger are given by name.
-    case 1:
-    case 0:
-      type = static_cast<TriggerActionType>(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-      team_type = TeamTypeClass::From_Name(tokens.Next());
-      DCHECK(ActionNeed(type) != NEED_TEAM || team_type != nullptr);
-
-      // The named trigger may not have been read yet, so keep the name;
-      // TriggerTypeClass::Read_INI() resolves it once every trigger exists.
-      pending_trigger_name = tokens.Next();
-
-      data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
-      break;
+    // The named trigger may not have been read yet, so keep the name;
+    // TriggerTypeClass::Read_INI() resolves it once every trigger exists.
+    pending_trigger_name = tokens.Next();
   }
+
+  data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
   // Fix corrupted sound values from original game scenario files. Some INI
   // files contain values like -65399 (0xFFFF0089) where only the low byte (137)
   // is the valid VocType index. The original read the value through a one-byte
   // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
-  // Data members - Movie, Special, Speech, House - still get it from the
+  // data members - movie, special, speech, house - still get it from the
   // union.)
   if (type == TACTION_PLAY_SOUND &&
       (data.value < 0 ||
@@ -288,10 +283,6 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
 bool TriggerAction::Perform(HousesType house, ObjectClass* object,
                             int trigger_id, Cell cell) {
   HouseClass* owner = HouseClass::As_Pointer(house);
-  TriggerClass* sprung_trigger = nullptr;
-  if (trigger_id != -1) {
-    sprung_trigger = TheObjectHeaps().trigger().Slot(trigger_id);
-  }
   bool success = true;
 
   // The object may already be dead: a trigger with two actions passes the same
@@ -329,7 +320,7 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
 
     // Set the preferred target for the house.
     case TACTION_PREFERRED_TARGET:
-      if (owner) {
+      if (owner != nullptr) {
         owner->PreferredTarget = data.quarry;
       }
       break;
@@ -348,14 +339,10 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
       TheMap().Encroach_Shadow();
       break;
 
-    // Set a scenario global.
+    // Set or clear a scenario global.
     case TACTION_SET_GLOBAL:
-      TheScenario().Set_Global_To(data.value, true);
-      break;
-
-    // Clear a scenario global.
     case TACTION_CLEAR_GLOBAL:
-      TheScenario().Set_Global_To(data.value, false);
+      TheScenario().Set_Global_To(data.value, type == TACTION_SET_GLOBAL);
       break;
 
     // Reveal the map around the waypoint to the player. Nothing to do once the
@@ -426,13 +413,9 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
 
     // Remove time from the mission timer, stopping at zero.
     case TACTION_SUB_TIMER:
-      if (TheScenario().MissionTimer.Remaining() <=
-          data.value * kTicksPerTimerUnit) {
-        TheScenario().MissionTimer.Set(0);
-      } else {
-        TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() -
-                                       (data.value * kTicksPerTimerUnit));
-      }
+      TheScenario().MissionTimer.Set(
+          std::max<int64_t>(0, TheScenario().MissionTimer.Remaining() -
+                                   (data.value * kTicksPerTimerUnit)));
       TheMap().Redraw_Tab();
       break;
 
@@ -495,11 +478,10 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
       if (trigger_type != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
-          if (TheObjectHeaps().trigger().ActiveAt(index)->Class ==
-              trigger_type) {
-            Detach_This_From_All(
-                TheObjectHeaps().trigger().ActiveAt(index)->As_Target());
-            base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(index));
+          TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(index);
+          if (trigger->Class == trigger_type) {
+            Detach_This_From_All(trigger->As_Target());
+            base::DeletePooled(trigger);
             index--;
           }
         }
@@ -599,12 +581,10 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
       break;
 
     // Destroy the object the trigger sprang on, and report failure when there
-    // is none (so the trigger is not used up). Take_Damage() takes the damage
-    // by reference, hence the locals.
+    // is none (so the trigger is not used up).
     case TACTION_DESTROY_OBJECT:
-      if (object) {
-        int damage = object->Strength;
-        object->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+      if (object != nullptr) {
+        Destroy(*object);
       } else {
         success = false;
       }
@@ -617,7 +597,9 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
       }
 
       // Destroy all objects that have this trigger attached to them.
-      if (sprung_trigger != nullptr) {
+      if (trigger_id != -1) {
+        const TriggerClass* sprung_trigger =
+            TheObjectHeaps().trigger().Slot(trigger_id);
         DestroyObjectsAttachedTo(TheObjectHeaps().unit(), sprung_trigger);
         DestroyObjectsAttachedTo(TheObjectHeaps().infantry(), sprung_trigger);
         DestroyObjectsAttachedTo(TheObjectHeaps().aircraft(), sprung_trigger);
