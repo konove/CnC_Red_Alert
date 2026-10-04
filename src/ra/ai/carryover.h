@@ -60,8 +60,10 @@ class Carryover {
 
   // Builds the recorded object and places it on the current map at its old
   // cell. Nothing is placed when the record is empty, its house is not in this
-  // scenario, the object pool is full, or the cell cannot take the object (the
-  // new map may differ from the old one).
+  // scenario, the object pool is full, or the cell cannot take the object: the
+  // new map may differ from the old one, so a cell the object would occupy may
+  // lie outside the playable map or already hold something. Infantry share a
+  // cell with other infantry; any other object needs its cells empty.
   void Recreate() const;
 
  private:

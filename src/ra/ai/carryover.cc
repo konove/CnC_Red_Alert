@@ -18,15 +18,40 @@
 
 #include "ra/ai/carryover.h"
 
+#include <cstdint>
+#include <span>
+
+#include "base/array.h"
 #include "base/pooled.h"
+#include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
+#include "ra/objects/cell.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
 namespace ra {
+namespace {
+
+// Whether every cell an object of `type` standing in `cell` occupies is on the
+// playable map and holds no object. The terrain is not checked: a scenario may
+// put its objects on ground the game would not let them be built on or driven
+// to, and those must come back.
+bool IsFootprintFree(const TechnoTypeClass& type, const Cell cell) {
+  std::span<const int16_t> offsets = type.Occupy_List(true);
+  while (!offsets.empty() && offsets.front() != kRefreshEol) {
+    const Cell occupied = cell.Offset(base::ConsumeFront(offsets));
+    if (!TheMap().In_Radar(occupied) ||
+        TheMap().at(occupied).Cell_Occupier() != nullptr) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 Carryover::Carryover(const TechnoClass& techno)
     : type_(techno.Techno_Type_Class()),
@@ -41,16 +66,21 @@ void Carryover::Recreate() const {
   if (type_ == nullptr || house == nullptr) {
     return;
   }
+  // While a scenario is being read (scenario_init set), Unlimbo() puts an
+  // object down without asking whether its cell can take it, and the old cell
+  // is not known to be good on this map. Infantry share a cell, so they are
+  // placed under the in-game rules instead, which find a free spot in the cell
+  // and refuse one off the map; every other object needs its whole footprint
+  // free.
+  const bool is_infantry = type_->What_Am_I() == RTTI_INFANTRYTYPE;
+  if (!is_infantry && !IsFootprintFree(*type_, cell_)) {
+    return;
+  }
   ObjectClass* const object = type_->Create_One_Of(house);
   if (object == nullptr) {
     return;
   }
 
-  // Infantry are placed under the in-game rules rather than the lenient ones
-  // that apply while a scenario is being read: with scenario_init set, the
-  // check against standing outside the playable map is skipped, and the old
-  // cell is not known to be good on this map.
-  const bool is_infantry = object->What_Am_I() == RTTI_INFANTRY;
   const int saved_scenario_init = TheWorld().scenario_init();
   object->Strength = strength_;
   if (is_infantry) {
@@ -60,8 +90,8 @@ void Carryover::Recreate() const {
   if (is_infantry) {
     TheWorld().scenario_init() = saved_scenario_init;
   }
-  // The old cell may be off this map or occupied. An object left in limbo
-  // would hold its pool slot for the rest of the scenario.
+  // An object left in limbo would hold its pool slot for the rest of the
+  // scenario.
   if (!placed) {
     base::DeletePooled(object);
   }
