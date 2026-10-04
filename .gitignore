@@ -2,6 +2,8 @@
 /build.*
 /build-asan
 /build-asan.*
+/build-coverage
+/build-coverage.*
 /build-debug
 /build-debug.*
 /build-strict

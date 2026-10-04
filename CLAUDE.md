@@ -334,6 +334,11 @@ same machinery, so their call sites look unchanged but are type-checked.
 All new code should have unit tests. Use the [Google Test](https://google.github.io/googletest/)
 framework.
 
+`tools/coverage.py <files>` reports the lines and branches of those files that no test reaches. It
+keeps its own clang build with source-based coverage in `build-coverage` (configured on first use,
+about 2.5 minutes cold, seconds after that) and runs every gtest executable; `--tests <regex>`
+narrows the run to some of them. `/cover-files` uses it to take a file to 100%.
+
 ## Abseil
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.
