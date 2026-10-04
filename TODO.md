@@ -239,14 +239,49 @@
     without asking how much room is left, so an APC can be made to carry more than its limit for the
     moment before it unloads. Options: skip a full transport in `FindHostNear()`, or load only what
     fits and send the rest over the map edge; both change play
-- Stop Tiberian Dawn's reinforcement placement loop when a member can never be placed
-  - `DeliverReinforcements()` (`td/ai/reinforcements.cc`) retries a member from a neighbouring edge
-    cell whenever `Unlimbo()` fails. With `scenario_init` raised, `Unlimbo()` skips the can-enter
-    check and fails only when the object cannot be marked down, which a new cell does not cure, so
-    the loop can hop between two cells for ever. Red Alert's `DeliverReinforcements()` now gives up
-    after eight retries (`ReinforcementTest.GivesUpOnATeamThatNoEdgeCellTakes`); Tiberian Dawn needs
-    the same bound, and a test fixture first (see Testing)
+- Bound Tiberian Dawn's reinforcement retries at the map edge
+  - `EnterFromEdge()` (`td/ai/reinforcements.cc:121`) retries a member from a neighbouring edge cell
+    whenever `Unlimbo()` fails, with no limit. Unlike Red Alert's it does not raise `scenario_init`,
+    so `Unlimbo()` runs the can-enter check and a new cell normally cures the failure; a member that
+    fails for another reason (the game not active, a failed mark-down) is walked from edge cell to
+    edge cell until the walk leaves the map. With the new fixture every edge ended that way, so no
+    endless case is known. Red Alert gives up after eight retries (`96a6794c`,
+    `ReinforcementTest.GivesUpOnATeamThatNoEdgeCellTakes`); the same bound here is about five lines
+    and cannot bind in play, where the cell a retry moves to has just passed the can-enter check
   - Both loops treat cell index 0 as "no cell" (`index() > 0`) where `Cell::None()` is -1
+- Decide what Tiberian Dawn's `DeliverReinforcements()` reports when nothing reaches the map
+  - It announces the reinforcements and returns true, which removes a volatile trigger, although no
+    member is on the map in three cases: every member failed at the edge
+    (`td/ai/reinforcements.cc:88`), no beach cell was free for the hovercraft (`:395`), and the
+    house's edge is not a place to enter from (`:424`). Red Alert announces only when a member was
+    placed
+  - By air (`:377`) the result is that of the last aircraft alone: when it fails the team is deleted
+    and the campaign returns false although earlier aircraft are on the map, and a multiplayer game
+    returns true and announces whatever happened
+  - One rule (count the placed members; none means delete the team and return false) is about 30
+    lines, but a false result makes the trigger try again and changes what is announced, so it needs
+    a sync check. Found in the modernization (`ef839f66`..`0ab14e0a`)
+- Decide how Tiberian Dawn picks the way a mixed reinforcement group arrives
+  - `arrives_by_hovercraft` (`td/ai/reinforcements.cc:234`) is assigned for each ground transport in
+    turn, so a type that lists a hovercraft and then an APC drives in over the map edge with the
+    hovercraft in the group; or-ing it would send it to the beach
+  - The gunboat test looks at the first member only (`:248`), and a gunboat or hovercraft delivery
+    places only the head of its list: `1336193b` deletes the rest, where placing them is the
+    alternative
+  - A group that flies in loads every member that is not a transport aircraft into the first
+    transport (`:331`), an Orca included, and without a transport its ground members are deleted
+  - No shipped scenario is known to use such a type; each change alters play for one that does
+- Free the special reinforcement's team type in multiplayer when its team cannot be made
+  - `DeliverSpecialReinforcement()` (`td/ai/reinforcements.cc:531`) deletes the one-off type only in
+    the campaign, so a multiplayer game with a full team pool keeps it for good. `5a68e467` checks
+    the pool slot to avoid deleting it twice; a clearer rule is to build the type with `IsTransient`
+    off, deliver, then delete it when `TeamClass::Number` for its slot is 0 and switch `IsTransient`
+    on otherwise. About ten lines; it changes pool contents in multiplayer, the same on every peer
+- Look at the last column in `HasLandRouteFromSouth()`
+  - `td/ai/reinforcements.cc:444` scans the south edge up to `MapCellWidth - 1`, so a map whose only
+    way in is its last column gets a hovercraft; `Calculated_Cell(SOURCE_SOUTH)`
+    (`td/map/display.cc:2183`) scans every column. Including it changes which special reinforcements
+    come by hovercraft
 - Balance `scenario_init` on the failure paths of `Read_Scenario()` and `Read_Scenario_INI()`
   - `ra/ai/scenario.cc:514` returns false after the `++` at `:463` without the `--` at `:516`, and
     `:2011` returns after the `++` at `:1898` (the `--` is at `:2319`). Both are masked by the
@@ -766,11 +801,34 @@
     `TeamMemberClass` by position would break silently if its members were reordered
   - Names to confirm: `DeliverReinforcements()` (or `BringInReinforcements()`), `riders` for the
     non-transport list in `CreateGroup()` (or `passengers`), `FindHostNear()`
-- Modernize Tiberian Dawn's `td/ai/reinf.cc`
-  - It still has the Westwood banners and block comments and the old names. It differs from Red
-    Alert's: `Create_Special_Reinforcement()` is live there (`building.cc:2545`, `house.cc:1052`),
-    the team is created inline and placement switches on the source. Its twin fixes from the Red
-    Alert pass are in (`e5cf1691`, `73182098`); rename the file to `reinforcements` in that pass
+- Follow-ups from the `td/ai/reinforcements.cc` modernization (`ef839f66`..`0ab14e0a`)
+  - Six of the hand-written `scenario_init` pairs are here (`:157`, `:173`, `:271`, `:284`, `:555`,
+    `:570`); they go with the scoped guard above. The two in `FlyIn()` must stay separate:
+    `Find_Docking_Bay()` runs between them with the counter lowered
+  - One owner for the group still in limbo. `DeliverReinforcements()` has five `DeletePooled(team)`
+    and four `DeleteGroup()` sites, one per way of failing; a small `LimboGroup` (push, `PopHead()`,
+    a destructor that deletes the rest) passed to `EnterFromEdge()` and `FlyIn()` makes "delete what
+    was not placed" impossible to miss, as `1336193b` found four that were. About 40 lines; members
+    must still be deleted before the team
+  - `Calculated_Cell()` (`td/map/display.cc:2118`) reports "no cell" as cell 0, which callers decode
+    as `index() > 0` and `index() == 0`, and `FlyIn()` raises `scenario_init` only to switch off
+    `Is_Generally_Clear()` inside it. Returning `std::optional<Cell>` and taking an "ignore
+    occupancy" parameter is about 25 lines and six call sites (`unit.cc:1308` among them); the
+    `Random_Pick()` calls must stay as they are
+  - `HasLandRouteFromSouth()` (`:441`) repeats the scan in `Calculated_Cell(SOURCE_SOUTH)` without
+    the random start, and the edge-to-facing factor (`:94`) and `LaunchAirStrike()`'s north fallback
+    (`:548`) are edge knowledge too: a `DisplayClass::HasEdgeEntry(SourceType)` and an
+    `EdgeFacing(SourceType)` would hold them, about 30 lines
+  - `LaunchAirStrike()`'s one caller (`house.cc:2574`) always passes `MISSION_HUNT` and no
+    destination and ignores the result; the parameters were kept to match Red Alert's twin
+  - `IsUnitType()` (`:66`) could replace the open-coded `What_Am_I()` plus `dynamic_cast` tests in
+    `td/objects/house.cc:582-612`
+  - `PopHead()` and `FindEdgeCellNextTo()` are copies of Red Alert's; sharing them means templates
+    over each game's `FootClass` in `src/game`
+  - CLion flags the fixture's `Game game_;` in `reinforcements_test.cc:83` (no message; the member
+    is only there for its lifetime), as it would Red Alert's
+  - Names to confirm: `DeliverSpecialReinforcement()` (or `DeliverUnplannedReinforcement()`),
+    `EnterFromEdge()` and `FlyIn()`, `arrives_by_hovercraft`, `riders`
 
 ## Testing
 
@@ -848,12 +906,16 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover Tiberian Dawn's `DeliverReinforcements()` with tests
-  - Red Alert's `ra_reinforcements_test` delivers teams in a real `Game` (edge entry, infantry
-    leaving a building, the clean-up and the retry limit). Tiberian Dawn has no such fixture, so
-    `e5cf1691` and `73182098` are untested. The Red Alert fixture shows what a `Game` without data
-    needs: type strengths, a ground cost for the member's speed, `ThePlayer()`, and clearing the
-    static `DisplayClass::Layer` between tests
+- Cover the rest of the reinforcement deliveries with tests
+  - `td_reinforcements_test` (`td/ai/reinforcements_test.cc`) delivers team types in a real `Game`
+    without data: the edge entry, the clean-ups of `73182098` and `1336193b`, the air strike count
+    and a failed special reinforcement. Not covered in Tiberian Dawn: a group with a team, a
+    hovercraft landing and a gunboat (both need water on the map), aircraft that are placed, a cargo
+    plane lining up with its airstrip, and what `DeliverSpecialReinforcement()` picks for its
+    transport and mission
+  - Each test builds its own `Game`, about 0.8 s; building it once per suite would save some 6 s
+    here and as much in Red Alert's two suites, if the per-test resets cover what a test leaves on
+    the map
   - `ReinforcementTest` and `CarryoverTest` (`ra/ai/carryover_test.cc`) share their eight set-up
     lines; a third user should move them into a common fixture
   - Not covered in Red Alert: a team with a transport, infantry loaded into a transport vehicle at
