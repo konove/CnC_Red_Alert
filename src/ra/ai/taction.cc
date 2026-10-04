@@ -146,7 +146,7 @@ constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
 
 }  // namespace
 
-void TriggerAction::Detach(Target target) {
+void TriggerAction::Detach(const Target target) {
   if (target.kind() == RTTI_TEAMTYPE && team_type == target.AsTeamType()) {
     team_type = nullptr;
   }
@@ -211,8 +211,8 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
 
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-bool TriggerAction::Perform(HousesType house, ObjectClass* object,
-                            int trigger_id, Cell cell) {
+bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
+                            const int trigger_id, const Cell cell) {
   HouseClass* owner = HouseClass::As_Pointer(house);
   bool success = true;
 
@@ -549,11 +549,11 @@ bool TriggerAction::Perform(HousesType house, ObjectClass* object,
   return success;
 }
 
-const char* ActionName(TriggerActionType action) {
+const char* ActionName(const TriggerActionType action) {
   return kActionNames.at(action);
 }
 
-NeedType ActionNeed(TriggerActionType action) {
+NeedType ActionNeed(const TriggerActionType action) {
   switch (action) {
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
