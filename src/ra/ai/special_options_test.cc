@@ -50,22 +50,27 @@ TEST(SpecialOptionsTest, TheSpecialOptionsIsTheInstalledInstance) {
 // for a computer house.
 TEST(DifficultyForLevelTest, TheEndsTradeThePlayerAgainstTheComputer) {
   EXPECT_EQ(DifficultyForLevel(0),
-            (DifficultyChoice{.player = DIFF_EASY, .computer = DIFF_HARD}));
+            (DifficultyChoice{.player = DifficultyLevel::kEasy,
+                              .computer = DifficultyLevel::kHard}));
   EXPECT_EQ(DifficultyForLevel(4),
-            (DifficultyChoice{.player = DIFF_HARD, .computer = DIFF_EASY}));
+            (DifficultyChoice{.player = DifficultyLevel::kHard,
+                              .computer = DifficultyLevel::kEasy}));
 }
 
 TEST(DifficultyForLevelTest, TheMiddleIsNormalOnBothSides) {
   EXPECT_EQ(DifficultyForLevel(2),
-            (DifficultyChoice{.player = DIFF_NORMAL, .computer = DIFF_NORMAL}));
+            (DifficultyChoice{.player = DifficultyLevel::kNormal,
+                              .computer = DifficultyLevel::kNormal}));
 }
 
 // The two fine levels only move the computer's side.
 TEST(DifficultyForLevelTest, TheInBetweenLevelsKeepThePlayerOnNormal) {
   EXPECT_EQ(DifficultyForLevel(1),
-            (DifficultyChoice{.player = DIFF_NORMAL, .computer = DIFF_HARD}));
+            (DifficultyChoice{.player = DifficultyLevel::kNormal,
+                              .computer = DifficultyLevel::kHard}));
   EXPECT_EQ(DifficultyForLevel(3),
-            (DifficultyChoice{.player = DIFF_NORMAL, .computer = DIFF_EASY}));
+            (DifficultyChoice{.player = DifficultyLevel::kNormal,
+                              .computer = DifficultyLevel::kEasy}));
 }
 
 TEST(DifficultyForLevelTest, ALevelOffTheScaleIsRejected) {

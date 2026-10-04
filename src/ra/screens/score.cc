@@ -462,15 +462,15 @@ void ScoreClass::Presentation() {
   // tried a flat 1000-point bonus for winning, and flooring the points at zero,
   // here; both were disabled, so a negative base score is possible.)
   switch (ThePlayer()->Difficulty) {
-    case DIFF_EASY:
+    case DifficultyLevel::kEasy:
       uspoints += 500;
       break;
 
-    case DIFF_NORMAL:
+    case DifficultyLevel::kNormal:
       uspoints += 1500;
       break;
 
-    case DIFF_HARD:
+    case DifficultyLevel::kHard:
       uspoints += 3500;
       break;
     default:

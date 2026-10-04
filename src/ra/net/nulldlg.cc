@@ -4083,35 +4083,35 @@ int Com_Scenario_Dialog(bool skirmish) {
             difficulty.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
         switch (diff) {
           case 0:
-            TheScenario().CDifficulty = DIFF_HARD;
-            TheScenario().Difficulty = DIFF_EASY;
+            TheScenario().CDifficulty = DifficultyLevel::kHard;
+            TheScenario().Difficulty = DifficultyLevel::kEasy;
             break;
 
           case 1:
-            TheScenario().CDifficulty = DIFF_HARD;
-            TheScenario().Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DifficultyLevel::kHard;
+            TheScenario().Difficulty = DifficultyLevel::kNormal;
             break;
 
           case 2:
-            TheScenario().CDifficulty = DIFF_NORMAL;
-            TheScenario().Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DifficultyLevel::kNormal;
+            TheScenario().Difficulty = DifficultyLevel::kNormal;
             break;
 
           case 3:
-            TheScenario().CDifficulty = DIFF_EASY;
-            TheScenario().Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DifficultyLevel::kEasy;
+            TheScenario().Difficulty = DifficultyLevel::kNormal;
             break;
 
           case 4:
-            TheScenario().CDifficulty = DIFF_EASY;
-            TheScenario().Difficulty = DIFF_HARD;
+            TheScenario().CDifficulty = DifficultyLevel::kEasy;
+            TheScenario().Difficulty = DifficultyLevel::kHard;
             break;
           default:
             break;
         }
       } else {
-        TheScenario().CDifficulty = DIFF_NORMAL;
-        TheScenario().Difficulty = DIFF_NORMAL;
+        TheScenario().CDifficulty = DifficultyLevel::kNormal;
+        TheScenario().Difficulty = DifficultyLevel::kNormal;
       }
 
       if (!skirmish) {

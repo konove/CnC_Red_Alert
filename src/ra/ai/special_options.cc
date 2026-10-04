@@ -162,11 +162,12 @@ DifficultyChoice DifficultyForLevel(const int level) {
   // The player's side gets easier as the computer's gets harder; only the
   // middle level has both on normal.
   static constexpr std::array<DifficultyChoice, 5> kChoices = {{
-      {.player = DIFF_EASY, .computer = DIFF_HARD},
-      {.player = DIFF_NORMAL, .computer = DIFF_HARD},
-      {.player = DIFF_NORMAL, .computer = DIFF_NORMAL},
-      {.player = DIFF_NORMAL, .computer = DIFF_EASY},
-      {.player = DIFF_HARD, .computer = DIFF_EASY},
+      {.player = DifficultyLevel::kEasy, .computer = DifficultyLevel::kHard},
+      {.player = DifficultyLevel::kNormal, .computer = DifficultyLevel::kHard},
+      {.player = DifficultyLevel::kNormal,
+       .computer = DifficultyLevel::kNormal},
+      {.player = DifficultyLevel::kNormal, .computer = DifficultyLevel::kEasy},
+      {.player = DifficultyLevel::kHard, .computer = DifficultyLevel::kEasy},
   }};
   return kChoices.at(base::ToSize(level));
 }

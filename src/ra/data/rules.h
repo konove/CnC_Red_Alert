@@ -554,7 +554,7 @@ class RulesClass {
   **	This array controls the difficulty affects on the game. There is one
   **	difficulty class object for each difficulty level.
   */
-  DifficultyClass Diff[kDiffCount];
+  base::EnumArray<DifficultyLevel, DifficultyClass> Diff;
 
   /*
   **	Is the computer paranoid? If so, then it will band together with other

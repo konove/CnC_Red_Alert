@@ -326,7 +326,7 @@ void HouseClass::One_Time() {
  *(controlled by the handicap value).  *
  *                                                                                             *
  * INPUT:   handicap -- The handicap value to assign to this house. The default
- *value for      * a house is DIFF_NORMAL. *
+ *value for      * a house is DifficultyLevel::kNormal. *
  *                                                                                             *
  * OUTPUT:  Returns with the old handicap value. *
  *                                                                                             *
@@ -335,56 +335,41 @@ void HouseClass::One_Time() {
  * HISTORY: * 07/09/1996 JLB : Created. * 10/22/1996 JLB : Uses act like value
  *for multiplay only.                                  *
  *=============================================================================================*/
-DiffType HouseClass::Assign_Handicap(DiffType handicap) {
-  const DiffType old = Difficulty;
+DifficultyLevel HouseClass::Assign_Handicap(DifficultyLevel handicap) {
+  const DifficultyLevel old = Difficulty;
   Difficulty = handicap;
 
   if (TheSession().Type != GAME_NORMAL) {
     const HouseTypeClass* hptr = &HouseTypeClass::As_Reference(ActLike);
     FirepowerBias =
-        hptr->FirepowerBias *
-        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
-    GroundspeedBias =
-        hptr->GroundspeedBias *
-        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
-        TheRules().GameSpeedBias;
-    AirspeedBias =
-        hptr->AirspeedBias *
-        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
-        TheRules().GameSpeedBias;
-    ArmorBias = hptr->ArmorBias *
-                base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
-    ROFBias = hptr->ROFBias *
-              base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
-    CostBias = hptr->CostBias *
-               base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
-    RepairDelay =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
-    BuildDelay =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
-    BuildSpeedBias =
-        hptr->BuildSpeedBias *
-        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
-        TheRules().GameSpeedBias;
+        hptr->FirepowerBias * TheRules().Diff.at(handicap).FirepowerBias;
+    GroundspeedBias = hptr->GroundspeedBias *
+                      TheRules().Diff.at(handicap).GroundspeedBias *
+                      TheRules().GameSpeedBias;
+    AirspeedBias = hptr->AirspeedBias *
+                   TheRules().Diff.at(handicap).AirspeedBias *
+                   TheRules().GameSpeedBias;
+    ArmorBias = hptr->ArmorBias * TheRules().Diff.at(handicap).ArmorBias;
+    ROFBias = hptr->ROFBias * TheRules().Diff.at(handicap).ROFBias;
+    CostBias = hptr->CostBias * TheRules().Diff.at(handicap).CostBias;
+    RepairDelay = TheRules().Diff.at(handicap).RepairDelay;
+    BuildDelay = TheRules().Diff.at(handicap).BuildDelay;
+    BuildSpeedBias = hptr->BuildSpeedBias *
+                     TheRules().Diff.at(handicap).BuildSpeedBias *
+                     TheRules().GameSpeedBias;
   } else {
-    FirepowerBias =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
+    FirepowerBias = TheRules().Diff.at(handicap).FirepowerBias;
     GroundspeedBias =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
-        TheRules().GameSpeedBias;
+        TheRules().Diff.at(handicap).GroundspeedBias * TheRules().GameSpeedBias;
     AirspeedBias =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
-        TheRules().GameSpeedBias;
-    ArmorBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
-    ROFBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
-    CostBias = base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
-    RepairDelay =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
-    BuildDelay =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
+        TheRules().Diff.at(handicap).AirspeedBias * TheRules().GameSpeedBias;
+    ArmorBias = TheRules().Diff.at(handicap).ArmorBias;
+    ROFBias = TheRules().Diff.at(handicap).ROFBias;
+    CostBias = TheRules().Diff.at(handicap).CostBias;
+    RepairDelay = TheRules().Diff.at(handicap).RepairDelay;
+    BuildDelay = TheRules().Diff.at(handicap).BuildDelay;
     BuildSpeedBias =
-        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
-        TheRules().GameSpeedBias;
+        TheRules().Diff.at(handicap).BuildSpeedBias * TheRules().GameSpeedBias;
   }
 
   return old;
@@ -555,7 +540,7 @@ void HouseClass::Init_Trackers() {
 HouseClass::HouseClass()
     : RTTI(RTTI_HOUSE),
       ID(TheObjectHeaps().house().SlotIndexOf(this)),
-      Difficulty(DIFF_NORMAL),
+      Difficulty(DifficultyLevel::kNormal),
       ActLike(HOUSE_NONE),
 
       IQ(0),
@@ -5494,7 +5479,7 @@ int HouseClass::AI_Unit() {
   if ((IQ >= TheRules().IQHarvester && !IsTiberiumShort && !IsHuman &&
        BQuantity.at(STRUCT_REFINERY) >
            UQuantity[static_cast<int>(UNIT_HARVESTER)] &&
-       Difficulty != DIFF_HARD) &&
+       Difficulty != DifficultyLevel::kHard) &&
       (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <=
        Control.TechLevel)) {
     BuildUnit = UNIT_HARVESTER;

@@ -2539,11 +2539,12 @@ void Assign_Houses() {
     housep->Control.TechLevel = base::At(build_tech, TheWorld().build_level());
     //		housep->Control.TechLevel = BuildLevel;
 
-    DiffType difficulty = TheScenario().CDifficulty;
+    DifficultyLevel difficulty = TheScenario().CDifficulty;
 
     if (TheSession().Players.Count() > 1 && TheRules().IsCompEasyBonus &&
-        difficulty > DIFF_EASY) {
-      difficulty = static_cast<DiffType>(static_cast<int>(difficulty) - 1);
+        difficulty > DifficultyLevel::kEasy) {
+      difficulty =
+          static_cast<DifficultyLevel>(static_cast<int>(difficulty) - 1);
     }
     housep->Assign_Handicap(difficulty);
   }

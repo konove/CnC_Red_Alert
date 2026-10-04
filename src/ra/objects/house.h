@@ -162,7 +162,7 @@ class HouseClass {
   /*
   **	This is the handicap (difficulty level) assigned to this house.
   */
-  DiffType Difficulty;
+  DifficultyLevel Difficulty;
 
   /*
   **	Override handicap control values.
@@ -688,7 +688,7 @@ class HouseClass {
   [[nodiscard]] const int* Factory_Counter(RTTIType rtti) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
-  DiffType Assign_Handicap(DiffType handicap);
+  DifficultyLevel Assign_Handicap(DifficultyLevel handicap);
   [[nodiscard]] Target Find_Juicy_Target(Coordinate coord) const;
   Cell Where_To_Go(const FootClass* object) const;
   [[nodiscard]] Cell Zone_Cell(ZoneType zone) const;

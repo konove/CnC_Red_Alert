@@ -187,9 +187,7 @@ enum class VQType : int8_t {
 using enum VQType;
 
 // These are the difficulty settings of the game.
-enum class DiffType { DIFF_EASY, DIFF_NORMAL, DIFF_HARD };
-using enum DiffType;
-inline constexpr int kDiffCount = static_cast<int>(DIFF_HARD) + 1;
+enum class DifficultyLevel { kEasy, kNormal, kHard };
 
 /**********************************************************************
 **	This is the size of the speech buffer. This value should be as large

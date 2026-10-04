@@ -4874,7 +4874,7 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
   **	Human controlled units don't automatically crush. Neither do computer
   *controlled ones *	if they are at difficult setting.
   */
-  if (House->IsHuman || House->Difficulty == DIFF_HARD) {
+  if (House->IsHuman || House->Difficulty == DifficultyLevel::kHard) {
     return false;
   }
 

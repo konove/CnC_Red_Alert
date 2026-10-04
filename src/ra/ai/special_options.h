@@ -90,8 +90,8 @@ void RunSpecialOptionsDialog();
 
 // The pair of difficulty settings a campaign is played at.
 struct DifficultyChoice {
-  DiffType player;    // How hard the game is on the player's side.
-  DiffType computer;  // How capable the computer's side is.
+  DifficultyLevel player;    // How hard the game is on the player's side.
+  DifficultyLevel computer;  // How capable the computer's side is.
 
   bool operator==(const DifficultyChoice&) const = default;
 };

@@ -61,7 +61,6 @@
 #include <algorithm>
 #include <cstddef>
 
-#include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "game/core/object_heap.h"
@@ -423,8 +422,7 @@ bool FactoryClass::Start() {
     *slowest to *	just normal time at the fastest.
     */
     if (!House->IsHuman &&
-        base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
-            .IsBuildSlowdown) {
+        TheRules().Diff.at(House->Difficulty).IsBuildSlowdown) {
       time = time *
              Fixed(House->IQ + TheRules().MaxIQ, TheRules().MaxIQ * 2).Invert();
     }

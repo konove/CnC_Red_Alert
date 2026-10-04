@@ -483,8 +483,8 @@ bool Select_Game(bool /*fade*/) {
   game::TheGameClock().set_frame(0);
   TheScenario().MissionTimer.Set(0);
   TheScenario().MissionTimer.Stop();
-  TheScenario().CDifficulty = DIFF_NORMAL;
-  TheScenario().Difficulty = DIFF_NORMAL;
+  TheScenario().CDifficulty = DifficultyLevel::kNormal;
+  TheScenario().Difficulty = DifficultyLevel::kNormal;
   TheGameState().player_wins() = false;
   TheGameState().player_loses() = false;
   TheSession().ObiWan = false;
@@ -593,8 +593,8 @@ bool Select_Game(bool /*fade*/) {
       // display.
       if (selection == kSelNone && !startup_game_started &&
           !options.new_game.empty()) {
-        TheScenario().CDifficulty = DIFF_NORMAL;
-        TheScenario().Difficulty = DIFF_NORMAL;
+        TheScenario().CDifficulty = DifficultyLevel::kNormal;
+        TheScenario().Difficulty = DifficultyLevel::kNormal;
         TheScenario().CarryOverMoney = 0;
         TheWorld().build_level() = 10;
         TheWorld().is_tanya_dead() = false;
@@ -680,8 +680,8 @@ bool Select_Game(bool /*fade*/) {
         */
         case kSelStartNewGame:
           if (TheSpecialOptions().from_install) {
-            TheScenario().CDifficulty = DIFF_NORMAL;
-            TheScenario().Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DifficultyLevel::kNormal;
+            TheScenario().Difficulty = DifficultyLevel::kNormal;
           } else {
             const DifficultyChoice difficulty = PromptForDifficulty();
             TheScenario().CDifficulty = difficulty.computer;

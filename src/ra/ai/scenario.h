@@ -98,8 +98,9 @@ class ScenarioClass {
   /*
   **	This is the difficulty setting of the game.
   */
-  DiffType Difficulty{DIFF_NORMAL};   // For human player.
-  DiffType CDifficulty{DIFF_NORMAL};  // For computer players.
+  DifficultyLevel Difficulty{DifficultyLevel::kNormal};  // For human player.
+  DifficultyLevel CDifficulty{
+      DifficultyLevel::kNormal};  // For computer players.
 
   /*
   **	This is the main mission timer. This is the timer that is reset at the

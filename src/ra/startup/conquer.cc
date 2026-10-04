@@ -460,9 +460,9 @@ static void StartFrameTimer() {
   }
 
   int delay = static_cast<int>(TheOptions().GameSpeed);
-  if (ThePlayer()->Difficulty == DIFF_EASY) {
+  if (ThePlayer()->Difficulty == DifficultyLevel::kEasy) {
     delay++;
-  } else if (ThePlayer()->Difficulty == DIFF_HARD && delay > 0) {
+  } else if (ThePlayer()->Difficulty == DifficultyLevel::kHard && delay > 0) {
     delay--;
   }
   frame_timer.Set(delay);

@@ -2091,8 +2091,7 @@ int TechnoClass::Evaluate_Just_Cell(Cell cell) const {
   **	Even then, if the difficulty indicates that it shouldn't search for wall
   **	targets, then don't allow it to do so.
   */
-  if (!base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
-           .IsWallDestroyer) {
+  if (!TheRules().Diff.at(House->Difficulty).IsWallDestroyer) {
     return 0;
   }
 
@@ -4859,8 +4858,7 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value.
   */
-  if ((base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
-           .IsContentScan ||
+  if ((TheRules().Diff.at(House->Difficulty).IsContentScan ||
        House->IQ >= TheRules().IQContentScan) &&
       Is_Something_Attached()) {
     const FootClass* object = Attached_Object();

@@ -941,9 +941,9 @@ bool RulesClass::Objects(engine::file::IniFile& ini) {
  * HISTORY: * 09/10/1996 JLB : Created. *
  *=============================================================================================*/
 bool RulesClass::Difficulty(engine::file::IniFile& ini) {
-  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_EASY)], "Easy");
-  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_NORMAL)], "Normal");
-  Difficulty_Get(ini, Diff[static_cast<int>(DIFF_HARD)], "Difficult");
+  Difficulty_Get(ini, Diff.at(DifficultyLevel::kEasy), "Easy");
+  Difficulty_Get(ini, Diff.at(DifficultyLevel::kNormal), "Normal");
+  Difficulty_Get(ini, Diff.at(DifficultyLevel::kHard), "Difficult");
   return true;
 }
 
