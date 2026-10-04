@@ -110,47 +110,6 @@ class ActionChoice {
   TriggerActionType action_;
 };
 
-// One choice per action, in enum order. The editor's drop lists hold pointers
-// to these, so they need storage that outlives the dialog.
-base::EnumArray<TriggerActionType, ActionChoice> action_choices = {
-    {{TACTION_NONE},
-     {TACTION_WIN},
-     {TACTION_LOSE},
-     {TACTION_BEGIN_PRODUCTION},
-     {TACTION_CREATE_TEAM},
-     {TACTION_DESTROY_TEAM},
-     {TACTION_ALL_HUNT},
-     {TACTION_REINFORCEMENTS},
-     {TACTION_DZ},
-     {TACTION_FIRE_SALE},
-     {TACTION_PLAY_MOVIE},
-     {TACTION_TEXT_TRIGGER},
-     {TACTION_DESTROY_TRIGGER},
-     {TACTION_AUTOCREATE},
-     {TACTION_WINLOSE},
-     {TACTION_ALLOWWIN},
-     {TACTION_REVEAL_ALL},
-     {TACTION_REVEAL_SOME},
-     {TACTION_REVEAL_ZONE},
-     {TACTION_PLAY_SOUND},
-     {TACTION_PLAY_MUSIC},
-     {TACTION_PLAY_SPEECH},
-     {TACTION_FORCE_TRIGGER},
-     {TACTION_START_TIMER},
-     {TACTION_STOP_TIMER},
-     {TACTION_ADD_TIMER},
-     {TACTION_SUB_TIMER},
-     {TACTION_SET_TIMER},
-     {TACTION_SET_GLOBAL},
-     {TACTION_CLEAR_GLOBAL},
-     {TACTION_BASE_BUILDING},
-     {TACTION_CREEP_SHADOW},
-     {TACTION_DESTROY_OBJECT},
-     {TACTION_1_SPECIAL},
-     {TACTION_FULL_SPECIAL},
-     {TACTION_PREFERRED_TARGET},
-     {TACTION_LAUNCH_NUKES}}};
-
 void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                            int width, int height, bool selected, FontType font,
                            TextPrintType flags) const {
@@ -270,49 +229,49 @@ constexpr int kDescriptionSize =
     35;  // Maximum length of object full name description.
 
 // Gadget IDs. "Primary" is the first event or action, "secondary" the second.
-constexpr int kEvent1List = 100;     // Primary event list.
-constexpr int kEvent2List = 101;     // Secondary event list.
-constexpr int kAction1List = 102;    // Primary action list.
-constexpr int kAction2List = 103;    // Secondary action list.
-constexpr int kNameEdit = 104;       // Trigger name edit field.
-constexpr int kAction1Speech = 105;  // Primary action speech.
-constexpr int kAction2Speech = 106;  // Secondary action speech.
-constexpr int kAction1Theme = 107;   // Primary action theme.
-constexpr int kAction2Theme = 108;   // Secondary action theme.
-constexpr int kAction1Movie = 109;   // Primary action movie.
-constexpr int kAction2Movie = 110;   // Secondary action movie.
-constexpr int kAction1Sound = 111;   // Primary action sound effect.
-constexpr int kAction2Sound = 112;   // Secondary action sound effect.
-constexpr int kAction1Special = 113;   // Primary action special weapon.
-constexpr int kAction2Special = 114;   // Secondary action special weapon.
-constexpr int kEvent1Waypoint = 115;   // Primary event waypoint data field.
-constexpr int kEvent2Waypoint = 116;   // Secondary event waypoint data field.
-constexpr int kAction1Waypoint = 117;  // Primary action waypoint data field.
-constexpr int kAction2Waypoint = 118;  // Secondary action waypoint data field.
-constexpr int kEvent1House = 119;      // Primary event house choice list.
-constexpr int kEvent2House = 120;      // Secondary event house choice list.
-constexpr int kAction1House = 121;     // Primary action house choice list.
-constexpr int kAction2House = 122;     // Secondary action house choice list.
-constexpr int kAction1Bool = 123;      // Primary action boolean data list.
-constexpr int kAction2Bool = 124;      // Secondary action boolean data list.
-constexpr int kEvent1Number = 125;     // Primary event general data field.
-constexpr int kEvent2Number = 126;     // Secondary event general data field.
-constexpr int kAction1Number = 127;    // Primary action general data field.
-constexpr int kAction2Number = 128;    // Secondary action general data field.
-constexpr int kEvent1Building = 129;   // Primary event building type list.
-constexpr int kEvent2Building = 130;   // Secondary event building type list.
-constexpr int kEvent1Infantry = 131;   // Primary event infantry type list.
-constexpr int kEvent2Infantry = 132;   // Secondary event infantry type list.
-constexpr int kEvent1Aircraft = 133;   // Primary event aircraft type list.
-constexpr int kEvent2Aircraft = 134;   // Secondary event aircraft type list.
-constexpr int kEvent1Unit = 135;       // Primary event unit type list.
-constexpr int kEvent2Unit = 136;       // Secondary event unit type list.
-constexpr int kEvent1Team = 137;       // Primary event team type entry list.
-constexpr int kEvent2Team = 138;       // Secondary event team type entry list.
-constexpr int kAction1Team = 139;      // Primary action team type entry list.
-constexpr int kAction2Team = 140;      // Secondary action team type entry list.
-constexpr int kAction1Trigger = 141;   // Primary action trigger list.
-constexpr int kAction2Trigger = 142;   // Secondary action trigger list.
+constexpr int kEvent1List = 100;
+constexpr int kEvent2List = 101;
+constexpr int kAction1List = 102;
+constexpr int kAction2List = 103;
+constexpr int kNameEdit = 104;
+constexpr int kAction1Speech = 105;
+constexpr int kAction2Speech = 106;
+constexpr int kAction1Theme = 107;
+constexpr int kAction2Theme = 108;
+constexpr int kAction1Movie = 109;
+constexpr int kAction2Movie = 110;
+constexpr int kAction1Sound = 111;
+constexpr int kAction2Sound = 112;
+constexpr int kAction1Special = 113;
+constexpr int kAction2Special = 114;
+constexpr int kEvent1Waypoint = 115;
+constexpr int kEvent2Waypoint = 116;
+constexpr int kAction1Waypoint = 117;
+constexpr int kAction2Waypoint = 118;
+constexpr int kEvent1House = 119;
+constexpr int kEvent2House = 120;
+constexpr int kAction1House = 121;
+constexpr int kAction2House = 122;
+constexpr int kAction1Bool = 123;
+constexpr int kAction2Bool = 124;
+constexpr int kEvent1Number = 125;
+constexpr int kEvent2Number = 126;
+constexpr int kAction1Number = 127;
+constexpr int kAction2Number = 128;
+constexpr int kEvent1Building = 129;
+constexpr int kEvent2Building = 130;
+constexpr int kEvent1Infantry = 131;
+constexpr int kEvent2Infantry = 132;
+constexpr int kEvent1Aircraft = 133;
+constexpr int kEvent2Aircraft = 134;
+constexpr int kEvent1Unit = 135;
+constexpr int kEvent2Unit = 136;
+constexpr int kEvent1Team = 137;
+constexpr int kEvent2Team = 138;
+constexpr int kAction1Team = 139;
+constexpr int kAction2Team = 140;
+constexpr int kAction1Trigger = 141;
+constexpr int kAction2Trigger = 142;
 constexpr int kOwnerList = 143;        // house ownership for this trigger.
 constexpr int kPersistenceList = 144;  // Persistence of this trigger.
 constexpr int kButtonOk = 145;           // Ok button - save and exit.
@@ -357,7 +316,9 @@ bool TriggerType::Edit() {
   event1_list.Set_Selected_Index(&EventChoices.at(event1.Event));
   event2_list.Set_Selected_Index(&EventChoices.at(event2.Event));
 
-  // The two action lists, likewise.
+  // The two action lists, likewise. The lists hold pointers to the choices,
+  // so the choices are declared first and outlive them.
+  base::EnumArray<TriggerActionType, ActionChoice> action_choices{};
   char action1_text[kChoiceSize] = "";
   TDropListClass<ActionChoice*> action1_list(
       kAction1List, action1_text, sizeof(action1_text), FontType::kEditor,
@@ -372,6 +333,7 @@ bool TriggerType::Edit() {
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const TriggerActionType action :
        magic_enum::enum_values<TriggerActionType>()) {
+    action_choices.at(action) = action;
     action1_list.Add_Item(&action_choices.at(action));
     action2_list.Add_Item(&action_choices.at(action));
   }
@@ -997,8 +959,8 @@ bool TriggerType::Edit() {
   persistence_list.Set_Selected_Index(static_cast<int>(persistence));
 
   // This button cycles through the four MultiStyle values for the events;
-  // `event_control_index` is the value as a number.
-  int event_control_index = static_cast<int>(event_control);
+  // `event_style` is the one showing.
+  MultiStyle event_style = event_control;
   TextButtonClass event_control_button(
       kEventControlButton, TXT_TRIGGER_JUST_EVENT, kEButtonFont, kEButtonFlags,
       event1_list.X, event1_list.Y + 11, 100, 9);
@@ -1061,7 +1023,7 @@ bool TriggerType::Edit() {
 
       // For linked events, draw a bracket from each event list to the action
       // list it sets off.
-      if (event_control_index == 3) {
+      if (event_style == MULTI_LINKED) {
         view.DrawLine(event1_list.X - 1, event1_list.Y + 3, event1_list.X - 4,
                       event1_list.Y + 3, kWhite);
         view.DrawLine(event1_list.X - 4, event1_list.Y + 3, action1_list.X - 4,
@@ -1079,22 +1041,22 @@ bool TriggerType::Edit() {
 
       // Show the second event list unless there is only one event.
       event2_list.Remove();
-      switch (event_control_index) {
-        case 0:
+      switch (event_style) {
+        case MULTI_ONLY:
           event_control_button.Set_Text(TXT_TRIGGER_JUST_EVENT);
           break;
 
-        case 1:
+        case MULTI_AND:
           event_control_button.Set_Text(TXT_TRIGGER_AND);
           event2_list.Add(*gadgets);
           break;
 
-        case 2:
+        case MULTI_OR:
           event_control_button.Set_Text(TXT_TRIGGER_OR);
           event2_list.Add(*gadgets);
           break;
 
-        case 3:
+        case MULTI_LINKED:
           event_control_button.Set_Text(TXT_TRIGGER_LINKED);
           event2_list.Add(*gadgets);
           break;
@@ -1226,7 +1188,7 @@ bool TriggerType::Edit() {
       // that toggles it and the list when it is toggled on.
       action_control_button.Remove();
       action2_list.Remove();
-      if (event_control_index == 3) {
+      if (event_style == MULTI_LINKED) {
         action2_list.Add(*gadgets);
       } else {
         action_control_button.Add(*gadgets);
@@ -1437,7 +1399,9 @@ bool TriggerType::Edit() {
 
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kEventControlButton):
-        event_control_index = (event_control_index + 1) % 4;
+        event_style = static_cast<MultiStyle>(
+            (std::to_underlying(event_style) + 1) %
+            static_cast<int>(magic_enum::enum_count<MultiStyle>()));
         redraw = true;
         break;
 
@@ -1479,7 +1443,7 @@ bool TriggerType::Edit() {
         }
 
         // The first event and its data.
-        event_control = MultiStyle(event_control_index);
+        event_control = event_style;
         event1.Event = *event1_list.Current_Item();
         switch (Event_Needs(event1.Event)) {
           case NEED_HOUSE:
@@ -1749,98 +1713,97 @@ bool TriggerType::Edit() {
 }
 
 std::string TriggerType::Description() const {
-  if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    // Marks for how the second event and action are used: '.' for unused.
-    char event_mark = 0;
-    switch (event_control) {
-      case MULTI_AND:
-        event_mark = '&';
-        break;
-
-      case MULTI_OR:
-        event_mark = '|';
-        break;
-
-      case MULTI_LINKED:
-        event_mark = '=';
-        break;
-
-      case MultiStyle::MULTI_ONLY:
-      default:
-        event_mark = '.';
-        break;
-    }
-
-    char action_mark = '.';
-    if (action_control == MULTI_AND) {
-      action_mark = '&';
-    }
-
-    // The first event's value, when it has one worth showing.
-    std::string value_text;
-    switch (Event_Needs(event1.Event)) {
-      case NEED_NUMBER:
-        value_text = absl::StrFormat("%d", event1.Data.Value);
-        break;
-
-      case NEED_UNIT:
-        value_text = Text_String(
-            UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
-        break;
-
-      case NEED_AIRCRAFT:
-        value_text = Text_String(
-            AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
-        break;
-
-      case NEED_STRUCTURE:
-        value_text = Text_String(
-            BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
-        break;
-
-      case NEED_INFANTRY:
-        value_text = Text_String(
-            InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
-        break;
-
-      case NEED_WAYPOINT:
-        value_text = absl::StrCat("'", WaypointLetters(event1.Data.Value), "'");
-        break;
-
-      case NeedType::NEED_NONE:
-      case NeedType::NEED_THEME:
-      case NeedType::NEED_MOVIE:
-      case NeedType::NEED_SOUND:
-      case NeedType::NEED_SPEECH:
-      case NeedType::NEED_TRIGGER:
-      case NeedType::NEED_TEAM:
-      case NeedType::NEED_HOUSE:
-      case NeedType::NEED_TIME:
-      case NeedType::NEED_QUARRY:
-      case NeedType::NEED_FORMATION:
-      case NeedType::NEED_BOOL:
-      case NeedType::NEED_SPECIAL:
-      case NeedType::NEED_MISSION:
-      case NeedType::NEED_HEX_NUMBER:
-      default:
-        break;
-    }
-
-    // Persistence mark: V(olatile), S(emi-persistent) or P(ersistent).
-    char persistence_mark = 'V';
-    if (persistence == SEMIPERSISTANT) {
-      persistence_mark = 'S';
-    }
-    if (persistence == PERSISTANT) {
-      persistence_mark = 'P';
-    }
-
-    return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
-                           HouseTypeClass::As_Reference(house).Suffix,
-                           persistence_mark, event_mark, action_mark,
-                           Name_From_Event(event1.Event), value_text);
+  if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
+    return {};
   }
-  return {};
+  // Marks for how the second event and action are used: '.' for unused.
+  char event_mark = '.';
+  switch (event_control) {
+    case MULTI_AND:
+      event_mark = '&';
+      break;
+
+    case MULTI_OR:
+      event_mark = '|';
+      break;
+
+    case MULTI_LINKED:
+      event_mark = '=';
+      break;
+
+    case MultiStyle::MULTI_ONLY:
+    default:
+      break;
+  }
+
+  char action_mark = '.';
+  if (action_control == MULTI_AND) {
+    action_mark = '&';
+  }
+
+  // The first event's value, when it has one worth showing.
+  std::string value_text;
+  switch (Event_Needs(event1.Event)) {
+    case NEED_NUMBER:
+      value_text = absl::StrCat(event1.Data.Value);
+      break;
+
+    case NEED_UNIT:
+      value_text = Text_String(
+          UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
+      break;
+
+    case NEED_AIRCRAFT:
+      value_text = Text_String(
+          AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
+      break;
+
+    case NEED_STRUCTURE:
+      value_text = Text_String(
+          BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
+      break;
+
+    case NEED_INFANTRY:
+      value_text = Text_String(
+          InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
+      break;
+
+    case NEED_WAYPOINT:
+      value_text = absl::StrCat("'", WaypointLetters(event1.Data.Value), "'");
+      break;
+
+    case NeedType::NEED_NONE:
+    case NeedType::NEED_THEME:
+    case NeedType::NEED_MOVIE:
+    case NeedType::NEED_SOUND:
+    case NeedType::NEED_SPEECH:
+    case NeedType::NEED_TRIGGER:
+    case NeedType::NEED_TEAM:
+    case NeedType::NEED_HOUSE:
+    case NeedType::NEED_TIME:
+    case NeedType::NEED_QUARRY:
+    case NeedType::NEED_FORMATION:
+    case NeedType::NEED_BOOL:
+    case NeedType::NEED_SPECIAL:
+    case NeedType::NEED_MISSION:
+    case NeedType::NEED_HEX_NUMBER:
+    default:
+      break;
+  }
+
+  // Persistence mark: V(olatile), S(emi-persistent) or P(ersistent).
+  char persistence_mark = 'V';
+  if (persistence == SEMIPERSISTANT) {
+    persistence_mark = 'S';
+  }
+  if (persistence == PERSISTANT) {
+    persistence_mark = 'P';
+  }
+
+  return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
+                         HouseTypeClass::As_Reference(house).Suffix,
+                         persistence_mark, event_mark, action_mark,
+                         Name_From_Event(event1.Event), value_text);
 }
 
 AttachType TriggerType::AttachesTo() const {
@@ -1936,29 +1899,30 @@ std::string TriggerType::ToIniEntry() const {
 void TriggerType::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                           int width, int height, bool selected, FontType font,
                           TextPrintType flags) const {
-  if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    RemapControlType* scheme = Get_Color_Scheme();
-    // Tab stops in pixels: Description() puts a tab after the name.
-    static constexpr std::array<int, 2> kTabStops = {13, 40};
-    if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-      if (selected) {
-        flags = flags | TPF_BRIGHT_COLOR;
-        view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
-      } else {
-        if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-          flags = flags | TPF_MEDIUM_COLOR;
-        }
-      }
-
-      Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
-                              kTBlack, font, flags, width, kTabStops);
+  if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
+    return;
+  }
+  RemapControlType* scheme = Get_Color_Scheme();
+  // Tab stops in pixels: Description() puts a tab after the name.
+  static constexpr std::array<int, 2> kTabStops = {13, 40};
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
+    if (selected) {
+      flags = flags | TPF_BRIGHT_COLOR;
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
-      Conquer_Clip_Text_Print(
-          view, Description().c_str(), x, y,
-          (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                    : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, font, flags, width, kTabStops);
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+        flags = flags | TPF_MEDIUM_COLOR;
+      }
     }
+
+    Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme, kTBlack,
+                            font, flags, width, kTabStops);
+  } else {
+    Conquer_Clip_Text_Print(
+        view, Description().c_str(), x, y,
+        (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                  : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
+        kTBlack, font, flags, width, kTabStops);
   }
 }
 
