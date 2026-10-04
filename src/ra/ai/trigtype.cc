@@ -208,8 +208,13 @@ void TriggerTypeClass::operator delete(void* ptr) {
 }
 
 void TriggerTypeClass::Detach(Target target, bool /*unused*/) {
-  // TODO: Event1.Team and Event2.Team are not cleared when `target` is their
-  // team type, so they dangle once the editor deletes it.
+  if (target.kind() == RTTI_TEAMTYPE) {
+    for (TEventClass* event : {&Event1, &Event2}) {
+      if (event->Team == target.AsTeamType()) {
+        event->Team = nullptr;
+      }
+    }
+  }
   Action1.Detach(target);
   Action2.Detach(target);
 }

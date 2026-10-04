@@ -146,8 +146,9 @@ class TriggerTypeClass : public AbstractTypeClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Drops the references this trigger type's actions hold to the team type or
-  // trigger type `target`, which is being destroyed. `all` is not used.
+  // Drops the references this trigger type's events and actions hold to the
+  // team type or trigger type `target`, which is being destroyed. `all` is not
+  // used.
   void Detach(Target target, bool all = true);
 
   // Returns what triggers of this type can be attached to: the union of what
