@@ -16,47 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/TRIGTYPE.CPP 1     3/03/97 10:26a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : TRIGTYPE.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/05/96 *
- *                                                                                             *
- *                  Last Update : July 9, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * TriggerTypeClass::As_Target -- Convert this trigger type object
- *into a target value.      * TriggerTypeClass::Attaches_To -- Determines what
- *trigger can attach to.                   * TriggerTypeClass::Build_INI_Entry
- *-- Construct the INI entry into the buffer specified.   *
- *   TriggerTypeClass::Description -- Build a text description of the trigger
- *type.            * TriggerTypeClass::Detach -- Removes attachments to the
- *target object specified.           * TriggerTypeClass::Draw_It -- Draws this
- *trigger as if it were a line in a list box.       * TriggerTypeClass::Edit --
- *Edit the trigger type through the scenario editor.              *
- *   TriggerTypeClass::Fill_In -- fills in trigger from the given INI entry *
- *   TriggerTypeClass::From_Name -- Convert an ASCII name into a trigger type
- *pointer.         * TriggerTypeClass::Init -- Initialize the trigger type
- *object management system.           * TriggerTypeClass::Read_INI -- reads
- *triggers from the INI file                            *
- *   TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object.
- ** TriggerTypeClass::Write_INI -- Stores all trigger types to the INI database
- *specified.    * TriggerTypeClass::operator delete -- Returns a trigger type
- *class object back to the pool * TriggerTypeClass::operator new -- Allocates a
- *trigger type class object.                  *
- *   TriggerTypeClass::~TriggerTypeClass -- Deleting a trigger type deletes
- *associated triggers*
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "ra/ai/trigtype.h"
 
 #include <algorithm>
@@ -225,20 +184,6 @@ std::string_view SelectedName(
 
 }  // namespace
 
-/***********************************************************************************************
- * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
- *                                                                                             *
- *    This is the normal constructor for a trigger object. The trigger starts
- *with no team     * members, no mission, and default values for all settings. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/10/1996 JLB : Created. *
- *=============================================================================================*/
 TriggerTypeClass::TriggerTypeClass()
     : AbstractTypeClass(RTTI_TRIGGERTYPE,
                         TheObjectHeaps().trigger_type().SlotIndexOf(this),
@@ -246,22 +191,6 @@ TriggerTypeClass::TriggerTypeClass()
 
 TriggerTypeClass::~TriggerTypeClass() = default;
 
-/***********************************************************************************************
- * TriggerTypeClass::operator new -- Allocates a trigger type class object. *
- *                                                                                             *
- *    This routine will allocate a block of memory from the special trigger type
- *object        * pool. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the allocated trigger type memory block.
- *If there is     * no more block available in the pool, then NULL is returned.
- **
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void* TriggerTypeClass::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().trigger_type().Allocate();
   if (ptr) {
@@ -271,21 +200,6 @@ void* TriggerTypeClass::operator new(std::size_t /*unused*/) {
   return ptr;
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::operator delete -- Returns a trigger type class object back
- *to the pool   *
- *                                                                                             *
- *    This routine will return a previously allocated trigger type object to the
- *private       * memory pool from which it was allocated. *
- *                                                                                             *
- * INPUT:   ptr   -- Pointer to the trigger type class to return to the pool. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TriggerTypeClass*>(ptr)->IsActive = false;
@@ -293,41 +207,25 @@ void TriggerTypeClass::operator delete(void* ptr) {
   TheObjectHeaps().trigger_type().Free(static_cast<TriggerTypeClass*>(ptr));
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Detach -- Removes attachments to the target object
- *specified.             *
- *                                                                                             *
- *    When an object disappears from the game, it must be detached from all
- *other objects that * may be referring to it. This routine will detach the
- *specified target object from any    * references to it in this trigger type
- *class.                                             *
- *                                                                                             *
- * INPUT:   target   -- The target object to be detached from this trigger type.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Detach(Target target, bool /*unused*/) {
+  // TODO: Event1.Team and Event2.Team are not cleared when `target` is their
+  // team type, so they dangle once the editor deletes it.
   Action1.Detach(target);
   Action2.Detach(target);
 }
 
-// Layout and gadget IDs of the trigger editor dialog.
-/*
-**	Dialog position and dimensions.
-*/
+// Layout and gadget IDs of the trigger editor dialog, in pixels. Each event
+// and each action has one data field position;
+// the gadget that suits what the chosen event or action needs is put there.
+
+// Dialog position and dimensions.
 constexpr int kDialogW = 320 + 100;
 constexpr int kDialogH = 200 + 20;
 constexpr int kDialogX = 0;
 constexpr int kDialogY = 0;
 
-/*
-**	Event entry list box coordinates and dimensions.
-*/
+// Event drop list coordinates and dimensions; the second sits below the
+// first.
 constexpr int kE1X = kDialogX + 45;
 constexpr int kE1Y = kDialogY + 65;
 constexpr int kE2X = kE1X;
@@ -335,9 +233,7 @@ constexpr int kE2Y = kE1Y + 22;
 constexpr int kEWidth = 160;
 constexpr int kEHeight = 8 * 5;
 
-/*
-**	Event optional data entry coordinates and dimensions.
-*/
+// Event data field coordinates and dimensions, to the right of each list.
 constexpr int kEd1X = kE1X + kEWidth + 20;
 constexpr int kEd1Y = kE1Y;
 constexpr int kEd2X = kEd1X;
@@ -346,25 +242,19 @@ constexpr int kEd2Y = kE2Y;
 constexpr int kEdWidth = 95;
 constexpr int kEdHeight = 8 * 5;
 
-/*
-**	Action entry list box coordinates.
-*/
+// Action drop list coordinates; the lists share the event lists' size.
 constexpr int kA1X = kE1X;
 constexpr int kA1Y = kDialogY + 120;
 constexpr int kA2X = kE1X;
 constexpr int kA2Y = kA1Y + 22;
 
-/*
-**	Action optional data entry coordinates.
-*/
+// Action data field coordinates.
 constexpr int kAd1X = kA1X + kEWidth + 20;
 constexpr int kAd1Y = kA1Y;
 constexpr int kAd2X = kAd1X;
 constexpr int kAd2Y = kA2Y;
 
-/*
-**	Misc control values.
-*/
+// Text buffer sizes, each counting the terminating NUL.
 constexpr int kGeneralSize = 10;  // Text length for general data entry fields.
 constexpr int kEntrySize =
     35;  // Maximum size of event or action description text.
@@ -373,9 +263,7 @@ constexpr int kTeamSize = 10;     // Team name text entry field length.
 constexpr int kDescSize =
     35;  // Maximum length of object full name description.
 
-/*
-**	Button enumerations:
-*/
+// Gadget IDs. "Primary" is the first event or action, "secondary" the second.
 constexpr int kEventList = 100;      // Primary event list.
 constexpr int kEventList2 = 101;     // Secondary event list.
 constexpr int kActionList = 102;     // Primary action list.
@@ -426,38 +314,16 @@ constexpr int kKbuttoncancel = 146;      // Cancel button - just exit.
 constexpr int kButtonAction = 147;       // Multiple action control button.
 constexpr int kButtonEvent = 148;        // Multiple event control button.
 
-/***********************************************************************************************
- * TriggerTypeClass::Edit -- Edit the trigger type through the scenario editor.
- **
- *                                                                                             *
- *    This is the scenario editor interface to a trigger type class object. It
- *brings up a     * fancy schmancy dialog to allow full edit control of the
- *trigger type.                    *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Was the "OK" button pressed? A false return value indicates
- *that the edits   * to this trigger type class object should be rejected. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 bool TriggerTypeClass::Edit() {
 
-  /*
-  **	Dialog variables:
-  */
   RemapControlType* scheme = Get_Color_Scheme();
 
-  /*
-  **	Buttons
-  */
-  game::ControlClass* commands = nullptr;  // the button list
+  // Head of the dialog's gadget list. Only the gadgets linked into it are
+  // drawn and receive input; the redraw pass below relinks the data fields to
+  // match the chosen events and actions.
+  game::ControlClass* commands = nullptr;
 
-  /*
-  **	List of events allowed.
-  */
+  // The two event lists, each offering every event, sorted by name.
   char eventtext[kEntrySize] = "";
   TDropListClass<EventChoiceClass*> event1list(
       kEventList, eventtext, sizeof(eventtext), FontType::kEditor, TPF_NOSHADOW,
@@ -483,9 +349,7 @@ bool TriggerTypeClass::Edit() {
   event1list.Set_Selected_Index(&EventChoices.at(Event1.Event));
   event2list.Set_Selected_Index(&EventChoices.at(Event2.Event));
 
-  /*
-  **	List of actions allowed.
-  */
+  // The two action lists, likewise.
   char actiontext[kEntrySize] = "";
   TDropListClass<ActionChoice*> action1list(
       kActionList, actiontext, sizeof(actiontext), FontType::kEditor,
@@ -510,9 +374,9 @@ bool TriggerTypeClass::Edit() {
   action1list.Set_Selected_Index(&action_choices.at(Action1.type));
   action2list.Set_Selected_Index(&action_choices.at(Action2.type));
 
-  /*
-  **	Optional waypoint entry field.
-  */
+  // Waypoint fields, one per event and action. A waypoint number shows as a
+  // letter, 'A' for 0 to 'Z' for 25, and from 26 on as two letters, "AA" for
+  // 26 to "ZZ" for 701.
   char way1[kWaypointSize] = "A";
   EditClass way1data(kDataEdit, way1, sizeof(way1), FontType::kEditor,
                      TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, 9,
@@ -571,9 +435,7 @@ bool TriggerTypeClass::Edit() {
     }
   }
 
-  /*
-  **	Optional event data entry field.
-  */
+  // Number fields, one per event and action.
   char databuf1[kGeneralSize] = "";
   EditClass event1data(kDataGeneral1, databuf1, sizeof(databuf1),
                        FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
@@ -656,9 +518,7 @@ bool TriggerTypeClass::Edit() {
     absl::SNPrintF(actionbuf2, sizeof(actionbuf2), "%d", Action2.data.value);
   }
 
-  /*
-  **	Optional team entry list.
-  */
+  // Team type lists, one per event and action, by INI name.
   char tbuf1[kTeamSize] = "";
   DropListClass ttype1list(kDataTtype1, tbuf1, sizeof(tbuf1), FontType::kEditor,
                            TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
@@ -708,9 +568,8 @@ bool TriggerTypeClass::Edit() {
     ttype4list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional trigger entry list.
-  */
+  // Trigger type lists for the actions, by INI name. They include this
+  // trigger type itself.
   char trbuf1[kTeamSize] = "";
   DropListClass trtype1list(kDataTrtype1, trbuf1, sizeof(trbuf1),
                             FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -743,9 +602,7 @@ bool TriggerTypeClass::Edit() {
     trtype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional boolean value list.
-  */
+  // On/off lists for the actions.
   char boolbuf1[kTeamSize] = "";
   DropListClass booltype1list(kDataBooltype1, boolbuf1, sizeof(boolbuf1),
                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -767,9 +624,7 @@ bool TriggerTypeClass::Edit() {
   booltype1list.Set_Selected_Index(Action1.data.flag ? 1 : 0);
   booltype2list.Set_Selected_Index(Action2.data.flag ? 1 : 0);
 
-  /*
-  **	Optional musical theme choice list.
-  */
+  // Musical theme lists for the actions; the list index is the ThemeType.
   char themebuf1[kDescSize] = "";
   DropListClass themetype1list(kDataTheme1, themebuf1, sizeof(themebuf1),
                                FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -799,9 +654,7 @@ bool TriggerTypeClass::Edit() {
     themetype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional movie list.
-  */
+  // Movie lists for the actions; the list index is the VQType.
   char moviebuf1[kDescSize] = "";
   DropListClass movietype1list(kDataMovie1, moviebuf1, sizeof(moviebuf1),
                                FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -831,9 +684,7 @@ bool TriggerTypeClass::Edit() {
     movietype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional sound effect list.
-  */
+  // Sound effect lists for the actions; the list index is the VocType.
   char soundbuf1[kDescSize] = "";
   DropListClass soundtype1list(kDataSound1, soundbuf1, sizeof(soundbuf1),
                                FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -863,9 +714,7 @@ bool TriggerTypeClass::Edit() {
     soundtype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional speech effect list.
-  */
+  // Speech lists for the actions; the list index is the VoxType.
   char speechbuf1[kDescSize] = "";
   DropListClass speechtype1list(kDataSpeech1, speechbuf1, sizeof(speechbuf1),
                                 FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
@@ -895,9 +744,7 @@ bool TriggerTypeClass::Edit() {
     speechtype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional building type entry list.
-  */
+  // Building type lists for the events; the list index is the StructType.
   char bbuf1[kDescSize] = "";
   DropListClass btype1list(kDataBtype1, bbuf1, sizeof(bbuf1), FontType::kEditor,
                            TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
@@ -927,9 +774,7 @@ bool TriggerTypeClass::Edit() {
     btype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional infantry type entry list.
-  */
+  // Infantry type lists for the events; the list index is the InfantryType.
   char ibuf1[kDescSize] = "";
   DropListClass itype1list(kDataItype1, ibuf1, sizeof(ibuf1), FontType::kEditor,
                            TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
@@ -959,9 +804,7 @@ bool TriggerTypeClass::Edit() {
     itype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional aircraft type entry list.
-  */
+  // Aircraft type lists for the events; the list index is the AircraftType.
   char abuf1[kDescSize] = "";
   DropListClass atype1list(kDataAtype1, abuf1, sizeof(abuf1), FontType::kEditor,
                            TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
@@ -991,9 +834,7 @@ bool TriggerTypeClass::Edit() {
     atype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional unit type entry list.
-  */
+  // Unit type lists for the events; the list index is the UnitType.
   char ubuf1[kDescSize] = "";
   DropListClass utype1list(kDataUtype1, ubuf1, sizeof(ubuf1), FontType::kEditor,
                            TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
@@ -1023,9 +864,7 @@ bool TriggerTypeClass::Edit() {
     utype2list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional house type entry list.
-  */
+  // House lists, one per event and action; the list index is the HousesType.
   char housebuf1[kDescSize] = "";
   DropListClass htype1list(kDataHtype1, housebuf1, sizeof(housebuf1),
                            FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y,
@@ -1079,9 +918,9 @@ bool TriggerTypeClass::Edit() {
     htype4list.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional special weapon list.
-  */
+  // Special weapon lists for the actions; the list index is the
+  // SpecialWeaponType. An action that needs something else holds another
+  // member of the data union, which may not be a valid weapon.
   char special1[kDescSize] = "";
   DropListClass spc1(kDataSpecial1, special1, sizeof(special1),
                      FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
@@ -1108,9 +947,10 @@ bool TriggerTypeClass::Edit() {
     spc2.Set_Selected_Index(0);
   }
 
-  /*
-  **	Optional quarry type.
-  */
+  // Quarry (preferred target) lists for the actions; the list index is the
+  // QuarryType. They share the special weapon lists' gadget IDs, which is
+  // harmless: nothing looks either up by ID, and only one of the two is linked
+  // in at a time.
   char quarry1[kDescSize] = "";
   DropListClass qlist1(kDataSpecial1, quarry1, sizeof(quarry1),
                        FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
@@ -1136,18 +976,15 @@ bool TriggerTypeClass::Edit() {
     qlist2.Set_Selected_Index(0);
   }
 
-  /*
-  **	Name of this trigger text edit field.
-  */
+  // The trigger name: four characters, which is all Description() shows.
   char namebuf[5] = "";
   EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf), FontType::kEditor,
                      TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40, 9,
                      EditClass::kAlphanumeric);
   base::SafeCopy(namebuf, IniName);  // Name
 
-  /*
-  **	Create the list of house's allowed for trigger.
-  */
+  // The house that owns the trigger. The list cannot show "no house", so an
+  // unset house becomes HOUSE_GOOD, even if the dialog is then cancelled.
   char housetext[kDescSize] = "";
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
                          FontType::kEditor, TPF_NOSHADOW,
@@ -1162,10 +999,8 @@ bool TriggerTypeClass::Edit() {
   }
   housebtn.Set_Selected_Index(static_cast<int>(House));
 
-  /*
-  ** Must match order and number of PersistantType specified in
-  **	TriggerTypeClass definition.
-  */
+  // The persistence list; the list index is the PersistantType, so the names
+  // must stay in the enum's order.
   char perstext[kDescSize] = "";
   static const char* _perstext[3] = {"Volatile", "Semi-persistent",
                                      "Persistent"};
@@ -1179,40 +1014,31 @@ bool TriggerTypeClass::Edit() {
   }
   persbtn.Set_Selected_Index(static_cast<int>(IsPersistant));
 
-  /*
-  **	This button controls the existence and relationship of a second trigger
-  **	event.
-  */
+  // This button cycles through the four MultiStyleType values for the events;
+  // `eventflag` is the value as a number.
   int eventflag = static_cast<int>(EventControl);
   TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kEButtonFont,
                            kEButtonFlags, event1list.X, event1list.Y + 11, 100,
                            9);
 
-  /*
-  **	This button controls the existence of a secondary action.
-  */
+  // This button toggles the second action. Linked events always have one, so
+  // the button is hidden then and `actionflag` is not consulted.
   bool actionflag = ActionControl != MULTI_ONLY;
   TextButtonClass actionbtn(kButtonAction, TXT_TRIGGER_JUST_ACTION,
                             kEButtonFont, kEButtonFlags, action1list.X,
                             action1list.Y + 11, 100, 9);
 
-  /*
-  **	Create the ubiquitous OK and Cancel buttons.
-  */
+  // Create the ubiquitous OK and Cancel buttons.
   TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
                         kDialogX + 35, kDialogY + kDialogH - 30, 45, 9);
   TextButtonClass cancelbtn(kKbuttoncancel, TXT_CANCEL, kEButtonFont,
                             kEButtonFlags, kDialogX + kDialogW - 80,
                             kDialogY + kDialogH - 30, 45, 9);
 
-  /*
-  **	Initialize
-  */
   PixelView& view = TheScreen().visible_view();
 
-  /*
-  **	Build the button list
-  */
+  // Link in the gadgets that are always shown. The second event and action
+  // lists and all the data fields are added by the redraw pass.
   commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
   event1list.Add_Tail(*commands);
@@ -1223,31 +1049,21 @@ bool TriggerTypeClass::Edit() {
   persbtn.Add_Tail(*commands);
   housebtn.Add_Tail(*commands);
 
-  /*
-  **	Main Processing Loop
-  */
+  // Main Processing Loop
   bool display = true;
   bool process = true;
   while (process) {
-    /*
-    **	Invoke game callback
-    */
+    // Service the real-time systems while the dialog has the main loop.
     ServiceRealTime();
 
-    /*
-    **	Refresh display if needed
-    */
+    // Redraw the dialog and relink its gadgets whenever a choice may have
+    // changed what it shows.
     if (display) {
-      /*
-      **	Display the dialog box
-      */
       game::TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
-      /*
-      **	Draw the captions
-      */
+      // Draw the captions
       Fancy_Text_Print(view, "Trigger Event:", event1list.X, event1list.Y - 7,
                        scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Action to Perform:", action1list.X,
@@ -1260,6 +1076,8 @@ bool TriggerTypeClass::Edit() {
       Fancy_Text_Print(view, "Persistence:", persbtn.X, persbtn.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
 
+      // For linked events, draw a bracket from each event list to the action
+      // list it sets off.
       if (eventflag == 3) {
         view.DrawLine(event1list.X - 1, event1list.Y + 3, event1list.X - 4,
                       event1list.Y + 3, kWhite);
@@ -1276,9 +1094,7 @@ bool TriggerTypeClass::Edit() {
                       action2list.Y + 3, kWhite);
       }
 
-      /*
-      **	Adjust the button list to match current control settings.
-      */
+      // Show the second event list unless there is only one event.
       event2list.Remove();
       switch (eventflag) {
         case 0:
@@ -1303,9 +1119,7 @@ bool TriggerTypeClass::Edit() {
           break;
       }
 
-      /*
-      **	Prepare the primary event data field.
-      */
+      // Show the data field the first event needs, if any.
       htype1list.Remove();
       way1data.Remove();
       event1data.Remove();
@@ -1364,9 +1178,7 @@ bool TriggerTypeClass::Edit() {
           break;
       }
 
-      /*
-      **	Prepare the secondary event data field.
-      */
+      // The same for the second event, when its list is showing.
       htype2list.Remove();
       way2data.Remove();
       event2data.Remove();
@@ -1427,9 +1239,8 @@ bool TriggerTypeClass::Edit() {
         }
       }
 
-      /*
-      **	Setup the action buttons and associated data entry fields.
-      */
+      // Show the second action list for linked events, or else the button
+      // that toggles it and the list when it is toggled on.
       actionbtn.Remove();
       action2list.Remove();
       if (eventflag == 3) {
@@ -1444,6 +1255,7 @@ bool TriggerTypeClass::Edit() {
         }
       }
 
+      // Show the data field the first action needs, if any.
       qlist1.Remove();
       spc1.Remove();
       htype3list.Remove();
@@ -1517,6 +1329,7 @@ bool TriggerTypeClass::Edit() {
           break;
       }
 
+      // The same for the second action, when its list is showing.
       qlist2.Remove();
       spc2.Remove();
       htype4list.Remove();
@@ -1592,9 +1405,8 @@ bool TriggerTypeClass::Edit() {
         }
       }
 
-      /*
-      **	Collapse any dropped down list boxes.
-      */
+      // Collapse any dropped down list: the dialog was just redrawn over its
+      // open part.
       spc1.Collapse();
       spc2.Collapse();
       qlist1.Collapse();
@@ -1638,14 +1450,8 @@ bool TriggerTypeClass::Edit() {
       display = false;
     }
 
-    /*
-    **	Get user input
-    */
     const engine::window::KeyNumber input = commands->Input(view).key;
 
-    /*
-    **	Process input
-    */
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kButtonEvent):
         eventflag = (eventflag + 1) % 4;
@@ -1677,10 +1483,8 @@ bool TriggerTypeClass::Edit() {
         display = true;
         break;
 
-      /*
-      **	Transfer all the necessary values from the edit fields into
-      *their *	respective positions within the trigger object.
-      */
+      // Store the dialog's values in the trigger type. Each event and action
+      // takes only the field it needs; the rest of its data is left alone.
       case KN_RETURN:
       case engine::window::ButtonKey(kButtonOk):
         House = HousesType(housebtn.Current_Index());
@@ -1691,9 +1495,7 @@ bool TriggerTypeClass::Edit() {
           Set_Name(namebuf);
         }
 
-        /*
-        **	Primary event specific data retrieval.
-        */
+        // The first event and its data.
         EventControl = MultiStyleType(eventflag);
         Event1.Event = *event1list.Current_Item();
         switch (Event_Needs(Event1.Event)) {
@@ -1750,9 +1552,8 @@ bool TriggerTypeClass::Edit() {
             break;
         }
 
-        /*
-        **	Secondary event specific data retrieval.
-        */
+        // The second event and its data. They are stored even when only one
+        // event is in use.
         Event2.Event = *event2list.Current_Item();
         switch (Event_Needs(Event2.Event)) {
           case NEED_HOUSE:
@@ -1808,9 +1609,8 @@ bool TriggerTypeClass::Edit() {
             break;
         }
 
-        /*
-        **	Primary action data retrieval.
-        */
+        // The first action and its data. `actionflag` converts to MULTI_ONLY
+        // or MULTI_AND.
         ActionControl = MultiStyleType(actionflag);
         Action1.type = *action1list.Current_Item();
         switch (ActionNeed(Action1.type)) {
@@ -1881,9 +1681,7 @@ bool TriggerTypeClass::Edit() {
             break;
         }
 
-        /*
-        **	Secondary action data retrieval.
-        */
+        // The second action and its data, stored even when it is not in use.
         Action2.type = *action2list.Current_Item();
         switch (ActionNeed(Action2.type)) {
           case NEED_SPECIAL:
@@ -1938,6 +1736,7 @@ bool TriggerTypeClass::Edit() {
             break;
 
           case NEED_QUARRY:
+            // TODO: reads the first action's list; should be qlist2.
             Action2.data.quarry = QuarryType(qlist1.Current_Index());
             break;
           case NeedType::NEED_NONE:
@@ -1959,11 +1758,8 @@ bool TriggerTypeClass::Edit() {
         process = false;
         [[fallthrough]];
 
-      /*
-      **	Always signal a redraw if any of the buttons were touched. This
-      **	can be determined by examining the button bit flag in the input
-      **	return value.
-      */
+      // Any gadget may have changed what the dialog should show, so redraw
+      // whenever the input came from one: those carry the button bit.
       default:
         if (input & KN_BUTTON) {
           display = true;
@@ -1974,27 +1770,11 @@ bool TriggerTypeClass::Edit() {
   return false;
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Description -- Build a text description of the trigger
- *type.              *
- *                                                                                             *
- *    This will build a (static) text description of the trigger type. Use this
- *description    * when displaying this trigger in a list box. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to a one line text description of this
- *trigger.             *
- *                                                                                             *
- * WARNINGS:   The pointer returned actually points to a static buffer. The
- *pointer is only    * valid until this routine is called again. *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 const char* TriggerTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char _buffer[128];
 
+    // Marks for how the second event and action are used: '.' for unused.
     char special = 0;
     switch (EventControl) {
       case MULTI_AND:
@@ -2020,6 +1800,7 @@ const char* TriggerTypeClass::Description() const {
       special2 = '&';
     }
 
+    // The first event's value, when it has one worth showing.
     char tbuf[32];
     const char* added = "";
     switch (Event_Needs(Event1.Event)) {
@@ -2080,9 +1861,7 @@ const char* TriggerTypeClass::Description() const {
         break;
     }
 
-    /*
-    **	Persistence indicator value.
-    */
+    // Persistence mark: V(olatile), S(emi-persistent) or P(ersistent).
     char pers = 'V';
     if (IsPersistant == SEMIPERSISTANT) {
       pers = 'S';
@@ -2099,22 +1878,6 @@ const char* TriggerTypeClass::Description() const {
   return "";
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Attaches_To -- Determines what trigger can attach to. *
- *                                                                                             *
- *    This routine will examine the trigger events and return with a composit
- *bitfield that    * indicates what this trigger can be attached to. This is
- *used for trigger placement       * and logic processing. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with AttachType bitfield representing what this trigger can
- *be attached    * to. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 11/30/1995 JLB : Created. *
- *=============================================================================================*/
 AttachType TriggerTypeClass::Attaches_To() const {
   AttachType attach = ra::Attaches_To(Event1.Event);
 
@@ -2124,56 +1887,16 @@ AttachType TriggerTypeClass::Attaches_To() const {
   return attach;
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Read_INI -- reads triggers from the INI file *
- *                                                                                             *
- *    INI entry format: * Triggername = Eventname, Actionname, Data, Housename,
- *TeamName, IsPersistant           *
- *                                                                                             *
- * This routine reads in the triggers & creates them. Then, other classes can *
- * get pointers to the triggers they're linked to. *
- *                                                                                             *
- * The routine relies on the TeamTypeClasses already being loaded so it can
- *resolve            * references to teams in this function. *
- *                                                                                             *
- * Cell Trigger pointers & IsTrigger flags are set in DisplayClass::Read_INI(),
- ** and cleared in the Map::Init() routine (which clears all cell objects to
- *0's).              *
- *                                                                                             *
- * Object's pointers are set in: * InfantryClass::Read_INI() *
- *      BuildingClass::Read_INI() * UnitClass::Read_INI() *
- *      TerrainClass::Read_INI() * The object trigger pointers are cleared in
- *the ObjectClass constructor.                     *
- *                                                                                             *
- * The House's EMSListOf triggers is set in this routine, and cleared in the *
- * HouseClass::Init() routine. *
- *                                                                                             *
- * INPUT: * buffer      buffer to hold the INI data *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * This function must be called before any other class's Read_INI. *
- *                                                                                             *
- * HISTORY: * 11/28/1994 BR : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    /*
-    **	Create a new trigger.
-    */
-    auto* trigger =
-        base::NewPooled<TriggerTypeClass>();  // Working trigger pointer.
-
-    /*
-    **	Fill in the trigger.
-    */
+    auto* trigger = base::NewPooled<TriggerTypeClass>();
     trigger->Fill_In(entry, value);
   }
 
   if (TheWorld().new_ini_format() < 2) {
-    /*
-    **	Fix up the self-referential trigger pointers.
-    */
+    // Before format 2 an action named its trigger type instead of giving its
+    // position, and the name may belong to an entry read after it. Resolve
+    // the names now that every trigger type exists.
     for (int trig_index = 0;
          trig_index < TheObjectHeaps().trigger_type().Count(); trig_index++) {
       TriggerTypeClass* indexed_trigger =
@@ -2190,33 +1913,9 @@ void TriggerTypeClass::Read_INI(engine::file::IniFile& ini) {
   }
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Fill_In -- fills in trigger from the given INI entry *
- *                                                                                             *
- * This routine fills in the given trigger with the given name, and values from
- ** the given INI entry. *
- *                                                                                             *
- * (This routine is used by the scenario editor, to import teams from the
- *MASTER.INI file.)    *
- *                                                                                             *
- *    INI entry format: * Triggername = Eventname, Actionname, Data, Housename,
- *TeamName, IsPersistant           *
- *                                                                                             *
- * INPUT: * name      mnemonic for the desired trigger * entry      INI entry to
- *parse                                                          *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 11/28/1994 BR : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
-  /*
-  **	Set its name.
-  */
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
@@ -2234,29 +1933,12 @@ void TriggerTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   Action2.ReadIni(tokens);
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Write_INI -- Stores all trigger types to the INI database
- *specified.      *
- *                                                                                             *
- *    This routine will write out all trigger type objects to the INI database.
- *Any existing   * trigger types in the database will be cleared out. *
- *                                                                                             *
- * INPUT:   ini   -- Reference to the INI database to have the trigger types
- *added.            *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
+  // [Triggers] is where older formats kept them; a file with both would
+  // describe the triggers twice.
   ini.Clear("Triggers");
   ini.Clear(INI_Name());
 
-  /*
-  **	Now write all the trigger data out
-  */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
     std::string buf;
@@ -2267,38 +1949,16 @@ void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
   }
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Build_INI_Entry -- Construct the INI entry into the buffer
- *specified.     *
- *                                                                                             *
- *    This low level routine will take the information in this trigger type and
- *store it       * into a buffer such that the resultant string can be stored
- *into an INI database for      * later retrieval. *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to the buffer to store the INI entry string. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Be sure the buffer is big enough. Usually 128 bytes is more than
- *sufficient.    *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 // LLVM 23 treats assignment as invalidating the string reference itself. No
 // pointer, reference or iterator into its old character storage is retained.
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
-  /*
-  ** Build the root portion of the trigger event.
-  */
+  // The enums are stored as their numbers, which Fill_In() casts back.
   buffer =
       std::format("{},{},{},{},", std::to_underlying(IsPersistant),
                   std::to_underlying(House), std::to_underlying(EventControl),
                   std::to_underlying(ActionControl));
 
-  /*
-  **	Append the event and action values.
-  */
   Event1.Build_INI_Entry(buffer);
   buffer += ',';
 
@@ -2311,39 +1971,12 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
   buffer += Action2.ToIniEntry();
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Draw_It -- Draws this trigger as if it were a line in a
- *list box.         *
- *                                                                                             *
- *    This routine is called when triggers are assigned to a list box and then
- *must be drawn.  * It will display an identifying text string with as much
- *information as is useful.        *
- *                                                                                             *
- * INPUT:   index    -- The index number of this line in the list box. *
- *                                                                                             *
- *          x,y      -- The pixel coordinate of the upper left corner of the
- *text box.         *
- *                                                                                             *
- *          width,height   -- The dimensions of the text box to display the
- *description in.    *
- *                                                                                             *
- *          selected -- Is this a selected line? If so, then it should be
- *highlighted.         *
- *                                                                                             *
- *          flags    -- The text print flags to use to display this text string.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                FontType font, TextPrintType flags) const {
   if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
+    // Tab stops in pixels: Description() puts a tab after the name.
     static const int _tabs[] = {13, 40};
     if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
@@ -2367,42 +2000,8 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-/***********************************************************************************************
- * TriggerTypeClass::Init -- Initialize the trigger type object management
- *system.             *
- *                                                                                             *
- *    This routine should be called to initialize the trigger type object
- *system. It should    * be called when clearing out a scenario. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   All trigger types will be destroyed by this routine. *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 void TriggerTypeClass::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
 
-/***********************************************************************************************
- * TriggerTypeClass::From_Name -- Convert an ASCII name into a trigger type
- *pointer.           *
- *                                                                                             *
- *    Given just an ASCII representation of the trigger type, this routine will
- *return with    * a pointer to the trigger type it refers to. Typical use of
- *this is when parsing          * scenario INI files. *
- *                                                                                             *
- * INPUT:   name  -- Pointer to the name to use to identify the trigger type
- *class object to   * be looked up. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the trigger type class object that matches
- *the name      * specified. If no match could be found, then NULL is returned.
- **
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
 TriggerTypeClass* TriggerTypeClass::From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();

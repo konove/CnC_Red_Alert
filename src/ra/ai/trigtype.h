@@ -16,26 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/TRIGTYPE.H 1     3/03/97 10:26a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : TRIGTYPE.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/05/96 *
- *                                                                                             *
- *                  Last Update : June 5, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The trigger type: a scenario's description of one trigger - the events that
+// spring it, the actions it then performs, the house it belongs to and how
+// long it lives. TriggerClass (trigger.h) is the live instance that objects,
+// cells and houses attach to. The scenario editor's dialog for a trigger type
+// lives here too.
 
 #ifndef CNC_RED_ALERT_RA_AI_TRIGTYPE_H_
 #define CNC_RED_ALERT_RA_AI_TRIGTYPE_H_
@@ -58,63 +43,60 @@ class ArchiveWriter;
 
 namespace ra {
 
-/*
-**	There can be multiple trigger events and trigger actions. This
-*enumeration is used to *	indicate if there are multiple events/actions
-*and what their relationship is.
-*/
+// How a trigger type's second event or action relates to its first. Scenario
+// INI files and saved games store the number, so the order is fixed.
 enum class MultiStyleType {
-  MULTI_ONLY,   // "Only" main trigger action/event?
-  MULTI_AND,    // "And" secondary trigger action/event?
-  MULTI_OR,     // "Or" secondary event?
-  MULTI_LINKED  // Cause and effect pairs are linked?
+  MULTI_ONLY,   // Only the first event or action counts.
+  MULTI_AND,    // Both events must occur; both actions are performed.
+  MULTI_OR,     // Events only: either event springs the trigger.
+  MULTI_LINKED  // Events only: either event springs the trigger, and each
+                // performs just its own action (event 1 -> action 1, event 2
+                // -> action 2).
 };
 using enum MultiStyleType;
 
+// One trigger of a scenario, as its INI file describes it. Trigger types live
+// in the trigger type heap (TheObjectHeaps().trigger_type()): create one with
+// base::NewPooled<TriggerTypeClass>() and destroy it with base::DeletePooled().
+// The name (IniName) is at most four characters in the editor and is how the
+// scenario's objects and cells name the trigger they carry.
 class TriggerTypeClass : public AbstractTypeClass {
  public:
-  // operator new sets this before the constructor runs; the initializer
-  // must agree with it.
+  // True while the object occupies its heap slot. operator new sets this
+  // before the constructor runs; the initializer must agree with it.
   bool IsActive : 1 = true;
 
+  // Whether a trigger of this type survives going off. Scenario INI files and
+  // saved games store the number.
   enum class PersistantType {
+    // The trigger destroys itself as soon as it has gone off, detaching from
+    // everything it is attached to.
     VOLATILE = 0,
+    // The trigger counts the objects it is attached to and springs only once
+    // every one of them has set it off; then it destroys itself.
     SEMIPERSISTANT = 1,
+    // The trigger never goes away and springs every time its events occur.
     PERSISTANT = 2
   };
   using enum PersistantType;
 
-  /*
-  **	This flag controls whether the trigger destroys itself after it goes
-  **	off.
-  **	0 = trigger destroys itself immediately after going off, and removes
-  **	    itself from all objects it's attached to
-  **	1 = trigger is "Semi-Persistent"; it maintains a count of all objects
-  **	    it's attached to, and only actually "springs" after its been
-  **		 triggered from all the objects; then, it removes itself.
-  **	2 = trigger is Fully Persistent; it just won't go away.
-  */
   PersistantType IsPersistant = VOLATILE;
 
-  /*
-  **	For house-specific events, this is the house for that event.
-  */
+  // The house the trigger belongs to: the one its house events are about and
+  // the one its actions affect when they name no house of their own.
   HousesType House = HOUSE_SPAIN;
 
-  /*
-  **	Each trigger must have an event which activates it. This is the event
-  *that is *	used to activate this trigger.
-  */
+  // The events that spring the trigger. Event2 only counts when EventControl
+  // is not MULTI_ONLY.
   TEventClass Event1;
   TEventClass Event2;
   MultiStyleType EventControl = MULTI_ONLY;
 
-  /*
-  **	This is the action to perform when the trigger event occurs.
-  */
+  // The actions performed when the trigger springs. Action2 is only performed
+  // when ActionControl is MULTI_AND or EventControl is MULTI_LINKED.
   TriggerAction Action1;
   TriggerAction Action2;
-  MultiStyleType ActionControl = MULTI_ONLY;
+  MultiStyleType ActionControl = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
 
   TriggerTypeClass();
   ~TriggerTypeClass() override;
@@ -123,42 +105,78 @@ class TriggerTypeClass : public AbstractTypeClass {
   TriggerTypeClass(TriggerTypeClass&&) = delete;
   TriggerTypeClass& operator=(TriggerTypeClass&&) = delete;
 
+  // Takes a slot from the trigger type heap; returns nullptr when it is full.
   void* operator new(std::size_t /*unused*/);
   void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
+  // Returns the slot to the trigger type heap.
   void operator delete(void* ptr);
 
-  /*
-  **	Initialization: clears all trigger types in preparation for new scenario
-  */
+  // Destroys every trigger type, in preparation for a new scenario.
   static void Init();
 
-  /*
-  **	File I/O routines
-  */
+  // Creates a trigger type for every entry of the [Trigs] section of `ini`.
+  // Team types must be loaded first: the events and actions look their teams
+  // up as they are read. The objects, cells and houses that carry a trigger
+  // find its type by name afterwards, so this runs before their sections are
+  // read.
   static void Read_INI(engine::file::IniFile& ini);
+
+  // Replaces the [Trigs] section of `ini` with one entry per trigger type, and
+  // clears the [Triggers] section the pre-Red Alert format used.
   static void Write_INI(engine::file::IniFile& ini);
+
+  // Names the trigger type `name` and sets it from the INI value `entry`:
+  //   persistence,house,event control,action control,event 1,event 2,
+  //   action 1,action 2
+  // with each event and action a comma separated group of its own (see
+  // TEventClass::Read_INI and TriggerAction::ReadIni). The first four are
+  // enum numbers; a missing or unreadable one reads as 0.
   void Fill_In(std::string_view name, std::string_view entry);
+
+  // Replaces `buffer` with the INI value Fill_In() reads.
   void Build_INI_Entry(std::string& buffer) const;
 
+  // The INI section the trigger types are stored in.
   static const char* INI_Name() { return "Trigs"; }
+
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  /*
-  **	Utility routines
-  */
+  // Drops the references this trigger type's actions hold to the team type or
+  // trigger type `target`, which is being destroyed. `all` is not used.
   void Detach(Target target, bool all = true);
+
+  // Returns what triggers of this type can be attached to: the union of what
+  // its events allow, the second event counting only when it is in use.
   [[nodiscard]] AttachType Attaches_To() const;
+
+  // Returns the trigger type named `name`, ignoring case, or nullptr when
+  // there is none or `name` is empty.
   static TriggerTypeClass* From_Name(std::string_view name);
+
+  // Runs the scenario editor's dialog on this trigger type. Returns true when
+  // the user confirmed, with the dialog's values stored in the object; false
+  // when the user cancelled, leaving it as it was apart from an unset house,
+  // which becomes HOUSE_GOOD either way.
   bool Edit();
+
+  // Returns a one-line summary for the editor's trigger list: name, house,
+  // persistence, event and action control marks, and the first event with its
+  // value. The text is in a static buffer that the next call overwrites. An
+  // empty string in builds without the cheat keys or the scenario editor.
   [[nodiscard]] const char* Description() const;
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(); }
+
+  // Draws Description() as a list box entry in the box at (`x`, `y`) of
+  // `width` by `height` pixels, highlighted when `selected`. The entry's
+  // `index` in the list is not used. Draws nothing in builds without the cheat
+  // keys or the scenario editor.
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 };
