@@ -1,7 +1,7 @@
 // Tests the reinforcements against a real Game with no game data: one house
 // and the team types are built by hand.
 
-#include "td/ai/reinf.h"
+#include "td/ai/reinforcements.h"
 
 #include "base/array.h"
 #include "base/pooled.h"

@@ -157,7 +157,7 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "td/ai/prebuilt_base.h"
-#include "td/ai/reinf.h"
+#include "td/ai/reinforcements.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"

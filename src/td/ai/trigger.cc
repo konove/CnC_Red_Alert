@@ -82,7 +82,7 @@
 #include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
 #include "game/core/object_heap.h"
-#include "td/ai/reinf.h"
+#include "td/ai/reinforcements.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"

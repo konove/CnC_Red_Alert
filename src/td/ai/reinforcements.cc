@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "td/ai/reinf.h"
+#include "td/ai/reinforcements.h"
 
 #include "base/array.h"
 #include "base/pooled.h"
