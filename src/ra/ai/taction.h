@@ -92,10 +92,6 @@ enum class TriggerActionType {
 };
 using enum TriggerActionType;
 
-// Returns the action the scenario editor lists as `name`, ignoring case, or
-// TACTION_NONE when there is none (or `name` is empty).
-TriggerActionType Action_From_Name(std::string_view name);
-
 // Returns the scenario editor's name for `action`.
 const char* ActionName(TriggerActionType action);
 

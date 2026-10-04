@@ -28,12 +28,10 @@
 #include <format>
 #include <span>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
 #include "absl/log/log.h"
-#include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
@@ -661,20 +659,6 @@ bool TriggerAction::operator()(HousesType house, ObjectClass* object,
       break;
   }
   return success;
-}
-
-TriggerActionType Action_From_Name(const std::string_view name) {
-  if (name.empty()) {
-    return TACTION_NONE;
-  }
-
-  for (TriggerActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
-    if (absl::EqualsIgnoreCase(name, kActionNames.at(i))) {
-      return i;
-    }
-  }
-
-  return TACTION_NONE;
 }
 
 const char* ActionName(TriggerActionType action) {
