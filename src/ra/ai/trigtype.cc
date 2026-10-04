@@ -480,13 +480,7 @@ bool TriggerTypeClass::Edit() {
   event1list.Sort(by_description);
   event2list.Sort(by_description);
 
-  if (Event1.Event == TEVENT_NONE) {
-    Event1.Event = TEVENT_NONE;
-  }
   event1list.Set_Selected_Index(&EventChoices.at(Event1.Event));
-  if (Event2.Event == TEVENT_NONE) {
-    Event2.Event = TEVENT_NONE;
-  }
   event2list.Set_Selected_Index(&EventChoices.at(Event2.Event));
 
   /*
@@ -513,13 +507,7 @@ bool TriggerTypeClass::Edit() {
   action1list.Sort(by_description);
   action2list.Sort(by_description);
 
-  if (Action1.type == TACTION_NONE) {
-    Action1.type = TACTION_NONE;
-  }
   action1list.Set_Selected_Index(&action_choices.at(Action1.type));
-  if (Action2.type == TACTION_NONE) {
-    Action2.type = TACTION_NONE;
-  }
   action2list.Set_Selected_Index(&action_choices.at(Action2.type));
 
   /*
@@ -2271,7 +2259,6 @@ void TriggerTypeClass::Write_INI(engine::file::IniFile& ini) {
   */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    //	for (int index = TriggerTypes.Count()-1; index >= 0; index--) {
     std::string buf;
     TriggerTypeClass* trigger = TheObjectHeaps().trigger_type().ActiveAt(index);
 

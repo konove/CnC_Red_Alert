@@ -149,14 +149,6 @@ class TriggerTypeClass : public AbstractTypeClass {
   void Serialize(Archive& ar);
 
   /*
-  **	Processing routines
-  */
-  // the heap owns the new object; many callers create without keeping it.
-  // NOLINTNEXTLINE(modernize-use-nodiscard)
-  TriggerClass* Create_One_Of() const;
-  void Destroy_All_Of() const;
-
-  /*
   **	Utility routines
   */
   void Detach(Target target, bool all = true);
