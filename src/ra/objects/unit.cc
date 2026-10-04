@@ -3153,11 +3153,11 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
 
   bool cancrush = false;
 
-  const CellClass* cellptr = &TheMap().at(cell);
-
   if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
+
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	Moving off the edge of the map is not allowed unless
