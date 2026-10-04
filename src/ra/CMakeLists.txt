@@ -93,11 +93,15 @@ add_gtest(
     LIBS engine_file absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
+# Carries out trigger actions in a real Game.
 add_gtest(
     NAME ra_taction_test
-    SOURCES ai/taction_test.cc
-    LIBS base absl::check absl::log magic_enum::magic_enum
+    SOURCES ai/taction_test.cc startup/game_test_util.cc startup/startup.cc
+    LIBS ra_engine absl::core_headers
 )
+target_compile_definitions(ra_taction_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_taction_test)
+apply_language_setting(ra_taction_test)
 
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(

@@ -280,10 +280,12 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
   switch (Action) {
     // Display a line of the mission's tutorial text over the tactical map.
-    // TODO: tutorial_text() returns nullptr for an ID with no text, which
-    // Add_Message() copies from.
+    // An ID with no text displays nothing.
     case TACTION_TEXT_TRIGGER: {
       const char* message = TheAssets().tutorial_text(Data.Value);
+      if (message == nullptr) {
+        break;
+      }
       TheSession().Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN, FontType::k6PointGradient,
           TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -311,12 +313,12 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       break;
 
     // Turn the house's computer base building on or off. When on, the computer
-    // builds bases and units.
-    // TODO: hptr is null when the trigger's house is not in the scenario
-    // (As_Pointer() also returns null for HOUSE_NONE). This action, the
-    // special weapon ones and the four that look up Data.House dereference it.
+    // builds bases and units. As for every house action here, a house the
+    // scenario does not have (or HOUSE_NONE) is left alone.
     case TACTION_BASE_BUILDING:
-      hptr->IsBaseBuilding = Data.Bool;
+      if (hptr != nullptr) {
+        hptr->IsBaseBuilding = Data.Bool;
+      }
       break;
 
     // Cause the shadow to creep back one step.
@@ -450,6 +452,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // its button on the player's sidebar.
     case TACTION_1_SPECIAL:
     case TACTION_FULL_SPECIAL:
+      if (hptr == nullptr) {
+        break;
+      }
       hptr->SuperWeapon.at(Data.Special)
           .Enable(Action == TACTION_1_SPECIAL, false);
 
@@ -479,12 +484,11 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       break;
 
     // A forced trigger will force an existing trigger of that type or will
-    // create a trigger of that type and then force it to be sprung.
-    // TODO: Find_Or_Make() returns nullptr when the trigger heap is full, and
-    // this dereferences it.
+    // create a trigger of that type and then force it to be sprung. Nothing
+    // is sprung when the trigger heap is full and none could be made.
     case TACTION_FORCE_TRIGGER:
-      if (Trigger != nullptr) {
-        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, Cell{}, true);
+      if (TriggerClass* forced = Find_Or_Make(Trigger); forced != nullptr) {
+        forced->Spring(TEVENT_ANY, nullptr, Cell{}, true);
       }
       break;
 
@@ -515,8 +519,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
     // This will enable production to begin for the house specified.
     case TACTION_BEGIN_PRODUCTION:
-      if (Data.House != HOUSE_NONE) {
-        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+          specified_house != nullptr) {
         specified_house->Begin_Production();
       }
       break;
@@ -524,43 +528,50 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     // Cause all buildings to be sold and all units to go into hunt mode. The
     // house's AI does both once it is in the endgame state.
     case TACTION_FIRE_SALE:
-      if (Data.House != HOUSE_NONE) {
-        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+          specified_house != nullptr) {
         specified_house->State = STATE_ENDGAME;
       }
       break;
 
     // Begin the team autocreate logic for the house specified.
     case TACTION_AUTOCREATE:
-      if (Data.House != HOUSE_NONE) {
-        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+          specified_house != nullptr) {
         specified_house->IsAlerted = true;
       }
       break;
 
     // Manually create the team specified. Counting as scenario setup makes
     // Create_One_Of() ignore the type's limit on how many teams may exist.
-    // TODO: Team is null when the INI named a team that does not exist; this
-    // and the two actions below dereference it.
+    // Team is null when the INI named a team that does not exist; the three
+    // team actions then do nothing.
     case TACTION_CREATE_TEAM:
-      TheWorld().scenario_init()++;
-      Team->Create_One_Of();
-      TheWorld().scenario_init()--;
+      if (Team != nullptr) {
+        TheWorld().scenario_init()++;
+        Team->Create_One_Of();
+        TheWorld().scenario_init()--;
+      }
       break;
 
     // Destroy all teams of the type specified.
     case TACTION_DESTROY_TEAM:
-      Team->Destroy_All_Of();
+      if (Team != nullptr) {
+        Team->Destroy_All_Of();
+      }
       break;
 
     // Create a reinforcement of the team specified.
     case TACTION_REINFORCEMENTS:
-      success = DeliverReinforcements(&*Team);
+      success = Team != nullptr && DeliverReinforcements(&*Team);
       break;
 
     // Force all units of the house specified to go into hunt mode.
     case TACTION_ALL_HUNT:
-      HouseClass::As_Pointer(Data.House)->Do_All_To_Hunt();
+      if (HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+          specified_house != nullptr) {
+        specified_house->Do_All_To_Hunt();
+      }
       break;
 
     // Destroy the object the trigger sprang on, and report failure when there
