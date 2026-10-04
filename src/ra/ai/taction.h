@@ -29,7 +29,6 @@
 
 #include "absl/strings/ascii.h"
 #include "base/enum_array.h"
-#include "base/enum_step.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ai/teamtype.h"
@@ -87,8 +86,6 @@ enum class TriggerActionType {
 
   TACTION_PREFERRED_TARGET,  // Designates preferred target for house.
   TACTION_LAUNCH_NUKES,      // Launch fake nuclear missiles from all silos
-
-  TACTION_COUNT,
 };
 using enum TriggerActionType;
 
@@ -211,16 +208,11 @@ class ActionChoice {
 };
 
 // The choice for every action, indexed by action.
-extern base::EnumArray<TriggerActionType, ActionChoice,
-                       static_cast<int>(TACTION_COUNT)>
-    action_choices;
+extern base::EnumArray<TriggerActionType, ActionChoice> action_choices;
 
 extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
-
-template <>
-inline constexpr bool base::kIsSteppableEnum<ra::TriggerActionType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TACTION_H_

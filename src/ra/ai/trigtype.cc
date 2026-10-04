@@ -405,8 +405,8 @@ bool TriggerTypeClass::Edit() {
       TPF_NOSHADOW, kA2X, kA2Y, kEWidth, kEHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (TriggerActionType action = TACTION_NONE; action < TACTION_COUNT;
-       action++) {
+  for (const TriggerActionType action :
+       magic_enum::enum_values<TriggerActionType>()) {
     action1list.Add_Item(&action_choices.at(action));
     action2list.Add_Item(&action_choices.at(action));
   }
