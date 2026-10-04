@@ -897,7 +897,7 @@ TriggerType* GetTriggerType(const engine::file::IniFile& ini,
                             std::string_view section, std::string_view entry) {
   const std::string value = ini.GetString(section, entry, "");
   if (!value.empty()) {
-    return TriggerType::From_Name(value);
+    return TriggerType::FromName(value);
   }
   return nullptr;
 }

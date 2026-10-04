@@ -122,7 +122,7 @@ struct TriggerAction {
   } data{.value = -1};
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
-  // that load later. TriggerType::Read_INI resolves it into trigger_type
+  // that load later. TriggerType::ReadIni resolves it into trigger_type
   // once every trigger exists; empty otherwise. Not saved.
   std::string pending_trigger_name;
 

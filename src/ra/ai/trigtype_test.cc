@@ -29,27 +29,27 @@ class TriggerTypeTest : public GameFixture {
 };
 
 TEST_F(TriggerTypeTest, DetachClearsTheTeamTypeOfItsEventsAndActions) {
-  trigger_type_->Event1.Team = team_type_;
-  trigger_type_->Event2.Team = team_type_;
-  trigger_type_->Action1.team_type = team_type_;
-  trigger_type_->Action2.team_type = team_type_;
+  trigger_type_->event1.Team = team_type_;
+  trigger_type_->event2.Team = team_type_;
+  trigger_type_->action1.team_type = team_type_;
+  trigger_type_->action2.team_type = team_type_;
 
   trigger_type_->Detach(team_type_->As_Target());
 
-  EXPECT_EQ(trigger_type_->Event1.Team, nullptr);
-  EXPECT_EQ(trigger_type_->Event2.Team, nullptr);
-  EXPECT_EQ(trigger_type_->Action1.team_type, nullptr);
-  EXPECT_EQ(trigger_type_->Action2.team_type, nullptr);
+  EXPECT_EQ(trigger_type_->event1.Team, nullptr);
+  EXPECT_EQ(trigger_type_->event2.Team, nullptr);
+  EXPECT_EQ(trigger_type_->action1.team_type, nullptr);
+  EXPECT_EQ(trigger_type_->action2.team_type, nullptr);
 }
 
 TEST_F(TriggerTypeTest, DetachLeavesAnotherTeamTypeAlone) {
-  trigger_type_->Event1.Team = team_type_;
-  trigger_type_->Event2.Team = team_type_;
+  trigger_type_->event1.Team = team_type_;
+  trigger_type_->event2.Team = team_type_;
 
   trigger_type_->Detach(base::NewPooled<TeamTypeClass>()->As_Target());
 
-  EXPECT_EQ(trigger_type_->Event1.Team, team_type_);
-  EXPECT_EQ(trigger_type_->Event2.Team, team_type_);
+  EXPECT_EQ(trigger_type_->event1.Team, team_type_);
+  EXPECT_EQ(trigger_type_->event2.Team, team_type_);
 }
 
 }  // namespace

@@ -199,10 +199,10 @@ template void TriggerAction::Serialize(ArchiveReader&);
 template <class Archive>
 void TriggerType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
-  bool is_active = IsActive;
-  ar(is_active, IsPersistant, House, Event1, Event2, EventControl, Action1,
-     Action2, ActionControl);
-  IsActive = is_active;
+  bool active = is_active;
+  ar(active, persistence, house, event1, event2, event_control, action1,
+     action2, action_control);
+  is_active = active;
 }
 template void TriggerType::Serialize(ArchiveWriter&);
 template void TriggerType::Serialize(ArchiveReader&);

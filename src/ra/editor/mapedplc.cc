@@ -1638,7 +1638,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
   /*
   **	Assign trigger to an object
   */
-  const AttachType a1 = CurTrigger->Attaches_To();
+  const AttachType a1 = CurTrigger->AttachesTo();
   if (object && base::Any(a1 & ATTACH_OBJECT)) {
     if (CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);

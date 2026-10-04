@@ -3010,13 +3010,13 @@ void HouseClass::Clobber_All() {
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->House == Class->House) {
+    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->house == Class->House) {
       base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
-    if (TheObjectHeaps().trigger_type().ActiveAt(i)->House == Class->House) {
+    if (TheObjectHeaps().trigger_type().ActiveAt(i)->house == Class->House) {
       base::DeletePooled(TheObjectHeaps().trigger_type().ActiveAt(i));
       i--;
     }

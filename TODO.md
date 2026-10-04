@@ -305,7 +305,7 @@
     `TriggerActionType`, and nothing checks that the action's team, waypoint or special weapon
     exists: `base::At(Waypoint, data.value)` aborts the game for the default -1 in `TACTION_DZ`,
     `TACTION_REVEAL_SOME` and `TACTION_REVEAL_ZONE`, and `SuperWeapon.at()` does for `SPC_NONE`. One
-    step in `TriggerTypeClass::Fill_In()` (`ra/ai/trigtype.cc`, after the two `ReadIni()` calls)
+    step in `TriggerType::ReadIniEntry()` (`ra/ai/trigtype.cc`, after the two `ReadIni()` calls)
     could log and downgrade an action that cannot be performed to `TACTION_NONE`
 - Check the unchecked house and trigger lookups around the trigger code
   - `HouseClass::As_Pointer()` returns null for `HOUSE_NONE` and for a house the scenario lacks.
@@ -904,12 +904,12 @@
     user. The two `Draw_It()` bodies (`trigtype.cc` ~196, `tevent.cc` ~176) and the two
     case-insensitive `operator<` (plus `ra/editor/mapeddlg.cc` ~2725) are copies; one helper each
   - `action_choices` (`trigtype.cc` ~157) is a 37-line identity table; a local in
-    `TriggerTypeClass::Edit()` filled from `magic_enum::enum_values()` replaces it
+    `TriggerType::Edit()` filled from `magic_enum::enum_values()` replaces it
   - `Name_From_Action()`'s successor `ActionName()` and `ActionChoice::Description()` return
     `const char*` because `Conquer_Clip_Text_Print()` (`ra/ui/dialog.h` ~33) takes one; they become
     `std::string_view` when the printer does
-  - `TEventClass`, `TeamTypeClass` and `TriggerTypeClass` still have
-    `Build_INI_Entry(std::string&)`; `TriggerAction::ToIniEntry()` returns the string
+  - `TEventClass`, `TeamTypeClass` and `TriggerType` still have `Build_INI_Entry(std::string&)`;
+    `TriggerAction::ToIniEntry()` returns the string
   - `kTicksPerTimerUnit` (`trigger_action.cc` ~80) is also spelled `kTicksPerMinute / 10` in
     `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in
     `ra/core/defines.h` ~2207

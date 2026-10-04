@@ -192,31 +192,31 @@ TriggerType::TriggerType()
 TriggerType::~TriggerType() = default;
 
 void* TriggerType::operator new(std::size_t /*unused*/) {
-  void* ptr = TheObjectHeaps().trigger_type().Allocate();
-  if (ptr) {
-    static_cast<TriggerType*>(ptr)->IsActive = true;
+  void* memory = TheObjectHeaps().trigger_type().Allocate();
+  if (memory) {
+    static_cast<TriggerType*>(memory)->is_active = true;
   }
 
-  return ptr;
+  return memory;
 }
 
-void TriggerType::operator delete(void* ptr) {
-  if (ptr) {
-    static_cast<TriggerType*>(ptr)->IsActive = false;
+void TriggerType::operator delete(void* memory) {
+  if (memory) {
+    static_cast<TriggerType*>(memory)->is_active = false;
   }
-  TheObjectHeaps().trigger_type().Free(static_cast<TriggerType*>(ptr));
+  TheObjectHeaps().trigger_type().Free(static_cast<TriggerType*>(memory));
 }
 
 void TriggerType::Detach(Target target, bool /*unused*/) {
   if (target.kind() == RTTI_TEAMTYPE) {
-    for (TEventClass* event : {&Event1, &Event2}) {
+    for (TEventClass* event : {&event1, &event2}) {
       if (event->Team == target.AsTeamType()) {
         event->Team = nullptr;
       }
     }
   }
-  Action1.Detach(target);
-  Action2.Detach(target);
+  action1.Detach(target);
+  action2.Detach(target);
 }
 
 // Layout and gadget IDs of the trigger editor dialog, in pixels. Each event
@@ -231,93 +231,93 @@ constexpr int kDialogY = 0;
 
 // Event drop list coordinates and dimensions; the second sits below the
 // first.
-constexpr int kE1X = kDialogX + 45;
-constexpr int kE1Y = kDialogY + 65;
-constexpr int kE2X = kE1X;
-constexpr int kE2Y = kE1Y + 22;
-constexpr int kEWidth = 160;
-constexpr int kEHeight = 8 * 5;
+constexpr int kEvent1X = kDialogX + 45;
+constexpr int kEvent1Y = kDialogY + 65;
+constexpr int kEvent2X = kEvent1X;
+constexpr int kEvent2Y = kEvent1Y + 22;
+constexpr int kListWidth = 160;
+constexpr int kListHeight = 8 * 5;
 
 // Event data field coordinates and dimensions, to the right of each list.
-constexpr int kEd1X = kE1X + kEWidth + 20;
-constexpr int kEd1Y = kE1Y;
-constexpr int kEd2X = kEd1X;
-constexpr int kEd2Y = kE2Y;
+constexpr int kEvent1DataX = kEvent1X + kListWidth + 20;
+constexpr int kEvent1DataY = kEvent1Y;
+constexpr int kEvent2DataX = kEvent1DataX;
+constexpr int kEvent2DataY = kEvent2Y;
 
-constexpr int kEdWidth = 95;
-constexpr int kEdHeight = 8 * 5;
+constexpr int kDataWidth = 95;
+constexpr int kDataHeight = 8 * 5;
 
 // Action drop list coordinates; the lists share the event lists' size.
-constexpr int kA1X = kE1X;
-constexpr int kA1Y = kDialogY + 120;
-constexpr int kA2X = kE1X;
-constexpr int kA2Y = kA1Y + 22;
+constexpr int kAction1X = kEvent1X;
+constexpr int kAction1Y = kDialogY + 120;
+constexpr int kAction2X = kEvent1X;
+constexpr int kAction2Y = kAction1Y + 22;
 
 // Action data field coordinates.
-constexpr int kAd1X = kA1X + kEWidth + 20;
-constexpr int kAd1Y = kA1Y;
-constexpr int kAd2X = kAd1X;
-constexpr int kAd2Y = kA2Y;
+constexpr int kAction1DataX = kAction1X + kListWidth + 20;
+constexpr int kAction1DataY = kAction1Y;
+constexpr int kAction2DataX = kAction1DataX;
+constexpr int kAction2DataY = kAction2Y;
 
 // Text buffer sizes, each counting the terminating NUL.
-constexpr int kGeneralSize = 10;  // Text length for general data entry fields.
-constexpr int kEntrySize =
+constexpr int kNumberSize = 10;  // Text length for general data entry fields.
+constexpr int kChoiceSize =
     35;  // Maximum size of event or action description text.
 constexpr int kWaypointSize = 3;  // Text length maximum for waypoint entry.
-constexpr int kTeamSize = 10;     // Team name text entry field length.
-constexpr int kDescSize =
+constexpr int kNameSize = 10;     // Team name text entry field length.
+constexpr int kDescriptionSize =
     35;  // Maximum length of object full name description.
 
 // Gadget IDs. "Primary" is the first event or action, "secondary" the second.
-constexpr int kEventList = 100;      // Primary event list.
-constexpr int kEventList2 = 101;     // Secondary event list.
-constexpr int kActionList = 102;     // Primary action list.
-constexpr int kActionList2 = 103;    // Secondary action list.
+constexpr int kEvent1List = 100;     // Primary event list.
+constexpr int kEvent2List = 101;     // Secondary event list.
+constexpr int kAction1List = 102;    // Primary action list.
+constexpr int kAction2List = 103;    // Secondary action list.
 constexpr int kNameEdit = 104;       // Trigger name edit field.
-constexpr int kDataSpeech1 = 105;    // Primary action speech.
-constexpr int kDataSpeech2 = 106;    // Secondary action speech.
-constexpr int kDataTheme1 = 107;     // Primary action theme.
-constexpr int kDataTheme2 = 108;     // Secondary action theme.
-constexpr int kDataMovie1 = 109;     // Primary action movie.
-constexpr int kDataMovie2 = 110;     // Secondary action movie.
-constexpr int kDataSound1 = 111;     // Primary action sound effect.
-constexpr int kDataSound2 = 112;     // Secondary action sound effect.
-constexpr int kDataSpecial1 = 113;   // Primary action special weapon.
-constexpr int kDataSpecial2 = 114;   // Secondary action special weapon.
-constexpr int kDataEdit = 115;       // Primary event waypoint data field.
-constexpr int kDataEdit2 = 116;      // Secondary event waypoint data field.
-constexpr int kDataEdit3 = 117;      // Primary action waypoint data field.
-constexpr int kDataEdit4 = 118;      // Secondary action waypoint data field.
-constexpr int kDataHtype1 = 119;     // Primary event house choice list.
-constexpr int kDataHtype2 = 120;     // Secondary event house choice list.
-constexpr int kDataHtype3 = 121;     // Primary action house choice list.
-constexpr int kDataHtype4 = 122;     // Secondary action house choice list.
-constexpr int kDataBooltype1 = 123;  // Primary action boolean data list.
-constexpr int kDataBooltype2 = 124;  // Secondary action boolean data list.
-constexpr int kDataGeneral1 = 125;   // Primary event general data field.
-constexpr int kDataGeneral2 = 126;   // Secondary event general data field.
-constexpr int kDataGeneral3 = 127;   // Primary action general data field.
-constexpr int kDataGeneral4 = 128;   // Secondary action general data field.
-constexpr int kDataBtype1 = 129;     // Primary event building type list.
-constexpr int kDataBtype2 = 130;     // Secondary event building type list.
-constexpr int kDataItype1 = 131;     // Primary event infantry type list.
-constexpr int kDataItype2 = 132;     // Secondary event infantry type list.
-constexpr int kDataAtype1 = 133;     // Primary event aircraft type list.
-constexpr int kDataAtype2 = 134;     // Secondary event aircraft type list.
-constexpr int kDataUtype1 = 135;     // Primary event unit type list.
-constexpr int kDataUtype2 = 136;     // Secondary event unit type list.
-constexpr int kDataTtype1 = 137;     // Primary event team type entry list.
-constexpr int kDataTtype2 = 138;     // Secondary event team type entry list.
-constexpr int kDataTtype3 = 139;     // Primary action team type entry list.
-constexpr int kDataTtype4 = 140;     // Secondary action team type entry list.
-constexpr int kDataTrtype1 = 141;    // Primary action trigger list.
-constexpr int kDataTrtype2 = 142;    // Secondary action trigger list.
-constexpr int kButtonHouse = 143;    // House ownership for this trigger.
-constexpr int kButtonPersistance = 144;  // Persistence of this trigger.
+constexpr int kAction1Speech = 105;  // Primary action speech.
+constexpr int kAction2Speech = 106;  // Secondary action speech.
+constexpr int kAction1Theme = 107;   // Primary action theme.
+constexpr int kAction2Theme = 108;   // Secondary action theme.
+constexpr int kAction1Movie = 109;   // Primary action movie.
+constexpr int kAction2Movie = 110;   // Secondary action movie.
+constexpr int kAction1Sound = 111;   // Primary action sound effect.
+constexpr int kAction2Sound = 112;   // Secondary action sound effect.
+constexpr int kAction1Special = 113;   // Primary action special weapon.
+constexpr int kAction2Special = 114;   // Secondary action special weapon.
+constexpr int kEvent1Waypoint = 115;   // Primary event waypoint data field.
+constexpr int kEvent2Waypoint = 116;   // Secondary event waypoint data field.
+constexpr int kAction1Waypoint = 117;  // Primary action waypoint data field.
+constexpr int kAction2Waypoint = 118;  // Secondary action waypoint data field.
+constexpr int kEvent1House = 119;      // Primary event house choice list.
+constexpr int kEvent2House = 120;      // Secondary event house choice list.
+constexpr int kAction1House = 121;     // Primary action house choice list.
+constexpr int kAction2House = 122;     // Secondary action house choice list.
+constexpr int kAction1Bool = 123;      // Primary action boolean data list.
+constexpr int kAction2Bool = 124;      // Secondary action boolean data list.
+constexpr int kEvent1Number = 125;     // Primary event general data field.
+constexpr int kEvent2Number = 126;     // Secondary event general data field.
+constexpr int kAction1Number = 127;    // Primary action general data field.
+constexpr int kAction2Number = 128;    // Secondary action general data field.
+constexpr int kEvent1Building = 129;   // Primary event building type list.
+constexpr int kEvent2Building = 130;   // Secondary event building type list.
+constexpr int kEvent1Infantry = 131;   // Primary event infantry type list.
+constexpr int kEvent2Infantry = 132;   // Secondary event infantry type list.
+constexpr int kEvent1Aircraft = 133;   // Primary event aircraft type list.
+constexpr int kEvent2Aircraft = 134;   // Secondary event aircraft type list.
+constexpr int kEvent1Unit = 135;       // Primary event unit type list.
+constexpr int kEvent2Unit = 136;       // Secondary event unit type list.
+constexpr int kEvent1Team = 137;       // Primary event team type entry list.
+constexpr int kEvent2Team = 138;       // Secondary event team type entry list.
+constexpr int kAction1Team = 139;      // Primary action team type entry list.
+constexpr int kAction2Team = 140;      // Secondary action team type entry list.
+constexpr int kAction1Trigger = 141;   // Primary action trigger list.
+constexpr int kAction2Trigger = 142;   // Secondary action trigger list.
+constexpr int kOwnerList = 143;        // house ownership for this trigger.
+constexpr int kPersistenceList = 144;  // Persistence of this trigger.
 constexpr int kButtonOk = 145;           // Ok button - save and exit.
-constexpr int kKbuttoncancel = 146;      // Cancel button - just exit.
-constexpr int kButtonAction = 147;       // Multiple action control button.
-constexpr int kButtonEvent = 148;        // Multiple event control button.
+constexpr int kButtonCancel = 146;       // Cancel button - just exit.
+constexpr int kActionControlButton = 147;  // Multiple action control button.
+constexpr int kEventControlButton = 148;   // Multiple event control button.
 
 bool TriggerType::Edit() {
   RemapControlType* scheme = Get_Color_Scheme();
@@ -325,130 +325,138 @@ bool TriggerType::Edit() {
   // Head of the dialog's gadget list. Only the gadgets linked into it are
   // drawn and receive input; the redraw pass below relinks the data fields to
   // match the chosen events and actions.
-  game::ControlClass* commands = nullptr;
+  game::ControlClass* gadgets = nullptr;
 
   // The two event lists, each offering every event, sorted by name.
-  char eventtext[kEntrySize] = "";
-  TDropListClass<EventChoiceClass*> event1list(
-      kEventList, eventtext, sizeof(eventtext), FontType::kEditor, TPF_NOSHADOW,
-      kE1X, kE1Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  char event1_text[kChoiceSize] = "";
+  TDropListClass<EventChoiceClass*> event1_list(
+      kEvent1List, event1_text, sizeof(event1_text), FontType::kEditor,
+      TPF_NOSHADOW, kEvent1X, kEvent1Y, kListWidth, kListHeight,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char event2text[kEntrySize] = "";
-  TDropListClass<EventChoiceClass*> event2list(
-      kEventList2, event2text, sizeof(event2text), FontType::kEditor,
-      TPF_NOSHADOW, kE2X, kE2Y, kEWidth, kEHeight,
+  char event2_text[kChoiceSize] = "";
+  TDropListClass<EventChoiceClass*> event2_list(
+      kEvent2List, event2_text, sizeof(event2_text), FontType::kEditor,
+      TPF_NOSHADOW, kEvent2X, kEvent2Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
-    event1list.Add_Item(&EventChoices.at(event));
-    event2list.Add_Item(&EventChoices.at(event));
+    event1_list.Add_Item(&EventChoices.at(event));
+    event2_list.Add_Item(&EventChoices.at(event));
   }
 
   const auto by_description = [](const auto* left, const auto* right) {
     return *left < *right;
   };
-  event1list.Sort(by_description);
-  event2list.Sort(by_description);
+  event1_list.Sort(by_description);
+  event2_list.Sort(by_description);
 
-  event1list.Set_Selected_Index(&EventChoices.at(Event1.Event));
-  event2list.Set_Selected_Index(&EventChoices.at(Event2.Event));
+  event1_list.Set_Selected_Index(&EventChoices.at(event1.Event));
+  event2_list.Set_Selected_Index(&EventChoices.at(event2.Event));
 
   // The two action lists, likewise.
-  char actiontext[kEntrySize] = "";
-  TDropListClass<ActionChoice*> action1list(
-      kActionList, actiontext, sizeof(actiontext), FontType::kEditor,
-      TPF_NOSHADOW, kA1X, kA1Y, kEWidth, kEHeight,
+  char action1_text[kChoiceSize] = "";
+  TDropListClass<ActionChoice*> action1_list(
+      kAction1List, action1_text, sizeof(action1_text), FontType::kEditor,
+      TPF_NOSHADOW, kAction1X, kAction1Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char action2text[kEntrySize] = "";
-  TDropListClass<ActionChoice*> action2list(
-      kActionList2, action2text, sizeof(action2text), FontType::kEditor,
-      TPF_NOSHADOW, kA2X, kA2Y, kEWidth, kEHeight,
+  char action2_text[kChoiceSize] = "";
+  TDropListClass<ActionChoice*> action2_list(
+      kAction2List, action2_text, sizeof(action2_text), FontType::kEditor,
+      TPF_NOSHADOW, kAction2X, kAction2Y, kListWidth, kListHeight,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const TriggerActionType action :
        magic_enum::enum_values<TriggerActionType>()) {
-    action1list.Add_Item(&action_choices.at(action));
-    action2list.Add_Item(&action_choices.at(action));
+    action1_list.Add_Item(&action_choices.at(action));
+    action2_list.Add_Item(&action_choices.at(action));
   }
 
-  action1list.Sort(by_description);
-  action2list.Sort(by_description);
+  action1_list.Sort(by_description);
+  action2_list.Sort(by_description);
 
-  action1list.Set_Selected_Index(&action_choices.at(Action1.type));
-  action2list.Set_Selected_Index(&action_choices.at(Action2.type));
+  action1_list.Set_Selected_Index(&action_choices.at(action1.type));
+  action2_list.Set_Selected_Index(&action_choices.at(action2.type));
 
   // Waypoint fields, one per event and action. A waypoint number shows as a
   // letter, 'A' for 0 to 'Z' for 25, and from 26 on as two letters, "AA" for
   // 26 to "ZZ" for 701.
-  char way1[kWaypointSize] = "A";
-  EditClass way1data(kDataEdit, way1, sizeof(way1), FontType::kEditor,
-                     TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, 9,
-                     EditClass::kAlpha);
-  if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
-    if (Event1.Data.Value < 26) {
-      absl::SNPrintF(way1, sizeof(way1), "%c",
-                     static_cast<int>(Event1.Data.Value) + 'A');
+  char event1_waypoint_text[kWaypointSize] = "A";
+  EditClass event1_waypoint_edit(
+      kEvent1Waypoint, event1_waypoint_text, sizeof(event1_waypoint_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      9, EditClass::kAlpha);
+  if (Event_Needs(event1.Event) == NEED_WAYPOINT) {
+    if (event1.Data.Value < 26) {
+      absl::SNPrintF(event1_waypoint_text, sizeof(event1_waypoint_text), "%c",
+                     static_cast<int>(event1.Data.Value) + 'A');
     } else {
-      absl::SNPrintF(way1, sizeof(way1), "%c%c",
-                     (Event1.Data.Value / 26) + 'A' - 1,
-                     (Event1.Data.Value % 26) + 'A');
+      absl::SNPrintF(event1_waypoint_text, sizeof(event1_waypoint_text), "%c%c",
+                     (event1.Data.Value / 26) + 'A' - 1,
+                     (event1.Data.Value % 26) + 'A');
     }
   }
 
-  char way2[kWaypointSize] = "A";
-  EditClass way2data(kDataEdit2, way2, sizeof(way2), FontType::kEditor,
-                     TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, 9,
-                     EditClass::kAlpha);
-  if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
-    if (Event2.Data.Value < 26) {
-      absl::SNPrintF(way2, sizeof(way2), "%c",
-                     static_cast<int>(Event2.Data.Value) + 'A');
+  char event2_waypoint_text[kWaypointSize] = "A";
+  EditClass event2_waypoint_edit(
+      kEvent2Waypoint, event2_waypoint_text, sizeof(event2_waypoint_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      9, EditClass::kAlpha);
+  if (Event_Needs(event2.Event) == NEED_WAYPOINT) {
+    if (event2.Data.Value < 26) {
+      absl::SNPrintF(event2_waypoint_text, sizeof(event2_waypoint_text), "%c",
+                     static_cast<int>(event2.Data.Value) + 'A');
     } else {
-      absl::SNPrintF(way2, sizeof(way2), "%c%c",
-                     (Event2.Data.Value / 26) + 'A' - 1,
-                     (Event2.Data.Value % 26) + 'A');
+      absl::SNPrintF(event2_waypoint_text, sizeof(event2_waypoint_text), "%c%c",
+                     (event2.Data.Value / 26) + 'A' - 1,
+                     (event2.Data.Value % 26) + 'A');
     }
   }
 
-  char way3[kWaypointSize] = "A";
-  EditClass way3data(kDataEdit3, way3, sizeof(way3), FontType::kEditor,
-                     TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, 9,
-                     EditClass::kAlpha);
-  if (ActionNeed(Action1.type) == NEED_WAYPOINT) {
-    if (Action1.data.value < 26) {
-      absl::SNPrintF(way3, sizeof(way3), "%c", Action1.data.value + 'A');
+  char action1_waypoint_text[kWaypointSize] = "A";
+  EditClass action1_waypoint_edit(
+      kAction1Waypoint, action1_waypoint_text, sizeof(action1_waypoint_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      9, EditClass::kAlpha);
+  if (ActionNeed(action1.type) == NEED_WAYPOINT) {
+    if (action1.data.value < 26) {
+      absl::SNPrintF(action1_waypoint_text, sizeof(action1_waypoint_text), "%c",
+                     action1.data.value + 'A');
     } else {
-      absl::SNPrintF(way3, sizeof(way3), "%c%c",
-                     (Action1.data.value / 26) + 'A' - 1,
-                     (Action1.data.value % 26) + 'A');
+      absl::SNPrintF(action1_waypoint_text, sizeof(action1_waypoint_text),
+                     "%c%c", (action1.data.value / 26) + 'A' - 1,
+                     (action1.data.value % 26) + 'A');
     }
   }
 
-  char way4[kWaypointSize] = "A";
-  EditClass way4data(kDataEdit4, way4, sizeof(way4), FontType::kEditor,
-                     TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, 9,
-                     EditClass::kAlpha);
-  if (ActionNeed(Action2.type) == NEED_WAYPOINT) {
-    if (Action2.data.value < 26) {
-      absl::SNPrintF(way4, sizeof(way4), "%c", Action2.data.value + 'A');
+  char action2_waypoint_text[kWaypointSize] = "A";
+  EditClass action2_waypoint_edit(
+      kAction2Waypoint, action2_waypoint_text, sizeof(action2_waypoint_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      9, EditClass::kAlpha);
+  if (ActionNeed(action2.type) == NEED_WAYPOINT) {
+    if (action2.data.value < 26) {
+      absl::SNPrintF(action2_waypoint_text, sizeof(action2_waypoint_text), "%c",
+                     action2.data.value + 'A');
     } else {
-      absl::SNPrintF(way4, sizeof(way4), "%c%c",
-                     (Action2.data.value / 26) + 'A' - 1,
-                     (Action2.data.value % 26) + 'A');
+      absl::SNPrintF(action2_waypoint_text, sizeof(action2_waypoint_text),
+                     "%c%c", (action2.data.value / 26) + 'A' - 1,
+                     (action2.data.value % 26) + 'A');
     }
   }
 
   // Number fields, one per event and action.
-  char databuf1[kGeneralSize] = "";
-  EditClass event1data(kDataGeneral1, databuf1, sizeof(databuf1),
-                       FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                       9, EditClass::kNumeric);
-  switch (Event_Needs(Event1.Event)) {
+  char event1_number_text[kNumberSize] = "";
+  EditClass event1_number_edit(kEvent1Number, event1_number_text,
+                               sizeof(event1_number_text), FontType::kEditor,
+                               TPF_NOSHADOW, kEvent1DataX, kEvent1DataY,
+                               kDataWidth, 9, EditClass::kNumeric);
+  switch (Event_Needs(event1.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      absl::SNPrintF(databuf1, sizeof(databuf1), "%d",
-                     static_cast<int>(Event1.Data.Value));
+      absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
+                     static_cast<int>(event1.Data.Value));
       break;
     case NeedType::NEED_NONE:
     case NeedType::NEED_THEME:
@@ -473,15 +481,16 @@ bool TriggerType::Edit() {
       break;
   }
 
-  char databuf2[kGeneralSize] = "";
-  EditClass event2data(kDataGeneral2, databuf2, sizeof(databuf2),
-                       FontType::kEditor, TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                       9, EditClass::kNumeric);
-  switch (Event_Needs(Event2.Event)) {
+  char event2_number_text[kNumberSize] = "";
+  EditClass event2_number_edit(kEvent2Number, event2_number_text,
+                               sizeof(event2_number_text), FontType::kEditor,
+                               TPF_NOSHADOW, kEvent2DataX, kEvent2DataY,
+                               kDataWidth, 9, EditClass::kNumeric);
+  switch (Event_Needs(event2.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
-      absl::SNPrintF(databuf2, sizeof(databuf2), "%d",
-                     static_cast<int>(Event2.Data.Value));
+      absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
+                     static_cast<int>(event2.Data.Value));
       break;
     case NeedType::NEED_NONE:
     case NeedType::NEED_THEME:
@@ -506,664 +515,705 @@ bool TriggerType::Edit() {
       break;
   }
 
-  char actionbuf1[kGeneralSize] = "";
-  EditClass action1data(kDataGeneral3, actionbuf1, sizeof(actionbuf1),
-                        FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                        9, EditClass::kNumeric);
-  if (ActionNeed(Action1.type) == NEED_NUMBER) {
-    absl::SNPrintF(actionbuf1, sizeof(actionbuf1), "%d", Action1.data.value);
+  char action1_number_text[kNumberSize] = "";
+  EditClass action1_number_edit(kAction1Number, action1_number_text,
+                                sizeof(action1_number_text), FontType::kEditor,
+                                TPF_NOSHADOW, kAction1DataX, kAction1DataY,
+                                kDataWidth, 9, EditClass::kNumeric);
+  if (ActionNeed(action1.type) == NEED_NUMBER) {
+    absl::SNPrintF(action1_number_text, sizeof(action1_number_text), "%d",
+                   action1.data.value);
   }
 
-  char actionbuf2[kGeneralSize] = "";
-  EditClass action2data(kDataGeneral4, actionbuf2, sizeof(actionbuf2),
-                        FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                        9, EditClass::kNumeric);
-  if (ActionNeed(Action2.type) == NEED_NUMBER) {
-    absl::SNPrintF(actionbuf2, sizeof(actionbuf2), "%d", Action2.data.value);
+  char action2_number_text[kNumberSize] = "";
+  EditClass action2_number_edit(kAction2Number, action2_number_text,
+                                sizeof(action2_number_text), FontType::kEditor,
+                                TPF_NOSHADOW, kAction2DataX, kAction2DataY,
+                                kDataWidth, 9, EditClass::kNumeric);
+  if (ActionNeed(action2.type) == NEED_NUMBER) {
+    absl::SNPrintF(action2_number_text, sizeof(action2_number_text), "%d",
+                   action2.data.value);
   }
 
   // Team type lists, one per event and action, by INI name.
-  char tbuf1[kTeamSize] = "";
-  DropListClass ttype1list(kDataTtype1, tbuf1, sizeof(tbuf1), FontType::kEditor,
-                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char tbuf2[kTeamSize] = "";
-  DropListClass ttype2list(kDataTtype2, tbuf2, sizeof(tbuf2), FontType::kEditor,
-                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char tbuf3[kTeamSize] = "";
-  DropListClass ttype3list(kDataTtype3, tbuf3, sizeof(tbuf3), FontType::kEditor,
-                           TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char tbuf4[kTeamSize] = "";
-  DropListClass ttype4list(kDataTtype4, tbuf4, sizeof(tbuf4), FontType::kEditor,
-                           TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_team_text[kNameSize] = "";
+  DropListClass event1_team_list(
+      kEvent1Team, event1_team_text, sizeof(event1_team_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_team_text[kNameSize] = "";
+  DropListClass event2_team_list(
+      kEvent2Team, event2_team_text, sizeof(event2_team_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_team_text[kNameSize] = "";
+  DropListClass action1_team_list(
+      kAction1Team, action1_team_text, sizeof(action1_team_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_team_text[kNameSize] = "";
+  DropListClass action2_team_list(
+      kAction2Team, action2_team_text, sizeof(action2_team_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    ttype1list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
-    ttype2list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
-    ttype3list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
-    ttype4list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    event1_team_list.Add_Item(
+        TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    event2_team_list.Add_Item(
+        TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    action1_team_list.Add_Item(
+        TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    action2_team_list.Add_Item(
+        TheObjectHeaps().team_type().ActiveAt(index)->IniName);
   }
 
-  if (Event1.Team != nullptr) {
-    ttype1list.Set_Selected_Index(Event1.Team->IniName);
+  if (event1.Team != nullptr) {
+    event1_team_list.Set_Selected_Index(event1.Team->IniName);
   } else {
-    ttype1list.Set_Selected_Index(0);
+    event1_team_list.Set_Selected_Index(0);
   }
-  if (Event2.Team != nullptr) {
-    ttype2list.Set_Selected_Index(Event2.Team->IniName);
+  if (event2.Team != nullptr) {
+    event2_team_list.Set_Selected_Index(event2.Team->IniName);
   } else {
-    ttype2list.Set_Selected_Index(0);
+    event2_team_list.Set_Selected_Index(0);
   }
-  if (Action1.team_type != nullptr) {
-    ttype3list.Set_Selected_Index(Action1.team_type->IniName);
+  if (action1.team_type != nullptr) {
+    action1_team_list.Set_Selected_Index(action1.team_type->IniName);
   } else {
-    ttype3list.Set_Selected_Index(0);
+    action1_team_list.Set_Selected_Index(0);
   }
-  if (Action2.team_type != nullptr) {
-    ttype4list.Set_Selected_Index(Action2.team_type->IniName);
+  if (action2.team_type != nullptr) {
+    action2_team_list.Set_Selected_Index(action2.team_type->IniName);
   } else {
-    ttype4list.Set_Selected_Index(0);
+    action2_team_list.Set_Selected_Index(0);
   }
 
   // Trigger type lists for the actions, by INI name. They include this
   // trigger type itself.
-  char trbuf1[kTeamSize] = "";
-  DropListClass trtype1list(kDataTrtype1, trbuf1, sizeof(trbuf1),
-                            FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                            kEdWidth, kEdHeight,
-                            MixArchive::RetrieveData("EBTN-UP.SHP"),
-                            MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char trbuf2[kTeamSize] = "";
-  DropListClass trtype2list(kDataTrtype2, trbuf2, sizeof(trbuf2),
-                            FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                            kEdWidth, kEdHeight,
-                            MixArchive::RetrieveData("EBTN-UP.SHP"),
-                            MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_trigger_text[kNameSize] = "";
+  DropListClass action1_trigger_list(
+      kAction1Trigger, action1_trigger_text, sizeof(action1_trigger_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_trigger_text[kNameSize] = "";
+  DropListClass action2_trigger_list(
+      kAction2Trigger, action2_trigger_text, sizeof(action2_trigger_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    trtype1list.Add_Item(
+    action1_trigger_list.Add_Item(
         TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
-    trtype2list.Add_Item(
+    action2_trigger_list.Add_Item(
         TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
 
-  if (Action1.trigger_type != nullptr) {
-    trtype1list.Set_Selected_Index(Action1.trigger_type->IniName);
+  if (action1.trigger_type != nullptr) {
+    action1_trigger_list.Set_Selected_Index(action1.trigger_type->IniName);
   } else {
-    trtype1list.Set_Selected_Index(0);
+    action1_trigger_list.Set_Selected_Index(0);
   }
-  if (Action2.trigger_type != nullptr) {
-    trtype2list.Set_Selected_Index(Action2.trigger_type->IniName);
+  if (action2.trigger_type != nullptr) {
+    action2_trigger_list.Set_Selected_Index(action2.trigger_type->IniName);
   } else {
-    trtype2list.Set_Selected_Index(0);
+    action2_trigger_list.Set_Selected_Index(0);
   }
 
   // On/off lists for the actions.
-  char boolbuf1[kTeamSize] = "";
-  DropListClass booltype1list(kDataBooltype1, boolbuf1, sizeof(boolbuf1),
-                              FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                              kEdWidth, kEdHeight,
-                              MixArchive::RetrieveData("EBTN-UP.SHP"),
-                              MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char boolbuf2[kTeamSize] = "";
-  DropListClass booltype2list(kDataBooltype2, boolbuf2, sizeof(boolbuf2),
-                              FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                              kEdWidth, kEdHeight,
-                              MixArchive::RetrieveData("EBTN-UP.SHP"),
-                              MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_bool_text[kNameSize] = "";
+  DropListClass action1_bool_list(
+      kAction1Bool, action1_bool_text, sizeof(action1_bool_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_bool_text[kNameSize] = "";
+  DropListClass action2_bool_list(
+      kAction2Bool, action2_bool_text, sizeof(action2_bool_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  booltype1list.Add_Item("OFF");
-  booltype1list.Add_Item("ON");
-  booltype2list.Add_Item("OFF");
-  booltype2list.Add_Item("ON");
+  action1_bool_list.Add_Item("OFF");
+  action1_bool_list.Add_Item("ON");
+  action2_bool_list.Add_Item("OFF");
+  action2_bool_list.Add_Item("ON");
 
-  booltype1list.Set_Selected_Index(Action1.data.flag ? 1 : 0);
-  booltype2list.Set_Selected_Index(Action2.data.flag ? 1 : 0);
+  action1_bool_list.Set_Selected_Index(action1.data.flag ? 1 : 0);
+  action2_bool_list.Set_Selected_Index(action2.data.flag ? 1 : 0);
 
   // Musical theme lists for the actions; the list index is the ThemeType.
-  char themebuf1[kDescSize] = "";
-  DropListClass themetype1list(kDataTheme1, themebuf1, sizeof(themebuf1),
-                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char themebuf2[kDescSize] = "";
-  DropListClass themetype2list(kDataTheme2, themebuf2, sizeof(themebuf2),
-                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_theme_text[kDescriptionSize] = "";
+  DropListClass action1_theme_list(
+      kAction1Theme, action1_theme_text, sizeof(action1_theme_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_theme_text[kDescriptionSize] = "";
+  DropListClass action2_theme_list(
+      kAction2Theme, action2_theme_text, sizeof(action2_theme_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-    themetype1list.Add_Item(ThemeClass::Full_Name(theme));
-    themetype2list.Add_Item(ThemeClass::Full_Name(theme));
+    action1_theme_list.Add_Item(ThemeClass::Full_Name(theme));
+    action2_theme_list.Add_Item(ThemeClass::Full_Name(theme));
   }
 
-  if (ActionNeed(Action1.type) == NEED_THEME) {
-    themetype1list.Set_Selected_Index(static_cast<int>(Action1.data.theme));
+  if (ActionNeed(action1.type) == NEED_THEME) {
+    action1_theme_list.Set_Selected_Index(static_cast<int>(action1.data.theme));
   } else {
-    themetype1list.Set_Selected_Index(0);
+    action1_theme_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action2.type) == NEED_THEME) {
-    themetype2list.Set_Selected_Index(static_cast<int>(Action2.data.theme));
+  if (ActionNeed(action2.type) == NEED_THEME) {
+    action2_theme_list.Set_Selected_Index(static_cast<int>(action2.data.theme));
   } else {
-    themetype2list.Set_Selected_Index(0);
+    action2_theme_list.Set_Selected_Index(0);
   }
 
   // Movie lists for the actions; the list index is the VQType.
-  char moviebuf1[kDescSize] = "";
-  DropListClass movietype1list(kDataMovie1, moviebuf1, sizeof(moviebuf1),
-                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char moviebuf2[kDescSize] = "";
-  DropListClass movietype2list(kDataMovie2, moviebuf2, sizeof(moviebuf2),
-                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_movie_text[kDescriptionSize] = "";
+  DropListClass action1_movie_list(
+      kAction1Movie, action1_movie_text, sizeof(action1_movie_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_movie_text[kDescriptionSize] = "";
+  DropListClass action2_movie_list(
+      kAction2Movie, action2_movie_text, sizeof(action2_movie_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VQType movie : magic_enum::enum_values<VQType>()) {
-    movietype1list.Add_Item(VQName.at(movie));
-    movietype2list.Add_Item(VQName.at(movie));
+    action1_movie_list.Add_Item(VQName.at(movie));
+    action2_movie_list.Add_Item(VQName.at(movie));
   }
 
-  if (ActionNeed(Action1.type) == NEED_MOVIE) {
-    movietype1list.Set_Selected_Index(static_cast<int>(Action1.data.movie));
+  if (ActionNeed(action1.type) == NEED_MOVIE) {
+    action1_movie_list.Set_Selected_Index(static_cast<int>(action1.data.movie));
   } else {
-    movietype1list.Set_Selected_Index(0);
+    action1_movie_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action2.type) == NEED_MOVIE) {
-    movietype2list.Set_Selected_Index(static_cast<int>(Action2.data.movie));
+  if (ActionNeed(action2.type) == NEED_MOVIE) {
+    action2_movie_list.Set_Selected_Index(static_cast<int>(action2.data.movie));
   } else {
-    movietype2list.Set_Selected_Index(0);
+    action2_movie_list.Set_Selected_Index(0);
   }
 
   // Sound effect lists for the actions; the list index is the VocType.
-  char soundbuf1[kDescSize] = "";
-  DropListClass soundtype1list(kDataSound1, soundbuf1, sizeof(soundbuf1),
-                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char soundbuf2[kDescSize] = "";
-  DropListClass soundtype2list(kDataSound2, soundbuf2, sizeof(soundbuf2),
-                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                               kEdWidth, kEdHeight,
-                               MixArchive::RetrieveData("EBTN-UP.SHP"),
-                               MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_sound_text[kDescriptionSize] = "";
+  DropListClass action1_sound_list(
+      kAction1Sound, action1_sound_text, sizeof(action1_sound_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_sound_text[kDescriptionSize] = "";
+  DropListClass action2_sound_list(
+      kAction2Sound, action2_sound_text, sizeof(action2_sound_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VocType sound : magic_enum::enum_values<VocType>()) {
-    soundtype1list.Add_Item(VocName(sound));
-    soundtype2list.Add_Item(VocName(sound));
+    action1_sound_list.Add_Item(VocName(sound));
+    action2_sound_list.Add_Item(VocName(sound));
   }
 
-  if (ActionNeed(Action1.type) == NEED_SOUND) {
-    soundtype1list.Set_Selected_Index(static_cast<int>(Action1.data.sound));
+  if (ActionNeed(action1.type) == NEED_SOUND) {
+    action1_sound_list.Set_Selected_Index(static_cast<int>(action1.data.sound));
   } else {
-    soundtype1list.Set_Selected_Index(0);
+    action1_sound_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action2.type) == NEED_SOUND) {
-    soundtype2list.Set_Selected_Index(static_cast<int>(Action2.data.sound));
+  if (ActionNeed(action2.type) == NEED_SOUND) {
+    action2_sound_list.Set_Selected_Index(static_cast<int>(action2.data.sound));
   } else {
-    soundtype2list.Set_Selected_Index(0);
+    action2_sound_list.Set_Selected_Index(0);
   }
 
   // Speech lists for the actions; the list index is the VoxType.
-  char speechbuf1[kDescSize] = "";
-  DropListClass speechtype1list(kDataSpeech1, speechbuf1, sizeof(speechbuf1),
-                                FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                                kEdWidth, kEdHeight,
-                                MixArchive::RetrieveData("EBTN-UP.SHP"),
-                                MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char speechbuf2[kDescSize] = "";
-  DropListClass speechtype2list(kDataSpeech2, speechbuf2, sizeof(speechbuf2),
-                                FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                                kEdWidth, kEdHeight,
-                                MixArchive::RetrieveData("EBTN-UP.SHP"),
-                                MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_speech_text[kDescriptionSize] = "";
+  DropListClass action1_speech_list(
+      kAction1Speech, action1_speech_text, sizeof(action1_speech_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_speech_text[kDescriptionSize] = "";
+  DropListClass action2_speech_list(
+      kAction2Speech, action2_speech_text, sizeof(action2_speech_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VoxType speech : magic_enum::enum_values<VoxType>()) {
-    speechtype1list.Add_Item(VoxName(speech));
-    speechtype2list.Add_Item(VoxName(speech));
+    action1_speech_list.Add_Item(VoxName(speech));
+    action2_speech_list.Add_Item(VoxName(speech));
   }
 
-  if (ActionNeed(Action1.type) == NEED_SPEECH) {
-    speechtype1list.Set_Selected_Index(static_cast<int>(Action1.data.speech));
+  if (ActionNeed(action1.type) == NEED_SPEECH) {
+    action1_speech_list.Set_Selected_Index(
+        static_cast<int>(action1.data.speech));
   } else {
-    speechtype1list.Set_Selected_Index(0);
+    action1_speech_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action2.type) == NEED_SPEECH) {
-    speechtype2list.Set_Selected_Index(static_cast<int>(Action2.data.speech));
+  if (ActionNeed(action2.type) == NEED_SPEECH) {
+    action2_speech_list.Set_Selected_Index(
+        static_cast<int>(action2.data.speech));
   } else {
-    speechtype2list.Set_Selected_Index(0);
+    action2_speech_list.Set_Selected_Index(0);
   }
 
   // Building type lists for the events; the list index is the StructType.
-  char bbuf1[kDescSize] = "";
-  DropListClass btype1list(kDataBtype1, bbuf1, sizeof(bbuf1), FontType::kEditor,
-                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char bbuf2[kDescSize] = "";
-  DropListClass btype2list(kDataBtype2, bbuf2, sizeof(bbuf2), FontType::kEditor,
-                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_building_text[kDescriptionSize] = "";
+  DropListClass event1_building_list(
+      kEvent1Building, event1_building_text, sizeof(event1_building_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_building_text[kDescriptionSize] = "";
+  DropListClass event2_building_list(
+      kEvent2Building, event2_building_text, sizeof(event2_building_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  for (const StructType ss : magic_enum::enum_values<StructType>()) {
-    btype1list.Add_Item(
-        Text_String(BuildingTypeClass::As_Reference(ss).Full_Name()));
-    btype2list.Add_Item(
-        Text_String(BuildingTypeClass::As_Reference(ss).Full_Name()));
+  for (const StructType building : magic_enum::enum_values<StructType>()) {
+    event1_building_list.Add_Item(
+        Text_String(BuildingTypeClass::As_Reference(building).Full_Name()));
+    event2_building_list.Add_Item(
+        Text_String(BuildingTypeClass::As_Reference(building).Full_Name()));
   }
 
-  if (Event_Needs(Event1.Event) == NEED_STRUCTURE) {
-    btype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Structure));
+  if (Event_Needs(event1.Event) == NEED_STRUCTURE) {
+    event1_building_list.Set_Selected_Index(
+        static_cast<int>(event1.Data.Structure));
   } else {
-    btype1list.Set_Selected_Index(0);
+    event1_building_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(Event2.Event) == NEED_STRUCTURE) {
-    btype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Structure));
+  if (Event_Needs(event2.Event) == NEED_STRUCTURE) {
+    event2_building_list.Set_Selected_Index(
+        static_cast<int>(event2.Data.Structure));
   } else {
-    btype2list.Set_Selected_Index(0);
+    event2_building_list.Set_Selected_Index(0);
   }
 
   // Infantry type lists for the events; the list index is the InfantryType.
-  char ibuf1[kDescSize] = "";
-  DropListClass itype1list(kDataItype1, ibuf1, sizeof(ibuf1), FontType::kEditor,
-                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char ibuf2[kDescSize] = "";
-  DropListClass itype2list(kDataItype2, ibuf2, sizeof(ibuf2), FontType::kEditor,
-                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_infantry_text[kDescriptionSize] = "";
+  DropListClass event1_infantry_list(
+      kEvent1Infantry, event1_infantry_text, sizeof(event1_infantry_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_infantry_text[kDescriptionSize] = "";
+  DropListClass event2_infantry_list(
+      kEvent2Infantry, event2_infantry_text, sizeof(event2_infantry_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  for (const InfantryType ii : magic_enum::enum_values<InfantryType>()) {
-    itype1list.Add_Item(
-        Text_String(InfantryTypeClass::As_Reference(ii).Full_Name()));
-    itype2list.Add_Item(
-        Text_String(InfantryTypeClass::As_Reference(ii).Full_Name()));
+  for (const InfantryType infantry : magic_enum::enum_values<InfantryType>()) {
+    event1_infantry_list.Add_Item(
+        Text_String(InfantryTypeClass::As_Reference(infantry).Full_Name()));
+    event2_infantry_list.Add_Item(
+        Text_String(InfantryTypeClass::As_Reference(infantry).Full_Name()));
   }
 
-  if (Event_Needs(Event1.Event) == NEED_INFANTRY) {
-    itype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Infantry));
+  if (Event_Needs(event1.Event) == NEED_INFANTRY) {
+    event1_infantry_list.Set_Selected_Index(
+        static_cast<int>(event1.Data.Infantry));
   } else {
-    itype1list.Set_Selected_Index(0);
+    event1_infantry_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(Event2.Event) == NEED_INFANTRY) {
-    itype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Infantry));
+  if (Event_Needs(event2.Event) == NEED_INFANTRY) {
+    event2_infantry_list.Set_Selected_Index(
+        static_cast<int>(event2.Data.Infantry));
   } else {
-    itype2list.Set_Selected_Index(0);
+    event2_infantry_list.Set_Selected_Index(0);
   }
 
   // Aircraft type lists for the events; the list index is the AircraftType.
-  char abuf1[kDescSize] = "";
-  DropListClass atype1list(kDataAtype1, abuf1, sizeof(abuf1), FontType::kEditor,
-                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char abuf2[kDescSize] = "";
-  DropListClass atype2list(kDataAtype2, abuf2, sizeof(abuf2), FontType::kEditor,
-                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_aircraft_text[kDescriptionSize] = "";
+  DropListClass event1_aircraft_list(
+      kEvent1Aircraft, event1_aircraft_text, sizeof(event1_aircraft_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_aircraft_text[kDescriptionSize] = "";
+  DropListClass event2_aircraft_list(
+      kEvent2Aircraft, event2_aircraft_text, sizeof(event2_aircraft_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  for (const AircraftType aa : magic_enum::enum_values<AircraftType>()) {
-    atype1list.Add_Item(
-        Text_String(AircraftTypeClass::As_Reference(aa).Full_Name()));
-    atype2list.Add_Item(
-        Text_String(AircraftTypeClass::As_Reference(aa).Full_Name()));
+  for (const AircraftType aircraft : magic_enum::enum_values<AircraftType>()) {
+    event1_aircraft_list.Add_Item(
+        Text_String(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
+    event2_aircraft_list.Add_Item(
+        Text_String(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
   }
 
-  if (Event_Needs(Event1.Event) == NEED_AIRCRAFT) {
-    atype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Aircraft));
+  if (Event_Needs(event1.Event) == NEED_AIRCRAFT) {
+    event1_aircraft_list.Set_Selected_Index(
+        static_cast<int>(event1.Data.Aircraft));
   } else {
-    atype1list.Set_Selected_Index(0);
+    event1_aircraft_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(Event2.Event) == NEED_AIRCRAFT) {
-    atype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Aircraft));
+  if (Event_Needs(event2.Event) == NEED_AIRCRAFT) {
+    event2_aircraft_list.Set_Selected_Index(
+        static_cast<int>(event2.Data.Aircraft));
   } else {
-    atype2list.Set_Selected_Index(0);
+    event2_aircraft_list.Set_Selected_Index(0);
   }
 
   // Unit type lists for the events; the list index is the UnitType.
-  char ubuf1[kDescSize] = "";
-  DropListClass utype1list(kDataUtype1, ubuf1, sizeof(ubuf1), FontType::kEditor,
-                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char ubuf2[kDescSize] = "";
-  DropListClass utype2list(kDataUtype2, ubuf2, sizeof(ubuf2), FontType::kEditor,
-                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_unit_text[kDescriptionSize] = "";
+  DropListClass event1_unit_list(
+      kEvent1Unit, event1_unit_text, sizeof(event1_unit_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_unit_text[kDescriptionSize] = "";
+  DropListClass event2_unit_list(
+      kEvent2Unit, event2_unit_text, sizeof(event2_unit_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  for (const UnitType uu : magic_enum::enum_values<UnitType>()) {
-    utype1list.Add_Item(
-        Text_String(UnitTypeClass::As_Reference(uu).Full_Name()));
-    utype2list.Add_Item(
-        Text_String(UnitTypeClass::As_Reference(uu).Full_Name()));
+  for (const UnitType unit : magic_enum::enum_values<UnitType>()) {
+    event1_unit_list.Add_Item(
+        Text_String(UnitTypeClass::As_Reference(unit).Full_Name()));
+    event2_unit_list.Add_Item(
+        Text_String(UnitTypeClass::As_Reference(unit).Full_Name()));
   }
 
-  if (Event_Needs(Event1.Event) == NEED_UNIT) {
-    utype1list.Set_Selected_Index(static_cast<int>(Event1.Data.Unit));
+  if (Event_Needs(event1.Event) == NEED_UNIT) {
+    event1_unit_list.Set_Selected_Index(static_cast<int>(event1.Data.Unit));
   } else {
-    utype1list.Set_Selected_Index(0);
+    event1_unit_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(Event2.Event) == NEED_UNIT) {
-    utype2list.Set_Selected_Index(static_cast<int>(Event2.Data.Unit));
+  if (Event_Needs(event2.Event) == NEED_UNIT) {
+    event2_unit_list.Set_Selected_Index(static_cast<int>(event2.Data.Unit));
   } else {
-    utype2list.Set_Selected_Index(0);
+    event2_unit_list.Set_Selected_Index(0);
   }
 
   // House lists, one per event and action; the list index is the HousesType.
-  char housebuf1[kDescSize] = "";
-  DropListClass htype1list(kDataHtype1, housebuf1, sizeof(housebuf1),
-                           FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y,
-                           kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char housebuf2[kDescSize] = "";
-  DropListClass htype2list(kDataHtype2, housebuf2, sizeof(housebuf2),
-                           FontType::kEditor, TPF_NOSHADOW, kEd2X, kEd2Y,
-                           kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char housebuf3[kDescSize] = "";
-  DropListClass htype3list(kDataHtype3, housebuf3, sizeof(housebuf3),
-                           FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
-                           kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char housebuf4[kDescSize] = "";
-  DropListClass htype4list(kDataHtype4, housebuf4, sizeof(housebuf4),
-                           FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
-                           kEdWidth, kEdHeight,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event1_house_text[kDescriptionSize] = "";
+  DropListClass event1_house_list(
+      kEvent1House, event1_house_text, sizeof(event1_house_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char event2_house_text[kDescriptionSize] = "";
+  DropListClass event2_house_list(
+      kEvent2House, event2_house_text, sizeof(event2_house_text),
+      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action1_house_text[kDescriptionSize] = "";
+  DropListClass action1_house_list(
+      kAction1House, action1_house_text, sizeof(action1_house_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_house_text[kDescriptionSize] = "";
+  DropListClass action2_house_list(
+      kAction2House, action2_house_text, sizeof(action2_house_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  for (const HousesType hh : magic_enum::enum_values<HousesType>()) {
-    htype1list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
-    htype2list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
-    htype3list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
-    htype4list.Add_Item(HouseTypeClass::As_Reference(hh).IniName);
+  for (const HousesType house_type : magic_enum::enum_values<HousesType>()) {
+    event1_house_list.Add_Item(
+        HouseTypeClass::As_Reference(house_type).IniName);
+    event2_house_list.Add_Item(
+        HouseTypeClass::As_Reference(house_type).IniName);
+    action1_house_list.Add_Item(
+        HouseTypeClass::As_Reference(house_type).IniName);
+    action2_house_list.Add_Item(
+        HouseTypeClass::As_Reference(house_type).IniName);
   }
 
-  if (Event_Needs(Event1.Event) == NEED_HOUSE) {
-    htype1list.Set_Selected_Index(static_cast<int>(Event1.Data.House));
+  if (Event_Needs(event1.Event) == NEED_HOUSE) {
+    event1_house_list.Set_Selected_Index(static_cast<int>(event1.Data.House));
   } else {
-    htype1list.Set_Selected_Index(0);
+    event1_house_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(Event2.Event) == NEED_HOUSE) {
-    htype2list.Set_Selected_Index(static_cast<int>(Event2.Data.House));
+  if (Event_Needs(event2.Event) == NEED_HOUSE) {
+    event2_house_list.Set_Selected_Index(static_cast<int>(event2.Data.House));
   } else {
-    htype2list.Set_Selected_Index(0);
+    event2_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action1.type) == NEED_HOUSE) {
-    htype3list.Set_Selected_Index(static_cast<int>(Action1.data.house));
+  if (ActionNeed(action1.type) == NEED_HOUSE) {
+    action1_house_list.Set_Selected_Index(static_cast<int>(action1.data.house));
   } else {
-    htype3list.Set_Selected_Index(0);
+    action1_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(Action2.type) == NEED_HOUSE) {
-    htype4list.Set_Selected_Index(static_cast<int>(Action2.data.house));
+  if (ActionNeed(action2.type) == NEED_HOUSE) {
+    action2_house_list.Set_Selected_Index(static_cast<int>(action2.data.house));
   } else {
-    htype4list.Set_Selected_Index(0);
+    action2_house_list.Set_Selected_Index(0);
   }
 
   // Special weapon lists for the actions; the list index is the
   // SpecialWeaponType. An action that needs something else holds another
   // member of the data union, which may not be a valid weapon.
-  char special1[kDescSize] = "";
-  DropListClass spc1(kDataSpecial1, special1, sizeof(special1),
-                     FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                     kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                     MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char special2[kDescSize] = "";
-  DropListClass spc2(kDataSpecial2, special2, sizeof(special2),
-                     FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                     kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                     MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (const SpecialWeaponType spec :
+  char action1_special_text[kDescriptionSize] = "";
+  DropListClass action1_special_list(
+      kAction1Special, action1_special_text, sizeof(action1_special_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_special_text[kDescriptionSize] = "";
+  DropListClass action2_special_list(
+      kAction2Special, action2_special_text, sizeof(action2_special_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  for (const SpecialWeaponType weapon :
        magic_enum::enum_values<SpecialWeaponType>()) {
-    spc1.Add_Item(SpecialWeaponName.at(spec));
-    spc2.Add_Item(SpecialWeaponName.at(spec));
+    action1_special_list.Add_Item(SpecialWeaponName.at(weapon));
+    action2_special_list.Add_Item(SpecialWeaponName.at(weapon));
   }
-  if (magic_enum::enum_contains(Action1.data.special)) {
-    spc1.Set_Selected_Index(static_cast<int>(Action1.data.special));
+  if (magic_enum::enum_contains(action1.data.special)) {
+    action1_special_list.Set_Selected_Index(
+        static_cast<int>(action1.data.special));
   } else {
-    spc1.Set_Selected_Index(0);
+    action1_special_list.Set_Selected_Index(0);
   }
-  if (magic_enum::enum_contains(Action2.data.special)) {
-    spc2.Set_Selected_Index(static_cast<int>(Action2.data.special));
+  if (magic_enum::enum_contains(action2.data.special)) {
+    action2_special_list.Set_Selected_Index(
+        static_cast<int>(action2.data.special));
   } else {
-    spc2.Set_Selected_Index(0);
+    action2_special_list.Set_Selected_Index(0);
   }
 
   // Quarry (preferred target) lists for the actions; the list index is the
   // QuarryType. They share the special weapon lists' gadget IDs, which is
   // harmless: nothing looks either up by ID, and only one of the two is linked
   // in at a time.
-  char quarry1[kDescSize] = "";
-  DropListClass qlist1(kDataSpecial1, quarry1, sizeof(quarry1),
-                       FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                       kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  char quarry2[kDescSize] = "";
-  DropListClass qlist2(kDataSpecial2, quarry2, sizeof(quarry2),
-                       FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                       kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                       MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
-    qlist1.Add_Item(QuarryName.at(q));
-    qlist2.Add_Item(QuarryName.at(q));
+  char action1_quarry_text[kDescriptionSize] = "";
+  DropListClass action1_quarry_list(
+      kAction1Special, action1_quarry_text, sizeof(action1_quarry_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char action2_quarry_text[kDescriptionSize] = "";
+  DropListClass action2_quarry_list(
+      kAction2Special, action2_quarry_text, sizeof(action2_quarry_text),
+      FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
+      kDataHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  for (const QuarryType quarry : magic_enum::enum_values<QuarryType>()) {
+    action1_quarry_list.Add_Item(QuarryName.at(quarry));
+    action2_quarry_list.Add_Item(QuarryName.at(quarry));
   }
-  if (magic_enum::enum_contains(Action1.data.quarry)) {
-    qlist1.Set_Selected_Index(static_cast<int>(Action1.data.quarry));
+  if (magic_enum::enum_contains(action1.data.quarry)) {
+    action1_quarry_list.Set_Selected_Index(
+        static_cast<int>(action1.data.quarry));
   } else {
-    qlist1.Set_Selected_Index(0);
+    action1_quarry_list.Set_Selected_Index(0);
   }
-  if (magic_enum::enum_contains(Action2.data.quarry)) {
-    qlist2.Set_Selected_Index(static_cast<int>(Action2.data.quarry));
+  if (magic_enum::enum_contains(action2.data.quarry)) {
+    action2_quarry_list.Set_Selected_Index(
+        static_cast<int>(action2.data.quarry));
   } else {
-    qlist2.Set_Selected_Index(0);
+    action2_quarry_list.Set_Selected_Index(0);
   }
 
   // The trigger name: four characters, which is all Description() shows.
-  char namebuf[5] = "";
-  EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf), FontType::kEditor,
-                     TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40, 9,
-                     EditClass::kAlphanumeric);
-  base::SafeCopy(namebuf, IniName);  // Name
+  char name_text[5] = "";
+  EditClass name_edit(kNameEdit, name_text, sizeof(name_text),
+                      FontType::kEditor, TPF_NOSHADOW, kDialogX + 40,
+                      kDialogY + 30, 40, 9, EditClass::kAlphanumeric);
+  base::SafeCopy(name_text, IniName);  // Name
 
   // The house that owns the trigger. The list cannot show "no house", so an
   // unset house becomes HOUSE_GOOD, even if the dialog is then cancelled.
-  char housetext[kDescSize] = "";
-  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
-                         FontType::kEditor, TPF_NOSHADOW,
-                         name_edt.X + name_edt.Width + 20, name_edt.Y, 95,
-                         8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                         MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
+  char owner_text[kDescriptionSize] = "";
+  DropListClass owner_list(kOwnerList, owner_text, sizeof(owner_text),
+                           FontType::kEditor, TPF_NOSHADOW,
+                           name_edit.X + name_edit.Width + 20, name_edit.Y, 95,
+                           8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           MixArchive::RetrieveData("EBTN-DN.SHP"));
+  for (const HousesType house_type : magic_enum::enum_values<HousesType>()) {
+    owner_list.Add_Item(HouseTypeClass::As_Reference(house_type).IniName);
   }
-  if (House == HOUSE_NONE) {
-    House = HOUSE_GOOD;
+  if (house == HOUSE_NONE) {
+    house = HOUSE_GOOD;
   }
-  housebtn.Set_Selected_Index(static_cast<int>(House));
+  owner_list.Set_Selected_Index(static_cast<int>(house));
 
   // The persistence list; the list index is the Persistence, so the names
   // must stay in the enum's order.
-  char perstext[kDescSize] = "";
+  char persistence_text[kDescriptionSize] = "";
   static constexpr std::array<const char*, 3> kPersistenceNames = {
       "Volatile", "Semi-persistent", "Persistent"};
-  DropListClass persbtn(kButtonPersistance, perstext, sizeof(perstext),
-                        FontType::kEditor, TPF_NOSHADOW,
-                        housebtn.X + housebtn.Width + 20, housebtn.Y, 105,
-                        8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                        MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass persistence_list(
+      kPersistenceList, persistence_text, sizeof(persistence_text),
+      FontType::kEditor, TPF_NOSHADOW, owner_list.X + owner_list.Width + 20,
+      owner_list.Y, 105, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const char* const name : kPersistenceNames) {
-    persbtn.Add_Item(name);
+    persistence_list.Add_Item(name);
   }
-  persbtn.Set_Selected_Index(static_cast<int>(IsPersistant));
+  persistence_list.Set_Selected_Index(static_cast<int>(persistence));
 
   // This button cycles through the four MultiStyle values for the events;
-  // `eventflag` is the value as a number.
-  int eventflag = static_cast<int>(EventControl);
-  TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kEButtonFont,
-                           kEButtonFlags, event1list.X, event1list.Y + 11, 100,
-                           9);
+  // `event_control_index` is the value as a number.
+  int event_control_index = static_cast<int>(event_control);
+  TextButtonClass event_control_button(
+      kEventControlButton, TXT_TRIGGER_JUST_EVENT, kEButtonFont, kEButtonFlags,
+      event1_list.X, event1_list.Y + 11, 100, 9);
 
   // This button toggles the second action. Linked events always have one, so
-  // the button is hidden then and `actionflag` is not consulted.
-  bool actionflag = ActionControl != MULTI_ONLY;
-  TextButtonClass actionbtn(kButtonAction, TXT_TRIGGER_JUST_ACTION,
-                            kEButtonFont, kEButtonFlags, action1list.X,
-                            action1list.Y + 11, 100, 9);
+  // the button is hidden then and `has_second_action` is not consulted.
+  bool has_second_action = action_control != MULTI_ONLY;
+  TextButtonClass action_control_button(
+      kActionControlButton, TXT_TRIGGER_JUST_ACTION, kEButtonFont,
+      kEButtonFlags, action1_list.X, action1_list.Y + 11, 100, 9);
 
   // Create the ubiquitous OK and Cancel buttons.
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
-                        kDialogX + 35, kDialogY + kDialogH - 30, 45, 9);
-  TextButtonClass cancelbtn(kKbuttoncancel, TXT_CANCEL, kEButtonFont,
-                            kEButtonFlags, kDialogX + kDialogW - 80,
-                            kDialogY + kDialogH - 30, 45, 9);
+  TextButtonClass ok_button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
+                            kDialogX + 35, kDialogY + kDialogH - 30, 45, 9);
+  TextButtonClass cancel_button(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                                kEButtonFlags, kDialogX + kDialogW - 80,
+                                kDialogY + kDialogH - 30, 45, 9);
 
   PixelView& view = TheScreen().visible_view();
 
   // Link in the gadgets that are always shown. The second event and action
   // lists and all the data fields are added by the redraw pass.
-  commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
-  event1list.Add_Tail(*commands);
-  action1list.Add_Tail(*commands);
-  eventbtn.Add_Tail(*commands);
-  actionbtn.Add_Tail(*commands);
-  name_edt.Add_Tail(*commands);
-  persbtn.Add_Tail(*commands);
-  housebtn.Add_Tail(*commands);
+  gadgets = &ok_button;
+  cancel_button.Add_Tail(*gadgets);
+  event1_list.Add_Tail(*gadgets);
+  action1_list.Add_Tail(*gadgets);
+  event_control_button.Add_Tail(*gadgets);
+  action_control_button.Add_Tail(*gadgets);
+  name_edit.Add_Tail(*gadgets);
+  persistence_list.Add_Tail(*gadgets);
+  owner_list.Add_Tail(*gadgets);
 
   // Main Processing Loop
-  bool display = true;
-  bool process = true;
-  while (process) {
+  bool redraw = true;
+  bool running = true;
+  while (running) {
     // Service the real-time systems while the dialog has the main loop.
     ServiceRealTime();
 
     // Redraw the dialog and relink its gadgets whenever a choice may have
     // changed what it shows.
-    if (display) {
+    if (redraw) {
       game::TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
       // Draw the captions
-      Fancy_Text_Print(view, "Trigger Event:", event1list.X, event1list.Y - 7,
+      Fancy_Text_Print(view, "Trigger Event:", event1_list.X, event1_list.Y - 7,
                        scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Action to Perform:", action1list.X,
-                       action1list.Y - 7, scheme, kTBlack, FontType::kEditor,
+      Fancy_Text_Print(view, "Action to Perform:", action1_list.X,
+                       action1_list.Y - 7, scheme, kTBlack, FontType::kEditor,
                        TPF_NOSHADOW);
-      Fancy_Text_Print(view, "House:", housebtn.X, housebtn.Y - 7, scheme,
+      Fancy_Text_Print(view, "House:", owner_list.X, owner_list.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Name:", name_edt.X, name_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Name:", name_edit.X, name_edit.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Persistence:", persbtn.X, persbtn.Y - 7, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+      Fancy_Text_Print(view, "Persistence:", persistence_list.X,
+                       persistence_list.Y - 7, scheme, kTBlack,
+                       FontType::kEditor, TPF_NOSHADOW);
 
       // For linked events, draw a bracket from each event list to the action
       // list it sets off.
-      if (eventflag == 3) {
-        view.DrawLine(event1list.X - 1, event1list.Y + 3, event1list.X - 4,
-                      event1list.Y + 3, kWhite);
-        view.DrawLine(event1list.X - 4, event1list.Y + 3, action1list.X - 4,
-                      action1list.Y + 3, kWhite);
-        view.DrawLine(action1list.X - 1, action1list.Y + 3, action1list.X - 4,
-                      action1list.Y + 3, kWhite);
+      if (event_control_index == 3) {
+        view.DrawLine(event1_list.X - 1, event1_list.Y + 3, event1_list.X - 4,
+                      event1_list.Y + 3, kWhite);
+        view.DrawLine(event1_list.X - 4, event1_list.Y + 3, action1_list.X - 4,
+                      action1_list.Y + 3, kWhite);
+        view.DrawLine(action1_list.X - 1, action1_list.Y + 3,
+                      action1_list.X - 4, action1_list.Y + 3, kWhite);
 
-        view.DrawLine(event2list.X - 1, event2list.Y + 3, event2list.X - 10,
-                      event2list.Y + 3, kWhite);
-        view.DrawLine(event2list.X - 10, event2list.Y + 3, action2list.X - 10,
-                      action2list.Y + 3, kWhite);
-        view.DrawLine(action2list.X - 1, action2list.Y + 3, action2list.X - 10,
-                      action2list.Y + 3, kWhite);
+        view.DrawLine(event2_list.X - 1, event2_list.Y + 3, event2_list.X - 10,
+                      event2_list.Y + 3, kWhite);
+        view.DrawLine(event2_list.X - 10, event2_list.Y + 3,
+                      action2_list.X - 10, action2_list.Y + 3, kWhite);
+        view.DrawLine(action2_list.X - 1, action2_list.Y + 3,
+                      action2_list.X - 10, action2_list.Y + 3, kWhite);
       }
 
       // Show the second event list unless there is only one event.
-      event2list.Remove();
-      switch (eventflag) {
+      event2_list.Remove();
+      switch (event_control_index) {
         case 0:
-          eventbtn.Set_Text(TXT_TRIGGER_JUST_EVENT);
+          event_control_button.Set_Text(TXT_TRIGGER_JUST_EVENT);
           break;
 
         case 1:
-          eventbtn.Set_Text(TXT_TRIGGER_AND);
-          event2list.Add(*commands);
+          event_control_button.Set_Text(TXT_TRIGGER_AND);
+          event2_list.Add(*gadgets);
           break;
 
         case 2:
-          eventbtn.Set_Text(TXT_TRIGGER_OR);
-          event2list.Add(*commands);
+          event_control_button.Set_Text(TXT_TRIGGER_OR);
+          event2_list.Add(*gadgets);
           break;
 
         case 3:
-          eventbtn.Set_Text(TXT_TRIGGER_LINKED);
-          event2list.Add(*commands);
+          event_control_button.Set_Text(TXT_TRIGGER_LINKED);
+          event2_list.Add(*gadgets);
           break;
         default:
           break;
       }
 
       // Show the data field the first event needs, if any.
-      htype1list.Remove();
-      way1data.Remove();
-      event1data.Remove();
-      btype1list.Remove();
-      itype1list.Remove();
-      atype1list.Remove();
-      utype1list.Remove();
-      ttype1list.Remove();
-      switch (Event_Needs(*event1list.Current_Item())) {
+      event1_house_list.Remove();
+      event1_waypoint_edit.Remove();
+      event1_number_edit.Remove();
+      event1_building_list.Remove();
+      event1_infantry_list.Remove();
+      event1_aircraft_list.Remove();
+      event1_unit_list.Remove();
+      event1_team_list.Remove();
+      switch (Event_Needs(*event1_list.Current_Item())) {
         case NEED_HOUSE:
-          htype1list.Add(*commands);
+          event1_house_list.Add(*gadgets);
           break;
 
         case NEED_TEAM:
-          ttype1list.Add(*commands);
+          event1_team_list.Add(*gadgets);
           break;
 
         case NEED_WAYPOINT:
-          way1data.Add(*commands);
+          event1_waypoint_edit.Add(*gadgets);
           break;
 
         case NEED_TIME:
         case NEED_NUMBER:
-          event1data.Add(*commands);
+          event1_number_edit.Add(*gadgets);
           break;
 
         case NEED_STRUCTURE:
-          btype1list.Add(*commands);
+          event1_building_list.Add(*gadgets);
           break;
 
         case NEED_INFANTRY:
-          itype1list.Add(*commands);
+          event1_infantry_list.Add(*gadgets);
           break;
 
         case NEED_AIRCRAFT:
-          atype1list.Add(*commands);
+          event1_aircraft_list.Add(*gadgets);
           break;
 
         case NEED_UNIT:
-          utype1list.Add(*commands);
+          event1_unit_list.Add(*gadgets);
           break;
 
         case NeedType::NEED_NONE:
@@ -1183,47 +1233,47 @@ bool TriggerType::Edit() {
       }
 
       // The same for the second event, when its list is showing.
-      htype2list.Remove();
-      way2data.Remove();
-      event2data.Remove();
-      btype2list.Remove();
-      itype2list.Remove();
-      atype2list.Remove();
-      utype2list.Remove();
-      ttype2list.Remove();
-      if (commands->Extract_Gadget(kEventList2)) {
-        switch (Event_Needs(*event2list.Current_Item())) {
+      event2_house_list.Remove();
+      event2_waypoint_edit.Remove();
+      event2_number_edit.Remove();
+      event2_building_list.Remove();
+      event2_infantry_list.Remove();
+      event2_aircraft_list.Remove();
+      event2_unit_list.Remove();
+      event2_team_list.Remove();
+      if (gadgets->Extract_Gadget(kEvent2List)) {
+        switch (Event_Needs(*event2_list.Current_Item())) {
           case NEED_HOUSE:
-            htype2list.Add(*commands);
+            event2_house_list.Add(*gadgets);
             break;
 
           case NEED_TEAM:
-            ttype2list.Add(*commands);
+            event2_team_list.Add(*gadgets);
             break;
 
           case NEED_WAYPOINT:
-            way2data.Add(*commands);
+            event2_waypoint_edit.Add(*gadgets);
             break;
 
           case NEED_TIME:
           case NEED_NUMBER:
-            event2data.Add(*commands);
+            event2_number_edit.Add(*gadgets);
             break;
 
           case NEED_STRUCTURE:
-            btype2list.Add(*commands);
+            event2_building_list.Add(*gadgets);
             break;
 
           case NEED_INFANTRY:
-            itype2list.Add(*commands);
+            event2_infantry_list.Add(*gadgets);
             break;
 
           case NEED_AIRCRAFT:
-            atype2list.Add(*commands);
+            event2_aircraft_list.Add(*gadgets);
             break;
 
           case NEED_UNIT:
-            utype2list.Add(*commands);
+            event2_unit_list.Add(*gadgets);
             break;
 
           case NeedType::NEED_NONE:
@@ -1245,80 +1295,80 @@ bool TriggerType::Edit() {
 
       // Show the second action list for linked events, or else the button
       // that toggles it and the list when it is toggled on.
-      actionbtn.Remove();
-      action2list.Remove();
-      if (eventflag == 3) {
-        action2list.Add(*commands);
+      action_control_button.Remove();
+      action2_list.Remove();
+      if (event_control_index == 3) {
+        action2_list.Add(*gadgets);
       } else {
-        actionbtn.Add(*commands);
-        if (actionflag) {
-          actionbtn.Set_Text(TXT_TRIGGER_AND);
-          action2list.Add(*commands);
+        action_control_button.Add(*gadgets);
+        if (has_second_action) {
+          action_control_button.Set_Text(TXT_TRIGGER_AND);
+          action2_list.Add(*gadgets);
         } else {
-          actionbtn.Set_Text(TXT_TRIGGER_JUST_ACTION);
+          action_control_button.Set_Text(TXT_TRIGGER_JUST_ACTION);
         }
       }
 
       // Show the data field the first action needs, if any.
-      qlist1.Remove();
-      spc1.Remove();
-      htype3list.Remove();
-      booltype1list.Remove();
-      trtype1list.Remove();
-      way3data.Remove();
-      action1data.Remove();
-      ttype3list.Remove();
-      themetype1list.Remove();
-      soundtype1list.Remove();
-      movietype1list.Remove();
-      speechtype1list.Remove();
-      switch (ActionNeed(*action1list.Current_Item())) {
+      action1_quarry_list.Remove();
+      action1_special_list.Remove();
+      action1_house_list.Remove();
+      action1_bool_list.Remove();
+      action1_trigger_list.Remove();
+      action1_waypoint_edit.Remove();
+      action1_number_edit.Remove();
+      action1_team_list.Remove();
+      action1_theme_list.Remove();
+      action1_sound_list.Remove();
+      action1_movie_list.Remove();
+      action1_speech_list.Remove();
+      switch (ActionNeed(*action1_list.Current_Item())) {
         case NEED_MOVIE:
-          movietype1list.Add(*commands);
+          action1_movie_list.Add(*gadgets);
           break;
 
         case NEED_SPECIAL:
-          spc1.Add(*commands);
+          action1_special_list.Add(*gadgets);
           break;
 
         case NEED_HOUSE:
-          htype3list.Add(*commands);
+          action1_house_list.Add(*gadgets);
           break;
 
         case NEED_BOOL:
-          booltype1list.Add(*commands);
+          action1_bool_list.Add(*gadgets);
           break;
 
         case NEED_TRIGGER:
-          trtype1list.Add(*commands);
+          action1_trigger_list.Add(*gadgets);
           break;
 
         case NEED_TEAM:
-          ttype3list.Add(*commands);
+          action1_team_list.Add(*gadgets);
           break;
 
         case NEED_NUMBER:
-          action1data.Add(*commands);
+          action1_number_edit.Add(*gadgets);
           break;
 
         case NEED_WAYPOINT:
-          way3data.Add(*commands);
+          action1_waypoint_edit.Add(*gadgets);
           break;
 
         case NEED_THEME:
-          themetype1list.Add(*commands);
+          action1_theme_list.Add(*gadgets);
           break;
 
         case NEED_SOUND:
-          soundtype1list.Add(*commands);
+          action1_sound_list.Add(*gadgets);
           break;
 
         case NEED_SPEECH:
-          speechtype1list.Add(*commands);
+          action1_speech_list.Add(*gadgets);
           break;
 
         case NEED_QUARRY:
-          qlist1.Add(*commands);
+          action1_quarry_list.Add(*gadgets);
           break;
         case NeedType::NEED_NONE:
         case NeedType::NEED_INFANTRY:
@@ -1334,66 +1384,66 @@ bool TriggerType::Edit() {
       }
 
       // The same for the second action, when its list is showing.
-      qlist2.Remove();
-      spc2.Remove();
-      htype4list.Remove();
-      booltype2list.Remove();
-      trtype2list.Remove();
-      way4data.Remove();
-      action2data.Remove();
-      ttype4list.Remove();
-      themetype2list.Remove();
-      soundtype2list.Remove();
-      movietype2list.Remove();
-      speechtype2list.Remove();
-      if (commands->Extract_Gadget(kActionList2)) {
-        switch (ActionNeed(*action2list.Current_Item())) {
+      action2_quarry_list.Remove();
+      action2_special_list.Remove();
+      action2_house_list.Remove();
+      action2_bool_list.Remove();
+      action2_trigger_list.Remove();
+      action2_waypoint_edit.Remove();
+      action2_number_edit.Remove();
+      action2_team_list.Remove();
+      action2_theme_list.Remove();
+      action2_sound_list.Remove();
+      action2_movie_list.Remove();
+      action2_speech_list.Remove();
+      if (gadgets->Extract_Gadget(kAction2List)) {
+        switch (ActionNeed(*action2_list.Current_Item())) {
           case NEED_MOVIE:
-            movietype2list.Add(*commands);
+            action2_movie_list.Add(*gadgets);
             break;
 
           case NEED_SPECIAL:
-            spc2.Add(*commands);
+            action2_special_list.Add(*gadgets);
             break;
 
           case NEED_HOUSE:
-            htype4list.Add(*commands);
+            action2_house_list.Add(*gadgets);
             break;
 
           case NEED_BOOL:
-            booltype2list.Add(*commands);
+            action2_bool_list.Add(*gadgets);
             break;
 
           case NEED_TRIGGER:
-            trtype2list.Add(*commands);
+            action2_trigger_list.Add(*gadgets);
             break;
 
           case NEED_TEAM:
-            ttype4list.Add(*commands);
+            action2_team_list.Add(*gadgets);
             break;
 
           case NEED_NUMBER:
-            action2data.Add(*commands);
+            action2_number_edit.Add(*gadgets);
             break;
 
           case NEED_WAYPOINT:
-            way4data.Add(*commands);
+            action2_waypoint_edit.Add(*gadgets);
             break;
 
           case NEED_THEME:
-            themetype2list.Add(*commands);
+            action2_theme_list.Add(*gadgets);
             break;
 
           case NEED_SOUND:
-            soundtype2list.Add(*commands);
+            action2_sound_list.Add(*gadgets);
             break;
 
           case NEED_SPEECH:
-            speechtype2list.Add(*commands);
+            action2_speech_list.Add(*gadgets);
             break;
 
           case NEED_QUARRY:
-            qlist2.Add(*commands);
+            action2_quarry_list.Add(*gadgets);
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:
@@ -1411,134 +1461,138 @@ bool TriggerType::Edit() {
 
       // Collapse any dropped down list: the dialog was just redrawn over its
       // open part.
-      spc1.Collapse();
-      spc2.Collapse();
-      qlist1.Collapse();
-      qlist2.Collapse();
-      htype1list.Collapse();
-      htype2list.Collapse();
-      htype3list.Collapse();
-      htype4list.Collapse();
-      ttype1list.Collapse();
-      ttype2list.Collapse();
-      ttype3list.Collapse();
-      ttype4list.Collapse();
-      btype1list.Collapse();
-      btype2list.Collapse();
-      utype1list.Collapse();
-      utype2list.Collapse();
-      itype1list.Collapse();
-      itype2list.Collapse();
-      atype1list.Collapse();
-      atype2list.Collapse();
-      trtype1list.Collapse();
-      trtype2list.Collapse();
-      action1list.Collapse();
-      action2list.Collapse();
-      event1list.Collapse();
-      event2list.Collapse();
-      housebtn.Collapse();
-      persbtn.Collapse();
-      booltype1list.Collapse();
-      booltype2list.Collapse();
-      themetype1list.Collapse();
-      themetype2list.Collapse();
-      soundtype1list.Collapse();
-      soundtype2list.Collapse();
-      movietype1list.Collapse();
-      movietype2list.Collapse();
-      speechtype1list.Collapse();
-      speechtype2list.Collapse();
-      commands->Flag_List_To_Redraw();
+      action1_special_list.Collapse();
+      action2_special_list.Collapse();
+      action1_quarry_list.Collapse();
+      action2_quarry_list.Collapse();
+      event1_house_list.Collapse();
+      event2_house_list.Collapse();
+      action1_house_list.Collapse();
+      action2_house_list.Collapse();
+      event1_team_list.Collapse();
+      event2_team_list.Collapse();
+      action1_team_list.Collapse();
+      action2_team_list.Collapse();
+      event1_building_list.Collapse();
+      event2_building_list.Collapse();
+      event1_unit_list.Collapse();
+      event2_unit_list.Collapse();
+      event1_infantry_list.Collapse();
+      event2_infantry_list.Collapse();
+      event1_aircraft_list.Collapse();
+      event2_aircraft_list.Collapse();
+      action1_trigger_list.Collapse();
+      action2_trigger_list.Collapse();
+      action1_list.Collapse();
+      action2_list.Collapse();
+      event1_list.Collapse();
+      event2_list.Collapse();
+      owner_list.Collapse();
+      persistence_list.Collapse();
+      action1_bool_list.Collapse();
+      action2_bool_list.Collapse();
+      action1_theme_list.Collapse();
+      action2_theme_list.Collapse();
+      action1_sound_list.Collapse();
+      action2_sound_list.Collapse();
+      action1_movie_list.Collapse();
+      action2_movie_list.Collapse();
+      action1_speech_list.Collapse();
+      action2_speech_list.Collapse();
+      gadgets->Flag_List_To_Redraw();
       game::TheMouse().Show();
-      display = false;
+      redraw = false;
     }
 
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = gadgets->Input(view).key;
 
     switch (static_cast<int>(input)) {
-      case engine::window::ButtonKey(kButtonEvent):
-        eventflag = (eventflag + 1) % 4;
-        display = true;
+      case engine::window::ButtonKey(kEventControlButton):
+        event_control_index = (event_control_index + 1) % 4;
+        redraw = true;
         break;
 
-      case engine::window::ButtonKey(kButtonAction):
-        actionflag = !actionflag;
-        display = true;
+      case engine::window::ButtonKey(kActionControlButton):
+        has_second_action = !has_second_action;
+        redraw = true;
         break;
 
-      case engine::window::ButtonKey(kDataSpeech1):
-        Speak(VoxType(speechtype1list.Current_Index()));
-        display = true;
+      case engine::window::ButtonKey(kAction1Speech):
+        Speak(VoxType(action1_speech_list.Current_Index()));
+        redraw = true;
         break;
 
-      case engine::window::ButtonKey(kDataSpeech2):
-        Speak(VoxType(speechtype2list.Current_Index()));
-        display = true;
+      case engine::window::ButtonKey(kAction2Speech):
+        Speak(VoxType(action2_speech_list.Current_Index()));
+        redraw = true;
         break;
 
-      case engine::window::ButtonKey(kDataSound1):
-        PlaySoundEffect(VocType(soundtype1list.Current_Index()));
-        display = true;
+      case engine::window::ButtonKey(kAction1Sound):
+        PlaySoundEffect(VocType(action1_sound_list.Current_Index()));
+        redraw = true;
         break;
 
-      case engine::window::ButtonKey(kDataSound2):
-        PlaySoundEffect(VocType(soundtype2list.Current_Index()));
-        display = true;
+      case engine::window::ButtonKey(kAction2Sound):
+        PlaySoundEffect(VocType(action2_sound_list.Current_Index()));
+        redraw = true;
         break;
 
       // Store the dialog's values in the trigger type. Each event and action
       // takes only the field it needs; the rest of its data is left alone.
       case KN_RETURN:
       case engine::window::ButtonKey(kButtonOk):
-        House = HousesType(housebtn.Current_Index());
-        IsPersistant = Persistence(persbtn.Current_Index());
-        if (std::string_view(namebuf).empty()) {
+        house = HousesType(owner_list.Current_Index());
+        persistence = Persistence(persistence_list.Current_Index());
+        if (std::string_view(name_text).empty()) {
           Set_Name("____");
         } else {
-          Set_Name(namebuf);
+          Set_Name(name_text);
         }
 
         // The first event and its data.
-        EventControl = MultiStyle(eventflag);
-        Event1.Event = *event1list.Current_Item();
-        switch (Event_Needs(Event1.Event)) {
+        event_control = MultiStyle(event_control_index);
+        event1.Event = *event1_list.Current_Item();
+        switch (Event_Needs(event1.Event)) {
           case NEED_HOUSE:
-            Event1.Data.House = HousesType(htype1list.Current_Index());
+            event1.Data.House = HousesType(event1_house_list.Current_Index());
             break;
 
           case NEED_TIME:
           case NEED_NUMBER:
-            Event1.Data.Value =
-                base::ParseIntegerOr<int>(event1data.Get_Text(), 0);
+            event1.Data.Value =
+                base::ParseIntegerOr<int>(event1_number_edit.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
-            Event1.Data.Structure = StructType(btype1list.Current_Index());
+            event1.Data.Structure =
+                StructType(event1_building_list.Current_Index());
             break;
 
           case NEED_UNIT:
-            Event1.Data.Unit = UnitType(utype1list.Current_Index());
+            event1.Data.Unit = UnitType(event1_unit_list.Current_Index());
             break;
 
           case NEED_INFANTRY:
-            Event1.Data.Infantry = InfantryType(itype1list.Current_Index());
+            event1.Data.Infantry =
+                InfantryType(event1_infantry_list.Current_Index());
             break;
 
           case NEED_AIRCRAFT:
-            Event1.Data.Aircraft = AircraftType(atype1list.Current_Index());
+            event1.Data.Aircraft =
+                AircraftType(event1_aircraft_list.Current_Index());
             break;
 
           case NEED_WAYPOINT:
-            Event1.Data.Value = toupper(way1[0]) - 'A';
-            if (way1[1] != '\0') {
-              Event1.Data.Value = (Event1.Data.Value + 1) * 26;
-              Event1.Data.Value += toupper(way1[1]) - 'A';
+            event1.Data.Value = toupper(event1_waypoint_text[0]) - 'A';
+            if (event1_waypoint_text[1] != '\0') {
+              event1.Data.Value = (event1.Data.Value + 1) * 26;
+              event1.Data.Value += toupper(event1_waypoint_text[1]) - 'A';
             }
             break;
 
           case NEED_TEAM:
-            Event1.Team = TeamTypeClass::From_Name(SelectedName(ttype1list));
+            event1.Team =
+                TeamTypeClass::From_Name(SelectedName(event1_team_list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_THEME:
@@ -1558,44 +1612,48 @@ bool TriggerType::Edit() {
 
         // The second event and its data. They are stored even when only one
         // event is in use.
-        Event2.Event = *event2list.Current_Item();
-        switch (Event_Needs(Event2.Event)) {
+        event2.Event = *event2_list.Current_Item();
+        switch (Event_Needs(event2.Event)) {
           case NEED_HOUSE:
-            Event2.Data.House = HousesType(htype2list.Current_Index());
+            event2.Data.House = HousesType(event2_house_list.Current_Index());
             break;
 
           case NEED_TIME:
           case NEED_NUMBER:
-            Event2.Data.Value =
-                base::ParseIntegerOr<int>(event2data.Get_Text(), 0);
+            event2.Data.Value =
+                base::ParseIntegerOr<int>(event2_number_edit.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
-            Event2.Data.Structure = StructType(btype2list.Current_Index());
+            event2.Data.Structure =
+                StructType(event2_building_list.Current_Index());
             break;
 
           case NEED_UNIT:
-            Event2.Data.Unit = UnitType(utype2list.Current_Index());
+            event2.Data.Unit = UnitType(event2_unit_list.Current_Index());
             break;
 
           case NEED_INFANTRY:
-            Event2.Data.Infantry = InfantryType(itype2list.Current_Index());
+            event2.Data.Infantry =
+                InfantryType(event2_infantry_list.Current_Index());
             break;
 
           case NEED_AIRCRAFT:
-            Event2.Data.Aircraft = AircraftType(atype2list.Current_Index());
+            event2.Data.Aircraft =
+                AircraftType(event2_aircraft_list.Current_Index());
             break;
 
           case NEED_WAYPOINT:
-            Event2.Data.Value = toupper(way2[0]) - 'A';
-            if (way2[1] != '\0') {
-              Event2.Data.Value = (Event2.Data.Value + 1) * 26;
-              Event2.Data.Value += toupper(way2[1]) - 'A';
+            event2.Data.Value = toupper(event2_waypoint_text[0]) - 'A';
+            if (event2_waypoint_text[1] != '\0') {
+              event2.Data.Value = (event2.Data.Value + 1) * 26;
+              event2.Data.Value += toupper(event2_waypoint_text[1]) - 'A';
             }
             break;
 
           case NEED_TEAM:
-            Event2.Team = TeamTypeClass::As_Pointer(SelectedName(ttype2list));
+            event2.Team =
+                TeamTypeClass::As_Pointer(SelectedName(event2_team_list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_THEME:
@@ -1613,64 +1671,66 @@ bool TriggerType::Edit() {
             break;
         }
 
-        // The first action and its data. `actionflag` converts to MULTI_ONLY
-        // or MULTI_AND.
-        ActionControl = MultiStyle(actionflag);
-        Action1.type = *action1list.Current_Item();
-        switch (ActionNeed(Action1.type)) {
+        // The first action and its data. `has_second_action` converts to
+        // MULTI_ONLY or MULTI_AND.
+        action_control = MultiStyle(has_second_action);
+        action1.type = *action1_list.Current_Item();
+        switch (ActionNeed(action1.type)) {
           case NEED_SPECIAL:
-            Action1.data.special = SpecialWeaponType(spc1.Current_Index());
+            action1.data.special =
+                SpecialWeaponType(action1_special_list.Current_Index());
             break;
 
           case NEED_HOUSE:
-            Action1.data.house = HousesType(htype3list.Current_Index());
+            action1.data.house = HousesType(action1_house_list.Current_Index());
             break;
 
           case NEED_TRIGGER:
-            Action1.trigger_type =
-                TriggerType::From_Name(SelectedName(trtype1list));
+            action1.trigger_type =
+                TriggerType::FromName(SelectedName(action1_trigger_list));
             break;
 
           case NEED_TEAM:
-            Action1.team_type =
-                TeamTypeClass::From_Name(SelectedName(ttype3list));
+            action1.team_type =
+                TeamTypeClass::From_Name(SelectedName(action1_team_list));
             break;
 
           case NEED_NUMBER:
-            Action1.data.value =
-                base::ParseIntegerOr<int>(action1data.Get_Text(), 0);
+            action1.data.value =
+                base::ParseIntegerOr<int>(action1_number_edit.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
-            Action1.data.value = toupper(way3[0]) - 'A';
-            if (way3[1] != '\0') {
-              Action1.data.value = (Action1.data.value + 1) * 26;
-              Action1.data.value += toupper(way3[1]) - 'A';
+            action1.data.value = toupper(action1_waypoint_text[0]) - 'A';
+            if (action1_waypoint_text[1] != '\0') {
+              action1.data.value = (action1.data.value + 1) * 26;
+              action1.data.value += toupper(action1_waypoint_text[1]) - 'A';
             }
             break;
 
           case NEED_BOOL:
-            Action1.data.flag = booltype1list.Current_Index() != 0;
+            action1.data.flag = action1_bool_list.Current_Index() != 0;
             break;
 
           case NEED_THEME:
-            Action1.data.theme = ThemeType(themetype1list.Current_Index());
+            action1.data.theme = ThemeType(action1_theme_list.Current_Index());
             break;
 
           case NEED_SOUND:
-            Action1.data.sound = VocType(soundtype1list.Current_Index());
+            action1.data.sound = VocType(action1_sound_list.Current_Index());
             break;
 
           case NEED_MOVIE:
-            Action1.data.movie = VQType(movietype1list.Current_Index());
+            action1.data.movie = VQType(action1_movie_list.Current_Index());
             break;
 
           case NEED_SPEECH:
-            Action1.data.speech = VoxType(speechtype1list.Current_Index());
+            action1.data.speech = VoxType(action1_speech_list.Current_Index());
             break;
 
           case NEED_QUARRY:
-            Action1.data.quarry = QuarryType(qlist1.Current_Index());
+            action1.data.quarry =
+                QuarryType(action1_quarry_list.Current_Index());
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:
@@ -1686,61 +1746,63 @@ bool TriggerType::Edit() {
         }
 
         // The second action and its data, stored even when it is not in use.
-        Action2.type = *action2list.Current_Item();
-        switch (ActionNeed(Action2.type)) {
+        action2.type = *action2_list.Current_Item();
+        switch (ActionNeed(action2.type)) {
           case NEED_SPECIAL:
-            Action2.data.special = SpecialWeaponType(spc2.Current_Index());
+            action2.data.special =
+                SpecialWeaponType(action2_special_list.Current_Index());
             break;
 
           case NEED_HOUSE:
-            Action2.data.house = HousesType(htype4list.Current_Index());
+            action2.data.house = HousesType(action2_house_list.Current_Index());
             break;
 
           case NEED_TRIGGER:
-            Action2.trigger_type =
-                TriggerType::From_Name(SelectedName(trtype2list));
+            action2.trigger_type =
+                TriggerType::FromName(SelectedName(action2_trigger_list));
             break;
 
           case NEED_TEAM:
-            Action2.team_type =
-                TeamTypeClass::From_Name(SelectedName(ttype4list));
+            action2.team_type =
+                TeamTypeClass::From_Name(SelectedName(action2_team_list));
             break;
 
           case NEED_NUMBER:
-            Action2.data.value =
-                base::ParseIntegerOr<int>(action2data.Get_Text(), 0);
+            action2.data.value =
+                base::ParseIntegerOr<int>(action2_number_edit.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
-            Action2.data.value = toupper(way4[0]) - 'A';
-            if (way4[1] != '\0') {
-              Action2.data.value = (Action2.data.value + 1) * 26;
-              Action2.data.value += toupper(way4[1]) - 'A';
+            action2.data.value = toupper(action2_waypoint_text[0]) - 'A';
+            if (action2_waypoint_text[1] != '\0') {
+              action2.data.value = (action2.data.value + 1) * 26;
+              action2.data.value += toupper(action2_waypoint_text[1]) - 'A';
             }
             break;
 
           case NEED_BOOL:
-            Action2.data.flag = booltype2list.Current_Index() != 0;
+            action2.data.flag = action2_bool_list.Current_Index() != 0;
             break;
 
           case NEED_THEME:
-            Action2.data.theme = ThemeType(themetype2list.Current_Index());
+            action2.data.theme = ThemeType(action2_theme_list.Current_Index());
             break;
 
           case NEED_MOVIE:
-            Action2.data.movie = VQType(movietype2list.Current_Index());
+            action2.data.movie = VQType(action2_movie_list.Current_Index());
             break;
 
           case NEED_SOUND:
-            Action2.data.sound = VocType(soundtype2list.Current_Index());
+            action2.data.sound = VocType(action2_sound_list.Current_Index());
             break;
 
           case NEED_SPEECH:
-            Action2.data.speech = VoxType(speechtype2list.Current_Index());
+            action2.data.speech = VoxType(action2_speech_list.Current_Index());
             break;
 
           case NEED_QUARRY:
-            Action2.data.quarry = QuarryType(qlist2.Current_Index());
+            action2.data.quarry =
+                QuarryType(action2_quarry_list.Current_Index());
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:
@@ -1757,15 +1819,15 @@ bool TriggerType::Edit() {
         return true;
 
       case KN_ESC:
-      case engine::window::ButtonKey(kKbuttoncancel):
-        process = false;
+      case engine::window::ButtonKey(kButtonCancel):
+        running = false;
         [[fallthrough]];
 
       // Any gadget may have changed what the dialog should show, so redraw
       // whenever the input came from one: those carry the button bit.
       default:
         if (input & KN_BUTTON) {
-          display = true;
+          redraw = true;
         }
         break;
     }
@@ -1776,64 +1838,65 @@ bool TriggerType::Edit() {
 std::string TriggerType::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // Marks for how the second event and action are used: '.' for unused.
-    char special = 0;
-    switch (EventControl) {
+    char event_mark = 0;
+    switch (event_control) {
       case MULTI_AND:
-        special = '&';
+        event_mark = '&';
         break;
 
       case MULTI_OR:
-        special = '|';
+        event_mark = '|';
         break;
 
       case MULTI_LINKED:
-        special = '=';
+        event_mark = '=';
         break;
 
       case MultiStyle::MULTI_ONLY:
       default:
-        special = '.';
+        event_mark = '.';
         break;
     }
 
-    char special2 = '.';
-    if (ActionControl == MULTI_AND) {
-      special2 = '&';
+    char action_mark = '.';
+    if (action_control == MULTI_AND) {
+      action_mark = '&';
     }
 
     // The first event's value, when it has one worth showing.
-    std::string added;
-    switch (Event_Needs(Event1.Event)) {
+    std::string value_text;
+    switch (Event_Needs(event1.Event)) {
       case NEED_NUMBER:
-        added = absl::StrFormat("%d", Event1.Data.Value);
+        value_text = absl::StrFormat("%d", event1.Data.Value);
         break;
 
       case NEED_UNIT:
-        added = Text_String(
-            UnitTypeClass::As_Reference(Event1.Data.Unit).Full_Name());
+        value_text = Text_String(
+            UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
         break;
 
       case NEED_AIRCRAFT:
-        added = Text_String(
-            AircraftTypeClass::As_Reference(Event1.Data.Aircraft).Full_Name());
+        value_text = Text_String(
+            AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
         break;
 
       case NEED_STRUCTURE:
-        added = Text_String(
-            BuildingTypeClass::As_Reference(Event1.Data.Structure).Full_Name());
+        value_text = Text_String(
+            BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
         break;
 
       case NEED_INFANTRY:
-        added = Text_String(
-            InfantryTypeClass::As_Reference(Event1.Data.Infantry).Full_Name());
+        value_text = Text_String(
+            InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
         break;
 
       case NEED_WAYPOINT:
-        if (Event1.Data.Value < 26) {
-          added = absl::StrFormat("'%c'", Event1.Data.Value + 'A');
+        if (event1.Data.Value < 26) {
+          value_text = absl::StrFormat("'%c'", event1.Data.Value + 'A');
         } else {
-          added = absl::StrFormat("'%c%c'", (Event1.Data.Value / 26) + 'A' - 1,
-                                  (Event1.Data.Value % 26) + 'A');
+          value_text =
+              absl::StrFormat("'%c%c'", (event1.Data.Value / 26) + 'A' - 1,
+                              (event1.Data.Value % 26) + 'A');
         }
         break;
 
@@ -1857,50 +1920,50 @@ std::string TriggerType::Description() const {
     }
 
     // Persistence mark: V(olatile), S(emi-persistent) or P(ersistent).
-    char pers = 'V';
-    if (IsPersistant == SEMIPERSISTANT) {
-      pers = 'S';
+    char persistence_mark = 'V';
+    if (persistence == SEMIPERSISTANT) {
+      persistence_mark = 'S';
     }
-    if (IsPersistant == PERSISTANT) {
-      pers = 'P';
+    if (persistence == PERSISTANT) {
+      persistence_mark = 'P';
     }
 
     return absl::StrFormat("%4.4s\t %s %c%c%c  %s%s", IniName,
-                           HouseTypeClass::As_Reference(House).Suffix, pers,
-                           special, special2, Name_From_Event(Event1.Event),
-                           added);
+                           HouseTypeClass::As_Reference(house).Suffix,
+                           persistence_mark, event_mark, action_mark,
+                           Name_From_Event(event1.Event), value_text);
   }
   return {};
 }
 
-AttachType TriggerType::Attaches_To() const {
-  AttachType attach = ra::Attaches_To(Event1.Event);
+AttachType TriggerType::AttachesTo() const {
+  AttachType attach = ra::Attaches_To(event1.Event);
 
-  if (EventControl != MULTI_ONLY) {
-    attach = attach | ra::Attaches_To(Event2.Event);
+  if (event_control != MULTI_ONLY) {
+    attach = attach | ra::Attaches_To(event2.Event);
   }
   return attach;
 }
 
-void TriggerType::Read_INI(engine::file::IniFile& ini) {
-  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    auto* trigger = base::NewPooled<TriggerType>();
-    trigger->Fill_In(entry, value);
+void TriggerType::ReadIni(engine::file::IniFile& ini) {
+  for (const auto& [entry, value] : ini.Entries(kIniSection)) {
+    auto* trigger_type = base::NewPooled<TriggerType>();
+    trigger_type->ReadIniEntry(entry, value);
   }
 
   if (TheWorld().new_ini_format() < 2) {
-    // Before format 2 an action named its trigger type instead of giving its
-    // position, and the name may belong to an entry read after it. Resolve
+    // Before format 2 an action named its trigger type instead of giving
+    // its position, and the name may belong to an entry read after it. Resolve
     // the names now that every trigger type exists.
-    for (int trig_index = 0;
-         trig_index < TheObjectHeaps().trigger_type().Count(); trig_index++) {
-      TriggerType* indexed_trigger =
-          TheObjectHeaps().trigger_type().ActiveAt(trig_index);
+    for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
+         index++) {
+      TriggerType* trigger_type =
+          TheObjectHeaps().trigger_type().ActiveAt(index);
 
       for (TriggerAction* action :
-           {&indexed_trigger->Action1, &indexed_trigger->Action2}) {
+           {&trigger_type->action1, &trigger_type->action2}) {
         if (!action->pending_trigger_name.empty()) {
-          action->trigger_type = From_Name(action->pending_trigger_name);
+          action->trigger_type = FromName(action->pending_trigger_name);
           action->pending_trigger_name.clear();
         }
       }
@@ -1908,57 +1971,58 @@ void TriggerType::Read_INI(engine::file::IniFile& ini) {
   }
 }
 
-void TriggerType::Fill_In(std::string_view name, std::string_view entry) {
+void TriggerType::ReadIniEntry(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
-  IsPersistant =
+  persistence =
       static_cast<Persistence>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  EventControl =
+  house = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  event_control =
       static_cast<MultiStyle>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  ActionControl =
+  action_control =
       static_cast<MultiStyle>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  Event1.Read_INI(tokens);
-  Event2.Read_INI(tokens);
-  Action1.ReadIni(tokens);
-  Action2.ReadIni(tokens);
+  event1.Read_INI(tokens);
+  event2.Read_INI(tokens);
+  action1.ReadIni(tokens);
+  action2.ReadIni(tokens);
 }
 
-void TriggerType::Write_INI(engine::file::IniFile& ini) {
+void TriggerType::WriteIni(engine::file::IniFile& ini) {
   // [Triggers] is where older formats kept them; a file with both would
   // describe the triggers twice.
   ini.Clear("Triggers");
-  ini.Clear(INI_Name());
+  ini.Clear(kIniSection);
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    const TriggerType* trigger =
+    const TriggerType* trigger_type =
         TheObjectHeaps().trigger_type().ActiveAt(index);
-    ini.PutString(INI_Name(), trigger->IniName, trigger->Build_INI_Entry());
+    ini.PutString(kIniSection, trigger_type->IniName,
+                  trigger_type->ToIniEntry());
   }
 }
 
-std::string TriggerType::Build_INI_Entry() const {
-  // The enums are stored as their numbers, which Fill_In() casts back.
+std::string TriggerType::ToIniEntry() const {
+  // The enums are stored as their numbers, which ReadIniEntry() casts back.
   std::string entry =
-      std::format("{},{},{},{},", std::to_underlying(IsPersistant),
-                  std::to_underlying(House), std::to_underlying(EventControl),
-                  std::to_underlying(ActionControl));
+      std::format("{},{},{},{},", std::to_underlying(persistence),
+                  std::to_underlying(house), std::to_underlying(event_control),
+                  std::to_underlying(action_control));
 
-  Event1.Build_INI_Entry(entry);
+  event1.Build_INI_Entry(entry);
   entry += ',';
 
-  Event2.Build_INI_Entry(entry);
+  event2.Build_INI_Entry(entry);
   entry += ',';
 
-  entry += Action1.ToIniEntry();
+  entry += action1.ToIniEntry();
   entry += ',';
 
-  entry += Action2.ToIniEntry();
+  entry += action2.ToIniEntry();
   return entry;
 }
 
@@ -1991,9 +2055,9 @@ void TriggerType::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-void TriggerType::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
+void TriggerType::DestroyAll() { TheObjectHeaps().trigger_type().FreeAll(); }
 
-TriggerType* TriggerType::From_Name(const std::string_view name) {
+TriggerType* TriggerType::FromName(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {

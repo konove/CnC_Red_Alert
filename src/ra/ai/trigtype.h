@@ -64,7 +64,7 @@ class TriggerType : public AbstractTypeClass {
  public:
   // True while the object occupies its heap slot. operator new sets this
   // before the constructor runs; the initializer must agree with it.
-  bool IsActive : 1 = true;
+  bool is_active : 1 = true;
 
   // Whether a trigger of this type survives going off. Scenario INI files and
   // saved games store the number.
@@ -80,23 +80,23 @@ class TriggerType : public AbstractTypeClass {
   };
   using enum Persistence;
 
-  Persistence IsPersistant = VOLATILE;
+  Persistence persistence = VOLATILE;
 
   // The house the trigger belongs to: the one its house events are about and
   // the one its actions affect when they name no house of their own.
-  HousesType House = HOUSE_SPAIN;
+  HousesType house = HOUSE_SPAIN;
 
-  // The events that spring the trigger. Event2 only counts when EventControl
+  // The events that spring the trigger. event2 only counts when event_control
   // is not MULTI_ONLY.
-  TEventClass Event1;
-  TEventClass Event2;
-  MultiStyle EventControl = MULTI_ONLY;
+  TEventClass event1;
+  TEventClass event2;
+  MultiStyle event_control = MULTI_ONLY;
 
-  // The actions performed when the trigger springs. Action2 is only performed
-  // when ActionControl is MULTI_AND or EventControl is MULTI_LINKED.
-  TriggerAction Action1;
-  TriggerAction Action2;
-  MultiStyle ActionControl = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
+  // The actions performed when the trigger springs. action2 is only performed
+  // when action_control is MULTI_AND or event_control is MULTI_LINKED.
+  TriggerAction action1;
+  TriggerAction action2;
+  MultiStyle action_control = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
 
   TriggerType();
   ~TriggerType() override;
@@ -108,25 +108,25 @@ class TriggerType : public AbstractTypeClass {
   // Takes a slot from the trigger type heap; returns nullptr when it is full.
   void* operator new(std::size_t /*unused*/);
   void* operator new(std::size_t /*unused*/,
-                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
-    return ptr;
+                     void* memory ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return memory;
   }
   // Returns the slot to the trigger type heap.
-  void operator delete(void* ptr);
+  void operator delete(void* memory);
 
   // Destroys every trigger type, in preparation for a new scenario.
-  static void Init();
+  static void DestroyAll();
 
   // Creates a trigger type for every entry of the [Trigs] section of `ini`.
   // Team types must be loaded first: the events and actions look their teams
   // up as they are read. The objects, cells and houses that carry a trigger
   // find its type by name afterwards, so this runs before their sections are
   // read.
-  static void Read_INI(engine::file::IniFile& ini);
+  static void ReadIni(engine::file::IniFile& ini);
 
   // Replaces the [Trigs] section of `ini` with one entry per trigger type, and
   // clears the [Triggers] section the pre-Red Alert format used.
-  static void Write_INI(engine::file::IniFile& ini);
+  static void WriteIni(engine::file::IniFile& ini);
 
   // Names the trigger type `name` and sets it from the INI value `entry`:
   //   persistence,house,event control,action control,event 1,event 2,
@@ -134,13 +134,13 @@ class TriggerType : public AbstractTypeClass {
   // with each event and action a comma separated group of its own (see
   // TEventClass::Read_INI and TriggerAction::ReadIni). The first four are
   // enum numbers; a missing or unreadable one reads as 0.
-  void Fill_In(std::string_view name, std::string_view entry);
+  void ReadIniEntry(std::string_view name, std::string_view entry);
 
-  // Returns the INI value Fill_In() reads.
-  [[nodiscard]] std::string Build_INI_Entry() const;
+  // Returns the INI value ReadIniEntry() reads.
+  [[nodiscard]] std::string ToIniEntry() const;
 
   // The INI section the trigger types are stored in.
-  static constexpr std::string_view INI_Name() { return "Trigs"; }
+  static constexpr std::string_view kIniSection = "Trigs";
 
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
@@ -153,11 +153,11 @@ class TriggerType : public AbstractTypeClass {
 
   // Returns what triggers of this type can be attached to: the union of what
   // its events allow, the second event counting only when it is in use.
-  [[nodiscard]] AttachType Attaches_To() const;
+  [[nodiscard]] AttachType AttachesTo() const;
 
   // Returns the trigger type named `name`, ignoring case, or nullptr when
   // there is none or `name` is empty.
-  static TriggerType* From_Name(std::string_view name);
+  static TriggerType* FromName(std::string_view name);
 
   // Runs the scenario editor's dialog on this trigger type. Returns true when
   // the user confirmed, with the dialog's values stored in the object; false

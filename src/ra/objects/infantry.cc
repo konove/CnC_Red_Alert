@@ -3341,7 +3341,7 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
           if (!validation.empty()) {
             dir = static_cast<game::DirType>(
                 base::ParseIntegerOr<int>(validation, 0));
-            tp = TriggerType::From_Name(tokens.Next());
+            tp = TriggerType::FromName(tokens.Next());
           } else {
             dir = static_cast<game::DirType>(0);
             tp = nullptr;

@@ -269,7 +269,7 @@ TEST_F(TriggerActionGameTest, TheOldFormatsNameTheTeamAndKeepTheTriggerName) {
 
     EXPECT_EQ(action.type, TACTION_CREATE_TEAM);
     EXPECT_EQ(action.team_type, team_type_);
-    // TriggerType::Read_INI() resolves the name later.
+    // TriggerType::ReadIni() resolves the name later.
     EXPECT_EQ(action.trigger_type, nullptr);
     EXPECT_EQ(action.pending_trigger_name, "alarm");
     EXPECT_EQ(action.data.value, 3);

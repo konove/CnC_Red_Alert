@@ -159,8 +159,8 @@ TriggerClass::TriggerClass(TriggerType* trigtype)
     : RTTI(RTTI_TRIGGER),
       ID(TheObjectHeaps().trigger().SlotIndexOf(this)),
       Class(trigtype) {
-  Class->Event1.Reset(Event1);
-  Class->Event2.Reset(Event2);
+  Class->event1.Reset(Event1);
+  Class->event2.Reset(Event2);
 }
 
 TriggerClass::TriggerClass()
@@ -182,7 +182,7 @@ TriggerClass::TriggerClass()
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
   if ((TheGameState().active() && Class != nullptr &&
-       base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
+       base::Any(Class->AttachesTo() & ATTACH_GENERAL)) &&
       (TheWorld().logic_trigger_id() >=
        base::IndexOf(TheWorld().logic_triggers(), this))) {
     TheWorld().logic_trigger_id()--;
@@ -193,7 +193,7 @@ TriggerClass::~TriggerClass() {
   }
 
   if ((TheGameState().active() && Class != nullptr &&
-       base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
+       base::Any(Class->AttachesTo() & ATTACH_MAP)) &&
       (TheWorld().map_trigger_id() >=
        base::IndexOf(TheWorld().map_triggers(), this))) {
     TheWorld().map_trigger_id()--;
@@ -204,11 +204,11 @@ TriggerClass::~TriggerClass() {
   }
 
   if (TheGameState().active() && Class != nullptr &&
-      Class->House != HOUSE_NONE && Class->Action1.type == TACTION_ALLOWWIN) {
-    if (HouseClass::As_Pointer(Class->House)->Blockage) {
-      HouseClass::As_Pointer(Class->House)->Blockage--;
+      Class->house != HOUSE_NONE && Class->action1.type == TACTION_ALLOWWIN) {
+    if (HouseClass::As_Pointer(Class->house)->Blockage) {
+      HouseClass::As_Pointer(Class->house)->Blockage--;
     }
-    HouseClass::As_Pointer(Class->House)
+    HouseClass::As_Pointer(Class->house)
         ->BorrowedTime.Set(int64_t{kTicksPerSecond} * 4);
   }
   ID = -1;
@@ -256,7 +256,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
                           bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
-  const bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
+  const bool e1 = Class->event1(Event1, event, Class->house, obj, forced);
   bool e2 = false;
   bool execute = false;
 
@@ -274,19 +274,19 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     *be triggered, one event *	triggered, or either event triggered to activate
     *the trigger action.
     */
-    switch (Class->EventControl) {
+    switch (Class->event_control) {
       case MULTI_ONLY:
         execute = e1;
         break;
 
       case MULTI_AND:
-        e2 = Class->Event2(Event2, event, Class->House, obj, forced);
+        e2 = Class->event2(Event2, event, Class->house, obj, forced);
         execute = e1 && e2;
         break;
 
       case MULTI_LINKED:
       case MULTI_OR:
-        e2 = Class->Event2(Event2, event, Class->House, obj, forced);
+        e2 = Class->event2(Event2, event, Class->house, obj, forced);
         execute = e1 || e2;
         break;
       default:
@@ -303,7 +303,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     **	would include semi-persistent triggers that don't actually
     **	spring until all triggers have sprung.
     */
-    if (Class->IsPersistant == TriggerType::SEMIPERSISTANT) {
+    if (Class->persistence == TriggerType::SEMIPERSISTANT) {
       /*
       ** Detach ourselves from the object and record that there
       **	is one less attachment to keep track of.
@@ -331,26 +331,26 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     *matching *	trigger event. Otherwise perform the action for both events.
     */
     bool ok = false;
-    const HousesType hh = Class->House;
-    if (Class->EventControl == MULTI_LINKED) {
+    const HousesType hh = Class->house;
+    if (Class->event_control == MULTI_LINKED) {
       if (e1 || forced) {
-        ok |= Class->Action1.Perform(hh, obj, ID, cell);
+        ok |= Class->action1.Perform(hh, obj, ID, cell);
       }
       if (e2 && !forced) {
-        ok |= Class->Action2.Perform(hh, obj, ID, cell);
+        ok |= Class->action2.Perform(hh, obj, ID, cell);
       }
     } else {
-      switch (Class->ActionControl) {
+      switch (Class->action_control) {
         case MULTI_ONLY:
-          ok |= Class->Action1.Perform(hh, obj, ID, cell);
+          ok |= Class->action1.Perform(hh, obj, ID, cell);
           break;
 
         case MultiStyle::MULTI_OR:
         case MultiStyle::MULTI_LINKED:
         default:
         case MULTI_AND:
-          ok |= Class->Action1.Perform(hh, obj, ID, cell);
-          ok |= Class->Action2.Perform(hh, obj, ID, cell);
+          ok |= Class->action1.Perform(hh, obj, ID, cell);
+          ok |= Class->action2.Perform(hh, obj, ID, cell);
           break;
       }
     }
@@ -364,8 +364,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     **	necessary.
     */
     if (ok) {
-      if (Class->IsPersistant == TriggerType::VOLATILE ||
-          (Class->IsPersistant == TriggerType::SEMIPERSISTANT &&
+      if (Class->persistence == TriggerType::VOLATILE ||
+          (Class->persistence == TriggerType::SEMIPERSISTANT &&
            AttachCount <= 1)) {
         Detach_This_From_All(As_Target(), true);
         delete this;
@@ -375,8 +375,8 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
        **	Reset event data so that the event will
        **	repeat as necessary.
        */
-      Class->Event1.Reset(Event1);
-      Class->Event2.Reset(Event2);
+      Class->event1.Reset(Event1);
+      Class->event2.Reset(Event2);
     }
   }
 

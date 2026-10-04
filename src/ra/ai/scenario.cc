@@ -330,15 +330,15 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
       */
       for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
         TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(index);
-        if ((tp->Class->Event1.Event == TEVENT_GLOBAL_SET ||
-             tp->Class->Event1.Event == TEVENT_GLOBAL_CLEAR) &&
-            tp->Class->Event1.Data.Value == global) {
-          tp->Class->Event2.Reset(tp->Event1);
+        if ((tp->Class->event1.Event == TEVENT_GLOBAL_SET ||
+             tp->Class->event1.Event == TEVENT_GLOBAL_CLEAR) &&
+            tp->Class->event1.Data.Value == global) {
+          tp->Class->event2.Reset(tp->Event1);
         }
-        if ((tp->Class->Event2.Event == TEVENT_GLOBAL_SET ||
-             tp->Class->Event2.Event == TEVENT_GLOBAL_CLEAR) &&
-            tp->Class->Event2.Data.Value == global) {
-          tp->Class->Event1.Reset(tp->Event1);
+        if ((tp->Class->event2.Event == TEVENT_GLOBAL_SET ||
+             tp->Class->event2.Event == TEVENT_GLOBAL_CLEAR) &&
+            tp->Class->event2.Data.Value == global) {
+          tp->Class->event1.Reset(tp->Event1);
         }
       }
     }
@@ -579,14 +579,14 @@ void Fill_In_Data() {
 
     DCHECK(tp != nullptr);
 
-    if (base::Any(tp->Attaches_To() & ATTACH_MAP)) {
+    if (base::Any(tp->AttachesTo() & ATTACH_MAP)) {
       TheWorld().map_triggers().push_back(Find_Or_Make(tp));
     }
-    if (base::Any(tp->Attaches_To() & ATTACH_GENERAL)) {
+    if (base::Any(tp->AttachesTo() & ATTACH_GENERAL)) {
       TheWorld().logic_triggers().push_back(Find_Or_Make(tp));
     }
-    if (base::Any(tp->Attaches_To() & ATTACH_HOUSE)) {
-      TheWorld().house_triggers().at(tp->House).push_back(Find_Or_Make(tp));
+    if (base::Any(tp->AttachesTo() & ATTACH_HOUSE)) {
+      TheWorld().house_triggers().at(tp->house).push_back(Find_Or_Make(tp));
     }
   }
 
@@ -637,10 +637,10 @@ void Fill_In_Data() {
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
     const TriggerType* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
-    if (tp->Action1.type == TACTION_ALLOWWIN ||
-        (tp->ActionControl != MULTI_ONLY &&
-         tp->Action2.type == TACTION_ALLOWWIN)) {
-      HouseClass::As_Pointer(tp->House)->Blockage++;
+    if (tp->action1.type == TACTION_ALLOWWIN ||
+        (tp->action_control != MULTI_ONLY &&
+         tp->action2.type == TACTION_ALLOWWIN)) {
+      HouseClass::As_Pointer(tp->house)->Blockage++;
     }
   }
 
@@ -765,7 +765,7 @@ void Clear_Scenario() {
   TeamTypeClass::Init();
   TeamClass::Init();
   TriggerClass::Init();
-  TriggerType::Init();
+  TriggerType::DestroyAll();
   AircraftClass::Init();
   AnimClass::Init();
   BuildingClass::Init();
@@ -1857,12 +1857,12 @@ void DropUnfilledTypeReferences() {
   }
   for (int i = 0; i < trigger_types.Count(); i++) {
     TriggerType& trigger_type = *trigger_types.ActiveAt(i);
-    for (TEventClass* event : {&trigger_type.Event1, &trigger_type.Event2}) {
+    for (TEventClass* event : {&trigger_type.event1, &trigger_type.event2}) {
       DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
                      "event team");
     }
     for (TriggerAction* action :
-         {&trigger_type.Action1, &trigger_type.Action2}) {
+         {&trigger_type.action1, &trigger_type.action2}) {
       DropIfUnfilled(action->team_type, team_types, trigger_type.Name(),
                      "action team");
       DropIfUnfilled(action->trigger_type, trigger_types, trigger_type.Name(),
@@ -2174,7 +2174,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in the trigger data. The triggers must be created before any other
   **	objects can be initialized.
   */
-  TriggerType::Read_INI(ini);
+  TriggerType::ReadIni(ini);
   DropUnfilledTypeReferences();
   ServiceRealTime();
 
@@ -2373,7 +2373,7 @@ void Write_Scenario_INI(const char* fname) {
 
     HouseClass::Write_INI(ini);
     TeamTypeClass::Write_INI(ini);
-    TriggerType::Write_INI(ini);
+    TriggerType::WriteIni(ini);
     TheMap().Write_INI(ini);
     TerrainClass::Write_INI(ini);
     UnitClass::Write_INI(ini);

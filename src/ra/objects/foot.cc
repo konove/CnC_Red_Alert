@@ -1446,9 +1446,9 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(index + TheMap().MapCellX, y)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->Event1.Event == TEVENT_CROSS_HORIZONTAL ||
-             (trigger->Class->EventControl != MULTI_ONLY &&
-              trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL))) {
+            (trigger->Class->event1.Event == TEVENT_CROSS_HORIZONTAL ||
+             (trigger->Class->event_control != MULTI_ONLY &&
+              trigger->Class->event2.Event == TEVENT_CROSS_HORIZONTAL))) {
           trigger->Spring(TEVENT_CROSS_HORIZONTAL, this,
                           Cell::Containing(Coord));
           if (!IsActive) {
@@ -1464,9 +1464,9 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         trigger =
             TheMap().at(Cell::FromXY(x, index + TheMap().MapCellY)).Trigger;
         if ((trigger != nullptr) &&
-            (trigger->Class->Event1.Event == TEVENT_CROSS_VERTICAL ||
-             (trigger->Class->EventControl != MULTI_ONLY &&
-              trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL))) {
+            (trigger->Class->event1.Event == TEVENT_CROSS_VERTICAL ||
+             (trigger->Class->event_control != MULTI_ONLY &&
+              trigger->Class->event2.Event == TEVENT_CROSS_VERTICAL))) {
           trigger->Spring(TEVENT_CROSS_VERTICAL, this, Cell::Containing(Coord));
           if (!IsActive) {
             return true;
@@ -1482,9 +1482,9 @@ bool FootClass::Per_Cell_Process(PCPType why) {
            TheWorld().map_trigger_id()++) {
         trigger =
             base::At(TheWorld().map_triggers(), TheWorld().map_trigger_id());
-        if ((trigger->Class->Event1.Event == TEVENT_ENTERS_ZONE ||
-             (trigger->Class->EventControl != MULTI_ONLY &&
-              trigger->Class->Event2.Event == TEVENT_ENTERS_ZONE)) &&
+        if ((trigger->Class->event1.Event == TEVENT_ENTERS_ZONE ||
+             (trigger->Class->event_control != MULTI_ONLY &&
+              trigger->Class->event2.Event == TEVENT_ENTERS_ZONE)) &&
             (TheMap().at(trigger->Cell).Zones.at(Techno_Type_Class()->MZone) ==
              TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone))) {
           trigger->Spring(TEVENT_ENTERS_ZONE, this, Cell::Containing(Coord));

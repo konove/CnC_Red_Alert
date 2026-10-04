@@ -184,7 +184,7 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
     }
 
     // The named trigger may not have been read yet, so keep the name;
-    // TriggerType::Read_INI() resolves it once every trigger exists.
+    // TriggerType::ReadIni() resolves it once every trigger exists.
     pending_trigger_name = tokens.Next();
   }
 
