@@ -9,6 +9,7 @@
 #include <numeric>
 #include <optional>
 #include <span>
+#include <utility>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -308,6 +309,121 @@ TEST(BlitTest, RectangleWhollyOffTheDestinationDrawsNothing) {
   EXPECT_EQ(page, blank);
   source.view().BlitTo(dest.view(), 0, 0, 0, 4, 3, 3);
   EXPECT_EQ(page, blank);
+}
+
+// The destination is a view that starts on the page's second row, so rows
+// drawn above the view land on the first row rather than outside the page.
+TEST(ScaleTest, ClipsRowsOffTheTopOfTheDestination) {
+  // 1 2
+  // 3 4
+  std::vector<uint8_t> image = NumberedPixels(2 * 2);
+  PixelBuffer source(2, 2, image);
+  std::vector<uint8_t> page_pixels(size_t{4} * 4, 0);
+  PixelBuffer page(4, 4, page_pixels);
+  PixelView view(&page, 0, 1, 4, 3);
+
+  source.view().Scale(view, 0, 0, 0, -1, 2, 2, 2, 2);
+
+  EXPECT_EQ(page_pixels, (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                               3, 4, 0, 0,  //
+                                               0, 0, 0, 0,  //
+                                               0, 0, 0, 0}));
+}
+
+// The row and column loops of the drawing calls count down to zero from the
+// size of the clipped rectangle, so each relies on an earlier check to turn
+// an empty rectangle away: entered with a count of zero, such a loop wraps
+// and runs 2^32 times. Clear() did exactly that on a view with no lines.
+TEST(EmptyRectangleTest, AViewWithNoPixelsDrawsNothing) {
+  PixelBuffer empty_page;
+  PixelView empty(&empty_page, 0, 0, 640, 480);
+  std::vector<uint8_t> image = NumberedPixels(4 * 4);
+  const std::vector<uint8_t> original = image;
+  PixelBuffer page(4, 4, image);
+  std::array<uint8_t, 256> remap{};
+  std::array<uint8_t, 16> out{};
+
+  empty.CopyToBuffer(0, 0, 4, 4, out);
+  empty.CopyFromBuffer(0, 0, 4, 4, original);
+  empty.FillRect(0, 0, 3, 3, 9);
+  empty.DrawLine(0, 0, 0, 3, 9);
+  empty.DrawRect(0, 0, 3, 3, 9);
+  empty.Remap(0, 0, 4, 4, remap);
+  for (const bool transparent : {false, true}) {
+    empty.BlitTo(page.view(), 0, 0, 0, 0, 4, 4, transparent);
+    page.view().BlitTo(empty, 0, 0, 0, 0, 4, 4, transparent);
+    empty.Scale(page.view(), 0, 0, 0, 0, 4, 4, 2, 2, transparent);
+    page.view().Scale(empty, 0, 0, 0, 0, 4, 4, 2, 2, transparent);
+    empty.Scale(page.view(), 0, 0, 0, 0, 4, 4, 2, 2, transparent, remap);
+    page.view().Scale(empty, 0, 0, 0, 0, 4, 4, 2, 2, transparent, remap);
+  }
+
+  EXPECT_EQ(image, original);
+  EXPECT_EQ(out, (std::array<uint8_t, 16>{}));
+}
+
+TEST(EmptyRectangleTest, ARectangleWithNoWidthOrHeightDrawsNothing) {
+  std::vector<uint8_t> source_pixels = NumberedPixels(4 * 4);
+  PixelBuffer source(4, 4, source_pixels);
+  std::vector<uint8_t> image = NumberedPixels(4 * 4);
+  const std::vector<uint8_t> original = image;
+  PixelBuffer page(4, 4, image);
+  PixelView& view = page.view();
+  // Every pixel remaps to 0, which no pixel of the image is.
+  const std::array<uint8_t, 256> remap{};
+  const std::array<uint8_t, 16> fill{};
+  std::array<uint8_t, 16> out{};
+
+  // {width, height}
+  for (const auto [width, height] : {std::pair{0, 2}, std::pair{2, 0}}) {
+    view.CopyToBuffer(1, 1, width, height, out);
+    view.CopyFromBuffer(1, 1, width, height, fill);
+    view.Remap(1, 1, width, height, remap);
+    for (const bool transparent : {false, true}) {
+      source.view().BlitTo(view, 0, 0, 1, 1, width, height, transparent);
+      // Within one view, where the copy runs bottom to top.
+      view.BlitTo(view, 0, 0, 1, 1, width, height, transparent);
+      source.view().Scale(view, 0, 0, 1, 1, width, height, 2, 2, transparent);
+      source.view().Scale(view, 0, 0, 1, 1, 2, 2, width, height, transparent);
+      source.view().Scale(view, 0, 0, 1, 1, 2, 2, width, height, transparent,
+                          remap);
+    }
+  }
+
+  EXPECT_EQ(image, original);
+  EXPECT_EQ(out, (std::array<uint8_t, 16>{}));
+}
+
+// Clipping can leave a rectangle that only touches the edge of the view,
+// with no pixel inside it.
+TEST(EmptyRectangleTest, ARectangleClippedToNothingDrawsNothing) {
+  std::vector<uint8_t> source_pixels = NumberedPixels(4 * 4);
+  PixelBuffer source(4, 4, source_pixels);
+  std::vector<uint8_t> image = NumberedPixels(4 * 4);
+  const std::vector<uint8_t> original = image;
+  PixelBuffer page(4, 4, image);
+  PixelView& view = page.view();
+  const std::array<uint8_t, 256> remap{};
+  const std::array<uint8_t, 16> fill{};
+  std::array<uint8_t, 16> out{};
+
+  // {x, y} of a 2x2 rectangle that ends, or starts, exactly on an edge.
+  for (const auto [x, y] :
+       {std::pair{-2, 0}, std::pair{0, -2}, std::pair{4, 0}, std::pair{0, 4}}) {
+    view.CopyToBuffer(x, y, 2, 2, out);
+    view.CopyFromBuffer(x, y, 2, 2, fill);
+    view.Remap(x, y, 2, 2, remap);
+    view.FillRect(x, y, x + 1, y + 1, 0);
+    for (const bool transparent : {false, true}) {
+      source.view().BlitTo(view, 0, 0, x, y, 2, 2, transparent);
+      source.view().BlitTo(view, x, y, 0, 0, 2, 2, transparent);
+      source.view().Scale(view, 0, 0, x, y, 2, 2, 2, 2, transparent);
+      source.view().Scale(view, x, y, 0, 0, 2, 2, 2, 2, transparent);
+    }
+  }
+
+  EXPECT_EQ(image, original);
+  EXPECT_EQ(out, (std::array<uint8_t, 16>{}));
 }
 
 // The shape the chronal vortex blits: a source buffer exactly the size of the

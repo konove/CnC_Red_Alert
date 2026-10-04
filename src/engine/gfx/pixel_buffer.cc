@@ -556,6 +556,7 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
       dst_x1 = dest.width();
     }
     if (base::Any(code0 & OutCode::kAbove)) {
+      dst_y0 = 0;
       src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
     }
     if (base::Any(code1 & OutCode::kBelow)) {

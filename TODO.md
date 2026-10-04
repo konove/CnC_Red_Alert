@@ -919,10 +919,6 @@
     common fixture
   - `CarryoverTest` calls `MapClass::One_Time()` but not `Init_Cells()`, so its cells do not know
     their own numbers (`CellClass::ID`); harmless until a test there asks a cell for its neighbours
-- Check the other `do { } while (--count)` loops in `engine/gfx/pixel_buffer.cc`
-  - `PixelView::ClearLocked()` ran 2^32 times on a view with no lines, 0.8 s per test that built a
-    `Game` in Tiberian Dawn. The 16 other loops of that shape have not been checked for a count of
-    zero
 
 ## Debugging
 
