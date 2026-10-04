@@ -178,13 +178,13 @@ void PixelView::ClearLocked(const uint8_t color) {
   auto dst_offset = pixels().begin();
 
   const int pixel_count = width();
-  int line_count = height();
 
-  // fill lines
-  do {
+  // A view with no lines, such as a page that was never attached, has nothing
+  // to fill.
+  for (int line = 0; line < height(); line++) {
     std::fill_n(dst_offset, pixel_count, color);
     dst_offset += dst_area;
-  } while (--line_count);
+  }
 }
 
 void PixelView::CopyToBuffer(const int src_x, const int src_y, const int width,
