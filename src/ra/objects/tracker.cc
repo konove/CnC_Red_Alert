@@ -144,7 +144,7 @@ void Detach_This_From_All(Target target, bool all) {
     }
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {
-      TheObjectHeaps().trigger_type().ActiveAt(index)->Detach(target, all);
+      TheObjectHeaps().trigger_type().ActiveAt(index)->Detach(target);
     }
   }
 }

@@ -20,10 +20,7 @@
 
 #include <algorithm>
 #include <array>
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <cstddef>
 #include <format>
 #include <string>
 #include <string_view>
@@ -32,6 +29,7 @@
 #include "absl/base/attributes.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
@@ -53,6 +51,7 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
+#include "ra/ai/waypoint_name.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -207,7 +206,7 @@ void TriggerType::operator delete(void* memory) {
   TheObjectHeaps().trigger_type().Free(static_cast<TriggerType*>(memory));
 }
 
-void TriggerType::Detach(Target target, bool /*unused*/) {
+void TriggerType::Detach(Target target) {
   if (target.kind() == RTTI_TEAMTYPE) {
     for (TEventClass* event : {&event1, &event2}) {
       if (event->Team == target.AsTeamType()) {
@@ -218,6 +217,8 @@ void TriggerType::Detach(Target target, bool /*unused*/) {
   action1.Detach(target);
   action2.Detach(target);
 }
+
+namespace {
 
 // Layout and gadget IDs of the trigger editor dialog, in pixels. Each event
 // and each action has one data field position;
@@ -319,6 +320,8 @@ constexpr int kButtonCancel = 146;       // Cancel button - just exit.
 constexpr int kActionControlButton = 147;  // Multiple action control button.
 constexpr int kEventControlButton = 148;   // Multiple event control button.
 
+}  // namespace
+
 bool TriggerType::Edit() {
   RemapControlType* scheme = Get_Color_Scheme();
 
@@ -388,14 +391,7 @@ bool TriggerType::Edit() {
       FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
       9, EditClass::kAlpha);
   if (Event_Needs(event1.Event) == NEED_WAYPOINT) {
-    if (event1.Data.Value < 26) {
-      absl::SNPrintF(event1_waypoint_text, sizeof(event1_waypoint_text), "%c",
-                     static_cast<int>(event1.Data.Value) + 'A');
-    } else {
-      absl::SNPrintF(event1_waypoint_text, sizeof(event1_waypoint_text), "%c%c",
-                     (event1.Data.Value / 26) + 'A' - 1,
-                     (event1.Data.Value % 26) + 'A');
-    }
+    base::SafeCopy(event1_waypoint_text, WaypointLetters(event1.Data.Value));
   }
 
   char event2_waypoint_text[kWaypointSize] = "A";
@@ -404,14 +400,7 @@ bool TriggerType::Edit() {
       FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
       9, EditClass::kAlpha);
   if (Event_Needs(event2.Event) == NEED_WAYPOINT) {
-    if (event2.Data.Value < 26) {
-      absl::SNPrintF(event2_waypoint_text, sizeof(event2_waypoint_text), "%c",
-                     static_cast<int>(event2.Data.Value) + 'A');
-    } else {
-      absl::SNPrintF(event2_waypoint_text, sizeof(event2_waypoint_text), "%c%c",
-                     (event2.Data.Value / 26) + 'A' - 1,
-                     (event2.Data.Value % 26) + 'A');
-    }
+    base::SafeCopy(event2_waypoint_text, WaypointLetters(event2.Data.Value));
   }
 
   char action1_waypoint_text[kWaypointSize] = "A";
@@ -420,14 +409,7 @@ bool TriggerType::Edit() {
       FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
       9, EditClass::kAlpha);
   if (ActionNeed(action1.type) == NEED_WAYPOINT) {
-    if (action1.data.value < 26) {
-      absl::SNPrintF(action1_waypoint_text, sizeof(action1_waypoint_text), "%c",
-                     action1.data.value + 'A');
-    } else {
-      absl::SNPrintF(action1_waypoint_text, sizeof(action1_waypoint_text),
-                     "%c%c", (action1.data.value / 26) + 'A' - 1,
-                     (action1.data.value % 26) + 'A');
-    }
+    base::SafeCopy(action1_waypoint_text, WaypointLetters(action1.data.value));
   }
 
   char action2_waypoint_text[kWaypointSize] = "A";
@@ -436,14 +418,7 @@ bool TriggerType::Edit() {
       FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
       9, EditClass::kAlpha);
   if (ActionNeed(action2.type) == NEED_WAYPOINT) {
-    if (action2.data.value < 26) {
-      absl::SNPrintF(action2_waypoint_text, sizeof(action2_waypoint_text), "%c",
-                     action2.data.value + 'A');
-    } else {
-      absl::SNPrintF(action2_waypoint_text, sizeof(action2_waypoint_text),
-                     "%c%c", (action2.data.value / 26) + 'A' - 1,
-                     (action2.data.value % 26) + 'A');
-    }
+    base::SafeCopy(action2_waypoint_text, WaypointLetters(action2.data.value));
   }
 
   // Number fields, one per event and action.
@@ -452,33 +427,10 @@ bool TriggerType::Edit() {
                                sizeof(event1_number_text), FontType::kEditor,
                                TPF_NOSHADOW, kEvent1DataX, kEvent1DataY,
                                kDataWidth, 9, EditClass::kNumeric);
-  switch (Event_Needs(event1.Event)) {
-    case NEED_TIME:
-    case NEED_NUMBER:
-      absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
-                     static_cast<int>(event1.Data.Value));
-      break;
-    case NeedType::NEED_NONE:
-    case NeedType::NEED_THEME:
-    case NeedType::NEED_MOVIE:
-    case NeedType::NEED_SOUND:
-    case NeedType::NEED_SPEECH:
-    case NeedType::NEED_INFANTRY:
-    case NeedType::NEED_UNIT:
-    case NeedType::NEED_AIRCRAFT:
-    case NeedType::NEED_STRUCTURE:
-    case NeedType::NEED_WAYPOINT:
-    case NeedType::NEED_TRIGGER:
-    case NeedType::NEED_TEAM:
-    case NeedType::NEED_HOUSE:
-    case NeedType::NEED_QUARRY:
-    case NeedType::NEED_FORMATION:
-    case NeedType::NEED_BOOL:
-    case NeedType::NEED_SPECIAL:
-    case NeedType::NEED_MISSION:
-    case NeedType::NEED_HEX_NUMBER:
-    default:
-      break;
+  if (const NeedType need = Event_Needs(event1.Event);
+      need == NEED_TIME || need == NEED_NUMBER) {
+    absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
+                   static_cast<int>(event1.Data.Value));
   }
 
   char event2_number_text[kNumberSize] = "";
@@ -486,33 +438,10 @@ bool TriggerType::Edit() {
                                sizeof(event2_number_text), FontType::kEditor,
                                TPF_NOSHADOW, kEvent2DataX, kEvent2DataY,
                                kDataWidth, 9, EditClass::kNumeric);
-  switch (Event_Needs(event2.Event)) {
-    case NEED_TIME:
-    case NEED_NUMBER:
-      absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
-                     static_cast<int>(event2.Data.Value));
-      break;
-    case NeedType::NEED_NONE:
-    case NeedType::NEED_THEME:
-    case NeedType::NEED_MOVIE:
-    case NeedType::NEED_SOUND:
-    case NeedType::NEED_SPEECH:
-    case NeedType::NEED_INFANTRY:
-    case NeedType::NEED_UNIT:
-    case NeedType::NEED_AIRCRAFT:
-    case NeedType::NEED_STRUCTURE:
-    case NeedType::NEED_WAYPOINT:
-    case NeedType::NEED_TRIGGER:
-    case NeedType::NEED_TEAM:
-    case NeedType::NEED_HOUSE:
-    case NeedType::NEED_QUARRY:
-    case NeedType::NEED_FORMATION:
-    case NeedType::NEED_BOOL:
-    case NeedType::NEED_SPECIAL:
-    case NeedType::NEED_MISSION:
-    case NeedType::NEED_HEX_NUMBER:
-    default:
-      break;
+  if (const NeedType need = Event_Needs(event2.Event);
+      need == NEED_TIME || need == NEED_NUMBER) {
+    absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
+                   static_cast<int>(event2.Data.Value));
   }
 
   char action1_number_text[kNumberSize] = "";
@@ -1583,11 +1512,7 @@ bool TriggerType::Edit() {
             break;
 
           case NEED_WAYPOINT:
-            event1.Data.Value = toupper(event1_waypoint_text[0]) - 'A';
-            if (event1_waypoint_text[1] != '\0') {
-              event1.Data.Value = (event1.Data.Value + 1) * 26;
-              event1.Data.Value += toupper(event1_waypoint_text[1]) - 'A';
-            }
+            event1.Data.Value = WaypointFromLetters(event1_waypoint_text);
             break;
 
           case NEED_TEAM:
@@ -1644,16 +1569,12 @@ bool TriggerType::Edit() {
             break;
 
           case NEED_WAYPOINT:
-            event2.Data.Value = toupper(event2_waypoint_text[0]) - 'A';
-            if (event2_waypoint_text[1] != '\0') {
-              event2.Data.Value = (event2.Data.Value + 1) * 26;
-              event2.Data.Value += toupper(event2_waypoint_text[1]) - 'A';
-            }
+            event2.Data.Value = WaypointFromLetters(event2_waypoint_text);
             break;
 
           case NEED_TEAM:
             event2.Team =
-                TeamTypeClass::As_Pointer(SelectedName(event2_team_list));
+                TeamTypeClass::From_Name(SelectedName(event2_team_list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_THEME:
@@ -1701,11 +1622,7 @@ bool TriggerType::Edit() {
             break;
 
           case NEED_WAYPOINT:
-            action1.data.value = toupper(action1_waypoint_text[0]) - 'A';
-            if (action1_waypoint_text[1] != '\0') {
-              action1.data.value = (action1.data.value + 1) * 26;
-              action1.data.value += toupper(action1_waypoint_text[1]) - 'A';
-            }
+            action1.data.value = WaypointFromLetters(action1_waypoint_text);
             break;
 
           case NEED_BOOL:
@@ -1773,11 +1690,7 @@ bool TriggerType::Edit() {
             break;
 
           case NEED_WAYPOINT:
-            action2.data.value = toupper(action2_waypoint_text[0]) - 'A';
-            if (action2_waypoint_text[1] != '\0') {
-              action2.data.value = (action2.data.value + 1) * 26;
-              action2.data.value += toupper(action2_waypoint_text[1]) - 'A';
-            }
+            action2.data.value = WaypointFromLetters(action2_waypoint_text);
             break;
 
           case NEED_BOOL:
@@ -1836,7 +1749,7 @@ bool TriggerType::Edit() {
 }
 
 std::string TriggerType::Description() const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+  if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // Marks for how the second event and action are used: '.' for unused.
     char event_mark = 0;
     switch (event_control) {
@@ -1891,13 +1804,7 @@ std::string TriggerType::Description() const {
         break;
 
       case NEED_WAYPOINT:
-        if (event1.Data.Value < 26) {
-          value_text = absl::StrFormat("'%c'", event1.Data.Value + 'A');
-        } else {
-          value_text =
-              absl::StrFormat("'%c%c'", (event1.Data.Value / 26) + 'A' - 1,
-                              (event1.Data.Value % 26) + 'A');
-        }
+        value_text = absl::StrCat("'", WaypointLetters(event1.Data.Value), "'");
         break;
 
       case NeedType::NEED_NONE:
@@ -2061,9 +1968,9 @@ TriggerType* TriggerType::FromName(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {
-      if (absl::EqualsIgnoreCase(
-              TheObjectHeaps().trigger_type().ActiveAt(index)->Name(), name)) {
-        return TheObjectHeaps().trigger_type().ActiveAt(index);
+      TriggerType* const type = TheObjectHeaps().trigger_type().ActiveAt(index);
+      if (absl::EqualsIgnoreCase(type->Name(), name)) {
+        return type;
       }
     }
   }
