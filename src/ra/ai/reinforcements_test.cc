@@ -53,6 +53,8 @@ class ReinforcementTest : public GameFixture {
     BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP).MaxStrength = 500;
     UnitTypeClass::As_Reference(UNIT_ANT1).MaxStrength = 100;
     AircraftTypeClass::As_Reference(AIRCRAFT_MIG).MaxStrength = 50;
+    AircraftTypeClass::As_Reference(AIRCRAFT_YAK).MaxStrength = 50;
+    AircraftTypeClass::As_Reference(AIRCRAFT_BADGER).MaxStrength = 50;
     AircraftTypeClass::As_Reference(AIRCRAFT_HIND).MaxStrength = 50;
     AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT).MaxStrength = 50;
     // Nor does any type carry passengers.
@@ -124,6 +126,57 @@ TEST_F(ReinforcementTest, AnAirStrikeThatCannotBePlacedCountsNoAircraft) {
   EXPECT_EQ(TheObjectHeaps().aircraft().Count(), 0);
 }
 
+TEST_F(ReinforcementTest, AnAirStrikeArrivesWithItsOrders) {
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_WEST;
+  const Target target = Target::FromCell(Cell::FromXY(40, 50));
+  const Target destination = Target::FromCell(Cell::FromXY(60, 70));
+
+  EXPECT_EQ(LaunchAirStrike(house_, AIRCRAFT_BADGER, 2, MISSION_HUNT, target,
+                            destination),
+            2);
+
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 2);
+  for (int index = 0; index < 2; index++) {
+    const AircraftClass* bomber = TheObjectHeaps().aircraft().ActiveAt(index);
+    EXPECT_FALSE(bomber->IsInLimbo);
+    EXPECT_EQ(bomber->Owner(), HOUSE_USSR);
+    // It leaves the map when it is done.
+    EXPECT_TRUE(bomber->IsALoaner);
+    EXPECT_EQ(Cell::Containing(bomber->Coord).x(), 0);
+    EXPECT_EQ(bomber->Mission, MISSION_HUNT);
+    EXPECT_EQ(bomber->TarCom, target);
+    EXPECT_EQ(bomber->NavCom, destination);
+  }
+  EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
+TEST_F(ReinforcementTest, AnAirStrikeWithoutOrdersHasNoTargetOrDestination) {
+  TheGameState().active() = true;
+
+  EXPECT_EQ(LaunchAirStrike(house_, AIRCRAFT_BADGER, 1, MISSION_HUNT, Target{},
+                            Target{}),
+            1);
+
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
+  const AircraftClass* bomber = TheObjectHeaps().aircraft().ActiveAt(0);
+  EXPECT_EQ(bomber->Mission, MISSION_HUNT);
+  EXPECT_EQ(bomber->TarCom, Target{});
+  EXPECT_EQ(bomber->NavCom, Target{});
+}
+
+TEST_F(ReinforcementTest, AnAirStrikeStopsWhenTheAircraftPoolIsFull) {
+  TheGameState().active() = true;
+
+  // The pool holds four.
+  EXPECT_EQ(LaunchAirStrike(house_, AIRCRAFT_BADGER, 5, MISSION_HUNT, Target{},
+                            Target{}),
+            4);
+
+  EXPECT_EQ(TheObjectHeaps().aircraft().Count(), 4);
+  EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
 TEST_F(ReinforcementTest, ATeamThatCannotBePlacedIsDeleted) {
   // Nothing leaves limbo while the game is not active, so every placement
   // fails, whichever edge cell is tried.
@@ -183,6 +236,145 @@ TEST_F(ReinforcementTest, AVehicleTeamEntersFromTheHouseEdge) {
     EXPECT_EQ(Cell::Containing(unit->Coord).x(), 0);
   }
   EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
+TEST_F(ReinforcementTest, AHouseWithoutAnEdgeEntersFromTheNorth) {
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_NONE;
+  TeamTypeClass& team_type =
+      MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 1);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
+  const UnitClass* jeep = TheObjectHeaps().unit().ActiveAt(0);
+  EXPECT_FALSE(jeep->IsInLimbo);
+  // One cell north of the visible map, which starts at row 1.
+  EXPECT_EQ(Cell::Containing(jeep->Coord).y(), 0);
+  // Facing the edge it came from, as from any other edge.
+  EXPECT_EQ(jeep->PrimaryFacing.Current(), game::DIR_N);
+}
+
+TEST_F(ReinforcementTest, OnlyAsManyMembersArriveAsThePoolHolds) {
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_WEST;
+  // The infantry pool holds four.
+  TeamTypeClass& team_type =
+      MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 5);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().infantry().Count(), 4);
+  for (int index = 0; index < 4; index++) {
+    EXPECT_FALSE(TheObjectHeaps().infantry().ActiveAt(index)->IsInLimbo);
+  }
+  EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
+TEST_F(ReinforcementTest, ATeamWhoseMembersCannotBeCreatedIsDeleted) {
+  TheGameState().active() = true;
+  // The vehicle pool holds four, and these fill it.
+  for (int index = 0; index < 4; index++) {
+    ASSERT_NE(base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR), nullptr);
+  }
+  TeamTypeClass& team_type =
+      MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 2);
+
+  EXPECT_FALSE(DeliverReinforcements(&team_type));
+
+  EXPECT_EQ(TheObjectHeaps().team().Count(), 0);
+  EXPECT_EQ(TheObjectHeaps().unit().Count(), 4);
+  EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
+TEST_F(ReinforcementTest, AGroupArrivesWithoutATeamWhenTheTeamPoolIsFull) {
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_WEST;
+  TeamTypeClass& team_type =
+      MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 1);
+  // The team pool holds two.
+  ASSERT_NE(base::NewPooled<TeamClass>(&team_type), nullptr);
+  ASSERT_NE(base::NewPooled<TeamClass>(&team_type), nullptr);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  EXPECT_EQ(TheObjectHeaps().team().Count(), 2);
+  ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
+  const UnitClass* jeep = TheObjectHeaps().unit().ActiveAt(0);
+  EXPECT_FALSE(jeep->IsInLimbo);
+  EXPECT_EQ(jeep->Team, nullptr);
+  EXPECT_EQ(Cell::Containing(jeep->Coord).x(), 0);
+}
+
+TEST_F(ReinforcementTest, InfantryThatCannotLeaveTheBuildingIsDeleted) {
+  TheGameState().active() = true;
+  constexpr Cell kOrigin = Cell::FromXY(40, 50);
+  TheScenario().Waypoint[0] = kOrigin;
+  // No rules are loaded, so no ground can be crossed and the barracks has no
+  // exit cell a soldier can walk onto.
+  Place(base::NewPooled<BuildingClass>(STRUCT_BARRACKS, HOUSE_USSR), kOrigin);
+  TeamTypeClass& team_type =
+      MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
+  team_type.Origin = 0;
+
+  EXPECT_FALSE(DeliverReinforcements(&team_type));
+
+  EXPECT_EQ(TheObjectHeaps().infantry().Count(), 0);
+  EXPECT_EQ(TheWorld().scenario_init(), 0);
+}
+
+TEST_F(ReinforcementTest,
+       AnInfantryTeamWithNothingAtItsOriginEntersFromTheEdge) {
+  TheGameState().active() = true;
+  TheRules().ground().at(LAND_CLEAR).Cost.at(SPEED_FOOT) = Fixed(1);
+  TheScenario().Waypoint[0] = Cell::FromXY(3, 20);
+  TeamTypeClass& team_type =
+      MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
+  team_type.Origin = 0;
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().infantry().Count(), 1);
+  const InfantryClass* soldier = TheObjectHeaps().infantry().ActiveAt(0);
+  EXPECT_FALSE(soldier->IsInLimbo);
+  EXPECT_EQ(Cell::Containing(soldier->Coord).x(), 0);
+}
+
+TEST_F(ReinforcementTest,
+       AnInfantryTeamIgnoresAVehicleThatCarriesNoPassengers) {
+  TheGameState().active() = true;
+  TheRules().ground().at(LAND_CLEAR).Cost.at(SPEED_FOOT) = Fixed(1);
+  constexpr Cell kOrigin = Cell::FromXY(3, 20);
+  TheScenario().Waypoint[0] = kOrigin;
+  auto* jeep = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
+  Place(jeep, kOrigin);
+  TeamTypeClass& team_type =
+      MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
+  team_type.Origin = 0;
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  EXPECT_EQ(jeep->How_Many(), 0);
+  ASSERT_EQ(TheObjectHeaps().infantry().Count(), 1);
+  const InfantryClass* soldier = TheObjectHeaps().infantry().ActiveAt(0);
+  EXPECT_FALSE(soldier->IsInLimbo);
+  EXPECT_EQ(Cell::Containing(soldier->Coord).x(), 0);
+}
+
+TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportOnItsOrigin) {
+  TheGameState().active() = true;
+  constexpr Cell kOrigin = Cell::FromXY(40, 50);
+  TheScenario().Waypoint[0] = kOrigin;
+  auto* apc = base::NewPooled<UnitClass>(UNIT_APC, HOUSE_USSR);
+  Place(apc, kOrigin);
+  TeamTypeClass& team_type =
+      MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
+  team_type.Origin = 0;
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  EXPECT_EQ(apc->How_Many(), 2);
+  EXPECT_EQ(apc->MissionQueue, MISSION_UNLOAD);
 }
 
 TEST_F(ReinforcementTest, AnInfantryTeamLeavesTheBuildingAtItsOrigin) {
@@ -284,6 +476,24 @@ TEST_F(ReinforcementTest, ATeamWithATransportArrivesLoaded) {
   EXPECT_EQ(TheWorld().scenario_init(), 0);
 }
 
+TEST_F(ReinforcementTest, AGroundTransportThatUnloadsIsNotALoaner) {
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_WEST;
+  TeamTypeClass& team_type =
+      MakeTeamType(UnitTypeClass::As_Reference(UNIT_APC), 1);
+  AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
+  team_type.MissionCount = 1;
+  team_type.MissionList[0].Mission = TMISSION_UNLOAD;
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
+  const UnitClass* apc = TheObjectHeaps().unit().ActiveAt(0);
+  EXPECT_EQ(apc->How_Many(), 1);
+  // Only a flying or sailing transport leaves the map after unloading.
+  EXPECT_FALSE(apc->IsALoaner);
+}
+
 TEST_F(ReinforcementTest, ALoadedHelicopterIsALoanerOnlyWhenTheTeamUnloads) {
   TheGameState().active() = true;
   const AircraftTypeClass& helicopter =
@@ -374,6 +584,61 @@ TEST_F(ReinforcementTest, AHouseKeepsOneMigForEachAirstrip) {
 
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 2);
   EXPECT_EQ(KeptAircraftCount(), 1);
+}
+
+TEST_F(ReinforcementTest, YaksAndMigsShareTheAirstrips) {
+  TheGameState().active() = true;
+  Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
+        Cell::FromXY(40, 50));
+  Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
+        Cell::FromXY(50, 50));
+  ASSERT_EQ(house_->Get_Quantity(STRUCT_AIRSTRIP), 2);
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_YAK), 2);
+  AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_MIG), 1);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  // Two airstrips, three aircraft: the last one created is borrowed.
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 3);
+  EXPECT_EQ(KeptAircraftCount(), 2);
+  EXPECT_TRUE(TheObjectHeaps().aircraft().ActiveAt(2)->IsALoaner);
+}
+
+TEST_F(ReinforcementTest, AnAirstripCountsOnlyThePlayersAircraftAsUsingIt) {
+  TheGameState().active() = true;
+  // The house is no longer the player's, so its kept MiG does not count
+  // against its airstrip and it keeps the second one as well.
+  ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
+  Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
+        Cell::FromXY(40, 50));
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_MIG), 2);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 2);
+  EXPECT_EQ(KeptAircraftCount(), 2);
+}
+
+TEST_F(ReinforcementTest, AHelicopterOrABorrowedMigUsesNoAirstrip) {
+  TheGameState().active() = true;
+  // Without an airstrip the first MiG is borrowed.
+  TeamTypeClass& before =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_MIG), 1);
+  AddMembers(before, AircraftTypeClass::As_Reference(AIRCRAFT_HIND), 1);
+  EXPECT_TRUE(DeliverReinforcements(&before));
+  ASSERT_EQ(KeptAircraftCount(), 0);
+  Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
+        Cell::FromXY(40, 50));
+  TeamTypeClass& after =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_MIG), 1);
+
+  EXPECT_TRUE(DeliverReinforcements(&after));
+
+  // The airstrip is still free for the MiG that arrives next.
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 3);
+  EXPECT_FALSE(TheObjectHeaps().aircraft().ActiveAt(2)->IsALoaner);
 }
 
 TEST_F(ReinforcementTest, AnAirstripKeepsNoHelicopter) {
