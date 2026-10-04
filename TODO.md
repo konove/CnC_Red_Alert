@@ -305,8 +305,37 @@
     `TriggerActionType`, and nothing checks that the action's team, waypoint or special weapon
     exists: `base::At(Waypoint, data.value)` aborts the game for the default -1 in `TACTION_DZ`,
     `TACTION_REVEAL_SOME` and `TACTION_REVEAL_ZONE`, and `SuperWeapon.at()` does for `SPC_NONE`. One
-    step in `TriggerType::ReadIniEntry()` (`ra/ai/trigtype.cc`, after the two `ReadIni()` calls)
+    step in `TriggerType::ReadIniEntry()` (`ra/ai/trigger_type.cc`, after the two `ReadIni()` calls)
     could log and downgrade an action that cannot be performed to `TACTION_NONE`
+  - `ReadIniEntry()` itself casts four unchecked numbers to `Persistence`, `HousesType` and
+    `MultiStyle` (`trigger_type.cc` ~229), and `TEventClass::Read_INI()` (`ra/ai/tevent.cc` ~665)
+    does the same for the event. A house of -1 then aborts in `HouseTypeClass::As_Reference()`. A
+    shared `base::ParseEnumOr<E>(token, fallback)` over `magic_enum::enum_cast` would serve all
+    three readers (about 20 lines plus call sites); it changes behaviour only for a malformed INI
+- Range-check the waypoints typed into the trigger editor
+  - `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, the four `WaypointFromLetters()`
+    calls) stores whatever the field holds: "ZZ" is 701, a digit is negative, and an empty field is
+    -1. `ScenarioClass::Waypoint` has `kWaypointCount` (101) entries, so the game aborts in
+    `base::At(TheScenario().Waypoint, data.value)` (`ra/ai/trigger_action.cc` ~283, ~295, ~435) when
+    the trigger springs
+  - Return `std::optional<int>` from `WaypointFromLetters()` (`ra/ai/waypoint_name.h`), rejecting
+    empty and non-letter input, and keep the old value in `Edit()` when it is out of range; about 25
+    lines plus tests. Editor behaviour only
+- Detach a destroyed team type from the teams made from it
+  - `TeamClass::Detach()` (`ra/ai/team.cc` ~1372) clears `Target`, `MissionTarget` and `Trigger` but
+    never `TeamClass::Class` (`ra/ai/team.h` ~71). The editor deletes team types
+    (`ra/editor/mapedtm.cc` ~166) and `HouseClass` does when a house is removed
+    (`ra/objects/house.cc` ~3008); a live team of that type is left with a dangling pointer
+  - Either `Destroy_All_Of()` before the delete or a clear in `TeamClass::Detach()`; about 5 lines.
+    `95332fb6` did the same for the trigger events
+- Make `TeamTypeClass::operator new` `noexcept`
+  - `ra/ai/teamtype.h` ~148 returns nullptr from a full heap without `noexcept`, so `new` runs the
+    constructor at address zero instead of testing the result; `fa858859` fixed the same crash in
+    `TriggerType`. Check `TeamTypeClass::Read_INI()` for the null dereference that fix also needed
+- Stop `TriggerType::Edit()` changing the house when it is cancelled
+  - It turns `HOUSE_NONE` into `HOUSE_GOOD` before the dialog opens
+    (`ra/editor/trigger_type_dialog.cc`, above the owner list), because the list cannot show "no
+    house". Set it only on OK. Editor behaviour only
 - Check the unchecked house and trigger lookups around the trigger code
   - `HouseClass::As_Pointer()` returns null for `HOUSE_NONE` and for a house the scenario lacks.
     Still dereferenced unchecked: `ra/ai/trigger.cc` ~206-212 and `ra/ai/scenario.cc` ~644 (the
@@ -781,7 +810,7 @@
     `From_Name()`/`As_Pointer()` lookups return none for `""` without scanning, where they used to
     compare it against every entry (Tiberian Dawn's callers were checked)
   - Return a `std::string_view` from `DropListClass::Current_Item()`. It returns null for an empty
-    list, so `ra/ai/trigtype.cc` wraps it in a file-local `SelectedName()`
+    list, so `ra/editor/trigger_type_dialog.cc` wraps it in a file-local `SelectedName()`
   - Three callees still need a NUL-terminated `const char*`, so their callers pass
     `std::string(token).c_str()`: `IconListClass::Add_Item_Detail()` (`ra/ui/iconlist`, virtual,
     stores the pointer), Tiberian Dawn's `NullModemClass::Send_Modem_Command()`, and the `name`
@@ -894,22 +923,70 @@
     `game/ui/` or `ra/screens/` offers one
   - `ToggleClass` (`game/ui/toggle.h`) has only `Turn_On()`/`Turn_Off()`, so callers write the same
     if/else (`ra/screens/sounddlg.cc` ~249-262)
+- Finish what the `ra/ai/trigger_type` modernization left (`7e448b91..57fdf1fc`)
+  - Rebuild `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, 1,550 lines) around one
+    struct per slot: an event slot (list, house, team, number, building, infantry, aircraft and unit
+    gadgets) used twice and an action slot used twice, each with `Show()` and `Store()`. Every block
+    is written two or four times today; roughly 400 lines after. Needs a by-hand check in the editor
+  - The same file carries dead gadgets: no event needs a waypoint or a time (`Event_Needs()`,
+    `ra/ai/tevent.cc` ~720, never returns `NEED_WAYPOINT` or `NEED_TIME`), so the two event waypoint
+    fields (`event1_waypoint_edit`, `event2_waypoint_edit`, `kEvent1Waypoint`, `kEvent2Waypoint`),
+    their `NEED_WAYPOINT` cases in the redraw pass and on OK, and the `NEED_TIME` labels on the
+    event switches cannot run. `fd64bc8a` removed the matching case from `Description()`
+  - One list-entry drawing helper in `ra/ui/`. `TriggerType::Draw_It()` (`ra/ai/trigger_type.cc`
+    ~276), `ActionChoice::Draw_It()` (`trigger_type_dialog.cc` ~100), `EventChoiceClass::Draw_It()`
+    (`ra/ai/tevent.cc` ~176), `TeamTypeClass::Draw_It()` (`ra/ai/teamtype.cc` ~150) and
+    `TriggerClass::Draw_It()` (`ra/ai/trigger.cc` ~120) are the same body. The last has no caller:
+    no `TListClass<TriggerClass*>` exists, so it and `TriggerClass::Description()` can go
+  - Give `TEventClass` a `Detach(Target)` (`ra/ai/tevent.h`) so `TriggerType::Detach()` is four
+    symmetric calls instead of reaching into `event1.Team`; about 15 lines, no behaviour change
+  - Use `WaypointLetters()`/`WaypointFromLetters()` (`ra/ai/waypoint_name.h`) where the letter
+    arithmetic is still written out: `ra/ai/teamtype.cc` ~771, ~1157, ~1221, ~1288, ~1355, ~1463,
+    ~1607, ~1678 and `ra/objects/cell.cc` ~1079; about 60 lines removed. `WaypointLetters(-1)` gives
+    "@", as the open-coded version did; an empty string would read better
+  - One case-insensitive less-than in `base/strings/`. The `lexicographical_compare` over
+    `absl::ascii_tolower` is written in `trigger_type_dialog.cc` ~90, `ra/ai/tevent.h` ~220,
+    `ra/editor/mapedtm.cc` ~290, `ra/editor/mapeddlg.cc` ~2725 and `ra/wol/rawolapi.cc` ~517
+  - A find-by-name on `game::ObjectHeap` (`game/core/object_heap.h`): `TriggerType::FromName()`,
+    `TeamTypeClass::From_Name()` and `TeamTypeClass::As_Pointer()` (`ra/ai/teamtype.cc` ~248, ~488)
+    are the same loop, and the last two are the same function under two names
+  - The `is_active` writes in `TriggerType::operator new`/`operator delete` (`trigger_type.cc`
+    ~63-76) look redundant: the member initializer sets the flag, `Allocate()` hands out zeroed
+    slots, and the only reader is `Serialize()` on live objects. Pin that with a save/load test,
+    then drop them and the comment in `trigger_type.h` ~65
+  - `TriggerType::ToIniEntry()` formats with `std::format`, as `ra/ai/tevent.cc` ~643 and
+    `ra/ai/trigger_action.cc` ~160 do; CLAUDE.md prefers Abseil. Check `HousesType`'s underlying
+    type before `absl::StrCat`, which prints a `char` as a character
+  - `TeamTypeClass::Detach()` and `TeamClass::Detach()` ignore their `all` parameter, as
+    `TriggerType::Detach()` did (`b3914ac1`); `ra/objects/tracker.cc` ~93-96 is the caller
+  - `TeamTypeClass::Description()` and `Member_Description()` (`ra/ai/teamtype.cc` ~1547, ~1594)
+    still return a pointer into a static buffer, and `teamtype.h` ~204 still has the
+    `operator const char*` that `TriggerType` lost in `022e3617`
+  - `TriggerType::WriteIni()` could take the trigger types in a range-for once the heap offers one
+  - Names to confirm: the data members have no trailing underscore though `TriggerType` is a class
+    (they are public, like `TriggerAction`'s); `MultiStyle` (or `SecondaryMode`); `DestroyAll()`
+    (its siblings in `ra/ai/scenario.cc` ~761 are still `Init()`); `event_style` in `Edit()`.
+    `Draw_It()` and `Description()` keep their names for `ra/ui/tlist.h` and `drop.h`
+  - Run `/fix-ide-issues` on `ra/editor/trigger_type_dialog.cc`, `ra/ai/trigger_type_test.cc` and
+    `ra/ai/waypoint_name.{h,cc}` once CLion has reloaded the CMake project: it returned no findings
+    for the files this run created, which means not analyzed rather than clean
+    (`ActionChoice::Draw_It()` has the by-value parameters it flagged in `trigger_type.cc`). Its two
+    "can be `if constexpr`" findings in `trigger_type.cc` are skipped on purpose
 - Finish what the `ra/ai/trigger_action` modernization left (`7eeaf347..cd29efc1`)
   - Replace `TriggerAction::data`'s union (`ra/ai/trigger_action.h` ~111) with an `int value` and
     typed accessors. Every member is read after `value` was written, and the one-byte members depend
     on reading its low byte (`trigger_action_test.cc` pins that for specials and movies). The save
-    format stores `value` only, so it does not change; 54 uses in `ra/ai/trigtype.cc`
+    format stores `value` only, so it does not change; 54 uses in `ra/editor/trigger_type_dialog.cc`
   - Run the same pass on `ra/ai/tevent`: `TEventClass` -> `TriggerEvent`, and `EventChoiceClass`
-    with its `EventChoices` table belongs in `trigtype.cc` beside `ActionChoice` (~125), its only
-    user. The two `Draw_It()` bodies (`trigtype.cc` ~196, `tevent.cc` ~176) and the two
-    case-insensitive `operator<` (plus `ra/editor/mapeddlg.cc` ~2725) are copies; one helper each
-  - `action_choices` (`trigtype.cc` ~157) is a 37-line identity table; a local in
-    `TriggerType::Edit()` filled from `magic_enum::enum_values()` replaces it
+    with its `EventChoices` table belongs in `ra/editor/trigger_type_dialog.cc` beside
+    `ActionChoice` (~75), its only user. The two classes are member-for-member copies; one
+    `Choice<E, NameFn>` template would serve both, and `EventChoices` can become a local filled from
+    the enum as `action_choices` did (`ee567c17`)
   - `Name_From_Action()`'s successor `ActionName()` and `ActionChoice::Description()` return
     `const char*` because `Conquer_Clip_Text_Print()` (`ra/ui/dialog.h` ~33) takes one; they become
     `std::string_view` when the printer does
-  - `TEventClass`, `TeamTypeClass` and `TriggerType` still have `Build_INI_Entry(std::string&)`;
-    `TriggerAction::ToIniEntry()` returns the string
+  - `TEventClass` and `TeamTypeClass` still have `Build_INI_Entry(std::string&)`;
+    `TriggerAction::ToIniEntry()` and `TriggerType::ToIniEntry()` return the string
   - `kTicksPerTimerUnit` (`trigger_action.cc` ~80) is also spelled `kTicksPerMinute / 10` in
     `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in
     `ra/core/defines.h` ~2207
@@ -1018,6 +1095,19 @@
     device; an accessor for `ThemeClass::Pending` would let the music action be asserted
   - `TACTION_PLAY_MOVIE` (~363) needs the display and a movie; the player's special weapon button
     (~398) needs the sidebar's game data; `TACTION_DZ` (~433) needs the animation types
+- Cover the rest of `ra/ai/trigger_type.cc` (79.7% of lines after `7476793a`)
+  - `Description()`'s unit, aircraft, building and infantry names (~126-145) call `Text_String()`,
+    which needs the text table, and `GameFixture` builds only the house and unit type heaps. A
+    fixture that installs a small in-memory text table would reach them
+  - `Draw_It()` (~276-303) needs the fonts and the colour remaps; it becomes one test of the shared
+    list-entry helper when the five copies are merged
+  - The placement `operator new` in `trigger_type.h` ~113 is only used by `ObjectHeap::Load()`; a
+    save and load of the trigger type heap through an `ArchiveWriter` would cover it and
+    `TriggerType::Serialize()`
+  - `ra/editor/trigger_type_dialog.cc` (1,227 lines, 0%) is a modal loop over the display and the
+    input queue. The per-slot structs above would leave `Store()` testable without either
+  - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
+    builds the internal version, where it is skipped
 
 ## Debugging
 
