@@ -555,9 +555,6 @@ int Fetch_Difficulty(bool amath) {
       /*
       **	Draw the body of the message.
       */
-      //			Fancy_Text_Print(buffer, x + 20*2, y +
-      // 15*2, Get_Color_Scheme(), TBLACK,
-      // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
       Fancy_Text_Print(view, buffer, x + 40, y + 30, Get_Color_Scheme(),
                        kTBlack, FontType::k6PointGradient, TPF_NOSHADOW);
 
