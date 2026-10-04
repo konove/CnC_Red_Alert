@@ -122,10 +122,9 @@ void RunSpecialOptionsDialog() {
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
-      for (const auto& label : labels) {
-        Fancy_Text_Print(view, label.label, label.check_box.X + 20,
-                         label.check_box.Y, Get_Color_Scheme(), kTBlack,
-                         FontType::k6PointGradient,
+      for (const auto& [label, check_box] : labels) {
+        Fancy_Text_Print(view, label, check_box.X + 20, check_box.Y,
+                         Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       ok_button.Draw_All(view);
@@ -159,7 +158,7 @@ void RunSpecialOptionsDialog() {
   TheMap().Render();
 }
 
-DifficultyChoice DifficultyForLevel(int level) {
+DifficultyChoice DifficultyForLevel(const int level) {
   // The player's side gets easier as the computer's gets harder; only the
   // middle level has both on normal.
   static constexpr std::array<DifficultyChoice, 5> kChoices = {{
@@ -172,12 +171,12 @@ DifficultyChoice DifficultyForLevel(int level) {
   return kChoices.at(base::ToSize(level));
 }
 
-DifficultyChoice PromptForDifficulty(bool is_expansion_mission) {
-  const int dialog_width = 500;
-  const int dialog_height = 160;
-  const int dialog_x = (Screen::kWidth - dialog_width) / 2;
-  const int dialog_y = (Screen::kHeight - dialog_height) / 2;
-  const int button_width = 60;
+DifficultyChoice PromptForDifficulty(const bool is_expansion_mission) {
+  constexpr int dialog_width = 500;
+  constexpr int dialog_height = 160;
+  constexpr int dialog_x = (Screen::kWidth - dialog_width) / 2;
+  constexpr int dialog_y = (Screen::kHeight - dialog_height) / 2;
+  constexpr int button_width = 60;
 
   // Format_Window_String() breaks the prompt into lines by writing into it,
   // so work on a copy of the string table's text.
