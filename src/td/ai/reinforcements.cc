@@ -101,8 +101,13 @@ static void EnterFromEdge(FootClass* group, const SourceType edge,
   while (place_cell.index() > 0 && member != nullptr) {
     if (member->Unlimbo(place_cell.Center(), facing)) {
       // The team handler assigns the mission a team member follows; until
-      // then it guards. Without a team the member moves one cell further in,
-      // which takes it onto the map.
+      // then it guards. Without a team the member is told to move to the next
+      // cell in the entry facing.
+      //
+      // TODO: that cell is further off the map, not on it, since the entry
+      // facing points away from the map; from the west edge it is the last
+      // cell of the row above. The original does the same ("Facing to enter
+      // map"), so the intent was the opposite facing.
       if (has_team) {
         member->Assign_Mission(MISSION_GUARD);
       } else {
