@@ -285,8 +285,8 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
 
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-bool TriggerAction::operator()(HousesType house, ObjectClass* object,
-                               int trigger_id, Cell cell) {
+bool TriggerAction::Perform(HousesType house, ObjectClass* object,
+                            int trigger_id, Cell cell) {
   HouseClass* owner = HouseClass::As_Pointer(house);
   TriggerClass* sprung_trigger = nullptr;
   if (trigger_id != -1) {

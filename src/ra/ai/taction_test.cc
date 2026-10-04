@@ -43,7 +43,7 @@ class TriggerActionTest : public GameFixture {
   // Carries out `action` as a trigger of `house` that is attached to nothing.
   static bool Perform(TriggerAction& action,
                       const HousesType house = HOUSE_USSR) {
-    return action(house, nullptr, -1, Cell{});
+    return action.Perform(house, nullptr, -1, Cell{});
   }
 };
 

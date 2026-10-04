@@ -98,7 +98,7 @@ const char* ActionName(TriggerActionType action);
 NeedType ActionNeed(TriggerActionType action);
 
 // One action of a trigger type: the action and the data it needs. A trigger
-// type holds two, and carries them out by calling them when it springs.
+// type holds two, and carries them out with Perform() when it springs.
 struct TriggerAction {
   TriggerActionType type{TACTION_NONE};  // Action to perform.
 
@@ -154,8 +154,8 @@ struct TriggerAction {
   // none. `cell` is the cell the trigger is attached to; cell 0 means none.
   // Returns false when the action could not be done (no reinforcements could
   // be created, nothing to destroy), so the trigger is not counted as used.
-  bool operator()(HousesType house, ObjectClass* object, int trigger_id,
-                  Cell cell);
+  bool Perform(HousesType house, ObjectClass* object, int trigger_id,
+               Cell cell);
 };
 
 // An action as an entry of the scenario editor's action drop lists, which

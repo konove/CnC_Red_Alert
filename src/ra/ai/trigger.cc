@@ -333,23 +333,23 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     const HousesType hh = Class->House;
     if (Class->EventControl == MULTI_LINKED) {
       if (e1 || forced) {
-        ok |= Class->Action1(hh, obj, ID, cell);
+        ok |= Class->Action1.Perform(hh, obj, ID, cell);
       }
       if (e2 && !forced) {
-        ok |= Class->Action2(hh, obj, ID, cell);
+        ok |= Class->Action2.Perform(hh, obj, ID, cell);
       }
     } else {
       switch (Class->ActionControl) {
         case MULTI_ONLY:
-          ok |= Class->Action1(hh, obj, ID, cell);
+          ok |= Class->Action1.Perform(hh, obj, ID, cell);
           break;
 
         case MultiStyleType::MULTI_OR:
         case MultiStyleType::MULTI_LINKED:
         default:
         case MULTI_AND:
-          ok |= Class->Action1(hh, obj, ID, cell);
-          ok |= Class->Action2(hh, obj, ID, cell);
+          ok |= Class->Action1.Perform(hh, obj, ID, cell);
+          ok |= Class->Action2.Perform(hh, obj, ID, cell);
           break;
       }
     }
