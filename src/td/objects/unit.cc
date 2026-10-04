@@ -2872,11 +2872,11 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
 game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
                                          game::FacingType /*unused*/) const {
   Validate();
-  const CellClass* cellptr = &TheMap().at(cell);
-
   if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
+
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	The gunboat can always move. This prevents it from trying to move around
