@@ -16,26 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/TACTION.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : ACTION.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 11/28/95 *
- *                                                                                             *
- *                  Last Update : November 28, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The action half of a scenario trigger: what happens when the trigger springs
+// (TActionClass), the kinds of action there are (TActionType), and the entries
+// the scenario editor lists them with (ActionChoiceClass).
 
 #ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
 #define CNC_RED_ALERT_RA_AI_TACTION_H_
@@ -58,6 +41,8 @@ class ArchiveWriter;
 
 namespace ra {
 
+// What a trigger action does. Scenario INI files and saved games store the
+// number, so the order is fixed.
 enum class TActionType {
   TACTION_NONE,
 
@@ -67,17 +52,17 @@ enum class TActionType {
   TACTION_CREATE_TEAM,       // computer creates a certain type of team
   TACTION_DESTROY_TEAM,
   TACTION_ALL_HUNT,  // all enemy units go into hunt mode (teams destroyed).
-  TACTION_REINFORCEMENTS,   // player gets reinforcements
-                            // (house that gets them is determined by
-                            // the Reinforcement instance)
+  TACTION_REINFORCEMENTS,   // The team type arrives as reinforcements, for
+                            // the house the team type names.
   TACTION_DZ,               // Deploy drop zone smoke.
   TACTION_FIRE_SALE,        // Sell all buildings and go on rampage.
-  TACTION_PLAY_MOVIE,       //	Play movie (temporarily suspend game).
+  TACTION_PLAY_MOVIE,       // Play movie (temporarily suspend game).
   TACTION_TEXT_TRIGGER,     // Triggers a text message display.
   TACTION_DESTROY_TRIGGER,  // Destroy specified trigger.
   TACTION_AUTOCREATE,       // Computer to autocreate teams.
-  TACTION_WINLOSE,          // Win if captured, lose if destroyed.
-  TACTION_ALLOWWIN,         // Allows winning if triggered.
+  TACTION_WINLOSE,          // Unused ("~don't use~" in the editor); was win
+                            // if captured, lose if destroyed.
+  TACTION_ALLOWWIN,         // The house cannot win until this has sprung.
 
   TACTION_REVEAL_ALL,     // Reveal the entire map.
   TACTION_REVEAL_SOME,    // Reveal map around cell #.
@@ -96,7 +81,7 @@ enum class TActionType {
   TACTION_BASE_BUILDING,  // Automated base building.
   TACTION_CREEP_SHADOW,   // Shadow grows back one 'step'.
 
-  TACTION_DESTROY_OBJECT,  // Destroys the building this trigger is attached to.
+  TACTION_DESTROY_OBJECT,  // Destroys every object this trigger is attached to.
   TACTION_1_SPECIAL,       // Add a one-time special weapon ability to house.
   TACTION_FULL_SPECIAL,    // Add a repeating special weapon ability to house.
 
@@ -107,14 +92,20 @@ enum class TActionType {
 };
 using enum TActionType;
 
+// Returns the action the scenario editor lists as `name`, ignoring case, or
+// TACTION_NONE when there is none (or `name` is empty).
 TActionType Action_From_Name(std::string_view name);
+
+// Returns the scenario editor's name for `action`.
 const char* Name_From_Action(TActionType action);
+
+// Returns the kind of value `action` takes in TActionClass::Data, which the
+// scenario editor prompts for; NEED_NONE when it takes none. NEED_TEAM and
+// NEED_TRIGGER mean the Team or Trigger member instead.
 NeedType Action_Needs(TActionType action);
 
-/*
-**	This elaborates the information necessary to carry out
-**	a trigger's action.
-*/
+// One action of a trigger type: the action and the data it needs. A trigger
+// type holds two, and carries them out by calling them when it springs.
 struct TActionClass {
   TActionType Action{TACTION_NONE};  // Action to perform.
 
@@ -123,6 +114,9 @@ struct TActionClass {
   // Trigger type for this action (if needed).
   TriggerTypeClass* Trigger = nullptr;
 
+  // The action's value, read through the member Action_Needs() names. The INI
+  // file and saved games store Value; the one-byte members read its low byte,
+  // which is what the shipped scenarios rely on (see taction_test.cc).
   union {
     ThemeType Theme;            // Musical theme.
     VocType Sound;              // Sound effect.
@@ -132,7 +126,8 @@ struct TActionClass {
     QuarryType Quarry;          // Preferred target for attack.
     VQType Movie;               // The movie to play.
     bool Bool;                  // Boolean value.
-    int Value;
+    int Value;  // Waypoint, global, text ID or timer tenths of a
+                // minute; -1 when unset.
   } Data{};
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
@@ -145,27 +140,45 @@ struct TActionClass {
     Data.Value = -1;
   }
 
+  // Clears Team or Trigger when `target` is the team type or trigger type it
+  // points to; called when that type is being destroyed.
   void Detach(Target target);
 
   // Saved-game support; defined in ioobj.cc. The union travels through its
   // widest member.
   template <class Archive>
   void Serialize(Archive& ar);
-  // Reads the action fields from the trigger entry `tokens` is parsing.
+
+  // Reads the action fields from the trigger entry `tokens` is parsing: the
+  // action number, the team, the trigger and the value. The counterpart of
+  // Build_INI_Entry().
   void Read_INI(base::Tokenizer& tokens);
+
+  // Appends the action to `buffer` in the scenario INI's current format:
+  // "action,team,trigger,value", the middle two as positions in their type
+  // lists (-1 for none).
   void Build_INI_Entry(std::string& buffer) const;
 
+  // Carries out the action for the trigger that sprang. `house` is the
+  // trigger's owner, which the house actions without a Data.House act on.
+  // `object` is what the trigger was attached to and sprang on, or nullptr.
+  // `id` is the springing trigger's slot in the trigger heap, or -1 for none.
+  // `cell` is the cell the trigger is attached to; cell 0 means none.
+  // Returns false when the action could not be done (no reinforcements could
+  // be created, nothing to destroy), so the trigger is not counted as used.
   bool operator()(HousesType house, ObjectClass* object, int id, Cell cell);
 };
 
+// An action as an entry of the scenario editor's action drop lists, which
+// sort by description and draw each entry through Draw_It().
 class ActionChoiceClass {
  public:
-  // choice tables are brace lists of action types.
+  // Implicit: choice tables are brace lists of action types.
   // NOLINTNEXTLINE(*-explicit-constructor)
   ActionChoiceClass(TActionType event = TACTION_NONE) noexcept
       : Action(event) {}
 
-  // objects compare directly against their type ID.
+  // Implicit: choices compare directly against their action type.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator TActionType() const { return Action; }
   bool operator==(const ActionChoiceClass& rvalue) const {
@@ -189,15 +202,21 @@ class ActionChoiceClass {
   bool operator>=(const ActionChoiceClass& rvalue) const {
     return Action == rvalue.Action || rvalue < *this;
   }
+  // The editor's name for the action.
   [[nodiscard]] const char* Description() const {
     return Name_From_Action(Action);
   }
+
+  // Draws the description as a list box entry in the box at (`x`, `y`) of
+  // `width` by `height` pixels, highlighted when `selected`. The index of the
+  // entry in the list is not used.
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
   TActionType Action;
 };
 
+// The choice for every action, indexed by action.
 extern base::EnumArray<TActionType, ActionChoiceClass,
                        static_cast<int>(TACTION_COUNT)>
     ActionChoices;
