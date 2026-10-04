@@ -22,22 +22,21 @@
 #ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
 #define CNC_RED_ALERT_RA_AI_TACTION_H_
 
-#include <algorithm>
 #include <string>
-#include <string_view>
 
-#include "absl/strings/ascii.h"
-#include "base/enum_array.h"
 #include "base/strings/tokenizer.h"
-#include "engine/gfx/pixel_buffer.h"
-#include "ra/ai/teamtype.h"
+#include "ra/core/cell.h"
 #include "ra/core/defines.h"
-#include "ra/objects/object.h"
+#include "ra/core/target.h"
 
 class ArchiveReader;
 class ArchiveWriter;
 
 namespace ra {
+
+class ObjectClass;
+class TeamTypeClass;
+class TriggerTypeClass;
 
 // What a trigger action does. Scenario INI files and saved games store the
 // number, so the order is fixed.
