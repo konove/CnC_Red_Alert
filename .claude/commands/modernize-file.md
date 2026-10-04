@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, moving out what belongs in another file, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -23,7 +23,10 @@ Each stage makes the next one cheaper or more accurate:
    which is what the comment pass found out.
 4. **Names** after the types, so a name can carry the unit the type now states (`distance_cells`).
 5. **Simplify** what the earlier stages listed but kept out of their diffs - every one of them ends
-   with "noticed but not changed", and the user always asks for those next.
+   with "noticed but not changed", and the user always asks for those next. Then **move out** what
+   the file holds but is not about. It goes after types and names so each piece arrives at its new
+   home already modernized, and before the namespace, the tests and the file name, which should all
+   be decided by what stays.
 6. **Namespace** once the names are final and the dead code is gone, so every caller is qualified
    once, with the name it keeps, and nothing about to be deleted gets a qualifier. Only for
    `src/engine` files; `src/ra` and `src/td` stay global.
@@ -48,13 +51,14 @@ Each stage makes the next one cheaper or more accurate:
 - `git status`: unrelated changes stay in the tree and out of every commit (stage by path).
 - Ask the user once, now, to open **both** files (the `.h` too) in CLion. Stage 8 needs them; CLion
   only answers for open files, and a mid-run question stalls the run for nothing.
-- Keep a ledger in the scratchpad (`modernize-<file>.md`) with three lists: **bugs**, **noticed**
+- Keep a ledger in the scratchpad (`modernize-<file>.md`) with four lists: **bugs**, **noticed**
   (unused or constant parameters, redundant checks, tables that could be `constexpr`, functions
-  doing two jobs), and **for the user** (anything that changes simulation behaviour, names you were
-  unsure of). Every stage appends to it; later stages read it. It is what makes the stages add up
-  instead of each rediscovering the same things, and at the end it is the source for stage 10. Put
-  everything on it, including what lies outside the files' scope and what a subagent reported: an
-  item that is only in the conversation is lost when the run ends.
+  doing two jobs), **misplaced** (an enum, class, constant or function the file holds but is not
+  about, with where it looks like it belongs), and **for the user** (anything that changes
+  simulation behaviour, names you were unsure of). Every stage appends to it; later stages read it.
+  It is what makes the stages add up instead of each rediscovering the same things, and at the end
+  it is the source for stage 10. Put everything on it, including what lies outside the files' scope
+  and what a subagent reported: an item that is only in the conversation is lost when the run ends.
 
 ## The stages
 
@@ -95,15 +99,18 @@ keeps because of a virtual chain or fan-out go on the **for the user** list.
 step, which is stage 9. Identifiers means all of them - the types the files declare (including
 dropping a `Class` suffix and picking a better name than the one under it), the parameters, and the
 locals, not just the functions and members. Settling the type name here is what lets stage 9 name
-the file once instead of twice. Leave out of the table anything the ledger already marks as going in
-stage 5 (a derivable member, a static that belongs elsewhere); renaming what is about to be deleted
-is churn in two commits. Its "noticed" and "unsure" lists go on the ledger.
+the file once instead of twice. Leave out of the table anything the ledger already marks as being
+deleted in stage 5 (a derivable member, a parameter nobody passes); renaming what is about to be
+deleted is churn in two commits. What is on the **misplaced** list is renamed like the rest: it
+survives, and should arrive at its new home with its final name. Its "noticed" and "unsure" lists go
+on the ledger.
 
 **5. Simplify** - first work through the ledger's **noticed** list: dead or constant parameters
 through `/remove-dead-code <claim>`, the rest by hand, each only if it keeps behaviour. Then run
 `/simplify` on what this run has changed so far (`git diff <base>..HEAD -- <files>`, with `<base>`
 the commit before stage 1) and apply what it finds on those files. Anything that would change
-behaviour goes to **for the user**.
+behaviour goes to **for the user**. Last, work through the **misplaced** list under "Moving out what
+does not belong" below, one commit per move.
 
 **6. Namespace** - `/migrate-namespaces <files>`, for a file under `src/engine` that is not in its
 library's namespace yet; otherwise one line in the report and no commit. It runs in its single-file
@@ -134,16 +141,16 @@ stage 10. If the name and the folder already fit, record why and make no commit.
 
 **10. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
 `/add-todo` for wording and section: bugs not fixed (behaviour-changing, out of scope, twin not
-done), **noticed** items not acted on, **for the user** decisions, design ideas `/simplify` raised
-but did not apply, lines stage 7 left uncovered and what would make them testable, stages skipped (a
-CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things spotted outside the files' scope.
-Give each entry what it takes to act without re-reading the run: the files and lines, what is wrong
-or possible, the options with their size, and the run's commit range. Before adding, grep `TODO.md`
-for an entry that already covers it (an existing item may only need the new file name or an extra
-detail); delete entries this run finished (a "move X into its namespace" item the namespace stage
-closed). Run Prettier on `TODO.md` (the pre-commit hook rejects it otherwise) and commit it alone,
-as `c8a9d6c4` did: "Add the <file> modernization's leftovers to TODO.md". A run whose ledger ends
-empty says so in the report and makes no commit.
+done), **noticed** items not acted on, **misplaced** items not moved, **for the user** decisions,
+design ideas `/simplify` raised but did not apply, lines stage 7 left uncovered and what would make
+them testable, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things
+spotted outside the files' scope. Give each entry what it takes to act without re-reading the run:
+the files and lines, what is wrong or possible, the options with their size, and the run's commit
+range. Before adding, grep `TODO.md` for an entry that already covers it (an existing item may only
+need the new file name or an extra detail); delete entries this run finished (a "move X into its
+namespace" item the namespace stage closed). Run Prettier on `TODO.md` (the pre-commit hook rejects
+it otherwise) and commit it alone, as `c8a9d6c4` did: "Add the <file> modernization's leftovers to
+TODO.md". A run whose ledger ends empty says so in the report and makes no commit.
 
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
@@ -154,11 +161,68 @@ If a stage cannot be made to build or pass the strict checks, stop there: report
 what is left in the tree, and the error. That includes the full strict pass before stage 9: a run
 that ends with it unclean is a failed run, however many stages committed.
 
+## Moving out what does not belong
+
+Legacy files collect things by accident: an enum declared in the first header that needed it, a
+helper class beside its only early user, a table in `defines.h` because everything included it.
+Stage 2's close reading is where these are spotted and put on the **misplaced** list; stage 5 moves
+them.
+
+**What is misplaced.** A declaration is in the wrong file when a reader looking for it would not
+open this file, or when other files include this header only to get it. Check before deciding:
+`git grep -nw '<name>' -- src` shows who uses it. Typical cases:
+
+- An enum, struct or constant that describes another subsystem, or that many files use and this one
+  merely happened to declare.
+- A second class in the header that is not a part of the first.
+- A free function or table whose callers are all elsewhere.
+- Something in the header that only this `.cc` uses.
+- The reverse: a declaration elsewhere that is plainly this file's (its own enum living in
+  `defines.h`). It is pulled in under the same rules.
+
+**Where it goes**, the nearest fit first:
+
+1. Into the `.cc`'s anonymous namespace, when only this `.cc` uses it. The cheapest move and the
+   most common.
+2. Into the class, as a nested type or a private member, when only that class uses it.
+3. Into the existing file whose subject it is.
+4. Into a new `.h`/`.cc` pair named after it (`/rename-google-style`'s file-name and folder rules;
+   new-file rules in `CLAUDE.md`), when it is a subject of its own and has no home. A header holding
+   two unrelated classes is split this way.
+
+**What is done here and what is reported.** A move inside the game's own folders, or inside one
+engine library, is made. A move that crosses a library or a namespace (`ra/` -> `game/sim/`,
+`engine/gfx/` -> `engine/window/`), that would need a dependency cut for `tools/check_layers.py` to
+pass, or that changes what a save game or a network packet contains goes to **for the user** with
+what stands in the way. So does a doubtful fit: say where it might go and leave it. If the file is a
+catch-all (`defines.h`, `function.h`), move out what has an obvious existing home and list the rest;
+dissolving it is a plan of its own, not a stage.
+
+**How.**
+
+- Move the declaration, its definition and its comment verbatim. The commit is a pure move, so
+  `git diff --color-moved` shows nothing but the move and the include changes; any edit to the moved
+  code is a separate commit, before or after.
+- Its tests move to the destination's test file in the same commit.
+- Fix the includes over every user: each one includes the new header, and drops the old one if it
+  used nothing else from it. `misc-include-cleaner` finds both in `.cc` files; headers are checked
+  by hand. An include that disappears from a widely used header is part of the gain - say in the
+  commit message when a move shrinks a fan-out or breaks a cycle.
+- `git clang-format -f` on the touched files, the plain `build` (the fan-out is tree-wide),
+  `tools/strict_tu.py` on the touched files, and `engine_layers_test`.
+- One commit per move, "Move `<what>` from `<file>` to `<file>`", through `/commit`.
+- The twin's copy stays where it is; note it for stage 10 so the other game's run picks it up.
+
+After this stage the later ones see only what stayed: stage 7 covers it, and stage 9 names and
+places the file by it.
+
 ## Report
 
 - One line per stage: the commit(s) it made (`git log --oneline <base>..HEAD`), or why there was
   none, and what the full strict pass before stage 9 turned up.
 - Bugs fixed, each with its commit and whether the twin got it.
+- What moved out or in, each with its commit, and the misplaced items left where they are with the
+  reason.
 - Coverage of each file before and after stage 7, and the lines still uncovered.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
