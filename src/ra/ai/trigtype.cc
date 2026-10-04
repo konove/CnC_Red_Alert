@@ -39,7 +39,6 @@
 #include "game/core/object_heap.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
-#include "ra/ai/waypoint_name.h"
 #include "ra/assets/palettes.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
@@ -144,16 +143,13 @@ std::string TriggerType::Description() const {
           InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
       break;
 
-    case NEED_WAYPOINT:
-      value_text = absl::StrCat("'", WaypointLetters(event1.Data.Value), "'");
-      break;
-
     case NeedType::NEED_NONE:
     case NeedType::NEED_THEME:
     case NeedType::NEED_MOVIE:
     case NeedType::NEED_SOUND:
     case NeedType::NEED_SPEECH:
     case NeedType::NEED_TRIGGER:
+    case NeedType::NEED_WAYPOINT:
     case NeedType::NEED_TEAM:
     case NeedType::NEED_HOUSE:
     case NeedType::NEED_TIME:
