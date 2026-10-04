@@ -19,6 +19,7 @@
 #ifndef CNC_RED_ALERT_RA_MAP_DISPLAY_H_
 #define CNC_RED_ALERT_RA_MAP_DISPLAY_H_
 
+#include <bitset>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -167,7 +168,6 @@ class DisplayClass : public MapClass {
                               bool reposition);
 
  public:
-
   /*
   **	Pending object placement control.
   */
@@ -213,7 +213,7 @@ class DisplayClass : public MapClass {
 
   virtual void Flag_Cell(Cell cell);
   [[nodiscard]] static bool Is_Cell_Flagged(Cell cell) {
-    return CellRedraw.at(base::ToSize(cell.index()));
+    return CellRedraw.test(base::ToSize(cell.index()));
   }
 
   /*
@@ -344,9 +344,11 @@ class DisplayClass : public MapClass {
 
   /*
   **	This bit array is used to flag cells to be redrawn. If the icon needs to
-  **	be redrawn for a cell, then the corresponding flag will be true.
+  **	be redrawn for a cell, then the corresponding flag will be true. A
+  **	bitset, so that it needs no one-time sizing: a map that never loads its
+  **	display data, as in the tests, can still flag cells.
   */
-  static std::vector<bool> CellRedraw;
+  static std::bitset<MAP_CELL_TOTAL> CellRedraw;
 
   [[nodiscard]] bool Good_Reinforcement_Cell(Cell outcell, Cell incell,
                                              SpeedType loco, int zone,

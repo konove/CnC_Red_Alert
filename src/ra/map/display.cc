@@ -104,6 +104,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bitset>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -222,10 +223,7 @@ TranslucencyTable<1> DisplayClass::SpecialGhost;
 std::span<const std::byte> DisplayClass::ShadowShapes;
 TranslucencyTable<kShadowColorCount> DisplayClass::ShadowTrans;
 
-/*
-** Bit array of cell redraw flags
-*/
-std::vector<bool> DisplayClass::CellRedraw;
+std::bitset<MAP_CELL_TOTAL> DisplayClass::CellRedraw;
 
 /*
 ** The main button that intercepts user input to the map
@@ -276,9 +274,6 @@ DisplayClass::DisplayClass() {
  *=============================================================================================*/
 void DisplayClass::One_Time() {
   MapClass::One_Time();
-
-  // Sized here rather than in constructor to follow one-time init pattern.
-  CellRedraw.resize(MAP_CELL_TOTAL);
 
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
     Layer.at(layer).One_Time();
@@ -1734,7 +1729,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     }
   }
 
-  CellRedraw.assign(CellRedraw.size(), true);
+  CellRedraw.set();
 
   if (view.Lock()) {
     view.FillRect(TacPixelX, TacPixelY,
@@ -1752,7 +1747,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     view.Unlock();
   }
 
-  CellRedraw.assign(CellRedraw.size(), false);
+  CellRedraw.reset();
 
   if constexpr (config::kScenarioEditorEnabled) {
     // The object being placed in the editor, drawn at the cell under the
@@ -4308,7 +4303,7 @@ void DisplayClass::Constrained_Look(Coordinate center, int distance) {
 void DisplayClass::Flag_Cell(Cell cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw.at(base::ToSize(cell.index())) = true;
+  CellRedraw.set(base::ToSize(cell.index()));
 }
 
 }  // namespace ra
