@@ -105,6 +105,13 @@ constexpr int kStripHeight = 100;
 
 namespace {
 
+// Tab stops in CREDITS.TXT are this many columns apart.
+constexpr int kTabColumns = 8;
+
+// The column that divides the page: a string wholly to its left is
+// right-justified, one wholly to its right left-justified.
+constexpr int kCreditCenterColumn = kCreditColumns / 2;
+
 // One string of credits text on its way up the screen.
 class CreditLine {
  public:
@@ -267,21 +274,130 @@ static void StepSlideShow(int slide, int slide_frame) {
   }
 }
 
+std::vector<CreditString> ParseCredits(std::string_view text) {
+  std::vector<CreditString> strings;
+  const base::ssize size = std::ssize(text);
+  int line = 0;
+  int column = 0;
+  base::ssize cursor = 0;
+  while (cursor < size) {
+    char ch = text.at(base::ToSize(cursor++));
+    switch (ch) {
+      case '\r':
+        line++;
+        column = 0;
+        break;
+
+      case '\n':
+        // The carriage return already ended the line.
+        break;
+
+      case ' ':
+        column++;
+        break;
+
+      case '\t':
+        column += kTabColumns;
+        column -= column % kTabColumns;
+        break;
+
+      default: {
+        // The start of a string. Find where it ends: `string_end` stops one
+        // past the character that ended it, which is left in `ch`.
+        const base::ssize string_begin = cursor - 1;
+        base::ssize string_end = string_begin;
+        const int start_column = column;
+        int end_column = column;
+        char previous_char = ch;
+        bool string_ended = false;
+        do {
+          ch = text.at(base::ToSize(string_end++));
+          switch (ch) {
+            case '\t':
+            case '\n':
+            case '\r':
+              string_ended = true;
+              break;
+
+            case ' ':
+              if (previous_char == ' ') {
+                string_ended = true;
+              }
+              end_column++;
+              break;
+
+            default:
+              end_column++;
+          }
+          if (string_end >= size) {
+            string_ended = true;
+          }
+          previous_char = ch;
+        } while (!string_ended);
+
+        // TODO: A string that runs into the end of the text is dropped, so
+        // the last line of credits is lost unless a CR and LF follow it.
+        if (string_end >= size) {
+          return strings;
+        }
+
+        // Ended by two spaces: step back so that neither is in the string.
+        //
+        // TODO: This also fires for one space before a tab or line end. The
+        // end column is then one too low, and after a CR the line counter
+        // advances twice, because the cursor is left on the CR and the outer
+        // loop counts it again.
+        if (text.at(base::ToSize(string_end - 2)) == ' ') {
+          string_end--;
+          end_column -= 2;
+        }
+
+        // The string is everything before the character that ended it.
+        const std::string_view string =
+            text.substr(base::ToSize(string_begin),
+                        base::ToSize(string_end - 1 - string_begin));
+        if (start_column < kCreditCenterColumn &&
+            end_column > kCreditCenterColumn) {
+          strings.push_back({.text = string,
+                             .line = line,
+                             .column = kCreditCenterColumn,
+                             .alignment = CreditAlignment::kCenter});
+        } else if (start_column < kCreditCenterColumn) {
+          strings.push_back({.text = string,
+                             .line = line,
+                             .column = end_column,
+                             .alignment = CreditAlignment::kRight});
+        } else {
+          strings.push_back({.text = string,
+                             .line = line,
+                             .column = start_column,
+                             .alignment = CreditAlignment::kLeft});
+        }
+
+        // Carry on after the string. The terminator was consumed with it, so
+        // do here what the outer loop would have done for it.
+        cursor = string_end;
+        column += static_cast<int>(string_end - string_begin);
+        if (ch == '\r') {
+          line++;
+          column = 0;
+        } else if (ch == '\t') {
+          column += kTabColumns - 1;
+          column -= column % kTabColumns;
+        }
+        break;
+      }
+    }
+  }
+  return strings;
+}
+
 void ShowCredits() {
   engine::window::KeyNumber key = KN_NONE;
 
   // System ticks (1/60 s) per pixel of scrolling.
   static constexpr int kTicksPerPixel = 3;
 
-  // CREDITS.TXT is laid out as an 80-column page, and a string's place on
-  // that page decides how it is drawn:
-  //
-  //   it straddles column 40      centred on the screen
-  //   it ends before column 40    right-justified at its last column
-  //   it starts after column 40   left-justified at its first column
-  //
-  // which gives the two-column "job  name" look. A string ends at a tab, at
-  // the end of the line or at two spaces in a row.
   const auto credits_file = OpenGameFile("credits.txt");
   if (!credits_file) {
     return;
@@ -297,139 +413,21 @@ void ShowCredits() {
   // time, so that the text never appears half-scrolled on screen.
   PixelView& view = TheScreen().hidden_view();
 
-  // `bytes_left` counts the bytes from `cursor` to the end of the file. Columns
-  // and lines count from zero.
-  int bytes_left = static_cast<int>(credits_file->Size());
-  int line = 0;
-  int column = 0;
-  auto cursor = credits.begin();
-  char previous_char = 0;
-  auto string_begin = credits.begin();
-  auto string_end = credits.begin();
-  bool string_ended = false;
-  int start_column = 0;
-  int end_column = 0;
-  int x = 0;
-  const int y = TheScreen().visible_view().height() + 2;
   // Every line starts two rows below the bottom of the screen, 16 rows
   // apart, and scrolls up from there.
-  do {
-    char ch = *cursor++;
-    bytes_left--;
-
-    switch (ch) {
-      case 13:
-        line++;
-        column = 0;
-        break;
-
-      case 10:
-        // The carriage return already ended the line.
-        break;
-
-      case 32:
-        column++;
-        break;
-
-        // Tab stops are every 8 columns.
-      case 9:
-        column += 8;
-        column -= column % 8;
-        break;
-
-      default:
-        // The start of a string. Find where it ends: `string_end` stops one
-        // past the character that ended it, which is left in `ch`.
-        previous_char = ch;
-        string_begin = cursor - 1;
-        string_end = cursor - 1;
-        end_column = start_column = column;
-        string_ended = false;
-
-        do {
-          ch = *string_end++;
-          switch (ch) {
-            case 9:
-            case 10:
-            case 13:
-              string_ended = true;
-              break;
-
-            case 32:
-              if (previous_char == 32) {
-                string_ended = true;
-              }
-              end_column++;
-              break;
-
-            default:
-              end_column++;
-          }
-          if (string_end >= cursor + bytes_left) {
-            string_ended = true;
-          }
-
-          previous_char = ch;
-        } while (!string_ended);
-
-        // TODO: A string that runs into the end of the file is dropped, so
-        // the last line of credits is lost unless a CR and LF follow it.
-        if (string_end >= cursor + bytes_left) {
-          break;
-        }
-
-        // Ended by two spaces: step back so that neither is in the string.
-        //
-        // TODO: This also fires for one space before a tab or line end. The
-        // end column is then one too low, and after a CR the line counter
-        // advances twice, because `cursor` is left on the CR and the outer loop
-        // counts it again.
-        if (*(string_end - 2) == 32) {
-          string_end--;
-          end_column -= 2;
-        }
-
-        TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
-
-        if (start_column < 40 && end_column > 40) {
-          flags = flags | TPF_CENTER;
-          x = TheScreen().visible_view().width() / 2;
-        } else {
-          if (start_column < 40) {
-            flags = flags | TPF_RIGHT;
-            x = end_column * TheScreen().visible_view().width() / 80;
-          } else {
-            x = start_column * TheScreen().visible_view().width() / 80;
-          }
-        }
-
-        // The string is everything before the character that ended it.
-        credit_lines.push_back(std::make_unique<CreditLine>(
-            x, y + (line * 16), std::string_view(string_begin, string_end - 1),
-            FontType::k6PointGradient, flags));
-
-        // Carry on after the string. The outer loop has already counted its
-        // first character.
-        cursor = string_end;
-        column = static_cast<int>(column + (string_end - string_begin));
-        bytes_left =
-            static_cast<int>(bytes_left - (string_end - string_begin - 1));
-
-        // The terminator was consumed with the string, so do here what the
-        // outer loop would have done for it.
-        if (ch == 13) {
-          line++;
-          column = 0;
-        } else {
-          if (ch == 9) {
-            column += 7;
-            column -= column % 8;
-          }
-        }
-        break;
+  const int width = TheScreen().visible_view().width();
+  const int y = TheScreen().visible_view().height() + 2;
+  for (const CreditString& string : ParseCredits(credits)) {
+    TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
+    if (string.alignment == CreditAlignment::kCenter) {
+      flags = flags | TPF_CENTER;
+    } else if (string.alignment == CreditAlignment::kRight) {
+      flags = flags | TPF_RIGHT;
     }
-
-  } while (bytes_left > 0);
+    credit_lines.push_back(std::make_unique<CreditLine>(
+        string.column * width / kCreditColumns, y + (string.line * 16),
+        string.text, FontType::k6PointGradient, flags));
+  }
 
   // Everything fades with the slides except the colours the text is drawn
   // in: the six gradient entries of the font and the green scheme's own.
