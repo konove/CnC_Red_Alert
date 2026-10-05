@@ -4,7 +4,7 @@ add_library(td_engine OBJECT)
 file(GLOB_RECURSE TD_SOURCES
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
-list(FILTER TD_SOURCES EXCLUDE REGEX "_test\\.cc$")
+list(FILTER TD_SOURCES EXCLUDE REGEX "_test(_util)?\\.cc$")
 list(REMOVE_ITEM TD_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/startup/ccdde.cc"
@@ -95,6 +95,38 @@ target_compile_definitions(td_game_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_game_test)
 
 # Delivers teams and launches an air strike in a real Game.
+# What a test that builds a real Game compiles in: GameFixture with the text
+# table and loose files it can install; a test of a dialog adds UiFixture and
+# its font.
+set(TD_GAME_TEST_UTIL
+    startup/game_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/file/string_table_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/file/game_files_test_util.cc
+)
+set(TD_UI_TEST_UTIL
+    startup/ui_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/gfx/font_test_util.cc
+)
+
+# Reads scenario objects from INI text and writes them back in a real Game.
+add_gtest(
+    NAME td_scenario_objects_ini_test
+    SOURCES data/scenario_objects_ini_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_scenario_objects_ini_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_scenario_objects_ini_test)
+
+# Saves the options and plays the visual controls dialog in a real Game.
+add_gtest(
+    NAME td_options_dialogs_test
+    SOURCES screens/options_dialogs_test.cc ${TD_GAME_TEST_UTIL} ${TD_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_options_dialogs_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_options_dialogs_test)
+
 add_gtest(
     NAME td_reinforcements_test
     SOURCES ai/reinforcements_test.cc startup/startup.cc

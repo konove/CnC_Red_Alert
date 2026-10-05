@@ -1100,15 +1100,22 @@
     `engine/crypto/blowfish_stream_test.cc`, and `engine/codec/stream_golden_test.cc`,
     `codec_corrupt_test.cc`, `codec_state_test.cc`, `lcw_comp_test.cc`, `stream_error_test.cc`
   - `engine/file/mix_archive_test.cc:95` defines its own class named `VectorSink`
-- Check the INI sharing work by hand (`docs/INI_SHARING_PLAN.md`, Outcome)
+- Finish checking the INI sharing work (`docs/INI_SHARING_PLAN.md`, Outcome)
   - Tiberian Dawn's scenario editor: load SCG01EA, save it under a new name, and compare the two
-    files' sorted `section/key=value` lines. `Write_Scenario_Ini()` is reachable only from the
-    editor, so no automated run exercises the load → writers → save path, and the unit, infantry,
-    building, terrain, aircraft and house writers (which need live objects) have no test
-  - Tiberian Dawn's options dialog: change a setting, quit, and check `CONQUER.INI` kept its unknown
-    keys; the `DEMO` and Windows-only branches, `Check_From_WChat()` and `Read_Game_Options()` were
-    converted by reading only
+    files' sorted `section/key=value` lines. `td/data/scenario_objects_ini_test.cc` reads and writes
+    back a vehicle, a soldier, a building, an aircraft and the houses; still untested are the
+    terrain writer (a tree is not placed without a theater), `Write_Scenario_Ini()` itself and a
+    whole shipped scenario
+  - The `DEMO` and Windows-only branches of Tiberian Dawn's options code, `Check_From_WChat()` and
+    `Read_Game_Options()` were converted by reading only; that saving keeps the unknown keys of
+    `CONQUER.INI` is tested (`td/screens/options_dialogs_test.cc`)
   - A two-player Red Alert lobby, to confirm both sides compute the same `rules.ini` ID
+- Fix the mission Tiberian Dawn's scenario editor saves for aircraft
+  - `AircraftClass::Read_INI()` (`td/objects/aircraft.cc` ~543) queues the entry's mission with
+    `Assign_Mission()` behind the Move an aircraft starts with, and `Write_INI()` (~586) writes
+    `unit->Mission`, so a scenario saved straight after loading has every aircraft on `Move`.
+    `ScenarioObjectsIniTest.AnAircraftIsWrittenWithTheMissionItStartsOn` pins it. Writing the queued
+    mission when there is one would fix it; editor behaviour only
 - Run `IniFileTest.RemovalAcceptsTheNameOfTheElementItRemoves` under ASan
   - It passes without the guard it documents in a normal build: the names are short enough to live
     in the string's inline buffer, which still reads back after the free. `-DENABLE_ASAN=ON` would

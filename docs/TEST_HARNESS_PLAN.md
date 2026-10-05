@@ -163,6 +163,19 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - Not done: clicking a drop list open. The drop buttons take their size from `EBTN-UP.SHP`, which
     the fixture does not have; a synthetic shape file would open them.
 
+- **Phase 4: done 2026-10-05.** Tiberian Dawn has the same two fixtures, `td::GameFixture` and
+  `td::UiFixture` (`td/startup/game_test_util.h`, `ui_test_util.h`), with `Screen::InitHeadless()`
+  and `Assets::set_system_strings()`. The loose-file helper both games' fixtures use is
+  `engine::file::TestGameFiles` (`engine/file/game_files_test_util.h`).
+  - `td/screens/options_dialogs_test.cc`: saving the options keeps the sections and keys of
+    `CONQUER.INI` the game does not write, and the visual controls dialog is played from the
+    keyboard.
+  - `td/data/scenario_objects_ini_test.cc`: a vehicle, a soldier, a building, an aircraft and the
+    houses are read from INI text and written back. It found that an aircraft's mission is always
+    saved as Move (`TODO.md`).
+  - Not done: a whole shipped scenario through the editor's Save. That needs the game data and
+    belongs to the scripted runs of phase 5.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

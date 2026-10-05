@@ -65,6 +65,11 @@ class Assets {
   [[nodiscard]] std::span<const std::byte> system_strings() const {
     return system_strings_;
   }
+  // Installs `strings` as the text table, which must outlive its use; for
+  // tests, which cannot load the table without the archives.
+  void set_system_strings(std::span<const std::byte> strings) {
+    system_strings_ = strings;
+  }
 
   // The speech holding tank. Speech does not mix, so one buffer, as large as
   // the largest speech file, is enough.
