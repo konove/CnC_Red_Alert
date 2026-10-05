@@ -1027,9 +1027,6 @@
     - `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` only runs with `RA_SCENARIO_DIR` set
       to a directory of extracted scenario INIs (`mixdump <game-dir> SCG01EA.INI <out>`); it passed
       on the 42 campaign scenarios of the Steam install
-    - `tools/ra_saveload_smoke.sh --load-fixture` fails, and did before the plan:
-      `src/ra/testdata/SAVEGAME.SCG01EA` is "not a version 18 Red Alert save", so the load waits at
-      the menu until the script's timeout. Regenerate the fixture or make the script say so
     - `TeamTypeClass::operator new` (`ra/ai/teamtype.cc` ~324) is not `noexcept`, so
       `base::NewPooled<TeamTypeClass>()` on a full heap constructs at null and crashes instead of
       returning nullptr as `TriggerType`'s does

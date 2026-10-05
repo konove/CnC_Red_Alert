@@ -24,6 +24,7 @@ if [ "${1:-}" = "--load-fixture" ]; then
   shift
 fi
 FIXTURE=$(realpath "$(dirname "$0")/../src/ra/testdata/SAVEGAME.SCG01EA")
+SAVELOAD_H=$(realpath "$(dirname "$0")/../src/ra/saveload/saveload.h")
 
 RASDL=${1:-cmake-build-strict-ra-clang/src/ra/rasdl}
 SCENARIO=${2:-SCG01EA}
@@ -43,6 +44,16 @@ run() {
 }
 
 if [ "$LOAD_FIXTURE" = 1 ]; then
+  # A save of another version is rejected and the game then waits at the menu
+  # until the timeout, so compare the versions here. The header is a 44-byte
+  # description, the magic, then the version as a little-endian int32.
+  want=$(sed -n 's/.*kSaveGameVersion = \([0-9]*\);.*/\1/p' "$SAVELOAD_H")
+  have=$(od -An -tu4 -j48 -N4 "$FIXTURE" | tr -d ' ')
+  if [ "$have" != "$want" ]; then
+    echo "FAIL: $FIXTURE is a version $have save and kSaveGameVersion is $want;" \
+      "regenerate it (src/ra/testdata/README.md)"
+    exit 1
+  fi
   cp "$FIXTURE" "SAVEGAME.0$SLOT"
   run "-LOADGAME$SLOT" "-QUITFRAME$END_AT" > "$WORK/fixture.log"
   rm -f "SAVEGAME.0$SLOT"
