@@ -195,7 +195,7 @@ ThemeClass::ThemeClass() = default;
  *=============================================================================================*/
 const char* ThemeClass::Full_Name(ThemeType theme) {
   if (static_cast<unsigned>(theme) < magic_enum::enum_count<ThemeType>()) {
-    return Text_String(_themes.at(theme).Fullname);
+    return TextString(_themes.at(theme).Fullname);
   }
   return nullptr;
 }
@@ -265,7 +265,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
       */
       ThemeType newtheme = THEME_NONE;
       do {
-        newtheme = Sim_Random_Pick(magic_enum::enum_values<ThemeType>().front(),
+        newtheme = LocalRandomPick(magic_enum::enum_values<ThemeType>().front(),
                                    magic_enum::enum_values<ThemeType>().back());
       } while (newtheme == theme || !Is_Allowed(newtheme));
       theme = newtheme;
@@ -574,7 +574,7 @@ ThemeType ThemeClass::From_Name(const std::string_view name) {
     **	yield a match, but is not guaranteed to be unique.
     */
     for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-      if (std::string_view(Text_String(_themes.at(theme).Fullname))
+      if (std::string_view(TextString(_themes.at(theme).Fullname))
               .contains(name)) {
         return theme;
       }

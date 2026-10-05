@@ -774,7 +774,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
 
       for (const game::FacingType facing :
            magic_enum::enum_values<game::FacingType>()) {
-        const Cell newcell = Adjacent_Cell(cell, facing);
+        const Cell newcell = AdjacentCell(cell, facing);
 
         if (!In_Radar(newcell)) {
           continue;
@@ -821,7 +821,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
 
         for (const game::FacingType newface :
              magic_enum::enum_values<game::FacingType>()) {
-          const Cell newercell = Adjacent_Cell(newcell, newface);
+          const Cell newercell = AdjacentCell(newcell, newface);
 
           if ((building->IsWall ||
                ((*this).at(newercell).Smudge != SMUDGE_NONE &&
@@ -1544,7 +1544,7 @@ bool DisplayClass::Map_Cell(Cell cell, HouseClass* house) {
   */
   for (const game::FacingType dir :
        magic_enum::enum_values<game::FacingType>()) {
-    const Cell c = Adjacent_Cell(cell, dir);
+    const Cell c = AdjacentCell(cell, dir);
     CellClass* cptr = &(*this).at(c);
     cptr->Redraw_Objects();
 
@@ -2165,25 +2165,25 @@ Cell DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, Cell cell,
       case SOURCE_NORTH:
         horz = true;
         y = -1;
-        x = Random_Pick(0, MapCellWidth - 1);
+        x = RandomPick(0, MapCellWidth - 1);
         break;
 
       case SOURCE_SOUTH:
         horz = true;
         y = MapCellHeight;
-        x = Random_Pick(0, MapCellWidth - 1);
+        x = RandomPick(0, MapCellWidth - 1);
         break;
 
       case SOURCE_EAST:
         vert = true;
         x = MapCellWidth;
-        y = Random_Pick(0, MapCellHeight - 1);
+        y = RandomPick(0, MapCellHeight - 1);
         break;
 
       case SOURCE_WEST:
         vert = true;
         x = -1;
-        y = Random_Pick(0, MapCellHeight - 1);
+        y = RandomPick(0, MapCellHeight - 1);
         break;
     }
   }
@@ -3147,7 +3147,7 @@ void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,
   } else {
     if (IsRubberBand) {
       Refresh_Band();
-      Select_These(XYP_Coord(BandX, BandY), XYP_Coord(x, y));
+      Select_These(CoordFromPixels(BandX, BandY), CoordFromPixels(x, y));
 
       Set_Default_Mouse(MOUSE_NORMAL, wsmall);
       IsRubberBand = false;
@@ -3994,7 +3994,7 @@ void DisplayClass::Shroud_Cell(Cell cell /*KO, bool shadeit*/) {
     */
     for (const game::FacingType dir :
          magic_enum::enum_values<game::FacingType>()) {
-      const Cell c = Adjacent_Cell(cell, dir);
+      const Cell c = AdjacentCell(cell, dir);
       CellClass* cptr = &(*this).at(c);
 
       /*

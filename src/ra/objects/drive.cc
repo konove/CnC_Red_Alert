@@ -117,7 +117,7 @@ void DriveClass::Response_Select() {
   static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
@@ -145,7 +145,7 @@ void DriveClass::Response_Move() {
       VOC_AFFIRM,
   };
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
@@ -170,7 +170,7 @@ void DriveClass::Response_Attack() {
 
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
@@ -216,21 +216,21 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   if (((What_Am_I() != RTTI_UNIT ||
         !dynamic_cast<UnitClass*>(this)->IsDumping) &&
        (!NavCom || (nokidding && !IsRotating))) &&
-      (!TarCom || forced || Random_Pick(1, 4) == 1)) {
+      (!TarCom || forced || RandomPick(1, 4) == 1)) {
     game::FacingType toface = game::FACING_NONE;
 
     if (threat) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
-      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 2) - 1);
+      toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
     } else {
       toface = game::Dir_Facing(PrimaryFacing.Current());
-      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 2) - 1);
+      toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
     }
 
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const game::FacingType newface = toface + face;
-      const Cell newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
+      const Cell newcell = AdjacentCell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
           Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -686,7 +686,7 @@ bool DriveClass::While_Moving() {
             Coordinate c = Head_To_Coord();
             const int oldspeed = Speed;
 
-            c = Adjacent_Cell(c, nextface);
+            c = AdjacentCell(c, nextface);
 
             switch (Can_Enter_Cell(Cell::Containing(c), nextface)) {
               case game::MOVE_OK:
@@ -900,8 +900,8 @@ bool DriveClass::Start_Of_Move() {
         *destination is *	blocked by a friendly temporary blockage, then
         *cause that blockage *	to scatter.
         */
-        const Cell cell = Adjacent_Cell(Cell::Containing(Center_Coord()),
-                                        PrimaryFacing.Current());
+        const Cell cell = AdjacentCell(Cell::Containing(Center_Coord()),
+                                       PrimaryFacing.Current());
         if (TheMap().In_Radar(cell)) {
           const game::MoveType ok = Can_Enter_Cell(cell);
           if (ok == game::MOVE_TEMP) {
@@ -967,7 +967,7 @@ bool DriveClass::Start_Of_Move() {
     **	to scatter.
     */
     const Cell cell =
-        Adjacent_Cell(Cell::Containing(Center_Coord()), base::At(Path, 0));
+        AdjacentCell(Cell::Containing(Center_Coord()), base::At(Path, 0));
     if (TheMap().In_Radar(cell)) {
       const game::MoveType ok = Can_Enter_Cell(cell);
       if (ok == game::MOVE_TEMP) {
@@ -996,7 +996,7 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	Determine the coordinate of the next cell to move into.
   */
-  Coordinate dest = Adjacent_Cell(Coord, facing);  // Destination coordinate.
+  Coordinate dest = AdjacentCell(Coord, facing);  // Destination coordinate.
   const game::DirType dir =
       game::Facing_Dir(facing);  // Desired actual facing toward destination.
 
@@ -1152,7 +1152,7 @@ bool DriveClass::Start_Of_Move() {
         if (!IsActive) {
           return false;
         }
-        dest = Adjacent_Cell(dest, nextface);
+        dest = AdjacentCell(dest, nextface);
         destcell = Cell::Containing(dest);
         cando = Can_Enter_Cell(destcell);
       }
@@ -1893,24 +1893,41 @@ const DriveClass::TrackType DriveClass::Track12[] = {
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
-    {XYP_Coord(0, -35), game::DIR_S}, {XYP_Coord(0, -34), game::DIR_S},
-    {XYP_Coord(0, -33), game::DIR_S}, {XYP_Coord(0, -32), game::DIR_S},
-    {XYP_Coord(0, -31), game::DIR_S}, {XYP_Coord(0, -30), game::DIR_S},
-    {XYP_Coord(0, -29), game::DIR_S}, {XYP_Coord(0, -28), game::DIR_S},
-    {XYP_Coord(0, -27), game::DIR_S}, {XYP_Coord(0, -26), game::DIR_S},
-    {XYP_Coord(0, -25), game::DIR_S}, {XYP_Coord(0, -24), game::DIR_S},
-    {XYP_Coord(0, -23), game::DIR_S}, {XYP_Coord(0, -22), game::DIR_S},
-    {XYP_Coord(0, -21), game::DIR_S}, {XYP_Coord(0, -20), game::DIR_S},
-    {XYP_Coord(0, -19), game::DIR_S}, {XYP_Coord(0, -18), game::DIR_S},
-    {XYP_Coord(0, -17), game::DIR_S}, {XYP_Coord(0, -16), game::DIR_S},
-    {XYP_Coord(0, -15), game::DIR_S}, {XYP_Coord(0, -14), game::DIR_S},
-    {XYP_Coord(0, -13), game::DIR_S}, {XYP_Coord(0, -12), game::DIR_S},
-    {XYP_Coord(0, -11), game::DIR_S}, {XYP_Coord(0, -10), game::DIR_S},
-    {XYP_Coord(0, -9), game::DIR_S},  {XYP_Coord(0, -8), game::DIR_S},
-    {XYP_Coord(0, -7), game::DIR_S},  {XYP_Coord(0, -6), game::DIR_S},
-    {XYP_Coord(0, -5), game::DIR_S},  {XYP_Coord(0, -4), game::DIR_S},
-    {XYP_Coord(0, -3), game::DIR_S},  {XYP_Coord(0, -2), game::DIR_S},
-    {XYP_Coord(0, -1), game::DIR_S},
+    {CoordFromPixels(0, -35), game::DIR_S},
+    {CoordFromPixels(0, -34), game::DIR_S},
+    {CoordFromPixels(0, -33), game::DIR_S},
+    {CoordFromPixels(0, -32), game::DIR_S},
+    {CoordFromPixels(0, -31), game::DIR_S},
+    {CoordFromPixels(0, -30), game::DIR_S},
+    {CoordFromPixels(0, -29), game::DIR_S},
+    {CoordFromPixels(0, -28), game::DIR_S},
+    {CoordFromPixels(0, -27), game::DIR_S},
+    {CoordFromPixels(0, -26), game::DIR_S},
+    {CoordFromPixels(0, -25), game::DIR_S},
+    {CoordFromPixels(0, -24), game::DIR_S},
+    {CoordFromPixels(0, -23), game::DIR_S},
+    {CoordFromPixels(0, -22), game::DIR_S},
+    {CoordFromPixels(0, -21), game::DIR_S},
+    {CoordFromPixels(0, -20), game::DIR_S},
+    {CoordFromPixels(0, -19), game::DIR_S},
+    {CoordFromPixels(0, -18), game::DIR_S},
+    {CoordFromPixels(0, -17), game::DIR_S},
+    {CoordFromPixels(0, -16), game::DIR_S},
+    {CoordFromPixels(0, -15), game::DIR_S},
+    {CoordFromPixels(0, -14), game::DIR_S},
+    {CoordFromPixels(0, -13), game::DIR_S},
+    {CoordFromPixels(0, -12), game::DIR_S},
+    {CoordFromPixels(0, -11), game::DIR_S},
+    {CoordFromPixels(0, -10), game::DIR_S},
+    {CoordFromPixels(0, -9), game::DIR_S},
+    {CoordFromPixels(0, -8), game::DIR_S},
+    {CoordFromPixels(0, -7), game::DIR_S},
+    {CoordFromPixels(0, -6), game::DIR_S},
+    {CoordFromPixels(0, -5), game::DIR_S},
+    {CoordFromPixels(0, -4), game::DIR_S},
+    {CoordFromPixels(0, -3), game::DIR_S},
+    {CoordFromPixels(0, -2), game::DIR_S},
+    {CoordFromPixels(0, -1), game::DIR_S},
 
     {Coordinate{}, game::DIR_S}};
 

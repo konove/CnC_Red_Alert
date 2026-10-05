@@ -684,7 +684,7 @@ void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
                       const FontType font, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
-    Fancy_Text_Print(view, Text_String(text), x, y, fore, back, font, flag,
+    Fancy_Text_Print(view, TextString(text), x, y, fore, back, font, flag,
                      args);
   }
 }
@@ -912,7 +912,7 @@ void Plain_Text_Print(PixelView& view, const char* text, const int x,
  * HISTORY: * 06/23/1995 JLB : Created. *
  *=============================================================================================*/
 void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
-  Draw_Caption(view, Text_String(text), x, y, w);
+  Draw_Caption(view, TextString(text), x, y, w);
 }
 
 void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {

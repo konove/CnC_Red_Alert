@@ -162,7 +162,7 @@ class World {
 
   // Names the scenario gives particular objects in place of their usual
   // ones. AbstractTypeClass::Full_Name() returns a negative index into
-  // these when an object has one, and Text_String() looks it up here.
+  // these when an object has one, and TextString() looks it up here.
   // A slot is free when its id is zero.
   auto& name_override() ABSL_ATTRIBUTE_LIFETIME_BOUND { return name_override_; }
   auto& name_override_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {

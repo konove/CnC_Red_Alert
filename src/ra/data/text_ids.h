@@ -22,7 +22,7 @@
 
 namespace ra {
 
-// Indices into the language string table; Text_String() turns one of these into
+// Indices into the language string table; TextString() turns one of these into
 // the localized string for the build's language. The trailing comments are the
 // original French strings, kept as a hint at what each index says -- they are
 // truncated and are NOT what the game displays.

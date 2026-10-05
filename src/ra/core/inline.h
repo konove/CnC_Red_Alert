@@ -55,48 +55,46 @@ inline RandomClass& LocalRandom() {
 // left corner, each rounded to the nearest lepton. Mouse positions come
 // through here; the caller adds the tactical view's own coordinate to get a
 // position in the world.
-inline Coordinate XYP_Coord(int x, int y) noexcept {
+inline Coordinate CoordFromPixels(int x, int y) noexcept {
   return Coordinate::FromLeptons(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 
-// Returns the direction from `coord1` to `coord2` at the full 256-step
+// Returns the direction from `from` to `to` at the full 256-step
 // resolution. Same as Direction().
-inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
-  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
-                                 coord2.y());
+inline game::DirType Direction256(Coordinate from, Coordinate to) {
+  return game::Desired_Facing256(from.x(), from.y(), to.x(), to.y());
 }
 
-// Returns the direction from `coord1` to `coord2` at the full 256-step
+// Returns the direction from `from` to `to` at the full 256-step
 // resolution.
-inline game::DirType Direction(Coordinate coord1, Coordinate coord2) {
-  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
-                                 coord2.y());
+inline game::DirType Direction(Coordinate from, Coordinate to) {
+  return game::Desired_Facing256(from.x(), from.y(), to.x(), to.y());
 }
 
-// Returns the direction from `coord1` to `coord2` as one of the eight compass
+// Returns the direction from `from` to `to` as one of the eight compass
 // points, which is cheaper to work out than Direction().
-inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
-  return game::Desired_Facing8(coord1.x(), coord1.y(), coord2.x(), coord2.y());
+inline game::DirType Direction8(Coordinate from, Coordinate to) {
+  return game::Desired_Facing8(from.x(), from.y(), to.x(), to.y());
 }
 
 // Returns the center of the cell next to the one `coord` lies in, in direction
 // `dir`. A `dir` outside the eight facings, FACING_NONE included, wraps into
 // them. No map edge check: the result may lie off the map.
-inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
+inline Coordinate AdjacentCell(Coordinate coord, game::FacingType dir) {
   return (kAdjacentCoordOffsets.at(game::AsFacing(static_cast<int>(dir))) +
           coord)
       .Snapped();
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
-inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
-  return Adjacent_Cell(coord, game::Dir_Facing(dir));
+inline Coordinate AdjacentCell(Coordinate coord, game::DirType dir) {
+  return AdjacentCell(coord, game::Dir_Facing(dir));
 }
 
 // Returns the cell next to `cell` in direction `dir`. A `dir` outside the eight
 // facings, FACING_NONE included, wraps into them. No map edge check: stepping
 // off the east or west edge lands on the opposite edge of a neighbouring row.
-inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
+inline Cell AdjacentCell(Cell cell, game::FacingType dir) {
   // Wrapped so that FACING_NONE (-1) does not index before the start of the
   // table.
   return cell.Offset(
@@ -104,60 +102,61 @@ inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
-inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
+inline Cell AdjacentCell(Cell cell, game::DirType dir) {
   return cell.Offset(kAdjacentCellOffsets.at(game::Dir_Facing(dir)));
 }
 
-// Returns the text for the text number `index`, or nullptr when the table has
+// Returns the text for the text number `text_id`, or nullptr when the table has
 // no such entry. Three sources share the number space:
-//   below 0     the scenario's name overrides, slot -index - 1, as
+//   below 0     the scenario's name overrides, slot -text_id - 1, as
 //               AbstractTypeClass::Full_Name() hands them out
 //   0..999      the game's text table (the TXT_* constants)
-//   1000 and up the developer text table, entry index - 1000
+//   1000 and up the developer text table, entry text_id - 1000
 // The pointer is into the loaded table or the override and stays valid until
 // the next scenario starts.
-inline const char* Text_String(int index) {
-  if (index < 0 && -index <= std::ssize(TheWorld().name_override())) {
-    return base::At(std::span(TheWorld().name_override()), -index - 1).c_str();
+inline const char* TextString(int text_id) {
+  if (text_id < 0 && -text_id <= std::ssize(TheWorld().name_override())) {
+    return base::At(std::span(TheWorld().name_override()), -text_id - 1)
+        .c_str();
   }
 
   // The developer table's numbers start at 1000 so they cannot collide with
   // the TXT_* constants.
-  if (index < 1000) {
-    return Extract_String(TheAssets().system_strings(), index).data();
+  if (text_id < 1000) {
+    return Extract_String(TheAssets().system_strings(), text_id).data();
   }
-  return Extract_String(TheAssets().debug_strings(), index - 1000).data();
+  return Extract_String(TheAssets().debug_strings(), text_id - 1000).data();
 }
 
-// Returns a random value in [a, b] from the synchronized generator. Every
+// Returns a random value in [low, high] from the synchronized generator. Every
 // machine in a multiplayer game must make the same calls in the same order, so
 // use it for whatever affects the simulation, and only for that. `T` is an
 // integer or an enum; the range must span less than 32768 values.
 template <class T>
-T Random_Pick(T a, T b) {
-  return static_cast<T>(TheScenario().sync_rng_.InRange(static_cast<int>(a),
-                                                        static_cast<int>(b)));
+T RandomPick(T low, T high) {
+  return static_cast<T>(TheScenario().sync_rng_.InRange(
+      static_cast<int>(low), static_cast<int>(high)));
 }
 
 // Returns true `percent` times out of 100, drawing from the synchronized
-// generator like Random_Pick().
-inline bool Percent_Chance(int percent) {
+// generator like RandomPick().
+inline bool PercentChance(int percent) {
   // The draw is 0..99, so 0 never succeeds and 100 always does.
   return TheScenario().sync_rng_.InRange(0, 99) < percent;
 }
 
-// Returns a random value in [a, b] from LocalRandom(), leaving the
+// Returns a random value in [low, high] from LocalRandom(), leaving the
 // synchronized generator alone. For anything that differs between machines or
 // is only cosmetic: animations, sounds, what one player's screen shows.
 template <class T>
-T Sim_Random_Pick(T a, T b) {
+T LocalRandomPick(T low, T high) {
   return static_cast<T>(
-      LocalRandom().InRange(static_cast<int>(a), static_cast<int>(b)));
+      LocalRandom().InRange(static_cast<int>(low), static_cast<int>(high)));
 }
 
 // Returns true `percent` times out of 100, drawing from LocalRandom() like
-// Sim_Random_Pick().
-inline bool Sim_Percent_Chance(int percent) {
+// LocalRandomPick().
+inline bool LocalPercentChance(int percent) {
   return LocalRandom().InRange(0, 99) < percent;
 }
 

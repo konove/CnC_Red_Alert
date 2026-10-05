@@ -1443,7 +1443,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     **	Display the object's name & ID
     */
     const char* label =
-        Text_String(base::At(TheWorld().current_object(), 0)->Full_Name());
+        TextString(base::At(TheWorld().current_object(), 0)->Full_Name());
     const char* tptr = label;
     absl::SNPrintF(
         buf, sizeof(buf), "%s (%d)", tptr,
@@ -1908,7 +1908,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
  *=========================================================================*/
 void MapEditClass::Fatal(int txt) {
   // ShutDownEngine();
-  absl::PrintF("%s\n", Text_String(txt));
+  absl::PrintF("%s\n", TextString(txt));
   EmergencyExit(EXIT_FAILURE);
 }
 

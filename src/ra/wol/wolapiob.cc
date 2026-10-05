@@ -1423,7 +1423,7 @@ HousesType WolapiObject::PullPlayerHouse_From(const char* szSource) {
     return HouseTypeClass::From_Name(szHouse);
   } else {
     for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
-      if (std::string_view(Text_String(
+      if (std::string_view(TextString(
               HouseTypeClass::As_Reference(house).Full_Name())) == szHouse) {
         return house;
       }
@@ -1439,7 +1439,7 @@ void WolapiObject::WritePlayerListItem(std::span<char> szDest,
   //	Sets szDest to the way a player list item appears in a game channel.
   char szHouse[50];
   base::SafeCopy(szHouse,
-                 Text_String(HouseTypeClass::As_Reference(House).Full_Name()));
+                 TextString(HouseTypeClass::As_Reference(House).Full_Name()));
 
   const int iRank = pNetUtilSink->GetUserRank(
       szName, bShowRankRA);  //	Horrendous inefficiency here, when called for
@@ -1718,12 +1718,12 @@ void WolapiObject::DoFindPage() {
                               // call, for god's sake.
   SimpleEditDlgClass FindPageDlg(400, TXT_WOL_PAGELOCATE,
                                  TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
-  FindPageDlg.SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL), TXT_WOL_PAGE);
+  FindPageDlg.SetButtons(TXT_WOL_LOCATE, TextString(TXT_CANCEL), TXT_WOL_PAGE);
   bPump_In_Call_Back = true;
   const char* szNameDlgResult = FindPageDlg.Show();
   bPump_In_Call_Back = false;
 
-  if (std::string_view(szNameDlgResult) == Text_String(TXT_CANCEL) ||
+  if (std::string_view(szNameDlgResult) == TextString(TXT_CANCEL) ||
       !*FindPageDlg.szEdit) {
     return;
   }
@@ -1781,7 +1781,7 @@ void WolapiObject::DoFindPage() {
     SimpleEditDlgClass MessDlg(600, TXT_WOL_PAGEMESSAGETITLE,
                                TXT_WOL_PAGEMESSAGEPROMPT, MAXCHATSENDLENGTH);
     bPump_In_Call_Back = true;
-    if (std::string_view(MessDlg.Show()) == Text_String(TXT_OK) &&
+    if (std::string_view(MessDlg.Show()) == TextString(TXT_OK) &&
         *MessDlg.szEdit) {
       switch (Page(FindPageDlg.szEdit, MessDlg.szEdit, true)) {
         case CHAT_S_PAGE_NOTHERE:
@@ -1923,7 +1923,7 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
           iFound++;
           if (iFound < 5) {
             PlaySoundEffect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
-                                              Sim_Random_Pick(0, 8)));
+                                                 LocalRandomPick(0, 8)));
           }
         }
       }
@@ -2951,7 +2951,7 @@ bool WolapiObject::GetNameOfBeginningLobby(std::span<char> szNameToSet) {
   }
 
   //	All lobbies have 50 or more users. So just choose a random one.
-  const int iChoice = Sim_Random_Pick(0, iCount - 1);
+  const int iChoice = LocalRandomPick(0, iCount - 1);
   pChannel = pChatSink->pChannelList;
   // Also stop at the tail, in case the list shrank since it was counted.
   for (int i = 0; i != iChoice && pChannel->next != nullptr; i++) {

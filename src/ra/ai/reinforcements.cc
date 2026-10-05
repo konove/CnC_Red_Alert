@@ -257,7 +257,7 @@ static TechnoClass* FindHostNear(const Cell origin) {
 static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
   for (const game::FacingType direction :
        magic_enum::enum_values<game::FacingType>()) {
-    const Cell neighbor = Adjacent_Cell(cell, direction);
+    const Cell neighbor = AdjacentCell(cell, direction);
     if (!TheMap().In_Radar(neighbor) &&
         member.Can_Enter_Cell(neighbor, direction) == game::MOVE_OK) {
       return neighbor;
@@ -344,7 +344,7 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   while (place_cell.index() > 0 && member != nullptr) {
     const bool is_aircraft = member->What_Am_I() == RTTI_AIRCRAFT;
     const game::DirType facing =
-        is_aircraft ? Random_Pick(game::DIR_N, kMaxRandomDirection) : entry_dir;
+        is_aircraft ? RandomPick(game::DIR_N, kMaxRandomDirection) : entry_dir;
 
     // scenario_init places the member on the edge cell without asking whether
     // it can enter it.

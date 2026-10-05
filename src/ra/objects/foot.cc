@@ -460,7 +460,7 @@ int FootClass::Mission_Move() {
     Target_Something_Nearby(THREAT_RANGE);
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -500,7 +500,7 @@ int FootClass::Mission_Capture() {
     }
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -527,7 +527,7 @@ int FootClass::Mission_Attack() {
     Enter_Idle_Mode();
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -620,7 +620,7 @@ int FootClass::Mission_Guard() {
   }
 
   return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())
-                           : dtime + Random_Pick(0, 2);
+                           : dtime + RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -662,7 +662,7 @@ int FootClass::Mission_Hunt() {
     }
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -930,7 +930,7 @@ int FootClass::Mission_Guard_Area() {
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Class->IsToHarvest) {
     Assign_Mission(MISSION_HARVEST);
-    return 1 + Random_Pick(1, 10);
+    return 1 + RandomPick(1, 10);
   }
 
   /*
@@ -980,7 +980,7 @@ int FootClass::Mission_Guard_Area() {
   if (What_Am_I() == RTTI_AIRCRAFT) {
     dtime *= 2;
   }
-  return dtime + Random_Pick(1, 5);
+  return dtime + RandomPick(1, 5);
 }
 
 /***********************************************************************************************
@@ -1389,7 +1389,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     if (Cloak == game::CLOAKED) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
-        const Cell cell = Adjacent_Cell(Cell::Containing(Coord), face);
+        const Cell cell = AdjacentCell(Cell::Containing(Coord), face);
 
         if (TheMap().In_Radar(cell)) {
           const TechnoClass* techno = TheMap().at(cell).Cell_Techno();
@@ -1759,7 +1759,7 @@ int FootClass::Mission_Enter() {
   }
 
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2610,7 +2610,7 @@ int FootClass::Mission_Retreat() {
   }
 
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 }  // namespace ra

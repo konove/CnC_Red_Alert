@@ -699,7 +699,7 @@ bool VesselClass::Per_Cell_Process(PCPType why) {
     if (IsToSelfRepair) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
-        const Cell cell = Cell::Containing(Adjacent_Cell(Center_Coord(), face));
+        const Cell cell = Cell::Containing(AdjacentCell(Center_Coord(), face));
         const BuildingClass* whom = TheMap().at(cell).Cell_Building();
         if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
@@ -764,7 +764,7 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
           if (found) {
             break;
           }
-          const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
+          const Cell cellnum = AdjacentCell(Cell::Containing(Coord), face);
           const CellClass* cell = &TheMap().at(cellnum);
           if (!TheMap().In_Radar(cellnum) ||
               TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) ==
@@ -974,8 +974,8 @@ game::ResultType VesselClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached &&
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
-      auto* anim =
-          base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + XYP_Coord(0, -8));
+      auto* anim = base::NewPooled<AnimClass>(ANIM_SMOKE_M,
+                                              Coord + CoordFromPixels(0, -8));
       if (anim != nullptr) {
         anim->Attach_To(this);
       }
@@ -1581,7 +1581,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
-    const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
+    const Cell cellnum = AdjacentCell(Cell::Containing(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -1634,7 +1634,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                               game::DIR_NW, game::DIR_NE, game::DIR_NE,
                               game::DIR_NE, game::DIR_SE};
 
-    moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
+    moveto = AdjacentCell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
   return game::DIR_N;
@@ -1761,7 +1761,7 @@ int VesselClass::Mission_Unload() {
                  magic_enum::enum_values<game::FacingType>()) {
               const game::DirType newface = toface + game::Facing_Dir(face);
               const Cell newcell =
-                  Adjacent_Cell(Cell::Containing(Coord), newface);
+                  AdjacentCell(Cell::Containing(Coord), newface);
 
               if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                 TheWorld().scenario_init()++;

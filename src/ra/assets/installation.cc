@@ -241,8 +241,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         // translation still takes a %d followed by a %s before using it.
         const int text =
             cd_desired == kCdAny ? TXT_CD_DIALOG_1 : TXT_CD_DIALOG_2;  // 0 or 1
-        const auto format =
-            absl::ParsedFormat<'d', 's'>::New(Text_String(text));
+        const auto format = absl::ParsedFormat<'d', 's'>::New(TextString(text));
         if (format != nullptr) {
           base::SafeCopy(buffer,
                          absl::StrFormat(*format, cd_desired + 1,

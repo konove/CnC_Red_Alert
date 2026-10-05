@@ -1248,7 +1248,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
                                         WOL_CHANKEY_LEN_MAX);
                                     pWO->bPump_In_Call_Back = true;
                                     if (std::string_view(EditDlg.Show()) !=
-                                            Text_String(TXT_OK) ||
+                                            TextString(TXT_OK) ||
                                         !*EditDlg.szEdit) {
                                       pWO->bPump_In_Call_Back = false;
                                       bKeepTrying = false;
@@ -1355,7 +1355,7 @@ void CreateChatChannel(WolapiObject* pWO) {
                   pEditDlg = new SimpleEditDlgClass( 300,
      TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
                                                                                           WOL_CHANNAME_LEN_MAX );
-                  if( strcmp( pEditDlg->Show(), Text_String( TXT_OK ) ) == 0 &&
+                  if( strcmp( pEditDlg->Show(), TextString( TXT_OK ) ) == 0 &&
      *pEditDlg->szEdit )
                   {
                           if( pWO->ChannelCreate( pEditDlg->szEdit, NULL ) )
@@ -1375,7 +1375,7 @@ void CreateChatChannel(WolapiObject* pWO) {
                                     WOL_CHANKEY_LEN_MAX);
                                 pWO->bPump_In_Call_Back = true;
                                 if (std::string_view(EditDlg.Show()) ==
-                                        Text_String(TXT_OK) &&
+                                        TextString(TXT_OK) &&
                                     *EditDlg.szEdit) {
                                   pWO->bPump_In_Call_Back = false;
                                   if (*EditDlg.szEdit2) {

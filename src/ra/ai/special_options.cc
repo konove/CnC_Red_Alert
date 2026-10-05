@@ -181,7 +181,7 @@ DifficultyChoice PromptForDifficulty(const bool is_expansion_mission) {
 
   // Format_Window_String() breaks the prompt into lines by writing into it,
   // so work on a copy of the string table's text.
-  std::string prompt = Text_String(TXT_DIFFICULTY);
+  std::string prompt = TextString(TXT_DIFFICULTY);
   // An expansion mission is not part of a campaign: keep only the first
   // sentence, since the rest of the prompt talks about the campaign.
   if (is_expansion_mission) {

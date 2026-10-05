@@ -564,7 +564,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
       if (TheSession().Type != GAME_NORMAL) {
         Fancy_Text_Print(
             view,
-            Text_String(
+            TextString(
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
             &ThePalettes().color_remaps().at(ThePlayer()->RemapColor), kTBlack,
@@ -2186,9 +2186,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
     */
     txt[0] = 0;
     absl::SNPrintF(txt, sizeof(txt), "%s",
-                   ptr->IniName);  // Text_String(ptr->Class->FullName));
+                   ptr->IniName);  // TextString(ptr->Class->FullName));
     //		absl::SNPrintF(txt, sizeof(txt), "%s",
-    // ptr->Name());//Text_String(ptr->Class->FullName));
+    // ptr->Name());//TextString(ptr->Class->FullName));
     if (!std::string_view(txt).empty()) {
       if (std::string_view(txt).size() > 9) {
         txt[9] = '.';
@@ -2303,7 +2303,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
     txt[0] = 0;
     //		absl::SNPrintF(txt, sizeof(txt), "%s", ptr->Name());
     absl::SNPrintF(txt, sizeof(txt), "%s",
-                   ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
+                   ptr->IsHuman ? ptr->IniName : TextString(TXT_COMPUTER));
 
     if (std::string_view(txt).empty()) {
       base::SafeCopy(txt, "________");

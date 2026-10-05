@@ -478,7 +478,7 @@ HouseClass::HouseClass(HousesType house)
       SuperClass(kTicksPerMinute * TheRules().GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
-  base::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
+  base::SafeCopy(IniName, TextString(TXT_COMPUTER));  // Default computer name.
   TheWorld().house_triggers().at(house).clear();
   Make_Ally(house);
   Assign_Handicap(TheScenario().CDifficulty);
@@ -488,7 +488,7 @@ HouseClass::HouseClass(HousesType house)
   */
   Attack.Set(
       TheRules().AttackDelay *
-      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+      static_cast<int>(RandomPick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
 
   Init_Trackers();
 }
@@ -857,7 +857,7 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    const int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
+    const int maxteams = RandomPick(2, ((Control.TechLevel - 1) / 3) + 1);
     for (int index = 0; index < maxteams; index++) {
       TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
@@ -866,12 +866,12 @@ void HouseClass::AI() {
         TheWorld().scenario_init()--;
       }
     }
-    AlertTime.Set(TheRules().AutocreateTime *
-                  static_cast<int>(
-                      Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+    AlertTime.Set(
+        TheRules().AutocreateTime *
+        static_cast<int>(RandomPick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
     //		int mintime = Rule.AutocreateTime * (kTicksPerMinute/2);
     //		int maxtime = Rule.AutocreateTime * (kTicksPerMinute*2);
-    //		AlertTime = Random_Pick(mintime, maxtime);
+    //		AlertTime = RandomPick(mintime, maxtime);
   }
 
   /*
@@ -992,13 +992,13 @@ void HouseClass::AI() {
 
       const char* text = nullptr;
       if (BQuantity.at(STRUCT_AAGUN) > 0) {
-        text = Text_String(TXT_POWER_AAGUN);
+        text = TextString(TXT_POWER_AAGUN);
       }
       if (BQuantity.at(STRUCT_TESLA) > 0) {
-        text = Text_String(TXT_POWER_TESLA);
+        text = TextString(TXT_POWER_TESLA);
       }
       if (text == nullptr) {
-        text = Text_String(TXT_LOW_POWER);
+        text = TextString(TXT_LOW_POWER);
       }
       if (text != nullptr) {
         TheSession().Messages.Add_Message(
@@ -2037,7 +2037,7 @@ void HouseClass::Make_Ally(HousesType house) {
 
       if (IsHuman) {
         const std::string message = base::FormatRuntime(
-            Text_String(TXT_HAS_ALLIED), IniName, As_Pointer(house)->IniName);
+            TextString(TXT_HAS_ALLIED), IniName, As_Pointer(house)->IniName);
         TheSession().Messages.Add_Message(
             nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
             TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -2090,7 +2090,7 @@ void HouseClass::Make_Enemy(HousesType house) {
          TheSession().Type != GAME_NORMAL) &&
         !TheWorld().scenario_init() && IsHuman) {
       const std::string message = base::FormatRuntime(
-          Text_String(TXT_AT_WAR), IniName, As_Pointer(house)->IniName);
+          TextString(TXT_AT_WAR), IniName, As_Pointer(house)->IniName);
       TheSession().Messages.Add_Message(
           nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
           TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -2390,7 +2390,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
     ** being destroyed and not our ally, then we can consider it.
     */
     if ((b != nullptr && !b->IsInLimbo && b->Strength && !Is_Ally(b)) &&
-        (Percent_Chance(90) && (b->Value() > best || best == -1))) {
+        (PercentChance(90) && (b->Value() > best || best == -1))) {
       best = b->Value();
       bestptr = b;
     }
@@ -2706,7 +2706,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
       ** Now set a percentage chance that a time quake will occur.
       */
       if (!TheWorld().time_quake()) {
-        TheWorld().time_quake() = Percent_Chance(TheRules().QuakeChance * 100);
+        TheWorld().time_quake() = PercentChance(TheRules().QuakeChance * 100);
       }
 
       /*
@@ -2719,14 +2719,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
           (tech->What_Am_I() != RTTI_UNIT ||
            *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
         if (!TheWorld().chronal_vortex().Is_Active() &&
-            Percent_Chance(TheRules().VortexChance * 100)) {
-          const int x = Random_Pick(0, TheMap().MapCellWidth - 1);
-          const int y = Random_Pick(0, TheMap().MapCellHeight - 1);
+            PercentChance(TheRules().VortexChance * 100)) {
+          const int x = RandomPick(0, TheMap().MapCellWidth - 1);
+          const int y = RandomPick(0, TheMap().MapCellHeight - 1);
           TheWorld().chronal_vortex().Appear(
               Cell::FromXY(TheMap().MapCellX + x, TheMap().MapCellY + y)
                   .Center());
 
-          //					if (Percent_Chance(50)) {
+          //					if (PercentChance(50)) {
           //						ChronalVortex.Appear(oldcell.Center());
           //					} else {
           //						ChronalVortex.Appear(cell.Center());
@@ -3420,7 +3420,7 @@ void HouseClass::MPlayer_Defeated() {
     **	Pop up a message showing that I was defeated
     */
     const std::string message =
-        base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED), IniName);
+        base::FormatRuntime(TextString(TXT_PLAYER_DEFEATED), IniName);
     TheSession().Messages.Add_Message(
         nullptr, 0, message.c_str(), TheSession().ColorIdx,
         FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -3433,7 +3433,7 @@ void HouseClass::MPlayer_Defeated() {
     */
     if (IsHuman) {
       const std::string message =
-          base::FormatRuntime(Text_String(TXT_PLAYER_DEFEATED), IniName);
+          base::FormatRuntime(TextString(TXT_PLAYER_DEFEATED), IniName);
 
       TheSession().Messages.Add_Message(
           nullptr, 0, message.c_str(), RemapColor, FontType::k6PointGradient,
@@ -3789,7 +3789,7 @@ void HouseClass::Blowup_All() {
       while (TheObjectHeaps().infantry().ActiveAt(i) == iptr &&
              iptr->Strength) {
         damage = iptr->Strength;
-        const WarheadType warhead = Random_Pick(WARHEAD_SA, WARHEAD_FIRE);
+        const WarheadType warhead = RandomPick(WARHEAD_SA, WARHEAD_FIRE);
         iptr->Take_Damage(damage, 0, warhead, nullptr, true);
 
         count++;
@@ -4198,7 +4198,7 @@ Coordinate HouseClass::Find_Build_Location(BuildingClass* building) const {
   **	with the greatest value and try to place the building in that zone.
   */
   ZoneType zone =
-      Random_Pick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
+      RandomPick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
   int largest = 0;
   for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
     if (zonerating.at(z) > largest) {
@@ -4217,7 +4217,7 @@ Coordinate HouseClass::Find_Build_Location(BuildingClass* building) const {
   */
   static const ZoneType _zones[] = {ZONE_CORE, ZONE_NORTH, ZONE_SOUTH,
                                     ZONE_EAST, ZONE_WEST};
-  const int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
+  const int start = RandomPick<int>(0, std::ssize(_zones) - 1);
   for (int zz = 0; zz < std::ssize(_zones); zz++) {
     const ZoneType tryzone =
         base::At(_zones, (zz + start) % std::ssize(_zones));
@@ -4630,7 +4630,7 @@ int HouseClass::Expert_AI() {
     }
   }
 
-  return (kTicksPerSecond * 5) + Random_Pick(1, kTicksPerSecond / 2);
+  return (kTicksPerSecond * 5) + RandomPick(1, kTicksPerSecond / 2);
 }
 
 UrgencyType HouseClass::Check_Build_Power() const {
@@ -4799,7 +4799,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
 
   const bool shuffle =
       (game::CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
-      !Percent_Chance(33);
+      !PercentChance(33);
   const bool forced = CurBuildings == 0;
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
     AircraftClass* a = TheObjectHeaps().aircraft().ActiveAt(index);
@@ -4807,7 +4807,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
     if ((a != nullptr && !a->IsInLimbo && a->House == this &&
          a->Strength > 0) &&
         (!shuffle && a->Is_Weapon_Equipped() &&
-         (forced || Percent_Chance(75)))) {
+         (forced || PercentChance(75)))) {
       a->Assign_Mission(MISSION_HUNT);
     }
   }
@@ -4816,14 +4816,14 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
 
     if (u != nullptr && !u->IsInLimbo && u->House == this && u->Strength > 0) {
       if (!shuffle && u->Is_Weapon_Equipped() &&
-          (forced || Percent_Chance(75))) {
+          (forced || PercentChance(75))) {
         u->Assign_Mission(MISSION_HUNT);
       } else {
         /*
         **	If this unit is guarding the base, then cause it to shuffle
         **	location instead.
         */
-        if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA &&
+        if (PercentChance(20) && u->Mission == MISSION_GUARD_AREA &&
             Which_Zone(u) != ZONE_NONE) {
           u->ArchiveTarget = Target::FromCell(Where_To_Go(u));
         }
@@ -4835,14 +4835,14 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
 
     if (i != nullptr && !i->IsInLimbo && i->House == this && i->Strength > 0) {
       if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) &&
-          (forced || Percent_Chance(75))) {
+          (forced || PercentChance(75))) {
         i->Assign_Mission(MISSION_HUNT);
       } else {
         /*
         **	If this soldier is guarding the base, then cause it to shuffle
         **	location instead.
         */
-        if (Percent_Chance(20) && i->Mission == MISSION_GUARD_AREA &&
+        if (PercentChance(20) && i->Mission == MISSION_GUARD_AREA &&
             Which_Zone(i) != ZONE_NONE) {
           i->ArchiveTarget = Target::FromCell(Where_To_Go(i));
         }
@@ -4851,7 +4851,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   }
   Attack.Set(
       TheRules().AttackInterval *
-      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+      static_cast<int>(RandomPick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
   return true;
 }
 
@@ -5244,7 +5244,7 @@ int HouseClass::AI_Building() {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
       } else {
-        if (Percent_Chance(50)) {
+        if (PercentChance(50)) {
           b = &BuildingTypeClass::As_Reference(STRUCT_PILLBOX);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
             choiceptr = BuildChoice.Allocate();
@@ -5574,7 +5574,7 @@ int HouseClass::AI_Unit() {
     *class.
     */
     if (bestcount) {
-      BuildUnit = base::At(bestlist, Random_Pick(0, bestcount - 1));
+      BuildUnit = base::At(bestlist, RandomPick(0, bestcount - 1));
     }
   }
 
@@ -5596,7 +5596,7 @@ int HouseClass::AI_Unit() {
     }
 
     if (total > 0) {
-      int choice = Random_Pick(0, total - 1);
+      int choice = RandomPick(0, total - 1);
       for (const UnitType index : magic_enum::enum_values<UnitType>()) {
         if (choice < counter.at(index)) {
           BuildUnit = index;
@@ -5722,7 +5722,7 @@ int HouseClass::AI_Vessel() {
     *class.
     */
     if (bestcount) {
-      BuildVessel = base::At(bestlist, Random_Pick(0, bestcount - 1));
+      BuildVessel = base::At(bestlist, RandomPick(0, bestcount - 1));
     }
   }
 
@@ -5858,7 +5858,7 @@ int HouseClass::AI_Infantry() {
     *type class.
     */
     if (bestcount) {
-      const int pick = Random_Pick(0, bestcount - 1);
+      const int pick = RandomPick(0, bestcount - 1);
       BuildInfantry = base::At(bestlist, pick);
     }
   }
@@ -5967,7 +5967,7 @@ int HouseClass::AI_Infantry() {
     *selected to be built.
     */
     if (count > 0) {
-      int pick = Random_Pick(0, total - 1);
+      int pick = RandomPick(0, total - 1);
       for (int index = 0; index < count; index++) {
         if (pick < base::At(typetrack, index).Value) {
           BuildInfantry = base::At(typetrack, index).Type;
@@ -6769,7 +6769,7 @@ Cell HouseClass::Where_To_Go(const FootClass* object) const {
   const ZoneType zone =
       object->Anti_Air() + object->Anti_Armor() + object->Anti_Infantry() == 0
           ? ZONE_CORE
-          : Random_Pick(ZONE_NORTH, ZONE_WEST);
+          : RandomPick(ZONE_NORTH, ZONE_WEST);
 
   const Cell cell = Random_Cell_In_Zone(zone);
   CHECK_NE(cell.index(), 0);
@@ -7663,7 +7663,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   int maxdist = 0;
   switch (zone) {
     case ZONE_CORE:
-      coord = Coord_Scatter(Center, Random_Pick(0, Radius), true);
+      coord = Coord_Scatter(Center, RandomPick(0, Radius), true);
       break;
 
     case ZONE_NORTH:
@@ -7675,10 +7675,9 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center,
-          Random_Pick(game::DIR_N, game::DIR_E) -
-              static_cast<game::DirType>(32),
-          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
-                                            std::min(Radius * 3, maxdist))));
+          RandomPick(game::DIR_N, game::DIR_E) - static_cast<game::DirType>(32),
+          static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
+                                           std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_EAST:
@@ -7689,9 +7688,9 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
         break;
       }
       coord = Coord_Move(
-          Center, Random_Pick(game::DIR_NE, game::DIR_SE),
-          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
-                                            std::min(Radius * 3, maxdist))));
+          Center, RandomPick(game::DIR_NE, game::DIR_SE),
+          static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
+                                           std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_SOUTH:
@@ -7702,9 +7701,9 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
         break;
       }
       coord = Coord_Move(
-          Center, Random_Pick(game::DIR_SE, game::DIR_SW),
-          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
-                                            std::min(Radius * 3, maxdist))));
+          Center, RandomPick(game::DIR_SE, game::DIR_SW),
+          static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
+                                           std::min(Radius * 3, maxdist))));
       break;
 
     case ZONE_WEST:
@@ -7715,9 +7714,9 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
         break;
       }
       coord = Coord_Move(
-          Center, Random_Pick(game::DIR_SW, game::DIR_NW),
-          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
-                                            std::min(Radius * 3, maxdist))));
+          Center, RandomPick(game::DIR_SW, game::DIR_NW),
+          static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
+                                           std::min(Radius * 3, maxdist))));
       break;
     case ZoneType::ZONE_NONE:
     default:

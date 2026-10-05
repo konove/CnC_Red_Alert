@@ -191,10 +191,10 @@ Coordinate AnimClass::Sort_Y() const {
     return xObject.AsObject()->Sort_Y() + Coordinate::FromLeptons(0, 1);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return Center_Coord() + XYP_Coord(0, -24);
+    return Center_Coord() + CoordFromPixels(0, -24);
   }
   if (Class->IsGroundLayer || *this == ANIM_LZ_SMOKE) {
-    return Center_Coord() + XYP_Coord(0, 14);
+    return Center_Coord() + CoordFromPixels(0, 14);
   }
   return Coord;
 }
@@ -905,7 +905,7 @@ void AnimClass::Middle() {
   *time.
   */
   if (Class->IsScorcher) {
-    base::NewPooled<SmudgeClass>(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+    base::NewPooled<SmudgeClass>(RandomPick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                                  Center_Coord());
   }
 
@@ -941,20 +941,20 @@ void AnimClass::Middle() {
           ANIM_FIRE_SMALL,
           MapEditClass::Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040),
                                           true),
-          0, static_cast<unsigned char>(Random_Pick(1, 2)));
-      if (Percent_Chance(50)) {
+          0, static_cast<unsigned char>(RandomPick(1, 2)));
+      if (PercentChance(50)) {
         base::NewPooled<AnimClass>(
             ANIM_FIRE_SMALL,
             MapEditClass::Closest_Free_Spot(
                 Coord_Scatter(Center_Coord(), 0x00A0), true),
-            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+            0, static_cast<unsigned char>(RandomPick(1, 2)));
       }
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         base::NewPooled<AnimClass>(
             ANIM_FIRE_MED,
             MapEditClass::Closest_Free_Spot(
                 Coord_Scatter(Center_Coord(), 0x0070), true),
-            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+            0, static_cast<unsigned char>(RandomPick(1, 2)));
       }
       break;
 
@@ -962,7 +962,7 @@ void AnimClass::Middle() {
     case ANIM_FIRE_MED2:
       newanim = base::NewPooled<AnimClass>(
           ANIM_FIRE_SMALL, Center_Coord(), 0,
-          static_cast<unsigned char>(Random_Pick(1, 2)));
+          static_cast<unsigned char>(RandomPick(1, 2)));
       if (newanim != nullptr && xObject != Target{}) {
         newanim->Attach_To(xObject.AsObject());
       }

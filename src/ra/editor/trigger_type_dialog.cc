@@ -635,9 +635,9 @@ bool TriggerType::Edit() {
 
   for (const StructType building : magic_enum::enum_values<StructType>()) {
     event1_building_list.Add_Item(
-        Text_String(BuildingTypeClass::As_Reference(building).Full_Name()));
+        TextString(BuildingTypeClass::As_Reference(building).Full_Name()));
     event2_building_list.Add_Item(
-        Text_String(BuildingTypeClass::As_Reference(building).Full_Name()));
+        TextString(BuildingTypeClass::As_Reference(building).Full_Name()));
   }
 
   if (Event_Needs(event1.Event) == NEED_STRUCTURE) {
@@ -669,9 +669,9 @@ bool TriggerType::Edit() {
 
   for (const InfantryType infantry : magic_enum::enum_values<InfantryType>()) {
     event1_infantry_list.Add_Item(
-        Text_String(InfantryTypeClass::As_Reference(infantry).Full_Name()));
+        TextString(InfantryTypeClass::As_Reference(infantry).Full_Name()));
     event2_infantry_list.Add_Item(
-        Text_String(InfantryTypeClass::As_Reference(infantry).Full_Name()));
+        TextString(InfantryTypeClass::As_Reference(infantry).Full_Name()));
   }
 
   if (Event_Needs(event1.Event) == NEED_INFANTRY) {
@@ -703,9 +703,9 @@ bool TriggerType::Edit() {
 
   for (const AircraftType aircraft : magic_enum::enum_values<AircraftType>()) {
     event1_aircraft_list.Add_Item(
-        Text_String(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
+        TextString(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
     event2_aircraft_list.Add_Item(
-        Text_String(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
+        TextString(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
   }
 
   if (Event_Needs(event1.Event) == NEED_AIRCRAFT) {
@@ -737,9 +737,9 @@ bool TriggerType::Edit() {
 
   for (const UnitType unit : magic_enum::enum_values<UnitType>()) {
     event1_unit_list.Add_Item(
-        Text_String(UnitTypeClass::As_Reference(unit).Full_Name()));
+        TextString(UnitTypeClass::As_Reference(unit).Full_Name()));
     event2_unit_list.Add_Item(
-        Text_String(UnitTypeClass::As_Reference(unit).Full_Name()));
+        TextString(UnitTypeClass::As_Reference(unit).Full_Name()));
   }
 
   if (Event_Needs(event1.Event) == NEED_UNIT) {

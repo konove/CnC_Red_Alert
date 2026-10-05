@@ -633,7 +633,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   */
   if (Style == SAVE) {
     FileEntryClass& empty_slot = Files.emplace_back();
-    base::SafeCopy(empty_slot.Descr, Text_String(TXT_EMPTY_SLOT));
+    base::SafeCopy(empty_slot.Descr, TextString(TXT_EMPTY_SLOT));
     empty_slot.DateTime = 0xffffffff;  // will always be first
   }
 
@@ -657,14 +657,14 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
 
       fdata.Descr[0] = '\0';
       if (!ok) {
-        base::SafeCopy(fdata.Descr, Text_String(TXT_OLD_GAME));
+        base::SafeCopy(fdata.Descr, TextString(TXT_OLD_GAME));
       } else {
         if (IsSovietHouse(house)) {
           absl::SNPrintF(fdata.Descr, sizeof(fdata.Descr), "(%s) ",
-                         Text_String(TXT_SOVIET));
+                         TextString(TXT_SOVIET));
         } else {
           absl::SNPrintF(fdata.Descr, sizeof(fdata.Descr), "(%s) ",
-                         Text_String(TXT_ALLIES));
+                         TextString(TXT_ALLIES));
         }
       }
       base::SafeAppend(fdata.Descr, descr);

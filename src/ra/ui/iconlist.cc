@@ -296,7 +296,7 @@ int IconListClass::Add_Item_Detail(
 
 //***********************************************************************************************
 int IconListClass::Add_Item(int text) {
-  return Add_Item(Text_String(text), nullptr, nullptr, ICON_SHAPE);
+  return Add_Item(TextString(text), nullptr, nullptr, ICON_SHAPE);
 }
 
 //***********************************************************************************************
@@ -310,7 +310,7 @@ int IconListClass::Add_Item(
     IconListIcon pFixedIcon /* = NULL */,
     ICONKIND FixedIconKind /* = ICON_SHAPE */, int iXFixedIcon /* = 0 */,
     int iYFixedIcon /* = 0 */, int iFixedIconWidth /* = -1 */) {
-  return Add_Item(Text_String(text), szHelp, pIcon0, IconKind0,
+  return Add_Item(TextString(text), szHelp, pIcon0, IconKind0,
                   szExtraDataString, pvExtraDataPtr, pColorRemap, pIcon1,
                   IconKind1, pIcon2, IconKind2, pFixedIcon, FixedIconKind,
                   iXFixedIcon, iYFixedIcon, iFixedIconWidth);

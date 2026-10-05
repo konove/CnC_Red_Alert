@@ -1240,8 +1240,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   int realval[5];
   int morebutton = 3;  // which button says "more": 2 or 3?
 
-  const char* b1txt = Text_String(left_btn);
-  const char* b2txt = Text_String(right_btn);
+  const char* b1txt = TextString(left_btn);
+  const char* b2txt = TextString(right_btn);
   const char* b3txt = [] {
     if (config::kIsFrench) {
       return "SUITE";
@@ -1698,7 +1698,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
 
     default:
     case game::SCEN_DIR_NONE:
-      c_dir = Percent_Chance(50) ? 'W' : 'E';
+      c_dir = PercentChance(50) ? 'W' : 'E';
       break;
   }
 
@@ -1726,7 +1726,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
     if (available == 0) {
       c_var = 'X';  // indicates an error
     } else {
-      c_var = static_cast<char>('A' + Random_Pick(0, available - 1));
+      c_var = static_cast<char>('A' + RandomPick(0, available - 1));
     }
   } else {
     switch (var) {
@@ -2503,14 +2503,13 @@ void Assign_Houses() {
        i < TheSession().Players.Count() + TheSession().Options.AIPlayers; i++) {
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
-    const HousesType pref_house =
-        Percent_Chance(50) ? HOUSE_GREECE : HOUSE_USSR;
+    const HousesType pref_house = PercentChance(50) ? HOUSE_GREECE : HOUSE_USSR;
 
     //.....................................................................
     // Pick a color for this house; keep looping until we find one.
     //.....................................................................
     while (true) {
-      color = Random_Pick(0, 7);
+      color = RandomPick(0, 7);
       if (!color_used.at(static_cast<PlayerColorType>(color))) {
         break;
       }
@@ -2527,7 +2526,7 @@ void Assign_Houses() {
     housep->IsHuman = false;
     housep->IsStarted = true;
 
-    base::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
+    base::SafeCopy(housep->IniName, TextString(TXT_COMPUTER));
 
     if (TheSession().Type != GAME_NORMAL) {
       housep->IQ = TheRules().MaxIQ;
@@ -2761,8 +2760,8 @@ static void Create_Units(bool official) {
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
       Cell trycell = Cell::FromXY(
-          TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
-          TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
+          TheMap().MapCellX + RandomPick(0, TheMap().MapCellWidth - 1),
+          TheMap().MapCellY + RandomPick(0, TheMap().MapCellHeight - 1));
 
       trycell = TheMap().Nearby_Location(trycell, SPEED_TRACK);
       base::At(waypts, num_waypts) = trycell;
@@ -2794,7 +2793,7 @@ static void Create_Units(bool official) {
     **	wapoint from the existing houses.
     */
     if (numtaken == 0) {
-      const int pick = Random_Pick(0, num_waypts - 1);
+      const int pick = RandomPick(0, num_waypts - 1);
       centroid = base::At(waypts, pick);
       base::At(taken, pick) = true;
       numtaken++;
@@ -3033,7 +3032,7 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
     **	Pick a random starting direction
     */
     game::FacingType rot =
-        Random_Pick(game::FACING_N, game::FACING_NW);  // for object placement
+        RandomPick(game::FACING_N, game::FACING_NW);  // for object placement
 
     /*
     **	Try all directions twice
@@ -3122,8 +3121,8 @@ static Cell Clip_Scatter(Cell cell, int maxdist) {
   /*
   **	Adjust the x-coordinate
   */
-  const int xdist = Random_Pick(0, maxdist);
-  if (Percent_Chance(50)) {
+  const int xdist = RandomPick(0, maxdist);
+  if (PercentChance(50)) {
     x += xdist;
     x = std::min(x, xmax);
   } else {
@@ -3134,8 +3133,8 @@ static Cell Clip_Scatter(Cell cell, int maxdist) {
   /*
   **	Adjust the y-coordinate
   */
-  const int ydist = Random_Pick(0, maxdist);
-  if (Percent_Chance(50)) {
+  const int ydist = RandomPick(0, maxdist);
+  if (PercentChance(50)) {
     y += ydist;
     y = std::min(y, ymax);
   } else {

@@ -976,7 +976,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
     view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
                   TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
                   TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
-                  static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+                  static_cast<unsigned char>(LocalRandomPick(1, 254)));
     Fancy_Text_Print(view, "%02X%02X\r%d%d%d\r%d %d",
                      TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
                      TheMap().TacPixelY + y, &ThePalettes().grey_scheme(),
@@ -1429,7 +1429,7 @@ bool CellClass::Reduce_Wall(int damage) {
       if (damage == -1 || damage >= wall.DamagePoints) {
         destroyed = true;
       } else {
-        destroyed = Random_Pick(0, wall.DamagePoints) < damage;
+        destroyed = RandomPick(0, wall.DamagePoints) < damage;
       }
 
       /*
@@ -1579,7 +1579,7 @@ Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   */
   std::span<const unsigned char> sequence;
   if (spot_index == 0) {
-    sequence = std::span(base::At(_alternate, Random_Pick(0, 3)));
+    sequence = std::span(base::At(_alternate, RandomPick(0, 3)));
   } else {
     sequence = std::span(base::At(_sequence, spot_index));
   }
@@ -1767,7 +1767,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
         case OVERLAY_GOLD3:
         case OVERLAY_GOLD4:
           value = TheRules().GoldValue;
-          Overlay = Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4);
+          Overlay = RandomPick(OVERLAY_GOLD1, OVERLAY_GOLD4);
           break;
 
         case OVERLAY_GEMS1:
@@ -1776,7 +1776,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
         case OVERLAY_GEMS4:
           gems = true;
           value = TheRules().GemValue * 4;
-          Overlay = Random_Pick(OVERLAY_GEMS1, OVERLAY_GEMS4);
+          Overlay = RandomPick(OVERLAY_GEMS1, OVERLAY_GEMS4);
           break;
 
         case OverlayType::OVERLAY_NONE:
@@ -1892,7 +1892,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       }
 
     } else {
-      const int pick = Random_Pick(1, total_shares);
+      const int pick = RandomPick(1, total_shares);
 
       int share_count = 0;
       bool found = false;
@@ -1986,7 +1986,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             bool found_spot = false;
             const int64_t minutes = std::min<int64_t>(
                 TheWorld().score().ElapsedTime / kTimerMinute, 100);
-            if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
+            if (RandomPick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (int i = 0; i < TheSession().Players.Count() +
                                       TheSession().Options.AIPlayers;
                    i++) {
@@ -2024,7 +2024,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                   minunits = std::min(minunits, ucount);
                 }
               }
-              if (Random_Pick(0, minunits) == minunits) {
+              if (RandomPick(0, minunits) == minunits) {
                 found_spot = true;
               }
             }
@@ -2143,8 +2143,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         object->House->Refund_Money(force_money);
       } else {
         object->House->Refund_Money(
-            Random_Pick(TheRules().crate_data().at(powerup),
-                        TheRules().crate_data().at(powerup) + 900));
+            RandomPick(TheRules().crate_data().at(powerup),
+                       TheRules().crate_data().at(powerup) + 900));
       }
     };
     switch (powerup) {
@@ -2217,7 +2217,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If no unit type has been determined, then pick one at random.
         */
         while (utp == nullptr) {
-          const UnitType utype = Random_Pick(
+          const UnitType utype = RandomPick(
               magic_enum::enum_values<UnitType>().front(),
               static_cast<UnitType>(HouseClass::kOriginalUnitCount - 1 - 3));
           if (utype != UNIT_MCV || TheSession().Options.Bases) {
@@ -2266,7 +2266,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               INFANTRY_E1, INFANTRY_E1, INFANTRY_E1,
               INFANTRY_E2, INFANTRY_E3, INFANTRY_RENOVATOR};
           if ((!InfantryTypeClass::As_Reference(
-                    base::At(_inf, Random_Pick<int>(0, std::ssize(_inf) - 1)))
+                    base::At(_inf, RandomPick<int>(0, std::ssize(_inf) - 1)))
                     .Create_And_Place(Cell_Number(), object->Owner())) &&
               (index == 0)) {
             give_crate_money();
@@ -2309,7 +2309,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         }
         for (int index = 0; index < 5; index++) {
           const Coordinate frag_coord =
-              Coord_Scatter(Center_Coord(), Random_Pick(0, 0x0200));
+              Coord_Scatter(Center_Coord(), RandomPick(0, 0x0200));
           base::NewPooled<AnimClass>(ANIM_FBALL1, frag_coord);
           damage = TheRules().crate_data().at(powerup);
           Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
@@ -2823,7 +2823,7 @@ bool CellClass::Spread_Tiberium(bool forced) {
     return false;
   }
 
-  const game::FacingType offset = Random_Pick(game::FACING_N, game::FACING_NW);
+  const game::FacingType offset = RandomPick(game::FACING_N, game::FACING_NW);
   // Placing the overlay is the point of the search, so not any_of.
   // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const game::FacingType index :
@@ -2831,7 +2831,7 @@ bool CellClass::Spread_Tiberium(bool forced) {
     CellClass* newcell = &Adjacent_Cell(index + offset);
 
     if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {
-      base::NewPooled<OverlayClass>(Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4),
+      base::NewPooled<OverlayClass>(RandomPick(OVERLAY_GOLD1, OVERLAY_GOLD4),
                                     newcell->Cell_Number());
       newcell->OverlayData = 0;
       return true;

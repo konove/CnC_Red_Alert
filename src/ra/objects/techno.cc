@@ -2661,7 +2661,7 @@ void TechnoClass::Cloaking_AI() {
         if (Health_Ratio() > TheRules().ConditionRed) {
           Do_Cloak();
         } else {
-          if (Percent_Chance(4)) {
+          if (PercentChance(4)) {
             Do_Cloak();
           }
         }
@@ -2701,7 +2701,7 @@ void TechnoClass::Cloaking_AI() {
             */
             case game::VISUAL_DARKEN:
               if (Health_Ratio() <= TheRules().ConditionRed &&
-                  Percent_Chance(25)) {
+                  PercentChance(25)) {
                 Cloak = game::UNCLOAKING;
               }
               break;
@@ -3181,7 +3181,7 @@ bool TechnoClass::Electric_Zap(Target target, int which,
         ** bolt some randomness.
         */
         if (ra::Distance(x, y, x1, y1) > 40) {
-          switch (Sim_Random_Pick(1, 3 + (shots == 0 ? 3 : 0))) {
+          switch (LocalRandomPick(1, 3 + (shots == 0 ? 3 : 0))) {
             case 1:
               facing++;
               break;
@@ -4821,10 +4821,10 @@ InfantryType TechnoClass::Crew_Type() const {
   */
   InfantryType infantry = INFANTRY_E1;
   if (House->ActLike == HOUSE_NEUTRAL) {
-    infantry = Random_Pick(INFANTRY_C1, INFANTRY_C9);
+    infantry = RandomPick(INFANTRY_C1, INFANTRY_C9);
   } else {
-    if (Techno_Type_Class()->PrimaryWeapon == nullptr && Percent_Chance(15)) {
-      if (Percent_Chance(50)) {
+    if (Techno_Type_Class()->PrimaryWeapon == nullptr && PercentChance(15)) {
+      if (PercentChance(50)) {
         infantry = INFANTRY_C1;
       } else {
         infantry = INFANTRY_C7;
@@ -5237,7 +5237,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
     }
 
     for (int lp = 0; lp < count; lp++) {
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         base::At(defender, lp)->Assign_Mission(MISSION_RESCUE);
       } else {
         base::At(defender, lp)->Assign_Mission(MISSION_GUARD_AREA);
@@ -5379,7 +5379,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   **	Compare potential threat of the current target and the potential new
   *target. Don't retaliate *	if it is currently attacking the greater threat.
   */
-  if (!House->IsHuman && Percent_Chance(50)) {
+  if (!House->IsHuman && PercentChance(50)) {
     auto source_val = Fixed(0);
     int primary = What_Weapon_Should_I_Use(source->As_Target());
     const WeaponTypeClass* weapon =

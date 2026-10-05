@@ -251,7 +251,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
-  base::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
+  base::SafeCopy(buffer, TextString(TXT_INITIALIZING_MODEM));
 
   PixelView& view = TheScreen().visible_view();
 
@@ -480,7 +480,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
   const char* buffer_const =
-      Text_String(reconnect ? TXT_MODEM_CONNERR_REDIALING : TXT_DIALING);
+      TextString(reconnect ? TXT_MODEM_CONNERR_REDIALING : TXT_DIALING);
 
   std::string buffer(buffer_const);
 
@@ -499,8 +499,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
-      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
-           2),
+      x + ((width - (StringPixelWidth(font, TextString(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontLineHeight(font) + 4) - 20);
 
   /*------------------------------------------------------------------------
@@ -664,9 +663,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
   if (reconnect) {
-    base::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
+    base::SafeCopy(text_buffer, TextString(TXT_MODEM_CONNERR_WAITING));
   } else {
-    base::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
+    base::SafeCopy(text_buffer, TextString(TXT_WAITING_FOR_CALL));
   }
 
   PixelView& view = TheScreen().visible_view();
@@ -684,8 +683,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
-      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
-           2),
+      x + ((width - (StringPixelWidth(font, TextString(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontLineHeight(font) + 4) - 20);
 
   /*------------------------------------------------------------------------
@@ -769,7 +767,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (process) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
-        base::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
+        base::SafeCopy(text_buffer, TextString(TXT_ANSWERING));
 
         Format_Window_String(font, text_buffer, view.height(), width, height);
 

@@ -386,7 +386,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
     Assign_Mission(MISSION_GUARD);
     Commence();
 
-    VocType sound = Sim_Random_Pick(VOC_SCREAM1, VOC_SCREAM11);
+    VocType sound = LocalRandomPick(VOC_SCREAM1, VOC_SCREAM11);
     VocType altsound = VOC_YELL1;
     if (*this == INFANTRY_TANYA) {
       sound = altsound = VOC_TANYA_DIE;
@@ -775,7 +775,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
 
         Stop_Driver();
-        Scatter(Adjacent_Cell(Coord, PrimaryFacing), true, true);
+        Scatter(AdjacentCell(Coord, PrimaryFacing), true, true);
         Assign_Mission(MISSION_MOVE);
 
         if (!NavCom || TheMap().at(NavCom.AsCell()).Land_Type() == LAND_WATER) {
@@ -1139,7 +1139,7 @@ void InfantryClass::AI() {
   */
   if (!NavCom && !IsProne && IsStoked && Comment.IsFinished()) {
     IsStoked = false;
-    Do_Action(Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2);
+    Do_Action(PercentChance(50) ? DO_GESTURE1 : DO_GESTURE2);
   }
 
   /*
@@ -1674,8 +1674,8 @@ bool InfantryClass::Random_Animate() {
 
   if (Is_Ready_To_Random_Animate()) {
     IdleTimer.Set(
-        Random_Pick(TheRules().RandomAnimateTime * (kTicksPerMinute / 2),
-                    TheRules().RandomAnimateTime * (kTicksPerMinute * 2)));
+        RandomPick(TheRules().RandomAnimateTime * (kTicksPerMinute / 2),
+                   TheRules().RandomAnimateTime * (kTicksPerMinute * 2)));
 
     /*
     **	Scared infantry will always follow the golden rule of civilians;
@@ -1687,7 +1687,7 @@ bool InfantryClass::Random_Animate() {
       return true;
     }
 
-    switch (Random_Pick(0, 10)) {
+    switch (RandomPick(0, 10)) {
       case 0:
         if (Class->IsDog) {
           Do_Action(DO_IDLE1);
@@ -1717,7 +1717,7 @@ bool InfantryClass::Random_Animate() {
       case 6:
         Mark(MARK_CHANGE_REDRAW);
         PrimaryFacing.Set(
-            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
+            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
@@ -1725,10 +1725,10 @@ bool InfantryClass::Random_Animate() {
         Do_Action(DO_IDLE2);
         Mark(MARK_CHANGE_REDRAW);
         PrimaryFacing.Set(
-            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
+            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
-            Sim_Random_Pick(0, 2) == 0) {
+            LocalRandomPick(0, 2) == 0) {
           PlaySoundEffectAt(VOC_TANYA_SHAKE, Coord);
         }
         break;
@@ -1739,7 +1739,7 @@ bool InfantryClass::Random_Animate() {
       case 8:
         Mark(MARK_CHANGE_REDRAW);
         PrimaryFacing.Set(
-            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
+            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
           Scatter(Coordinate{}, true);
@@ -1750,7 +1750,7 @@ bool InfantryClass::Random_Animate() {
       case 10:
         Mark(MARK_CHANGE_REDRAW);
         PrimaryFacing.Set(
-            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
+            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
@@ -1830,12 +1830,12 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     return;
   }
 
-  if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
+  if (forced || Class->IsFraidyCat /*|| !(RandomPick(1, 4) == 1)*/) {
     game::FacingType toface = game::FACING_NONE;
 
     if (threat) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
-      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
+      toface = toface + static_cast<game::FacingType>(RandomPick(0, 4) - 2);
     } else {
       const Coordinate coord = Center_Coord().Fraction();
 
@@ -1845,7 +1845,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
       } else {
         toface = game::Dir_Facing(PrimaryFacing.Current());
       }
-      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
+      toface = toface + static_cast<game::FacingType>(RandomPick(0, 4) - 2);
     }
 
     Cell newcell{};
@@ -1854,7 +1854,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const game::FacingType newface = toface + face;
-      newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
+      newcell = AdjacentCell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
           Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -1913,7 +1913,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
   }
 
   if (*this == INFANTRY_SPY && todo >= DO_GESTURE1) {
-    todo = static_cast<DoType>(static_cast<int>(DO_IDLE1) + Random_Pick(0, 1));
+    todo = static_cast<DoType>(static_cast<int>(DO_IDLE1) + RandomPick(0, 1));
   }
 
   if (todo != Doing &&
@@ -2444,7 +2444,7 @@ void InfantryClass::Response_Select() {
     }
     if (!response.empty()) {
       PlaySoundEffect(
-          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          base::At(response, base::ToSize(LocalRandomPick(0, size - 1))),
           Fixed(1), ID + 1, house);
     }
   }
@@ -2589,7 +2589,7 @@ void InfantryClass::Response_Move() {
     }
     if (!response.empty()) {
       PlaySoundEffect(
-          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          base::At(response, base::ToSize(LocalRandomPick(0, size - 1))),
           Fixed(1), ID + 1, house);
     }
   }
@@ -2736,7 +2736,7 @@ void InfantryClass::Response_Attack() {
     }
     if (!response.empty()) {
       PlaySoundEffect(
-          base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
+          base::At(response, base::ToSize(LocalRandomPick(0, size - 1))),
           Fixed(1), ID + 1, house);
     }
   }
@@ -2958,7 +2958,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
             for (const game::FacingType i :
                  magic_enum::enum_values<game::FacingType>()) {
               if (std::cmp_equal(TheMap()
-                                     .at(Adjacent_Cell(newcell, i))
+                                     .at(AdjacentCell(newcell, i))
                                      .Zones.at(Class->MZone),
                                  targzone)) {
                 found = true;
@@ -3731,15 +3731,15 @@ bool InfantryClass::Doing_AI() {
                 .Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
             base::NewPooled<AnimClass>(ANIM_CORPSE1,
-                                       Center_Coord() + XYP_Coord(-2, 4));
+                                       Center_Coord() + CoordFromPixels(-2, 4));
           }
           if (Doing == DO_GRENADE_DEATH && !Class->IsDog && Height == 0) {
-            base::NewPooled<AnimClass>(ANIM_CORPSE1,
-                                       Center_Coord() + XYP_Coord(-10, 3));
+            base::NewPooled<AnimClass>(
+                ANIM_CORPSE1, Center_Coord() + CoordFromPixels(-10, 3));
           }
           if (Doing == DO_EXPLOSION_DEATH && !Class->IsDog && Height == 0) {
             base::NewPooled<AnimClass>(ANIM_CORPSE3,
-                                       Center_Coord() + XYP_Coord(-2, 4));
+                                       Center_Coord() + CoordFromPixels(-2, 4));
           }
           if (Doing == DO_EXPLOSION2_DEATH && !Class->IsDog && Height == 0) {
             base::NewPooled<AnimClass>(ANIM_CORPSE2, Center_Coord());
@@ -3817,8 +3817,8 @@ void InfantryClass::Movement_AI() {
         **	again.
         */
         if (base::At(Path, 0) != game::FACING_NONE &&
-            Can_Enter_Cell(Adjacent_Cell(Cell::Containing(Center_Coord()),
-                                         base::At(Path, 0))) != game::MOVE_OK) {
+            Can_Enter_Cell(AdjacentCell(Cell::Containing(Center_Coord()),
+                                        base::At(Path, 0))) != game::MOVE_OK) {
           base::At(Path, 0) = game::FACING_NONE;
         }
 
@@ -3910,7 +3910,7 @@ void InfantryClass::Movement_AI() {
         **	Determine the coordinate to head to based on the infantry's
         **	current location and the next location in the path.
         */
-        Coordinate acoord = Adjacent_Cell(Coord, base::At(Path, 0));
+        Coordinate acoord = AdjacentCell(Coord, base::At(Path, 0));
         const Cell acell = Cell::Containing(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {

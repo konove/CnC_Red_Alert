@@ -1066,14 +1066,14 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       std::string_view(szMessage).contains("<<dying>>") ||
       std::string_view(szMessage).contains("<<groan>>") ||
       std::string_view(szMessage).contains("<<died>>")) {
-    const int i = Sim_Random_Pick(0, 29);
+    const int i = LocalRandomPick(0, 29);
     if (i == 0) {
       PlaySoundEffect(VOC_DOG_HURT);
     } else if (i == 1) {
       PlaySoundEffect(VOC_ANTDIE);
     } else {
       PlaySoundEffect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
-                                        Sim_Random_Pick(0, 8)));
+                                           LocalRandomPick(0, 8)));
     }
   } else if (std::string_view(szMessage).contains("<<whines>>") ||
              std::string_view(szMessage).contains("<<whining>>") ||
@@ -1084,7 +1084,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<shooting>>") ||
              std::string_view(szMessage).contains("<<shoot>>") ||
              std::string_view(szMessage).contains("<<shot>>")) {
-    switch (Sim_Random_Pick(0, 5)) {
+    switch (LocalRandomPick(0, 5)) {
       case 0:
         PlaySoundEffect(VOC_CANNON1);
         break;
@@ -1112,7 +1112,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<exploded>>") ||
              std::string_view(szMessage).contains("<<boom>>") ||
              std::string_view(szMessage).contains("<<nukes>>")) {
-    switch (Sim_Random_Pick(0, 4)) {
+    switch (LocalRandomPick(0, 4)) {
       case 0:
         PlaySoundEffect(VOC_KABOOM1);
         break;
@@ -1135,7 +1135,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<ok>>") ||
              std::string_view(szMessage).contains("<<yes>>") ||
              std::string_view(szMessage).contains("<<yeah>>")) {
-    switch (Sim_Random_Pick(0, 7)) {
+    switch (LocalRandomPick(0, 7)) {
       case 0:
         PlaySoundEffect(VOC_E_AH);
         break;
@@ -1170,7 +1170,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   } else if (std::string_view(szMessage).contains("<<coming>>") ||
              std::string_view(szMessage).contains("<<on my way>>") ||
              std::string_view(szMessage).contains("<<moving out>>")) {
-    switch (Sim_Random_Pick(0, 4)) {
+    switch (LocalRandomPick(0, 4)) {
       case 0:
         PlaySoundEffect(VOC_SPY_ONWAY);
         break;
@@ -1227,7 +1227,7 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<heals>>")) {
     PlaySoundEffect(VOC_HEAL);
   } else if (std::string_view(szMessage).contains("<<missile>>")) {
-    switch (Sim_Random_Pick(0, 2)) {
+    switch (LocalRandomPick(0, 2)) {
       case 0:
         PlaySoundEffect(VOC_MISSILE_1);
         break;
@@ -1413,7 +1413,7 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
                                .c_str(),
                            WOLCOLORREMAP_KICKORBAN);
     }
-    switch (Sim_Random_Pick(0, 3)) {
+    switch (LocalRandomPick(0, 3)) {
       case 0:
         PlaySoundEffect(VOC_TANYA_CHEW);
         break;

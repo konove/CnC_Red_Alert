@@ -455,7 +455,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
  *=============================================================================================*/
 int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) const {
-  return Process(Text_String(msg), b1txt, b2txt, b3txt, preserve);
+  return Process(TextString(msg), b1txt, b2txt, b3txt, preserve);
 }
 
 /***********************************************************************************************
@@ -480,8 +480,8 @@ int WWMessageBox::Process(int msg, int b1txt, int b2txt, int b3txt,
  *=============================================================================================*/
 int WWMessageBox::Process(const char* msg, int b1txt, int b2txt, int b3txt,
                           bool preserve) const {
-  return Process(msg, Text_String(b1txt), Text_String(b2txt),
-                 Text_String(b3txt), preserve);
+  return Process(msg, TextString(b1txt), TextString(b2txt), TextString(b3txt),
+                 preserve);
 }
 
 }  // namespace ra

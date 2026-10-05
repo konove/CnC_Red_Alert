@@ -27,7 +27,7 @@ void UiSkin::Draw_Shape(PixelView& view, std::span<const std::byte> shapes,
                 engine::gfx::ShapeFlags::kNone);
 }
 
-const char* UiSkin::Text_String(const int id) { return ra::Text_String(id); }
+const char* UiSkin::Text_String(const int id) { return ra::TextString(id); }
 
 int UiSkin::Text_Width(const Font font, const PrintFlags flags,
                        const char* text) {

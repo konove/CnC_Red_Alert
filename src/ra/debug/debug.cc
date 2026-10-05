@@ -161,7 +161,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_GRAVE: {
-        const WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
+        const WarheadType warhead = RandomPick(WARHEAD_HE, WARHEAD_FIRE);
         const Coordinate coord =
             TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         const int damage = 1000;

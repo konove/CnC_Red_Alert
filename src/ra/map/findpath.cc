@@ -254,7 +254,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::FacingType& dir,
   ** Walk back to the actual cell before we advanced our position
   */
   game::FacingType curr_dir = dir;
-  Cell curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
+  Cell curr_pos = AdjacentCell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
   int list = idx - 1;
   bool last_was_line = false;
@@ -301,7 +301,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::FacingType& dir,
     ** Adjust to the next list position and direction.
     */
     curr_dir = base::At(path->Command, base::ToSize(list--));
-    curr_pos = Adjacent_Cell(curr_pos, Opposite(curr_dir));
+    curr_pos = AdjacentCell(curr_pos, Opposite(curr_dir));
     idx--;
   }
 
@@ -348,7 +348,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::FacingType dir,
 
     if (base::At(path->Command, base::ToSize(path->Length - 1)) ==
         Opposite(dir)) {
-      const Cell pos = Adjacent_Cell(cell, Opposite(dir));
+      const Cell pos = AdjacentCell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
     } else {
@@ -378,7 +378,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::FacingType dir,
 
       if (pos != cell) {
         while (idx < path->Length) {
-          pos = Adjacent_Cell(pos, base::At(path->Command, list));
+          pos = AdjacentCell(pos, base::At(path->Command, list));
           if (pos == cell) {
             idx++;
             list++;
@@ -397,7 +397,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::FacingType dir,
       ** then.
       */
       while (idx < path->Length) {
-        pos = Adjacent_Cell(pos, base::At(path->Command, list));
+        pos = AdjacentCell(pos, base::At(path->Command, list));
         path->Cost -=
             Passable_Cell(pos, base::At(path->Command, list), -1, threshhold);
         Clear_Overlap(path, pos);
@@ -543,7 +543,7 @@ PathType* FootClass::Find_Path(Cell dest,
     */
     const game::FacingType direction =
         CELL_FACING(startcell, dest);  // Working direction of look ahead.
-    Cell next = Adjacent_Cell(startcell, direction);  // Next cell to enter
+    Cell next = AdjacentCell(startcell, direction);  // Next cell to enter
 
     /*
     **	If we can move here, then make this our next move.
@@ -580,7 +580,7 @@ PathType* FootClass::Find_Path(Cell dest,
           **	Move one step closer toward destination.
           */
           newdir = CELL_FACING(next, dest);
-          next = Adjacent_Cell(next, newdir);
+          next = AdjacentCell(next, newdir);
 
           /*
           ** If the cell is passable then we have been completely
@@ -703,7 +703,7 @@ PathType* FootClass::Find_Path(Cell dest,
           }
 
           newdir = CELL_FACING(next, dest);
-          next = Adjacent_Cell(next, newdir);
+          next = AdjacentCell(next, newdir);
         } while (Passable_Cell(next, newdir, threat, threshhold));
       }
 
@@ -863,7 +863,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
       if (static_cast<int>(newdir) % 2 != 0) {
         // int	x,y;
 
-        Cell checkcell = Adjacent_Cell(
+        Cell checkcell = AdjacentCell(
             oldcell,
             Next_Direction(newdir, search));  // Non-diagonal check cell.
 
@@ -881,7 +881,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
             **	scanning will terminate later.
             */
             newdir = Next_Direction(newdir, search);
-            newcell = Adjacent_Cell(oldcell, newdir);
+            newcell = AdjacentCell(oldcell, newdir);
             break;
           }
         }
@@ -898,7 +898,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
         **      the value that just happened to be in checkcell.
         */
 
-        checkcell = Adjacent_Cell(oldcell, newdir);
+        checkcell = AdjacentCell(oldcell, newdir);
 
         const int checkx = checkcell.x();
         const int checky = checkcell.y();
@@ -935,7 +935,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
       /*
       **	Get the new cell.
       */
-      newcell = Adjacent_Cell(oldcell, newdir);
+      newcell = AdjacentCell(oldcell, newdir);
 
       /*
       **	If we found a passable position, this is where we should move.
@@ -1185,13 +1185,13 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
           **	the path isn't any shorter.
           */
           if (std::abs(static_cast<int>(newcmd)) == 1) {
-            if (Passable_Cell(Adjacent_Cell(cell, newdir), newdir, -1,
+            if (Passable_Cell(AdjacentCell(cell, newdir), newdir, -1,
                               threshhold)) {
               base::At(path->Command, cmd2) = newdir;
               base::At(path->Command, cmd1) = newdir;
             }
             // BOB 16.12.92
-            cell = Adjacent_Cell(cell, base::At(path->Command, cmd1));
+            cell = AdjacentCell(cell, base::At(path->Command, cmd1));
             cmd2++;
             continue;
           }
@@ -1213,7 +1213,7 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
           cmd1--;
         }
         if (base::At(path->Command, cmd1) != kEmptyCommand) {
-          cell = Adjacent_Cell(
+          cell = AdjacentCell(
               cell,
               Next_Direction(base::At(path->Command, cmd1), game::FACING_S));
         } else {
@@ -1226,7 +1226,7 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
       **	Since we could not make an optimization, we move our
       **	head pointer forward.
       */
-      cell = Adjacent_Cell(cell, base::At(path->Command, cmd1));
+      cell = AdjacentCell(cell, base::At(path->Command, cmd1));
       cmd2++;
     }
   }
@@ -1241,7 +1241,7 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
   path->Length = 0;
   while (base::At(path->Command, cmd2) != END) {
     if (base::At(path->Command, cmd2) != kEmptyCommand) {
-      cell = Adjacent_Cell(cell, base::At(path->Command, cmd2));
+      cell = AdjacentCell(cell, base::At(path->Command, cmd2));
       path->Cost +=
           Passable_Cell(cell, base::At(path->Command, cmd2), -1, threshhold);
       path->Length++;
@@ -1268,7 +1268,7 @@ Cell FootClass::Safety_Point(Cell src, Cell dst, int start, int max) const {
     Cell next = dst;
 
     for (int lp = 0; lp < dist; lp++) {
-      next = Adjacent_Cell(next, dir);
+      next = AdjacentCell(next, dir);
     }
 
     if (static_cast<int>(dir) % 2 != 0) {
@@ -1278,7 +1278,7 @@ Cell FootClass::Safety_Point(Cell src, Cell dst, int start, int max) const {
       ** together.
       */
       for (int lp = 0; lp < dist * 2; lp++) {
-        next = Adjacent_Cell(next, dir + 3);
+        next = AdjacentCell(next, dir + 3);
         if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }
@@ -1289,14 +1289,14 @@ Cell FootClass::Safety_Point(Cell src, Cell dst, int start, int max) const {
       ** sides so that we are checking a corner like location.
       */
       for (int lp = 0; lp < dist; lp++) {
-        next = Adjacent_Cell(next, dir + 2);
+        next = AdjacentCell(next, dir + 2);
         if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }
       }
 
       for (int lp = 0; lp < dist; lp++) {
-        next = Adjacent_Cell(next, dir + 4);
+        next = AdjacentCell(next, dir + 4);
         if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }

@@ -108,7 +108,7 @@ Coordinate Coord_Move(const Coordinate start, const game::DirType facing,
 Coordinate Coord_Scatter(const Coordinate coord, const int distance,
                          const bool lock) {
   Coordinate result =
-      Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
+      Coord_Move(coord, RandomPick(game::DIR_N, kMaxRandomDirection),
                  static_cast<uint16_t>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.

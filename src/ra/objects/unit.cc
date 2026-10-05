@@ -1063,7 +1063,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     Mark(MARK_UP);
 
     if (Class->IsCrew && Class->Max_Passengers() == 0) {
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         InfantryClass* i = nullptr;
 
         if (Class->PrimaryWeapon == nullptr) {
@@ -1077,7 +1077,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
         if (i != nullptr) {
           if (i->Unlimbo(Coord, game::DIR_N)) {
             i->Strength = static_cast<int16_t>(
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
+                RandomPick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(Coordinate{}, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
@@ -1139,8 +1139,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached) {
       if (*this != UNIT_ANT1 && *this != UNIT_ANT2 && *this != UNIT_ANT3) {
-        auto* anim =
-            base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + XYP_Coord(0, -8));
+        auto* anim = base::NewPooled<AnimClass>(ANIM_SMOKE_M,
+                                                Coord + CoordFromPixels(0, -8));
         if (anim) {
           anim->Attach_To(this);
         }
@@ -1425,7 +1425,7 @@ bool UnitClass::Goto_Clear_Spot() {
 
   Mark(MARK_UP);
   if (!NavCom && BuildingTypeClass::As_Reference(STRUCT_CONST)
-                     .Legal_Placement(Adjacent_Cell(
+                     .Legal_Placement(AdjacentCell(
                          Cell::Containing(Center_Coord()), game::FACING_NW))) {
     Mark(MARK_DOWN);
     return true;
@@ -1457,7 +1457,7 @@ bool UnitClass::Goto_Clear_Spot() {
     std::span<const int> ptr(_offsets);
     while (ptr.front()) {
       const Cell cell = Cell::Containing(Coord).Offset(base::ConsumeFront(ptr));
-      const Cell check_cell = Adjacent_Cell(cell, game::FACING_NW);
+      const Cell check_cell = AdjacentCell(cell, game::FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
         Assign_Destination(Target::FromCell(cell));
@@ -1510,7 +1510,7 @@ bool UnitClass::Try_To_Deploy() {
       */
       Mark(MARK_UP);
       const Cell cell =
-          Cell::Containing(Adjacent_Cell(Center_Coord(), game::FACING_NW));
+          Cell::Containing(AdjacentCell(Center_Coord(), game::FACING_NW));
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(cell)) {
         if (ThePlayer() == House) {
@@ -1548,7 +1548,7 @@ bool UnitClass::Try_To_Deploy() {
       auto* building =
           base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building != nullptr) {
-        if (building->Unlimbo(Adjacent_Cell(Coord, game::FACING_NW))) {
+        if (building->Unlimbo(AdjacentCell(Coord, game::FACING_NW))) {
           /*
           **	Play the buildup sound for the player if this is the players
           **	MCV.
@@ -2497,7 +2497,7 @@ int UnitClass::Mission_Unload() {
                    magic_enum::enum_values<game::FacingType>()) {
                 const game::DirType newface = toface + game::Facing_Dir(face);
                 const Cell newcell =
-                    Adjacent_Cell(Cell::Containing(Coord), newface);
+                    AdjacentCell(Cell::Containing(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
@@ -2581,7 +2581,7 @@ int UnitClass::Mission_Unload() {
                    magic_enum::enum_values<game::FacingType>()) {
                 const game::DirType newface = toface + game::Facing_Dir(face);
                 const Cell newcell =
-                    Adjacent_Cell(Cell::Containing(Coord), newface);
+                    AdjacentCell(Cell::Containing(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
@@ -2762,8 +2762,7 @@ int UnitClass::Mission_Unload() {
           for (const game::FacingType face :
                magic_enum::enum_values<game::FacingType>()) {
             const game::DirType newface = toface + game::Facing_Dir(face);
-            const Cell newcell =
-                Adjacent_Cell(Cell::Containing(Coord), newface);
+            const Cell newcell = AdjacentCell(Cell::Containing(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == game::MOVE_OK) {
               TheWorld().scenario_init()++;
               crew->Unlimbo(Coord_Move(Coord, newface, 0x0080), newface);
@@ -2829,7 +2828,7 @@ int UnitClass::Mission_Unload() {
       break;
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3032,7 +3031,7 @@ int UnitClass::Mission_Harvest() {
       break;
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3088,7 +3087,7 @@ int UnitClass::Mission_Hunt() {
     return DriveClass::Mission_Hunt();
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3513,7 +3512,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(Cell::Containing(
-                   Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
+                   AdjacentCell(Center_Coord(), game::FACING_NW)))) {
         action = ACTION_NO_DEPLOY;
       }
       Mark(MARK_DOWN);
@@ -3753,14 +3752,14 @@ int UnitClass::Mission_Guard() {
       House->Get_Quantity(STRUCT_REFINERY) > 0 && !House->IsTiberiumShort) {
     Assign_Mission(MISSION_HARVEST);
     return 1;
-    //		return(MissionControl[Mission].Normal_Delay() + Random_Pick(0,
+    //		return(MissionControl[Mission].Normal_Delay() + RandomPick(0,
     // 2));
   }
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
     Assign_Mission(MISSION_UNLOAD);
     return TheRules().mission_control().at(Mission).Normal_Delay() +
-           Random_Pick(0, 2);
+           RandomPick(0, 2);
   }
   return DriveClass::Mission_Guard();
 }
@@ -3842,7 +3841,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
-    const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
+    const Cell cellnum = AdjacentCell(Cell::Containing(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -3905,7 +3904,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                               game::DIR_NW, game::DIR_NE, game::DIR_NE,
                               game::DIR_NE, game::DIR_SE};
 
-    moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
+    moveto = AdjacentCell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
   return game::DIR_S;
@@ -4077,7 +4076,7 @@ InfantryType UnitClass::Crew_Type() const {
   DCHECK(IsActive);
 
   if (Class->PrimaryWeapon == nullptr) {
-    if (Percent_Chance(50)) {
+    if (PercentChance(50)) {
       return INFANTRY_C1;
     }
     return INFANTRY_C7;

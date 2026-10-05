@@ -224,7 +224,7 @@ void ScoreCredsClass::Update() {
 
 ScorePrintClass::ScorePrintClass(int string, int xpos, int ypos,
                                  std::span<const uint8_t> palette)
-    : ScoreAnimClass(xpos, ypos, Text_String(string)),
+    : ScoreAnimClass(xpos, ypos, TextString(string)),
       Stage(0),
       PrimaryPalette(palette) {}
 
@@ -913,10 +913,10 @@ void ScoreClass::Print_Minutes(int minutes,
     if (minutes / 60 > 9) {
       minutes = (9 * 60) + 59;
     }
-    text = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT1), minutes / 60,
+    text = base::FormatRuntime(TextString(TXT_SCORE_TIMEFORMAT1), minutes / 60,
                                minutes % 60);
   } else {
-    text = base::FormatRuntime(Text_String(TXT_SCORE_TIMEFORMAT2), minutes);
+    text = base::FormatRuntime(TextString(TXT_SCORE_TIMEFORMAT2), minutes);
   }
   TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(), 550,
                                    18, kTBlack, kTBlack);

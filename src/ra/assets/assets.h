@@ -59,7 +59,7 @@ class Assets {
   // Nothing can print text before this runs.
   void LoadFonts();
 
-  // Reads the game's and the developer text tables. Text_String() serves
+  // Reads the game's and the developer text tables. TextString() serves
   // both.
   void LoadStrings();
 
@@ -71,7 +71,7 @@ class Assets {
     return fonts_.at(type);
   }
 
-  // The game's text table, and the developer messages that Text_String()
+  // The game's text table, and the developer messages that TextString()
   // serves under numbers from 1000 up.
   [[nodiscard]] std::span<const std::byte> system_strings() const {
     return system_strings_;

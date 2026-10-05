@@ -438,7 +438,7 @@ void Shake_The_Screen(int shakes) {
     // Never repeat the previous offset, so every tick visibly moves the screen.
     int new_y_off = 0;
     do {
-      new_y_off = Sim_Random_Pick(0, 2) - 1;
+      new_y_off = LocalRandomPick(0, 2) - 1;
     } while (new_y_off == old_y_off);
     old_y_off = new_y_off;
     switch (new_y_off) {

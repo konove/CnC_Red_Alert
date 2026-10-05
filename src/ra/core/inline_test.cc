@@ -16,8 +16,8 @@ TEST_F(InlineTest, TextStringServesEveryNameOverrideSlot) {
   overrides.front() = "First";
   overrides.back() = "Last";
 
-  EXPECT_STREQ(Text_String(-1), "First");
-  EXPECT_STREQ(Text_String(-static_cast<int>(overrides.size())), "Last");
+  EXPECT_STREQ(TextString(-1), "First");
+  EXPECT_STREQ(TextString(-static_cast<int>(overrides.size())), "Last");
 }
 
 }  // namespace

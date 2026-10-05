@@ -1156,9 +1156,9 @@ void Destroy_Connection(int id, int error) {
   std::string message;
   if (error == 1) {
     message =
-        base::FormatRuntime(Text_String(TXT_CONNECTION_LOST), housep->IniName);
+        base::FormatRuntime(TextString(TXT_CONNECTION_LOST), housep->IniName);
   } else if (error == 0) {
-    message = base::FormatRuntime(Text_String(TXT_LEFT_GAME), housep->IniName);
+    message = base::FormatRuntime(TextString(TXT_LEFT_GAME), housep->IniName);
   }
 
   if (!message.empty()) {
@@ -1189,7 +1189,7 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   housep->IsHuman = false;
   housep->IQ = TheRules().MaxIQ;
-  base::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
+  base::SafeCopy(housep->IniName, TextString(TXT_COMPUTER));
 
   TheSession().NumPlayers--;
 
@@ -1198,7 +1198,7 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   if (TheSession().NumPlayers == 1) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, Text_String(TXT_JUST_YOU_AND_ME), housep->RemapColor,
+        nullptr, 0, TextString(TXT_JUST_YOU_AND_ME), housep->RemapColor,
         kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
   }
@@ -1629,11 +1629,11 @@ static int Net_Join_Dialog() {
   optionlist.Set_Tabs(optiontabs);
   optionlist.Set_Read_Only(true);
 
-  optionlist.Add_Item(Text_String(TXT_BASES));
-  optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
-  optionlist.Add_Item(Text_String(TXT_CRATES));
-  optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
-  optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
+  optionlist.Add_Item(TextString(TXT_BASES));
+  optionlist.Add_Item(TextString(TXT_ORE_SPREADS));
+  optionlist.Add_Item(TextString(TXT_CRATES));
+  optionlist.Add_Item(TextString(TXT_CAPTURE_THE_FLAG));
+  optionlist.Add_Item(TextString(TXT_SHADOW_REGROWS));
 
   optionlist.Check_Item(0, TheRules().IsMPBasesOn);
   optionlist.Check_Item(1, TheRules().IsMPTiberiumGrow);
@@ -1653,7 +1653,7 @@ static int Net_Join_Dialog() {
 #else
   for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
     housebtn.Add_Item(
-        Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
+        TextString(HouseTypeClass::As_Reference(house).Full_Name()));
   }
   housebtn.Set_Selected_Index(static_cast<int>(TheSession().House) -
                               static_cast<int>(HOUSE_USSR));
@@ -1718,7 +1718,7 @@ static int Net_Join_Dialog() {
   who->Name[0] = '\0';
   who->Game.IsOpen = 0;
   who->Game.LastTime = 0;
-  gamelist.Add_Item(Text_String(TXT_LOBBY));
+  gamelist.Add_Item(TextString(TXT_LOBBY));
   gamelist.Set_Selected_Index(0);
   game_index = 0;
 
@@ -1809,14 +1809,14 @@ static int Net_Join_Dialog() {
           //...............................................................
 #ifdef OLDWAY
           const std::string playing = base::FormatRuntime(
-              Text_String(TXT_S_PLAYING_S), namebuf,
-              Text_String(TheSession().House == HOUSE_GOOD ? TXT_ALLIES
-                                                           : TXT_SOVIET));
+              TextString(TXT_S_PLAYING_S), namebuf,
+              TextString(TheSession().House == HOUSE_GOOD ? TXT_ALLIES
+                                                          : TXT_SOVIET));
 #else   // OLDWAY
           const std::string playing = base::FormatRuntime(
-              Text_String(TXT_S_PLAYING_S), namebuf,
-              Text_String(HouseTypeClass::As_Reference(TheSession().House)
-                              .Full_Name()));
+              TextString(TXT_S_PLAYING_S), namebuf,
+              TextString(HouseTypeClass::As_Reference(TheSession().House)
+                             .Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(
               view, playing.c_str(), d_dialog_cx, d_dialog_y + d_margin2 + 2,
@@ -1948,7 +1948,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Scenario title
         //...............................................................
-        p = Text_String(TXT_SCENARIO_COLON);
+        p = TextString(TXT_SCENARIO_COLON);
         if (TheSession().Options.ScenarioDescription[0]) {
           // EW - Scenario language translation goes here!!!!!!!! VG
           int ii = 0;
@@ -1977,11 +1977,11 @@ static int Net_Join_Dialog() {
           // Session.Options.ScenarioDescription);
         } else {
           absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                         Text_String(TXT_NOT_FOUND));
+                         TextString(TXT_NOT_FOUND));
           descrip.Set_Text(txt);
           //					Fancy_Text_Print("%s %s",
           // d_dialog_cx, d_name_y, &ColorRemaps[PCOLOR_RED], TBLACK, kTpfText |
-          // TPF_CENTER, p, Text_String(TXT_NOT_FOUND));
+          // TPF_CENTER, p, TextString(TXT_NOT_FOUND));
         }
         //...............................................................
         // Unit count, tech level, credits, ai players
@@ -2058,7 +2058,7 @@ static int Net_Join_Dialog() {
              game::TheMouse().y() >= d_options_y &&
              game::TheMouse().y() <= d_options_y + d_options_h)) {
           TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+              nullptr, 0, TextString(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
               kTextFont, kTextFlags, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -2306,7 +2306,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (std::string_view(namebuf).empty()) {
           TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_NAME_ERROR), PCOLOR_BROWN, kTextFont,
+              nullptr, 0, TextString(TXT_NAME_ERROR), PCOLOR_BROWN, kTextFont,
               kTextFlags, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -2321,7 +2321,7 @@ static int Net_Join_Dialog() {
           if (absl::EqualsIgnoreCase(TheSession().Games.at(i)->Name, namebuf)) {
             found = 1;
             TheSession().Messages.Add_Message(
-                nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
+                nullptr, 0, TextString(TXT_GAMENAME_MUSTBE_UNIQUE),
                 PCOLOR_BROWN, kTextFont, kTextFlags, 1200);
             PlaySoundEffect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
@@ -2608,15 +2608,15 @@ static int Net_Join_Dialog() {
 #ifdef OLDWAY
         if (TheSession().House == HOUSE_GOOD) {
           absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                         Text_String(TXT_ALLIES));
+                         TextString(TXT_ALLIES));
         } else {
           absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                         Text_String(TXT_SOVIET));
+                         TextString(TXT_SOVIET));
         }
 #else   // OLDWAY
         absl::SNPrintF(
             item, sizeof(item), "%s\t%s", namebuf,
-            Text_String(
+            TextString(
                 HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Add_Item(
@@ -2659,23 +2659,23 @@ static int Net_Join_Dialog() {
             kTextFont, kTextFlags, nullptr, '_', d_message2_w);
 
         TheSession().Messages.Add_Message(
-            nullptr, 0, Text_String(TXT_REQUEST_DENIED), PCOLOR_BROWN,
-            kTextFont, kTextFlags, 1200);
+            nullptr, 0, TextString(TXT_REQUEST_DENIED), PCOLOR_BROWN, kTextFont,
+            kTextFlags, 1200);
         PlaySoundEffect(VOC_SYS_ERROR);
 
         const char* message = nullptr;
         if (why == REJECT_DUPLICATE_NAME) {
-          message = Text_String(TXT_NAME_MUSTBE_UNIQUE);
+          message = TextString(TXT_NAME_MUSTBE_UNIQUE);
         } else if (why == REJECT_GAME_FULL) {
-          message = Text_String(TXT_GAME_FULL);
+          message = TextString(TXT_GAME_FULL);
         } else if (why == REJECT_VERSION_TOO_OLD) {
-          message = Text_String(TXT_YOURGAME_OUTDATED);
+          message = TextString(TXT_YOURGAME_OUTDATED);
         } else if (why == REJECT_VERSION_TOO_NEW) {
-          message = Text_String(TXT_DESTGAME_OUTDATED);
+          message = TextString(TXT_DESTGAME_OUTDATED);
         } else if (why == REJECT_MISMATCH) {
-          message = Text_String(TXT_MISMATCH);
+          message = TextString(TXT_MISMATCH);
         } else if (why == REJECT_DISBANDED) {
-          message = Text_String(TXT_GAME_CANCELLED);
+          message = TextString(TXT_GAME_CANCELLED);
         }
         if (message) {
           TheSession().Messages.Add_Message(nullptr, 0, message, PCOLOR_BROWN,
@@ -3059,7 +3059,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   if (join_index < 1) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, Text_String(TXT_MUST_SELECT_GAME), PCOLOR_BROWN, kTextFont,
+        nullptr, 0, TextString(TXT_MUST_SELECT_GAME), PCOLOR_BROWN, kTextFont,
         kTextFlags, 1200);
     PlaySoundEffect(VOC_SYS_ERROR);
     return false;
@@ -3067,7 +3067,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   if (TheSession().Games.Count() <= 1 ||
       join_index > TheSession().Games.Count()) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, Text_String(TXT_NOTHING_TO_JOIN), PCOLOR_BROWN, kTextFont,
+        nullptr, 0, TextString(TXT_NOTHING_TO_JOIN), PCOLOR_BROWN, kTextFont,
         kTextFlags, 1200);
     PlaySoundEffect(VOC_SYS_ERROR);
     return false;
@@ -3077,7 +3077,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //	Force user to enter a name
   //------------------------------------------------------------------------
   if (std::string_view(playername).empty()) {
-    TheSession().Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
+    TheSession().Messages.Add_Message(nullptr, 0, TextString(TXT_NAME_ERROR),
                                       PCOLOR_BROWN, kTextFont, kTextFlags,
                                       1200);
     PlaySoundEffect(VOC_SYS_ERROR);
@@ -3089,7 +3089,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   //------------------------------------------------------------------------
   if (!TheSession().Games.at(join_index)->Game.IsOpen) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, Text_String(TXT_GAME_IS_CLOSED), PCOLOR_BROWN, kTextFont,
+        nullptr, 0, TextString(TXT_GAME_IS_CLOSED), PCOLOR_BROWN, kTextFont,
         kTextFlags, 1200);
     PlaySoundEffect(VOC_SYS_ERROR);
     return false;
@@ -3461,12 +3461,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
             engine::platform::SystemTicks();
         if (TheSession().Games.at(i)->Game.IsOpen !=
             TheSession().GPacket.GameInfo.IsOpen) {
-          gamelist->Set_Item(
-              i, base::FormatRuntime(
-                     Text_String(TheSession().GPacket.GameInfo.IsOpen
-                                     ? TXT_THATGUYS_GAME
-                                     : TXT_THATGUYS_GAME_BRACKET),
-                     TheSession().GPacket.Name));
+          gamelist->Set_Item(i,
+                             base::FormatRuntime(
+                                 TextString(TheSession().GPacket.GameInfo.IsOpen
+                                                ? TXT_THATGUYS_GAME
+                                                : TXT_THATGUYS_GAME_BRACKET),
+                                 TheSession().GPacket.Name));
           TheSession().Games.at(i)->Game.IsOpen =
               TheSession().GPacket.GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
@@ -3488,12 +3488,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
             std::string message;
             if (TheSession().Games.at(i)->Game.IsOpen) {
               message = base::FormatRuntime(
-                  Text_String(TXT_S_FORMED_NEW_GAME),
+                  TextString(TXT_S_FORMED_NEW_GAME),
                   TheSession().Games.at(TheSession().Games.Count() - 1)->Name);
               PlaySoundEffect(VOC_GAME_FORMING);
             } else {
               message = base::FormatRuntime(
-                  Text_String(TXT_GAME_NOW_IN_PROGRESS),
+                  TextString(TXT_GAME_NOW_IN_PROGRESS),
                   TheSession().Games.at(TheSession().Games.Count() - 1)->Name);
               PlaySoundEffect(VOC_GAME_CLOSED);
             }
@@ -3525,9 +3525,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // around 	the string if it's a closed game
       //..................................................................
       gamelist->Add_Item(
-          base::FormatRuntime(Text_String(TheSession().GPacket.GameInfo.IsOpen
-                                              ? TXT_THATGUYS_GAME
-                                              : TXT_THATGUYS_GAME_BRACKET),
+          base::FormatRuntime(TextString(TheSession().GPacket.GameInfo.IsOpen
+                                             ? TXT_THATGUYS_GAME
+                                             : TXT_THATGUYS_GAME_BRACKET),
                               TheSession().GPacket.Name)
               .c_str());
 
@@ -3547,7 +3547,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       if (TheSession().GPacket.GameInfo.IsOpen && *joinstate < JOIN_CONFIRMED) {
         const std::string message = base::FormatRuntime(
-            Text_String(TXT_S_FORMED_NEW_GAME), TheSession().GPacket.Name);
+            TextString(TXT_S_FORMED_NEW_GAME), TheSession().GPacket.Name);
         TheSession().Messages.Add_Message(nullptr, 0, message.c_str(),
                                           PCOLOR_BROWN, kTextFont, kTextFlags,
                                           1200);
@@ -3634,16 +3634,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 #ifdef OLDWAY
       if (TheSession().GPacket.PlayerInfo.House == HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                       Text_String(TXT_ALLIES));
+                       TextString(TXT_ALLIES));
       } else {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                       Text_String(TXT_SOVIET));
+                       TextString(TXT_SOVIET));
       }
 #else   // OLDWAY
       absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                     Text_String(HouseTypeClass::As_Reference(
-                                     TheSession().GPacket.PlayerInfo.House)
-                                     .Full_Name()));
+                     TextString(HouseTypeClass::As_Reference(
+                                    TheSession().GPacket.PlayerInfo.House)
+                                    .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
           item, who->Player.Color == PCOLOR_DIALOG_BLUE
@@ -4298,11 +4298,11 @@ static int Net_New_Dialog() {
   optionlist.Set_Tabs(optiontabs);
   optionlist.Set_Read_Only(false);
 
-  optionlist.Add_Item(Text_String(TXT_BASES));
-  optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
-  optionlist.Add_Item(Text_String(TXT_CRATES));
-  optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
-  optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
+  optionlist.Add_Item(TextString(TXT_BASES));
+  optionlist.Add_Item(TextString(TXT_ORE_SPREADS));
+  optionlist.Add_Item(TextString(TXT_CRATES));
+  optionlist.Add_Item(TextString(TXT_CAPTURE_THE_FLAG));
+  optionlist.Add_Item(TextString(TXT_SHADOW_REGROWS));
 
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
@@ -4417,16 +4417,15 @@ static int Net_New_Dialog() {
 #ifdef OLDWAY
   if (TheSession().House == HOUSE_GOOD) {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().Handle,
-                   Text_String(TXT_ALLIES));
+                   TextString(TXT_ALLIES));
   } else {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().Handle,
-                   Text_String(TXT_SOVIET));
+                   TextString(TXT_SOVIET));
   }
 #else   // OLDWAY
   absl::SNPrintF(
       item, sizeof(item), "%s\t%s", TheSession().Handle,
-      Text_String(
-          HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
+      TextString(HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
   playerlist.Add_Item(
       item, TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
@@ -4614,7 +4613,7 @@ static int Net_New_Dialog() {
 
         if (index == 0) {
           TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_CANT_REJECT_SELF), PCOLOR_BROWN,
+              nullptr, 0, TextString(TXT_CANT_REJECT_SELF), PCOLOR_BROWN,
               kTextFont, kTextFlags, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4622,7 +4621,7 @@ static int Net_New_Dialog() {
         }
         if (index < 0 || index >= playerlist.Count()) {
           TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_SELECT_PLAYER_REJECT), PCOLOR_BROWN,
+              nullptr, 0, TextString(TXT_SELECT_PLAYER_REJECT), PCOLOR_BROWN,
               kTextFont, kTextFlags, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -4771,7 +4770,7 @@ static int Net_New_Dialog() {
           process = false;
         } else {
           TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_ONLY_ONE), PCOLOR_BROWN, kTextFont,
+              nullptr, 0, TextString(TXT_ONLY_ONE), PCOLOR_BROWN, kTextFont,
               kTextFlags, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
@@ -5482,16 +5481,16 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
 #ifdef OLDWAY
       if (TheSession().GPacket.PlayerInfo.House == HOUSE_GOOD) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                       Text_String(TXT_ALLIES));
+                       TextString(TXT_ALLIES));
       } else {
         absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                       Text_String(TXT_SOVIET));
+                       TextString(TXT_SOVIET));
       }
 #else   // OLDWAY
       absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().GPacket.Name,
-                     Text_String(HouseTypeClass::As_Reference(
-                                     TheSession().GPacket.PlayerInfo.House)
-                                     .Full_Name()));
+                     TextString(HouseTypeClass::As_Reference(
+                                    TheSession().GPacket.PlayerInfo.House)
+                                    .Full_Name()));
 #endif  // OLDWAY
       playerlist->Add_Item(
           item, who->Player.Color == PCOLOR_DIALOG_BLUE
@@ -5666,10 +5665,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
         if (reconn) {
           const int id = TheNetwork().ipx().Connection_ID(oldest_index);
-          status = base::FormatRuntime(Text_String(TXT_RECONNECTING_TO),
+          status = base::FormatRuntime(TextString(TXT_RECONNECTING_TO),
                                        TheNetwork().ipx().Connection_Name(id));
         } else {
-          status = Text_String(TXT_WAITING_FOR_CONNECTIONS);
+          status = TextString(TXT_WAITING_FOR_CONNECTIONS);
         }
         break;
       case GameType::GAME_NORMAL:
@@ -5679,8 +5678,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     }
 
     const std::string time_allowed =
-        base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
-    const char* buf3 = Text_String(TXT_PRESS_ESC);
+        base::FormatRuntime(TextString(TXT_TIME_ALLOWED), timeval + 1);
+    const char* buf3 = TextString(TXT_PRESS_ESC);
 
     w = std::max(StringPixelWidth(font, status.c_str()),
                  StringPixelWidth(font, time_allowed.c_str()));
@@ -5730,7 +5729,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     game::TheMouse().Hide();
 
     const std::string time_allowed =
-        base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
+        base::FormatRuntime(TextString(TXT_TIME_ALLOWED), timeval + 1);
     const int time_width = StringPixelWidth(font, time_allowed.c_str());
 
     const int fillx = 320 - (time_width / 2) - 6;
@@ -7279,16 +7278,15 @@ void Start_WWChat(ColorListClass* playerlist) {
 #ifdef OLDWAY
   if (TheSession().House == HOUSE_GOOD) {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().Handle,
-                   Text_String(TXT_ALLIES));
+                   TextString(TXT_ALLIES));
   } else {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().Handle,
-                   Text_String(TXT_SOVIET));
+                   TextString(TXT_SOVIET));
   }
 #else   // OLDWAY
   absl::SNPrintF(
       item, sizeof(item), "%s\t%s", TheSession().Handle,
-      Text_String(
-          HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
+      TextString(HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
   playerlist->Add_Item(
       item, TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
@@ -7305,19 +7303,19 @@ void Start_WWChat(ColorListClass* playerlist) {
     //.....................................................................
     if (i == 0 || std::string_view(base::At(WWPersons, i).Name) !=
                       base::At(WWPersons, i - 1).Name) {
-      base::At(WWPersons, i).Color = static_cast<PlayerColorType>(Random_Pick(
+      base::At(WWPersons, i).Color = static_cast<PlayerColorType>(RandomPick(
           0,
           static_cast<int>(magic_enum::enum_values<PlayerColorType>().back()) -
               1));
-      const HousesType house = Percent_Chance(50) ? HOUSE_GREECE : HOUSE_USSR;
+      const HousesType house = PercentChance(50) ? HOUSE_GREECE : HOUSE_USSR;
       //			house =
-      //(HousesType)Random_Pick((int)HOUSE_GOOD,(int)HOUSE_BAD);
+      //(HousesType)RandomPick((int)HOUSE_GOOD,(int)HOUSE_BAD);
       if (!IsSovietHouse(house)) {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
-                       base::At(WWPersons, i).Name, Text_String(TXT_ALLIES));
+                       base::At(WWPersons, i).Name, TextString(TXT_ALLIES));
       } else {
         absl::SNPrintF(item, sizeof(item), "%s\t%s",
-                       base::At(WWPersons, i).Name, Text_String(TXT_SOVIET));
+                       base::At(WWPersons, i).Name, TextString(TXT_SOVIET));
       }
       playerlist->Add_Item(
           item,
@@ -7334,7 +7332,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   }
 
   // wwperson_timer = 240;
-  wwperson_timer.Set(Random_Pick(90, 360));
+  wwperson_timer.Set(RandomPick(90, 360));
 
 }  // end of Start_WWChat
 
@@ -7348,13 +7346,13 @@ int Update_WWChat() {
   }
 
   // wwperson_timer = 240;
-  wwperson_timer.Set(Random_Pick(90, 360));
+  wwperson_timer.Set(RandomPick(90, 360));
 
   //------------------------------------------------------------------------
   // Even after the timer's gone off, there's only a 1/8 chance we'll
   // print a message.
   //------------------------------------------------------------------------
-  if (Percent_Chance(12)) {
+  if (PercentChance(12)) {
     return 0;
   }
 
@@ -7363,7 +7361,7 @@ int Update_WWChat() {
   // hasn't been recently displayed.
   //------------------------------------------------------------------------
   const int j = sizeof(WWPersons) / sizeof(struct WWPerson);
-  const int i = Random_Pick(0, j - 1);
+  const int i = RandomPick(0, j - 1);
   if (engine::platform::SystemTicks() - base::At(WWPersons, i).LastTime <
           1800 &&
       base::At(WWPersons, i).LastTime != 0) {

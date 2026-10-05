@@ -74,7 +74,7 @@ namespace {
 // game shipped spells TXT_BRIGHTNESS "BRIGHTNESS:" beside "Color:",
 // "Contrast:" and "Tint:"; a translated table passes through unchanged.
 const char* SliderTitle(const int text_id) {
-  const char* const text = Text_String(text_id);
+  const char* const text = TextString(text_id);
   if (std::string_view(text) == "BRIGHTNESS:") {
     return "Brightness:";
   }

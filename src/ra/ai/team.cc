@@ -604,7 +604,7 @@ void TeamClass::AI() {
     **	a gesture at random.
     */
     FootClass* techno = Member;
-    const DoType doaction = Percent_Chance(50) ? DO_GESTURE1 : DO_GESTURE2;
+    const DoType doaction = PercentChance(50) ? DO_GESTURE1 : DO_GESTURE2;
     while (techno) {
       if (Is_It_Breathing(techno) && techno->What_Am_I() == RTTI_INFANTRY) {
         dynamic_cast<InfantryClass*>(techno)->Do_Action(doaction);

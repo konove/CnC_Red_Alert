@@ -439,7 +439,7 @@ int MapEditClass::Placement_Dialog() {
 
       /*
       **	Print the object's label from the class's Full_Name().
-      **	Warning: Text_String returns an EMS pointer, so standard string
+      **	Warning: TextString returns an EMS pointer, so standard string
       **	functions won't work!
       */
       Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,

@@ -320,7 +320,7 @@ void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
     Width = StringPixelWidth(TextFontStyle(FontType::kMap, TPF_NOSHADOW),
-                             Text_String(Text));
+                             TextString(Text));
     if (IsRight) {
       DrawX = X - Width;
       DrawY = Y;
@@ -339,7 +339,7 @@ void HelpClass::Set_Text(int text) {
       DrawX = std::max(DrawX, TacPixelX + 1);
       DrawY = std::max(DrawY, TacPixelY + 1);
     }
-    List_Copy(Text_Overlap_List(Text_String(Text), DrawX - 1, DrawY),
+    List_Copy(Text_Overlap_List(TextString(Text), DrawX - 1, DrawY),
               std::ssize(OverlapList), OverlapList);
     std::span(OverlapList).back() = kRefreshEol;
   }

@@ -192,7 +192,7 @@ BulletClass::~BulletClass() {
         */
         for (int i = -1; i < 8; i++) {
           if (i != -1) {
-            newcoord = Adjacent_Cell(Coord, static_cast<game::FacingType>(i));
+            newcoord = AdjacentCell(Coord, static_cast<game::FacingType>(i));
           }
           TheWorld().scenario_init()++;
           if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {
@@ -741,14 +741,14 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
         scatterdist = std::max(scatterdist, 0);
 
         dir =
-            game::AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
-        tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
+            game::AsDirection(static_cast<int>(dir) + (RandomPick(0, 10) - 5));
+        tcoord = Coord_Scatter(tcoord, RandomPick(0, scatterdist));
       } else {
         int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist = std::min(scatterdist, TheRules().BallisticScatter);
         scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir,
-                            static_cast<uint16_t>(Random_Pick(0, scatterdist)));
+                            static_cast<uint16_t>(RandomPick(0, scatterdist)));
       }
     }
 

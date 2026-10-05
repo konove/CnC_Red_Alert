@@ -599,7 +599,7 @@ void EventClass::Execute() {
       // The format string comes from the localized string table, so verify the
       // translation still takes exactly one %s before using it.
       const auto format =
-          absl::ParsedFormat<'s'>::New(Text_String(TXT_SPECIAL_WARNING));
+          absl::ParsedFormat<'s'>::New(TextString(TXT_SPECIAL_WARNING));
       if (format != nullptr) {
         const std::string message = absl::StrFormat(*format, house->Name());
         TheSession().Messages.Add_Message(
@@ -964,7 +964,7 @@ void EventClass::Execute() {
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 
-        Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, TextString(TXT_MULTIPLAYER_GAME));
 
         while (timer.HasTimeLeft()) {
           ServiceRealTime();
@@ -974,7 +974,7 @@ void EventClass::Execute() {
         TheMap().Flag_To_Redraw(true);
         TheMap().Render();
       } else {
-        Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+        Save_Game(-1, TextString(TXT_MULTIPLAYER_GAME));
       }
       break;
 

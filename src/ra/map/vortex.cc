@@ -199,8 +199,8 @@ void ChronalVortexClass::Appear(Coordinate coordinate) {
   /*
   ** Vortex starts off in a random direction.
   */
-  DesiredXDir = Random_Pick(-Speed, Speed);
-  DesiredYDir = Random_Pick(-Speed, Speed);
+  DesiredXDir = RandomPick(-Speed, Speed);
+  DesiredYDir = RandomPick(-Speed, Speed);
 }
 
 /***********************************************************************************************
@@ -366,7 +366,7 @@ void ChronalVortexClass::AI() {
       ** Vortex is hidden. Chance of it showing itself increases the longer its
       *stays hidden.
       */
-      const int chance = Random_Pick(0, 2000);
+      const int chance = RandomPick(0, 2000);
       if (chance <= game::CurrentFrame() - HiddenFrame) {
         Show();
       }
@@ -408,7 +408,7 @@ void ChronalVortexClass::AI() {
                 StartHiding = false;
                 Hidden = true;
                 HiddenFrame = static_cast<int>(game::CurrentFrame());
-                if (Random_Pick(0, 4) == 4) {
+                if (RandomPick(0, 4) == 4) {
                   Disappear();
                 }
               } else {
@@ -534,9 +534,9 @@ void ChronalVortexClass::Movement() {
   /*
   ** Occasionally change the direction of the vortex.
   */
-  if (newpick && Random_Pick(0, 100) == 100) {
-    DesiredXDir = Random_Pick(-Speed, Speed);
-    DesiredYDir = Random_Pick(-Speed, Speed);
+  if (newpick && RandomPick(0, 100) == 100) {
+    DesiredXDir = RandomPick(-Speed, Speed);
+    DesiredYDir = RandomPick(-Speed, Speed);
   }
 }
 
@@ -631,7 +631,7 @@ void ChronalVortexClass::Attack() {
   *distance from the vortex.
   */
 
-  int chance = Random_Pick(0, 1000);
+  int chance = RandomPick(0, 1000);
   if (chance > game::CurrentFrame() - LastAttackFrame) {
     return;
   }
@@ -643,7 +643,7 @@ void ChronalVortexClass::Attack() {
       distance = Distance(obj->Center_Coord(), Position);
 
       if (distance < game::kCellWidthLeptons * Range) {
-        chance = Random_Pick(0, distance);
+        chance = RandomPick(0, distance);
         if (chance < game::kCellWidthLeptons) {
           Set_Target(obj);
           break;
@@ -719,7 +719,7 @@ void ChronalVortexClass::Zap_Target() {
     /*
     ** Vortex might pretend to go away after zapping the target.
     */
-    if (Random_Pick(0, 2) == 2) {
+    if (RandomPick(0, 2) == 2) {
       Hide();
     }
   }

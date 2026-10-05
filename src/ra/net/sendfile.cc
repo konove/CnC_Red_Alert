@@ -273,7 +273,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   // Format_Window_String inserts line breaks in place, so format a copy
   // rather than the shared string table.
-  std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
+  std::string info_string(TextString(TXT_RECEIVING_SCENARIO));
 
   Format_Window_String(
       TextFontStyle(FontType::k6PointGradient,
@@ -536,7 +536,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   // Format_Window_String inserts line breaks in place, so format a copy
   // rather than the shared string table.
-  std::string info_string(Text_String(TXT_SENDING_SCENARIO));
+  std::string info_string(TextString(TXT_SENDING_SCENARIO));
 
   engine::platform::Timer<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses

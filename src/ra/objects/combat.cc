@@ -306,7 +306,7 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
        cellptr->TType == TEMPLATE_BRIDGE_3A ||
        cellptr->TType == TEMPLATE_BRIDGE_3B) &&
       ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
-       Random_Pick(1, TheRules().BridgeStrength) < strength)) {
+       RandomPick(1, TheRules().BridgeStrength) < strength)) {
     TheMap().Destroy_Bridge_At(cell);
   }
 }
@@ -486,8 +486,8 @@ void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
           rawdamage * Fixed(cell_radius, dist_from_center).Invert();
       Explosion_Damage(tcell.Center(), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
-        base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), tcell.Center());
+        base::NewPooled<SmudgeClass>(RandomPick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                     tcell.Center());
       }
     }
   }

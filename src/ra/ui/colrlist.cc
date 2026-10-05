@@ -147,7 +147,7 @@ int ColorListClass::Add_Item(const char* text, RemapControlType* color) {
 int ColorListClass::Add_Item(int text, RemapControlType* color) {
   // Not ListClass::Add_Item(int): that would call back into the virtual
   // Add_Item(const char*) and add a second color.
-  return Add_Item(text == TXT_NONE ? nullptr : Text_String(text), color);
+  return Add_Item(text == TXT_NONE ? nullptr : TextString(text), color);
 }
 
 /***************************************************************************

@@ -744,11 +744,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   pCheckListOptions->Set_Tabs(optiontabs);
   pCheckListOptions->Set_Read_Only(false);
 
-  pCheckListOptions->Add_Item(Text_String(TXT_BASES));
-  pCheckListOptions->Add_Item(Text_String(TXT_ORE_SPREADS));
-  pCheckListOptions->Add_Item(Text_String(TXT_CRATES));
-  pCheckListOptions->Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
-  pCheckListOptions->Add_Item(Text_String(TXT_SHADOW_REGROWS));
+  pCheckListOptions->Add_Item(TextString(TXT_BASES));
+  pCheckListOptions->Add_Item(TextString(TXT_ORE_SPREADS));
+  pCheckListOptions->Add_Item(TextString(TXT_CRATES));
+  pCheckListOptions->Add_Item(TextString(TXT_CAPTURE_THE_FLAG));
+  pCheckListOptions->Add_Item(TextString(TXT_SHADOW_REGROWS));
   pCheckListOptions->Add_Item(TXT_WOL_SLOWUNITBUILD);
 
   SetSpecialControlStates();
@@ -758,7 +758,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //........................................................................
   for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
     pDropListHouse->Add_Item(
-        Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
+        TextString(HouseTypeClass::As_Reference(house).Full_Name()));
   }
   pDropListHouse->Set_Selected_Index(static_cast<int>(TheSession().House) -
                                      static_cast<int>(HOUSE_USSR));
@@ -1220,7 +1220,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           DrawScenarioDescripIcon(view, pIcon);
         } else {
           // absl::SNPrintF(txt, sizeof(txt), "%s %s",
-          // Text_String(TXT_SCENARIO_COLON), Text_String(TXT_NOT_FOUND));
+          // TextString(TXT_SCENARIO_COLON), TextString(TXT_NOT_FOUND));
           absl::SNPrintF(txt, sizeof(txt), "%s", TXT_WOL_SCENARIONAMEWAIT);
           //					pStaticDescrip->Set_Text( txt,
           // false );
@@ -1338,9 +1338,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             game::TheMouse().y() >= d_scenariolist_y &&
             game::TheMouse().y() <= d_scenariolist_y + d_scenariolist_h))) {
         // Session.Messages.Add_Message(NULL, 0, (char
-        // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+        // *)TextString(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
         // kTpfText, 1200);
-        WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+        WOL_PrintMessage(*pILDisc, TextString(TXT_ONLY_HOST_CAN_MODIFY),
                          WOLCOLORREMAP_LOCALMACHINEMESS);
         PlaySoundEffect(WOLSOUND_ERROR);
         display = std::max(display, REDRAW_MESSAGE);

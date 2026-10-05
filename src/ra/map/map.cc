@@ -1202,11 +1202,11 @@ void MapClass::Logic() {
         **	Either replace an existing recorded cell value or add the new
         *cell value to *	the list.
         */
-        if (Random_Pick(0, TiberiumGrowthExcess) <= TiberiumGrowthCount) {
+        if (RandomPick(0, TiberiumGrowthExcess) <= TiberiumGrowthCount) {
           if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
             base::At(TiberiumGrowth, TiberiumGrowthCount++) = cell;
           } else {
-            base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1)) =
+            base::At(TiberiumGrowth, RandomPick(0, TiberiumGrowthCount - 1)) =
                 cell;
           }
         }
@@ -1221,11 +1221,11 @@ void MapClass::Logic() {
         **	Either replace an existing recorded cell value or add the new
         *cell value to *	the list.
         */
-        if (Random_Pick(0, TiberiumSpreadExcess) <= TiberiumSpreadCount) {
+        if (RandomPick(0, TiberiumSpreadExcess) <= TiberiumSpreadCount) {
           if (TiberiumSpreadCount < std::ssize(TiberiumSpread)) {
             base::At(TiberiumSpread, TiberiumSpreadCount++) = cell;
           } else {
-            base::At(TiberiumSpread, Random_Pick(0, TiberiumSpreadCount - 1)) =
+            base::At(TiberiumSpread, RandomPick(0, TiberiumSpreadCount - 1)) =
                 cell;
           }
         }
@@ -2268,8 +2268,8 @@ int MapClass::Intact_Bridge_Count() const {
  * HISTORY: * 09/25/1996 JLB : Created. *
  *=============================================================================================*/
 Cell MapClass::Pick_Random_Location() {
-  const int x = TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1);
-  const int y = TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1);
+  const int x = TheMap().MapCellX + RandomPick(0, TheMap().MapCellWidth - 1);
+  const int y = TheMap().MapCellY + RandomPick(0, TheMap().MapCellHeight - 1);
 
   return Cell::FromXY(x, y);
 }

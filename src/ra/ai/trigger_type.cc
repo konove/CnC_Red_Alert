@@ -124,22 +124,22 @@ std::string TriggerType::Description() const {
       break;
 
     case NEED_UNIT:
-      value_text = Text_String(
-          UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
+      value_text =
+          TextString(UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
       break;
 
     case NEED_AIRCRAFT:
-      value_text = Text_String(
+      value_text = TextString(
           AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
       break;
 
     case NEED_STRUCTURE:
-      value_text = Text_String(
+      value_text = TextString(
           BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
       break;
 
     case NEED_INFANTRY:
-      value_text = Text_String(
+      value_text = TextString(
           InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
       break;
 

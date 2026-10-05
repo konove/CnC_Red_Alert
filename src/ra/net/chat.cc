@@ -93,7 +93,7 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
   char txt[MAX_MESSAGE_LENGTH + 32] = {};
   // TXT_TO comes from the localized string table, so verify the translation
   // still takes exactly one %s before using it.
-  const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+  const auto format = absl::ParsedFormat<'s'>::New(TextString(TXT_TO));
   if (format != nullptr) {
     base::SafeCopy(
         txt, absl::StrFormat(*format, TheNetwork().wolapi()->szExternalPager)
@@ -192,7 +192,7 @@ void Message_Input(engine::window::KeyNumber& input) {
     if (TheSession().Type == GAME_NULL_MODEM ||
         TheSession().Type == GAME_MODEM) {
       if (input == KN_F1 || input == KN_F1 + TheSession().MaxPlayers - 1) {
-        base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+        base::SafeCopy(txt, TextString(TXT_MESSAGE));  // "Message:"
 
         TheSession().Messages.Add_Edit(
             TheSession().ColorIdx, FontType::k6PointGradient,
@@ -209,7 +209,7 @@ void Message_Input(engine::window::KeyNumber& input) {
       if (input == KN_F1 + TheSession().MaxPlayers - 1) {
         TheSession().MessageAddress =
             engine::net::IPXAddressClass();               // set to broadcast
-        base::SafeCopy(txt, Text_String(TXT_TO_ALL));     // "To All:"
+        base::SafeCopy(txt, TextString(TXT_TO_ALL));      // "To All:"
 
         TheSession().Messages.Add_Edit(
             TheSession().ColorIdx, FontType::k6PointGradient,
@@ -224,7 +224,7 @@ void Message_Input(engine::window::KeyNumber& input) {
             *TheNetwork().ipx().Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
         // translation still takes exactly one %s before using it.
-        const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
+        const auto format = absl::ParsedFormat<'s'>::New(TextString(TXT_TO));
         if (format != nullptr) {
           base::SafeCopy(
               txt,

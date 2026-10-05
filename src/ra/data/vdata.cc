@@ -452,7 +452,7 @@ bool VesselTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<VesselClass>(Type, house);
   if (unit != nullptr) {
     return unit->Unlimbo(cell.Center(),
-                         Random_Pick(game::DIR_N, kMaxRandomDirection));
+                         RandomPick(game::DIR_N, kMaxRandomDirection));
   }
   base::DeletePooled(unit);
   return false;

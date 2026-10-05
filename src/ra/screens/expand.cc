@@ -345,7 +345,7 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
   } else {
     text = TXT_SOVIET;
   }
-  absl::SNPrintF(buffer, sizeof(buffer), "%s: %s", Text_String(text),
+  absl::SNPrintF(buffer, sizeof(buffer), "%s: %s", TextString(text),
                  Get_Object(index).Name);
 
   TextPrintType flags = TextFlags;

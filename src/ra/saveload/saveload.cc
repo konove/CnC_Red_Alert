@@ -1489,7 +1489,7 @@ static bool Reconcile_Players() {
       housep->IsStarted = true;
       //			housep->Smartness = IQ_MENSA;
       housep->IQ = TheRules().MaxIQ;
-      base::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
+      base::SafeCopy(housep->IniName, TextString(TXT_COMPUTER));
 
       TheSession().NumPlayers--;
     }

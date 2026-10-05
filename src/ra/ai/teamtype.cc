@@ -463,7 +463,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   }
 
   if (choicecount > 0) {
-    return base::At(choices, Random_Pick(0, choicecount - 1));
+    return base::At(choices, RandomPick(0, choicecount - 1));
   }
   return nullptr;
 

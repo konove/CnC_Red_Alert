@@ -334,7 +334,7 @@ int Test_Null_Modem() {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  base::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
+  base::SafeCopy(buffer, TextString(TXT_WAITING_CONNECT));
   const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -348,8 +348,7 @@ int Test_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
-      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
-           2),
+      x + ((width - (StringPixelWidth(font, TextString(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontLineHeight(font) + 4) - 20);
 
   process = true;
@@ -637,7 +636,7 @@ static int Reconnect_Null_Modem() {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  base::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
+  base::SafeCopy(buffer, TextString(TXT_NULL_CONNERR_CHECK_CABLES));
   const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -651,8 +650,7 @@ static int Reconnect_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
-      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
-           2),
+      x + ((width - (StringPixelWidth(font, TextString(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontLineHeight(font) + 4) - 20);
 
   process = true;
@@ -812,13 +810,12 @@ void Destroy_Null_Connection(int id, int error) {
   std::string message;
   switch (error) {
     case 1:
-      message = base::FormatRuntime(Text_String(TXT_CONNECTION_LOST),
-                                    housep->IniName);
+      message =
+          base::FormatRuntime(TextString(TXT_CONNECTION_LOST), housep->IniName);
       break;
 
     case 0:
-      message =
-          base::FormatRuntime(Text_String(TXT_LEFT_GAME), housep->IniName);
+      message = base::FormatRuntime(TextString(TXT_LEFT_GAME), housep->IniName);
       break;
 
     case -1:
@@ -854,7 +851,7 @@ void Destroy_Null_Connection(int id, int error) {
   housep->IsHuman = false;
   //	housep->Smartness = IQ_MENSA;
   housep->IQ = TheRules().MaxIQ;
-  base::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
+  base::SafeCopy(housep->IniName, TextString(TXT_COMPUTER));
 
   TheSession().NumPlayers--;
 
@@ -863,7 +860,7 @@ void Destroy_Null_Connection(int id, int error) {
   */
   if (TheSession().NumPlayers == 1) {
     TheSession().Messages.Add_Message(
-        nullptr, 0, Text_String(TXT_JUST_YOU_AND_ME),
+        nullptr, 0, TextString(TXT_JUST_YOU_AND_ME),
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
         kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
@@ -1383,14 +1380,14 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*
   ** Initialise the button text
   */
-  base::SafeCopy(compress_text, settings->Compression ? Text_String(TXT_ON)
-                                                      : Text_String(TXT_OFF));
+  base::SafeCopy(compress_text, settings->Compression ? TextString(TXT_ON)
+                                                      : TextString(TXT_OFF));
   base::SafeCopy(correction_text, settings->ErrorCorrection
-                                      ? Text_String(TXT_ON)
-                                      : Text_String(TXT_OFF));
+                                      ? TextString(TXT_ON)
+                                      : TextString(TXT_OFF));
   base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
-                                       ? Text_String(TXT_ON)
-                                       : Text_String(TXT_OFF));
+                                       ? TextString(TXT_ON)
+                                       : TextString(TXT_OFF));
 
   /*
   ** Create the buttons
@@ -1501,24 +1498,24 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
       case engine::window::ButtonKey(kButtonCompression):
         settings->Compression = !settings->Compression;
         base::SafeCopy(compress_text, settings->Compression
-                                          ? Text_String(TXT_ON)
-                                          : Text_String(TXT_OFF));
+                                          ? TextString(TXT_ON)
+                                          : TextString(TXT_OFF));
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case engine::window::ButtonKey(kButtonErrorCorrection):
         settings->ErrorCorrection = !settings->ErrorCorrection;
         base::SafeCopy(correction_text, settings->ErrorCorrection
-                                            ? Text_String(TXT_ON)
-                                            : Text_String(TXT_OFF));
+                                            ? TextString(TXT_ON)
+                                            : TextString(TXT_OFF));
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
       case engine::window::ButtonKey(kButtonHardwareFlowControl):
         settings->HardwareFlowControl = !settings->HardwareFlowControl;
         base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
-                                             ? Text_String(TXT_ON)
-                                             : Text_String(TXT_OFF));
+                                             ? TextString(TXT_ON)
+                                             : TextString(TXT_OFF));
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
@@ -1528,16 +1525,16 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         settings->HardwareFlowControl = true;
 
         base::SafeCopy(compress_text, settings->Compression
-                                          ? Text_String(TXT_ON)
-                                          : Text_String(TXT_OFF));
+                                          ? TextString(TXT_ON)
+                                          : TextString(TXT_OFF));
 
         base::SafeCopy(correction_text, settings->ErrorCorrection
-                                            ? Text_String(TXT_ON)
-                                            : Text_String(TXT_OFF));
+                                            ? TextString(TXT_ON)
+                                            : TextString(TXT_OFF));
 
         base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
-                                             ? Text_String(TXT_ON)
-                                             : Text_String(TXT_OFF));
+                                             ? TextString(TXT_ON)
+                                             : TextString(TXT_OFF));
 
         display = std::max(display, REDRAW_BUTTONS);
         break;
@@ -2902,7 +2899,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 #else
   for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
     housebtn.Add_Item(
-        Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
+        TextString(HouseTypeClass::As_Reference(house).Full_Name()));
   }
   housebtn.Set_Selected_Index(static_cast<int>(TheSession().House) -
                               static_cast<int>(HOUSE_USSR));
@@ -2938,12 +2935,12 @@ int Com_Scenario_Dialog(bool skirmish) {
   optionlist.Set_Tabs(optiontabs);
   optionlist.Set_Read_Only(false);
 
-  optionlist.Add_Item(Text_String(TXT_BASES));
-  optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
-  optionlist.Add_Item(Text_String(TXT_CRATES));
-  optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
+  optionlist.Add_Item(TextString(TXT_BASES));
+  optionlist.Add_Item(TextString(TXT_ORE_SPREADS));
+  optionlist.Add_Item(TextString(TXT_CRATES));
+  optionlist.Add_Item(TextString(TXT_SHADOW_REGROWS));
   if (!skirmish) {
-    optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
+    optionlist.Add_Item(TextString(TXT_CAPTURE_THE_FLAG));
   }
 
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
@@ -3744,16 +3741,16 @@ int Com_Scenario_Dialog(bool skirmish) {
 #ifdef OLDWAY
           if (TheSession().House == HOUSE_GOOD) {
             absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                           Text_String(TXT_ALLIES));
+                           TextString(TXT_ALLIES));
           } else {
             absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                           Text_String(TXT_SOVIET));
+                           TextString(TXT_SOVIET));
           }
 #else   // OLDWAY
           absl::SNPrintF(
               item, sizeof(item), "%s\t%s", namebuf,
-              Text_String(HouseTypeClass::As_Reference(TheSession().House)
-                              .Full_Name()));
+              TextString(HouseTypeClass::As_Reference(TheSession().House)
+                             .Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
           base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
@@ -3931,16 +3928,16 @@ int Com_Scenario_Dialog(bool skirmish) {
 #ifdef OLDWAY
               if (TheSession().House == HOUSE_GOOD) {
                 absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                               Text_String(TXT_ALLIES));
+                               TextString(TXT_ALLIES));
               } else {
                 absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                               Text_String(TXT_SOVIET));
+                               TextString(TXT_SOVIET));
               }
 #else   // OLDWAY
               absl::SNPrintF(
                   item, sizeof(item), "%s\t%s", namebuf,
-                  Text_String(HouseTypeClass::As_Reference(TheSession().House)
-                                  .Full_Name()));
+                  TextString(HouseTypeClass::As_Reference(TheSession().House)
+                                 .Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(0, item);
               base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
@@ -3951,15 +3948,15 @@ int Com_Scenario_Dialog(bool skirmish) {
 #ifdef OLDWAY
               if (TheirHouse == HOUSE_GOOD) {
                 absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
-                               Text_String(TXT_ALLIES));
+                               TextString(TXT_ALLIES));
               } else {
                 absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
-                               Text_String(TXT_SOVIET));
+                               TextString(TXT_SOVIET));
               }
 #else   // OLDWAY
               absl::SNPrintF(
                   item, sizeof(item), "%s\t%s", TheirName,
-                  Text_String(
+                  TextString(
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(1, item);
@@ -4763,11 +4760,11 @@ int Com_Show_Scenario_Dialog() {
   optionlist.Set_Tabs(optiontabs);
   optionlist.Set_Read_Only(true);
 
-  optionlist.Add_Item(Text_String(TXT_BASES));
-  optionlist.Add_Item(Text_String(TXT_ORE_SPREADS));
-  optionlist.Add_Item(Text_String(TXT_CRATES));
-  optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
-  optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
+  optionlist.Add_Item(TextString(TXT_BASES));
+  optionlist.Add_Item(TextString(TXT_ORE_SPREADS));
+  optionlist.Add_Item(TextString(TXT_CRATES));
+  optionlist.Add_Item(TextString(TXT_CAPTURE_THE_FLAG));
+  optionlist.Add_Item(TextString(TXT_SHADOW_REGROWS));
 
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
@@ -4787,7 +4784,7 @@ int Com_Show_Scenario_Dialog() {
 #else   // OLDWAY
   for (HousesType house = HOUSE_USSR; house <= HOUSE_FRANCE; house++) {
     housebtn.Add_Item(
-        Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
+        TextString(HouseTypeClass::As_Reference(house).Full_Name()));
   }
   housebtn.Set_Selected_Index(static_cast<int>(TheSession().House) -
                               static_cast<int>(HOUSE_USSR));
@@ -4981,7 +4978,7 @@ int Com_Show_Scenario_Dialog() {
         if (display >= REDRAW_PARMS && parms_received) {
           if (oppscorescreen) {
             absl::SNPrintF(txt, sizeof(txt), "%s",
-                           Text_String(TXT_WAITING_FOR_OPPONENT));
+                           TextString(TXT_WAITING_FOR_OPPONENT));
 
             Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, scheme,
                              kTBlack, kTextFont, TPF_CENTER | kTextFlags);
@@ -4989,7 +4986,7 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Scenario description
             ............................................................*/
-            p = Text_String(TXT_SCENARIO_COLON);
+            p = TextString(TXT_SCENARIO_COLON);
             if (TheSession().Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
               //%s",p, Session.Options.ScenarioDescription);
@@ -5019,7 +5016,7 @@ int Com_Show_Scenario_Dialog() {
 
             } else {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                             Text_String(TXT_NOT_FOUND));
+                             TextString(TXT_NOT_FOUND));
 
               Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y,
                                &ThePalettes().color_remaps().at(PCOLOR_RED),
@@ -5141,7 +5138,7 @@ int Com_Show_Scenario_Dialog() {
                   game::TheMouse().y() >= d_options_y &&
                   game::TheMouse().y() <= d_options_y + d_options_h)) {
         TheSession().Messages.Add_Message(
-            nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+            nullptr, 0, TextString(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
             kTextFont, kTextFlags, 1200);
         PlaySoundEffect(VOC_SYS_ERROR);
         display = std::max(display, REDRAW_MESSAGE);
@@ -5309,15 +5306,15 @@ int Com_Show_Scenario_Dialog() {
 #ifdef OLDWAY
         if (TheSession().House == HOUSE_GOOD) {
           absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                         Text_String(TXT_ALLIES));
+                         TextString(TXT_ALLIES));
         } else {
           absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                         Text_String(TXT_SOVIET));
+                         TextString(TXT_SOVIET));
         }
 #else   // OLDWAY
         absl::SNPrintF(
             item, sizeof(item), "%s\t%s", namebuf,
-            Text_String(
+            TextString(
                 HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
@@ -5604,22 +5601,21 @@ int Com_Show_Scenario_Dialog() {
             // greatest copy of our names & colors.  Do this every time
             // we receive an options packet.
             //.........................................................
-            gamelist.Set_Item(
-                0,
-                base::FormatRuntime(Text_String(TXT_THATGUYS_GAME), TheirName));
+            gamelist.Set_Item(0, base::FormatRuntime(
+                                     TextString(TXT_THATGUYS_GAME), TheirName));
 #ifdef OLDWAY
             if (TheSession().House == HOUSE_GOOD) {
               absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                             Text_String(TXT_ALLIES));
+                             TextString(TXT_ALLIES));
             } else {
               absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
-                             Text_String(TXT_SOVIET));
+                             TextString(TXT_SOVIET));
             }
 #else  // OLDWAY
             absl::SNPrintF(
                 item, sizeof(item), "%s\t%s", namebuf,
-                Text_String(HouseTypeClass::As_Reference(TheSession().House)
-                                .Full_Name()));
+                TextString(HouseTypeClass::As_Reference(TheSession().House)
+                               .Full_Name()));
 
 #endif  // OLDWAY
             playerlist.Set_Item(0, item);
@@ -5631,15 +5627,15 @@ int Com_Show_Scenario_Dialog() {
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
               absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
-                             Text_String(TXT_ALLIES));
+                             TextString(TXT_ALLIES));
             } else {
               absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
-                             Text_String(TXT_SOVIET));
+                             TextString(TXT_SOVIET));
             }
 #else   // OLDWAY
             absl::SNPrintF(
                 item, sizeof(item), "%s\t%s", TheirName,
-                Text_String(
+                TextString(
                     HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
             playerlist.Set_Item(1, item);
@@ -6538,7 +6534,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
                      TheSession().PhoneBook.at(i)->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
-                     Text_String(TXT_DEFAULT));
+                     TextString(TXT_DEFAULT));
     }
     list->Add_Item(item);
   }

@@ -942,7 +942,7 @@ int AircraftClass::Mission_Hunt() {
     }
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1299,7 +1299,7 @@ int AircraftClass::Mission_Unload() {
       break;
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1454,7 +1454,7 @@ int AircraftClass::Mission_Retreat() {
       break;
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1490,7 +1490,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   **	Find a free cell to drop the unit off at.
   */
   for (const auto direction : kUnloadPriority) {
-    const Cell adjacent = Adjacent_Cell(Cell::Containing(Coord), direction);
+    const Cell adjacent = AdjacentCell(Cell::Containing(Coord), direction);
     // If the passenger can be placed on the map, then start it moving toward
     // the destination cell and establish radio contact with the transport.
     // This is used to make sure that the transport waits until the passenger
@@ -1665,7 +1665,7 @@ game::ResultType AircraftClass::Take_Damage(int& damage, int distance,
       /*
       **	Parachute a survivor if possible.
       */
-      if (Class->IsCrew && Percent_Chance(90) &&
+      if (Class->IsCrew && PercentChance(90) &&
           TheMap()
               .at(Center_Coord())
               .Is_Clear_To_Move(SPEED_FOOT, true, false)) {
@@ -1914,7 +1914,7 @@ int AircraftClass::Mission_Move() {
   }
 
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2679,7 +2679,7 @@ int AircraftClass::Mission_Attack() {
   }
 
   return TheRules().mission_control().at(Mission).Normal_Delay() +
-         Random_Pick(0, 2);
+         RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2715,7 +2715,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     for (int radius = 0;
          radius < TheRules().LZScanRadius / game::kCellWidthLeptons; radius++) {
       const game::FacingType modifier =
-          Random_Pick(game::FACING_N, game::FACING_NW);
+          RandomPick(game::FACING_N, game::FACING_NW);
       Cell lastcell = Cell::None();
 
       /*
@@ -2980,14 +2980,14 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
   const Cell center = Cell::Containing(Center_Coord());
   for (int sweep = static_cast<int>(game::FACING_N);
        sweep < static_cast<int>(game::FACING_S); sweep++) {
-    moveto = Adjacent_Cell(center, game::FACING_S + sweep);
+    moveto = AdjacentCell(center, game::FACING_S + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
       return game::DIR_N;
     }
 
-    moveto = Adjacent_Cell(center, game::FACING_S - sweep);
+    moveto = AdjacentCell(center, game::FACING_S - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
@@ -3247,7 +3247,7 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
     **	a target value.
     */
     if (bestval != -1) {
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         return Target::FromCell(bestcell);
       }
       return Target::FromCell(best2cell);
@@ -3985,7 +3985,7 @@ void AircraftClass::Response_Attack() {
 
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
@@ -4010,7 +4010,7 @@ void AircraftClass::Response_Move() {
 
   static const VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
@@ -4036,7 +4036,7 @@ void AircraftClass::Response_Select() {
   static const VocType _response[] = {VOC_VEHIC,  VOC_REPORT, VOC_YESSIR,
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
-      base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
+      base::At(_response, LocalRandomPick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }

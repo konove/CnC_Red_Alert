@@ -351,7 +351,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     SimpleEditDlgClass EditDlg(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;
-    if (std::string_view(EditDlg.Show()) == Text_String(TXT_OK) &&
+    if (std::string_view(EditDlg.Show()) == TextString(TXT_OK) &&
         *EditDlg.szEdit) {
       base::SafeCopy(cgiReturn.szPassword, EditDlg.szEdit);
     } else {

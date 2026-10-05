@@ -1035,7 +1035,7 @@ void ObjectClass::Move(game::FacingType facing) {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
-  const Coordinate coord = Adjacent_Cell(Coord, facing);
+  const Coordinate coord = AdjacentCell(Coord, facing);
   if (Can_Enter_Cell(Cell::Containing(coord)) == game::MOVE_OK) {
     Coord = coord;
   }

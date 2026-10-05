@@ -563,7 +563,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             break;
 
           case STRUCT_REFINERY:
-            param = Target::FromCell(Cell::Containing(Adjacent_Cell(
+            param = Target::FromCell(Cell::Containing(AdjacentCell(
                                          Center_Coord(), game::DIR_S)))
                         .packed();
             break;
@@ -1411,7 +1411,7 @@ void BuildingClass::AI() {
     if (Arm.IsFinished()) {
       IsJamming = false;
       Arm.Set(kTicksPerMinute * TheRules().GapRegenInterval +
-              Random_Pick(1, kTicksPerSecond));
+              RandomPick(1, kTicksPerSecond));
     }
 
     if (!IsJamming) {
@@ -1772,22 +1772,22 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           **	explosions occur.
           */
           base::NewPooled<SmudgeClass>(
-              Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6), cell.Center());
-          if (Percent_Chance(50)) {
+              RandomPick(SMUDGE_CRATER1, SMUDGE_CRATER6), cell.Center());
+          if (PercentChance(50)) {
             base::NewPooled<AnimClass>(
                 ANIM_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0080),
-                static_cast<unsigned char>(Random_Pick(0, 7)),
-                static_cast<unsigned char>(Random_Pick(1, 3)));
-            if (Percent_Chance(50)) {
+                static_cast<unsigned char>(RandomPick(0, 7)),
+                static_cast<unsigned char>(RandomPick(1, 3)));
+            if (PercentChance(50)) {
               base::NewPooled<AnimClass>(
                   ANIM_FIRE_MED, Coord_Scatter(cell.Center(), 0x0040),
-                  static_cast<unsigned char>(Random_Pick(0, 7)),
-                  static_cast<unsigned char>(Random_Pick(1, 3)));
+                  static_cast<unsigned char>(RandomPick(0, 7)),
+                  static_cast<unsigned char>(RandomPick(1, 3)));
             }
           }
           base::NewPooled<AnimClass>(
               ANIM_FBALL1, Coord_Scatter(cell.Center(), 0x0040),
-              static_cast<unsigned char>(Random_Pick(0, 3)));
+              static_cast<unsigned char>(RandomPick(0, 3)));
         }
 
         shakes = Class->Cost_Of() / 400;
@@ -1865,7 +1865,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_N)),
+              Target::FromCell(AdjacentCell(cellcenter, game::FACING_N)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1874,7 +1874,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_E)),
+              Target::FromCell(AdjacentCell(cellcenter, game::FACING_E)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1883,7 +1883,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_S)),
+              Target::FromCell(AdjacentCell(cellcenter, game::FACING_S)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1892,7 +1892,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_W)),
+              Target::FromCell(AdjacentCell(cellcenter, game::FACING_W)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1924,7 +1924,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           **	damage level has occurred.
           */
           if (warhead == WARHEAD_FIRE) {
-            switch (Random_Pick(0, 5 + Class->Width() + Class->Height())) {
+            switch (RandomPick(0, 5 + Class->Width() + Class->Height())) {
               case 0:
                 break;
 
@@ -1935,7 +1935,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 5:
                 anim = base::NewPooled<AnimClass>(
                     ANIM_ON_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0060), 0,
-                    static_cast<unsigned char>(Random_Pick(1, 3)));
+                    static_cast<unsigned char>(RandomPick(1, 3)));
                 break;
 
               case 6:
@@ -1943,7 +1943,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 8:
                 anim = base::NewPooled<AnimClass>(
                     ANIM_ON_FIRE_MED, Coord_Scatter(cell.Center(), 0x0060), 0,
-                    static_cast<unsigned char>(Random_Pick(1, 3)));
+                    static_cast<unsigned char>(RandomPick(1, 3)));
                 break;
 
               case 9:
@@ -1956,7 +1956,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
                 break;
             }
           } else {
-            if (Percent_Chance(50)) {
+            if (PercentChance(50)) {
               /*
               ** Building may catch on fire, but only if it wasn't a
               ** renovator that caused the damage.
@@ -1965,8 +1965,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
                   *dynamic_cast<InfantryClass*>(source) != INFANTRY_RENOVATOR) {
                 anim = base::NewPooled<AnimClass>(
                     ANIM_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0060),
-                    static_cast<unsigned char>(Random_Pick(0, 7)),
-                    static_cast<unsigned char>(Random_Pick(1, 3)));
+                    static_cast<unsigned char>(RandomPick(0, 7)),
+                    static_cast<unsigned char>(RandomPick(1, 3)));
               }
             }
           }
@@ -2018,7 +2018,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           */
           if (!PrimaryFacing.Is_Rotating()) {
             PrimaryFacing.Set_Desired(
-                Random_Pick(game::DIR_N, kMaxRandomDirection));
+                RandomPick(game::DIR_N, kMaxRandomDirection));
           }
         }
       }
@@ -2191,7 +2191,7 @@ void BuildingClass::Drop_Debris(Target source) {
     if (!House->IsToDie && count > 0) {
       InfantryClass* i = nullptr;
 
-      if (Random_Pick(0, odds) == 1) {
+      if (RandomPick(0, odds) == 1) {
         i = nullptr;
         const InfantryType typ = Crew_Type();
         if (typ != INFANTRY_NONE) {
@@ -2205,7 +2205,7 @@ void BuildingClass::Drop_Debris(Target source) {
           if (i->Unlimbo(newcell.Center(), game::DIR_N)) {
             count--;
             i->Strength = static_cast<int16_t>(
-                Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
+                RandomPick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(Coordinate{}, true);
             if (source != Target{} && !House->Is_Ally(source.AsObject())) {
               i->Assign_Mission(MISSION_ATTACK);
@@ -2233,14 +2233,14 @@ void BuildingClass::Drop_Debris(Target source) {
       /*
       **	Possibly add some smoke rising from the ashes of the building.
       */
-      switch (Random_Pick(0, 5)) {
+      switch (RandomPick(0, 5)) {
         case 0:
         case 1:
         case 2:
           base::NewPooled<AnimClass>(
               ANIM_SMOKE_M, Coord_Scatter(newcell.Center(), 0x0050, false),
-              static_cast<unsigned char>(Random_Pick(0, 5)),
-              static_cast<unsigned char>(Random_Pick(1, 2)));
+              static_cast<unsigned char>(RandomPick(0, 5)),
+              static_cast<unsigned char>(RandomPick(1, 2)));
           break;
 
         default:
@@ -2250,12 +2250,12 @@ void BuildingClass::Drop_Debris(Target source) {
       /*
       **	The building always scars the ground in some fashion.
       */
-      if (Percent_Chance(25)) {
-        base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), newcell.Center());
+      if (PercentChance(25)) {
+        base::NewPooled<SmudgeClass>(RandomPick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                     newcell.Center());
       } else {
         base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6),
+            RandomPick(SMUDGE_CRATER1, SMUDGE_CRATER6),
             Coord_Scatter(newcell.Center(), 0x0080, false));
       }
     }
@@ -2436,11 +2436,11 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheMap().MapCellWidth / 2) {
           cell = Cell::FromXY(
               TheMap().MapCellX - 1,
-              Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
+              RandomPick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         } else {
           cell = Cell::FromXY(
               TheMap().MapCellX + TheMap().MapCellWidth,
-              Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
+              RandomPick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         }
         TheWorld().scenario_init()++;
         if (air->Unlimbo(cell.Center(), game::DIR_N)) {
@@ -2570,9 +2570,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             cell = Cell::Containing(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
-            cell = Adjacent_Cell(cell, game::FACING_SW);
+            cell = AdjacentCell(cell, game::FACING_SW);
             TheWorld().scenario_init()++;
-            if (unit->Unlimbo(Adjacent_Cell(cell, game::DIR_S).Center(),
+            if (unit->Unlimbo(AdjacentCell(cell, game::DIR_S).Center(),
                               game::DIR_SW_X2)) {
               unit->PrimaryFacing = game::DIR_S;
               unit->Assign_Mission(MISSION_HARVEST);
@@ -3134,7 +3134,7 @@ void BuildingClass::Grand_Opening(bool captured) {
         !TheDebugState().map_editor_active() &&
         (!House->IsHuman || PurchasePrice == 0 ||
          PurchasePrice > Class->Raw_Cost())) {
-      Cell cell = Cell::Containing(Adjacent_Cell(Center_Coord(), game::DIR_S));
+      Cell cell = Cell::Containing(AdjacentCell(Center_Coord(), game::DIR_S));
 
       auto* unit =
           base::NewPooled<UnitClass>(UNIT_HARVESTER, House->Class->House);
@@ -3562,11 +3562,12 @@ Coordinate BuildingClass::Docking_Coord() const {
   DCHECK(IsActive);
 
   if (*this == STRUCT_HELIPAD) {
-    return Coord + XYP_Coord(24, 18);
+    return Coord + CoordFromPixels(24, 18);
   }
   if (*this == STRUCT_AIRSTRIP) {
     return Coord +
-           XYP_Coord(game::kCellWidthPixels + (game::kCellWidthPixels / 2), 28);
+           CoordFromPixels(
+               game::kCellWidthPixels + (game::kCellWidthPixels / 2), 28);
   }
   return TechnoClass::Docking_Coord();
 }
@@ -4055,13 +4056,12 @@ int BuildingClass::Mission_Guard() {
 
     if (*this == STRUCT_REPAIR) {
       return TheRules().mission_control().at(Mission).Normal_Delay() +
-             Random_Pick(0, 2);
+             RandomPick(0, 2);
     }
     return (TheRules().mission_control().at(Mission).Normal_Delay() * 3) +
-           Random_Pick(0, 2);
+           RandomPick(0, 2);
   }
-  return TheRules().mission_control().at(Mission).AA_Delay() +
-         Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).AA_Delay() + RandomPick(0, 2);
 }
 
 /***********************************************************************************************
@@ -4223,7 +4223,7 @@ int BuildingClass::Mission_Deconstruction() {
             }
             if (infantry != nullptr) {
               TheWorld().scenario_init()++;
-              Coordinate coord = Center_Coord() + XYP_Coord(0, -12);
+              Coordinate coord = Center_Coord() + CoordFromPixels(0, -12);
               coord = TheMap().at(coord).Closest_Free_Spot(coord, false);
 
               if (infantry->Unlimbo(coord, game::DIR_N)) {
@@ -4282,7 +4282,7 @@ int BuildingClass::Mission_Deconstruction() {
             const int money = Refund_Amount();
             const Target arch = ArchiveTarget;
             const Coordinate place =
-                Adjacent_Cell(Coord, game::DIR_SE).Snapped();
+                AdjacentCell(Coord, game::DIR_SE).Snapped();
 
             delete this;
 
@@ -4428,7 +4428,7 @@ int BuildingClass::Mission_Attack() {
         break;
     }
     return TheRules().mission_control().at(Mission).AA_Delay() +
-           Random_Pick(0, 2);
+           RandomPick(0, 2);
   }
 
   if (!TarCom) {
@@ -4476,7 +4476,7 @@ int BuildingClass::Mission_Attack() {
   }
   PrimaryFacing.Set_Desired(Direction(TarCom));
   return 1;
-  //	return(MissionControl[Mission].Normal_Delay() + Random_Pick(0, 2));
+  //	return(MissionControl[Mission].Normal_Delay() + RandomPick(0, 2));
 }
 
 /***********************************************************************************************
@@ -4521,7 +4521,7 @@ int BuildingClass::Mission_Harvest() {
         **	Force any bib squatters to scatter.
         */
         TheMap()
-            .at(Adjacent_Cell(Cell::Containing(Center_Coord()), game::DIR_S))
+            .at(AdjacentCell(Cell::Containing(Center_Coord()), game::DIR_S))
             .Incoming(Coordinate{}, true, true);
 
         FootClass* techno = Attached_Object();
@@ -5299,7 +5299,7 @@ int BuildingClass::Mission_Unload() {
         break;
     }
     return TheRules().mission_control().at(Mission).Normal_Delay() +
-           Random_Pick(0, 2);
+           RandomPick(0, 2);
   }
 
   Assign_Mission(MISSION_GUARD);
@@ -5384,19 +5384,19 @@ InfantryType BuildingClass::Crew_Type() const {
 
   switch (Class->Type) {
     case STRUCT_STORAGE:
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         return INFANTRY_C1;
       }
       return INFANTRY_C7;
 
     case STRUCT_CONST:
-      if (!IsCaptured && House->IsHuman && Percent_Chance(25)) {
+      if (!IsCaptured && House->IsHuman && PercentChance(25)) {
         return INFANTRY_RENOVATOR;
       }
       break;
 
     case STRUCT_KENNEL:
-      if (Percent_Chance(50)) {
+      if (PercentChance(50)) {
         return INFANTRY_DOG;
       }
       return INFANTRY_NONE;
@@ -5946,7 +5946,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
  *=============================================================================================*/
 Coordinate BuildingClass::Target_Coord() const {
   if (Class->FoundationFace != game::FACING_NONE) {
-    return Adjacent_Cell(Center_Coord(), Class->FoundationFace);
+    return AdjacentCell(Center_Coord(), Class->FoundationFace);
   }
   return Center_Coord();
 }
@@ -6244,15 +6244,15 @@ void BuildingClass::Repair_AI() {
 
         if (!House->IsHuman) {
           House->RepairTimer.Set(
-              Random_Pick(House->RepairDelay * (kTicksPerMinute / 4),
-                          House->RepairDelay * kTicksPerMinute * 2));
+              RandomPick(House->RepairDelay * (kTicksPerMinute / 4),
+                         House->RepairDelay * kTicksPerMinute * 2));
         }
       }
 
     } else {
       if ((TheSession().Type != GAME_NORMAL || IsAllowedToSell) &&
           IsTickedOff && House->Control.TechLevel >= TheRules().IQSellBack &&
-          Random_Pick(0, 50) < House->Control.TechLevel && Trigger == nullptr &&
+          RandomPick(0, 50) < House->Control.TechLevel && Trigger == nullptr &&
           *this != STRUCT_CONST && Health_Ratio() < TheRules().ConditionRed) {
         Sell_Back(1);
       }

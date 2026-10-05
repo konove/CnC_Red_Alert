@@ -26,9 +26,9 @@ Coordinate Coord_Move(Coordinate start, game::DirType facing,
 // is true, the result is snapped to the nearest cell center.
 Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock = false);
 
-game::DirType Direction(Coordinate coord1, Coordinate coord2);
-game::DirType Direction256(Coordinate coord1, Coordinate coord2);
-game::DirType Direction8(Coordinate coord1, Coordinate coord2);
+game::DirType Direction(Coordinate from, Coordinate to);
+game::DirType Direction256(Coordinate from, Coordinate to);
+game::DirType Direction8(Coordinate from, Coordinate to);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
 inline game::DirType Direction(Cell cell1, Cell cell2) {

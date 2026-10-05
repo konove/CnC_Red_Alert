@@ -1114,7 +1114,7 @@ static RetcodeType Wait_For_Players(
           // Save: Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
           //	Scen.RandomNumber.Seed);
-          Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+          Save_Game(-1, TextString(TXT_MULTIPLAYER_GAME));
           // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
           //	Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
@@ -1180,7 +1180,7 @@ static RetcodeType Wait_For_Players(
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+            Save_Game(-1, TextString(TXT_MULTIPLAYER_GAME));
             // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
@@ -3604,7 +3604,7 @@ static int Execute_DoList(
               hptr->IsHuman = false;
               hptr->IQ = TheRules().MaxIQ;
               HouseClass::Computer_Paranoid();
-              base::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
+              base::SafeCopy(hptr->IniName, TextString(TXT_COMPUTER));
               TheSession().NumPlayers--;
             }
           }

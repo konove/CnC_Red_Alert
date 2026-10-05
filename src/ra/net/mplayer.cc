@@ -486,7 +486,7 @@ void Computer_Message() {
  * HISTORY:                                                                *
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int Surrender_Dialog(int text) { return Surrender_Dialog(Text_String(text)); }
+int Surrender_Dialog(int text) { return Surrender_Dialog(TextString(text)); }
 
 int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
@@ -759,7 +759,7 @@ int Abort_Dialog() {
       //...............................................................
       //	Draw the captions
       //...............................................................
-      Fancy_Text_Print(view, Text_String(TXT_CONFIRM_EXIT), kDDialogCx,
+      Fancy_Text_Print(view, TextString(TXT_CONFIRM_EXIT), kDDialogCx,
                        kDDialogY + kDTopmargin, Get_Color_Scheme(), kTBlack,
                        kTextFont, TPF_CENTER | kTextFlags);
 
