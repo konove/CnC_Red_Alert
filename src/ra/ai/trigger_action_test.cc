@@ -178,6 +178,7 @@ TEST_F(TriggerActionTest, TeamActionsSkipAMissingTeam) {
 }
 
 TEST_F(TriggerActionTest, ForceTriggerDoesNothingWhenNoTriggerCanBeMade) {
+  TriggerType::DestroyAll();
   TheObjectHeaps().trigger_type().Reset(1);
   TheObjectHeaps().trigger().Reset(0);
   auto* const trigger_type = base::NewPooled<TriggerType>();

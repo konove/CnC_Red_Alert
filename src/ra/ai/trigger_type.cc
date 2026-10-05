@@ -300,7 +300,10 @@ void TriggerType::Draw_It(PixelView& view, int /*unused*/, const int x,
   }
 }
 
-void TriggerType::DestroyAll() { TheObjectHeaps().trigger_type().FreeAll(); }
+void TriggerType::DestroyAll() {
+  // Not FreeAll(): a trigger type owns its two actions.
+  TheObjectHeaps().trigger_type().DestroyAll();
+}
 
 TriggerType* TriggerType::FromName(const std::string_view name) {
   if (!name.empty()) {

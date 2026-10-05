@@ -247,6 +247,9 @@ What differs from the design:
   naming it, it was unused code, which the strict build rejects.
 - **`TriggerActionContext` has defaults** (`HOUSE_NONE`, `nullptr`, -1, cell 0), so a test names
   only the fields it uses.
+- **Trigger types are now destroyed, not just freed.** `TriggerType::DestroyAll()` called the heap's
+  `FreeAll()`, which runs no destructors, so the two owned actions leaked on every scenario clear
+  (AddressSanitizer showed it). It and `~ObjectHeaps()` now call the heap's `DestroyAll()`.
 - **A type number that is no action** makes a `NoAction` that keeps the number.
 - **`trigger_action.cc` is about 1,150 lines,** not 700. Each class carries its own `type()` and
   `ToRecord()`; the four one-line house actions are the obvious candidates for a shared base

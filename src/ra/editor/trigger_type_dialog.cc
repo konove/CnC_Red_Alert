@@ -503,8 +503,14 @@ bool TriggerType::Edit() {
   action2_bool_list.Add_Item("OFF");
   action2_bool_list.Add_Item("ON");
 
-  action1_bool_list.Set_Selected_Index((action1_record.value != 0) ? 1 : 0);
-  action2_bool_list.Set_Selected_Index((action2_record.value != 0) ? 1 : 0);
+  action1_bool_list.Set_Selected_Index(
+      ActionNeed(action1_record.type) == NEED_BOOL && action1_record.value != 0
+          ? 1
+          : 0);
+  action2_bool_list.Set_Selected_Index(
+      ActionNeed(action2_record.type) == NEED_BOOL && action2_record.value != 0
+          ? 1
+          : 0);
 
   // Musical theme lists for the actions; the list index is the ThemeType.
   char action1_theme_text[kDescriptionSize] = "";
@@ -838,13 +844,15 @@ bool TriggerType::Edit() {
     action1_special_list.Add_Item(SpecialWeaponName.at(weapon));
     action2_special_list.Add_Item(SpecialWeaponName.at(weapon));
   }
-  if (magic_enum::enum_contains(
+  if (ActionNeed(action1_record.type) == NEED_SPECIAL &&
+      magic_enum::enum_contains(
           static_cast<SpecialWeaponType>(action1_record.value))) {
     action1_special_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_special_list.Set_Selected_Index(0);
   }
-  if (magic_enum::enum_contains(
+  if (ActionNeed(action2_record.type) == NEED_SPECIAL &&
+      magic_enum::enum_contains(
           static_cast<SpecialWeaponType>(action2_record.value))) {
     action2_special_list.Set_Selected_Index(action2_record.value);
   } else {

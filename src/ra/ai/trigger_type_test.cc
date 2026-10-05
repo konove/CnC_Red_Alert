@@ -73,6 +73,7 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
 }
 
 TEST_F(TriggerTypeTest, AFullHeapGivesNoTriggerType) {
+  TriggerType::DestroyAll();
   TheObjectHeaps().trigger_type().Reset(1);
   ASSERT_NE(base::NewPooled<TriggerType>(), nullptr);
   EXPECT_EQ(base::NewPooled<TriggerType>(), nullptr);
@@ -243,7 +244,28 @@ TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
   EXPECT_EQ(dawn->event1.Data.Value, 5);
 }
 
+// From format 2 an action gives its trigger type's heap slot, which may be a
+// later entry's.
+TEST_F(TriggerTypeTest, ReadIniResolvesALaterSlotInTheCurrentFormat) {
+  TriggerType::DestroyAll();
+  engine::file::IniFile ini;
+  ASSERT_TRUE(ini.PutString(TriggerType::kIniSection, "frst",
+                            "0,1,0,1,13,-1,50,0,-1,0,22,-1,1,-1,22,-1,2,-1"));
+  ASSERT_TRUE(ini.PutString(TriggerType::kIniSection, "last",
+                            "0,1,0,0,13,-1,60,0,-1,0,1,-1,-1,1,0,-1,-1,-1"));
+
+  TriggerType::ReadIni(ini);
+
+  const TriggerType* const first = TriggerType::FromName("frst");
+  ASSERT_NE(first, nullptr);
+  EXPECT_EQ(first->action1->ToRecord().trigger_type,
+            TriggerType::FromName("last"));
+  // Slot 2 exists but the scenario never filled it.
+  EXPECT_EQ(first->action2->ToRecord().trigger_type, nullptr);
+}
+
 TEST_F(TriggerTypeTest, ReadIniDropsTheEntriesTheHeapHasNoRoomFor) {
+  TriggerType::DestroyAll();
   TheObjectHeaps().trigger_type().Reset(1);
   engine::file::IniFile ini;
   ASSERT_TRUE(ini.PutString(TriggerType::kIniSection, "wave", kEntry));
@@ -312,6 +334,7 @@ TEST_F(TriggerTypeTest, TheShippedTriggersAreReadBackAsWritten) {
   }
   // Room for the largest scenario, and a team type in every slot an action
   // may name.
+  TriggerType::DestroyAll();
   TheObjectHeaps().trigger_type().Reset(128);
   constexpr int kTeamTypes = 64;
   TheObjectHeaps().team_type().Reset(kTeamTypes);
