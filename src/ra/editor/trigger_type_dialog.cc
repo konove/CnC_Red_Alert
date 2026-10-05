@@ -298,8 +298,8 @@ bool TriggerType::Edit() {
   action1_list.Sort(by_description);
   action2_list.Sort(by_description);
 
-  action1_list.Set_Selected_Index(&action_choices.at(action1.type));
-  action2_list.Set_Selected_Index(&action_choices.at(action2.type));
+  action1_list.Set_Selected_Index(&action_choices.at(action1.type()));
+  action2_list.Set_Selected_Index(&action_choices.at(action2.type()));
 
   // Waypoint fields, one per event and action. A waypoint number shows as a
   // letter, 'A' for 0 to 'Z' for 25, and from 26 on as two letters, "AA" for
@@ -327,8 +327,8 @@ bool TriggerType::Edit() {
       kAction1Waypoint, action1_waypoint_text, sizeof(action1_waypoint_text),
       FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
       9, EditClass::kAlpha);
-  if (ActionNeed(action1.type) == NEED_WAYPOINT) {
-    base::SafeCopy(action1_waypoint_text, WaypointLetters(action1.data.value));
+  if (ActionNeed(action1.type()) == NEED_WAYPOINT) {
+    base::SafeCopy(action1_waypoint_text, WaypointLetters(action1.value()));
   }
 
   char action2_waypoint_text[kWaypointSize] = "A";
@@ -336,8 +336,8 @@ bool TriggerType::Edit() {
       kAction2Waypoint, action2_waypoint_text, sizeof(action2_waypoint_text),
       FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
       9, EditClass::kAlpha);
-  if (ActionNeed(action2.type) == NEED_WAYPOINT) {
-    base::SafeCopy(action2_waypoint_text, WaypointLetters(action2.data.value));
+  if (ActionNeed(action2.type()) == NEED_WAYPOINT) {
+    base::SafeCopy(action2_waypoint_text, WaypointLetters(action2.value()));
   }
 
   // Number fields, one per event and action.
@@ -368,9 +368,9 @@ bool TriggerType::Edit() {
                                 sizeof(action1_number_text), FontType::kEditor,
                                 TPF_NOSHADOW, kAction1DataX, kAction1DataY,
                                 kDataWidth, 9, EditClass::kNumeric);
-  if (ActionNeed(action1.type) == NEED_NUMBER) {
+  if (ActionNeed(action1.type()) == NEED_NUMBER) {
     absl::SNPrintF(action1_number_text, sizeof(action1_number_text), "%d",
-                   action1.data.value);
+                   action1.value());
   }
 
   char action2_number_text[kNumberSize] = "";
@@ -378,9 +378,9 @@ bool TriggerType::Edit() {
                                 sizeof(action2_number_text), FontType::kEditor,
                                 TPF_NOSHADOW, kAction2DataX, kAction2DataY,
                                 kDataWidth, 9, EditClass::kNumeric);
-  if (ActionNeed(action2.type) == NEED_NUMBER) {
+  if (ActionNeed(action2.type()) == NEED_NUMBER) {
     absl::SNPrintF(action2_number_text, sizeof(action2_number_text), "%d",
-                   action2.data.value);
+                   action2.value());
   }
 
   // Team type lists, one per event and action, by INI name.
@@ -430,13 +430,13 @@ bool TriggerType::Edit() {
   } else {
     event2_team_list.Set_Selected_Index(0);
   }
-  if (action1.team_type != nullptr) {
-    action1_team_list.Set_Selected_Index(action1.team_type->IniName);
+  if (action1.team_type() != nullptr) {
+    action1_team_list.Set_Selected_Index(action1.team_type()->IniName);
   } else {
     action1_team_list.Set_Selected_Index(0);
   }
-  if (action2.team_type != nullptr) {
-    action2_team_list.Set_Selected_Index(action2.team_type->IniName);
+  if (action2.team_type() != nullptr) {
+    action2_team_list.Set_Selected_Index(action2.team_type()->IniName);
   } else {
     action2_team_list.Set_Selected_Index(0);
   }
@@ -464,13 +464,13 @@ bool TriggerType::Edit() {
         TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
 
-  if (action1.trigger_type != nullptr) {
-    action1_trigger_list.Set_Selected_Index(action1.trigger_type->IniName);
+  if (action1.trigger_type() != nullptr) {
+    action1_trigger_list.Set_Selected_Index(action1.trigger_type()->IniName);
   } else {
     action1_trigger_list.Set_Selected_Index(0);
   }
-  if (action2.trigger_type != nullptr) {
-    action2_trigger_list.Set_Selected_Index(action2.trigger_type->IniName);
+  if (action2.trigger_type() != nullptr) {
+    action2_trigger_list.Set_Selected_Index(action2.trigger_type()->IniName);
   } else {
     action2_trigger_list.Set_Selected_Index(0);
   }
@@ -494,8 +494,8 @@ bool TriggerType::Edit() {
   action2_bool_list.Add_Item("OFF");
   action2_bool_list.Add_Item("ON");
 
-  action1_bool_list.Set_Selected_Index(action1.data.flag ? 1 : 0);
-  action2_bool_list.Set_Selected_Index(action2.data.flag ? 1 : 0);
+  action1_bool_list.Set_Selected_Index(action1.flag() ? 1 : 0);
+  action2_bool_list.Set_Selected_Index(action2.flag() ? 1 : 0);
 
   // Musical theme lists for the actions; the list index is the ThemeType.
   char action1_theme_text[kDescriptionSize] = "";
@@ -516,13 +516,13 @@ bool TriggerType::Edit() {
     action2_theme_list.Add_Item(ThemeClass::Full_Name(theme));
   }
 
-  if (ActionNeed(action1.type) == NEED_THEME) {
-    action1_theme_list.Set_Selected_Index(static_cast<int>(action1.data.theme));
+  if (ActionNeed(action1.type()) == NEED_THEME) {
+    action1_theme_list.Set_Selected_Index(static_cast<int>(action1.theme()));
   } else {
     action1_theme_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2.type) == NEED_THEME) {
-    action2_theme_list.Set_Selected_Index(static_cast<int>(action2.data.theme));
+  if (ActionNeed(action2.type()) == NEED_THEME) {
+    action2_theme_list.Set_Selected_Index(static_cast<int>(action2.theme()));
   } else {
     action2_theme_list.Set_Selected_Index(0);
   }
@@ -546,13 +546,13 @@ bool TriggerType::Edit() {
     action2_movie_list.Add_Item(VQName.at(movie));
   }
 
-  if (ActionNeed(action1.type) == NEED_MOVIE) {
-    action1_movie_list.Set_Selected_Index(static_cast<int>(action1.data.movie));
+  if (ActionNeed(action1.type()) == NEED_MOVIE) {
+    action1_movie_list.Set_Selected_Index(static_cast<int>(action1.movie()));
   } else {
     action1_movie_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2.type) == NEED_MOVIE) {
-    action2_movie_list.Set_Selected_Index(static_cast<int>(action2.data.movie));
+  if (ActionNeed(action2.type()) == NEED_MOVIE) {
+    action2_movie_list.Set_Selected_Index(static_cast<int>(action2.movie()));
   } else {
     action2_movie_list.Set_Selected_Index(0);
   }
@@ -576,13 +576,13 @@ bool TriggerType::Edit() {
     action2_sound_list.Add_Item(VocName(sound));
   }
 
-  if (ActionNeed(action1.type) == NEED_SOUND) {
-    action1_sound_list.Set_Selected_Index(static_cast<int>(action1.data.sound));
+  if (ActionNeed(action1.type()) == NEED_SOUND) {
+    action1_sound_list.Set_Selected_Index(static_cast<int>(action1.sound()));
   } else {
     action1_sound_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2.type) == NEED_SOUND) {
-    action2_sound_list.Set_Selected_Index(static_cast<int>(action2.data.sound));
+  if (ActionNeed(action2.type()) == NEED_SOUND) {
+    action2_sound_list.Set_Selected_Index(static_cast<int>(action2.sound()));
   } else {
     action2_sound_list.Set_Selected_Index(0);
   }
@@ -606,15 +606,13 @@ bool TriggerType::Edit() {
     action2_speech_list.Add_Item(VoxName(speech));
   }
 
-  if (ActionNeed(action1.type) == NEED_SPEECH) {
-    action1_speech_list.Set_Selected_Index(
-        static_cast<int>(action1.data.speech));
+  if (ActionNeed(action1.type()) == NEED_SPEECH) {
+    action1_speech_list.Set_Selected_Index(static_cast<int>(action1.speech()));
   } else {
     action1_speech_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2.type) == NEED_SPEECH) {
-    action2_speech_list.Set_Selected_Index(
-        static_cast<int>(action2.data.speech));
+  if (ActionNeed(action2.type()) == NEED_SPEECH) {
+    action2_speech_list.Set_Selected_Index(static_cast<int>(action2.speech()));
   } else {
     action2_speech_list.Set_Selected_Index(0);
   }
@@ -800,13 +798,13 @@ bool TriggerType::Edit() {
   } else {
     event2_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action1.type) == NEED_HOUSE) {
-    action1_house_list.Set_Selected_Index(static_cast<int>(action1.data.house));
+  if (ActionNeed(action1.type()) == NEED_HOUSE) {
+    action1_house_list.Set_Selected_Index(static_cast<int>(action1.house()));
   } else {
     action1_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2.type) == NEED_HOUSE) {
-    action2_house_list.Set_Selected_Index(static_cast<int>(action2.data.house));
+  if (ActionNeed(action2.type()) == NEED_HOUSE) {
+    action2_house_list.Set_Selected_Index(static_cast<int>(action2.house()));
   } else {
     action2_house_list.Set_Selected_Index(0);
   }
@@ -831,15 +829,15 @@ bool TriggerType::Edit() {
     action1_special_list.Add_Item(SpecialWeaponName.at(weapon));
     action2_special_list.Add_Item(SpecialWeaponName.at(weapon));
   }
-  if (magic_enum::enum_contains(action1.data.special)) {
+  if (magic_enum::enum_contains(action1.special())) {
     action1_special_list.Set_Selected_Index(
-        static_cast<int>(action1.data.special));
+        static_cast<int>(action1.special()));
   } else {
     action1_special_list.Set_Selected_Index(0);
   }
-  if (magic_enum::enum_contains(action2.data.special)) {
+  if (magic_enum::enum_contains(action2.special())) {
     action2_special_list.Set_Selected_Index(
-        static_cast<int>(action2.data.special));
+        static_cast<int>(action2.special()));
   } else {
     action2_special_list.Set_Selected_Index(0);
   }
@@ -864,15 +862,13 @@ bool TriggerType::Edit() {
     action1_quarry_list.Add_Item(QuarryName.at(quarry));
     action2_quarry_list.Add_Item(QuarryName.at(quarry));
   }
-  if (magic_enum::enum_contains(action1.data.quarry)) {
-    action1_quarry_list.Set_Selected_Index(
-        static_cast<int>(action1.data.quarry));
+  if (magic_enum::enum_contains(action1.quarry())) {
+    action1_quarry_list.Set_Selected_Index(static_cast<int>(action1.quarry()));
   } else {
     action1_quarry_list.Set_Selected_Index(0);
   }
-  if (magic_enum::enum_contains(action2.data.quarry)) {
-    action2_quarry_list.Set_Selected_Index(
-        static_cast<int>(action2.data.quarry));
+  if (magic_enum::enum_contains(action2.quarry())) {
+    action2_quarry_list.Set_Selected_Index(static_cast<int>(action2.quarry()));
   } else {
     action2_quarry_list.Set_Selected_Index(0);
   }
@@ -1516,59 +1512,58 @@ bool TriggerType::Edit() {
         // The first action and its data. `has_second_action` converts to
         // MULTI_ONLY or MULTI_AND.
         action_control = MultiStyle(has_second_action);
-        action1.type = *action1_list.Current_Item();
-        switch (ActionNeed(action1.type)) {
+        action1.set_type(*action1_list.Current_Item());
+        switch (ActionNeed(action1.type())) {
           case NEED_SPECIAL:
-            action1.data.special =
-                SpecialWeaponType(action1_special_list.Current_Index());
+            action1.set_special(
+                SpecialWeaponType(action1_special_list.Current_Index()));
             break;
 
           case NEED_HOUSE:
-            action1.data.house = HousesType(action1_house_list.Current_Index());
+            action1.set_house(HousesType(action1_house_list.Current_Index()));
             break;
 
           case NEED_TRIGGER:
-            action1.trigger_type =
-                TriggerType::FromName(SelectedName(action1_trigger_list));
+            action1.set_trigger_type(
+                TriggerType::FromName(SelectedName(action1_trigger_list)));
             break;
 
           case NEED_TEAM:
-            action1.team_type =
-                TeamTypeClass::From_Name(SelectedName(action1_team_list));
+            action1.set_team_type(
+                TeamTypeClass::From_Name(SelectedName(action1_team_list)));
             break;
 
           case NEED_NUMBER:
-            action1.data.value =
-                base::ParseIntegerOr<int>(action1_number_edit.Get_Text(), 0);
+            action1.set_value(
+                base::ParseIntegerOr<int>(action1_number_edit.Get_Text(), 0));
             break;
 
           case NEED_WAYPOINT:
-            action1.data.value = WaypointFromLetters(action1_waypoint_text);
+            action1.set_value(WaypointFromLetters(action1_waypoint_text));
             break;
 
           case NEED_BOOL:
-            action1.data.flag = action1_bool_list.Current_Index() != 0;
+            action1.set_flag(action1_bool_list.Current_Index() != 0);
             break;
 
           case NEED_THEME:
-            action1.data.theme = ThemeType(action1_theme_list.Current_Index());
+            action1.set_theme(ThemeType(action1_theme_list.Current_Index()));
             break;
 
           case NEED_SOUND:
-            action1.data.sound = VocType(action1_sound_list.Current_Index());
+            action1.set_sound(VocType(action1_sound_list.Current_Index()));
             break;
 
           case NEED_MOVIE:
-            action1.data.movie = VQType(action1_movie_list.Current_Index());
+            action1.set_movie(VQType(action1_movie_list.Current_Index()));
             break;
 
           case NEED_SPEECH:
-            action1.data.speech = VoxType(action1_speech_list.Current_Index());
+            action1.set_speech(VoxType(action1_speech_list.Current_Index()));
             break;
 
           case NEED_QUARRY:
-            action1.data.quarry =
-                QuarryType(action1_quarry_list.Current_Index());
+            action1.set_quarry(QuarryType(action1_quarry_list.Current_Index()));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:
@@ -1584,59 +1579,58 @@ bool TriggerType::Edit() {
         }
 
         // The second action and its data, stored even when it is not in use.
-        action2.type = *action2_list.Current_Item();
-        switch (ActionNeed(action2.type)) {
+        action2.set_type(*action2_list.Current_Item());
+        switch (ActionNeed(action2.type())) {
           case NEED_SPECIAL:
-            action2.data.special =
-                SpecialWeaponType(action2_special_list.Current_Index());
+            action2.set_special(
+                SpecialWeaponType(action2_special_list.Current_Index()));
             break;
 
           case NEED_HOUSE:
-            action2.data.house = HousesType(action2_house_list.Current_Index());
+            action2.set_house(HousesType(action2_house_list.Current_Index()));
             break;
 
           case NEED_TRIGGER:
-            action2.trigger_type =
-                TriggerType::FromName(SelectedName(action2_trigger_list));
+            action2.set_trigger_type(
+                TriggerType::FromName(SelectedName(action2_trigger_list)));
             break;
 
           case NEED_TEAM:
-            action2.team_type =
-                TeamTypeClass::From_Name(SelectedName(action2_team_list));
+            action2.set_team_type(
+                TeamTypeClass::From_Name(SelectedName(action2_team_list)));
             break;
 
           case NEED_NUMBER:
-            action2.data.value =
-                base::ParseIntegerOr<int>(action2_number_edit.Get_Text(), 0);
+            action2.set_value(
+                base::ParseIntegerOr<int>(action2_number_edit.Get_Text(), 0));
             break;
 
           case NEED_WAYPOINT:
-            action2.data.value = WaypointFromLetters(action2_waypoint_text);
+            action2.set_value(WaypointFromLetters(action2_waypoint_text));
             break;
 
           case NEED_BOOL:
-            action2.data.flag = action2_bool_list.Current_Index() != 0;
+            action2.set_flag(action2_bool_list.Current_Index() != 0);
             break;
 
           case NEED_THEME:
-            action2.data.theme = ThemeType(action2_theme_list.Current_Index());
+            action2.set_theme(ThemeType(action2_theme_list.Current_Index()));
             break;
 
           case NEED_MOVIE:
-            action2.data.movie = VQType(action2_movie_list.Current_Index());
+            action2.set_movie(VQType(action2_movie_list.Current_Index()));
             break;
 
           case NEED_SOUND:
-            action2.data.sound = VocType(action2_sound_list.Current_Index());
+            action2.set_sound(VocType(action2_sound_list.Current_Index()));
             break;
 
           case NEED_SPEECH:
-            action2.data.speech = VoxType(action2_speech_list.Current_Index());
+            action2.set_speech(VoxType(action2_speech_list.Current_Index()));
             break;
 
           case NEED_QUARRY:
-            action2.data.quarry =
-                QuarryType(action2_quarry_list.Current_Index());
+            action2.set_quarry(QuarryType(action2_quarry_list.Current_Index()));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:

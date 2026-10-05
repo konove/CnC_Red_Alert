@@ -188,9 +188,9 @@ template void TEventClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TriggerAction::Serialize(Archive& ar) {
-  ar(type, game::HeapSlotPtr(team_type, TheObjectHeaps().team_type()),
-     game::HeapSlotPtr(trigger_type, TheObjectHeaps().trigger_type()),
-     data.value);
+  ar(type_, game::HeapSlotPtr(team_type_, TheObjectHeaps().team_type()),
+     game::HeapSlotPtr(trigger_type_, TheObjectHeaps().trigger_type()),
+     data_.value);
 }
 
 template void TriggerAction::Serialize(ArchiveWriter&);

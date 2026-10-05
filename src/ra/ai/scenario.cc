@@ -638,9 +638,9 @@ void Fill_In_Data() {
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
     const TriggerType* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
-    if (tp->action1.type == TriggerActionType::kAllowWin ||
+    if (tp->action1.type() == TriggerActionType::kAllowWin ||
         (tp->action_control != MULTI_ONLY &&
-         tp->action2.type == TriggerActionType::kAllowWin)) {
+         tp->action2.type() == TriggerActionType::kAllowWin)) {
       HouseClass::As_Pointer(tp->house)->Blockage++;
     }
   }
@@ -1864,10 +1864,15 @@ void DropUnfilledTypeReferences() {
     }
     for (TriggerAction* action :
          {&trigger_type.action1, &trigger_type.action2}) {
-      DropIfUnfilled(action->team_type, team_types, trigger_type.Name(),
+      TeamTypeClass* action_team = action->team_type();
+      DropIfUnfilled(action_team, team_types, trigger_type.Name(),
                      "action team");
-      DropIfUnfilled(action->trigger_type, trigger_types, trigger_type.Name(),
+      action->set_team_type(action_team);
+
+      TriggerType* action_trigger = action->trigger_type();
+      DropIfUnfilled(action_trigger, trigger_types, trigger_type.Name(),
                      "action trigger");
+      action->set_trigger_type(action_trigger);
     }
   }
 }

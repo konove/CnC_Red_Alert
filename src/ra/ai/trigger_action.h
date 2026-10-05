@@ -23,7 +23,9 @@
 #define CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 
 #include <string>
+#include <utility>
 
+#include "absl/base/attributes.h"
 #include "base/strings/tokenizer.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
@@ -98,33 +100,56 @@ NeedType ActionNeed(TriggerActionType action);
 // type holds two, and carries them out with Perform() when it springs.
 class TriggerAction {
  public:
-  TriggerActionType type{TriggerActionType::kNone};  // Action to perform.
+  // The action to perform.
+  [[nodiscard]] TriggerActionType type() const { return type_; }
+  void set_type(const TriggerActionType type) { type_ = type; }
 
-  TeamTypeClass* team_type = nullptr;  // Team type for this action (if needed).
+  // The team type the action is for; nullptr when it needs none or the
+  // scenario named one that does not exist.
+  [[nodiscard]] TeamTypeClass* team_type() const { return team_type_; }
+  void set_team_type(TeamTypeClass* team_type) { team_type_ = team_type; }
 
-  // Trigger type for this action (if needed).
-  TriggerType* trigger_type = nullptr;
+  // The trigger type the action is for; nullptr when it needs none.
+  [[nodiscard]] TriggerType* trigger_type() const { return trigger_type_; }
+  void set_trigger_type(TriggerType* trigger_type) {
+    trigger_type_ = trigger_type;
+  }
 
-  // The action's value, read through the member ActionNeed() names. The INI
-  // file and saved games store `value`; the one-byte members read its low byte,
-  // which is what the shipped scenarios rely on (see trigger_action_test.cc).
-  union {
-    ThemeType theme;            // Musical theme.
-    VocType sound;              // Sound effect.
-    VoxType speech;             // Speech identifier.
-    HousesType house;           // House to be affected.
-    SpecialWeaponType special;  // Special weapon ability.
-    QuarryType quarry;          // Preferred target for attack.
-    VQType movie;               // The movie to play.
-    bool flag;                  // Boolean value.
-    int value;  // Waypoint, global, text ID or timer tenths of a
-                // minute; -1 when unset.
-  } data{.value = -1};
+  // The action's value, read through the accessor ActionNeed() names. They
+  // share storage: the INI file and saved games store value(), and the others
+  // read and write its low byte.
+  [[nodiscard]] ThemeType theme() const { return data_.theme; }
+  void set_theme(const ThemeType theme) { data_.theme = theme; }
+  [[nodiscard]] VocType sound() const { return data_.sound; }
+  void set_sound(const VocType sound) { data_.sound = sound; }
+  [[nodiscard]] VoxType speech() const { return data_.speech; }
+  void set_speech(const VoxType speech) { data_.speech = speech; }
+  [[nodiscard]] HousesType house() const { return data_.house; }
+  void set_house(const HousesType house) { data_.house = house; }
+  [[nodiscard]] SpecialWeaponType special() const { return data_.special; }
+  void set_special(const SpecialWeaponType special) { data_.special = special; }
+  [[nodiscard]] QuarryType quarry() const { return data_.quarry; }
+  void set_quarry(const QuarryType quarry) { data_.quarry = quarry; }
+  [[nodiscard]] VQType movie() const { return data_.movie; }
+  void set_movie(const VQType movie) { data_.movie = movie; }
+  [[nodiscard]] bool flag() const { return data_.flag; }
+  void set_flag(const bool flag) { data_.flag = flag; }
+  // Waypoint, global, text ID or timer tenths of a minute; -1 when unset.
+  [[nodiscard]] int value() const { return data_.value; }
+  void set_value(const int value) { data_.value = value; }
 
   // Trigger name read from a pre-version-2 INI, where triggers may name ones
-  // that load later. TriggerType::ReadIni resolves it into trigger_type
-  // once every trigger exists; empty otherwise. Not saved.
-  std::string pending_trigger_name;
+  // that load later; empty otherwise. Not saved.
+  [[nodiscard]] const std::string& pending_trigger_name() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return pending_trigger_name_;
+  }
+
+  // Returns pending_trigger_name() and clears it. TriggerType::ReadIni() calls
+  // this once every trigger exists and sets trigger_type() from the name.
+  [[nodiscard]] std::string TakePendingTriggerName() {
+    return std::exchange(pending_trigger_name_, {});
+  }
 
   // Clears team_type or trigger_type when `target` is the team type or trigger
   // type it points to; called when that type is being destroyed.
@@ -154,6 +179,28 @@ class TriggerAction {
   // be created, nothing to destroy), so the trigger is not counted as used.
   bool Perform(HousesType house, ObjectClass* object, int trigger_id,
                Cell cell);
+
+ private:
+  TriggerActionType type_{TriggerActionType::kNone};
+  TeamTypeClass* team_type_ = nullptr;
+  TriggerType* trigger_type_ = nullptr;
+
+  // The action's value; type_ decides which member means something (see
+  // ActionNeed()). The one-byte members alias the low byte of `value`, which
+  // is what the shipped scenarios rely on (see trigger_action_test.cc).
+  union {
+    ThemeType theme;            // Musical theme.
+    VocType sound;              // Sound effect.
+    VoxType speech;             // Speech identifier.
+    HousesType house;           // House to be affected.
+    SpecialWeaponType special;  // Special weapon ability.
+    QuarryType quarry;          // Preferred target for attack.
+    VQType movie;               // The movie to play.
+    bool flag;                  // Boolean value.
+    int value;
+  } data_{.value = -1};
+
+  std::string pending_trigger_name_;
 };
 
 extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);

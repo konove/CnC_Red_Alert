@@ -62,7 +62,7 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
-  EXPECT_EQ(trigger_type_->action1.type, TriggerActionType::kNone);
+  EXPECT_EQ(trigger_type_->action1.type(), TriggerActionType::kNone);
   EXPECT_EQ(trigger_type_->ID, 0);
 }
 
@@ -110,15 +110,15 @@ TEST_F(TriggerTypeTest, FromNameGivesNullForAnUnknownOrEmptyName) {
 TEST_F(TriggerTypeTest, DetachClearsTheTeamTypeOfItsEventsAndActions) {
   trigger_type_->event1.Team = team_type_;
   trigger_type_->event2.Team = team_type_;
-  trigger_type_->action1.team_type = team_type_;
-  trigger_type_->action2.team_type = team_type_;
+  trigger_type_->action1.set_team_type(team_type_);
+  trigger_type_->action2.set_team_type(team_type_);
 
   trigger_type_->Detach(team_type_->As_Target());
 
   EXPECT_EQ(trigger_type_->event1.Team, nullptr);
   EXPECT_EQ(trigger_type_->event2.Team, nullptr);
-  EXPECT_EQ(trigger_type_->action1.team_type, nullptr);
-  EXPECT_EQ(trigger_type_->action2.team_type, nullptr);
+  EXPECT_EQ(trigger_type_->action1.team_type(), nullptr);
+  EXPECT_EQ(trigger_type_->action2.team_type(), nullptr);
 }
 
 TEST_F(TriggerTypeTest, DetachLeavesAnotherTeamTypeAlone) {
@@ -133,13 +133,13 @@ TEST_F(TriggerTypeTest, DetachLeavesAnotherTeamTypeAlone) {
 
 TEST_F(TriggerTypeTest, DetachLeavesItsNamesakesAlone) {
   trigger_type_->event1.Team = team_type_;
-  trigger_type_->action1.trigger_type = trigger_type_;
+  trigger_type_->action1.set_trigger_type(trigger_type_);
 
   // A trigger type in the same slot number as the team type.
   trigger_type_->Detach(trigger_type_->As_Target());
 
   EXPECT_EQ(trigger_type_->event1.Team, team_type_);
-  EXPECT_EQ(trigger_type_->action1.trigger_type, nullptr);
+  EXPECT_EQ(trigger_type_->action1.trigger_type(), nullptr);
 }
 
 TEST_F(TriggerTypeTest, OneEventAttachesWhereThatEventDoes) {
@@ -180,13 +180,13 @@ TEST_F(TriggerTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(type->event1.Data.Value, 50);
   EXPECT_EQ(type->event2.Event, TEVENT_LEAVES_MAP);
   EXPECT_EQ(type->event2.Team, team_type_);
-  EXPECT_EQ(type->action1.type, TriggerActionType::kCreateTeam);
-  EXPECT_EQ(type->action1.team_type, team_type_);
-  EXPECT_EQ(type->action1.trigger_type, nullptr);
-  EXPECT_EQ(type->action1.data.value, 7);
-  EXPECT_EQ(type->action2.type, TriggerActionType::kForceTrigger);
-  EXPECT_EQ(type->action2.team_type, nullptr);
-  EXPECT_EQ(type->action2.trigger_type, trigger_type_);
+  EXPECT_EQ(type->action1.type(), TriggerActionType::kCreateTeam);
+  EXPECT_EQ(type->action1.team_type(), team_type_);
+  EXPECT_EQ(type->action1.trigger_type(), nullptr);
+  EXPECT_EQ(type->action1.value(), 7);
+  EXPECT_EQ(type->action2.type(), TriggerActionType::kForceTrigger);
+  EXPECT_EQ(type->action2.team_type(), nullptr);
+  EXPECT_EQ(type->action2.trigger_type(), trigger_type_);
 }
 
 TEST_F(TriggerTypeTest, ToIniEntryWritesWhatReadIniEntryReads) {
@@ -208,7 +208,7 @@ TEST_F(TriggerTypeTest, MissingFieldsReadAsZero) {
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
-  EXPECT_EQ(trigger_type_->action1.type, TriggerActionType::kNone);
+  EXPECT_EQ(trigger_type_->action1.type(), TriggerActionType::kNone);
 }
 
 TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
@@ -227,8 +227,8 @@ TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
   ASSERT_NE(dawn, nullptr);
   EXPECT_EQ(wave->event1.Data.Value, 50);
   // The trigger in slot 0, which is the first entry: itself.
-  EXPECT_EQ(wave->action2.trigger_type, wave);
-  EXPECT_EQ(dawn->action1.type, TriggerActionType::kWin);
+  EXPECT_EQ(wave->action2.trigger_type(), wave);
+  EXPECT_EQ(dawn->action1.type(), TriggerActionType::kWin);
   EXPECT_EQ(dawn->event1.Data.Value, 5);
 }
 
@@ -272,12 +272,12 @@ TEST_F(TriggerTypeTest, ReadIniResolvesTriggerNamesInTheOldFormats) {
   const TriggerType* const last = TriggerType::FromName("last");
   ASSERT_NE(first, nullptr);
   ASSERT_NE(last, nullptr);
-  EXPECT_EQ(first->action1.trigger_type, last);
-  EXPECT_TRUE(first->action1.pending_trigger_name.empty());
+  EXPECT_EQ(first->action1.trigger_type(), last);
+  EXPECT_TRUE(first->action1.pending_trigger_name().empty());
   // A name no trigger type has resolves to none.
-  EXPECT_EQ(first->action2.trigger_type, nullptr);
-  EXPECT_TRUE(first->action2.pending_trigger_name.empty());
-  EXPECT_EQ(last->action1.trigger_type, nullptr);
+  EXPECT_EQ(first->action2.trigger_type(), nullptr);
+  EXPECT_TRUE(first->action2.pending_trigger_name().empty());
+  EXPECT_EQ(last->action1.trigger_type(), nullptr);
 }
 
 TEST_F(TriggerTypeTest, WriteIniReplacesTheSectionAndClearsTheOldOne) {

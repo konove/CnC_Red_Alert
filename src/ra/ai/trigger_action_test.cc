@@ -37,21 +37,21 @@ namespace {
 // the original game read, through a one-byte enum, as SPC_NUCLEAR_BOMB.
 TEST(TriggerActionDataTest, SpecialWeaponReadsTheLowByteOfTheIniValue) {
   TriggerAction action;
-  action.data.value = -255;
-  EXPECT_EQ(action.data.special, SPC_NUCLEAR_BOMB);
-  action.data.value = -252;
-  EXPECT_EQ(action.data.special, SPC_PARA_INFANTRY);
-  action.data.value = -1;
-  EXPECT_EQ(action.data.special, SPC_NONE);
+  action.set_value(-255);
+  EXPECT_EQ(action.special(), SPC_NUCLEAR_BOMB);
+  action.set_value(-252);
+  EXPECT_EQ(action.special(), SPC_PARA_INFANTRY);
+  action.set_value(-1);
+  EXPECT_EQ(action.special(), SPC_NONE);
 }
 
 // SCG10EA's "lch3" trigger plays movie -170, which the original read as 86.
 TEST(TriggerActionDataTest, MovieReadsTheLowByteOfTheIniValue) {
   TriggerAction action;
-  action.data.value = -170;
-  EXPECT_EQ(action.data.movie, static_cast<VQType>(86));
-  action.data.value = -1;
-  EXPECT_EQ(action.data.movie, VQ_NONE);
+  action.set_value(-170);
+  EXPECT_EQ(action.movie(), static_cast<VQType>(86));
+  action.set_value(-1);
+  EXPECT_EQ(action.movie(), VQ_NONE);
 }
 
 // A Game whose only house heap is empty: no house the actions name exists.
@@ -67,15 +67,15 @@ class TriggerActionTest : public GameFixture {
 // A trigger may belong to a house the scenario does not have.
 TEST_F(TriggerActionTest, ActionsOnTheTriggersHouseSkipAMissingHouse) {
   TriggerAction action;
-  action.type = TriggerActionType::kBaseBuilding;
-  action.data.flag = true;
+  action.set_type(TriggerActionType::kBaseBuilding);
+  action.set_flag(true);
   EXPECT_TRUE(Perform(action));
 
-  action.type = TriggerActionType::kOneSpecial;
-  action.data.special = SPC_NUCLEAR_BOMB;
+  action.set_type(TriggerActionType::kOneSpecial);
+  action.set_special(SPC_NUCLEAR_BOMB);
   EXPECT_TRUE(Perform(action));
 
-  action.type = TriggerActionType::kFullSpecial;
+  action.set_type(TriggerActionType::kFullSpecial);
   EXPECT_TRUE(Perform(action));
 }
 
@@ -84,10 +84,10 @@ TEST_F(TriggerActionTest, ActionsOnTheNamedHouseSkipAMissingHouse) {
        {TriggerActionType::kAllHunt, TriggerActionType::kBeginProduction,
         TriggerActionType::kFireSale, TriggerActionType::kAutocreate}) {
     TriggerAction action;
-    action.type = type;
-    action.data.house = HOUSE_GREECE;
+    action.set_type(type);
+    action.set_house(HOUSE_GREECE);
     EXPECT_TRUE(Perform(action));
-    action.data.house = HOUSE_NONE;
+    action.set_house(HOUSE_NONE);
     EXPECT_TRUE(Perform(action));
   }
 }
@@ -96,11 +96,11 @@ TEST_F(TriggerActionTest, ActionsOnTheNamedHouseSkipAMissingHouse) {
 // exist.
 TEST_F(TriggerActionTest, TeamActionsSkipAMissingTeam) {
   TriggerAction action;
-  action.type = TriggerActionType::kCreateTeam;
+  action.set_type(TriggerActionType::kCreateTeam);
   EXPECT_TRUE(Perform(action));
-  action.type = TriggerActionType::kDestroyTeam;
+  action.set_type(TriggerActionType::kDestroyTeam);
   EXPECT_TRUE(Perform(action));
-  action.type = TriggerActionType::kReinforcements;
+  action.set_type(TriggerActionType::kReinforcements);
   EXPECT_FALSE(Perform(action));
 }
 
@@ -108,18 +108,18 @@ TEST_F(TriggerActionTest, ForceTriggerDoesNothingWhenNoTriggerCanBeMade) {
   TheObjectHeaps().trigger_type().Reset(1);
   TheObjectHeaps().trigger().Reset(0);
   TriggerAction action;
-  action.type = TriggerActionType::kForceTrigger;
-  action.trigger_type = base::NewPooled<TriggerType>();
-  ASSERT_NE(action.trigger_type, nullptr);
+  action.set_type(TriggerActionType::kForceTrigger);
+  action.set_trigger_type(base::NewPooled<TriggerType>());
+  ASSERT_NE(action.trigger_type(), nullptr);
   EXPECT_TRUE(Perform(action));
 }
 
 TEST_F(TriggerActionTest, TextTriggerSkipsAnIdWithNoText) {
   TriggerAction action;
-  action.type = TriggerActionType::kTextTrigger;
-  action.data.value = -1;
+  action.set_type(TriggerActionType::kTextTrigger);
+  action.set_value(-1);
   EXPECT_TRUE(Perform(action));
-  action.data.value = 0;
+  action.set_value(0);
   EXPECT_TRUE(Perform(action));
 }
 
@@ -208,99 +208,99 @@ class TriggerActionGameTest : public TriggerActionTest {
 
 TEST_F(TriggerActionGameTest, DetachClearsOnlyTheTypeBeingDestroyed) {
   TriggerAction action;
-  action.team_type = team_type_;
-  action.trigger_type = trigger_type_;
+  action.set_team_type(team_type_);
+  action.set_trigger_type(trigger_type_);
 
   action.Detach(Target{});
-  EXPECT_EQ(action.team_type, team_type_);
-  EXPECT_EQ(action.trigger_type, trigger_type_);
+  EXPECT_EQ(action.team_type(), team_type_);
+  EXPECT_EQ(action.trigger_type(), trigger_type_);
 
   action.Detach(team_type_->As_Target());
-  EXPECT_EQ(action.team_type, nullptr);
-  EXPECT_EQ(action.trigger_type, trigger_type_);
+  EXPECT_EQ(action.team_type(), nullptr);
+  EXPECT_EQ(action.trigger_type(), trigger_type_);
 
   action.Detach(trigger_type_->As_Target());
-  EXPECT_EQ(action.trigger_type, nullptr);
+  EXPECT_EQ(action.trigger_type(), nullptr);
 }
 
 TEST_F(TriggerActionGameTest, DetachLeavesAnotherTeamOrTriggerTypeAlone) {
   TriggerAction action;
-  action.team_type = team_type_;
-  action.trigger_type = trigger_type_;
+  action.set_team_type(team_type_);
+  action.set_trigger_type(trigger_type_);
 
   action.Detach(base::NewPooled<TeamTypeClass>()->As_Target());
   action.Detach(base::NewPooled<TriggerType>()->As_Target());
 
-  EXPECT_EQ(action.team_type, team_type_);
-  EXPECT_EQ(action.trigger_type, trigger_type_);
+  EXPECT_EQ(action.team_type(), team_type_);
+  EXPECT_EQ(action.trigger_type(), trigger_type_);
 }
 
 TEST_F(TriggerActionGameTest, TheIniEntryNumbersTheTeamAndTheTrigger) {
   TriggerAction action;
-  action.type = TriggerActionType::kCreateTeam;
-  action.team_type = team_type_;
-  action.data.value = 7;
+  action.set_type(TriggerActionType::kCreateTeam);
+  action.set_team_type(team_type_);
+  action.set_value(7);
   EXPECT_EQ(action.ToIniEntry(), "4,0,-1,7");
 
-  action.type = TriggerActionType::kForceTrigger;
-  action.team_type = nullptr;
-  action.trigger_type = trigger_type_;
-  action.data.value = -1;
+  action.set_type(TriggerActionType::kForceTrigger);
+  action.set_team_type(nullptr);
+  action.set_trigger_type(trigger_type_);
+  action.set_value(-1);
   EXPECT_EQ(action.ToIniEntry(), "22,-1,0,-1");
 }
 
 TEST_F(TriggerActionGameTest, TheCurrentFormatReadsWhatToIniEntryWrites) {
   const TriggerAction action = Read("22,0,0,5", 2);
 
-  EXPECT_EQ(action.type, TriggerActionType::kForceTrigger);
-  EXPECT_EQ(action.team_type, team_type_);
-  EXPECT_EQ(action.trigger_type, trigger_type_);
-  EXPECT_EQ(action.data.value, 5);
-  EXPECT_TRUE(action.pending_trigger_name.empty());
+  EXPECT_EQ(action.type(), TriggerActionType::kForceTrigger);
+  EXPECT_EQ(action.team_type(), team_type_);
+  EXPECT_EQ(action.trigger_type(), trigger_type_);
+  EXPECT_EQ(action.value(), 5);
+  EXPECT_TRUE(action.pending_trigger_name().empty());
   EXPECT_EQ(Read(action.ToIniEntry(), 2).ToIniEntry(), "22,0,0,5");
 }
 
 TEST_F(TriggerActionGameTest, TheCurrentFormatReadsNoTeamOrTriggerAsNull) {
   const TriggerAction action = Read("1,-1,-1,2", 2);
 
-  EXPECT_EQ(action.type, TriggerActionType::kWin);
-  EXPECT_EQ(action.team_type, nullptr);
-  EXPECT_EQ(action.trigger_type, nullptr);
-  EXPECT_EQ(action.data.value, 2);
+  EXPECT_EQ(action.type(), TriggerActionType::kWin);
+  EXPECT_EQ(action.team_type(), nullptr);
+  EXPECT_EQ(action.trigger_type(), nullptr);
+  EXPECT_EQ(action.value(), 2);
 }
 
 TEST_F(TriggerActionGameTest, TheOldFormatsNameTheTeamAndKeepTheTriggerName) {
   for (const int format : {0, 1}) {
     const TriggerAction action = Read("4,TANKS,alarm,3", format);
 
-    EXPECT_EQ(action.type, TriggerActionType::kCreateTeam);
-    EXPECT_EQ(action.team_type, team_type_);
+    EXPECT_EQ(action.type(), TriggerActionType::kCreateTeam);
+    EXPECT_EQ(action.team_type(), team_type_);
     // TriggerType::ReadIni() resolves the name later.
-    EXPECT_EQ(action.trigger_type, nullptr);
-    EXPECT_EQ(action.pending_trigger_name, "alarm");
-    EXPECT_EQ(action.data.value, 3);
+    EXPECT_EQ(action.trigger_type(), nullptr);
+    EXPECT_EQ(action.pending_trigger_name(), "alarm");
+    EXPECT_EQ(action.value(), 3);
   }
 }
 
 TEST_F(TriggerActionGameTest, TheOldFormatsLeaveAMissingTeamNull) {
   const TriggerAction action = Read("4,nobody,None,0", 0);
 
-  EXPECT_EQ(action.type, TriggerActionType::kCreateTeam);
-  EXPECT_EQ(action.team_type, nullptr);
+  EXPECT_EQ(action.type(), TriggerActionType::kCreateTeam);
+  EXPECT_EQ(action.team_type(), nullptr);
 }
 
 // SCU31EA and others store a sound as 0xFFFF00xx.
 TEST_F(TriggerActionGameTest, ASoundOutOfRangeIsReadAsItsLowByte) {
-  EXPECT_EQ(Read("19,-1,-1,-65399", 2).data.value, 137);
-  EXPECT_EQ(Read("19,-1,-1,65673", 2).data.value, 137);
-  EXPECT_EQ(Read("19,-1,-1,137", 2).data.value, 137);
+  EXPECT_EQ(Read("19,-1,-1,-65399", 2).value(), 137);
+  EXPECT_EQ(Read("19,-1,-1,65673", 2).value(), 137);
+  EXPECT_EQ(Read("19,-1,-1,137", 2).value(), 137);
   // Only a sound is corrected.
-  EXPECT_EQ(Read("11,-1,-1,-65399", 2).data.value, -65399);
+  EXPECT_EQ(Read("11,-1,-1,-65399", 2).value(), -65399);
 }
 
 // 0xFF is no sound either, so the value is kept as it is.
 TEST_F(TriggerActionGameTest, ASoundWhoseLowByteIsNoSoundIsKept) {
-  EXPECT_EQ(Read("19,-1,-1,-1", 2).data.value, -1);
+  EXPECT_EQ(Read("19,-1,-1,-1", 2).value(), -1);
 }
 
 TEST_F(TriggerActionGameTest, NoActionSucceedsAndChangesNothing) {
@@ -308,7 +308,7 @@ TEST_F(TriggerActionGameTest, NoActionSucceedsAndChangesNothing) {
        {TriggerActionType::kNone, TriggerActionType::kWinLose,
         TriggerActionType::kAllowWin}) {
     TriggerAction action;
-    action.type = type;
+    action.set_type(type);
     EXPECT_TRUE(Perform(action));
   }
   EXPECT_FALSE(house_->IsToWin);
@@ -317,82 +317,82 @@ TEST_F(TriggerActionGameTest, NoActionSucceedsAndChangesNothing) {
 
 TEST_F(TriggerActionGameTest, HouseActionsChangeTheTriggersHouse) {
   TriggerAction action;
-  action.type = TriggerActionType::kPreferredTarget;
-  action.data.quarry = QUARRY_HARVESTERS;
+  action.set_type(TriggerActionType::kPreferredTarget);
+  action.set_quarry(QUARRY_HARVESTERS);
   EXPECT_TRUE(Perform(action));
   EXPECT_EQ(house_->PreferredTarget, QUARRY_HARVESTERS);
 
-  action.type = TriggerActionType::kBaseBuilding;
-  action.data.value = 0;
-  action.data.flag = true;
+  action.set_type(TriggerActionType::kBaseBuilding);
+  action.set_value(0);
+  action.set_flag(true);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsBaseBuilding);
 }
 
 TEST_F(TriggerActionGameTest, PreferredTargetSkipsAMissingHouse) {
   TriggerAction action;
-  action.type = TriggerActionType::kPreferredTarget;
-  action.data.quarry = QUARRY_HARVESTERS;
+  action.set_type(TriggerActionType::kPreferredTarget);
+  action.set_quarry(QUARRY_HARVESTERS);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_EQ(house_->PreferredTarget, QUARRY_ANYTHING);
 }
 
 TEST_F(TriggerActionGameTest, NamedHouseActionsChangeThatHouse) {
   TriggerAction action;
-  action.data.value = 0;
-  action.data.house = HOUSE_USSR;
+  action.set_value(0);
+  action.set_house(HOUSE_USSR);
 
-  action.type = TriggerActionType::kBeginProduction;
+  action.set_type(TriggerActionType::kBeginProduction);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_TRUE(house_->IsStarted);
 
-  action.type = TriggerActionType::kFireSale;
+  action.set_type(TriggerActionType::kFireSale);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_EQ(house_->State, STATE_ENDGAME);
 
-  action.type = TriggerActionType::kAutocreate;
+  action.set_type(TriggerActionType::kAutocreate);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_TRUE(house_->IsAlerted);
 }
 
 TEST_F(TriggerActionGameTest, GlobalsAreSetAndCleared) {
   TriggerAction action;
-  action.type = TriggerActionType::kSetGlobal;
-  action.data.value = 3;
+  action.set_type(TriggerActionType::kSetGlobal);
+  action.set_value(3);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(base::At(TheScenario().GlobalFlags, 3));
 
-  action.type = TriggerActionType::kClearGlobal;
+  action.set_type(TriggerActionType::kClearGlobal);
   EXPECT_TRUE(Perform(action));
   EXPECT_FALSE(base::At(TheScenario().GlobalFlags, 3));
 }
 
 TEST_F(TriggerActionGameTest, WinAndLoseFlagThePlayerByTheNamedHouse) {
   TriggerAction action;
-  action.data.value = 0;
-  action.type = TriggerActionType::kWin;
-  action.data.house = HOUSE_USSR;
+  action.set_value(0);
+  action.set_type(TriggerActionType::kWin);
+  action.set_house(HOUSE_USSR);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsToWin);
 
   house_->IsToWin = false;
-  action.type = TriggerActionType::kLose;
-  action.data.house = HOUSE_GREECE;
+  action.set_type(TriggerActionType::kLose);
+  action.set_house(HOUSE_GREECE);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsToWin);
 }
 
 TEST_F(TriggerActionGameTest, TheOtherHouseWinningMeansThePlayerLoses) {
   TriggerAction action;
-  action.data.value = 0;
-  action.type = TriggerActionType::kWin;
-  action.data.house = HOUSE_GREECE;
+  action.set_value(0);
+  action.set_type(TriggerActionType::kWin);
+  action.set_house(HOUSE_GREECE);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsToLose);
 
   house_->IsToLose = false;
-  action.type = TriggerActionType::kLose;
-  action.data.house = HOUSE_USSR;
+  action.set_type(TriggerActionType::kLose);
+  action.set_house(HOUSE_USSR);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsToLose);
 }
@@ -406,8 +406,8 @@ TEST_F(TriggerActionGameTest, DestroyTriggerDeletesEveryTriggerOfTheType) {
   ASSERT_EQ(TheObjectHeaps().trigger().Count(), 4);
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyTrigger;
-  action.trigger_type = trigger_type_;
+  action.set_type(TriggerActionType::kDestroyTrigger);
+  action.set_trigger_type(trigger_type_);
   EXPECT_TRUE(Perform(action));
 
   ASSERT_EQ(TheObjectHeaps().trigger().Count(), 1);
@@ -417,7 +417,7 @@ TEST_F(TriggerActionGameTest, DestroyTriggerDeletesEveryTriggerOfTheType) {
 TEST_F(TriggerActionGameTest, DestroyTriggerWithNoTypeDeletesNothing) {
   base::NewPooled<TriggerClass>(trigger_type_);
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyTrigger;
+  action.set_type(TriggerActionType::kDestroyTrigger);
   EXPECT_TRUE(Perform(action));
   EXPECT_EQ(TheObjectHeaps().trigger().Count(), 1);
 }
@@ -425,8 +425,8 @@ TEST_F(TriggerActionGameTest, DestroyTriggerWithNoTypeDeletesNothing) {
 // The forced trigger has no action of its own, so springing it only makes it.
 TEST_F(TriggerActionGameTest, ForceTriggerMakesATriggerOfTheType) {
   TriggerAction action;
-  action.type = TriggerActionType::kForceTrigger;
-  action.trigger_type = trigger_type_;
+  action.set_type(TriggerActionType::kForceTrigger);
+  action.set_trigger_type(trigger_type_);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(Perform(action));
   // A volatile trigger is deleted once it has sprung.
@@ -438,8 +438,8 @@ TEST_F(TriggerActionGameTest, DestroyTeamRemovesTheTeamsOfTheType) {
   ASSERT_EQ(TheObjectHeaps().team().Count(), 1);
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyTeam;
-  action.team_type = team_type_;
+  action.set_type(TriggerActionType::kDestroyTeam);
+  action.set_team_type(team_type_);
   EXPECT_TRUE(Perform(action));
 
   EXPECT_EQ(TheObjectHeaps().team().Count(), 0);
@@ -447,8 +447,8 @@ TEST_F(TriggerActionGameTest, DestroyTeamRemovesTheTeamsOfTheType) {
 
 TEST_F(TriggerActionGameTest, CreateTeamMakesOneAsScenarioSetup) {
   TriggerAction action;
-  action.type = TriggerActionType::kCreateTeam;
-  action.team_type = team_type_;
+  action.set_type(TriggerActionType::kCreateTeam);
+  action.set_team_type(team_type_);
   EXPECT_TRUE(Perform(action));
 
   EXPECT_EQ(TheObjectHeaps().team().Count(), 1);
@@ -458,14 +458,14 @@ TEST_F(TriggerActionGameTest, CreateTeamMakesOneAsScenarioSetup) {
 // A team type with no members brings nothing on.
 TEST_F(TriggerActionGameTest, ReinforcementsReportATeamThatCannotArrive) {
   TriggerAction action;
-  action.type = TriggerActionType::kReinforcements;
-  action.team_type = team_type_;
+  action.set_type(TriggerActionType::kReinforcements);
+  action.set_team_type(team_type_);
   EXPECT_FALSE(Perform(action));
 }
 
 TEST_F(TriggerActionGameTest, DestroyObjectFailsWithNothingToDestroy) {
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyObject;
+  action.set_type(TriggerActionType::kDestroyObject);
   EXPECT_FALSE(Perform(action));
 }
 
@@ -476,7 +476,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectKillsTheObjectTheTriggerSprangOn) {
   ASSERT_GT(jeep->Strength, 0);
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyObject;
+  action.set_type(TriggerActionType::kDestroyObject);
   EXPECT_TRUE(action.Perform(HOUSE_USSR, jeep, -1, Cell{}));
 
   EXPECT_EQ(TheObjectHeaps().unit().Count(), 0);
@@ -489,7 +489,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectIgnoresAnObjectAlreadyDead) {
   jeep->IsActive = false;
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyObject;
+  action.set_type(TriggerActionType::kDestroyObject);
   EXPECT_FALSE(action.Perform(HOUSE_USSR, jeep, -1, Cell{}));
 
   jeep->IsActive = true;
@@ -506,7 +506,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectKillsEverythingTheTriggerIsOn) {
   bystander->Trigger = other;
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyObject;
+  action.set_type(TriggerActionType::kDestroyObject);
   // Nothing sprang it, so the action itself fails.
   EXPECT_FALSE(action.Perform(HOUSE_USSR, nullptr,
                               TheObjectHeaps().trigger().SlotIndexOf(trigger),
@@ -519,20 +519,20 @@ TEST_F(TriggerActionGameTest, DestroyObjectKillsEverythingTheTriggerIsOn) {
 
 TEST_F(TriggerActionGameTest, TheTimerStartsStopsAndIsSetInTenthsOfAMinute) {
   TriggerAction action;
-  action.type = TriggerActionType::kSetTimer;
-  action.data.value = 20;
+  action.set_type(TriggerActionType::kSetTimer);
+  action.set_value(20);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(TheScenario().MissionTimer.IsRunning());
   EXPECT_EQ(TheScenario().MissionTimer.Remaining(), 2 * kTicksPerMinute);
 
-  action.type = TriggerActionType::kStopTimer;
+  action.set_type(TriggerActionType::kStopTimer);
   EXPECT_TRUE(Perform(action));
   EXPECT_FALSE(TheScenario().MissionTimer.IsRunning());
   // Stopping a stopped timer changes nothing.
   EXPECT_TRUE(Perform(action));
   EXPECT_FALSE(TheScenario().MissionTimer.IsRunning());
 
-  action.type = TriggerActionType::kStartTimer;
+  action.set_type(TriggerActionType::kStartTimer);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(TheScenario().MissionTimer.IsRunning());
   EXPECT_TRUE(Perform(action));
@@ -545,14 +545,14 @@ TEST_F(TriggerActionGameTest, TheTimerIsExtendedAndShortenedDownToZero) {
   TheScenario().MissionTimer.Stop();
 
   TriggerAction action;
-  action.type = TriggerActionType::kAddTimer;
-  action.data.value = 5;
+  action.set_type(TriggerActionType::kAddTimer);
+  action.set_value(5);
   EXPECT_TRUE(Perform(action));
   EXPECT_EQ(TheScenario().MissionTimer.Remaining(),
             kTicksPerMinute + (kTicksPerMinute / 2));
 
-  action.type = TriggerActionType::kSubTimer;
-  action.data.value = 10;
+  action.set_type(TriggerActionType::kSubTimer);
+  action.set_value(10);
   EXPECT_TRUE(Perform(action));
   EXPECT_EQ(TheScenario().MissionTimer.Remaining(), kTicksPerMinute / 2);
 
@@ -564,16 +564,16 @@ TEST_F(TriggerActionGameTest, ASpecialWeaponIsGivenOnceOrForGood) {
   // The sidebar button is the player's; give the weapon to another house.
   auto* greece = base::NewPooled<HouseClass>(HOUSE_GREECE);
   TriggerAction action;
-  action.data.value = 0;
-  action.data.special = SPC_NUCLEAR_BOMB;
+  action.set_value(0);
+  action.set_special(SPC_NUCLEAR_BOMB);
 
-  action.type = TriggerActionType::kOneSpecial;
+  action.set_type(TriggerActionType::kOneSpecial);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_TRUE(greece->SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Present());
   EXPECT_TRUE(greece->SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time());
 
-  action.data.special = SPC_SONAR_PULSE;
-  action.type = TriggerActionType::kFullSpecial;
+  action.set_special(SPC_SONAR_PULSE);
+  action.set_type(TriggerActionType::kFullSpecial);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
   EXPECT_TRUE(greece->SuperWeapon.at(SPC_SONAR_PULSE).Is_Present());
   EXPECT_FALSE(greece->SuperWeapon.at(SPC_SONAR_PULSE).Is_One_Time());
@@ -582,21 +582,21 @@ TEST_F(TriggerActionGameTest, ASpecialWeaponIsGivenOnceOrForGood) {
 
 TEST_F(TriggerActionGameTest, AllHuntReachesTheNamedHouse) {
   TriggerAction action;
-  action.type = TriggerActionType::kAllHunt;
-  action.data.value = 0;
-  action.data.house = HOUSE_USSR;
+  action.set_type(TriggerActionType::kAllHunt);
+  action.set_value(0);
+  action.set_house(HOUSE_USSR);
   EXPECT_TRUE(Perform(action, HOUSE_GREECE));
 }
 
 TEST_F(TriggerActionGameTest, LaunchNukesWithNoSilosDoesNothing) {
   TriggerAction action;
-  action.type = TriggerActionType::kLaunchNukes;
+  action.set_type(TriggerActionType::kLaunchNukes);
   EXPECT_TRUE(Perform(action));
 }
 
 TEST_F(TriggerActionGameTest, RevealAllMakesThePlayerSeeTheWholeMap) {
   TriggerAction action;
-  action.type = TriggerActionType::kRevealAll;
+  action.set_type(TriggerActionType::kRevealAll);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(house_->IsVisionary);
   EXPECT_TRUE(TheMap().at(Cell::FromXY(10, 10)).IsMapped);
@@ -608,11 +608,11 @@ TEST_F(TriggerActionGameTest, RevealActionsDoNothingForAPlayerWhoSeesAll) {
   house_->IsVisionary = true;
   base::At(TheScenario().Waypoint, 0) = Cell::FromXY(10, 10);
   TriggerAction action;
-  action.data.value = 0;
+  action.set_value(0);
   for (const TriggerActionType type :
        {TriggerActionType::kRevealSome, TriggerActionType::kRevealZone,
         TriggerActionType::kRevealAll}) {
-    action.type = type;
+    action.set_type(type);
     EXPECT_TRUE(Perform(action));
   }
   EXPECT_FALSE(TheMap().at(Cell::FromXY(10, 10)).IsMapped);
@@ -621,8 +621,8 @@ TEST_F(TriggerActionGameTest, RevealActionsDoNothingForAPlayerWhoSeesAll) {
 TEST_F(TriggerActionGameTest, RevealZoneMapsTheCellsOfTheWaypointsZone) {
   base::At(TheScenario().Waypoint, 0) = Cell::FromXY(10, 10);
   TriggerAction action;
-  action.type = TriggerActionType::kRevealZone;
-  action.data.value = 0;
+  action.set_type(TriggerActionType::kRevealZone);
+  action.set_value(0);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(TheMap().at(Cell::FromXY(10, 10)).IsMapped);
 }
@@ -631,8 +631,8 @@ TEST_F(TriggerActionGameTest, RevealSomeMapsAroundTheWaypoint) {
   base::At(TheScenario().Waypoint, 0) = Cell::FromXY(10, 10);
   TheRules().GapShroudRadius = 3;
   TriggerAction action;
-  action.type = TriggerActionType::kRevealSome;
-  action.data.value = 0;
+  action.set_type(TriggerActionType::kRevealSome);
+  action.set_value(0);
   EXPECT_TRUE(Perform(action));
   EXPECT_TRUE(TheMap().at(Cell::FromXY(10, 10)).IsMapped);
   EXPECT_FALSE(TheMap().at(Cell::FromXY(40, 40)).IsMapped);
@@ -640,7 +640,7 @@ TEST_F(TriggerActionGameTest, RevealSomeMapsAroundTheWaypoint) {
 
 TEST_F(TriggerActionGameTest, CreepShadowRuns) {
   TriggerAction action;
-  action.type = TriggerActionType::kCreepShadow;
+  action.set_type(TriggerActionType::kCreepShadow);
   EXPECT_TRUE(Perform(action));
 }
 
@@ -657,7 +657,7 @@ TEST_F(TriggerActionGameTest, LaunchNukesOrdersEverySiloToFire) {
   const MissionType barracks_orders = barracks->MissionQueue;
 
   TriggerAction action;
-  action.type = TriggerActionType::kLaunchNukes;
+  action.set_type(TriggerActionType::kLaunchNukes);
   EXPECT_TRUE(Perform(action));
 
   EXPECT_EQ(silo->MissionQueue, MISSION_MISSILE);
@@ -669,7 +669,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectOnACellWithNoBridgeStillSucceeds) {
   auto* jeep = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
 
   TriggerAction action;
-  action.type = TriggerActionType::kDestroyObject;
+  action.set_type(TriggerActionType::kDestroyObject);
   EXPECT_TRUE(action.Perform(HOUSE_USSR, jeep, -1, Cell::FromXY(10, 10)));
 
   EXPECT_EQ(TheObjectHeaps().unit().Count(), 0);

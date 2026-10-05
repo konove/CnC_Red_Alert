@@ -209,9 +209,9 @@ void TriggerType::ReadIni(const engine::file::IniFile& ini) {
 
       for (TriggerAction* action :
            {&trigger_type->action1, &trigger_type->action2}) {
-        if (!action->pending_trigger_name.empty()) {
-          action->trigger_type = FromName(action->pending_trigger_name);
-          action->pending_trigger_name.clear();
+        if (const std::string name = action->TakePendingTriggerName();
+            !name.empty()) {
+          action->set_trigger_type(FromName(name));
         }
       }
     }

@@ -147,64 +147,65 @@ constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
 }  // namespace
 
 void TriggerAction::Detach(const Target target) {
-  if (target.kind() == RTTI_TEAMTYPE && team_type == target.AsTeamType()) {
-    team_type = nullptr;
+  if (target.kind() == RTTI_TEAMTYPE && team_type_ == target.AsTeamType()) {
+    team_type_ = nullptr;
   }
   if (target.kind() == RTTI_TRIGGERTYPE &&
-      trigger_type == target.AsTriggerType()) {
-    trigger_type = nullptr;
+      trigger_type_ == target.AsTriggerType()) {
+    trigger_type_ = nullptr;
   }
 }
 
 std::string TriggerAction::ToIniEntry() const {
-  return std::format("{},{},{},{}", std::to_underlying(type),
-                     TheObjectHeaps().team_type().PositionOf(team_type),
-                     TheObjectHeaps().trigger_type().PositionOf(trigger_type),
-                     data.value);
+  return std::format("{},{},{},{}", std::to_underlying(type_),
+                     TheObjectHeaps().team_type().PositionOf(team_type_),
+                     TheObjectHeaps().trigger_type().PositionOf(trigger_type_),
+                     data_.value);
 }
 
 void TriggerAction::ReadIni(base::Tokenizer& tokens) {
-  type = static_cast<TriggerActionType>(
+  type_ = static_cast<TriggerActionType>(
       base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   if (const int format = TheWorld().new_ini_format();
       format != 0 && format != 1) {
     // Format 2 and later: the team and the trigger are positions in their
-    // type lists (ToIniEntry() writes this form).
-    team_type = TheObjectHeaps().team_type().SlotOrNull(
+    // type_ lists (ToIniEntry() writes this form).
+    team_type_ = TheObjectHeaps().team_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
-    trigger_type = TheObjectHeaps().trigger_type().SlotOrNull(
+    trigger_type_ = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   } else {
     // The shipped scenarios: the team and the trigger are given by name.
-    team_type = TeamTypeClass::From_Name(tokens.Next());
-    if (ActionNeed(type) == NEED_TEAM && team_type == nullptr) {
-      DLOG(WARNING) << "ReadIni: " << ActionName(type)
+    team_type_ = TeamTypeClass::From_Name(tokens.Next());
+    if (ActionNeed(type_) == NEED_TEAM && team_type_ == nullptr) {
+      DLOG(WARNING) << "ReadIni: " << ActionName(type_)
                     << " names a team that does not exist";
     }
 
     // The named trigger may not have been read yet, so keep the name;
     // TriggerType::ReadIni() resolves it once every trigger exists.
-    pending_trigger_name = tokens.Next();
+    pending_trigger_name_ = tokens.Next();
   }
 
-  data.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  data_.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
   // Fix corrupted sound values from original game scenario files. Some INI
   // files contain values like -65399 (0xFFFF0089) where only the low byte (137)
   // is the valid VocType index. The original read the value through a one-byte
   // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
-  // data members - movie, special, speech, house - still get it from the
+  // data_ members - movie, special, speech, house - still get it from the
   // union.)
-  if (type == TriggerActionType::kPlaySound &&
-      (data.value < 0 ||
-       std::cmp_greater_equal(data.value, magic_enum::enum_count<VocType>()))) {
+  if (type_ == TriggerActionType::kPlaySound &&
+      (data_.value < 0 ||
+       std::cmp_greater_equal(data_.value,
+                              magic_enum::enum_count<VocType>()))) {
     const int low_byte =
-        static_cast<int>(static_cast<uint32_t>(data.value) & 0xFFU);
+        static_cast<int>(static_cast<uint32_t>(data_.value) & 0xFFU);
     if (std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
-      DLOG(WARNING) << "ReadIni: Fixed corrupted sound value " << data.value
+      DLOG(WARNING) << "ReadIni: Fixed corrupted sound value " << data_.value
                     << " -> " << low_byte;
-      data.value = low_byte;
+      data_.value = low_byte;
     }
   }
 }
@@ -222,11 +223,11 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     object = nullptr;
   }
 
-  switch (type) {
+  switch (type_) {
     // Display a line of the mission's tutorial text over the tactical map.
     // An ID with no text displays nothing.
     case TriggerActionType::kTextTrigger: {
-      const char* message = TheAssets().tutorial_text(data.value);
+      const char* message = TheAssets().tutorial_text(data_.value);
       if (message == nullptr) {
         break;
       }
@@ -252,7 +253,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Set the preferred target for the house.
     case TriggerActionType::kPreferredTarget:
       if (owner != nullptr) {
-        owner->PreferredTarget = data.quarry;
+        owner->PreferredTarget = data_.quarry;
       }
       break;
 
@@ -261,7 +262,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // scenario does not have (or HOUSE_NONE) is left alone.
     case TriggerActionType::kBaseBuilding:
       if (owner != nullptr) {
-        owner->IsBaseBuilding = data.flag;
+        owner->IsBaseBuilding = data_.flag;
       }
       break;
 
@@ -273,15 +274,15 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Set or clear a scenario global.
     case TriggerActionType::kSetGlobal:
     case TriggerActionType::kClearGlobal:
-      TheScenario().Set_Global_To(data.value,
-                                  type == TriggerActionType::kSetGlobal);
+      TheScenario().Set_Global_To(data_.value,
+                                  type_ == TriggerActionType::kSetGlobal);
       break;
 
     // Reveal the map around the waypoint to the player. Nothing to do once the
     // player sees everything.
     case TriggerActionType::kRevealSome:
       if (!ThePlayer()->IsVisionary) {
-        TheMap().Sight_From(base::At(TheScenario().Waypoint, data.value),
+        TheMap().Sight_From(base::At(TheScenario().Waypoint, data_.value),
                             TheRules().GapShroudRadius, ThePlayer(), false);
       }
       break;
@@ -293,7 +294,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     case TriggerActionType::kRevealZone:
       if (!ThePlayer()->IsVisionary) {
         const int zone = TheMap()
-                             .at(base::At(TheScenario().Waypoint, data.value))
+                             .at(base::At(TheScenario().Waypoint, data_.value))
                              .Zones.at(MZONE_CRUSHER);
 
         for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
@@ -339,7 +340,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // for the two actions below.
     case TriggerActionType::kAddTimer:
       TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
-                                     (data.value * kTicksPerTimerUnit));
+                                     (data_.value * kTicksPerTimerUnit));
       TheMap().Redraw_Tab();
       break;
 
@@ -347,13 +348,13 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     case TriggerActionType::kSubTimer:
       TheScenario().MissionTimer.Set(
           std::max<int64_t>(0, TheScenario().MissionTimer.Remaining() -
-                                   (data.value * kTicksPerTimerUnit)));
+                                   (data_.value * kTicksPerTimerUnit)));
       TheMap().Redraw_Tab();
       break;
 
     // Set the mission timer to the value specified.
     case TriggerActionType::kSetTimer:
-      TheScenario().MissionTimer.Set(data.value * kTicksPerTimerUnit);
+      TheScenario().MissionTimer.Set(data_.value * kTicksPerTimerUnit);
       TheScenario().MissionTimer.Start();
       TheMap().Redraw_Tab();
       break;
@@ -364,7 +365,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     case TriggerActionType::kPlayMovie:
       game::TheMouse().Hide();
       TheScreen().visible_view().Clear();
-      Play_Movie(data.movie, THEME_NONE, true);
+      Play_Movie(data_.movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
       TheMap().Flag_To_Redraw(true);
       game::TheMouse().Show();
@@ -372,17 +373,17 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Play a sound effect.
     case TriggerActionType::kPlaySound:
-      PlaySoundEffect(data.sound);
+      PlaySoundEffect(data_.sound);
       break;
 
     // Play a musical theme.
     case TriggerActionType::kPlayMusic:
-      TheTheme().Queue_Song(data.theme);
+      TheTheme().Queue_Song(data_.theme);
       break;
 
-    // Play the speech data specified.
+    // Play the speech data_ specified.
     case TriggerActionType::kPlaySpeech:
-      Speak(data.speech);
+      Speak(data_.speech);
       break;
 
     // Give the special weapon to the house, for one use or for good, and put
@@ -392,26 +393,26 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       if (owner == nullptr) {
         break;
       }
-      owner->SuperWeapon.at(data.special)
-          .Enable(type == TriggerActionType::kOneSpecial, false);
+      owner->SuperWeapon.at(data_.special)
+          .Enable(type_ == TriggerActionType::kOneSpecial, false);
 
       if (ThePlayer() == owner) {
-        TheMap().Add(RTTI_SPECIAL, static_cast<int>(data.special));
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(data_.special));
         TheMap().Column[1].Flag_To_Redraw();
       }
       break;
 
-    // Destroying a trigger means that all triggers of that type will be
+    // Destroying a trigger means that all triggers of that type_ will be
     // destroyed. Deleting one closes the gap in the heap's in-use list, so the
     // index is stepped back to look at the trigger that moved into it. The
     // springing trigger may be among them; TriggerClass::Spring() checks for
     // that when this returns.
     case TriggerActionType::kDestroyTrigger:
-      if (trigger_type != nullptr) {
+      if (trigger_type_ != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
           TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(index);
-          if (trigger->Class == trigger_type) {
+          if (trigger->Class == trigger_type_) {
             Detach_This_From_All(trigger->As_Target());
             base::DeletePooled(trigger);
             index--;
@@ -420,11 +421,11 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       }
       break;
 
-    // A forced trigger will force an existing trigger of that type or will
-    // create a trigger of that type and then force it to be sprung. Nothing
+    // A forced trigger will force an existing trigger of that type_ or will
+    // create a trigger of that type_ and then force it to be sprung. Nothing
     // is sprung when the trigger heap is full and none could be made.
     case TriggerActionType::kForceTrigger:
-      if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type);
+      if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type_);
           forced_trigger != nullptr) {
         forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
       }
@@ -433,13 +434,14 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Place a smoke marker at the waypoint specified.
     case TriggerActionType::kDropZoneFlare:
       base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, data.value).Center());
+          ANIM_LZ_SMOKE,
+          base::At(TheScenario().Waypoint, data_.value).Center());
       break;
 
     // Flag the house specified as the winner. Only the player is ever flagged:
     // the house says whether the player is the one who won or lost.
     case TriggerActionType::kWin:
-      if (data.house == ThePlayer()->Class->House) {
+      if (data_.house == ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
         ThePlayer()->Flag_To_Lose();
@@ -448,7 +450,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Flag the house specified as the loser; the mirror image of the above.
     case TriggerActionType::kLose:
-      if (data.house != ThePlayer()->Class->House) {
+      if (data_.house != ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
         ThePlayer()->Flag_To_Lose();
@@ -457,7 +459,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // This will enable production to begin for the house specified.
     case TriggerActionType::kBeginProduction:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
           specified_house != nullptr) {
         specified_house->Begin_Production();
       }
@@ -466,7 +468,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Cause all buildings to be sold and all units to go into hunt mode. The
     // house's AI does both once it is in the endgame state.
     case TriggerActionType::kFireSale:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
           specified_house != nullptr) {
         specified_house->State = STATE_ENDGAME;
       }
@@ -474,39 +476,39 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Begin the team autocreate logic for the house specified.
     case TriggerActionType::kAutocreate:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
           specified_house != nullptr) {
         specified_house->IsAlerted = true;
       }
       break;
 
     // Manually create the team specified. Counting as scenario setup makes
-    // Create_One_Of() ignore the type's limit on how many teams may exist.
-    // team_type is null when the INI named a team that does not exist; the
+    // Create_One_Of() ignore the type_'s limit on how many teams may exist.
+    // team_type_ is null when the INI named a team that does not exist; the
     // three team actions then do nothing.
     case TriggerActionType::kCreateTeam:
-      if (team_type != nullptr) {
+      if (team_type_ != nullptr) {
         TheWorld().scenario_init()++;
-        team_type->Create_One_Of();
+        team_type_->Create_One_Of();
         TheWorld().scenario_init()--;
       }
       break;
 
-    // Destroy all teams of the type specified.
+    // Destroy all teams of the type_ specified.
     case TriggerActionType::kDestroyTeam:
-      if (team_type != nullptr) {
-        team_type->Destroy_All_Of();
+      if (team_type_ != nullptr) {
+        team_type_->Destroy_All_Of();
       }
       break;
 
     // Create a reinforcement of the team specified.
     case TriggerActionType::kReinforcements:
-      success = team_type != nullptr && DeliverReinforcements(team_type);
+      success = team_type_ != nullptr && DeliverReinforcements(team_type_);
       break;
 
     // Force all units of the house specified to go into hunt mode.
     case TriggerActionType::kAllHunt:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
+      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
           specified_house != nullptr) {
         specified_house->Do_All_To_Hunt();
       }
@@ -540,7 +542,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // No action. TriggerActionType::kAllowWin is not carried out here:
-    // TriggerClass and the scenario's win check look for it by type.
+    // TriggerClass and the scenario's win check look for it by type_.
     case TriggerActionType::kNone:
     case TriggerActionType::kWinLose:
     case TriggerActionType::kAllowWin:
