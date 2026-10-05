@@ -90,8 +90,8 @@ void Destroy(ObjectClass& object) {
 // detached first so its death does not spring the trigger again.
 // TODO: an object that Take_Damage() deletes on the spot closes its gap in the
 // heap's in-use list, and the loop then steps over the object that moved into
-// it. Stepping back (as TACTION_DESTROY_TRIGGER does) would kill objects that
-// survive today.
+// it. Stepping back (as TriggerActionType::kDestroyTrigger does) would kill
+// objects that survive today.
 template <class Heap>
 void DestroyObjectsAttachedTo(Heap& heap, const TriggerClass* trigger) {
   for (int index = 0; index < heap.Count(); index++) {
@@ -196,7 +196,7 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
   // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
   // data members - movie, special, speech, house - still get it from the
   // union.)
-  if (type == TACTION_PLAY_SOUND &&
+  if (type == TriggerActionType::kPlaySound &&
       (data.value < 0 ||
        std::cmp_greater_equal(data.value, magic_enum::enum_count<VocType>()))) {
     const int low_byte =
@@ -225,7 +225,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
   switch (type) {
     // Display a line of the mission's tutorial text over the tactical map.
     // An ID with no text displays nothing.
-    case TACTION_TEXT_TRIGGER: {
+    case TriggerActionType::kTextTrigger: {
       const char* message = TheAssets().tutorial_text(data.value);
       if (message == nullptr) {
         break;
@@ -238,7 +238,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     }
 
     // Launch nuclear missiles (duds) from every missile silo, whoever owns it.
-    case TACTION_LAUNCH_NUKES: {
+    case TriggerActionType::kLaunchNukes: {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
         BuildingClass* silo = TheObjectHeaps().building().ActiveAt(index);
@@ -250,7 +250,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     }
 
     // Set the preferred target for the house.
-    case TACTION_PREFERRED_TARGET:
+    case TriggerActionType::kPreferredTarget:
       if (owner != nullptr) {
         owner->PreferredTarget = data.quarry;
       }
@@ -259,26 +259,27 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Turn the house's computer base building on or off. When on, the computer
     // builds bases and units. As for every house action here, a house the
     // scenario does not have (or HOUSE_NONE) is left alone.
-    case TACTION_BASE_BUILDING:
+    case TriggerActionType::kBaseBuilding:
       if (owner != nullptr) {
         owner->IsBaseBuilding = data.flag;
       }
       break;
 
     // Cause the shadow to creep back one step.
-    case TACTION_CREEP_SHADOW:
+    case TriggerActionType::kCreepShadow:
       TheMap().Encroach_Shadow();
       break;
 
     // Set or clear a scenario global.
-    case TACTION_SET_GLOBAL:
-    case TACTION_CLEAR_GLOBAL:
-      TheScenario().Set_Global_To(data.value, type == TACTION_SET_GLOBAL);
+    case TriggerActionType::kSetGlobal:
+    case TriggerActionType::kClearGlobal:
+      TheScenario().Set_Global_To(data.value,
+                                  type == TriggerActionType::kSetGlobal);
       break;
 
     // Reveal the map around the waypoint to the player. Nothing to do once the
     // player sees everything.
-    case TACTION_REVEAL_SOME:
+    case TriggerActionType::kRevealSome:
       if (!ThePlayer()->IsVisionary) {
         TheMap().Sight_From(base::At(TheScenario().Waypoint, data.value),
                             TheRules().GapShroudRadius, ThePlayer(), false);
@@ -289,7 +290,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // whole islands or bodies of water. Zones are compared as the heaviest
     // vehicles see them (MZONE_CRUSHER), where crushable walls do not divide
     // the land.
-    case TACTION_REVEAL_ZONE:
+    case TriggerActionType::kRevealZone:
       if (!ThePlayer()->IsVisionary) {
         const int zone = TheMap()
                              .at(base::At(TheScenario().Waypoint, data.value))
@@ -307,7 +308,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Reveal the entire map.
-    case TACTION_REVEAL_ALL:
+    case TriggerActionType::kRevealAll:
       if (!ThePlayer()->IsVisionary) {
         ThePlayer()->IsVisionary = true;
         for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
@@ -319,7 +320,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Start the mission timer.
-    case TACTION_START_TIMER:
+    case TriggerActionType::kStartTimer:
       if (!TheScenario().MissionTimer.IsRunning()) {
         TheScenario().MissionTimer.Start();
         TheMap().Redraw_Tab();
@@ -327,7 +328,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Stop the mission timer. This will really just suspend the timer.
-    case TACTION_STOP_TIMER:
+    case TriggerActionType::kStopTimer:
       if (TheScenario().MissionTimer.IsRunning()) {
         TheScenario().MissionTimer.Stop();
         TheMap().Redraw_Tab();
@@ -336,14 +337,14 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Add time to the mission timer. The value is in tenths of a minute, as
     // for the two actions below.
-    case TACTION_ADD_TIMER:
+    case TriggerActionType::kAddTimer:
       TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
                                      (data.value * kTicksPerTimerUnit));
       TheMap().Redraw_Tab();
       break;
 
     // Remove time from the mission timer, stopping at zero.
-    case TACTION_SUB_TIMER:
+    case TriggerActionType::kSubTimer:
       TheScenario().MissionTimer.Set(
           std::max<int64_t>(0, TheScenario().MissionTimer.Remaining() -
                                    (data.value * kTicksPerTimerUnit)));
@@ -351,7 +352,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Set the mission timer to the value specified.
-    case TACTION_SET_TIMER:
+    case TriggerActionType::kSetTimer:
       TheScenario().MissionTimer.Set(data.value * kTicksPerTimerUnit);
       TheScenario().MissionTimer.Start();
       TheMap().Redraw_Tab();
@@ -360,7 +361,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Play a movie immediately. The game is suspended while it plays; the
     // movie leaves its own palette behind, so the game's is restored and the
     // whole map redrawn.
-    case TACTION_PLAY_MOVIE:
+    case TriggerActionType::kPlayMovie:
       game::TheMouse().Hide();
       TheScreen().visible_view().Clear();
       Play_Movie(data.movie, THEME_NONE, true);
@@ -370,29 +371,29 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Play a sound effect.
-    case TACTION_PLAY_SOUND:
+    case TriggerActionType::kPlaySound:
       PlaySoundEffect(data.sound);
       break;
 
     // Play a musical theme.
-    case TACTION_PLAY_MUSIC:
+    case TriggerActionType::kPlayMusic:
       TheTheme().Queue_Song(data.theme);
       break;
 
     // Play the speech data specified.
-    case TACTION_PLAY_SPEECH:
+    case TriggerActionType::kPlaySpeech:
       Speak(data.speech);
       break;
 
     // Give the special weapon to the house, for one use or for good, and put
     // its button on the player's sidebar.
-    case TACTION_1_SPECIAL:
-    case TACTION_FULL_SPECIAL:
+    case TriggerActionType::kOneSpecial:
+    case TriggerActionType::kFullSpecial:
       if (owner == nullptr) {
         break;
       }
       owner->SuperWeapon.at(data.special)
-          .Enable(type == TACTION_1_SPECIAL, false);
+          .Enable(type == TriggerActionType::kOneSpecial, false);
 
       if (ThePlayer() == owner) {
         TheMap().Add(RTTI_SPECIAL, static_cast<int>(data.special));
@@ -405,7 +406,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // index is stepped back to look at the trigger that moved into it. The
     // springing trigger may be among them; TriggerClass::Spring() checks for
     // that when this returns.
-    case TACTION_DESTROY_TRIGGER:
+    case TriggerActionType::kDestroyTrigger:
       if (trigger_type != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
@@ -422,7 +423,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // A forced trigger will force an existing trigger of that type or will
     // create a trigger of that type and then force it to be sprung. Nothing
     // is sprung when the trigger heap is full and none could be made.
-    case TACTION_FORCE_TRIGGER:
+    case TriggerActionType::kForceTrigger:
       if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type);
           forced_trigger != nullptr) {
         forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
@@ -430,14 +431,14 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Place a smoke marker at the waypoint specified.
-    case TACTION_DZ:
+    case TriggerActionType::kDropZoneFlare:
       base::NewPooled<AnimClass>(
           ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, data.value).Center());
       break;
 
     // Flag the house specified as the winner. Only the player is ever flagged:
     // the house says whether the player is the one who won or lost.
-    case TACTION_WIN:
+    case TriggerActionType::kWin:
       if (data.house == ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
@@ -446,7 +447,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Flag the house specified as the loser; the mirror image of the above.
-    case TACTION_LOSE:
+    case TriggerActionType::kLose:
       if (data.house != ThePlayer()->Class->House) {
         ThePlayer()->Flag_To_Win();
       } else {
@@ -455,7 +456,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // This will enable production to begin for the house specified.
-    case TACTION_BEGIN_PRODUCTION:
+    case TriggerActionType::kBeginProduction:
       if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->Begin_Production();
@@ -464,7 +465,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Cause all buildings to be sold and all units to go into hunt mode. The
     // house's AI does both once it is in the endgame state.
-    case TACTION_FIRE_SALE:
+    case TriggerActionType::kFireSale:
       if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->State = STATE_ENDGAME;
@@ -472,7 +473,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Begin the team autocreate logic for the house specified.
-    case TACTION_AUTOCREATE:
+    case TriggerActionType::kAutocreate:
       if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->IsAlerted = true;
@@ -483,7 +484,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
     // Create_One_Of() ignore the type's limit on how many teams may exist.
     // team_type is null when the INI named a team that does not exist; the
     // three team actions then do nothing.
-    case TACTION_CREATE_TEAM:
+    case TriggerActionType::kCreateTeam:
       if (team_type != nullptr) {
         TheWorld().scenario_init()++;
         team_type->Create_One_Of();
@@ -492,19 +493,19 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
 
     // Destroy all teams of the type specified.
-    case TACTION_DESTROY_TEAM:
+    case TriggerActionType::kDestroyTeam:
       if (team_type != nullptr) {
         team_type->Destroy_All_Of();
       }
       break;
 
     // Create a reinforcement of the team specified.
-    case TACTION_REINFORCEMENTS:
+    case TriggerActionType::kReinforcements:
       success = team_type != nullptr && DeliverReinforcements(team_type);
       break;
 
     // Force all units of the house specified to go into hunt mode.
-    case TACTION_ALL_HUNT:
+    case TriggerActionType::kAllHunt:
       if (HouseClass* specified_house = HouseClass::As_Pointer(data.house);
           specified_house != nullptr) {
         specified_house->Do_All_To_Hunt();
@@ -513,7 +514,7 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
 
     // Destroy the object the trigger sprang on, and report failure when there
     // is none (so the trigger is not used up).
-    case TACTION_DESTROY_OBJECT:
+    case TriggerActionType::kDestroyObject:
       if (object != nullptr) {
         Destroy(*object);
       } else {
@@ -538,11 +539,11 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       }
       break;
 
-    // No action. TACTION_ALLOWWIN is not carried out here: TriggerClass and
-    // the scenario's win check look for it by type.
-    case TACTION_NONE:
-    case TriggerActionType::TACTION_WINLOSE:
-    case TriggerActionType::TACTION_ALLOWWIN:
+    // No action. TriggerActionType::kAllowWin is not carried out here:
+    // TriggerClass and the scenario's win check look for it by type.
+    case TriggerActionType::kNone:
+    case TriggerActionType::kWinLose:
+    case TriggerActionType::kAllowWin:
     default:
       break;
   }
@@ -555,67 +556,67 @@ const char* ActionName(const TriggerActionType action) {
 
 NeedType ActionNeed(const TriggerActionType action) {
   switch (action) {
-    case TACTION_1_SPECIAL:
-    case TACTION_FULL_SPECIAL:
+    case TriggerActionType::kOneSpecial:
+    case TriggerActionType::kFullSpecial:
       return NEED_SPECIAL;
 
-    case TACTION_FIRE_SALE:
-    case TACTION_WIN:
-    case TACTION_LOSE:
-    case TACTION_ALL_HUNT:
-    case TACTION_BEGIN_PRODUCTION:
-    case TACTION_AUTOCREATE:
+    case TriggerActionType::kFireSale:
+    case TriggerActionType::kWin:
+    case TriggerActionType::kLose:
+    case TriggerActionType::kAllHunt:
+    case TriggerActionType::kBeginProduction:
+    case TriggerActionType::kAutocreate:
       return NEED_HOUSE;
 
-    case TACTION_BASE_BUILDING:
+    case TriggerActionType::kBaseBuilding:
       return NEED_BOOL;
 
-    case TACTION_CREATE_TEAM:
-    case TACTION_DESTROY_TEAM:
-    case TACTION_REINFORCEMENTS:
+    case TriggerActionType::kCreateTeam:
+    case TriggerActionType::kDestroyTeam:
+    case TriggerActionType::kReinforcements:
       return NEED_TEAM;
 
-    case TACTION_FORCE_TRIGGER:
-    case TACTION_DESTROY_TRIGGER:
+    case TriggerActionType::kForceTrigger:
+    case TriggerActionType::kDestroyTrigger:
       return NEED_TRIGGER;
 
-    case TACTION_DZ:
-    case TACTION_REVEAL_SOME:
-    case TACTION_REVEAL_ZONE:
+    case TriggerActionType::kDropZoneFlare:
+    case TriggerActionType::kRevealSome:
+    case TriggerActionType::kRevealZone:
       return NEED_WAYPOINT;
 
-    case TACTION_PLAY_MUSIC:
+    case TriggerActionType::kPlayMusic:
       return NEED_THEME;
 
-    case TACTION_PLAY_MOVIE:
+    case TriggerActionType::kPlayMovie:
       return NEED_MOVIE;
 
-    case TACTION_PLAY_SOUND:
+    case TriggerActionType::kPlaySound:
       return NEED_SOUND;
 
-    case TACTION_PLAY_SPEECH:
+    case TriggerActionType::kPlaySpeech:
       return NEED_SPEECH;
 
-    case TACTION_TEXT_TRIGGER:
-    case TACTION_ADD_TIMER:
-    case TACTION_SUB_TIMER:
-    case TACTION_SET_TIMER:
-    case TACTION_SET_GLOBAL:
-    case TACTION_CLEAR_GLOBAL:
+    case TriggerActionType::kTextTrigger:
+    case TriggerActionType::kAddTimer:
+    case TriggerActionType::kSubTimer:
+    case TriggerActionType::kSetTimer:
+    case TriggerActionType::kSetGlobal:
+    case TriggerActionType::kClearGlobal:
       return NEED_NUMBER;
 
-    case TACTION_PREFERRED_TARGET:
+    case TriggerActionType::kPreferredTarget:
       return NEED_QUARRY;
 
-    case TriggerActionType::TACTION_NONE:
-    case TriggerActionType::TACTION_WINLOSE:
-    case TriggerActionType::TACTION_ALLOWWIN:
-    case TriggerActionType::TACTION_REVEAL_ALL:
-    case TriggerActionType::TACTION_START_TIMER:
-    case TriggerActionType::TACTION_STOP_TIMER:
-    case TriggerActionType::TACTION_CREEP_SHADOW:
-    case TriggerActionType::TACTION_DESTROY_OBJECT:
-    case TriggerActionType::TACTION_LAUNCH_NUKES:
+    case TriggerActionType::kNone:
+    case TriggerActionType::kWinLose:
+    case TriggerActionType::kAllowWin:
+    case TriggerActionType::kRevealAll:
+    case TriggerActionType::kStartTimer:
+    case TriggerActionType::kStopTimer:
+    case TriggerActionType::kCreepShadow:
+    case TriggerActionType::kDestroyObject:
+    case TriggerActionType::kLaunchNukes:
     default:
       break;
   }

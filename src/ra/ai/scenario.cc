@@ -638,9 +638,9 @@ void Fill_In_Data() {
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
     const TriggerType* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
-    if (tp->action1.type == TACTION_ALLOWWIN ||
+    if (tp->action1.type == TriggerActionType::kAllowWin ||
         (tp->action_control != MULTI_ONLY &&
-         tp->action2.type == TACTION_ALLOWWIN)) {
+         tp->action2.type == TriggerActionType::kAllowWin)) {
       HouseClass::As_Pointer(tp->house)->Blockage++;
     }
   }

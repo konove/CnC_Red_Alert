@@ -62,7 +62,7 @@ TEST_F(TriggerTypeTest, ANewTriggerTypeIsVolatileWithOneEventAndOneAction) {
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
-  EXPECT_EQ(trigger_type_->action1.type, TACTION_NONE);
+  EXPECT_EQ(trigger_type_->action1.type, TriggerActionType::kNone);
   EXPECT_EQ(trigger_type_->ID, 0);
 }
 
@@ -180,11 +180,11 @@ TEST_F(TriggerTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(type->event1.Data.Value, 50);
   EXPECT_EQ(type->event2.Event, TEVENT_LEAVES_MAP);
   EXPECT_EQ(type->event2.Team, team_type_);
-  EXPECT_EQ(type->action1.type, TACTION_CREATE_TEAM);
+  EXPECT_EQ(type->action1.type, TriggerActionType::kCreateTeam);
   EXPECT_EQ(type->action1.team_type, team_type_);
   EXPECT_EQ(type->action1.trigger_type, nullptr);
   EXPECT_EQ(type->action1.data.value, 7);
-  EXPECT_EQ(type->action2.type, TACTION_FORCE_TRIGGER);
+  EXPECT_EQ(type->action2.type, TriggerActionType::kForceTrigger);
   EXPECT_EQ(type->action2.team_type, nullptr);
   EXPECT_EQ(type->action2.trigger_type, trigger_type_);
 }
@@ -208,7 +208,7 @@ TEST_F(TriggerTypeTest, MissingFieldsReadAsZero) {
   EXPECT_EQ(trigger_type_->event_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->action_control, MULTI_ONLY);
   EXPECT_EQ(trigger_type_->event1.Event, TEVENT_NONE);
-  EXPECT_EQ(trigger_type_->action1.type, TACTION_NONE);
+  EXPECT_EQ(trigger_type_->action1.type, TriggerActionType::kNone);
 }
 
 TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
@@ -228,7 +228,7 @@ TEST_F(TriggerTypeTest, ReadIniCreatesATriggerTypePerEntry) {
   EXPECT_EQ(wave->event1.Data.Value, 50);
   // The trigger in slot 0, which is the first entry: itself.
   EXPECT_EQ(wave->action2.trigger_type, wave);
-  EXPECT_EQ(dawn->action1.type, TACTION_WIN);
+  EXPECT_EQ(dawn->action1.type, TriggerActionType::kWin);
   EXPECT_EQ(dawn->event1.Data.Value, 5);
 }
 

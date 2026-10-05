@@ -76,7 +76,7 @@ class ActionChoice {
  public:
   // Implicit: choice tables are brace lists of action types.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  ActionChoice(TriggerActionType action = TACTION_NONE) noexcept
+  ActionChoice(TriggerActionType action = TriggerActionType::kNone) noexcept
       : action_(action) {}
 
   // Implicit: choices compare directly against their action type.

@@ -41,51 +41,50 @@ class TriggerType;
 // What a trigger action does. Scenario INI files and saved games store the
 // number, so the order is fixed.
 enum class TriggerActionType {
-  TACTION_NONE,
+  kNone,
 
-  TACTION_WIN,               // player wins!
-  TACTION_LOSE,              // player loses.
-  TACTION_BEGIN_PRODUCTION,  // computer begins factory production.
-  TACTION_CREATE_TEAM,       // computer creates a certain type of team
-  TACTION_DESTROY_TEAM,
-  TACTION_ALL_HUNT,  // all enemy units go into hunt mode (teams destroyed).
-  TACTION_REINFORCEMENTS,   // The team type arrives as reinforcements, for
-                            // the house the team type names.
-  TACTION_DZ,               // Deploy drop zone smoke.
-  TACTION_FIRE_SALE,        // Sell all buildings and go on rampage.
-  TACTION_PLAY_MOVIE,       // Play movie (temporarily suspend game).
-  TACTION_TEXT_TRIGGER,     // Triggers a text message display.
-  TACTION_DESTROY_TRIGGER,  // Destroy specified trigger.
-  TACTION_AUTOCREATE,       // Computer to autocreate teams.
-  TACTION_WINLOSE,          // Unused ("~don't use~" in the editor); was win
-                            // if captured, lose if destroyed.
-  TACTION_ALLOWWIN,         // The house cannot win until this has sprung.
+  kWin,              // player wins!
+  kLose,             // player loses.
+  kBeginProduction,  // computer begins factory production.
+  kCreateTeam,       // computer creates a certain type of team
+  kDestroyTeam,
+  kAllHunt,         // all enemy units go into hunt mode (teams destroyed).
+  kReinforcements,  // The team type arrives as reinforcements, for
+                    // the house the team type names.
+  kDropZoneFlare,   // Deploy drop zone smoke.
+  kFireSale,        // Sell all buildings and go on rampage.
+  kPlayMovie,       // Play movie (temporarily suspend game).
+  kTextTrigger,     // Triggers a text message display.
+  kDestroyTrigger,  // Destroy specified trigger.
+  kAutocreate,      // Computer to autocreate teams.
+  kWinLose,         // Unused ("~don't use~" in the editor); was win
+                    // if captured, lose if destroyed.
+  kAllowWin,        // The house cannot win until this has sprung.
 
-  TACTION_REVEAL_ALL,     // Reveal the entire map.
-  TACTION_REVEAL_SOME,    // Reveal map around cell #.
-  TACTION_REVEAL_ZONE,    // Reveal all of specified zone.
-  TACTION_PLAY_SOUND,     // Play sound effect.
-  TACTION_PLAY_MUSIC,     // Play musical score.
-  TACTION_PLAY_SPEECH,    // Play EVA speech.
-  TACTION_FORCE_TRIGGER,  // Force trigger to activate.
-  TACTION_START_TIMER,    // Start mission timer.
-  TACTION_STOP_TIMER,     // Stop mission timer.
-  TACTION_ADD_TIMER,      // Increase mission timer time.
-  TACTION_SUB_TIMER,      // Decrease mission timer time.
-  TACTION_SET_TIMER,      // Set and start the mission timer.
-  TACTION_SET_GLOBAL,     // Set global variable.
-  TACTION_CLEAR_GLOBAL,   // Clear global variable.
-  TACTION_BASE_BUILDING,  // Automated base building.
-  TACTION_CREEP_SHADOW,   // Shadow grows back one 'step'.
+  kRevealAll,     // Reveal the entire map.
+  kRevealSome,    // Reveal map around cell #.
+  kRevealZone,    // Reveal all of specified zone.
+  kPlaySound,     // Play sound effect.
+  kPlayMusic,     // Play musical score.
+  kPlaySpeech,    // Play EVA speech.
+  kForceTrigger,  // Force trigger to activate.
+  kStartTimer,    // Start mission timer.
+  kStopTimer,     // Stop mission timer.
+  kAddTimer,      // Increase mission timer time.
+  kSubTimer,      // Decrease mission timer time.
+  kSetTimer,      // Set and start the mission timer.
+  kSetGlobal,     // Set global variable.
+  kClearGlobal,   // Clear global variable.
+  kBaseBuilding,  // Automated base building.
+  kCreepShadow,   // Shadow grows back one 'step'.
 
-  TACTION_DESTROY_OBJECT,  // Destroys every object this trigger is attached to.
-  TACTION_1_SPECIAL,       // Add a one-time special weapon ability to house.
-  TACTION_FULL_SPECIAL,    // Add a repeating special weapon ability to house.
+  kDestroyObject,  // Destroys every object this trigger is attached to.
+  kOneSpecial,     // Add a one-time special weapon ability to house.
+  kFullSpecial,    // Add a repeating special weapon ability to house.
 
-  TACTION_PREFERRED_TARGET,  // Designates preferred target for house.
-  TACTION_LAUNCH_NUKES,      // Launch fake nuclear missiles from all silos
+  kPreferredTarget,  // Designates preferred target for house.
+  kLaunchNukes,      // Launch fake nuclear missiles from all silos
 };
-using enum TriggerActionType;
 
 // Returns the scenario editor's name for `action`.
 const char* ActionName(TriggerActionType action);
@@ -98,7 +97,7 @@ NeedType ActionNeed(TriggerActionType action);
 // One action of a trigger type: the action and the data it needs. A trigger
 // type holds two, and carries them out with Perform() when it springs.
 struct TriggerAction {
-  TriggerActionType type{TACTION_NONE};  // Action to perform.
+  TriggerActionType type{TriggerActionType::kNone};  // Action to perform.
 
   TeamTypeClass* team_type = nullptr;  // Team type for this action (if needed).
 
