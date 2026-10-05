@@ -1192,8 +1192,10 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
         */
         if (TheDebugState().map_editor_active() && Trigger != nullptr) {
           Fancy_Text_Print(
-              view, Trigger->Class->IniName, x + static_cast<int>(WinX), y,
-              &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
+              view, Trigger->Class->IniName,
+              x + base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
+                           kWindowX),
+              y, &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
               FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
         }
       }

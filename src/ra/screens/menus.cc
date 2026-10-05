@@ -90,6 +90,15 @@ namespace {
 constexpr FontType kMenuTextFont = FontType::k8Point;
 constexpr TextPrintType kMenuTextFlags = TPF_DROPSHADOW;
 
+// The top-left corner, in pixels, of the window Do_Menu() draws its box in.
+// The menu's own position is relative to it.
+int MenuWindowX() {
+  return base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX);
+}
+int MenuWindowY() {
+  return base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY);
+}
+
 }  // namespace
 
 /*****************************
@@ -219,9 +228,9 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const auto menuptr =
       std::span(base::At(menu_list, menu)); /* get pointer to menu	*/
   const int menuy =
-      static_cast<int>(WinY) + base::At(menuptr, kMenuy); /* get the absolute */
+      MenuWindowY() + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + base::At(menuptr, kMenux); /* coords of menu */
+      MenuWindowX() + base::At(menuptr, kMenux); /* coords of menu */
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
@@ -269,9 +278,9 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
 
   const int menuy =
-      static_cast<int>(WinY) + base::At(menuptr, kMenuy); /* get the absolute */
+      MenuWindowY() + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
-      static_cast<int>(WinX) + base::At(menuptr, kMenux); /* coords of menu */
+      MenuWindowX() + base::At(menuptr, kMenux); /* coords of menu */
   const int normcol = base::At(menuptr, kNormcol);
   const int litcol = base::At(menuptr, kHilite);
 
@@ -299,8 +308,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   */
   /* get menu coords from the menu structure as necessary */
   const int mx1 =
-      static_cast<int>(WinX) + (base::At(menuptr, kMenux) * FontMaxWidth(font));
-  const int my1 = static_cast<int>(WinY) + base::At(menuptr, kMenuy) -
+      MenuWindowX() + (base::At(menuptr, kMenux) * FontMaxWidth(font));
+  const int my1 = MenuWindowY() + base::At(menuptr, kMenuy) -
                   halfskip; /*		from the menu		*/
   const int mx2 = mx1 + (base::At(menuptr, kItemwidth) * FontMaxWidth(font)) -
                   1; /*		structure as		*/
