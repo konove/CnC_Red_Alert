@@ -1,6 +1,7 @@
 #include "ra/screens/credits_text.h"
 
 #include <iterator>
+#include <ostream>
 #include <string_view>
 #include <vector>
 
@@ -24,6 +25,12 @@ constexpr bool EndsString(const char ch) {
 }
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& os, const CreditString& string) {
+  return os << '"' << string.text << "\" line " << string.line << " column "
+            << string.column << " alignment "
+            << static_cast<int>(string.alignment);
+}
 
 std::vector<CreditString> ParseCredits(std::string_view text) {
   std::vector<CreditString> strings;

@@ -3,7 +3,7 @@
 
 #include "ra/screens/credits_text.h"
 
-#include <ostream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -11,13 +11,6 @@
 #include "gtest/gtest.h"
 
 namespace ra {
-
-// Lets a failed expectation show the strings instead of their bytes.
-// GoogleTest finds it by the argument's namespace.
-static void PrintTo(const CreditString& string, std::ostream* os) {
-  *os << '"' << string.text << "\" line " << string.line << " column "
-      << string.column << " alignment " << static_cast<int>(string.alignment);
-}
 
 namespace {
 
@@ -153,6 +146,12 @@ TEST(ParseCreditsTest, TheStringsPointIntoTheText) {
   ASSERT_EQ(strings.size(), 2U);
   EXPECT_EQ(strings.back().text.data(),
             std::string_view(text).substr(4).data());
+}
+
+TEST(CreditStringTest, PrintsItsTextAndPlace) {
+  std::ostringstream os;
+  os << Left("Producer", 3, 40);
+  EXPECT_EQ(os.str(), "\"Producer\" line 3 column 40 alignment 0");
 }
 
 }  // namespace

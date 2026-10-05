@@ -1199,10 +1199,6 @@
     event type takes
   - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
     builds the internal version, where it is skipped
-- Clear CLion's "never used" finding in `ra/screens/credits_text_test.cc`
-  - `PrintTo()` in `ra/screens/credits_text_test.cc` is flagged "never used" by CLion because
-    GoogleTest finds it by argument-dependent lookup; an `operator<<` or `AbslStringify` on
-    `CreditString` itself would be seen
 
 ## Debugging
 

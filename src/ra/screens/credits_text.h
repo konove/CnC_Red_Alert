@@ -2,6 +2,7 @@
 #ifndef CNC_RED_ALERT_RA_SCREENS_CREDITS_TEXT_H_
 #define CNC_RED_ALERT_RA_SCREENS_CREDITS_TEXT_H_
 
+#include <iosfwd>
 #include <string_view>
 #include <vector>
 
@@ -25,6 +26,10 @@ struct CreditString {
   CreditAlignment alignment = CreditAlignment::kLeft;
 
   bool operator==(const CreditString&) const = default;
+
+  // Writes the string and its place on the page, for logs and failed test
+  // expectations.
+  friend std::ostream& operator<<(std::ostream& os, const CreditString& string);
 };
 
 // Splits the text of CREDITS.TXT into the strings to draw, in file order. A
