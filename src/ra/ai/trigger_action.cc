@@ -190,6 +190,148 @@ int SoundValue(const int value) {
   return low_byte;
 }
 
+// kNone, and the two types that are not carried out here: kAllowWin, which
+// TriggerClass and the scenario's win check look for by type, and the unused
+// kWinLose. Also what a type number that is no action becomes.
+class NoAction final : public TriggerAction {
+ public:
+  explicit NoAction(const TriggerActionType type) : type_(type) {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_};
+  }
+
+ private:
+  TriggerActionType type_;
+};
+
+// Reveals the entire map to the player.
+class RevealAllAction final : public TriggerAction {
+ public:
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kRevealAll;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (!ThePlayer()->IsVisionary) {
+      ThePlayer()->IsVisionary = true;
+      for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+        TheMap().Map_Cell(Cell::FromIndex(cell_index), ThePlayer());
+      }
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type()};
+  }
+};
+
+// Starts the mission timer (kStartTimer) or stops it (kStopTimer), which only
+// suspends it: the time left stays.
+class TimerSwitchAction final : public TriggerAction {
+ public:
+  explicit TimerSwitchAction(const TriggerActionType type) : type_(type) {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    const bool start = type_ == TriggerActionType::kStartTimer;
+    auto& timer = TheScenario().MissionTimer;
+    if (timer.IsRunning() != start) {
+      if (start) {
+        timer.Start();
+      } else {
+        timer.Stop();
+      }
+      TheMap().Redraw_Tab();
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_};
+  }
+
+ private:
+  TriggerActionType type_;
+};
+
+// Makes the shroud creep back one step.
+class CreepShadowAction final : public TriggerAction {
+ public:
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kCreepShadow;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    TheMap().Encroach_Shadow();
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type()};
+  }
+};
+
+// Destroys what the trigger is attached to: the object it sprang on, the
+// bridge at its cell and every object that carries it.
+class DestroyObjectAction final : public TriggerAction {
+ public:
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kDestroyObject;
+  }
+  bool Perform(const TriggerActionContext& context) override {
+    // Reports failure when there is no object to destroy, so the trigger is
+    // not used up. The object may already be dead: a trigger with two actions
+    // passes the same object to both, and the first may have killed it.
+    const bool has_object =
+        context.object != nullptr && context.object->IsActive;
+    if (has_object) {
+      Destroy(*context.object);
+    }
+
+    // If the trigger is attached to a bridge, then the bridge gets destroyed
+    // regardless of whether the trigger was a forced or natural spring event.
+    // Cell 0 means the trigger is not attached to a cell.
+    if (context.cell.index() != 0) {
+      TheMap().Destroy_Bridge_At(context.cell);
+    }
+
+    // Destroy all objects that have this trigger attached to them.
+    if (context.trigger_id != -1) {
+      const TriggerClass* sprung_trigger =
+          TheObjectHeaps().trigger().Slot(context.trigger_id);
+      DestroyObjectsAttachedTo(TheObjectHeaps().unit(), sprung_trigger);
+      DestroyObjectsAttachedTo(TheObjectHeaps().infantry(), sprung_trigger);
+      DestroyObjectsAttachedTo(TheObjectHeaps().aircraft(), sprung_trigger);
+      DestroyObjectsAttachedTo(TheObjectHeaps().building(), sprung_trigger);
+    }
+    return has_object;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type()};
+  }
+};
+
+// Launches nuclear missiles (duds) from every missile silo, whoever owns it.
+class LaunchNukesAction final : public TriggerAction {
+ public:
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kLaunchNukes;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* silo = TheObjectHeaps().building().ActiveAt(index);
+      if (*silo == STRUCT_MSLO) {
+        silo->Assign_Mission(MISSION_MISSILE);
+      }
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type()};
+  }
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -299,13 +441,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
   HouseClass* owner = HouseClass::As_Pointer(context.house);
   bool success = true;
 
-  // The object may already be dead: a trigger with two actions passes the same
-  // object to both, and the first may have killed it.
-  ObjectClass* object = context.object;
-  if (object && !object->IsActive) {
-    object = nullptr;
-  }
-
   switch (type_) {
     // Display a line of the mission's tutorial text over the tactical map.
     // An ID with no text displays nothing.
@@ -318,18 +453,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
           nullptr, 0, message, PCOLOR_GREEN, FontType::k6PointGradient,
           TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
-      break;
-    }
-
-    // Launch nuclear missiles (duds) from every missile silo, whoever owns it.
-    case TriggerActionType::kLaunchNukes: {
-      for (int index = 0; index < TheObjectHeaps().building().Count();
-           index++) {
-        BuildingClass* silo = TheObjectHeaps().building().ActiveAt(index);
-        if (*silo == STRUCT_MSLO) {
-          silo->Assign_Mission(MISSION_MISSILE);
-        }
-      }
       break;
     }
 
@@ -347,11 +470,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       if (owner != nullptr) {
         owner->IsBaseBuilding = data_.flag;
       }
-      break;
-
-    // Cause the shadow to creep back one step.
-    case TriggerActionType::kCreepShadow:
-      TheMap().Encroach_Shadow();
       break;
 
     // Set or clear a scenario global.
@@ -388,34 +506,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
             TheMap().Map_Cell(map_cell, ThePlayer());
           }
         }
-      }
-      break;
-
-    // Reveal the entire map.
-    case TriggerActionType::kRevealAll:
-      if (!ThePlayer()->IsVisionary) {
-        ThePlayer()->IsVisionary = true;
-        for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
-             ++map_cell_index) {
-          const Cell map_cell = Cell::FromIndex(map_cell_index);
-          TheMap().Map_Cell(map_cell, ThePlayer());
-        }
-      }
-      break;
-
-    // Start the mission timer.
-    case TriggerActionType::kStartTimer:
-      if (!TheScenario().MissionTimer.IsRunning()) {
-        TheScenario().MissionTimer.Start();
-        TheMap().Redraw_Tab();
-      }
-      break;
-
-    // Stop the mission timer. This will really just suspend the timer.
-    case TriggerActionType::kStopTimer:
-      if (TheScenario().MissionTimer.IsRunning()) {
-        TheScenario().MissionTimer.Stop();
-        TheMap().Redraw_Tab();
       }
       break;
 
@@ -597,38 +687,17 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       }
       break;
 
-    // Destroy the object the trigger sprang on, and report failure when there
-    // is none (so the trigger is not used up).
-    case TriggerActionType::kDestroyObject:
-      if (object != nullptr) {
-        Destroy(*object);
-      } else {
-        success = false;
-      }
-
-      // If the trigger is attached to a bridge, then the bridge gets destroyed
-      // regardless of whether the trigger was a forced or natural spring event.
-      // Cell 0 means the trigger is not attached to a cell.
-      if (context.cell.index() != 0) {
-        TheMap().Destroy_Bridge_At(context.cell);
-      }
-
-      // Destroy all objects that have this trigger attached to them.
-      if (context.trigger_id != -1) {
-        const TriggerClass* sprung_trigger =
-            TheObjectHeaps().trigger().Slot(context.trigger_id);
-        DestroyObjectsAttachedTo(TheObjectHeaps().unit(), sprung_trigger);
-        DestroyObjectsAttachedTo(TheObjectHeaps().infantry(), sprung_trigger);
-        DestroyObjectsAttachedTo(TheObjectHeaps().aircraft(), sprung_trigger);
-        DestroyObjectsAttachedTo(TheObjectHeaps().building(), sprung_trigger);
-      }
-      break;
-
     // No action. TriggerActionType::kAllowWin is not carried out here:
     // TriggerClass and the scenario's win check look for it by type_.
     case TriggerActionType::kNone:
     case TriggerActionType::kWinLose:
     case TriggerActionType::kAllowWin:
+    case TriggerActionType::kLaunchNukes:
+    case TriggerActionType::kCreepShadow:
+    case TriggerActionType::kRevealAll:
+    case TriggerActionType::kStartTimer:
+    case TriggerActionType::kStopTimer:
+    case TriggerActionType::kDestroyObject:
     default:
       break;
   }
@@ -751,7 +820,61 @@ void TriggerAction::Detach(Target /*target*/) {}
 
 std::unique_ptr<TriggerAction> MakeTriggerAction(
     const TriggerActionRecord& record) {
-  return std::make_unique<LegacyAction>(Normalized(record));
+  const TriggerActionType type = record.type;
+  switch (type) {
+    case TriggerActionType::kRevealAll:
+      return std::make_unique<RevealAllAction>();
+
+    case TriggerActionType::kStartTimer:
+    case TriggerActionType::kStopTimer:
+      return std::make_unique<TimerSwitchAction>(type);
+
+    case TriggerActionType::kCreepShadow:
+      return std::make_unique<CreepShadowAction>();
+
+    case TriggerActionType::kDestroyObject:
+      return std::make_unique<DestroyObjectAction>();
+
+    case TriggerActionType::kLaunchNukes:
+      return std::make_unique<LaunchNukesAction>();
+
+    // Not yet classes of their own.
+    case TriggerActionType::kWin:
+    case TriggerActionType::kLose:
+    case TriggerActionType::kBeginProduction:
+    case TriggerActionType::kAllHunt:
+    case TriggerActionType::kFireSale:
+    case TriggerActionType::kAutocreate:
+    case TriggerActionType::kCreateTeam:
+    case TriggerActionType::kDestroyTeam:
+    case TriggerActionType::kReinforcements:
+    case TriggerActionType::kDestroyTrigger:
+    case TriggerActionType::kForceTrigger:
+    case TriggerActionType::kDropZoneFlare:
+    case TriggerActionType::kRevealSome:
+    case TriggerActionType::kRevealZone:
+    case TriggerActionType::kTextTrigger:
+    case TriggerActionType::kAddTimer:
+    case TriggerActionType::kSubTimer:
+    case TriggerActionType::kSetTimer:
+    case TriggerActionType::kSetGlobal:
+    case TriggerActionType::kClearGlobal:
+    case TriggerActionType::kPlayMovie:
+    case TriggerActionType::kPlaySound:
+    case TriggerActionType::kPlayMusic:
+    case TriggerActionType::kPlaySpeech:
+    case TriggerActionType::kBaseBuilding:
+    case TriggerActionType::kOneSpecial:
+    case TriggerActionType::kFullSpecial:
+    case TriggerActionType::kPreferredTarget:
+      return std::make_unique<LegacyAction>(Normalized(record));
+
+    case TriggerActionType::kNone:
+    case TriggerActionType::kWinLose:
+    case TriggerActionType::kAllowWin:
+    default:
+      return std::make_unique<NoAction>(type);
+  }
 }
 
 }  // namespace ra
