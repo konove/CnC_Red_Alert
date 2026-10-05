@@ -156,13 +156,6 @@ void TriggerAction::Detach(const Target target) {
   }
 }
 
-std::string TriggerAction::ToIniEntry() const {
-  return std::format("{},{},{},{}", std::to_underlying(type_),
-                     TheObjectHeaps().team_type().PositionOf(team_type_),
-                     TheObjectHeaps().trigger_type().PositionOf(trigger_type_),
-                     data_.value);
-}
-
 void TriggerAction::ReadIni(base::Tokenizer& tokens) {
   type_ = static_cast<TriggerActionType>(
       base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -208,6 +201,13 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
       data_.value = low_byte;
     }
   }
+}
+
+std::string TriggerAction::ToIniEntry() const {
+  return std::format("{},{},{},{}", std::to_underlying(type_),
+                     TheObjectHeaps().team_type().PositionOf(team_type_),
+                     TheObjectHeaps().trigger_type().PositionOf(trigger_type_),
+                     data_.value);
 }
 
 // Not const: carries out the action.
