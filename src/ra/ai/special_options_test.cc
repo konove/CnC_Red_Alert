@@ -185,9 +185,7 @@ TEST_F(SpecialOptionsDialogTest, CancelQueuesNothing) {
   EXPECT_EQ(TheNetwork().out_list().Count(), 0);
 }
 
-// Esc shares the OK button's branch, so it applies what was edited rather
-// than cancelling.
-TEST_F(SpecialOptionsDialogTest, EscAppliesLikeOk) {
+TEST_F(SpecialOptionsDialogTest, EscCancelsLikeTheCancelButton) {
   player()
       .At(2)
       .Click(kThreePointBoxX, kThreePointBoxY)
@@ -196,7 +194,8 @@ TEST_F(SpecialOptionsDialogTest, EscAppliesLikeOk) {
 
   RunSpecialOptionsDialog();
 
-  EXPECT_TRUE(QueuedOptions().three_point_turns);
+  EXPECT_TRUE(player().finished());
+  EXPECT_EQ(TheNetwork().out_list().Count(), 0);
 }
 
 TEST_F(SpecialOptionsDialogTest, StaysOpenUntilAnswered) {

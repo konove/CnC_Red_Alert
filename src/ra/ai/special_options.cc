@@ -132,7 +132,6 @@ void RunSpecialOptionsDialog() {
     }
 
     switch (static_cast<int>(ok_button.Input(view).key)) {
-      case KN_ESC:
       case engine::window::ButtonKey(200):
         process = false;
         edited_options.three_point_turns = three_point_box.IsOn;
@@ -142,6 +141,7 @@ void RunSpecialOptionsDialog() {
         TheNetwork().out_list().Add(EventClass(edited_options));
         break;
 
+      case KN_ESC:
       case engine::window::ButtonKey(201):
         process = false;
         break;
