@@ -70,6 +70,13 @@ class ScriptedPlayer final : public DisplayObserver {
                  HardwareCursor& mouse ABSL_ATTRIBUTE_LIFETIME_BOUND,
                  engine::platform::ManualClock& clock
                      ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  // A player that moves no clock: the game keeps real time and the frames
+  // come as fast as the display presents them. For a run that has to keep
+  // pace with something outside it, such as another instance of the game on
+  // the network; what frame a step lands on then differs from run to run.
+  ScriptedPlayer(Display& display ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                 KeyBuffer& keyboard ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                 HardwareCursor& mouse ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~ScriptedPlayer() override;
 
   ScriptedPlayer(const ScriptedPlayer&) = delete;
@@ -159,7 +166,7 @@ class ScriptedPlayer final : public DisplayObserver {
   Display* display_;
   KeyBuffer* keyboard_;
   HardwareCursor* mouse_;
-  engine::platform::ManualClock* clock_;
+  engine::platform::ManualClock* clock_;  // nullptr: real time
 
   // In frame order; steps of one frame keep the order they were queued in.
   std::vector<Step> steps_;

@@ -101,6 +101,17 @@ ScriptedPlayer::ScriptedPlayer(Display& display, KeyBuffer& keyboard,
   display_->set_observer(this);
 }
 
+ScriptedPlayer::ScriptedPlayer(Display& display, KeyBuffer& keyboard,
+                               HardwareCursor& mouse)
+    : display_(&display),
+      keyboard_(&keyboard),
+      mouse_(&mouse),
+      clock_(nullptr),
+      previous_buttons_(&ExchangeCurrentMouseButtons(held_)),
+      previous_keyboard_(&ExchangeCurrentKeyboardState(held_keys_)) {
+  display_->set_observer(this);
+}
+
 ScriptedPlayer::~ScriptedPlayer() {
   display_->set_observer(nullptr);
   ExchangeCurrentKeyboardState(*previous_keyboard_);
@@ -171,7 +182,9 @@ ScriptedPlayer& ScriptedPlayer::Do(std::function<void()> action) {
 void ScriptedPlayer::OnFrameEnd() {
   ++frame_;
   pumps_since_frame_ = 0;
-  clock_->Advance(1);
+  if (clock_ != nullptr) {
+    clock_->Advance(1);
+  }
 
   while (next_step_ < steps_.size() && steps_.at(next_step_).frame <= frame_) {
     // Counted as played before it runs: an action may throw.

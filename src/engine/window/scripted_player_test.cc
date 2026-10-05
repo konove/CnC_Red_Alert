@@ -299,6 +299,24 @@ TEST_F(ScriptedPlayerTest, GoingBackAFrameIsAProgrammingError) {
   EXPECT_DEATH(player_.At(4), "frame order");
 }
 
+// A player without a clock leaves time to the machine, for a run that has to
+// keep pace with something outside it.
+TEST(ScriptedPlayerRealTimeTest, PlaysItsStepsAndMovesNoClock) {
+  HeadlessDisplay display;
+  display.SetVideoMode(8, 4);
+  KeyBuffer keyboard;
+  HardwareCursor mouse(48, 48);
+  const engine::platform::ManualClock clock;
+  ScriptedPlayer player(display, keyboard, mouse);
+  player.At(2).Key(KN_RETURN);
+
+  display.EndFrame();
+  display.EndFrame();
+
+  EXPECT_EQ(keyboard.Read().key, KN_RETURN);
+  EXPECT_EQ(clock.Ticks(), 0);
+}
+
 TEST(ScriptedPlayerLifetimeTest, DetachesFromTheDisplayWhenDestroyed) {
   HeadlessDisplay display;
   display.SetVideoMode(8, 4);
