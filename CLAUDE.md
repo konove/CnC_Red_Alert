@@ -200,7 +200,7 @@ game/        → The code both games share, in namespace game::, above the engin
                [depends: base, engine_stream]
   sim/       → Simulation helpers: the direction types (FacingType, DirType), FacingClass, the shared
                simulation enums (ArmorType, MoveType, BStateType, ...),
-               UnitTrackerClass, CrewClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
+               UnitTrackerClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
                [depends: game_core]
   ui/        → LinkClass, Input, the gadget base classes, and the widgets as templates over each
                game's UiSkin (ra/ui/ui_skin.h, td/ui/ui_skin.h), aliased per game (target `game_ui`)
