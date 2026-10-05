@@ -27,7 +27,6 @@ Coordinate Coord_Move(Coordinate start, game::DirType facing,
 Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock = false);
 
 game::DirType Direction(Coordinate from, Coordinate to);
-game::DirType Direction256(Coordinate from, Coordinate to);
 game::DirType Direction8(Coordinate from, Coordinate to);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).

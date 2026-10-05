@@ -411,7 +411,7 @@ void BulletClass::AI() {
   *makes *	missiles not so deadly).
   */
   if (game::CurrentFrame() % 2 != 0 && Class->ROT != 0 && TarCom) {
-    PrimaryFacing.Set_Desired(Direction256(Coord, TarCom.AsCoordinate()));
+    PrimaryFacing.Set_Desired(ra::Direction(Coord, TarCom.AsCoordinate()));
   }
 
   /*

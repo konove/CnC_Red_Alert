@@ -60,12 +60,6 @@ inline Coordinate CoordFromPixels(int x, int y) noexcept {
 }
 
 // Returns the direction from `from` to `to` at the full 256-step
-// resolution. Same as Direction().
-inline game::DirType Direction256(Coordinate from, Coordinate to) {
-  return game::Desired_Facing256(from.x(), from.y(), to.x(), to.y());
-}
-
-// Returns the direction from `from` to `to` at the full 256-step
 // resolution.
 inline game::DirType Direction(Coordinate from, Coordinate to) {
   return game::Desired_Facing256(from.x(), from.y(), to.x(), to.y());
@@ -103,7 +97,7 @@ inline Cell AdjacentCell(Cell cell, game::FacingType dir) {
 
 // As above, with `dir` rounded to the nearest of the eight facings.
 inline Cell AdjacentCell(Cell cell, game::DirType dir) {
-  return cell.Offset(kAdjacentCellOffsets.at(game::Dir_Facing(dir)));
+  return AdjacentCell(cell, game::Dir_Facing(dir));
 }
 
 // Returns the text for the text number `text_id`, or nullptr when the table has
