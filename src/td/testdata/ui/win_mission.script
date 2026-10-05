@@ -1,0 +1,20 @@
+# Winning the first GDI mission with the developers' Alt-W: the score screen,
+# the hall of fame, the map on which the next territory is chosen, and the
+# mission there. No shot is taken while the map dissolves in: the order of its
+# pixels is random on purpose (Bit_It_In() in td/screens/mapsel.cc).
+# args: -PLAYTEST
+at 301 click 320 58
+at 501 click 160 200
+at 3000 keydown ALT
+at 3001 key W
+at 3005 keyup ALT
+at 4000 shot score_counting
+at 6000 shot hall_of_fame
+at 6001 type AB
+at 6020 key RETURN
+at 9000 shot map_selection
+at 9001 click 400 40
+at 12000 shot territory
+at 12001 click 320 200
+at 16000 shot next_mission
+at 16001 quit

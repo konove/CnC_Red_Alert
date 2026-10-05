@@ -240,6 +240,17 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - Skipping the lobby is the smaller build and tests the packets, which is what
     `docs/COORDINATE_TYPES_PLAN.md` asks for; the lobby itself would stay a check by hand.
 
+- **More scripts, 2026-10-05.** Eleven scripts now, about 55 screenshots.
+  - A script can hold keys (`keydown`/`keyup`; `engine::window::KeyboardState` is the interface
+    behind `IsShiftDown()` and `KeyBuffer::IsDown()`), which gave RA's Shift-click for the ant
+    missions and Alt-W.
+  - `-PLAYTEST` turns the developers' keys on without a pass phrase, in a build that has them. With
+    Alt-W the scripts win a mission and reach both games' score screens, halls of fame and mission
+    maps, and the mission after.
+  - A screenshot is `Display::Capture()`: what the window shows, movie frame or backdrop included.
+    It no longer locks the page, which used to end an extra frame after every shot.
+  - No shot is taken while TD's map dissolves in; the order of its pixels is random on purpose.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

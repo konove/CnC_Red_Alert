@@ -1,0 +1,19 @@
+# Winning the first Allied mission with the developers' Alt-W: the score
+# screen, the hall of fame, the map on which the next mission is chosen, and
+# that mission.
+# args: -PLAYTEST
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 600 keydown ALT
+at 601 key W
+at 605 keyup ALT
+at 1200 shot score_counting
+at 2000 shot hall_of_fame
+at 2001 type AB
+at 2020 key RETURN
+at 2400 shot map_selection
+at 2401 click 360 240
+at 3200 shot next_mission_start
+at 4500 shot next_mission_under_way
+at 4501 quit

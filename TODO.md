@@ -1117,16 +1117,15 @@
 - Script the rest of the keyboard and mouse checks (`tools/ui_check.py`, `docs/TEST_HARNESS_PLAN.md`
   phase 5)
   - Scripted so far: menu and dialog clicks, Esc and Return, the arrow keys in the editor's menus,
-    drag-select, a move order and right-click deselect on the map, RA's title logo click, TD's side
-    choice
-  - Keys still to script: typing, Backspace and Enter in edit boxes and the message line;
-    hall-of-fame name entry; battle hotkeys, including a Steam `REDALERT.INI` whose `[WinHotkeys]`
-    holds Windows key codes; TD's debug hotkeys (Home, F7-F10, 0-9) and map-editor waypoint keys. A
-    script cannot hold Shift, Ctrl or Alt yet: `KeyBuffer` reads them from SDL's live state, as
-    `IsLeftButtonDown()` did before `ScriptedPlayer` got its own buttons
-  - Clicks still to script: gadget and slider drags; the multiplayer color pickers; RA's Shift-click
-    for the ant missions; TD's ending; object and trigger placement, map-size drag handles and the
-    team editor's held +/- buttons in the map editor; Iron Curtain and Chronosphere targeting
+    drag-select, a move order and right-click deselect on the map, RA's title logo click and its
+    Shift-click for the ant missions, TD's side choice, hall-of-fame name entry and the mission maps
+    of both games, Alt-W
+  - Keys still to script: typing, Backspace and Enter in edit boxes and the message line; battle
+    hotkeys, including a Steam `REDALERT.INI` whose `[WinHotkeys]` holds Windows key codes; TD's
+    debug hotkeys (Home, F7-F10, 0-9) and map-editor waypoint keys
+  - Clicks still to script: gadget and slider drags; the multiplayer color pickers; TD's ending;
+    object and trigger placement, map-size drag handles and the team editor's held +/- buttons in
+    the map editor; Iron Curtain and Chronosphere targeting
   - Stays a check by eye: the hardware cursor after the `SetShape()` rewrite (shapes, hot spots and
     transparency at 1x, 2x and 4x display scale, and its colors through fades). SDL draws it, so it
     is in no screenshot
@@ -1162,17 +1161,23 @@
     entry clicked, Edit, New, Delete and OK. Still open: the team dialog (`TeamTypeClass::Edit()`,
     `Team_Members()`), New/Load/Save scenario, `Pick_Scenario()`, `Size_Map()` and
     `Scenario_Dialog()`, all of which `UiFixture` can now drive
-- Look once at the screenshots of the UI scripts, and script the score screens
+- Look once at the screenshots of the UI scripts
   - `tools/ui_check.py --accept` leaves PNGs of every screen the scripts reach in `build/ui_check/`:
-    RA's main menu, difficulty and side prompts, options dialogs, credits, a mission, the map
-    editor's menus, team and trigger lists and dialogs; TD's main menu and a mission. The hashes
-    recorded on 2026-10-05 are of the code as it is, which nobody has compared by eye with
-    `1f60381e` (`docs/TEXT_PRINT_SPLIT_PLAN.md`); do that once, then the hashes hold it
-  - Not scripted: RA's and TD's score screens and TD's map selection, which need a mission won. A
-    `-NEWGAME` scenario that is won on its first frame, or a cheat key in the script, would reach
-    them
-  - A screenshot holds the game's page only. TD's side-choice pictures and other movie frames, which
-    the display stretches over or under the page, are not in it
+    RA's main menu, difficulty and side prompts, options dialogs, credits, a mission, the score
+    screen, hall of fame and mission map, and the map editor's menus, team and trigger lists and
+    dialogs; TD's main menu, side choice, a mission, score screen, hall of fame, mission map and
+    territory screen. The hashes recorded on 2026-10-05 are of the code as it is, which nobody has
+    compared by eye with `1f60381e` (`docs/TEXT_PRINT_SPLIT_PLAN.md`); do that once, then the hashes
+    hold it
+  - A stretched movie frame or backdrop is in a screenshot at the nearest pixel, where the window
+    blends
+- Find out why Red Alert's hall of fame shows 16777218 for a score of 3000
+  - The `hall_of_fame` shot of `src/ra/testdata/ui/win_mission.script` has the new entry at 16777218
+    (0x1000002) under a score screen that totals 3000; the older rows read 7162, 9198 and so on.
+    Seen after winning SCG01EA with Alt-W on normal difficulty
+- Show a help text in a UI script
+  - Resting the pointer on a sidebar button for 140 frames in `map_mouse.script` showed none, so the
+    step was dropped; find what the help text waits for (`ra/map/help.cc`)
 - Cover the multiplayer branch of `RunSpecialOptionsDialog()` (`ra/ai/special_options.cc`, 137 of
   141 lines covered)
   - In a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs

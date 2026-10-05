@@ -1419,6 +1419,17 @@ std::optional<StartupOptions> Parse_Command_Line(
       continue;
     }
 
+    // -PLAYTEST: turn the developers' keys on, as the play-test pass phrases
+    // do, in a build that has them. For scripts, which need Alt-W to win a
+    // mission and reach what comes after it.
+    if (std::string_view(string) == "-PLAYTEST") {
+      if constexpr (config::kCheatKeysEnabled) {
+        options.playtest = true;
+        options.developer_mode = true;
+      }
+      continue;
+    }
+
     // -EDITOR: start in the scenario editor, as the editor's pass phrases
     // do, in a build that has one. For scripts, which cannot be given a
     // phrase to keep.
