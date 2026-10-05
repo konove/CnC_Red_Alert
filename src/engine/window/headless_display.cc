@@ -114,6 +114,28 @@ void HeadlessDisplay::PresentBackdrop(const std::span<const uint8_t> frame,
   PresentScaledFrame(frame, width, height);
 }
 
+DisplayPicture HeadlessDisplay::Capture() const {
+  const auto* surface = static_cast<const SDL_Surface*>(palette_surface_);
+  if (surface == nullptr) {
+    return {};
+  }
+  DisplayPicture picture{
+      .width = surface->w, .height = surface->h, .pixels = {}};
+  picture.pixels.reserve(base::ToSize(surface->w) * base::ToSize(surface->h));
+  // A surface made by SDL_CreateRGBSurface owns pitch bytes for each row.
+  const auto bytes =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(static_cast<const uint8_t*>(surface->pixels),
+                base::ToSize(surface->pitch) * base::ToSize(surface->h));
+  for (int y = 0; y < surface->h; y++) {
+    const auto row =
+        bytes.subspan(base::ToSize(y) * base::ToSize(surface->pitch),
+                      base::ToSize(surface->w));
+    picture.pixels.insert(picture.pixels.end(), row.begin(), row.end());
+  }
+  return picture;
+}
+
 void HeadlessDisplay::PumpEvents() {
   NotifyPump();
   client().Pump();

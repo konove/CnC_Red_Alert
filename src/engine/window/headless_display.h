@@ -67,6 +67,9 @@ class HeadlessDisplay final : public Display {
   void DropScaledFrame() override {}
   void ClearBackdrop() override {}
 
+  // The surface: there are no scaled frames to show over or under it.
+  [[nodiscard]] DisplayPicture Capture() const override;
+
   // Nothing ever waits: drawing is "presented" as it is drawn.
   [[nodiscard]] bool redraw_pending() const override { return false; }
 

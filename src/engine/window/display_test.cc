@@ -19,6 +19,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -374,6 +375,61 @@ TEST_F(ScriptedWindowDisplayTest, PresentingDoesNotWait) {
 
   // 200 paced frames take close to three seconds.
   EXPECT_LT(std::chrono::steady_clock::now() - start, std::chrono::seconds(1));
+}
+
+TEST_F(DisplayTest, CapturesTheSurface) {
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  page.view().Clear(7);
+
+  const DisplayPicture picture = display().Capture();
+
+  EXPECT_EQ(picture.width, 2);
+  EXPECT_EQ(picture.height, 2);
+  EXPECT_EQ(picture.pixels, (std::vector<uint8_t>{7, 7, 7, 7}));
+}
+
+// A movie frame shows instead of the surface, stretched to its size.
+TEST_F(DisplayTest, CapturesAMovieFrameInsteadOfTheSurface) {
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  page.view().Clear(7);
+  display().PresentScaledFrame(std::array<uint8_t, 1>{3}, 1, 1);
+
+  EXPECT_EQ(display().Capture().pixels, (std::vector<uint8_t>{3, 3, 3, 3}));
+}
+
+// A backdrop shows where the surface is color 0, and the surface elsewhere.
+TEST_F(DisplayTest, CapturesABackdropUnderTheSurface) {
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 2, 3, 4}, 2, 2);
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  page.view().Clear(0);
+  page.view().PutPixel(1, 0, 9);
+
+  EXPECT_EQ(display().Capture().pixels, (std::vector<uint8_t>{1, 9, 3, 4}));
+}
+
+TEST(DisplayWithoutVideoModeTest, CapturesNothing) {
+  const WindowDisplay display;
+
+  EXPECT_TRUE(display.Capture().pixels.empty());
+  EXPECT_TRUE(HeadlessDisplay().Capture().pixels.empty());
+}
+
+TEST(HeadlessDisplayTest, CapturesItsSurface) {
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(3, 2));
+  PixelBuffer page;
+  page.Init(3, 2, display);
+  page.view().Clear(5);
+  page.view().PutPixel(2, 1, 6);
+
+  const DisplayPicture picture = display.Capture();
+
+  EXPECT_EQ(picture.width, 3);
+  EXPECT_EQ(picture.height, 2);
+  EXPECT_EQ(picture.pixels, (std::vector<uint8_t>{5, 5, 5, 5, 5, 6}));
 }
 
 // Counts what the event loop hands it.

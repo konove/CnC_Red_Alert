@@ -11,8 +11,9 @@ namespace ra {
 // arrive as the player's, on the frames it names, and the game's clock moves
 // a tick a frame instead of with real time, so the run is the same every
 // time. The format is that of engine/window/player_script.h. A `shot <name>`
-// step saves the screen as <name>.pcx in the script's directory, in the
-// palette being shown; `quit` ends the game with exit code 0.
+// step saves what the window shows -- a movie frame or backdrop included --
+// as <name>.pcx in the script's directory, in the palette being shown; `quit`
+// ends the game with exit code 0.
 //
 // Call once, when the window is open and before the first screen. Returns
 // false, having said why on stderr, when the file cannot be read or holds a

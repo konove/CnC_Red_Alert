@@ -1,6 +1,5 @@
 #include "td/startup/scripted_run.h"
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -21,21 +20,22 @@
 #include "engine/window/scripted_run.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"
-#include "td/assets/screen.h"
 #include "td/startup/startup.h"
 
 namespace td {
 
 namespace {
 
-// Saves the game area of the screen as the PCX file `path`, in the palette
-// on screen, which during a fade is not the game's own.
+// Saves what the window shows as the PCX file `path`, in the palette on
+// screen, which during a fade is not the game's own.
 void SaveShot(const std::filesystem::path& path) {
-  PixelView& screen = TheScreen().visible_view();
-  PixelBuffer copy(screen.width(), screen.height(), {},
-                   static_cast<int32_t>(screen.width()) * screen.height());
-  screen.BlitTo(copy.view());
-  Write_PCX_File(path.string().c_str(), copy.view(), CurrentPalette);
+  engine::window::DisplayPicture picture =
+      engine::window::TheDisplay().Capture();
+  if (picture.pixels.empty()) {
+    return;
+  }
+  PixelBuffer page(picture.width, picture.height, picture.pixels);
+  Write_PCX_File(path.string().c_str(), page.view(), CurrentPalette);
 }
 
 }  // namespace

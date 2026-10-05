@@ -86,6 +86,8 @@ class WindowDisplay : public Display {
                        int height) override;
   void ClearBackdrop() override;
 
+  [[nodiscard]] DisplayPicture Capture() const override;
+
   // Posts the event that makes the event loop end the frame, so that drawing
   // which scheduled a redraw is presented even if nothing else draws. Called
   // from an SDL timer thread.

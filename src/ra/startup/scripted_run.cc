@@ -1,6 +1,5 @@
 #include "ra/startup/scripted_run.h"
 
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -23,26 +22,27 @@
 #include "game/ui/input.h"
 #include "ra/assets/filepcx.h"
 #include "ra/assets/palette.h"
-#include "ra/assets/screen.h"
 #include "ra/startup/startup.h"
 
 namespace ra {
 
 namespace {
 
-// Saves the game area of the screen as the PCX file `path`, in the palette
-// on screen, which during a fade is not the game's own.
+// Saves what the window shows as the PCX file `path`, in the palette on
+// screen, which during a fade is not the game's own.
 void SaveShot(const std::filesystem::path& path) {
-  PixelView& screen = TheScreen().visible_view();
-  PixelBuffer copy(screen.width(), screen.height(), {},
-                   static_cast<int32_t>(screen.width()) * screen.height());
-  screen.BlitTo(copy.view());
+  engine::window::DisplayPicture picture =
+      engine::window::TheDisplay().Capture();
+  if (picture.pixels.empty()) {
+    return;
+  }
+  PixelBuffer page(picture.width, picture.height, picture.pixels);
   const auto file = OpenDiskFile(path.string(), FileAccess::kWrite);
   if (!file) {
     absl::FPrintF(stderr, "-SCRIPT: cannot write %s\n", path.string());
     return;
   }
-  Write_PCX_File(*file, copy, PaletteClass::CurrentPalette);
+  Write_PCX_File(*file, page, PaletteClass::CurrentPalette);
 }
 
 }  // namespace

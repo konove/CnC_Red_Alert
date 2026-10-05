@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
@@ -16,6 +17,14 @@
 #include "engine/window/display_observer.h"
 
 namespace engine::window {
+
+// A picture in palette indices, row by row from the top, `width` pixels to a
+// row.
+struct DisplayPicture {
+  int width = 0;
+  int height = 0;
+  std::vector<uint8_t> pixels;  // width * height of them
+};
 
 // What the game shows its picture on: an 8-bit paletted surface it draws the
 // frame on, the palette that surface is seen through, and the event loop the
@@ -115,6 +124,13 @@ class Display : public PixelSurface {
   // Drops the scaled frame if it is a backdrop, so the next present shows the
   // surface alone; a movie frame stays.
   virtual void ClearBackdrop() = 0;
+
+  // Returns what the window shows, or would if everything drawn were
+  // presented, at the size of the surface: the surface, the movie frame
+  // showing instead of it, or the backdrop with the surface over it. A
+  // stretched frame is sampled at the nearest pixel, where the window blends.
+  // Empty before SetVideoMode(). For screenshots.
+  [[nodiscard]] virtual DisplayPicture Capture() const = 0;
 
   // Whether drawing is waiting in the surface to be presented.
   [[nodiscard]] virtual bool redraw_pending() const = 0;

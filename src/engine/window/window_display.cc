@@ -434,6 +434,42 @@ void WindowDisplay::FreeScaledFrame() {
   backdrop_ = false;
 }
 
+DisplayPicture WindowDisplay::Capture() const {
+  const auto* surface = static_cast<const SDL_Surface*>(palette_surface_);
+  if (surface == nullptr) {
+    return {};
+  }
+  DisplayPicture picture{
+      .width = surface->w, .height = surface->h, .pixels = {}};
+  picture.pixels.reserve(base::ToSize(surface->w) * base::ToSize(surface->h));
+
+  // SDL owns pitch bytes for each of the surface's rows.
+  const auto surface_bytes =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(static_cast<const uint8_t*>(surface->pixels),
+                base::ToSize(surface->pitch) * base::ToSize(surface->h));
+  const std::span<const uint8_t> frame = scaled_frame_;
+  for (int y = 0; y < surface->h; y++) {
+    const auto row =
+        surface_bytes.subspan(base::ToSize(y) * base::ToSize(surface->pitch),
+                              base::ToSize(surface->w));
+    for (int x = 0; x < surface->w; x++) {
+      uint8_t pixel = base::At(row, x);
+      // A movie frame shows instead of the surface; a backdrop shows where
+      // the surface is color 0.
+      if (!frame.empty() && (!backdrop_ || pixel == 0)) {
+        const int frame_x = x * scaled_frame_width_ / surface->w;
+        const int frame_y = y * scaled_frame_height_ / surface->h;
+        pixel = base::At(
+            frame, (base::ToSize(frame_y) * base::ToSize(scaled_frame_width_)) +
+                       base::ToSize(frame_x));
+      }
+      picture.pixels.push_back(pixel);
+    }
+  }
+  return picture;
+}
+
 void WindowDisplay::PresentFrame() {
   WaitForPresentSlot();
   SDL_RenderPresent(static_cast<SDL_Renderer*>(renderer_));
