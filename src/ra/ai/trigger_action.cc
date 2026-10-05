@@ -847,182 +847,85 @@ class PlaySpeechAction final : public TriggerAction {
   VoxType speech_;
 };
 
-// Returns `record` as an action keeps it: the fields its type does not use at
-// their defaults, and the value as the number of what the action acts on.
-// TODO: scaffolding for LegacyAction; each action class converts its own
-// value in MakeTriggerAction() (docs/TRIGGER_ACTION_CLASSES_PLAN.md).
-TriggerActionRecord Normalized(const TriggerActionRecord& record) {
-  TriggerActionRecord kept{.type = record.type};
-  switch (ActionNeed(record.type)) {
-    case NEED_TEAM:
-      kept.team_type = record.team_type;
-      break;
-
-    case NEED_TRIGGER:
-      kept.trigger_type = record.trigger_type;
-      break;
-
-    case NEED_HOUSE:
-    case NEED_SPECIAL:
-    case NEED_MOVIE:
-    case NEED_SPEECH:
-      kept.value = LowByte(record.value);
-      break;
-
-    case NEED_BOOL:
-      kept.value = LowByte(record.value) != 0 ? 1 : 0;
-      break;
-
-    case NEED_SOUND:
-      kept.value = SoundValue(record.value);
-      break;
-
-    case NEED_THEME:
-    case NEED_QUARRY:
-    case NEED_WAYPOINT:
-    case NEED_NUMBER:
-      kept.value = record.value;
-      break;
-
-    case NeedType::NEED_NONE:
-    case NeedType::NEED_INFANTRY:
-    case NeedType::NEED_UNIT:
-    case NeedType::NEED_AIRCRAFT:
-    case NeedType::NEED_STRUCTURE:
-    case NeedType::NEED_TIME:
-    case NeedType::NEED_FORMATION:
-    case NeedType::NEED_MISSION:
-    case NeedType::NEED_HEX_NUMBER:
-    default:
-      break;
-  }
-  return kept;
-}
-
-// Every action that has no class of its own yet
-// (docs/TRIGGER_ACTION_CLASSES_PLAN.md): the record's fields and a switch over
-// the type.
-class LegacyAction final : public TriggerAction {
+// Turns computer base building on or off for the trigger's house. When on,
+// the computer builds bases and units. As for the two classes below, a house
+// the scenario does not have is left alone.
+class BaseBuildingAction final : public TriggerAction {
  public:
-  explicit LegacyAction(const TriggerActionRecord& record)
-      : type_(record.type),
-        team_type_(record.team_type),
-        trigger_type_(record.trigger_type),
-        data_{.value = record.value} {}
+  explicit BaseBuildingAction(const bool enabled) : enabled_(enabled) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kBaseBuilding;
+  }
+  bool Perform(const TriggerActionContext& context) override {
+    if (HouseClass* owner = HouseClass::As_Pointer(context.house);
+        owner != nullptr) {
+      owner->IsBaseBuilding = enabled_;
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = enabled_ ? 1 : 0};
+  }
+
+ private:
+  bool enabled_;
+};
+
+// Gives the trigger's house a special weapon, for one use (kOneSpecial) or for
+// good (kFullSpecial), and puts its button on the player's sidebar.
+class SpecialWeaponAction final : public TriggerAction {
+ public:
+  SpecialWeaponAction(const TriggerActionType type,
+                      const SpecialWeaponType special)
+      : type_(type), special_(special) {}
 
   [[nodiscard]] TriggerActionType type() const override { return type_; }
-  bool Perform(const TriggerActionContext& context) override;
-  void Detach(Target target) override;
+  bool Perform(const TriggerActionContext& context) override {
+    HouseClass* owner = HouseClass::As_Pointer(context.house);
+    if (owner == nullptr) {
+      return true;
+    }
+    owner->SuperWeapon.at(special_).Enable(
+        type_ == TriggerActionType::kOneSpecial, false);
+
+    if (ThePlayer() == owner) {
+      TheMap().Add(RTTI_SPECIAL, static_cast<int>(special_));
+      TheMap().Column[1].Flag_To_Redraw();
+    }
+    return true;
+  }
   [[nodiscard]] TriggerActionRecord ToRecord() const override {
-    return {.type = type_,
-            .team_type = team_type_,
-            .trigger_type = trigger_type_,
-            .value = data_.value};
+    return {.type = type_, .value = static_cast<int>(special_)};
   }
 
  private:
   TriggerActionType type_;
-  TeamTypeClass* team_type_;
-  TriggerType* trigger_type_;
-
-  // The action's value; type_ decides which member means something (see
-  // ActionNeed()). The one-byte members alias the low byte of `value`.
-  union {
-    SpecialWeaponType special;  // Special weapon ability.
-    QuarryType quarry;          // Preferred target for attack.
-    bool flag;                  // Boolean value.
-    int value;
-  } data_;
+  SpecialWeaponType special_;
 };
 
-void LegacyAction::Detach(const Target target) {
-  if (target.kind() == RTTI_TEAMTYPE && team_type_ == target.AsTeamType()) {
-    team_type_ = nullptr;
+// Sets what the trigger's house prefers to attack.
+class PreferredTargetAction final : public TriggerAction {
+ public:
+  explicit PreferredTargetAction(const QuarryType quarry) : quarry_(quarry) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kPreferredTarget;
   }
-  if (target.kind() == RTTI_TRIGGERTYPE &&
-      trigger_type_ == target.AsTriggerType()) {
-    trigger_type_ = nullptr;
+  bool Perform(const TriggerActionContext& context) override {
+    if (HouseClass* owner = HouseClass::As_Pointer(context.house);
+        owner != nullptr) {
+      owner->PreferredTarget = quarry_;
+    }
+    return true;
   }
-}
-
-// Not const: carries out the action.
-// NOLINTNEXTLINE(readability-make-member-function-const)
-bool LegacyAction::Perform(const TriggerActionContext& context) {
-  HouseClass* owner = HouseClass::As_Pointer(context.house);
-
-  switch (type_) {
-    // Set the preferred target for the house.
-    case TriggerActionType::kPreferredTarget:
-      if (owner != nullptr) {
-        owner->PreferredTarget = data_.quarry;
-      }
-      break;
-
-    // Turn the house's computer base building on or off. When on, the computer
-    // builds bases and units. As for every house action here, a house the
-    // scenario does not have (or HOUSE_NONE) is left alone.
-    case TriggerActionType::kBaseBuilding:
-      if (owner != nullptr) {
-        owner->IsBaseBuilding = data_.flag;
-      }
-      break;
-
-    // Give the special weapon to the house, for one use or for good, and put
-    // its button on the player's sidebar.
-    case TriggerActionType::kOneSpecial:
-    case TriggerActionType::kFullSpecial:
-      if (owner == nullptr) {
-        break;
-      }
-      owner->SuperWeapon.at(data_.special)
-          .Enable(type_ == TriggerActionType::kOneSpecial, false);
-
-      if (ThePlayer() == owner) {
-        TheMap().Add(RTTI_SPECIAL, static_cast<int>(data_.special));
-        TheMap().Column[1].Flag_To_Redraw();
-      }
-      break;
-
-    // No action. TriggerActionType::kAllowWin is not carried out here:
-    // TriggerClass and the scenario's win check look for it by type_.
-    case TriggerActionType::kNone:
-    case TriggerActionType::kWinLose:
-    case TriggerActionType::kAllowWin:
-    case TriggerActionType::kLaunchNukes:
-    case TriggerActionType::kCreepShadow:
-    case TriggerActionType::kRevealAll:
-    case TriggerActionType::kStartTimer:
-    case TriggerActionType::kStopTimer:
-    case TriggerActionType::kDestroyObject:
-    case TriggerActionType::kWin:
-    case TriggerActionType::kLose:
-    case TriggerActionType::kBeginProduction:
-    case TriggerActionType::kFireSale:
-    case TriggerActionType::kAutocreate:
-    case TriggerActionType::kAllHunt:
-    case TriggerActionType::kCreateTeam:
-    case TriggerActionType::kDestroyTeam:
-    case TriggerActionType::kReinforcements:
-    case TriggerActionType::kDestroyTrigger:
-    case TriggerActionType::kForceTrigger:
-    case TriggerActionType::kSetGlobal:
-    case TriggerActionType::kClearGlobal:
-    case TriggerActionType::kRevealSome:
-    case TriggerActionType::kRevealZone:
-    case TriggerActionType::kAddTimer:
-    case TriggerActionType::kSubTimer:
-    case TriggerActionType::kSetTimer:
-    case TriggerActionType::kDropZoneFlare:
-    case TriggerActionType::kTextTrigger:
-    case TriggerActionType::kPlayMovie:
-    case TriggerActionType::kPlaySound:
-    case TriggerActionType::kPlayMusic:
-    case TriggerActionType::kPlaySpeech:
-    default:
-      break;
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(quarry_)};
   }
-  return true;
-}
+
+ private:
+  QuarryType quarry_;
+};
 
 }  // namespace
 
@@ -1230,12 +1133,17 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
       return std::make_unique<PlaySpeechAction>(
           LowByteAs<VoxType>(record.value));
 
-    // Not yet classes of their own.
     case TriggerActionType::kBaseBuilding:
+      return std::make_unique<BaseBuildingAction>(LowByte(record.value) != 0);
+
     case TriggerActionType::kOneSpecial:
     case TriggerActionType::kFullSpecial:
+      return std::make_unique<SpecialWeaponAction>(
+          type, LowByteAs<SpecialWeaponType>(record.value));
+
     case TriggerActionType::kPreferredTarget:
-      return std::make_unique<LegacyAction>(Normalized(record));
+      return std::make_unique<PreferredTargetAction>(
+          static_cast<QuarryType>(record.value));
 
     case TriggerActionType::kNone:
     case TriggerActionType::kWinLose:
