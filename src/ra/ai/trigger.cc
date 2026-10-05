@@ -332,26 +332,27 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
     *matching *	trigger event. Otherwise perform the action for both events.
     */
     bool ok = false;
-    const HousesType hh = Class->house;
+    const TriggerActionContext context{
+        .house = Class->house, .object = obj, .trigger_id = ID, .cell = cell};
     if (Class->event_control == MULTI_LINKED) {
       if (e1 || forced) {
-        ok |= Class->action1.Perform(hh, obj, ID, cell);
+        ok |= Class->action1.Perform(context);
       }
       if (e2 && !forced) {
-        ok |= Class->action2.Perform(hh, obj, ID, cell);
+        ok |= Class->action2.Perform(context);
       }
     } else {
       switch (Class->action_control) {
         case MULTI_ONLY:
-          ok |= Class->action1.Perform(hh, obj, ID, cell);
+          ok |= Class->action1.Perform(context);
           break;
 
         case MultiStyle::MULTI_OR:
         case MultiStyle::MULTI_LINKED:
         default:
         case MULTI_AND:
-          ok |= Class->action1.Perform(hh, obj, ID, cell);
-          ok |= Class->action2.Perform(hh, obj, ID, cell);
+          ok |= Class->action1.Perform(context);
+          ok |= Class->action2.Perform(context);
           break;
       }
     }

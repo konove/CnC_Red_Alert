@@ -177,13 +177,13 @@ void TriggerAction::Detach(const Target target) {
 
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
-                            const int trigger_id, const Cell cell) {
-  HouseClass* owner = HouseClass::As_Pointer(house);
+bool TriggerAction::Perform(const TriggerActionContext& context) {
+  HouseClass* owner = HouseClass::As_Pointer(context.house);
   bool success = true;
 
   // The object may already be dead: a trigger with two actions passes the same
   // object to both, and the first may have killed it.
+  ObjectClass* object = context.object;
   if (object && !object->IsActive) {
     object = nullptr;
   }
@@ -491,14 +491,14 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       // If the trigger is attached to a bridge, then the bridge gets destroyed
       // regardless of whether the trigger was a forced or natural spring event.
       // Cell 0 means the trigger is not attached to a cell.
-      if (cell.index() != 0) {
-        TheMap().Destroy_Bridge_At(cell);
+      if (context.cell.index() != 0) {
+        TheMap().Destroy_Bridge_At(context.cell);
       }
 
       // Destroy all objects that have this trigger attached to them.
-      if (trigger_id != -1) {
+      if (context.trigger_id != -1) {
         const TriggerClass* sprung_trigger =
-            TheObjectHeaps().trigger().Slot(trigger_id);
+            TheObjectHeaps().trigger().Slot(context.trigger_id);
         DestroyObjectsAttachedTo(TheObjectHeaps().unit(), sprung_trigger);
         DestroyObjectsAttachedTo(TheObjectHeaps().infantry(), sprung_trigger);
         DestroyObjectsAttachedTo(TheObjectHeaps().aircraft(), sprung_trigger);

@@ -94,6 +94,19 @@ const char* ActionName(TriggerActionType action);
 // NEED_TRIGGER mean the team_type or trigger_type member instead.
 NeedType ActionNeed(TriggerActionType action);
 
+// What an action is told when its trigger springs.
+struct TriggerActionContext {
+  // The trigger's owner, which the house actions that name no house of their
+  // own act on.
+  HousesType house = HOUSE_NONE;
+  // What the trigger was attached to and sprang on; nullptr for none.
+  ObjectClass* object = nullptr;
+  // The springing trigger's slot in the trigger heap; -1 for none.
+  int trigger_id = -1;
+  // The cell the trigger is attached to; cell 0 for none.
+  Cell cell{};
+};
+
 // An action as the scenario INI, a saved game and the editor see it: the same
 // four fields whatever the action is. ActionNeed() says which of the last three
 // `type` uses.
@@ -197,15 +210,10 @@ class TriggerAction {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Carries out the action for the trigger that sprang. `house` is the
-  // trigger's owner, which the house actions without a data.house act on.
-  // `object` is what the trigger was attached to and sprang on, or nullptr.
-  // `trigger_id` is the springing trigger's slot in the trigger heap, or -1 for
-  // none. `cell` is the cell the trigger is attached to; cell 0 means none.
-  // Returns false when the action could not be done (no reinforcements could
-  // be created, nothing to destroy), so the trigger is not counted as used.
-  bool Perform(HousesType house, ObjectClass* object, int trigger_id,
-               Cell cell);
+  // Carries out the action for the trigger that sprang. Returns false when
+  // the action could not be done (no reinforcements could be created, nothing
+  // to destroy), so the trigger is not counted as used.
+  bool Perform(const TriggerActionContext& context);
 
  private:
   TriggerActionType type_{TriggerActionType::kNone};

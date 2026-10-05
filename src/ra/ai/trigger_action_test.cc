@@ -97,7 +97,7 @@ class TriggerActionTest : public GameFixture {
   // Carries out `action` as a trigger of `house` that is attached to nothing.
   static bool Perform(TriggerAction& action,
                       const HousesType house = HOUSE_USSR) {
-    return action.Perform(house, nullptr, -1, Cell{});
+    return action.Perform({.house = house});
   }
 };
 
@@ -529,7 +529,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectKillsTheObjectTheTriggerSprangOn) {
 
   TriggerAction action;
   action.set_type(TriggerActionType::kDestroyObject);
-  EXPECT_TRUE(action.Perform(HOUSE_USSR, jeep, -1, Cell{}));
+  EXPECT_TRUE(action.Perform({.house = HOUSE_USSR, .object = jeep}));
 
   EXPECT_EQ(TheObjectHeaps().unit().Count(), 0);
 }
@@ -542,7 +542,7 @@ TEST_F(TriggerActionGameTest, DestroyObjectIgnoresAnObjectAlreadyDead) {
 
   TriggerAction action;
   action.set_type(TriggerActionType::kDestroyObject);
-  EXPECT_FALSE(action.Perform(HOUSE_USSR, jeep, -1, Cell{}));
+  EXPECT_FALSE(action.Perform({.house = HOUSE_USSR, .object = jeep}));
 
   jeep->IsActive = true;
   EXPECT_EQ(jeep->Strength, 100);
@@ -560,9 +560,9 @@ TEST_F(TriggerActionGameTest, DestroyObjectKillsEverythingTheTriggerIsOn) {
   TriggerAction action;
   action.set_type(TriggerActionType::kDestroyObject);
   // Nothing sprang it, so the action itself fails.
-  EXPECT_FALSE(action.Perform(HOUSE_USSR, nullptr,
-                              TheObjectHeaps().trigger().SlotIndexOf(trigger),
-                              Cell{}));
+  EXPECT_FALSE(action.Perform(
+      {.house = HOUSE_USSR,
+       .trigger_id = TheObjectHeaps().trigger().SlotIndexOf(trigger)}));
 
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().unit().ActiveAt(0), bystander);
@@ -722,7 +722,8 @@ TEST_F(TriggerActionGameTest, DestroyObjectOnACellWithNoBridgeStillSucceeds) {
 
   TriggerAction action;
   action.set_type(TriggerActionType::kDestroyObject);
-  EXPECT_TRUE(action.Perform(HOUSE_USSR, jeep, -1, Cell::FromXY(10, 10)));
+  EXPECT_TRUE(action.Perform(
+      {.house = HOUSE_USSR, .object = jeep, .cell = Cell::FromXY(10, 10)}));
 
   EXPECT_EQ(TheObjectHeaps().unit().Count(), 0);
 }
