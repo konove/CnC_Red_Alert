@@ -20,9 +20,7 @@
 // titles while a slideshow of stills fades in and out behind it.
 #include "ra/screens/egos.h"
 
-#include <algorithm>
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <iterator>
@@ -35,7 +33,6 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/font.h"
@@ -43,6 +40,7 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -61,13 +59,14 @@
 
 namespace ra {
 
-using enum engine::window::KeyNumber;
-
 namespace {
 
-// The font of the credits. Its text is 14 rows high, and the lines of the
-// file are drawn this many rows apart.
+// The font of the credits and the height of its text in rows. A drop shadow
+// adds one row below and one column on each side.
 constexpr FontType kCreditFont = FontType::k6PointGradient;
+constexpr int kTextHeight = 14;
+
+// The lines of CREDITS.TXT are drawn this many rows apart.
 constexpr int kLinePitch = 16;
 
 // The top and bottom rows of the hidden page that are never shown. The text
@@ -75,28 +74,17 @@ constexpr int kLinePitch = 16;
 // behind these margins it does so out of sight.
 constexpr int kMarginRows = 16;
 
+// A line whose top row is above this one is out of sight for good.
+constexpr int kGoneRow = -20;
+
 // System ticks (1/60 s) per pixel of scrolling.
 constexpr int kTicksPerPixel = 3;
 
-// Number of slideshow pictures.
-constexpr int kSlideCount = 17;
-
-// Slide frames from the start of a slide to the start of its fade-out. One
-// slide frame passes per pixel of scrolling.
-constexpr int kSlideHoldFrames = 150;
-
-// Slide frames a fade in or out takes.
-constexpr int kFadeFrames = 37;
-
-// Slide frames the screen stays black between two slides, fade-out included.
-constexpr int kSlideGapFrames = 50;
-
-// A new slide is copied in strips of this height, one strip per frame, so
-// that the copy does not make the scroll stutter. Four strips cover the 400
-// rows of a slide.
-constexpr int kStripHeight = 100;
+// Frames of scrolling before a credits score that has run out is restarted.
+constexpr int kReplayScoreAfterFrames = 1000;
 
 // The slideshow pictures, in the order they are shown; the show loops.
+constexpr int kSlideCount = 17;
 constexpr std::array<std::string_view, kSlideCount> kSlideNames = {
     "aftr_hi.pcx",  "aly1.pcx",     "apc_hi.pcx",   "aphi0049.pcx",
     "bnhi0020.pcx", "dchi0040.pcx", "frhi0166.pcx", "lab.pcx",
@@ -104,13 +92,58 @@ constexpr std::array<std::string_view, kSlideCount> kSlideNames = {
     "needle.pcx",   "sov2.pcx",     "spy.pcx",      "stalin.pcx",
     "tent.pcx"};
 
+// A new slide is copied in strips of this height, one strip per frame, so
+// that the copy does not make the scroll stutter. The strips cover the 400
+// rows of a slide.
+constexpr int kStripHeight = 100;
+constexpr int kStripCount = 4;
+
+// A slide's timetable, in slide frames. One slide frame passes per pixel of
+// scrolling, and the count restarts at 0 with every slide:
+//
+//   1-4      copy the slide to the background page, a strip per frame
+//   5-8      copy the background page to the hidden page the same way
+//   9        put the slide's colours into the combo palette
+//   11-46    fade the slide's colours up from black
+//   151-186  fade them back down to black
+//   200      the last frame; the screen has been black since 186
+//
+// Nothing of a slide is displayed until its fade starts, because its palette
+// entries are black while its pixels are copied in.
+constexpr int kCopyToBackgroundFrame = 1;
+constexpr int kCopyToPageFrame = kCopyToBackgroundFrame + kStripCount;
+constexpr int kLoadColorsFrame = kCopyToPageFrame + kStripCount;
+constexpr int kFadeInFrame = 10;
+constexpr int kFadeOutFrame = 150;
+constexpr int kLastSlideFrame = 200;
+
+// A fade takes the steps 1 to kFadeFrames - 1, one per frame, each this much
+// further from the starting colours.
+//
+// TODO: The integer division makes a step 6/255, so the last one reaches
+// 216/255: a slide is shown at 85% of its brightness, and the fade down has
+// to black out the colours at the end.
+constexpr int kFadeFrames = 37;
+constexpr int kFadeStep = 255 / kFadeFrames;
+
+// The flags the text printer draws a string of the credits with.
+constexpr TextPrintType PrintFlags(CreditAlignment alignment) {
+  const TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
+  if (alignment == CreditAlignment::kCenter) {
+    return flags | TPF_CENTER;
+  }
+  if (alignment == CreditAlignment::kRight) {
+    return flags | TPF_RIGHT;
+  }
+  return flags;
+}
+
 // One string of credits text on its way up the screen.
 class CreditLine {
  public:
-  // `x` and `y` are where the text printer is given the string, in pixels on
-  // the hidden page: `x` is the left edge, the centre or the right edge of
-  // the text according to `flags`, `y` its top row.
-  CreditLine(int x, int y, std::string_view text, TextPrintType flags);
+  // Places `string` on a page of the given size in pixels, as far below the
+  // bottom of the page as its line is down the file.
+  CreditLine(const CreditString& string, int page_width, int page_height);
 
   // Moves the text up one pixel. Returns true once it has left the top of
   // the screen for good.
@@ -124,19 +157,23 @@ class CreditLine {
   void Erase(PixelView& view, PixelView& background) const;
 
   std::string text_;
-  int x_;
-  int y_;  // Negative once the text has started to leave the page.
-  TextPrintType flags_;
+  CreditAlignment alignment_;
+  int x_;  // Where `alignment_` anchors the text: its left edge, centre or
+           // right edge.
+  int y_;  // The top row. Negative once the text has started to leave the
+           // page.
 };
 
-CreditLine::CreditLine(int x, int y, std::string_view text, TextPrintType flags)
-    : text_(text), x_(x), y_(y), flags_(flags) {}
+CreditLine::CreditLine(const CreditString& string, int page_width,
+                       int page_height)
+    : text_(string.text),
+      alignment_(string.alignment),
+      x_(string.column * page_width / kCreditColumns),
+      y_(page_height + 2 + (string.line * kLinePitch)) {}
 
 bool CreditLine::ScrollUp() {
   y_--;
-  // A line is 16 pixels high at most, and the top 16 rows of the hidden page
-  // are never shown, so by now the line is long out of sight.
-  return y_ < -20;
+  return y_ < kGoneRow;
 }
 
 void CreditLine::Render(PixelView& view) const {
@@ -144,53 +181,58 @@ void CreditLine::Render(PixelView& view) const {
   // all of it is on the page.
   if (y_ < view.height() && y_ > -kMarginRows) {
     Fancy_Text_Print(view, text_.c_str(), x_, y_, Get_Color_Scheme(), kTBlack,
-                     kCreditFont, flags_);
+                     kCreditFont, PrintFlags(alignment_));
   }
 }
 
 void CreditLine::Erase(PixelView& view, PixelView& background) const {
-  const int width =
-      StringPixelWidth(TextFontStyle(kCreditFont, flags_), text_.c_str());
+  // The text and the row of shadow below it.
+  const int height = kTextHeight + 1;
+  // Most lines are still below the page; do not measure those.
+  if (y_ >= view.height() || y_ + height <= 0) {
+    return;
+  }
+
   // Find the left edge the way the text printer does.
+  const int width = StringPixelWidth(
+      TextFontStyle(kCreditFont, PrintFlags(alignment_)), text_.c_str());
   int x = x_;
-  if (base::Any(flags_ & TPF_RIGHT)) {
+  if (alignment_ == CreditAlignment::kRight) {
     x -= width;
-  } else if (base::Any(flags_ & TPF_CENTER)) {
+  } else if (alignment_ == CreditAlignment::kCenter) {
     x -= width / 2;
   }
 
-  // One pixel wider on each side and one row taller than the 14-pixel text,
-  // for the drop shadow. The blit clips, so a line that is still below the
-  // page or already above it costs nothing.
-  background.BlitTo(view, x - 1, y_, x - 1, y_, width + 2, 14 + 1);
+  // One pixel wider on each side for the shadow.
+  background.BlitTo(view, x - 1, y_, x - 1, y_, width + 2, height);
 }
 
 // The slideshow behind the text: the pictures, the page the text is erased
 // with, and the palettes that fade each picture in and out while the colours
 // of the text stay as they are.
 //
-// The show draws on the hidden page and fades by way of the title palette,
-// which it takes over for as long as it lives.
+// The show fades by way of the title palette, which it takes over for as long
+// as it lives.
 class SlideShow {
  public:
-  // Loads the pictures and shows the credits palette with every slide colour
-  // black. `text_scheme` is the colour scheme the text is drawn in; its
-  // colours never fade. The screen must be black already: loading takes a
-  // moment, and the page for erasing text starts as a copy of it.
-  explicit SlideShow(const RemapControlType& text_scheme);
+  // Loads the pictures into pages of the given size and shows the credits
+  // palette with every slide colour black. `text_scheme` is the colour scheme
+  // the text is drawn in; its colours never fade.
+  SlideShow(const RemapControlType& text_scheme, int width, int height);
 
-  // Advances the show by one step. `slide` is the picture and `slide_frame`
-  // how long it has been current, which decides what happens:
-  //
-  //   1-4      copy the slide to the background page, a strip per frame
-  //   5-8      copy the background page to the hidden page the same way
-  //   9        put the slide's colours into the combo palette
-  //   11-46    fade the slide's colours up from black
-  //   151-186  fade them back down to black
-  //
-  // Nothing is displayed until the fade starts, because the slide's palette
-  // entries are black while its pixels are copied in.
-  void Step(int slide, int slide_frame);
+  // Moves the show on by one frame of the timetable above, going to the next
+  // slide when the current one has had its time. `page` is the page the
+  // slide is drawn on, under the text.
+  void Advance(PixelView& page);
+
+  // Brings the current slide's fade-out forward if the slide is being shown.
+  // One that is still being copied in or fading up carries on as it was.
+  void SkipToFadeOut();
+
+  // True when the current slide has faded out and the screen is black.
+  [[nodiscard]] bool faded_out() const {
+    return slide_frame_ > kFadeOutFrame + kFadeFrames;
+  }
 
   // The current slide without the text on it: what a line of text is erased
   // with before it is drawn one pixel higher.
@@ -198,9 +240,20 @@ class SlideShow {
     return background_page_.view();
   }
 
+  // Gives every colour of `palette` that belongs to the slides the colour
+  // `source` has there.
+  void SetSlideColors(engine::gfx::Palette& palette,
+                      const engine::gfx::Palette& source) const;
+
+  // Copies one strip of `from` to the same place on `to`.
+  static void CopyStrip(PixelView& from, PixelView& to, int strip);
+
+  int slide_ = 0;        // Index into kSlideNames.
+  int slide_frame_ = 0;  // Frames the slide has been current.
+
   // Non-zero for the palette entries that belong to the slides and fade with
   // them; zero for the ones the text is drawn in, which never fade.
-  std::array<char, 256> fades_with_slide_{};
+  std::array<char, engine::gfx::Palette::kColorCount> fades_with_slide_{};
 
   // The font's colours plus the current slide's colours: the palette a slide
   // fades up to.
@@ -216,125 +269,125 @@ class SlideShow {
   PixelBuffer background_page_;
 };
 
-SlideShow::SlideShow(const RemapControlType& text_scheme) {
+SlideShow::SlideShow(const RemapControlType& text_scheme, int width,
+                     int height) {
   // Everything fades with the slides except the colours the text is drawn
   // in: the six gradient entries of the font and the scheme's own.
   fades_with_slide_.fill(1);
   for (int index = 0; index < 6; index++) {
-    fades_with_slide_.at(base::At(text_scheme.FontRemap, 10 + index)) = 0;
+    base::At(fades_with_slide_, base::At(text_scheme.FontRemap, 10 + index)) =
+        0;
   }
-  fades_with_slide_.at(text_scheme.Color) = 0;
-  fades_with_slide_.at(text_scheme.Shadow) = 0;
-  fades_with_slide_.at(text_scheme.Background) = 0;
-  fades_with_slide_.at(text_scheme.Corners) = 0;
-  fades_with_slide_.at(text_scheme.Highlight) = 0;
-  fades_with_slide_.at(text_scheme.Bright) = 0;
-  fades_with_slide_.at(text_scheme.Underline) = 0;
-  fades_with_slide_.at(text_scheme.Bar) = 0;
-  fades_with_slide_.at(text_scheme.Box) = 0;
+  for (const uint8_t color :
+       {text_scheme.Color, text_scheme.Shadow, text_scheme.Background,
+        text_scheme.Corners, text_scheme.Highlight, text_scheme.Bright,
+        text_scheme.Underline, text_scheme.Bar, text_scheme.Box}) {
+    base::At(fades_with_slide_, color) = 0;
+  }
 
   // EGOPAL.PAL holds the colours of the text; the slides were drawn to leave
   // those entries alone.
+  PaletteClass& title_palette = ThePalettes().title_palette();
   if (const auto file = OpenGameFile("EGOPAL.PAL")) {
-    std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
-    if (file->ReadObject(vga)) {
-      ThePalettes().title_palette() = engine::gfx::Palette::FromVga(vga);
+    if (const auto palette = engine::gfx::ReadVgaPalette(*file)) {
+      title_palette = *palette;
     }
   }
 
   // Start with the slide entries black, so the text can scroll on a black
   // screen until the first slide fades up.
-  combo_palette_ = ThePalettes().title_palette();
-  for (int index = 0; index < 256; index++) {
-    if (fades_with_slide_.at(base::ToSize(index))) {
-      combo_palette_.at(index) = engine::gfx::kBlackColor;
-    }
-  }
-  ThePalettes().title_palette() = combo_palette_;
-  ThePalettes().title_palette().Set();
+  combo_palette_ = title_palette;
+  SetSlideColors(combo_palette_,
+                 engine::gfx::Palette(engine::gfx::kBlackColor));
+  title_palette = combo_palette_;
+  title_palette.Set();
 
-  const int width = TheScreen().visible_view().width();
-  const int height = TheScreen().visible_view().height();
-  for (std::size_t index = 0; index < kSlideNames.size(); index++) {
-    slide_pages_.at(index).Init(width, height, {}, 0);
-    Load_Title_Screen(kSlideNames.at(index), &slide_pages_.at(index).view(),
-                      slide_palettes_.at(index));
+  for (int index = 0; index < kSlideCount; index++) {
+    PixelBuffer& page = base::At(slide_pages_, index);
+    page.Init(width, height, {}, 0);
+    Load_Title_Screen(base::At(kSlideNames, index), &page.view(),
+                      base::At(slide_palettes_, index));
   }
 
-  // The background page starts as a copy of the black screen, so the text
-  // can be erased from the first frame on.
+  // Black, so the text can be erased before the first slide is copied in.
   background_page_.Init(width, height, {}, 0);
-  TheScreen().visible_view().BlitTo(background_page_.view());
+  background_page_.view().Clear();
 }
 
-void SlideShow::Step(int slide, int slide_frame) {
-  if (slide_frame >= 1 && slide_frame <= 4) {
-    PixelView& slide_view = slide_pages_.at(base::ToSize(slide)).view();
-    slide_view.BlitTo(background_page_.view(), 0,
-                      (slide_frame - 1) * kStripHeight, 0,
-                      (slide_frame - 1) * kStripHeight,
-                      TheScreen().visible_view().width(), kStripHeight);
+void SlideShow::Advance(PixelView& page) {
+  slide_frame_++;
+  if (slide_frame_ > kLastSlideFrame) {
+    slide_ = (slide_ + 1) % kSlideCount;
+    slide_frame_ = 0;
+  }
+
+  if (slide_frame_ >= kCopyToBackgroundFrame &&
+      slide_frame_ < kCopyToPageFrame) {
+    CopyStrip(base::At(slide_pages_, slide_).view(), background_page_.view(),
+              slide_frame_ - kCopyToBackgroundFrame);
     return;
   }
 
-  if (slide_frame >= 5 && slide_frame <= 8) {
-    background_page_.view().BlitTo(
-        TheScreen().hidden_view(), 0, (slide_frame - 5) * kStripHeight, 0,
-        (slide_frame - 5) * kStripHeight, TheScreen().visible_view().width(),
-        kStripHeight);
+  if (slide_frame_ >= kCopyToPageFrame && slide_frame_ < kLoadColorsFrame) {
+    CopyStrip(background_page_.view(), page, slide_frame_ - kCopyToPageFrame);
     return;
   }
 
-  if (slide_frame == 9) {
-    for (int index = 0; index < 256; index++) {
-      if (fades_with_slide_.at(base::ToSize(index))) {
-        combo_palette_.at(index) =
-            slide_palettes_.at(base::ToSize(slide)).at(index);
-      }
+  if (slide_frame_ == kLoadColorsFrame) {
+    SetSlideColors(combo_palette_, base::At(slide_palettes_, slide_));
+    return;
+  }
+
+  // Each step of a fade is computed from the title palette as it was when
+  // the fade began; only the last step is kept in it.
+  PaletteClass& title_palette = ThePalettes().title_palette();
+  if (slide_frame_ > kFadeInFrame &&
+      slide_frame_ < kFadeInFrame + kFadeFrames) {
+    const int step = slide_frame_ - kFadeInFrame;
+    PaletteClass faded = title_palette;
+    faded.Partial_Adjust(kFadeStep * step, combo_palette_, fades_with_slide_);
+    Set_Palette(faded);
+    if (step == kFadeFrames - 1) {
+      title_palette = faded;
     }
     return;
   }
 
-  if (slide_frame > 10 && slide_frame < kFadeFrames + 10) {
-    // Each step is computed from the unfaded title palette, which is why it
-    // is put back afterwards; only the last step keeps its result.
-    //
-    // TODO: The integer division makes a step 6/255, so the last one reaches
-    // 216/255 and the slide is shown at 85% of its brightness.
-    const PaletteClass unfaded_palette = ThePalettes().title_palette();
-    ThePalettes().title_palette().Partial_Adjust(
-        std::min(255 / kFadeFrames * (slide_frame - 10), 255), combo_palette_,
-        fades_with_slide_);
-    Set_Palette(ThePalettes().title_palette());
-    if (slide_frame != 9 + kFadeFrames) {
-      ThePalettes().title_palette() = unfaded_palette;
-    } else {
-      ThePalettes().title_palette() = PaletteClass::CurrentPalette;
+  if (slide_frame_ > kFadeOutFrame &&
+      slide_frame_ < kFadeOutFrame + kFadeFrames) {
+    const int step = slide_frame_ - kFadeOutFrame;
+    PaletteClass faded = title_palette;
+    faded.Partial_Adjust(kFadeStep * step, fades_with_slide_);
+    if (step == kFadeFrames - 1) {
+      // The steps stop short of black, so the last one blacks out the
+      // slide's entries outright. The next slide's pixels can then be copied
+      // in unseen.
+      SetSlideColors(faded, engine::gfx::Palette(engine::gfx::kBlackColor));
+      title_palette = faded;
     }
-    return;
+    Set_Palette(faded);
   }
+}
 
-  if (slide_frame > kSlideHoldFrames &&
-      slide_frame < kSlideHoldFrames + kFadeFrames) {
-    const PaletteClass unfaded_palette = ThePalettes().title_palette();
-    ThePalettes().title_palette().Partial_Adjust(
-        std::min(255 / kFadeFrames * (slide_frame - kSlideHoldFrames), 255),
-        fades_with_slide_);
-    if (slide_frame != kSlideHoldFrames + kFadeFrames - 1) {
-      Set_Palette(ThePalettes().title_palette());
-      ThePalettes().title_palette() = unfaded_palette;
-    } else {
-      // The steps stop short of black (see the fade up), so the last one
-      // blacks out the slide's entries outright. The next slide's pixels can
-      // then be copied in unseen.
-      for (int index = 0; index < 256; index++) {
-        if (fades_with_slide_.at(base::ToSize(index))) {
-          ThePalettes().title_palette().at(index) = engine::gfx::kBlackColor;
-        }
-      }
-      Set_Palette(ThePalettes().title_palette());
+void SlideShow::SkipToFadeOut() {
+  if (slide_frame_ > kFadeInFrame + kFadeFrames &&
+      slide_frame_ < kFadeOutFrame) {
+    slide_frame_ = kFadeOutFrame;
+  }
+}
+
+void SlideShow::SetSlideColors(engine::gfx::Palette& palette,
+                               const engine::gfx::Palette& source) const {
+  for (int index = 0; index < engine::gfx::Palette::kColorCount; index++) {
+    if (base::At(fades_with_slide_, index)) {
+      palette.at(index) = source.at(index);
     }
   }
+}
+
+void SlideShow::CopyStrip(PixelView& from, PixelView& to, int strip) {
+  const int y = strip * kStripHeight;
+  from.BlitTo(to, 0, y, 0, y, from.width(), kStripHeight);
 }
 
 // Waits until `frame` frames of scrolling have passed since `start_ticks`.
@@ -344,6 +397,7 @@ void WaitForFrame(int64_t start_ticks, int frame) {
   while (engine::platform::SystemTicks() - start_ticks <
              static_cast<int64_t>(frame) * kTicksPerPixel &&
          !game::TheKeyboard().Peek()) {
+    engine::platform::SleepMs(1);
   }
 }
 
@@ -354,8 +408,8 @@ void ShowCredits() {
   if (!credits_file) {
     return;
   }
-  std::string credits(base::ToSize(credits_file->Size()), '\0');
-  if (credits_file->Read(std::as_writable_bytes(std::span(credits))) <= 0) {
+  const std::string credits = credits_file->ReadString(credits_file->Size());
+  if (credits.empty()) {
     return;
   }
 
@@ -368,19 +422,10 @@ void ShowCredits() {
   const int width = TheScreen().visible_view().width();
   const int height = TheScreen().visible_view().height();
 
-  // The strings still on their way up the screen, in file order. Every line
-  // of the file starts two rows below the bottom of the screen.
+  // The strings still on their way up the screen, in file order.
   std::vector<CreditLine> lines;
   for (const CreditString& string : ParseCredits(credits)) {
-    TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
-    if (string.alignment == CreditAlignment::kCenter) {
-      flags = flags | TPF_CENTER;
-    } else if (string.alignment == CreditAlignment::kRight) {
-      flags = flags | TPF_RIGHT;
-    }
-    lines.emplace_back(string.column * width / kCreditColumns,
-                       height + 2 + (string.line * kLinePitch), string.text,
-                       flags);
+    lines.emplace_back(string, width, height);
   }
 
   TheTheme().Stop();
@@ -389,9 +434,9 @@ void ShowCredits() {
 
   // The scroll never touches the top and bottom rows of the visible page.
   TheScreen().visible_view().Clear();
-  TheScreen().hidden_view().Clear();
+  view.Clear();
 
-  SlideShow slides(text_scheme);
+  SlideShow slides(text_scheme, width, height);
 
   // Drop the keys pressed so far; one of them would end the credits.
   game::TheKeyboard().Clear();
@@ -404,12 +449,9 @@ void ShowCredits() {
   }
   TheTheme().Queue_Song(THEME_CREDITS);
 
-  // `frame` counts pixels scrolled since `start_ticks`; `slide_frame` restarts
-  // with every slide.
+  // `frame` counts the pixels scrolled since `start_ticks`.
   const int64_t start_ticks = engine::platform::SystemTicks();
   int frame = 0;
-  int slide_frame = 0;
-  int slide = 0;
 
   game::TheMouse().Hide();
 
@@ -418,23 +460,14 @@ void ShowCredits() {
   bool escaped = false;
   while (!lines.empty() && !escaped) {
     frame++;
-
-    // A slide stays for 150 frames, fades for 37 and leaves the screen black
-    // until frame 200. Then the next one starts, the first following the
-    // last.
-    slide_frame++;
-    if (slide_frame > kSlideHoldFrames + kSlideGapFrames) {
-      slide = (slide + 1) % kSlideCount;
-      slide_frame = 0;
-    }
-    slides.Step(slide, slide_frame);
+    slides.Advance(view);
 
     // Erase every line where it was drawn and move it up. A line that has
     // left the screen is removed, which ends the pass early: the lines not
     // reached are the ones above it, which are off the screen as well and
     // go the same way in the next passes.
     for (base::ssize i = std::ssize(lines) - 1; i >= 0; i--) {
-      CreditLine& line = lines.at(base::ToSize(i));
+      CreditLine& line = base::At(lines, i);
       line.Erase(view, slides.background());
       if (line.ScrollUp()) {
         lines.erase(std::next(lines.begin(), i));
@@ -449,8 +482,7 @@ void ShowCredits() {
       view.Unlock();
     }
 
-    // Play the credits score again when it runs out.
-    if (frame > 1000 && !TheTheme().Still_Playing()) {
+    if (frame > kReplayScoreAfterFrames && !TheTheme().Still_Playing()) {
       TheTheme().Queue_Song(THEME_CREDITS);
     }
 
@@ -461,7 +493,7 @@ void ShowCredits() {
                 width, height - (2 * kMarginRows));
 
     if (game::TheKeyboard().Peek()) {
-      escaped = game::TheKeyboard().Read().key == KN_ESC;
+      escaped = game::TheKeyboard().Read().key == engine::window::KN_ESC;
     }
   }
 
@@ -469,17 +501,11 @@ void ShowCredits() {
     TheTheme().Fade_Out();
     ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
   } else {
-    // The text is gone: let the slide fade out. One that is being shown
-    // skips straight to its fade; one that is still fading up finishes that
-    // first.
-    while (slide_frame <= kFadeFrames + kSlideHoldFrames) {
-      if (slide_frame < kSlideHoldFrames && slide_frame > 10 + kFadeFrames) {
-        slide_frame = kSlideHoldFrames;
-      }
+    // The text is gone: let the slide fade out.
+    while (!slides.faded_out()) {
+      slides.SkipToFadeOut();
       frame++;
-      slide_frame++;
-
-      slides.Step(slide, slide_frame);
+      slides.Advance(view);
 
       ServiceRealTime();
       WaitForFrame(start_ticks, frame);

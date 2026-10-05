@@ -31,6 +31,10 @@ std::vector<CreditString> ParseCredits(std::string_view text) {
   const auto at = [text](base::ssize index) {
     return text.at(base::ToSize(index));
   };
+  // True where no string can continue: past the end and at a tab or line end.
+  const auto ends_string = [size, at](base::ssize index) {
+    return index >= size || EndsString(at(index));
+  };
   int line = 0;
   int column = 0;
   base::ssize cursor = 0;
@@ -63,34 +67,29 @@ std::vector<CreditString> ParseCredits(std::string_view text) {
         // the end of the text, and a space belongs to it only when another
         // character of the string follows.
         base::ssize string_end = cursor + 1;
-        while (string_end < size && !EndsString(at(string_end)) &&
+        while (!ends_string(string_end) &&
                (at(string_end) != ' ' ||
-                (string_end + 1 < size && at(string_end + 1) != ' ' &&
-                 !EndsString(at(string_end + 1))))) {
+                (!ends_string(string_end + 1) && at(string_end + 1) != ' '))) {
           string_end++;
         }
 
-        const std::string_view string = text.substr(
-            base::ToSize(cursor), base::ToSize(string_end - cursor));
-        const int start_column = column;
         const int end_column = column + static_cast<int>(string_end - cursor);
-        if (start_column < kCreditCenterColumn &&
-            end_column > kCreditCenterColumn) {
-          strings.push_back({.text = string,
-                             .line = line,
-                             .column = kCreditCenterColumn,
-                             .alignment = CreditAlignment::kCenter});
-        } else if (start_column < kCreditCenterColumn) {
-          strings.push_back({.text = string,
-                             .line = line,
-                             .column = end_column,
-                             .alignment = CreditAlignment::kRight});
-        } else {
-          strings.push_back({.text = string,
-                             .line = line,
-                             .column = start_column,
-                             .alignment = CreditAlignment::kLeft});
+        CreditString string = {
+            .text = text.substr(base::ToSize(cursor),
+                                base::ToSize(string_end - cursor)),
+            .line = line,
+            .column = column,
+            .alignment = CreditAlignment::kLeft};
+        if (column < kCreditCenterColumn) {
+          if (end_column > kCreditCenterColumn) {
+            string.column = kCreditCenterColumn;
+            string.alignment = CreditAlignment::kCenter;
+          } else {
+            string.column = end_column;
+            string.alignment = CreditAlignment::kRight;
+          }
         }
+        strings.push_back(string);
 
         // Whatever ended the string is still to be read.
         cursor = string_end;
