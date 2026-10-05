@@ -1611,9 +1611,12 @@ const char* TeamTypeClass::Description() const {
       }
     }
 
+    // A team read from a scenario that names no house for it has none.
+    const char* const house_suffix =
+        House == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(House).Suffix;
     absl::SNPrintF(_buffer, sizeof(_buffer), "%s\t%s\t%c%s\t%d\t%s", IniName,
-                   HouseTypeClass::As_Reference(House).Suffix, extra, loc,
-                   MissionCount, Member_Description());
+                   house_suffix, extra, loc, MissionCount,
+                   Member_Description());
     return _buffer;
   }
   return "";

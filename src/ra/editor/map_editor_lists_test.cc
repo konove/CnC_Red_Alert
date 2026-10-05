@@ -261,6 +261,17 @@ TEST_F(TeamListTest, DeleteRemovesTheEntryClicked) {
   EXPECT_FALSE(Exists("zulu"));
 }
 
+// A scenario can hold a team with no house; the list shows it all the same.
+TEST_F(TeamListTest, ATeamWithoutAHouseIsListed) {
+  TeamTypeClass::From_Name("Alfa")->House = HOUSE_NONE;
+  player().At(3).Click(kDeleteX, kButtonsY).At(10).Click(kOkX, kButtonsY);
+
+  TheMap().Handle_Teams("Teams");
+
+  EXPECT_FALSE(Exists("Alfa"));
+  EXPECT_EQ(TheObjectHeaps().team_type().Count(), 2);
+}
+
 TEST_F(TeamListTest, DeletingTwiceRemovesTheFirstTwo) {
   player()
       .At(3)
