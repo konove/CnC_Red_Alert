@@ -25,14 +25,14 @@ inline RandomClass& LocalRandom() {
 // use it for whatever affects the simulation, and only for that. `T` is an
 // integer or an enum; the range must span less than 32768 values.
 template <class T>
-T RandomPick(T low, T high) {
+T RandomPick(const T low, const T high) {
   return static_cast<T>(TheScenario().sync_rng_.InRange(
       static_cast<int>(low), static_cast<int>(high)));
 }
 
 // Returns true `percent` times out of 100, drawing from the synchronized
 // generator like RandomPick().
-inline bool PercentChance(int percent) {
+inline bool PercentChance(const int percent) {
   // The draw is 0..99, so 0 never succeeds and 100 always does.
   return TheScenario().sync_rng_.InRange(0, 99) < percent;
 }
@@ -41,14 +41,14 @@ inline bool PercentChance(int percent) {
 // synchronized generator alone. For anything that differs between machines or
 // is only cosmetic: animations, sounds, what one player's screen shows.
 template <class T>
-T LocalRandomPick(T low, T high) {
+T LocalRandomPick(const T low, const T high) {
   return static_cast<T>(
       LocalRandom().InRange(static_cast<int>(low), static_cast<int>(high)));
 }
 
 // Returns true `percent` times out of 100, drawing from LocalRandom() like
 // LocalRandomPick().
-inline bool LocalPercentChance(int percent) {
+inline bool LocalPercentChance(const int percent) {
   return LocalRandom().InRange(0, 99) < percent;
 }
 

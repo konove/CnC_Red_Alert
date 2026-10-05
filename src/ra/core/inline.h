@@ -39,7 +39,7 @@ namespace ra {
 //   1000 and up the developer text table, entry text_id - 1000
 // The pointer is into the loaded table or the override and stays valid until
 // the next scenario starts.
-inline const char* TextString(int text_id) {
+inline const char* TextString(const int text_id) {
   if (text_id < 0 && -text_id <= std::ssize(TheWorld().name_override())) {
     return base::At(std::span(TheWorld().name_override()), -text_id - 1)
         .c_str();

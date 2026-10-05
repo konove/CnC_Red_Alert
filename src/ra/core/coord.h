@@ -31,40 +31,42 @@ Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock = false);
 // left corner, each rounded to the nearest lepton. Mouse positions come
 // through here; the caller adds the tactical view's own coordinate to get a
 // position in the world.
-inline Coordinate CoordFromPixels(int x, int y) noexcept {
+inline Coordinate CoordFromPixels(const int x, const int y) noexcept {
   return Coordinate::FromLeptons(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 
 // Returns the direction from `from` to `to` at the full 256-step
 // resolution.
-inline game::DirType Direction(Coordinate from, Coordinate to) {
+inline game::DirType Direction(const Coordinate from, const Coordinate to) {
   return game::Desired_Facing256(from.x(), from.y(), to.x(), to.y());
 }
 
 // Returns the direction from `from` to `to` as one of the eight compass
 // points, which is cheaper to work out than Direction().
-inline game::DirType Direction8(Coordinate from, Coordinate to) {
+inline game::DirType Direction8(const Coordinate from, const Coordinate to) {
   return game::Desired_Facing8(from.x(), from.y(), to.x(), to.y());
 }
 
 // Returns the center of the cell next to the one `coord` lies in, in direction
 // `dir`. A `dir` outside the eight facings, FACING_NONE included, wraps into
 // them. No map edge check: the result may lie off the map.
-inline Coordinate AdjacentCell(Coordinate coord, game::FacingType dir) {
+inline Coordinate AdjacentCell(const Coordinate coord,
+                               const game::FacingType dir) {
   return (kAdjacentCoordOffsets.at(game::AsFacing(static_cast<int>(dir))) +
           coord)
       .Snapped();
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
-inline Coordinate AdjacentCell(Coordinate coord, game::DirType dir) {
+inline Coordinate AdjacentCell(const Coordinate coord,
+                               const game::DirType dir) {
   return AdjacentCell(coord, game::Dir_Facing(dir));
 }
 
 // Returns the cell next to `cell` in direction `dir`. A `dir` outside the eight
 // facings, FACING_NONE included, wraps into them. No map edge check: stepping
 // off the east or west edge lands on the opposite edge of a neighbouring row.
-inline Cell AdjacentCell(Cell cell, game::FacingType dir) {
+inline Cell AdjacentCell(const Cell cell, const game::FacingType dir) {
   // Wrapped so that FACING_NONE (-1) does not index before the start of the
   // table.
   return cell.Offset(
@@ -72,7 +74,7 @@ inline Cell AdjacentCell(Cell cell, game::FacingType dir) {
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
-inline Cell AdjacentCell(Cell cell, game::DirType dir) {
+inline Cell AdjacentCell(const Cell cell, const game::DirType dir) {
   return AdjacentCell(cell, game::Dir_Facing(dir));
 }
 
