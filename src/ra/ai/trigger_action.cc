@@ -31,6 +31,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "base/array.h"
@@ -454,6 +455,80 @@ class AutocreateAction final : public TriggerAction {
   HousesType house_;
 };
 
+// An action on a team type, which is null when the scenario named one that
+// does not exist or once it has been destroyed; the action then does nothing.
+class TeamAction : public TriggerAction {
+ public:
+  void Detach(const Target target) final {
+    if (target.kind() == RTTI_TEAMTYPE && team_type_ == target.AsTeamType()) {
+      team_type_ = nullptr;
+    }
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const final {
+    return {.type = type(), .team_type = team_type_};
+  }
+
+ protected:
+  explicit TeamAction(TeamTypeClass* team_type ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : team_type_(team_type) {}
+
+  [[nodiscard]] TeamTypeClass* team_type() const { return team_type_; }
+
+ private:
+  TeamTypeClass* team_type_;  // nullptr for none.
+};
+
+// Creates a team of the type. Counting as scenario setup makes Create_One_Of()
+// ignore the type's limit on how many teams may exist.
+class CreateTeamAction final : public TeamAction {
+ public:
+  explicit CreateTeamAction(TeamTypeClass* team_type) : TeamAction(team_type) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kCreateTeam;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (team_type() != nullptr) {
+      TheWorld().scenario_init()++;
+      team_type()->Create_One_Of();
+      TheWorld().scenario_init()--;
+    }
+    return true;
+  }
+};
+
+// Destroys every team of the type.
+class DestroyTeamAction final : public TeamAction {
+ public:
+  explicit DestroyTeamAction(TeamTypeClass* team_type)
+      : TeamAction(team_type) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kDestroyTeam;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (team_type() != nullptr) {
+      team_type()->Destroy_All_Of();
+    }
+    return true;
+  }
+};
+
+// Brings a team of the type on as reinforcements, for the house the team type
+// names. Fails when none could be created, so the trigger tries again.
+class ReinforcementsAction final : public TeamAction {
+ public:
+  explicit ReinforcementsAction(TeamTypeClass* team_type)
+      : TeamAction(team_type) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kReinforcements;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    return team_type() != nullptr && DeliverReinforcements(team_type());
+  }
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -560,7 +635,6 @@ void LegacyAction::Detach(const Target target) {
 // NOLINTNEXTLINE(readability-make-member-function-const)
 bool LegacyAction::Perform(const TriggerActionContext& context) {
   HouseClass* owner = HouseClass::As_Pointer(context.house);
-  bool success = true;
 
   switch (type_) {
     // Display a line of the mission's tutorial text over the tactical map.
@@ -732,30 +806,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
           base::At(TheScenario().Waypoint, data_.value).Center());
       break;
 
-    // Manually create the team specified. Counting as scenario setup makes
-    // Create_One_Of() ignore the type_'s limit on how many teams may exist.
-    // team_type_ is null when the INI named a team that does not exist; the
-    // three team actions then do nothing.
-    case TriggerActionType::kCreateTeam:
-      if (team_type_ != nullptr) {
-        TheWorld().scenario_init()++;
-        team_type_->Create_One_Of();
-        TheWorld().scenario_init()--;
-      }
-      break;
-
-    // Destroy all teams of the type_ specified.
-    case TriggerActionType::kDestroyTeam:
-      if (team_type_ != nullptr) {
-        team_type_->Destroy_All_Of();
-      }
-      break;
-
-    // Create a reinforcement of the team specified.
-    case TriggerActionType::kReinforcements:
-      success = team_type_ != nullptr && DeliverReinforcements(team_type_);
-      break;
-
     // No action. TriggerActionType::kAllowWin is not carried out here:
     // TriggerClass and the scenario's win check look for it by type_.
     case TriggerActionType::kNone:
@@ -773,10 +823,13 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
     case TriggerActionType::kFireSale:
     case TriggerActionType::kAutocreate:
     case TriggerActionType::kAllHunt:
+    case TriggerActionType::kCreateTeam:
+    case TriggerActionType::kDestroyTeam:
+    case TriggerActionType::kReinforcements:
     default:
       break;
   }
-  return success;
+  return true;
 }
 
 }  // namespace
@@ -934,10 +987,16 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
       return std::make_unique<AutocreateAction>(
           LowByteAs<HousesType>(record.value));
 
-    // Not yet classes of their own.
     case TriggerActionType::kCreateTeam:
+      return std::make_unique<CreateTeamAction>(record.team_type);
+
     case TriggerActionType::kDestroyTeam:
+      return std::make_unique<DestroyTeamAction>(record.team_type);
+
     case TriggerActionType::kReinforcements:
+      return std::make_unique<ReinforcementsAction>(record.team_type);
+
+    // Not yet classes of their own.
     case TriggerActionType::kDestroyTrigger:
     case TriggerActionType::kForceTrigger:
     case TriggerActionType::kDropZoneFlare:
