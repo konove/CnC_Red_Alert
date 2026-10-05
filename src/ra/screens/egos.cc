@@ -511,8 +511,7 @@ void Show_Who_Was_Responsible() {
         **
         ** If string is on the right hand side then left justify it.
         */
-        TextPrintType flags =
-            TPF_USE_GRAD_PAL | TPF_DROPSHADOW;  // TPF_NOSHADOW;
+        TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
 
         if (startcolumn < 40 && endcolumn > 40) {
           flags = flags | TPF_CENTER;
@@ -576,7 +575,6 @@ void Show_Who_Was_Responsible() {
              base::At(ThePalettes().color_remaps().at(pcolor).FontRemap,
                       10 + index)) = 0;
   }
-  // PaletteLUT[ColorRemaps[pcolor].BrightColor] = 0;
   base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Color) = 0;
   base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
   base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Background) = 0;
@@ -677,25 +675,11 @@ void Show_Who_Was_Responsible() {
   game::TheMouse().Hide();
 
   /*
-  ** Save the priority of this process so we can change it back later
-  */
-  // DWORD process_priority = GetPriorityClass(GetCurrentProcess());
-
-  /*
   ** Main scrolling loop.
   ** Keeps going until all the EgoClass objects are deleted or esc is pressed.
   */
   while (!EgoList.empty()) {
     frame++;
-
-    /*
-    ** Once we have been running for a few frames, and Windows has time to do
-    *its virtual
-    ** memory stuff, increase our priority level.
-    */
-    // if (frame == 30){
-    //	SetPriorityClass (GetCurrentProcess() , HIGH_PRIORITY_CLASS);
-    // }
 
     /*
     ** Update the slideshow frame and switch to the next picture if its time.
