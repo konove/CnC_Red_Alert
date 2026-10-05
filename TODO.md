@@ -1016,12 +1016,8 @@
     "can be `if constexpr`" findings in `trigger_type.cc` are skipped on purpose
 - Finish what the `ra/ai/trigger_action` modernization left (`7eeaf347..cd29efc1`, class shape
   `de41dba2..0036d5a1`)
-  - Replace `TriggerAction::data_`'s union (`ra/ai/trigger_action.h` ~185) with an `int value_`.
-    Every member is read after `value` was written, and the one-byte members depend on reading its
-    low byte, which is a read of an inactive union member (`trigger_action_test.cc` pins the
-    behaviour for specials, movies and a house set over -1). Since `ea81ba4c` the union is private
-    behind `house()`/`set_house()`-style accessors (~120-137), so only their bodies change: each
-    getter casts the low byte, each setter replaces it. The save format stores `value` only
+  - `TriggerAction::data_`'s union and the class around it are replaced by one class per action: see
+    `docs/TRIGGER_ACTION_CLASSES_PLAN.md`
   - `DropUnfilledTypeReferences()` (`ra/ai/scenario.cc` ~1865) reads each action pointer into a
     local, passes it to `DropIfUnfilled(T*&, ...)` and sets it back; returning the kept pointer from
     `DropIfUnfilled()` would make it one line per reference (four callers)

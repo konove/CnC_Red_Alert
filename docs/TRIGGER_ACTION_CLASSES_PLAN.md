@@ -2,8 +2,8 @@
 
 Written 2026-10-04 against `main` at c25198d5.
 
-**Status: design, awaiting review.** No code has changed. The step list under Plan is an outline;
-the detailed implementation plan is written once this design is approved.
+**Status: in progress** on branch `trigger-action-classes`, started 2026-10-04. The step list under
+Plan is the whole plan; Progress at the end records what each step did.
 
 ## Context
 
