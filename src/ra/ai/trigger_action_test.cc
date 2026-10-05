@@ -54,6 +54,36 @@ TEST(TriggerActionDataTest, MovieReadsTheLowByteOfTheIniValue) {
   EXPECT_EQ(action.movie(), VQ_NONE);
 }
 
+// The dialog and the scenario reader set the value through the accessor the
+// action needs, and Perform() reads it back through the same one.
+TEST(TriggerActionDataTest, EachValueAccessorReadsWhatItsSetterStored) {
+  TriggerAction action;
+  action.set_theme(THEME_CRUS);
+  EXPECT_EQ(action.theme(), THEME_CRUS);
+  action.set_sound(VOC_GUY_OKAY);
+  EXPECT_EQ(action.sound(), VOC_GUY_OKAY);
+  action.set_speech(VOX_FAIL);
+  EXPECT_EQ(action.speech(), VOX_FAIL);
+  action.set_house(HOUSE_GREECE);
+  EXPECT_EQ(action.house(), HOUSE_GREECE);
+  action.set_quarry(QUARRY_BUILDINGS);
+  EXPECT_EQ(action.quarry(), QUARRY_BUILDINGS);
+  action.set_movie(VQ_NONE);
+  EXPECT_EQ(action.movie(), VQ_NONE);
+  action.set_flag(true);
+  EXPECT_TRUE(action.flag());
+}
+
+// The one-byte accessors write only the low byte of the value, so an action
+// that was never given a number keeps 0xFF in the bytes above it, and that is
+// the number the INI entry and a saved game store.
+TEST(TriggerActionDataTest, AOneByteSetterKeepsTheHighBytesOfTheValue) {
+  TriggerAction action;
+  ASSERT_EQ(action.value(), -1);
+  action.set_house(HOUSE_GREECE);
+  EXPECT_EQ(action.value(), -256 + static_cast<int>(HOUSE_GREECE));
+}
+
 // A Game whose only house heap is empty: no house the actions name exists.
 class TriggerActionTest : public GameFixture {
  protected:
