@@ -222,6 +222,29 @@
 
 namespace ra {
 
+namespace {
+
+// Returns the approximate distance between two points, in the units they are
+// given in: the longer axis difference plus half the shorter one (the "Dragon
+// Strike" method). Exact along an axis and about 6% long on a diagonal, with
+// no multiply or square root.
+int PointDistance(int x1, int y1, int x2, int y2) {
+  int diff1 = y1 - y2;
+  if (diff1 < 0) {
+    diff1 = -diff1;
+  }
+  int diff2 = x1 - x2;
+  if (diff2 < 0) {
+    diff2 = -diff2;
+  }
+  if (diff1 > diff2) {
+    return diff1 + (diff2 / 2);
+  }
+  return diff2 + (diff1 / 2);
+}
+
+}  // namespace
+
 using engine::gfx::ShapeFlags;
 
 /***************************************************************************
@@ -3167,7 +3190,7 @@ bool TechnoClass::Electric_Zap(Target target, int which,
       x = savex;
       y = savey;
       int lastfacing = 0;
-      while (ra::Distance(x, y, x1, y1) > 8) {
+      while (PointDistance(x, y, x1, y1) > 8) {
         /*
         **	Determine true (0..7) facing from current position to
         **	destination (actually the source coordinate of the zap).
@@ -3180,7 +3203,7 @@ bool TechnoClass::Electric_Zap(Target target, int which,
         ** we may vary the desired facing to give the
         ** bolt some randomness.
         */
-        if (ra::Distance(x, y, x1, y1) > 40) {
+        if (PointDistance(x, y, x1, y1) > 40) {
           switch (LocalRandomPick(1, 3 + (shots == 0 ? 3 : 0))) {
             case 1:
               facing++;
