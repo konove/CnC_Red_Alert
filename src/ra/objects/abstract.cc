@@ -21,8 +21,8 @@
 #include <algorithm>
 
 #include "game/sim/direction.h"
+#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/target.h"
 #include "ra/objects/building.h"
 #include "ra/objects/type.h"
