@@ -129,6 +129,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/random_pick.h"
 #include "ra/data/ini_types.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"

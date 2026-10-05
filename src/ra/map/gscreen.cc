@@ -66,6 +66,7 @@
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
+#include "ra/core/random_pick.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"

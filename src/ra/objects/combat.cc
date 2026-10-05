@@ -56,7 +56,7 @@
 #include "ra/ai/special_options.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/core/random_pick.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"

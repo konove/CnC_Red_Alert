@@ -55,7 +55,7 @@
 #include "ra/assets/audio.h"
 #include "ra/assets/installation.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/core/random_pick.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/world.h"

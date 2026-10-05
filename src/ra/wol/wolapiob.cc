@@ -86,6 +86,7 @@
 #include "ra/assets/palette.h"
 #include "ra/core/config.h"
 #include "ra/core/inline.h"
+#include "ra/core/random_pick.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
 #include "ra/ui/shapebtn.h"

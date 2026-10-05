@@ -73,7 +73,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/core/random_pick.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
