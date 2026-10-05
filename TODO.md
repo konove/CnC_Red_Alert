@@ -1047,9 +1047,6 @@
   - `kTicksPerTimerUnit` (`trigger_action.cc` ~84) is also spelled `kTicksPerMinute / 10` in
     `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in
     `ra/core/defines.h` ~2207
-  - `Destroy()` (`trigger_action.cc` ~87), full-strength armor-piercing damage, is repeated in
-    `ra/objects/aircraft.cc` ~1788 and ~4168, `unit.cc` ~1905 and `infantry.cc` ~875; a member of
-    `ObjectClass` would serve all
   - `Assets::tutorial_text()` (`ra/assets/assets.cc` ~74) turns an empty string into nullptr; a
     `std::string_view` where empty means none is cleaner (one caller)
   - Names to confirm: `ActionNeed()` (or `ActionDataNeed()`), `TriggerAction::type()` (or `kind`),

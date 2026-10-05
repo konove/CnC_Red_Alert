@@ -1785,8 +1785,7 @@ int AircraftClass::Mission_Move() {
               if (NavCom.kind() == RTTI_CELL) {
                 if (Process_Landing()) {
                   Strength = 1;
-                  int damage = Strength;
-                  Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+                  Destroy();
                   return 1;
                 }
                 return 500;
@@ -4165,9 +4164,8 @@ bool AircraftClass::Landing_Takeoff_AI() {
         if (Class->IsFixedWing && Mission != MISSION_ENTER) {
           Strength = 1;
 
-          int damage = Strength;
           MapEditClass::Remove(this, layer);
-          Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+          Destroy();
           return true;
         }
 

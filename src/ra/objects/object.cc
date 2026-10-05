@@ -1583,6 +1583,12 @@ game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
   return result;
 }
 
+void ObjectClass::Destroy() {
+  // Take_Damage() writes the damage it applied back through the reference.
+  int damage = Strength;
+  Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+}
+
 /***********************************************************************************************
  * ObjectClass::Mark -- Handles basic marking logic. *
  *                                                                                             *

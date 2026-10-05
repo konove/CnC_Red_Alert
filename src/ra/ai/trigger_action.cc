@@ -83,13 +83,6 @@ namespace {
 // The unit of the timer actions' values, a tenth of a minute, in game ticks.
 constexpr int64_t kTicksPerTimerUnit = kTicksPerMinute / 10;
 
-// Kills `object` with damage equal to its strength, which no armor reduces.
-void Destroy(ObjectClass& object) {
-  // Take_Damage() takes the damage by reference.
-  int damage = object.Strength;
-  object.Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-}
-
 // Destroys every object in `heap` that `trigger` is attached to. Each is
 // detached first so its death does not spring the trigger again.
 // TODO: an object that Take_Damage() deletes on the spot closes its gap in the
@@ -102,7 +95,7 @@ void DestroyObjectsAttachedTo(Heap& heap, const TriggerClass* trigger) {
     auto* object = heap.ActiveAt(index);
     if (object->Trigger == trigger) {
       object->Trigger = nullptr;
-      Destroy(*object);
+      object->Destroy();
     }
   }
 }
@@ -293,7 +286,7 @@ class DestroyObjectAction final : public TriggerAction {
     const bool has_object =
         context.object != nullptr && context.object->IsActive;
     if (has_object) {
-      Destroy(*context.object);
+      context.object->Destroy();
     }
 
     // If the trigger is attached to a bridge, then the bridge gets destroyed

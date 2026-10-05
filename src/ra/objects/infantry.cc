@@ -872,8 +872,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
     const LandType land = TheMap().at(Coord).Land_Type();
     if (!IsDriving && !Class->IsBomber &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
-      int damage = Strength;
-      Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+      Destroy();
       return !IsActive;
     }
   }

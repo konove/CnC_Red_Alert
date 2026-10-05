@@ -1902,8 +1902,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       base::NewPooled<AnimClass>(Combat_Anim(Strength, WARHEAD_AP, land),
                                  Coord);
-      int damage = Strength;
-      Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+      Destroy();
       return !IsActive;
     }
   }

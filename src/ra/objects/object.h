@@ -277,6 +277,9 @@ class ObjectClass : public AbstractClass {
                                        WarheadType warhead,
                                        TechnoClass* source = nullptr,
                                        bool forced = false);
+  // Kills the object with armor-piercing damage equal to its strength, which
+  // no armor reduces and no immunity stops. The object may delete itself.
+  void Destroy();
   virtual void Scatter(Coordinate /*unused*/, bool forced = false,
                        bool nokidding = false);
   virtual bool Catch_Fire();
