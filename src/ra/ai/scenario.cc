@@ -158,7 +158,7 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 #include "ra/objects/weapon.h"
-#include "ra/screens/egos.h"
+#include "ra/screens/credits_roll.h"
 #include "ra/screens/goptions.h"
 #include "ra/screens/mapsel.h"
 #include "ra/screens/movie.h"

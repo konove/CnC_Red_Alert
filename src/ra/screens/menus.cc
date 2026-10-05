@@ -68,7 +68,7 @@
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
-#include "ra/screens/egos.h"
+#include "ra/screens/credits_roll.h"
 #include "ra/screens/expand.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"

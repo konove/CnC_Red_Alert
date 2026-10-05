@@ -17,8 +17,8 @@
 */
 
 // The scrolling credits shown from the main menu and after the last mission.
-#ifndef CNC_RED_ALERT_RA_SCREENS_EGOS_H_
-#define CNC_RED_ALERT_RA_SCREENS_EGOS_H_
+#ifndef CNC_RED_ALERT_RA_SCREENS_CREDITS_ROLL_H_
+#define CNC_RED_ALERT_RA_SCREENS_CREDITS_ROLL_H_
 
 namespace ra {
 
@@ -32,4 +32,4 @@ void ShowCredits();
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_SCREENS_EGOS_H_
+#endif  // CNC_RED_ALERT_RA_SCREENS_CREDITS_ROLL_H_

@@ -18,7 +18,7 @@
 
 // The scrolling credits: CREDITS.TXT rolls up the screen like a film's end
 // titles while a slideshow of stills fades in and out behind it.
-#include "ra/screens/egos.h"
+#include "ra/screens/credits_roll.h"
 
 #include <array>
 #include <cstdint>
