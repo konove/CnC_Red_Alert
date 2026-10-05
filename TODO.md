@@ -346,6 +346,24 @@
   - `ra/ai/scenario.cc` ~583, ~586 and ~589 push the result of `Find_Or_Make()` into the trigger
     lists unchecked; it is null when the trigger heap is full
   - `MessageListClass::Add_Message()` (`ra/ui/msglist.cc` ~342) copies from a null `txt`
+- Decide whether Red Alert's credits slides should fade up to full brightness
+  - `kFadeStep` (`ra/screens/credits_roll.cc`) is `255 / kFadeFrames` = 6 in integer arithmetic, so
+    the last of the 36 fade steps reaches 216/255 and every slide is shown at 85% of its brightness;
+    the fade down blacks the colours out at the end for the same reason. This is the original's
+    arithmetic (`EGOS.CPP:399`), so the shipped game looks like this
+  - To fix: compute the level as `255 * step / (kFadeFrames - 1)` in both fades of
+    `SlideShow::Advance()`; the black-out on the last fade-down step then only confirms what the
+    fade reached. A few lines, but the credits get visibly brighter, so it is the user's call
+  - Found in the modernization run `abae42e8..eaa7551d`
+- Watch Red Alert's credits once on a real display
+  - `ShowCredits()` (`ra/screens/credits_roll.cc`) was restructured in `f77f9e76` and `830c2ff2`
+    (state in a `SlideShow` object, fades on a copy of the title palette, a 1 ms sleep in the frame
+    wait) with no test that can reach it; click the logo on the main menu and check the scroll
+    speed, the slide fades, that the text colours never fade, Esc, and the fade-out after the last
+    line
+  - `95181720` also changed the layout on purpose: four blank rows after "Solo Play Map Designers:",
+    "Multiplay Map Designers:", "Matthew Tillett, Phillip Veale" and "Joseph B. Hewitt IV" are gone,
+    and the first two sit one column further right
 
 ## Features
 
@@ -1043,6 +1061,33 @@
     `TriggerActionType::kDropZoneFlare` (or `kDz`)
   - `ActionChoice::Draw_It()` ignores its index parameter; the signature is `TListClass`'s
     (`ra/ui/tlist.h` ~330), shared by seven item types
+- Finish the clean-ups the credits modernization left in `ra/screens/credits_roll.cc`
+  (`abae42e8..eaa7551d`)
+  - `ShowCredits()` leaves `ThePalettes().title_palette()` holding the credits palette; both callers
+    (`ra/screens/menus.cc`, `ra/ai/scenario.cc`) redraw afterwards, but nothing restores it. Save
+    and restore it in `SlideShow`, which already says it "takes over" the palette
+  - `SlideShow`'s constructor ignores a slide `Load_Title_Screen()` could not load; the page stays
+    black and its palette default. Decide whether a missing `.pcx` should skip the slide
+  - `lines.erase()` removes from the front of a `std::vector<CreditLine>` once per line; keep an
+    index of the first live line (or a `std::deque`) instead. Microseconds, a few hundred times
+  - `CreditLine::Erase()` still measures each visible line every frame; the width depends only on
+    the text, so it can be computed once in the constructor
+  - `CreditLine` copies its text into a `std::string` only because `Fancy_Text_Print()` and
+    `StringPixelWidth()` take `const char*`; with `std::string_view` overloads it could keep the
+    view `ParseCredits()` returns
+  - `PaletteClass::Partial_Adjust()` (`ra/assets/palette.h`) takes its mask as
+    `std::span<const char, kColorCount>` and only the credits call it; a `std::bitset` or
+    `std::array<bool, 256>` would say what it is. Changes `ra/assets/palette_test.cc` too
+  - `WaitForFrame()` duplicates the shape of `ServiceRealTimeFor()` (`ra/startup/conquer.h`), which
+    waits a relative time and cannot be cut short by a key; one helper with an absolute deadline and
+    an optional key check could serve both
+  - Three screens open-code "open a `.PAL`, `ReadVgaPalette()`, assign": `credits_roll.cc`,
+    `td/screens/ending.cc` ~178 and `td/screens/mapsel.cc` ~1180 and ~1196; a
+    `std::optional<Palette> LoadVgaPalette(std::string_view name)` beside `ReadVgaPalette()` in
+    `engine/gfx/palette.h` would need `engine_gfx` to open game files, which it may (it depends on
+    `engine_file`)
+  - The name `credits_roll` was chosen because `ra/map/credits.h` is the money counter;
+    `credits_screen` was the alternative
 
 ## Testing
 
@@ -1145,6 +1190,18 @@
     input queue. The per-slot structs above would leave `Store()` testable without either
   - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
     builds the internal version, where it is skipped
+- Make Red Alert's credits roll testable
+  - `ra/screens/credits_roll.cc` is at 0% coverage (224 lines): `ShowCredits()` needs the screen,
+    the palettes, the game's files, the music and real time from its first statement, and
+    `CreditLine` and `SlideShow` are private to the file. `credits_text.cc`, the parser, is at 100%
+  - Seams that would open it: move `CreditLine` and `SlideShow` to a header; give `SlideShow` the
+    title palette, the slide pages and palettes, and a "show this palette" callback instead of
+    `ThePalettes()`, `Load_Title_Screen()` and `Set_Palette()`; give `CreditLine` the text printer
+    as a parameter. The timetable (`Advance()`, `SkipToFadeOut()`, `faded_out()`) and the erase
+    rectangle could then be tested on in-memory pages
+  - `PrintTo()` in `ra/screens/credits_text_test.cc` is flagged "never used" by CLion because
+    GoogleTest finds it by argument-dependent lookup; an `operator<<` or `AbslStringify` on
+    `CreditString` itself would be seen
 
 ## Debugging
 
