@@ -16,30 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /counterstrike/EGOS.CPP 2     3/10/97 3:19p Steve_tall $ */
-/*************************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S **
- *************************************************************************************
- *                                                                                   *
- *                 Project Name : Command & Conquer - Red Alert *
- *                                                                                   *
- *                    File Name : EGOS.CPP *
- *                                                                                   *
- *                   Programmer : Steve Tall *
- *                                                                                   *
- *                   Start Date : September 4th, 1996 *
- *                                                                                   *
- *                  Last Update : September 4th, 1996 [ST] *
- *                                                                                   *
- *-----------------------------------------------------------------------------------*
- * Overview: *
- *                                                                                   *
- *   Scrolling movie style credits. *
- *                                                                                   *
- *-----------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - */
+// The scrolling credits: CREDITS.TXT rolls up the screen like a film's end
+// titles while a slideshow of stills fades in and out behind it.
 #include "ra/screens/egos.h"
 
 #include <algorithm>
@@ -82,31 +60,21 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
-/*
-** List of Ego Class instances
-**  There will be one instance for each line of text.
-*/
+// One entry per string of credits text still on its way up the screen, in file
+// order. Empty outside Show_Who_Was_Responsible().
 static std::vector<std::unique_ptr<EgoClass>> EgoList;
 
-/*
-** Number of slideshow pictures
-*/
-
+// Number of slideshow pictures.
 #define NUM_SLIDES 17
 
-/*
-** Length of time frame is displayed for
-*/
+// Slide frames from the start of a slide to the start of its fade-out. One
+// slide frame passes per pixel of scrolling.
 #define FRAME_DELAY 150
 
-/*
-** Number of frames that palete fade occurs over
-*/
+// Slide frames a fade in or out takes.
 #define FADE_DELAY 37
 
-/*
-** Names of slideshow pictures to play behind the text
-*/
+// The slideshow pictures, in the order they are shown; the show loops.
 static char SlideNames[NUM_SLIDES][13] = {
 
     "aftr_hi.pcx",  "aly1.pcx",     "apc_hi.pcx",   "aphi0049.pcx",
@@ -115,114 +83,54 @@ static char SlideNames[NUM_SLIDES][13] = {
     "needle.pcx",   "sov2.pcx",     "spy.pcx",      "stalin.pcx",
     "tent.pcx"};
 
-/*
-** Array of all the palettes required for the slides
-*/
+// Each slide's own palette, as loaded from its picture.
 static engine::gfx::Palette SlidePals[NUM_SLIDES];
 
-/*
-** Array of graphic buffers containing the slides
-*/
+// The slides, decoded to screen-sized pages. All are loaded up front so that
+// no disk access stalls the scroll.
 static std::unique_ptr<PixelBuffer> SlideBuffers[NUM_SLIDES];
 
-/*
-** Original copy of slide (pref in video mem) that we use to undraw the text
-*/
+// The current slide without the text on it: what a line of text is erased
+// with before it is drawn one pixel higher.
 static std::unique_ptr<PixelBuffer> BackgroundPage;
 
-/*
-**  This palette contains both the font palette entries and the slide
-**  palette.
-*/
+// The font's colours plus the current slide's colours: the palette a slide
+// fades up to.
 static PaletteClass ComboPalette;
 
-/*
-** Lookup table. If an entry is non-zero then it should be faded in/out when the
-*slide changes.
-*/
+// Non-zero for the palette entries that belong to the slides and fade with
+// them; zero for the ones the text is drawn in, which never fade.
 static char PaletteLUT[256];
 
-/*
-** Height of the strips that are blitted from the slides to the backgound and
-*hid pages.
-** We blit in several strips over several frames so as not to impact on the
-*frame rate.
-*/
+// A new slide is copied in strips of this height, one strip per frame, so
+// that the copy does not make the scroll stutter. Four strips cover the 400
+// rows of a slide.
 #define CHUNK_HEIGHT 100
 
-/***********************************************************************************************
- * EC::EgoClass -- EgoClass constructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    x position of text * y position of text * ptr to text string *
- *           flags to print text with *
- *                                                                                             *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:53PM ST : Created *
- *=============================================================================================*/
 EgoClass::EgoClass(int x, int y, std::string_view text, FontType font,
                    TextPrintType flags)
     : Text(text), XPos(x), YPos(y), TextFont(font), Flags(flags) {}
 
-/***********************************************************************************************
- * EC::Scroll -- Apply the given distance to the y position of the text. * A
- *positive distance scrolls up.                                               *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    distance in pixels to scroll up *
- *                                                                                             *
- * OUTPUT:   true if text scrolled beyond the top of the screen *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:55PM ST : Created *
- *=============================================================================================*/
 bool EgoClass::Scroll(int distance) {
   YPos -= distance;
+  // A line is 16 pixels high at most, and the top 16 rows of the hidden page
+  // are never shown, so by now the line is long out of sight.
   return YPos < -20;
 }
 
-/***********************************************************************************************
- * EC::Render -- Draws the text to the logic page *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:57PM ST : Created *
- *=============================================================================================*/
 void EgoClass::Render(PixelView& view) const {
+  // The text printer does not clip vertically, so a line is only drawn while
+  // all of it is on the page.
   if (YPos < view.height() && YPos > -16) {
     Fancy_Text_Print(view, Text.c_str(), XPos, YPos, Get_Color_Scheme(),
                      kTBlack, TextFont, Flags);
   }
 }
 
-/***********************************************************************************************
- * EC::Wipe -- Wipes the previously rendered text by blitting a rectangle from
- *the given       * background screen. *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    ptr to screen containing original background *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:58PM ST : Created *
- *=============================================================================================*/
 void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
   const int width =
       StringPixelWidth(TextFontStyle(TextFont, Flags), Text.c_str());
+  // Find the left edge the way the text printer does.
   int x = XPos;
 
   if (base::Any(Flags & TPF_RIGHT)) {
@@ -233,43 +141,28 @@ void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
     }
   }
 
+  // One pixel wider on each side and one row taller than the 14-pixel text,
+  // for the drop shadow. The blit clips, so a line that is still below the
+  // page or already above it costs nothing.
   background->view().BlitTo(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1);
 }
 
-/***********************************************************************************************
- * Set_Pal -- Low level palette set *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    ptr to palette *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:59PM ST : Created *
- *=============================================================================================*/
+// Makes `palette` the displayed palette at once, with no fade.
 static void Set_Pal(const PaletteClass* palette) { Set_Palette(*palette); }
 
-/***********************************************************************************************
- * Slide_Show -- Handles the blitting and fading of the background pictures. *
- *                                                                                             *
- *  The picture frame number is used to trigger blitting and fading events *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    picture number * frame *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/10/96 0:16AM ST : Created *
- *=============================================================================================*/
+// Advances the slideshow behind the text by one step. `slide` is the picture
+// and `frame` how long it has been current, which decides what happens:
+//
+//   1-4      copy the slide to the background page, a strip per frame
+//   5-8      copy the background page to the hidden page the same way
+//   9        put the slide's colours into the combo palette
+//   11-46    fade the slide's colours up from black
+//   151-186  fade them back down to black
+//
+// Nothing is displayed until the fade starts, because the slide's palette
+// entries are black while its pixels are copied in.
 static void Slide_Show(int slide, int frame) {
   if (frame >= 1 && frame <= 4) {
-    /*
-    ** Blit in a quarter of the new frame to the background page.
-    */
     PixelView& slide_view = base::At(SlideBuffers, slide)->view();
     slide_view.BlitTo(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
                       (frame - 1) * CHUNK_HEIGHT,
@@ -278,9 +171,6 @@ static void Slide_Show(int slide, int frame) {
   }
 
   if (frame >= 5 && frame <= 8) {
-    /*
-    ** Blit in a quarter of the new frame to the hid page.
-    */
     BackgroundPage->view().BlitTo(
         TheScreen().hidden_view(), 0, (frame - 5) * CHUNK_HEIGHT, 0,
         (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
@@ -289,9 +179,6 @@ static void Slide_Show(int slide, int frame) {
   }
 
   if (frame == 9) {
-    /*
-    ** Create the combo palette from the font entries and the picture entries.
-    */
     for (int index = 0; index < 256; index++) {
       if (base::At(PaletteLUT, index)) {
         ComboPalette.at(index) = base::At(SlidePals, slide).at(index);
@@ -301,9 +188,11 @@ static void Slide_Show(int slide, int frame) {
   }
 
   if (frame > 10 && frame < FADE_DELAY + 10) {
-    /*
-    ** Fade up the picture in the background. The text colors never fade.
-    */
+    // Each step is computed from the unfaded title palette, which is why it
+    // is put back afterwards; only the last step keeps its result.
+    //
+    // TODO: The integer division makes a step 6/255, so the last one reaches
+    // 216/255 and the slide is shown at 85% of its brightness.
     const PaletteClass save_palette = ThePalettes().title_palette();
     ThePalettes().title_palette().Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - 10), 255), ComboPalette,
@@ -318,9 +207,6 @@ static void Slide_Show(int slide, int frame) {
   }
 
   if (frame > FRAME_DELAY && frame < FRAME_DELAY + FADE_DELAY) {
-    /*
-    ** Fade down the picture in the background. The text colors never fade.
-    */
     const PaletteClass save_palette = ThePalettes().title_palette();
     ThePalettes().title_palette().Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
@@ -328,10 +214,9 @@ static void Slide_Show(int slide, int frame) {
       Set_Pal(&ThePalettes().title_palette());
       ThePalettes().title_palette() = save_palette;
     } else {
-      /*
-      ** If this is the last fade down frame then zero the picture palette
-      *entries.
-      */
+      // The steps stop short of black (see the fade up), so the last one
+      // blacks out the slide's entries outright. The next slide's pixels can
+      // then be copied in unseen.
       for (int index = 0; index < 256; index++) {
         if (base::At(PaletteLUT, index)) {
           ThePalettes().title_palette().at(index) = engine::gfx::kBlackColor;
@@ -342,39 +227,24 @@ static void Slide_Show(int slide, int frame) {
   }
 }
 
-/***********************************************************************************************
- * Show_Who_Was_Responsible -- Main function to print the credits. *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/10/96 0:20AM ST : Created *
- *=============================================================================================*/
 void Show_Who_Was_Responsible() {
   int key = 0;
 
-  /*
-  ** Deault speed of credits scolling. This is the frame delay between pixel
-  *scrolls.
-  */
+  // System ticks (1/60 s) per pixel of scrolling.
   static const int speed = 3;
 
-  /*
-  ** Read in the credits file to be displayed
-  **
-  ** Lines of text in CREDITS.TXT are treated as follows....
-  **
-  **  If the text starts and ends to the left of column 40 then text will be
-  *right justified.
-  **  If the text starts before column 40 and ends after it then it will be
-  *centered.
-  **  If the text starts after column 40 it will be right justified.
-  */
+  // CREDITS.TXT is laid out as an 80-column page, and a string's place on
+  // that page decides how it is drawn:
+  //
+  //   it straddles column 40      centred on the screen
+  //   it ends before column 40    right-justified at its last column
+  //   it starts after column 40   left-justified at its first column
+  //
+  // which gives the two-column "job  name" look. A string ends at a tab, at
+  // the end of the line or at two spaces in a row.
+  //
+  // The buffer is one byte longer than the file so that a string can be
+  // terminated in place.
   const auto creditsfile = OpenGameFile("credits.txt");
   if (!creditsfile) {
     return;
@@ -385,18 +255,14 @@ void Show_Who_Was_Responsible() {
     return;
   }
 
-  /*
-  ** Initialise the text printing system.
-  */
   Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
 
   // The credits are drawn to the hidden page and blitted forward a frame at a
   // time, so that the text never appears half-scrolled on screen.
   PixelView& view = TheScreen().hidden_view();
 
-  /*
-  ** Miscellaneous stuff for parsing the credits text file.
-  */
+  // `length` counts the bytes from `cptr` to the end of the file. Columns
+  // and lines count from zero.
   int length = static_cast<int>(creditsfile->Size());
   int line = 0;
   int column = 0;
@@ -410,56 +276,35 @@ void Show_Who_Was_Responsible() {
   int endcolumn = 0;
   int x = 0;
   const int y = TheScreen().visible_view().height() + 2;
-  /*
-  ** Search through the text file and extract the strings, using each string to
-  *create
-  ** a new EgoClass
-  */
+  // Every line starts two rows below the bottom of the screen, 16 rows
+  // apart, and scrolls up from there.
   do {
-    /*
-    ** Search for text
-    */
     char ch = *cptr++;
     length--;
 
-    /*
-    ** Look for a non whitespace character.
-    */
     switch (ch) {
       case 13:
-        /*
-        ** Char was carriage return. Go on to the next line starting at column
-        *0.
-        */
         line++;
         column = 0;
         break;
 
       case 10:
-        /*
-        ** Ignore line feed. CR does both.
-        */
+        // The carriage return already ended the line.
         break;
 
-        /*
-        ** Space character. Just advance the cursor and move on.
-        */
       case 32:
         column++;
         break;
 
-        /*
-        ** Tab char. Advance to the next tab column. Tabs are every 8 columns.
-        */
+        // Tab stops are every 8 columns.
       case 9:
         column += 8;
         column -= column % 8;
         break;
 
       default:
-        /*
-        ** Found new string. Work out where it ends so we know how to treat it.
-        */
+        // The start of a string. Find where it ends: `strparse` stops one
+        // past the character that ended it, which is left in `ch`.
         lastchar = ch;
         strstart = cptr - 1;
         strparse = cptr - 1;
@@ -492,25 +337,23 @@ void Show_Who_Was_Responsible() {
           lastchar = ch;
         } while (!gotendstr);
 
+        // TODO: A string that runs into the end of the file is dropped, so
+        // the last line of credits is lost unless a CR and LF follow it.
         if (strparse >= cptr + length) {
           break;
         }
 
-        /*
-        ** Strip off any trailing space.
-        */
+        // Ended by two spaces: step back so that neither is in the string.
+        //
+        // TODO: This also fires for one space before a tab or line end. The
+        // end column is then one too low, and after a CR the line counter
+        // advances twice, because `cptr` is left on the CR and the outer loop
+        // counts it again.
         if (*(strparse - 2) == 32) {
           strparse--;
           endcolumn -= 2;
         }
 
-        /*
-        ** If string straddles the center column then center it.
-        **
-        ** If string is on the left hand side then right justify it.
-        **
-        ** If string is on the right hand side then left justify it.
-        */
         TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
 
         if (startcolumn < 40 && endcolumn > 40) {
@@ -525,31 +368,24 @@ void Show_Who_Was_Responsible() {
           }
         }
 
-        /*
-        ** Temporarily terminate the string.
-        */
+        // Terminate the string in place for as long as it takes to copy it.
         oldchar = *(strparse - 1);
         *(strparse - 1) = 0;
 
-        /*
-        ** Create the new class and add it to our list.
-        */
         EgoList.push_back(std::make_unique<EgoClass>(
             x, y + (line * 16), std::to_address(strstart),
             FontType::k6PointGradient, flags));
 
-        /*
-        ** Restore the character that was lost when we added the terminator.
-        */
         *(strparse - 1) = oldchar;
 
-        /*
-        ** Fix up our outer loop parsing variables.
-        */
+        // Carry on after the string. The outer loop has already counted its
+        // first character.
         cptr = strparse;
         column = static_cast<int>(column + (strparse - strstart));
         length = static_cast<int>(length - (strparse - strstart - 1));
 
+        // The terminator was consumed with the string, so do here what the
+        // outer loop would have done for it.
         if (ch == 13) {
           line++;
           column = 0;
@@ -564,9 +400,8 @@ void Show_Who_Was_Responsible() {
 
   } while (length > 0);
 
-  /*
-  ** Work out which palette entries the font needs so we dont fade those colors.
-  */
+  // Everything fades with the slides except the colours the text is drawn
+  // in: the six gradient entries of the font and the green scheme's own.
   base::FillBytes(base::ObjectBytes(PaletteLUT), 1, sizeof(PaletteLUT));
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
@@ -585,19 +420,12 @@ void Show_Who_Was_Responsible() {
   base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Bar) = 0;
   base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Box) = 0;
 
-  /*
-  ** Stop the music.
-  */
   TheTheme().Stop();
 
-  /*
-  ** Fade to black.
-  */
   ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
 
-  /*
-  ** Load the reference palette for the font.
-  */
+  // EGOPAL.PAL holds the colours of the text; the slides were drawn to leave
+  // those entries alone.
   if (const auto file = OpenGameFile("EGOPAL.PAL")) {
     std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
     if (file->ReadObject(vga)) {
@@ -605,9 +433,8 @@ void Show_Who_Was_Responsible() {
     }
   }
 
-  /*
-  ** Copy the font palette entries into the combo palette.
-  */
+  // Start with the slide entries black, so the text can scroll on a black
+  // screen until the first slide fades up.
   ComboPalette = ThePalettes().title_palette();
 
   for (int index = 0; index < 256; index++) {
@@ -616,21 +443,13 @@ void Show_Who_Was_Responsible() {
     }
   }
 
-  /*
-  ** Clear the Seen Page since we will not be blitting to all of it.
-  */
+  // The scroll never touches the top and bottom 16 rows of the visible page.
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
 
-  /*
-  ** Set the font palette.
-  */
   ThePalettes().title_palette() = ComboPalette;
   ThePalettes().title_palette().Set();
 
-  /*
-  ** Loop through and load up all the slideshow pictures
-  */
   for (int index = 0; index < NUM_SLIDES; index++) {
     base::At(SlideBuffers, index) = std::make_unique<PixelBuffer>();
     base::At(SlideBuffers, index)
@@ -641,32 +460,27 @@ void Show_Who_Was_Responsible() {
                       base::At(SlidePals, index));
   }
 
-  // Create a new graphic buffer to restore the background from. Initialize it
-  // to black so we can start scrolling before the first slideshow picture is
-  // blitted.
+  // The background page starts as a copy of the cleared screen, so the text
+  // can be erased from the first frame on.
   BackgroundPage = std::make_unique<PixelBuffer>();
   BackgroundPage->Init(TheScreen().visible_view().width(),
                        TheScreen().visible_view().height(), {}, 0);
 
   TheScreen().visible_view().BlitTo(BackgroundPage->view());
 
-  /*
-  ** Go away nasty keyboard.
-  */
+  // Drop the keys pressed so far; one of them would end the credits.
   game::TheKeyboard().Clear();
 
-  /*
-  ** Start any old song.
-  */
+  // The credits always have music: with the score turned off, play it at
+  // 40% until they end.
   const Fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
     TheOptions().Set_Score_Volume(Fixed(4, 10), false);
   }
   TheTheme().Queue_Song(THEME_CREDITS);
 
-  /*
-  ** Init misc timing variables.
-  */
+  // `frame` counts pixels scrolled since `time`; `picture_frame` restarts
+  // with every slide.
   const int time = static_cast<int>(engine::platform::SystemTicks());
   int frame = 0;
   int picture_frame = 0;
@@ -674,16 +488,14 @@ void Show_Who_Was_Responsible() {
 
   game::TheMouse().Hide();
 
-  /*
-  ** Main scrolling loop.
-  ** Keeps going until all the EgoClass objects are deleted or esc is pressed.
-  */
+  // Scroll one pixel per pass until every line has left the top of the
+  // screen or Esc is pressed.
   while (!EgoList.empty()) {
     frame++;
 
-    /*
-    ** Update the slideshow frame and switch to the next picture if its time.
-    */
+    // A slide stays for 150 frames, fades for 37 and leaves the screen black
+    // until frame 200. Then the next one starts, the first following the
+    // last.
     picture_frame++;
 
     if (picture_frame > FRAME_DELAY + 50) {
@@ -696,14 +508,12 @@ void Show_Who_Was_Responsible() {
       }
     }
 
-    /*
-    ** Do the slideshow background.
-    */
     Slide_Show(slide_number, picture_frame);
 
-    /*
-    ** Scroll the text. If any text goes off the top then delete that object.
-    */
+    // Erase every line where it was drawn and move it up. A line that has
+    // left the screen is removed, which ends the pass early: the lines not
+    // reached are the ones above it, which are off the screen as well and
+    // go the same way in the next passes.
     for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
       EgoList.at(base::ToSize(i))->Wipe(view, BackgroundPage.get());
       if (EgoList.at(base::ToSize(i))->Scroll(1)) {
@@ -712,9 +522,6 @@ void Show_Who_Was_Responsible() {
       }
     }
 
-    /*
-    ** Render all the text strings in their new positions.
-    */
     if (view.Lock()) {
       for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
         EgoList.at(base::ToSize(i))->Render(view);
@@ -722,36 +529,28 @@ void Show_Who_Was_Responsible() {
       view.Unlock();
     }
 
+    // Play the credits score again when it runs out.
     if (frame > 1000 && !TheTheme().Still_Playing()) {
       TheTheme().Queue_Song(THEME_CREDITS);
     }
 
-    /*
-    ** Stop calling Theme.AI after a while so a different song doesnt start
-    *playing
-    */
     ServiceRealTime();
 
-    /*
-    ** Kill any spare time before blitting the hid page forward.
-    */
+    // Wait for this frame's time. The deadline is measured from the start,
+    // so a slow frame is made up for by the next ones. Any key cuts the wait
+    // short.
     while (engine::platform::SystemTicks() - time <
                static_cast<int64_t>(frame) * speed &&
            !game::TheKeyboard().Peek()) {
     }
 
-    /*
-    ** Blit all but the top and bottom of the hid page. This is beacuse the text
-    *print doesn't
-    ** clip vertically and looks ugly when it suddenly appears and disappears.
-    */
+    // Show all but the top and bottom 16 rows of the hidden page. The text
+    // printer does not clip vertically, so a line appears and disappears
+    // whole; behind these margins it does so out of sight.
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 16, 0, 16,
                                      TheScreen().visible_view().width(),
                                      TheScreen().visible_view().height() - 32);
 
-    /*
-    ** If user hits escape then break.
-    */
     key = KN_NONE;
     if (game::TheKeyboard().Peek()) {
       key = game::TheKeyboard().Read().key;
@@ -765,9 +564,9 @@ void Show_Who_Was_Responsible() {
     TheTheme().Fade_Out();
     ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
   } else {
-    /*
-    ** Wait for the picture to fade down
-    */
+    // The text is gone: let the slide fade out. One that is being shown
+    // skips straight to its fade; one that is still fading up finishes that
+    // first.
     while (picture_frame <= FADE_DELAY + FRAME_DELAY) {
       if (picture_frame < FRAME_DELAY && picture_frame > 10 + FADE_DELAY) {
         picture_frame = FRAME_DELAY;
@@ -779,9 +578,6 @@ void Show_Who_Was_Responsible() {
 
       ServiceRealTime();
 
-      /*
-      ** Kill any spare time
-      */
       while (engine::platform::SystemTicks() - time <
                  static_cast<int64_t>(frame) * speed &&
              !game::TheKeyboard().Peek()) {
@@ -789,9 +585,6 @@ void Show_Who_Was_Responsible() {
     }
   }
 
-  /*
-  ** Tidy up.
-  */
   TheScreen().visible_view().Clear();
 
   game::TheMouse().Show();
