@@ -121,7 +121,8 @@ class TriggerType : public AbstractTypeClass {
 
   // Creates a trigger type for every entry of the [Trigs] section of `ini`.
   // Team types must be loaded first: the events and actions look their teams
-  // up as they are read. The objects, cells and houses that carry a trigger
+  // up as they are read. An action may refer to a trigger type that comes
+  // later in the section. The objects, cells and houses that carry a trigger
   // find its type by name afterwards, so this runs before their sections are
   // read.
   static void ReadIni(const engine::file::IniFile& ini);
@@ -134,8 +135,9 @@ class TriggerType : public AbstractTypeClass {
   //   persistence,house,event control,action control,event 1,event 2,
   //   action 1,action 2
   // with each event and action a comma separated group of its own (see
-  // TEventClass::Read_INI and TriggerAction::ReadIni). The first four are
-  // enum numbers; a missing or unreadable one reads as 0.
+  // TEventClass::Read_INI and ReadTriggerActionRecord()). The first four are
+  // enum numbers; a missing or unreadable one reads as 0. The team types and
+  // trigger types its actions refer to must exist already.
   void ReadIniEntry(std::string_view name, std::string_view entry);
 
   // Returns the INI value ReadIniEntry() reads.

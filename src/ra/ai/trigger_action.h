@@ -23,9 +23,7 @@
 #define CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 
 #include <string>
-#include <utility>
 
-#include "absl/base/attributes.h"
 #include "base/strings/tokenizer.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
@@ -116,6 +114,15 @@ struct TriggerActionRecord {
   void Serialize(Archive& ar);
 };
 
+// Reads a record from the trigger entry `tokens` is parsing: the action
+// number, the team, the trigger and the value. The counterpart of
+// ToIniEntry(). Every team type and trigger type of the scenario must exist
+// already: INI formats 0 and 1 name them, and the later formats give a heap
+// slot. A name nothing has, or a slot the scenario never filled, reads as
+// none.
+[[nodiscard]] TriggerActionRecord ReadTriggerActionRecord(
+    base::Tokenizer& tokens);
+
 // Returns `record` in the scenario INI's current format:
 // "action,team,trigger,value", the middle two as positions in their type
 // lists (-1 for none).
@@ -181,19 +188,6 @@ class TriggerAction {
   [[nodiscard]] int value() const { return data_.value; }
   void set_value(const int value) { data_.value = value; }
 
-  // Trigger name read from a pre-version-2 INI, where triggers may name ones
-  // that load later; empty otherwise. Not saved.
-  [[nodiscard]] const std::string& pending_trigger_name() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return pending_trigger_name_;
-  }
-
-  // Returns pending_trigger_name() and clears it. TriggerType::ReadIni() calls
-  // this once every trigger exists and sets trigger_type() from the name.
-  [[nodiscard]] std::string TakePendingTriggerName() {
-    return std::exchange(pending_trigger_name_, {});
-  }
-
   // Clears team_type or trigger_type when `target` is the team type or trigger
   // type it points to; called when that type is being destroyed.
   void Detach(Target target);
@@ -202,14 +196,6 @@ class TriggerAction {
   // record.
   template <class Archive>
   void Serialize(Archive& ar);
-
-  // Reads the action fields from the trigger entry `tokens` is parsing: the
-  // action number, the team, the trigger and the value. The counterpart of
-  // ToIniEntry().
-  void ReadIni(base::Tokenizer& tokens);
-
-  // Returns ToIniEntry() of the action's record.
-  [[nodiscard]] std::string ToIniEntry() const;
 
   // Carries out the action for the trigger that sprang. `house` is the
   // trigger's owner, which the house actions without a data.house act on.
@@ -240,8 +226,6 @@ class TriggerAction {
     bool flag;                  // Boolean value.
     int value;
   } data_{.value = -1};
-
-  std::string pending_trigger_name_;
 };
 
 extern template void TriggerActionRecord::Serialize<ArchiveWriter>(

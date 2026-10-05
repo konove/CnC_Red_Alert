@@ -273,10 +273,8 @@ TEST_F(TriggerTypeTest, ReadIniResolvesTriggerNamesInTheOldFormats) {
   ASSERT_NE(first, nullptr);
   ASSERT_NE(last, nullptr);
   EXPECT_EQ(first->action1.trigger_type(), last);
-  EXPECT_TRUE(first->action1.pending_trigger_name().empty());
   // A name no trigger type has resolves to none.
   EXPECT_EQ(first->action2.trigger_type(), nullptr);
-  EXPECT_TRUE(first->action2.pending_trigger_name().empty());
   EXPECT_EQ(last->action1.trigger_type(), nullptr);
 }
 

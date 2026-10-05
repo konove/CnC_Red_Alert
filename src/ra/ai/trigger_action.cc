@@ -27,6 +27,7 @@
 #include <cstring>
 #include <format>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -48,6 +49,7 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
+#include "ra/ai/trigger_type.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
@@ -144,6 +146,23 @@ constexpr base::EnumArray<TriggerActionType, const char*> kActionNames = {
     "Preferred target...",
     "Launch Nukes"};
 
+// Returns the object in slot `slot_index` of `heap`, or nullptr when the index
+// is none or the scenario never filled the slot: an empty slot would read as a
+// zeroed object. `field` names the reference for the log.
+template <class T>
+T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,
+                    const std::string_view field) {
+  if (heap.IsAllocated(slot_index)) {
+    return heap.Slot(slot_index);
+  }
+  if (heap.SlotOrNull(slot_index) != nullptr) {
+    DLOG(WARNING) << "ReadTriggerActionRecord: action " << field
+                  << " names slot " << slot_index
+                  << ", which the scenario never filled";
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 void TriggerAction::Detach(const Target target) {
@@ -154,57 +173,6 @@ void TriggerAction::Detach(const Target target) {
       trigger_type_ == target.AsTriggerType()) {
     trigger_type_ = nullptr;
   }
-}
-
-void TriggerAction::ReadIni(base::Tokenizer& tokens) {
-  type_ = static_cast<TriggerActionType>(
-      base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-  if (const int format = TheWorld().new_ini_format();
-      format != 0 && format != 1) {
-    // Format 2 and later: the team and the trigger are positions in their
-    // type_ lists (ToIniEntry() writes this form).
-    team_type_ = TheObjectHeaps().team_type().SlotOrNull(
-        base::ParseIntegerOr<int>(tokens.Next(), 0));
-    trigger_type_ = TheObjectHeaps().trigger_type().SlotOrNull(
-        base::ParseIntegerOr<int>(tokens.Next(), 0));
-  } else {
-    // The shipped scenarios: the team and the trigger are given by name.
-    team_type_ = TeamTypeClass::From_Name(tokens.Next());
-    if (ActionNeed(type_) == NEED_TEAM && team_type_ == nullptr) {
-      DLOG(WARNING) << "ReadIni: " << ActionName(type_)
-                    << " names a team that does not exist";
-    }
-
-    // The named trigger may not have been read yet, so keep the name;
-    // TriggerType::ReadIni() resolves it once every trigger exists.
-    pending_trigger_name_ = tokens.Next();
-  }
-
-  data_.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
-
-  // Fix corrupted sound values from original game scenario files. Some INI
-  // files contain values like -65399 (0xFFFF0089) where only the low byte (137)
-  // is the valid VocType index. The original read the value through a one-byte
-  // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
-  // data_ members - movie, special, speech, house - still get it from the
-  // union.)
-  if (type_ == TriggerActionType::kPlaySound &&
-      (data_.value < 0 ||
-       std::cmp_greater_equal(data_.value,
-                              magic_enum::enum_count<VocType>()))) {
-    const int low_byte =
-        static_cast<int>(static_cast<uint32_t>(data_.value) & 0xFFU);
-    if (std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
-      DLOG(WARNING) << "ReadIni: Fixed corrupted sound value " << data_.value
-                    << " -> " << low_byte;
-      data_.value = low_byte;
-    }
-  }
-}
-
-std::string TriggerAction::ToIniEntry() const {
-  return ra::ToIniEntry(ToRecord());
 }
 
 // Not const: carries out the action.
@@ -547,6 +515,53 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
   }
   return success;
+}
+
+TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
+  TriggerActionRecord record;
+  record.type = static_cast<TriggerActionType>(
+      base::ParseIntegerOr<int>(tokens.Next(), 0));
+
+  if (const int format = TheWorld().new_ini_format();
+      format != 0 && format != 1) {
+    // Format 2 and later: the team and the trigger are heap slots
+    // (ToIniEntry() writes this form).
+    record.team_type =
+        FilledSlotOrNull(TheObjectHeaps().team_type(),
+                         base::ParseIntegerOr<int>(tokens.Next(), 0), "team");
+    record.trigger_type = FilledSlotOrNull(
+        TheObjectHeaps().trigger_type(),
+        base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
+  } else {
+    // The shipped scenarios: the team and the trigger are given by name.
+    record.team_type = TeamTypeClass::From_Name(tokens.Next());
+    if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
+      DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
+                    << " names a team that does not exist";
+    }
+    record.trigger_type = TriggerType::FromName(tokens.Next());
+  }
+
+  record.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+
+  // Fix corrupted sound values from original game scenario files. Some INI
+  // files contain values like -65399 (0xFFFF0089) where only the low byte (137)
+  // is the valid VocType index. The original read the value through a one-byte
+  // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
+  // values - movie, special, speech, house - still get it from the union.)
+  if (record.type == TriggerActionType::kPlaySound &&
+      (record.value < 0 ||
+       std::cmp_greater_equal(record.value,
+                              magic_enum::enum_count<VocType>()))) {
+    const int low_byte =
+        static_cast<int>(static_cast<uint32_t>(record.value) & 0xFFU);
+    if (std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
+      DLOG(WARNING) << "ReadTriggerActionRecord: Fixed corrupted sound value "
+                    << record.value << " -> " << low_byte;
+      record.value = low_byte;
+    }
+  }
+  return record;
 }
 
 std::string ToIniEntry(const TriggerActionRecord& record) {

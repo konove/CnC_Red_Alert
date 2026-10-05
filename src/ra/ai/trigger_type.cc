@@ -24,6 +24,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
@@ -45,7 +46,6 @@
 #include "ra/core/object_heaps.h"
 #include "ra/data/text.h"
 #include "ra/data/text_ids.h"
-#include "ra/map/world.h"
 #include "ra/objects/type.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
@@ -188,33 +188,28 @@ AttachType TriggerType::AttachesTo() const {
 }
 
 void TriggerType::ReadIni(const engine::file::IniFile& ini) {
-  for (const auto& [entry, value] : ini.Entries(kIniSection)) {
+  // An action may name a trigger type that comes later in the section, so
+  // every trigger type is created and named before any entry is read.
+  struct Pending {
+    TriggerType* trigger_type;
+    std::string_view name;
+    std::string_view entry;
+  };
+  std::vector<Pending> pending;
+  for (const auto& [name, entry] : ini.Entries(kIniSection)) {
     auto* const trigger_type = base::NewPooled<TriggerType>();
     // The scenario lists more trigger types than the heap holds; the rest
     // are dropped.
     if (trigger_type == nullptr) {
       break;
     }
-    trigger_type->ReadIniEntry(entry, value);
+    trigger_type->Set_Name(name);
+    pending.push_back(
+        {.trigger_type = trigger_type, .name = name, .entry = entry});
   }
 
-  if (TheWorld().new_ini_format() < 2) {
-    // Before format 2 an action named its trigger type instead of giving
-    // its position, and the name may belong to an entry read after it. Resolve
-    // the names now that every trigger type exists.
-    for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
-         index++) {
-      TriggerType* trigger_type =
-          TheObjectHeaps().trigger_type().ActiveAt(index);
-
-      for (TriggerAction* action :
-           {&trigger_type->action1, &trigger_type->action2}) {
-        if (const std::string name = action->TakePendingTriggerName();
-            !name.empty()) {
-          action->set_trigger_type(FromName(name));
-        }
-      }
-    }
+  for (const Pending& read : pending) {
+    read.trigger_type->ReadIniEntry(read.name, read.entry);
   }
 }
 
@@ -235,8 +230,8 @@ void TriggerType::ReadIniEntry(const std::string_view name,
 
   event1.Read_INI(tokens);
   event2.Read_INI(tokens);
-  action1.ReadIni(tokens);
-  action2.ReadIni(tokens);
+  action1 = TriggerAction(ReadTriggerActionRecord(tokens));
+  action2 = TriggerAction(ReadTriggerActionRecord(tokens));
 }
 
 void TriggerType::WriteIni(engine::file::IniFile& ini) {
@@ -267,10 +262,10 @@ std::string TriggerType::ToIniEntry() const {
   event2.Build_INI_Entry(entry);
   entry += ',';
 
-  entry += action1.ToIniEntry();
+  entry += ra::ToIniEntry(action1.ToRecord());
   entry += ',';
 
-  entry += action2.ToIniEntry();
+  entry += ra::ToIniEntry(action2.ToRecord());
   return entry;
 }
 

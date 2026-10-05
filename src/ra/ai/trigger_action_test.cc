@@ -229,13 +229,12 @@ class TriggerActionGameTest : public TriggerActionTest {
     trigger_type_->Set_Name("alarm");
   }
 
-  // The action `text` describes in the scenario INI's format `format`.
-  static TriggerAction Read(const std::string_view text, const int format) {
+  // The record `text` describes in the scenario INI's format `format`.
+  static TriggerActionRecord Read(const std::string_view text,
+                                  const int format) {
     TheWorld().new_ini_format() = format;
     base::Tokenizer tokens(text);
-    TriggerAction action;
-    action.ReadIni(tokens);
-    return action;
+    return ReadTriggerActionRecord(tokens);
   }
 
   HouseClass* house_ = nullptr;
@@ -273,17 +272,13 @@ TEST_F(TriggerActionGameTest, DetachLeavesAnotherTeamOrTriggerTypeAlone) {
 }
 
 TEST_F(TriggerActionGameTest, TheIniEntryNumbersTheTeamAndTheTrigger) {
-  TriggerAction action;
-  action.set_type(TriggerActionType::kCreateTeam);
-  action.set_team_type(team_type_);
-  action.set_value(7);
-  EXPECT_EQ(action.ToIniEntry(), "4,0,-1,7");
-
-  action.set_type(TriggerActionType::kForceTrigger);
-  action.set_team_type(nullptr);
-  action.set_trigger_type(trigger_type_);
-  action.set_value(-1);
-  EXPECT_EQ(action.ToIniEntry(), "22,-1,0,-1");
+  EXPECT_EQ(ToIniEntry({.type = TriggerActionType::kCreateTeam,
+                        .team_type = team_type_,
+                        .value = 7}),
+            "4,0,-1,7");
+  EXPECT_EQ(ToIniEntry({.type = TriggerActionType::kForceTrigger,
+                        .trigger_type = trigger_type_}),
+            "22,-1,0,-1");
 }
 
 TEST_F(TriggerActionGameTest, ARecordKeepsTheTeamAndTheTrigger) {
@@ -295,61 +290,69 @@ TEST_F(TriggerActionGameTest, ARecordKeepsTheTeamAndTheTrigger) {
   EXPECT_EQ(action.team_type(), team_type_);
   EXPECT_EQ(action.trigger_type(), trigger_type_);
   EXPECT_EQ(action.ToRecord(), record);
-  EXPECT_EQ(ToIniEntry(record), "22,0,0,5");
 }
 
 TEST_F(TriggerActionGameTest, TheCurrentFormatReadsWhatToIniEntryWrites) {
-  const TriggerAction action = Read("22,0,0,5", 2);
+  const TriggerActionRecord record = Read("22,0,0,5", 2);
 
-  EXPECT_EQ(action.type(), TriggerActionType::kForceTrigger);
-  EXPECT_EQ(action.team_type(), team_type_);
-  EXPECT_EQ(action.trigger_type(), trigger_type_);
-  EXPECT_EQ(action.value(), 5);
-  EXPECT_TRUE(action.pending_trigger_name().empty());
-  EXPECT_EQ(Read(action.ToIniEntry(), 2).ToIniEntry(), "22,0,0,5");
+  EXPECT_EQ(record.type, TriggerActionType::kForceTrigger);
+  EXPECT_EQ(record.team_type, team_type_);
+  EXPECT_EQ(record.trigger_type, trigger_type_);
+  EXPECT_EQ(record.value, 5);
+  EXPECT_EQ(ToIniEntry(record), "22,0,0,5");
 }
 
 TEST_F(TriggerActionGameTest, TheCurrentFormatReadsNoTeamOrTriggerAsNull) {
-  const TriggerAction action = Read("1,-1,-1,2", 2);
+  const TriggerActionRecord record = Read("1,-1,-1,2", 2);
 
-  EXPECT_EQ(action.type(), TriggerActionType::kWin);
-  EXPECT_EQ(action.team_type(), nullptr);
-  EXPECT_EQ(action.trigger_type(), nullptr);
-  EXPECT_EQ(action.value(), 2);
+  EXPECT_EQ(record.type, TriggerActionType::kWin);
+  EXPECT_EQ(record.team_type, nullptr);
+  EXPECT_EQ(record.trigger_type, nullptr);
+  EXPECT_EQ(record.value, 2);
 }
 
-TEST_F(TriggerActionGameTest, TheOldFormatsNameTheTeamAndKeepTheTriggerName) {
-  for (const int format : {0, 1}) {
-    const TriggerAction action = Read("4,TANKS,alarm,3", format);
+// Slot 1 of both heaps exists but holds nothing, and slot 9 does not exist.
+TEST_F(TriggerActionGameTest, TheCurrentFormatReadsAnUnfilledSlotAsNull) {
+  for (const std::string_view text : {"22,1,1,5", "22,9,9,5"}) {
+    const TriggerActionRecord record = Read(text, 2);
 
-    EXPECT_EQ(action.type(), TriggerActionType::kCreateTeam);
-    EXPECT_EQ(action.team_type(), team_type_);
-    // TriggerType::ReadIni() resolves the name later.
-    EXPECT_EQ(action.trigger_type(), nullptr);
-    EXPECT_EQ(action.pending_trigger_name(), "alarm");
-    EXPECT_EQ(action.value(), 3);
+    EXPECT_EQ(record.team_type, nullptr);
+    EXPECT_EQ(record.trigger_type, nullptr);
+    EXPECT_EQ(record.value, 5);
   }
 }
 
-TEST_F(TriggerActionGameTest, TheOldFormatsLeaveAMissingTeamNull) {
-  const TriggerAction action = Read("4,nobody,None,0", 0);
+TEST_F(TriggerActionGameTest, TheOldFormatsNameTheTeamAndTheTrigger) {
+  for (const int format : {0, 1}) {
+    const TriggerActionRecord record = Read("4,TANKS,ALARM,3", format);
 
-  EXPECT_EQ(action.type(), TriggerActionType::kCreateTeam);
-  EXPECT_EQ(action.team_type(), nullptr);
+    EXPECT_EQ(record.type, TriggerActionType::kCreateTeam);
+    EXPECT_EQ(record.team_type, team_type_);
+    EXPECT_EQ(record.trigger_type, trigger_type_);
+    EXPECT_EQ(record.value, 3);
+  }
+}
+
+TEST_F(TriggerActionGameTest, TheOldFormatsLeaveAMissingTeamOrTriggerNull) {
+  const TriggerActionRecord record = Read("4,nobody,None,0", 0);
+
+  EXPECT_EQ(record.type, TriggerActionType::kCreateTeam);
+  EXPECT_EQ(record.team_type, nullptr);
+  EXPECT_EQ(record.trigger_type, nullptr);
 }
 
 // SCU31EA and others store a sound as 0xFFFF00xx.
 TEST_F(TriggerActionGameTest, ASoundOutOfRangeIsReadAsItsLowByte) {
-  EXPECT_EQ(Read("19,-1,-1,-65399", 2).value(), 137);
-  EXPECT_EQ(Read("19,-1,-1,65673", 2).value(), 137);
-  EXPECT_EQ(Read("19,-1,-1,137", 2).value(), 137);
+  EXPECT_EQ(Read("19,-1,-1,-65399", 2).value, 137);
+  EXPECT_EQ(Read("19,-1,-1,65673", 2).value, 137);
+  EXPECT_EQ(Read("19,-1,-1,137", 2).value, 137);
   // Only a sound is corrected.
-  EXPECT_EQ(Read("11,-1,-1,-65399", 2).value(), -65399);
+  EXPECT_EQ(Read("11,-1,-1,-65399", 2).value, -65399);
 }
 
 // 0xFF is no sound either, so the value is kept as it is.
 TEST_F(TriggerActionGameTest, ASoundWhoseLowByteIsNoSoundIsKept) {
-  EXPECT_EQ(Read("19,-1,-1,-1", 2).value(), -1);
+  EXPECT_EQ(Read("19,-1,-1,-1", 2).value, -1);
 }
 
 TEST_F(TriggerActionGameTest, NoActionSucceedsAndChangesNothing) {
