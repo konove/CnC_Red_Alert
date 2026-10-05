@@ -22,6 +22,7 @@
 #include "absl/log/log.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/installed.h"
 #include "base/numeric.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/gfx/shape.h"
@@ -287,10 +288,16 @@ void HardwareCursor::RebuildCursor() {
 }
 
 bool IsLeftButtonDown() {
+  if (base::Installed<ScriptedMouseButtons>::IsInstalled()) {
+    return base::Installed<ScriptedMouseButtons>::Get().left;
+  }
   return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
 }
 
 bool IsRightButtonDown() {
+  if (base::Installed<ScriptedMouseButtons>::IsInstalled()) {
+    return base::Installed<ScriptedMouseButtons>::Get().right;
+  }
   return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
 }
 

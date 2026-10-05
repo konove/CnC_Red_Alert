@@ -24,10 +24,12 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/installed.h"
 #include "base/numeric.h"
 #include "engine/gfx/ico_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/platform/manual_clock.h"
 #include "engine/window/display_client.h"
 #include "engine/window/display_observer.h"
 
@@ -468,6 +470,11 @@ void Display::DropScaledFrame() {
 }
 
 void Display::PresentFrame() {
+  // A scripted run paces itself by its own clock, and waits for nothing.
+  if (base::Installed<engine::platform::ManualClock>::IsInstalled()) {
+    SDL_RenderPresent(static_cast<SDL_Renderer*>(renderer_));
+    return;
+  }
   // Shorter than a 60 Hz refresh, so on a vsync display, where the present
   // itself blocks for the refresh, the floor is never reached and cannot make
   // a frame miss its vblank. The renderer's vsync flag cannot tell the two
@@ -501,6 +508,9 @@ void Display::PumpEvents() {
   if (headless_) {
     return;
   }
+  if (redraw_on_pump_) {
+    EndFrame();
+  }
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -515,12 +525,19 @@ void Display::PumpEvents() {
 }
 
 void Display::ArmRedrawTimer() {
+  // The timer fires in real time, on a thread of its own: under a manual
+  // clock the frames it ended would differ from run to run.
+  if (base::Installed<engine::platform::ManualClock>::IsInstalled()) {
+    redraw_on_pump_ = true;
+    return;
+  }
   if (redraw_timer_ == 0) {
     redraw_timer_ = SDL_AddTimer(kRedrawDelayMs, PostRedraw, nullptr);
   }
 }
 
 void Display::CancelRedrawTimer() {
+  redraw_on_pump_ = false;
   if (redraw_timer_ != 0) {
     SDL_RemoveTimer(redraw_timer_);
     redraw_timer_ = 0;

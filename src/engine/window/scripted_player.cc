@@ -144,7 +144,15 @@ void ScriptedPlayer::OnFrameEnd() {
 }
 
 void ScriptedPlayer::OnPump() {
-  if (++pumps_since_frame_ > kMaxPumpsPerFrame) {
+  ++pumps_since_frame_;
+  if (idle_pumps_per_frame_ > 0 &&
+      pumps_since_frame_ >= idle_pumps_per_frame_) {
+    // Ending the frame comes back here through OnFrameEnd(), which starts
+    // the count again, and through the pump that follows it.
+    display_->EndFrame();
+    return;
+  }
+  if (pumps_since_frame_ > kMaxPumpsPerFrame) {
     pumps_since_frame_ = 0;
     throw ScriptOverrun(absl::StrFormat(
         "the game polled for input %d times after frame %d without ending a "
@@ -160,6 +168,11 @@ void ScriptedPlayer::PutKey(const KeyNumber key, const char character) {
 
 void ScriptedPlayer::PutClick(const MouseButton button, const bool release,
                               const int x, const int y) {
+  if (button == MouseButton::kLeft) {
+    held_.left = !release;
+  } else if (button == MouseButton::kRight) {
+    held_.right = !release;
+  }
   mouse_->RecordPosition(x, y);
   keyboard_->PutClick(button, release, x, y);
 }

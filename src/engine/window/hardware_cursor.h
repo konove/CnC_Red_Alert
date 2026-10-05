@@ -200,8 +200,18 @@ class HardwareCursor {
   bool palette_stale_ = false;
 };
 
+// The mouse buttons a scripted player is holding down. While one is installed
+// (base::Installed<ScriptedMouseButtons>) it is what IsLeftButtonDown() and
+// IsRightButtonDown() report, since SDL knows nothing of a script's mouse.
+// ScriptedPlayer installs its own.
+struct ScriptedMouseButtons {
+  bool left = false;
+  bool right = false;
+};
+
 // Returns whether the left or right mouse button is held down right now, read
-// from SDL's live state rather than from the queued clicks.
+// from SDL's live state rather than from the queued clicks, or from the
+// installed ScriptedMouseButtons when there is one.
 bool IsLeftButtonDown();
 bool IsRightButtonDown();
 

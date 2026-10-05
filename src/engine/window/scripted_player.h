@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/installed.h"
 #include "engine/platform/manual_clock.h"
 #include "engine/window/display.h"
 #include "engine/window/display_observer.h"
@@ -103,7 +104,8 @@ class ScriptedPlayer final : public DisplayObserver {
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Queues a move to `x`, `y` and one half of a click there, for a drag:
-  // Press(), MoveTo() on later frames, then Release().
+  // Press(), MoveTo() on later frames, then Release(). The button reads as
+  // held down (IsLeftButtonDown()) in between.
   ScriptedPlayer& Press(int x, int y, MouseButton button = MouseButton::kLeft)
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   ScriptedPlayer& Release(int x, int y, MouseButton button = MouseButton::kLeft)
@@ -117,6 +119,14 @@ class ScriptedPlayer final : public DisplayObserver {
   // Sets how many frames a loop may run past the last step before
   // ScriptOverrun is thrown.
   void set_frame_budget(int frames) { frame_budget_ = frames; }
+
+  // Makes a loop that polls for input `pumps` times without ending a frame
+  // get a frame ended for it, so that a loop which only waits for a key --
+  // and would never see one, since a script moves on frames -- goes round
+  // like the others. 0, the default, ends no frames: such a loop is cut
+  // short instead. A scripted run of the whole game sets this; a test of one
+  // dialog wants to hear about a loop that does not present.
+  void set_idle_pumps_per_frame(int pumps) { idle_pumps_per_frame_ = pumps; }
 
   // The number of frames the Display has ended since the player was made.
   [[nodiscard]] int frame() const { return frame_; }
@@ -151,6 +161,11 @@ class ScriptedPlayer final : public DisplayObserver {
   int frame_ = 0;         // frames ended so far
   int frame_budget_ = kDefaultFrameBudget;
   int pumps_since_frame_ = 0;
+  // What IsLeftButtonDown() and IsRightButtonDown() report while the player
+  // exists: a button is held from its Press() to its Release().
+  ScriptedMouseButtons held_;
+  base::Installed<ScriptedMouseButtons>::Scope held_scope_{held_};
+  int idle_pumps_per_frame_ = 0;  // 0 for never
 };
 
 }  // namespace engine::window

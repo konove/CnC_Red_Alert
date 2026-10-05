@@ -36,6 +36,11 @@ namespace engine::window {
 // PumpEvents() presents the frames the redraw timer asks for and hands every
 // other event to the game's DisplayClient.
 //
+// While an engine::platform::ManualClock exists the Display keeps no time of
+// its own, so that a scripted run of the game does the same thing every
+// time: drawing left in the surface is presented by the next PumpEvents()
+// instead of by the redraw timer, and PresentFrame() does not pace itself.
+//
 // Constructing a Display opens nothing: Init() creates the window once the
 // configured video mode is known, and SetVideoMode() the surface. A test
 // builds one and leaves it closed, adopts a window and renderer it made
@@ -164,9 +169,12 @@ class Display : public PixelSurface {
   // Called from an SDL timer thread.
   void PostRedrawEvent();
 
-  // Whether the redraw timer is armed, that is whether drawing is waiting in
-  // the surface to be presented.
-  [[nodiscard]] bool redraw_pending() const { return redraw_timer_ != 0; }
+  // Whether drawing is waiting in the surface to be presented: the redraw
+  // timer is armed or, under a ManualClock, the next PumpEvents() will
+  // present it.
+  [[nodiscard]] bool redraw_pending() const {
+    return redraw_timer_ != 0 || redraw_on_pump_;
+  }
 
   // Drains SDL's event queue: runs the client's Pump(), then ends the frame
   // on each redraw event and passes every other event to the client's
@@ -265,6 +273,9 @@ class Display : public PixelSurface {
   uint32_t redraw_event_ = 0;
   // SDL_TimerID of the pending redraw, 0 when none is armed.
   int redraw_timer_ = 0;
+  // Under a ManualClock, whether the next PumpEvents() presents the surface,
+  // which is what stands in for the redraw timer there.
+  bool redraw_on_pump_ = false;
   // The earliest time the next present may happen.
   std::chrono::steady_clock::time_point next_present_;
 };

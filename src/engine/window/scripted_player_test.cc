@@ -140,6 +140,30 @@ TEST_F(ScriptedPlayerTest, ADragIsAPressMovesAndARelease) {
   EXPECT_EQ(release.x, 50);
 }
 
+// The games ask whether a button is held separately from reading the click,
+// to tell a drag from a click.
+TEST_F(ScriptedPlayerTest, AButtonIsHeldFromItsPressToItsRelease) {
+  player_.At(1).Press(10, 10).At(3).Release(50, 10);
+
+  EXPECT_FALSE(IsLeftButtonDown());
+  Turn();
+  EXPECT_TRUE(IsLeftButtonDown());
+  EXPECT_FALSE(IsRightButtonDown());
+  Turn();
+  EXPECT_TRUE(IsLeftButtonDown());
+  Turn();
+  EXPECT_FALSE(IsLeftButtonDown());
+}
+
+TEST_F(ScriptedPlayerTest, AClickLeavesNoButtonHeld) {
+  player_.Click(10, 10).Click(20, 20, MouseButton::kRight);
+
+  Turn();
+
+  EXPECT_FALSE(IsLeftButtonDown());
+  EXPECT_FALSE(IsRightButtonDown());
+}
+
 TEST_F(ScriptedPlayerTest, StepsOfOneFramePlayInTheOrderQueued) {
   std::vector<int> order;
   player_.At(2).Do([&order] { order.push_back(1); }).Do([&order] {
@@ -204,6 +228,30 @@ TEST_F(ScriptedPlayerTest, ALoopThatNeverEndsAFrameIsCutShort) {
       },
       ScriptOverrun);
   EXPECT_EQ(player_.frame(), 0);
+}
+
+// What a scripted run of the whole game asks for: the loop that only polls
+// gets its frames, and with them the key it is waiting for.
+TEST_F(ScriptedPlayerTest, IdlePumpsCanEndFramesForALoopThatOnlyPolls) {
+  player_.set_idle_pumps_per_frame(4);
+  player_.At(3).Key(KN_RETURN);
+
+  int polls = 0;
+  while (!keyboard_.Peek()) {
+    ++polls;
+  }
+
+  EXPECT_EQ(player_.frame(), 3);
+  // A frame every few polls, not one every hundred thousand.
+  EXPECT_LT(polls, 20);
+}
+
+TEST_F(ScriptedPlayerTest, IdlePumpsEndNoFrameForALoopThatPresents) {
+  player_.set_idle_pumps_per_frame(4);
+  player_.At(3).Key(KN_RETURN);
+
+  EXPECT_EQ(TurnsUntilPressed(KN_RETURN), 3);
+  EXPECT_EQ(player_.frame(), 3);
 }
 
 TEST_F(ScriptedPlayerTest, GoingBackAFrameIsAProgrammingError) {

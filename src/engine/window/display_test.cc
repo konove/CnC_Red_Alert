@@ -12,6 +12,7 @@
 #include <SDL_surface.h>
 
 #include <array>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -26,6 +27,7 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/platform/manual_clock.h"
 #include "engine/window/display_client.h"
 #include "engine/window/display_observer.h"
 #include "gtest/gtest.h"
@@ -42,6 +44,14 @@ engine::gfx::Palette PaletteWith(int index, int red, int green, int blue) {
                                                 engine::gfx::ExpandGun(blue));
   return palette;
 }
+
+// Counts the frames a Display ends.
+class RecordingFrames final : public DisplayObserver {
+ public:
+  void OnFrameEnd() override { ++ended; }
+
+  int ended = 0;
+};
 
 // The palette and present paths run before Screen::Init() sets a video mode
 // and after the game tears it down, so a Display without a surface has to
@@ -319,6 +329,48 @@ TEST_F(DisplayTest, RejectsFramesThatDoNotMatchTheirSize) {
   display().EndFrame();
 
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
+}
+
+// Under a manual clock nothing may depend on real time, so the next pump
+// presents what the redraw timer would have, and no timer is armed.
+TEST_F(DisplayTest, UnderAManualClockThePumpPresentsWhatWasDrawn) {
+  const engine::platform::ManualClock clock;
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
+  PixelBuffer page;
+  page.Init(2, 2, display());
+
+  page.view().Clear(1);
+  EXPECT_TRUE(display().redraw_pending());
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
+
+  display().PumpEvents();
+
+  EXPECT_FALSE(display().redraw_pending());
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
+}
+
+TEST_F(DisplayTest, UnderAManualClockAPumpWithNothingDrawnEndsNoFrame) {
+  const engine::platform::ManualClock clock;
+  RecordingFrames frames;
+  display().set_observer(&frames);
+
+  display().PumpEvents();
+
+  EXPECT_EQ(frames.ended, 0);
+  display().set_observer(nullptr);
+}
+
+// The 70-a-second limit would make a scripted run take as long as playing.
+TEST_F(DisplayTest, UnderAManualClockPresentingDoesNotWait) {
+  const engine::platform::ManualClock clock;
+  const auto start = std::chrono::steady_clock::now();
+
+  for (int frame = 0; frame < 200; ++frame) {
+    display().EndFrame();
+  }
+
+  // 200 paced frames take close to three seconds.
+  EXPECT_LT(std::chrono::steady_clock::now() - start, std::chrono::seconds(1));
 }
 
 // Counts what the event loop hands it.
