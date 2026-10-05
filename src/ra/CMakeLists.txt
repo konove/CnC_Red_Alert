@@ -84,6 +84,17 @@ target_link_libraries(rasdl PRIVATE ra_engine)
 
 install(TARGETS rasdl)
 
+# What a test that builds a real Game compiles in: GameFixture and the text
+# table it can install; a test of a dialog adds UiFixture and its font.
+set(RA_GAME_TEST_UTIL
+    startup/game_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/file/string_table_test_util.cc
+)
+set(RA_UI_TEST_UTIL
+    startup/ui_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/gfx/font_test_util.cc
+)
+
 # Tests
 include(Testing)
 add_gtest(
@@ -95,7 +106,7 @@ add_gtest(
 # Carries out trigger actions in a real Game.
 add_gtest(
     NAME ra_trigger_action_test
-    SOURCES ai/trigger_action_test.cc startup/game_test_util.cc startup/startup.cc
+    SOURCES ai/trigger_action_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_trigger_action_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -111,7 +122,7 @@ add_gtest(
 # Reads, writes and detaches trigger types in a real Game.
 add_gtest(
     NAME ra_trigger_type_test
-    SOURCES ai/trigger_type_test.cc startup/game_test_util.cc startup/startup.cc
+    SOURCES ai/trigger_type_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_trigger_type_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -131,7 +142,7 @@ apply_language_setting(ra_game_test)
 # Builds type objects, a house and a vehicle in a real Game.
 add_gtest(
     NAME ra_carryover_test
-    SOURCES ai/carryover_test.cc startup/game_test_util.cc startup/startup.cc
+    SOURCES ai/carryover_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -141,7 +152,7 @@ apply_language_setting(ra_carryover_test)
 # Records a kill between two vehicles in a real Game.
 add_gtest(
     NAME ra_techno_test
-    SOURCES objects/techno_test.cc startup/game_test_util.cc startup/startup.cc
+    SOURCES objects/techno_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_techno_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -151,7 +162,7 @@ apply_language_setting(ra_techno_test)
 # Delivers teams and launches an air strike in a real Game.
 add_gtest(
     NAME ra_reinforcements_test
-    SOURCES ai/reinforcements_test.cc startup/game_test_util.cc startup/startup.cc
+    SOURCES ai/reinforcements_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_reinforcements_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -166,7 +177,7 @@ add_gtest(
         data/text_test.cc
         core/random_pick_test.cc
         core/coord_test.cc
-        startup/game_test_util.cc
+        ${RA_GAME_TEST_UTIL}
         startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
@@ -194,8 +205,8 @@ apply_language_setting(ra_options_test)
 
 add_gtest(
     NAME ra_special_options_test
-    SOURCES ai/special_options_test.cc startup/game_test_util.cc startup/ui_test_util.cc
-            startup/startup.cc ${CMAKE_SOURCE_DIR}/src/engine/gfx/font_test_util.cc
+    SOURCES ai/special_options_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
     LIBS ra_engine base
 )
 target_compile_definitions(ra_special_options_test PRIVATE RA_NO_ENTRY_POINT=1)

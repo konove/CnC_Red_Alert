@@ -1165,25 +1165,20 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover the rest of `ra/ai/special_options.cc`
-  - `RunSpecialOptionsDialog()` is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`, phase
-    1), except its multiplayer branch, which calls `RunFrame()` instead of `ServiceRealTime()`
-  - `PromptForDifficulty()` copies `TextString(TXT_DIFFICULTY)`, which is null in the fixture; it
-    needs the in-memory string table of the plan's phase 2
+- Cover the multiplayer branch of `RunSpecialOptionsDialog()` (`ra/ai/special_options.cc`, 137 of
+  141 lines covered)
+  - In a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs
+    a running game behind it; the rest of both dialogs is covered through `UiFixture`
+    (`docs/TEST_HARNESS_PLAN.md`)
   - Esc in the special options dialog shares the OK button's branch, so it applies the edits instead
     of cancelling (`SpecialOptionsDialogTest.EscAppliesLikeOk` pins it); decide whether that is
     intended
-- Cover the rest of `ra/ai/trigger_action.cc` (605 of 639 lines covered)
-  - `TextAction` with a text (~694) needs `TUTORIAL.INI`; a setter for the tutorial text on
-    `Assets`, or loading it from an `IniFile` passed in, would do
+- Cover the rest of `ra/ai/trigger_action.cc` (606 of 635 lines covered)
   - `PlaySoundAction`, `PlayMusicAction` and `PlaySpeechAction` (~798-840) need the audio device; an
     accessor for `ThemeClass::Pending` would let the music action be asserted
   - `PlayMovieAction` (~773) needs the display and a movie; the player's special weapon button
     (~892) needs the sidebar's game data; `DropZoneFlareAction` (~613) needs the animation types
-- Cover the rest of `ra/ai/trigger_type.cc` (79.7% of lines after `7476793a`)
-  - `Description()`'s unit, aircraft, building and infantry names (~126-145) call `Text_String()`,
-    which needs the text table, and `GameFixture` builds only the house and unit type heaps. A
-    fixture that installs a small in-memory text table would reach them
+- Cover the rest of `ra/ai/trigger_type.cc` (184 of 211 lines covered)
   - `Draw_It()` (~276-303) needs the fonts and the colour remaps; it becomes one test of the shared
     list-entry helper when the five copies are merged
   - The placement `operator new` in `trigger_type.h` ~113 is only used by `ObjectHeap::Load()`; a

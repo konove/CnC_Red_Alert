@@ -16,12 +16,14 @@
 #include "engine/file/ini_file.h"
 #include "engine/platform/env.h"
 #include "gtest/gtest.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/type_heaps.h"
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 #include "ra/startup/game_test_util.h"
@@ -451,6 +453,77 @@ TEST_F(TriggerTypeTest, TheDescriptionAddsTheNumberAnEventTakes) {
   EXPECT_EQ(
       trigger_type_->Description(),
       DescriptionPrefix(*trigger_type_, "V..") + "Credits exceed (x100)...50");
+}
+
+// The events that are about a kind of object show its name, which comes from
+// the text table under the number the type keeps.
+class TriggerTypeObjectNameTest : public TriggerTypeTest {
+ protected:
+  void SetUp() override {
+    TriggerTypeTest::SetUp();
+    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
+    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
+    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
+    AircraftTypeClass::Init_Heap();
+    BuildingTypeClass::Init_Heap();
+    InfantryTypeClass::Init_Heap();
+  }
+
+  // What Description() puts after the prefix: the event's name and `value`.
+  std::string DescriptionEnding() const {
+    const std::string description = trigger_type_->Description();
+    const std::string prefix = DescriptionPrefix(*trigger_type_, "V..");
+    EXPECT_TRUE(description.starts_with(prefix)) << description;
+    return description.substr(prefix.size());
+  }
+};
+
+TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheUnitAnEventTakes) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  SetText(UnitTypeClass::As_Reference(UNIT_JEEP).Full_Name(), "Ranger");
+  trigger_type_->event1.Event = TEVENT_BUILD_UNIT;
+  trigger_type_->event1.Data.Unit = UNIT_JEEP;
+
+  EXPECT_TRUE(DescriptionEnding().ends_with("Ranger")) << DescriptionEnding();
+}
+
+TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheAircraftAnEventTakes) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  SetText(AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Full_Name(), "Hind");
+  trigger_type_->event1.Event = TEVENT_BUILD_AIRCRAFT;
+  trigger_type_->event1.Data.Aircraft = AIRCRAFT_HIND;
+
+  EXPECT_TRUE(DescriptionEnding().ends_with("Hind")) << DescriptionEnding();
+}
+
+TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheBuildingAnEventTakes) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  SetText(BuildingTypeClass::As_Reference(STRUCT_POWER).Full_Name(),
+          "Power Plant");
+  trigger_type_->event1.Event = TEVENT_BUILD;
+  trigger_type_->event1.Data.Structure = STRUCT_POWER;
+
+  EXPECT_TRUE(DescriptionEnding().ends_with("Power Plant"))
+      << DescriptionEnding();
+}
+
+TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheInfantryAnEventTakes) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  SetText(InfantryTypeClass::As_Reference(INFANTRY_E1).Full_Name(),
+          "Rifle Infantry");
+  trigger_type_->event1.Event = TEVENT_BUILD_INFANTRY;
+  trigger_type_->event1.Data.Infantry = INFANTRY_E1;
+
+  EXPECT_TRUE(DescriptionEnding().ends_with("Rifle Infantry"))
+      << DescriptionEnding();
 }
 
 }  // namespace

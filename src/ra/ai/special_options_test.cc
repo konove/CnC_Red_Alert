@@ -1,8 +1,6 @@
 // Tests for the special option flags' starting values, for the mapping from
 // a difficulty level to the player's and the computer's settings, and for
-// the special options dialog, played by a script on a headless screen.
-// PromptForDifficulty() reads its prompt from the string table, which the
-// fixture cannot fill yet (docs/TEST_HARNESS_PLAN.md, phase 2).
+// the two dialogs, played by a script on a headless screen.
 
 #include "ra/ai/special_options.h"
 
@@ -16,6 +14,8 @@
 #include "gtest/gtest.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
+#include "ra/data/rules.h"
+#include "ra/data/text_ids.h"
 #include "ra/map/world.h"
 #include "ra/net/event.h"
 #include "ra/net/network.h"
@@ -133,6 +133,18 @@ TEST_F(SpecialOptionsDialogTest, OkQueuesTheFlagsAsTheyWere) {
   EXPECT_FALSE(queued.three_point_turns);
 }
 
+TEST_F(SpecialOptionsDialogTest, BothBoxesStartCheckedWhenBothFlagsAreOn) {
+  TheSpecialOptions().speed_build = true;
+  TheSpecialOptions().three_point_turns = true;
+  player().At(2).Click(kOkX, kButtonsY);
+
+  RunSpecialOptionsDialog();
+
+  const SpecialOptions queued = QueuedOptions();
+  EXPECT_TRUE(queued.speed_build);
+  EXPECT_TRUE(queued.three_point_turns);
+}
+
 TEST_F(SpecialOptionsDialogTest, ACheckedBoxIsQueuedButNotInstalled) {
   player()
       .At(2)
@@ -213,6 +225,78 @@ TEST_F(SpecialOptionsDialogTest, DrawsOnTheVisiblePage) {
   RunSpecialOptionsDialog();
 
   EXPECT_GT(drawn, 0);
+}
+
+// The prompt is 500 by 160, centred, so its corner is at 70, 120; the slider
+// is 420 wide from 110, 222 and the OK button is at 470, 244.
+constexpr int kSliderLeftX = 110 + 4;
+constexpr int kSliderRightX = 110 + 420 - 4;
+constexpr int kSliderY = 222 + 8;
+constexpr int kPromptOkX = 470 + 5;
+constexpr int kPromptOkY = 244 + 5;
+
+using DifficultyPromptTest = UiFixture;
+
+TEST_F(DifficultyPromptTest, ReturnTakesTheMiddleOfTheSlider) {
+  player().At(2).Key(engine::window::KN_RETURN);
+
+  EXPECT_EQ(PromptForDifficulty(false),
+            (DifficultyChoice{.player = DifficultyLevel::kNormal,
+                              .computer = DifficultyLevel::kNormal}));
+}
+
+TEST_F(DifficultyPromptTest, TheOkButtonAnswersToo) {
+  player().At(2).Click(kPromptOkX, kPromptOkY);
+
+  EXPECT_EQ(PromptForDifficulty(false),
+            (DifficultyChoice{.player = DifficultyLevel::kNormal,
+                              .computer = DifficultyLevel::kNormal}));
+  EXPECT_TRUE(player().finished());
+}
+
+TEST_F(DifficultyPromptTest, TheLeftEndOfTheSliderIsEasy) {
+  player()
+      .At(2)
+      .Click(kSliderLeftX, kSliderY)
+      .At(6)
+      .Key(engine::window::KN_RETURN);
+
+  EXPECT_EQ(PromptForDifficulty(false), DifficultyForLevel(0));
+}
+
+TEST_F(DifficultyPromptTest, TheRightEndOfTheSliderIsHard) {
+  player()
+      .At(2)
+      .Click(kSliderRightX, kSliderY)
+      .At(6)
+      .Key(engine::window::KN_RETURN);
+
+  EXPECT_EQ(PromptForDifficulty(false), DifficultyForLevel(4));
+}
+
+// With fine difficulty the slider has five stops, one per level, instead of
+// three spread over them.
+TEST_F(DifficultyPromptTest, FineDifficultyStartsOnTheSameMiddle) {
+  TheRules().IsFineDifficulty = true;
+  player().At(2).Key(engine::window::KN_RETURN);
+
+  EXPECT_EQ(PromptForDifficulty(false), DifficultyForLevel(2));
+}
+
+// An expansion mission is not part of a campaign, so the prompt keeps only
+// its first sentence. Both forms have to survive being cut into lines.
+TEST_F(DifficultyPromptTest, AnExpansionMissionGetsAShorterPrompt) {
+  SetText(TXT_DIFFICULTY, "Choose a level. It lasts the whole campaign.");
+  player().At(2).Key(engine::window::KN_RETURN);
+
+  EXPECT_EQ(PromptForDifficulty(true), DifficultyForLevel(2));
+}
+
+TEST_F(DifficultyPromptTest, StaysOpenUntilAnswered) {
+  player().set_frame_budget(30);
+  player().At(2).Key(engine::window::KN_ESC);
+
+  EXPECT_THROW(PromptForDifficulty(false), engine::window::ScriptOverrun);
 }
 
 }  // namespace

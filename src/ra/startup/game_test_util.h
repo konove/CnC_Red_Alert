@@ -4,6 +4,11 @@
 #ifndef CNC_RED_ALERT_RA_STARTUP_GAME_TEST_UTIL_H_
 #define CNC_RED_ALERT_RA_STARTUP_GAME_TEST_UTIL_H_
 
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "gtest/gtest.h"
 #include "ra/startup/game.h"
 
@@ -25,8 +30,21 @@ class GameFixture : public ::testing::Test {
   // Empties the display layers, which are static and outlive the Game.
   void TearDown() override;
 
+  // Makes TextString(text_id) return `text`, for one of the game's own
+  // strings (0 up to kTextCount). The first call installs a text table in
+  // which every other string is empty; before it there is no table and every
+  // TextString() is null.
+  void SetText(int text_id, std::string_view text);
+
  private:
+  // One past the highest TXT_* number (ra/data/text_ids.h).
+  static constexpr int kTextCount = 555;
+
   Game game_;
+  // The strings SetText() has set, and the table made from them that Assets
+  // borrows. Both are empty until the first SetText().
+  std::vector<std::string> texts_;
+  std::vector<std::byte> text_table_;
 };
 
 }  // namespace ra

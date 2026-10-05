@@ -131,6 +131,15 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - `PromptForDifficulty()` is not covered yet: it copies `TextString(TXT_DIFFICULTY)`, which is
     null without a string table. Phase 2's text table opens it.
 
+- **Phase 2: done 2026-10-05.** `MakeStringTable()` (`engine/file/string_table_test_util.h`),
+  `Assets::set_system_strings()` and `set_tutorial_text()`, and `GameFixture::SetText()`, which
+  installs a text table on first use. `UiFixture` installs it up front, so every string is empty
+  rather than null. Newly covered: `PromptForDifficulty()` (seven tests, including the slider's
+  ends), the object names in `TriggerType::Description()` and `TextAction` with a tutorial message.
+  `special_options.cc` went from 20 to 137 of 141 lines.
+  - Palettes and colour remaps were not needed by anything tested so far; they are added with the
+    first screen that reads them.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

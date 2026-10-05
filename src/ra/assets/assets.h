@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -80,6 +81,12 @@ class Assets {
     return debug_strings_;
   }
 
+  // Installs `strings` as the game's text table, which must outlive its use;
+  // for tests, which cannot LoadStrings() without the archives.
+  void set_system_strings(std::span<const std::byte> strings) {
+    system_strings_ = strings;
+  }
+
   // The shapes of the chronosphere's lightning bolts, loaded with the
   // chronosphere's building type.
   [[nodiscard]] std::span<const std::byte> lightning_shapes() const {
@@ -98,6 +105,9 @@ class Assets {
   // Returns tutorial message `index`, or nullptr if TUTORIAL.INI has no
   // entry for it. The result stays valid until the next LoadTutorialText().
   [[nodiscard]] const char* tutorial_text(int index) const;
+  // Sets tutorial message `index`, which must be below kTutorialTextCount;
+  // for tests, which cannot LoadTutorialText() without TUTORIAL.INI.
+  void set_tutorial_text(int index, std::string_view text);
 
   // A speech holding tank: the buffer a voice is read into and the voice it
   // holds. `voice` is VOX_NONE when the buffer has never been filled.

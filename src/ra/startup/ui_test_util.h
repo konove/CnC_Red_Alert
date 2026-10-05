@@ -22,8 +22,8 @@ namespace ra {
 //
 // Every font is the same 6x10 block font (MakeBlockFont()), so text and the
 // buttons sized to it have a known size: a button is 12 pixels tall and 8
-// wider than its text. The string table is empty, so a button labelled from
-// it is 8 wide.
+// wider than its text. Every string of the text table is empty until the
+// test sets it with SetText(), so a button labelled from the table is 8 wide.
 //
 // Example:
 //   TEST_F(UiFixture, EscClosesTheDialog) {

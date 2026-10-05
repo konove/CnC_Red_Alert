@@ -15,18 +15,21 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_type.h"
+#include "ra/assets/assets.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/map/world.h"
+#include "ra/net/session.h"
 #include "ra/objects/building.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 #include "ra/startup/game_test_util.h"
+#include "ra/ui/msglist.h"
 
 namespace ra {
 
@@ -190,6 +193,17 @@ TEST_F(TriggerActionTest, ForceTriggerDoesNothingWhenNoTriggerCanBeMade) {
 TEST_F(TriggerActionTest, TextTriggerSkipsAnIdWithNoText) {
   EXPECT_TRUE(Perform(Record(TriggerActionType::kTextTrigger, -1)));
   EXPECT_TRUE(Perform(Record(TriggerActionType::kTextTrigger, 0)));
+}
+
+TEST_F(TriggerActionTest, TextTriggerShowsItsTutorialMessage) {
+  TheSession().Messages.Init(0, 0, 6, MAX_MESSAGE_LENGTH - 14, 8, 0, 0, 0, 0,
+                             0);
+  TheAssets().set_tutorial_text(3, "Build a power plant.");
+
+  EXPECT_TRUE(Perform(Record(TriggerActionType::kTextTrigger, 3)));
+
+  ASSERT_EQ(TheSession().Messages.Num_Messages(), 1);
+  EXPECT_STREQ(TheSession().Messages.Get_Message(0), "Build a power plant.");
 }
 
 TEST(TriggerActionNameTest, EveryActionHasAnEditorName) {

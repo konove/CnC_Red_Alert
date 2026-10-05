@@ -1,6 +1,11 @@
 #include "ra/startup/game_test_util.h"
 
+#include <string_view>
+
+#include "base/numeric.h"
+#include "engine/file/string_table_test_util.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/assets/assets.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
@@ -32,6 +37,14 @@ void GameFixture::TearDown() {
   for (LayerClass& layer : DisplayClass::Layer) {
     layer.Clear();
   }
+}
+
+void GameFixture::SetText(const int text_id, const std::string_view text) {
+  texts_.resize(kTextCount);
+  texts_.at(base::ToSize(text_id)) = text;
+  // Rebuilt whole: the table is offsets followed by packed strings.
+  text_table_ = MakeStringTable(texts_);
+  TheAssets().set_system_strings(text_table_);
 }
 
 }  // namespace ra

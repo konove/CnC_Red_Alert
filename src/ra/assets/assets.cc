@@ -4,6 +4,7 @@
 
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -77,6 +78,10 @@ const char* Assets::tutorial_text(const int index) const {
   }
   const std::string& text = base::At(std::span(tutorial_text_), index);
   return text.empty() ? nullptr : text.c_str();
+}
+
+void Assets::set_tutorial_text(const int index, const std::string_view text) {
+  base::At(std::span(tutorial_text_), index) = text;
 }
 
 }  // namespace ra
