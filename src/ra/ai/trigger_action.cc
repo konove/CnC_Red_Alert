@@ -760,6 +760,93 @@ class GlobalAction final : public TriggerAction {
   int global_;
 };
 
+// Plays a movie at once. The game is suspended while it plays; the movie
+// leaves its own palette behind, so the game's is restored and the whole map
+// redrawn.
+class PlayMovieAction final : public TriggerAction {
+ public:
+  explicit PlayMovieAction(const VQType movie) : movie_(movie) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kPlayMovie;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    game::TheMouse().Hide();
+    TheScreen().visible_view().Clear();
+    Play_Movie(movie_, THEME_NONE, true);
+    ThePalettes().game_palette().Set();
+    TheMap().Flag_To_Redraw(true);
+    game::TheMouse().Show();
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(movie_)};
+  }
+
+ private:
+  VQType movie_;
+};
+
+// Plays a sound effect.
+class PlaySoundAction final : public TriggerAction {
+ public:
+  explicit PlaySoundAction(const VocType sound) : sound_(sound) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kPlaySound;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    PlaySoundEffect(sound_);
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(sound_)};
+  }
+
+ private:
+  VocType sound_;
+};
+
+// Queues a musical theme.
+class PlayMusicAction final : public TriggerAction {
+ public:
+  explicit PlayMusicAction(const ThemeType theme) : theme_(theme) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kPlayMusic;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    TheTheme().Queue_Song(theme_);
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(theme_)};
+  }
+
+ private:
+  ThemeType theme_;
+};
+
+// Plays an EVA speech.
+class PlaySpeechAction final : public TriggerAction {
+ public:
+  explicit PlaySpeechAction(const VoxType speech) : speech_(speech) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kPlaySpeech;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    Speak(speech_);
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(speech_)};
+  }
+
+ private:
+  VoxType speech_;
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -841,12 +928,8 @@ class LegacyAction final : public TriggerAction {
   // The action's value; type_ decides which member means something (see
   // ActionNeed()). The one-byte members alias the low byte of `value`.
   union {
-    ThemeType theme;            // Musical theme.
-    VocType sound;              // Sound effect.
-    VoxType speech;             // Speech identifier.
     SpecialWeaponType special;  // Special weapon ability.
     QuarryType quarry;          // Preferred target for attack.
-    VQType movie;               // The movie to play.
     bool flag;                  // Boolean value.
     int value;
   } data_;
@@ -882,33 +965,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       if (owner != nullptr) {
         owner->IsBaseBuilding = data_.flag;
       }
-      break;
-
-    // Play a movie immediately. The game is suspended while it plays; the
-    // movie leaves its own palette behind, so the game's is restored and the
-    // whole map redrawn.
-    case TriggerActionType::kPlayMovie:
-      game::TheMouse().Hide();
-      TheScreen().visible_view().Clear();
-      Play_Movie(data_.movie, THEME_NONE, true);
-      ThePalettes().game_palette().Set();
-      TheMap().Flag_To_Redraw(true);
-      game::TheMouse().Show();
-      break;
-
-    // Play a sound effect.
-    case TriggerActionType::kPlaySound:
-      PlaySoundEffect(data_.sound);
-      break;
-
-    // Play a musical theme.
-    case TriggerActionType::kPlayMusic:
-      TheTheme().Queue_Song(data_.theme);
-      break;
-
-    // Play the speech data_ specified.
-    case TriggerActionType::kPlaySpeech:
-      Speak(data_.speech);
       break;
 
     // Give the special weapon to the house, for one use or for good, and put
@@ -958,6 +1014,10 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
     case TriggerActionType::kSetTimer:
     case TriggerActionType::kDropZoneFlare:
     case TriggerActionType::kTextTrigger:
+    case TriggerActionType::kPlayMovie:
+    case TriggerActionType::kPlaySound:
+    case TriggerActionType::kPlayMusic:
+    case TriggerActionType::kPlaySpeech:
     default:
       break;
   }
@@ -1155,11 +1215,22 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
     case TriggerActionType::kClearGlobal:
       return std::make_unique<GlobalAction>(type, record.value);
 
-    // Not yet classes of their own.
     case TriggerActionType::kPlayMovie:
+      return std::make_unique<PlayMovieAction>(LowByteAs<VQType>(record.value));
+
     case TriggerActionType::kPlaySound:
+      return std::make_unique<PlaySoundAction>(
+          static_cast<VocType>(SoundValue(record.value)));
+
     case TriggerActionType::kPlayMusic:
+      return std::make_unique<PlayMusicAction>(
+          static_cast<ThemeType>(record.value));
+
     case TriggerActionType::kPlaySpeech:
+      return std::make_unique<PlaySpeechAction>(
+          LowByteAs<VoxType>(record.value));
+
+    // Not yet classes of their own.
     case TriggerActionType::kBaseBuilding:
     case TriggerActionType::kOneSpecial:
     case TriggerActionType::kFullSpecial:
