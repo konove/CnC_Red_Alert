@@ -201,8 +201,6 @@ constexpr int kAction1Sound = 111;
 constexpr int kAction2Sound = 112;
 constexpr int kAction1Special = 113;
 constexpr int kAction2Special = 114;
-constexpr int kEvent1Waypoint = 115;
-constexpr int kEvent2Waypoint = 116;
 constexpr int kAction1Waypoint = 117;
 constexpr int kAction2Waypoint = 118;
 constexpr int kEvent1House = 119;
@@ -306,27 +304,10 @@ bool TriggerType::Edit() {
   action1_list.Set_Selected_Index(&action_choices.at(action1_record.type));
   action2_list.Set_Selected_Index(&action_choices.at(action2_record.type));
 
-  // Waypoint fields, one per event and action. A waypoint number shows as a
+  // Waypoint fields, one per action; no event takes a waypoint. A waypoint
+  // number shows as a
   // letter, 'A' for 0 to 'Z' for 25, and from 26 on as two letters, "AA" for
   // 26 to "ZZ" for 701.
-  char event1_waypoint_text[kWaypointSize] = "A";
-  EditClass event1_waypoint_edit(
-      kEvent1Waypoint, event1_waypoint_text, sizeof(event1_waypoint_text),
-      FontType::kEditor, TPF_NOSHADOW, kEvent1DataX, kEvent1DataY, kDataWidth,
-      9, EditClass::kAlpha);
-  if (Event_Needs(event1.Event) == NEED_WAYPOINT) {
-    base::SafeCopy(event1_waypoint_text, WaypointLetters(event1.Data.Value));
-  }
-
-  char event2_waypoint_text[kWaypointSize] = "A";
-  EditClass event2_waypoint_edit(
-      kEvent2Waypoint, event2_waypoint_text, sizeof(event2_waypoint_text),
-      FontType::kEditor, TPF_NOSHADOW, kEvent2DataX, kEvent2DataY, kDataWidth,
-      9, EditClass::kAlpha);
-  if (Event_Needs(event2.Event) == NEED_WAYPOINT) {
-    base::SafeCopy(event2_waypoint_text, WaypointLetters(event2.Data.Value));
-  }
-
   char action1_waypoint_text[kWaypointSize] = "A";
   EditClass action1_waypoint_edit(
       kAction1Waypoint, action1_waypoint_text, sizeof(action1_waypoint_text),
@@ -1038,7 +1019,6 @@ bool TriggerType::Edit() {
 
       // Show the data field the first event needs, if any.
       event1_house_list.Remove();
-      event1_waypoint_edit.Remove();
       event1_number_edit.Remove();
       event1_building_list.Remove();
       event1_infantry_list.Remove();
@@ -1054,11 +1034,7 @@ bool TriggerType::Edit() {
           event1_team_list.Add(*gadgets);
           break;
 
-        case NEED_WAYPOINT:
-          event1_waypoint_edit.Add(*gadgets);
-          break;
 
-        case NEED_TIME:
         case NEED_NUMBER:
           event1_number_edit.Add(*gadgets);
           break;
@@ -1080,6 +1056,8 @@ bool TriggerType::Edit() {
           break;
 
         case NeedType::NEED_NONE:
+        case NeedType::NEED_WAYPOINT:
+        case NeedType::NEED_TIME:
         case NeedType::NEED_THEME:
         case NeedType::NEED_MOVIE:
         case NeedType::NEED_SOUND:
@@ -1097,7 +1075,6 @@ bool TriggerType::Edit() {
 
       // The same for the second event, when its list is showing.
       event2_house_list.Remove();
-      event2_waypoint_edit.Remove();
       event2_number_edit.Remove();
       event2_building_list.Remove();
       event2_infantry_list.Remove();
@@ -1114,11 +1091,7 @@ bool TriggerType::Edit() {
             event2_team_list.Add(*gadgets);
             break;
 
-          case NEED_WAYPOINT:
-            event2_waypoint_edit.Add(*gadgets);
-            break;
 
-          case NEED_TIME:
           case NEED_NUMBER:
             event2_number_edit.Add(*gadgets);
             break;
@@ -1140,6 +1113,8 @@ bool TriggerType::Edit() {
             break;
 
           case NeedType::NEED_NONE:
+          case NeedType::NEED_WAYPOINT:
+          case NeedType::NEED_TIME:
           case NeedType::NEED_THEME:
           case NeedType::NEED_MOVIE:
           case NeedType::NEED_SOUND:
@@ -1422,7 +1397,6 @@ bool TriggerType::Edit() {
             event1.Data.House = HousesType(event1_house_list.Current_Index());
             break;
 
-          case NEED_TIME:
           case NEED_NUMBER:
             event1.Data.Value =
                 base::ParseIntegerOr<int>(event1_number_edit.Get_Text(), 0);
@@ -1447,15 +1421,14 @@ bool TriggerType::Edit() {
                 AircraftType(event1_aircraft_list.Current_Index());
             break;
 
-          case NEED_WAYPOINT:
-            event1.Data.Value = WaypointFromLetters(event1_waypoint_text);
-            break;
 
           case NEED_TEAM:
             event1.Team =
                 TeamTypeClass::From_Name(SelectedName(event1_team_list));
             break;
           case NeedType::NEED_NONE:
+          case NeedType::NEED_WAYPOINT:
+          case NeedType::NEED_TIME:
           case NeedType::NEED_THEME:
           case NeedType::NEED_MOVIE:
           case NeedType::NEED_SOUND:
@@ -1479,7 +1452,6 @@ bool TriggerType::Edit() {
             event2.Data.House = HousesType(event2_house_list.Current_Index());
             break;
 
-          case NEED_TIME:
           case NEED_NUMBER:
             event2.Data.Value =
                 base::ParseIntegerOr<int>(event2_number_edit.Get_Text(), 0);
@@ -1504,15 +1476,14 @@ bool TriggerType::Edit() {
                 AircraftType(event2_aircraft_list.Current_Index());
             break;
 
-          case NEED_WAYPOINT:
-            event2.Data.Value = WaypointFromLetters(event2_waypoint_text);
-            break;
 
           case NEED_TEAM:
             event2.Team =
                 TeamTypeClass::From_Name(SelectedName(event2_team_list));
             break;
           case NeedType::NEED_NONE:
+          case NeedType::NEED_WAYPOINT:
+          case NeedType::NEED_TIME:
           case NeedType::NEED_THEME:
           case NeedType::NEED_MOVIE:
           case NeedType::NEED_SOUND:
