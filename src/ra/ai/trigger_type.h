@@ -26,6 +26,7 @@
 #define CNC_RED_ALERT_RA_AI_TRIGGER_TYPE_H_
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -92,10 +93,11 @@ class TriggerType : public AbstractTypeClass {
   TEventClass event2;
   MultiStyle event_control = MULTI_ONLY;
 
-  // The actions performed when the trigger springs. action2 is only performed
-  // when action_control is MULTI_AND or event_control is MULTI_LINKED.
-  TriggerAction action1;
-  TriggerAction action2;
+  // The actions performed when the trigger springs; never null. action2 is
+  // only performed when action_control is MULTI_AND or event_control is
+  // MULTI_LINKED.
+  std::unique_ptr<TriggerAction> action1 = MakeTriggerAction({});
+  std::unique_ptr<TriggerAction> action2 = MakeTriggerAction({});
   MultiStyle action_control = MULTI_ONLY;  // MULTI_ONLY or MULTI_AND.
 
   TriggerType();

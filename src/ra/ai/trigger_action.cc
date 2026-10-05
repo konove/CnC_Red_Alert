@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <format>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -163,9 +164,126 @@ T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,
   return nullptr;
 }
 
-}  // namespace
+// Returns the low byte of `value` as a number. The original game kept the
+// one-byte values (house, special weapon, movie, speech, flag) in a union with
+// the int the scenario stores, and the shipped scenarios rely on it: SCG12EA's
+// nuke is special weapon -255 and SCG10EA's "lch3" plays movie -170.
+constexpr int LowByte(const int value) { return static_cast<int8_t>(value); }
 
-void TriggerAction::Detach(const Target target) {
+// Returns the sound a record's `value` means: the value, or its low byte when
+// the value is no sound and the byte is one. SCU31EA and others store a sound
+// as 0xFFFF00xx; the original read it through a one-byte enum, and VocType is
+// wider here.
+int SoundValue(const int value) {
+  const auto is_sound = [](const int number) {
+    return number >= 0 &&
+           std::cmp_less(number, magic_enum::enum_count<VocType>());
+  };
+  if (is_sound(value)) {
+    return value;
+  }
+  const int low_byte = static_cast<int>(static_cast<uint32_t>(value) & 0xFFU);
+  if (!is_sound(low_byte)) {
+    return value;
+  }
+  DLOG(WARNING) << "SoundValue: read sound " << value << " as " << low_byte;
+  return low_byte;
+}
+
+// Returns `record` as an action keeps it: the fields its type does not use at
+// their defaults, and the value as the number of what the action acts on.
+// TODO: scaffolding for LegacyAction; each action class converts its own
+// value in MakeTriggerAction() (docs/TRIGGER_ACTION_CLASSES_PLAN.md).
+TriggerActionRecord Normalized(const TriggerActionRecord& record) {
+  TriggerActionRecord kept{.type = record.type};
+  switch (ActionNeed(record.type)) {
+    case NEED_TEAM:
+      kept.team_type = record.team_type;
+      break;
+
+    case NEED_TRIGGER:
+      kept.trigger_type = record.trigger_type;
+      break;
+
+    case NEED_HOUSE:
+    case NEED_SPECIAL:
+    case NEED_MOVIE:
+    case NEED_SPEECH:
+      kept.value = LowByte(record.value);
+      break;
+
+    case NEED_BOOL:
+      kept.value = LowByte(record.value) != 0 ? 1 : 0;
+      break;
+
+    case NEED_SOUND:
+      kept.value = SoundValue(record.value);
+      break;
+
+    case NEED_THEME:
+    case NEED_QUARRY:
+    case NEED_WAYPOINT:
+    case NEED_NUMBER:
+      kept.value = record.value;
+      break;
+
+    case NeedType::NEED_NONE:
+    case NeedType::NEED_INFANTRY:
+    case NeedType::NEED_UNIT:
+    case NeedType::NEED_AIRCRAFT:
+    case NeedType::NEED_STRUCTURE:
+    case NeedType::NEED_TIME:
+    case NeedType::NEED_FORMATION:
+    case NeedType::NEED_MISSION:
+    case NeedType::NEED_HEX_NUMBER:
+    default:
+      break;
+  }
+  return kept;
+}
+
+// Every action that has no class of its own yet
+// (docs/TRIGGER_ACTION_CLASSES_PLAN.md): the record's fields and a switch over
+// the type.
+class LegacyAction final : public TriggerAction {
+ public:
+  explicit LegacyAction(const TriggerActionRecord& record)
+      : type_(record.type),
+        team_type_(record.team_type),
+        trigger_type_(record.trigger_type),
+        data_{.value = record.value} {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& context) override;
+  void Detach(Target target) override;
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_,
+            .team_type = team_type_,
+            .trigger_type = trigger_type_,
+            .value = data_.value};
+  }
+
+ private:
+  TriggerActionType type_;
+  TeamTypeClass* team_type_;
+  TriggerType* trigger_type_;
+
+  // The action's value; type_ decides which member means something (see
+  // ActionNeed()). The one-byte members alias the low byte of `value`.
+  union {
+    ThemeType theme;            // Musical theme.
+    VocType sound;              // Sound effect.
+    VoxType speech;             // Speech identifier.
+    HousesType house;           // House to be affected.
+    SpecialWeaponType special;  // Special weapon ability.
+    QuarryType quarry;          // Preferred target for attack.
+    VQType movie;               // The movie to play.
+    bool flag;                  // Boolean value.
+    int value;
+  } data_;
+};
+
+void LegacyAction::Detach(const Target target) {
   if (target.kind() == RTTI_TEAMTYPE && team_type_ == target.AsTeamType()) {
     team_type_ = nullptr;
   }
@@ -177,7 +295,7 @@ void TriggerAction::Detach(const Target target) {
 
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-bool TriggerAction::Perform(const TriggerActionContext& context) {
+bool LegacyAction::Perform(const TriggerActionContext& context) {
   HouseClass* owner = HouseClass::As_Pointer(context.house);
   bool success = true;
 
@@ -517,60 +635,7 @@ bool TriggerAction::Perform(const TriggerActionContext& context) {
   return success;
 }
 
-TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
-  TriggerActionRecord record;
-  record.type = static_cast<TriggerActionType>(
-      base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-  if (const int format = TheWorld().new_ini_format();
-      format != 0 && format != 1) {
-    // Format 2 and later: the team and the trigger are heap slots
-    // (ToIniEntry() writes this form).
-    record.team_type =
-        FilledSlotOrNull(TheObjectHeaps().team_type(),
-                         base::ParseIntegerOr<int>(tokens.Next(), 0), "team");
-    record.trigger_type = FilledSlotOrNull(
-        TheObjectHeaps().trigger_type(),
-        base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
-  } else {
-    // The shipped scenarios: the team and the trigger are given by name.
-    record.team_type = TeamTypeClass::From_Name(tokens.Next());
-    if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
-      DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
-                    << " names a team that does not exist";
-    }
-    record.trigger_type = TriggerType::FromName(tokens.Next());
-  }
-
-  record.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
-
-  // Fix corrupted sound values from original game scenario files. Some INI
-  // files contain values like -65399 (0xFFFF0089) where only the low byte (137)
-  // is the valid VocType index. The original read the value through a one-byte
-  // enum; VocType is wider here, so the byte is taken by hand. (The one-byte
-  // values - movie, special, speech, house - still get it from the union.)
-  if (record.type == TriggerActionType::kPlaySound &&
-      (record.value < 0 ||
-       std::cmp_greater_equal(record.value,
-                              magic_enum::enum_count<VocType>()))) {
-    const int low_byte =
-        static_cast<int>(static_cast<uint32_t>(record.value) & 0xFFU);
-    if (std::cmp_less(low_byte, magic_enum::enum_count<VocType>())) {
-      DLOG(WARNING) << "ReadTriggerActionRecord: Fixed corrupted sound value "
-                    << record.value << " -> " << low_byte;
-      record.value = low_byte;
-    }
-  }
-  return record;
-}
-
-std::string ToIniEntry(const TriggerActionRecord& record) {
-  return std::format(
-      "{},{},{},{}", std::to_underlying(record.type),
-      TheObjectHeaps().team_type().PositionOf(record.team_type),
-      TheObjectHeaps().trigger_type().PositionOf(record.trigger_type),
-      record.value);
-}
+}  // namespace
 
 const char* ActionName(const TriggerActionType action) {
   return kActionNames.at(action);
@@ -643,6 +708,50 @@ NeedType ActionNeed(const TriggerActionType action) {
       break;
   }
   return NEED_NONE;
+}
+
+TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
+  TriggerActionRecord record;
+  record.type = static_cast<TriggerActionType>(
+      base::ParseIntegerOr<int>(tokens.Next(), 0));
+
+  if (const int format = TheWorld().new_ini_format();
+      format != 0 && format != 1) {
+    // Format 2 and later: the team and the trigger are heap slots
+    // (ToIniEntry() writes this form).
+    record.team_type =
+        FilledSlotOrNull(TheObjectHeaps().team_type(),
+                         base::ParseIntegerOr<int>(tokens.Next(), 0), "team");
+    record.trigger_type = FilledSlotOrNull(
+        TheObjectHeaps().trigger_type(),
+        base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
+  } else {
+    // The shipped scenarios: the team and the trigger are given by name.
+    record.team_type = TeamTypeClass::From_Name(tokens.Next());
+    if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
+      DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
+                    << " names a team that does not exist";
+    }
+    record.trigger_type = TriggerType::FromName(tokens.Next());
+  }
+
+  record.value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  return record;
+}
+
+std::string ToIniEntry(const TriggerActionRecord& record) {
+  return std::format(
+      "{},{},{},{}", std::to_underlying(record.type),
+      TheObjectHeaps().team_type().PositionOf(record.team_type),
+      TheObjectHeaps().trigger_type().PositionOf(record.trigger_type),
+      record.value);
+}
+
+void TriggerAction::Detach(Target /*target*/) {}
+
+std::unique_ptr<TriggerAction> MakeTriggerAction(
+    const TriggerActionRecord& record) {
+  return std::make_unique<LegacyAction>(Normalized(record));
 }
 
 }  // namespace ra

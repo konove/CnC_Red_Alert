@@ -196,24 +196,19 @@ template void TriggerActionRecord::Serialize(ArchiveWriter&);
 template void TriggerActionRecord::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TriggerAction::Serialize(Archive& ar) {
-  TriggerActionRecord record = ToRecord();
-  ar(record);
-  if constexpr (Archive::kIsReading) {
-    *this = TriggerAction(record);
-  }
-}
-
-template void TriggerAction::Serialize(ArchiveWriter&);
-template void TriggerAction::Serialize(ArchiveReader&);
-
-template <class Archive>
 void TriggerType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
   bool active = is_active;
-  ar(active, persistence, house, event1, event2, event_control, action1,
-     action2, action_control);
+  // The actions travel as their records.
+  TriggerActionRecord record1 = action1->ToRecord();
+  TriggerActionRecord record2 = action2->ToRecord();
+  ar(active, persistence, house, event1, event2, event_control, record1,
+     record2, action_control);
   is_active = active;
+  if constexpr (Archive::kIsReading) {
+    action1 = MakeTriggerAction(record1);
+    action2 = MakeTriggerAction(record2);
+  }
 }
 template void TriggerType::Serialize(ArchiveWriter&);
 template void TriggerType::Serialize(ArchiveReader&);

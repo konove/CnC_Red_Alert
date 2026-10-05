@@ -205,7 +205,7 @@ TriggerClass::~TriggerClass() {
 
   if (TheGameState().active() && Class != nullptr &&
       Class->house != HOUSE_NONE &&
-      Class->action1.type() == TriggerActionType::kAllowWin) {
+      Class->action1->type() == TriggerActionType::kAllowWin) {
     if (HouseClass::As_Pointer(Class->house)->Blockage) {
       HouseClass::As_Pointer(Class->house)->Blockage--;
     }
@@ -336,23 +336,23 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
         .house = Class->house, .object = obj, .trigger_id = ID, .cell = cell};
     if (Class->event_control == MULTI_LINKED) {
       if (e1 || forced) {
-        ok |= Class->action1.Perform(context);
+        ok |= Class->action1->Perform(context);
       }
       if (e2 && !forced) {
-        ok |= Class->action2.Perform(context);
+        ok |= Class->action2->Perform(context);
       }
     } else {
       switch (Class->action_control) {
         case MULTI_ONLY:
-          ok |= Class->action1.Perform(context);
+          ok |= Class->action1->Perform(context);
           break;
 
         case MultiStyle::MULTI_OR:
         case MultiStyle::MULTI_LINKED:
         default:
         case MULTI_AND:
-          ok |= Class->action1.Perform(context);
-          ok |= Class->action2.Perform(context);
+          ok |= Class->action1->Perform(context);
+          ok |= Class->action2->Perform(context);
           break;
       }
     }

@@ -22,6 +22,7 @@
 #ifndef CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 #define CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 
+#include <memory>
 #include <string>
 
 #include "base/strings/tokenizer.h"
@@ -141,107 +142,58 @@ struct TriggerActionRecord {
 // lists (-1 for none).
 [[nodiscard]] std::string ToIniEntry(const TriggerActionRecord& record);
 
-// One action of a trigger type: the action and the data it needs. A trigger
-// type holds two, and carries them out with Perform() when it springs.
+// One action of a trigger type, which the trigger type carries out with
+// Perform() when it springs. Each kind of action is a class of its own in
+// trigger_action.cc; MakeTriggerAction() makes them.
+//
+// Example:
+//   std::unique_ptr<TriggerAction> action = MakeTriggerAction(
+//       {.type = TriggerActionType::kSetTimer, .value = 20});
+//   action->Perform({.house = HOUSE_USSR});
 class TriggerAction {
  public:
-  TriggerAction() = default;
+  TriggerAction(const TriggerAction&) = delete;
+  TriggerAction& operator=(const TriggerAction&) = delete;
+  TriggerAction(TriggerAction&&) = delete;
+  TriggerAction& operator=(TriggerAction&&) = delete;
+  virtual ~TriggerAction() = default;
 
-  // Makes the action `record` describes.
-  explicit TriggerAction(const TriggerActionRecord& record)
-      : type_(record.type),
-        team_type_(record.team_type),
-        trigger_type_(record.trigger_type),
-        data_{.value = record.value} {}
-
-  // Returns the action as a record; TriggerAction(record) makes an equal
-  // action from it.
-  [[nodiscard]] TriggerActionRecord ToRecord() const {
-    return {.type = type_,
-            .team_type = team_type_,
-            .trigger_type = trigger_type_,
-            .value = data_.value};
-  }
-
-  // The action to perform.
-  [[nodiscard]] TriggerActionType type() const { return type_; }
-  void set_type(const TriggerActionType type) { type_ = type; }
-
-  // The team type the action is for; nullptr when it needs none or the
-  // scenario named one that does not exist.
-  [[nodiscard]] TeamTypeClass* team_type() const { return team_type_; }
-  void set_team_type(TeamTypeClass* team_type) { team_type_ = team_type; }
-
-  // The trigger type the action is for; nullptr when it needs none.
-  [[nodiscard]] TriggerType* trigger_type() const { return trigger_type_; }
-  void set_trigger_type(TriggerType* trigger_type) {
-    trigger_type_ = trigger_type;
-  }
-
-  // The action's value, read through the accessor ActionNeed() names. They
-  // share storage: the INI file and saved games store value(), and the others
-  // read and write its low byte.
-  [[nodiscard]] ThemeType theme() const { return data_.theme; }
-  void set_theme(const ThemeType theme) { data_.theme = theme; }
-  [[nodiscard]] VocType sound() const { return data_.sound; }
-  void set_sound(const VocType sound) { data_.sound = sound; }
-  [[nodiscard]] VoxType speech() const { return data_.speech; }
-  void set_speech(const VoxType speech) { data_.speech = speech; }
-  [[nodiscard]] HousesType house() const { return data_.house; }
-  void set_house(const HousesType house) { data_.house = house; }
-  [[nodiscard]] SpecialWeaponType special() const { return data_.special; }
-  void set_special(const SpecialWeaponType special) { data_.special = special; }
-  [[nodiscard]] QuarryType quarry() const { return data_.quarry; }
-  void set_quarry(const QuarryType quarry) { data_.quarry = quarry; }
-  [[nodiscard]] VQType movie() const { return data_.movie; }
-  void set_movie(const VQType movie) { data_.movie = movie; }
-  [[nodiscard]] bool flag() const { return data_.flag; }
-  void set_flag(const bool flag) { data_.flag = flag; }
-  // Waypoint, global, text ID or timer tenths of a minute; -1 when unset.
-  [[nodiscard]] int value() const { return data_.value; }
-  void set_value(const int value) { data_.value = value; }
-
-  // Clears team_type or trigger_type when `target` is the team type or trigger
-  // type it points to; called when that type is being destroyed.
-  void Detach(Target target);
-
-  // Saved-game support; defined in ioobj.cc. The action travels as its
-  // record.
-  template <class Archive>
-  void Serialize(Archive& ar);
+  // The action this is.
+  [[nodiscard]] virtual TriggerActionType type() const = 0;
 
   // Carries out the action for the trigger that sprang. Returns false when
   // the action could not be done (no reinforcements could be created, nothing
   // to destroy), so the trigger is not counted as used.
-  bool Perform(const TriggerActionContext& context);
+  virtual bool Perform(const TriggerActionContext& context) = 0;
 
- private:
-  TriggerActionType type_{TriggerActionType::kNone};
-  TeamTypeClass* team_type_ = nullptr;
-  TriggerType* trigger_type_ = nullptr;
+  // Drops the action's reference to the team type or trigger type `target`,
+  // which is being destroyed. Does nothing for an action that refers to
+  // neither.
+  virtual void Detach(Target target);
 
-  // The action's value; type_ decides which member means something (see
-  // ActionNeed()). The one-byte members alias the low byte of `value`, which
-  // is what the shipped scenarios rely on (see trigger_action_test.cc).
-  union {
-    ThemeType theme;            // Musical theme.
-    VocType sound;              // Sound effect.
-    VoxType speech;             // Speech identifier.
-    HousesType house;           // House to be affected.
-    SpecialWeaponType special;  // Special weapon ability.
-    QuarryType quarry;          // Preferred target for attack.
-    VQType movie;               // The movie to play.
-    bool flag;                  // Boolean value.
-    int value;
-  } data_{.value = -1};
+  // Returns the action as a record; MakeTriggerAction() makes an equal action
+  // from it. A field the action does not use is at its default, and the value
+  // is the number of what the action acts on: 1 for the nuke, where a shipped
+  // scenario may have said -255.
+  [[nodiscard]] virtual TriggerActionRecord ToRecord() const = 0;
+
+ protected:
+  TriggerAction() = default;
 };
+
+// Returns the action `record` describes; never null. A team, trigger or value
+// the action's type does not use is ignored. The house, special weapon, movie,
+// speech and flag actions take the low byte of the value, which is where the
+// shipped scenarios keep it (-255 is the nuke, movie -170 is movie 86), and a
+// sound action takes the low byte when the value is no sound and the byte is
+// one. A type number that is no action makes an action that does nothing.
+[[nodiscard]] std::unique_ptr<TriggerAction> MakeTriggerAction(
+    const TriggerActionRecord& record);
 
 extern template void TriggerActionRecord::Serialize<ArchiveWriter>(
     ArchiveWriter&);
 extern template void TriggerActionRecord::Serialize<ArchiveReader>(
     ArchiveReader&);
-extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

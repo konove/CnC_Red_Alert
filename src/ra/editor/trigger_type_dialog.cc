@@ -21,7 +21,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstdint>
 #include <string_view>
 #include <utility>
 
@@ -124,11 +123,6 @@ void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
                           flags, width, kTabStops);
 }
-
-// Returns the low byte of an action's `value` as a number: the house, special
-// weapon, movie, speech and flag actions read only that byte (see
-// trigger_action.h).
-int LowByte(const int value) { return static_cast<int8_t>(value); }
 
 // Returns the name selected in `list`, or an empty view when the list has no
 // items: Current_Item() is null then, which a string_view cannot hold.
@@ -281,8 +275,8 @@ bool TriggerType::Edit() {
 
   // The dialog shows and edits the actions as records; OK makes the actions
   // from them.
-  TriggerActionRecord action1_record = action1.ToRecord();
-  TriggerActionRecord action2_record = action2.ToRecord();
+  TriggerActionRecord action1_record = action1->ToRecord();
+  TriggerActionRecord action2_record = action2->ToRecord();
 
   // The two action lists, likewise. The lists hold pointers to the choices,
   // so the choices are declared first and outlive them.
@@ -509,10 +503,8 @@ bool TriggerType::Edit() {
   action2_bool_list.Add_Item("OFF");
   action2_bool_list.Add_Item("ON");
 
-  action1_bool_list.Set_Selected_Index(
-      (LowByte(action1_record.value) != 0) ? 1 : 0);
-  action2_bool_list.Set_Selected_Index(
-      (LowByte(action2_record.value) != 0) ? 1 : 0);
+  action1_bool_list.Set_Selected_Index((action1_record.value != 0) ? 1 : 0);
+  action2_bool_list.Set_Selected_Index((action2_record.value != 0) ? 1 : 0);
 
   // Musical theme lists for the actions; the list index is the ThemeType.
   char action1_theme_text[kDescriptionSize] = "";
@@ -564,12 +556,12 @@ bool TriggerType::Edit() {
   }
 
   if (ActionNeed(action1_record.type) == NEED_MOVIE) {
-    action1_movie_list.Set_Selected_Index(LowByte(action1_record.value));
+    action1_movie_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_movie_list.Set_Selected_Index(0);
   }
   if (ActionNeed(action2_record.type) == NEED_MOVIE) {
-    action2_movie_list.Set_Selected_Index(LowByte(action2_record.value));
+    action2_movie_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_movie_list.Set_Selected_Index(0);
   }
@@ -624,12 +616,12 @@ bool TriggerType::Edit() {
   }
 
   if (ActionNeed(action1_record.type) == NEED_SPEECH) {
-    action1_speech_list.Set_Selected_Index(LowByte(action1_record.value));
+    action1_speech_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_speech_list.Set_Selected_Index(0);
   }
   if (ActionNeed(action2_record.type) == NEED_SPEECH) {
-    action2_speech_list.Set_Selected_Index(LowByte(action2_record.value));
+    action2_speech_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_speech_list.Set_Selected_Index(0);
   }
@@ -816,12 +808,12 @@ bool TriggerType::Edit() {
     event2_house_list.Set_Selected_Index(0);
   }
   if (ActionNeed(action1_record.type) == NEED_HOUSE) {
-    action1_house_list.Set_Selected_Index(LowByte(action1_record.value));
+    action1_house_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_house_list.Set_Selected_Index(0);
   }
   if (ActionNeed(action2_record.type) == NEED_HOUSE) {
-    action2_house_list.Set_Selected_Index(LowByte(action2_record.value));
+    action2_house_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_house_list.Set_Selected_Index(0);
   }
@@ -847,14 +839,14 @@ bool TriggerType::Edit() {
     action2_special_list.Add_Item(SpecialWeaponName.at(weapon));
   }
   if (magic_enum::enum_contains(
-          static_cast<SpecialWeaponType>(LowByte(action1_record.value)))) {
-    action1_special_list.Set_Selected_Index(LowByte(action1_record.value));
+          static_cast<SpecialWeaponType>(action1_record.value))) {
+    action1_special_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_special_list.Set_Selected_Index(0);
   }
   if (magic_enum::enum_contains(
-          static_cast<SpecialWeaponType>(LowByte(action2_record.value)))) {
-    action2_special_list.Set_Selected_Index(LowByte(action2_record.value));
+          static_cast<SpecialWeaponType>(action2_record.value))) {
+    action2_special_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_special_list.Set_Selected_Index(0);
   }
@@ -1663,8 +1655,8 @@ bool TriggerType::Edit() {
           default:
             break;
         }
-        action1 = TriggerAction(action1_record);
-        action2 = TriggerAction(action2_record);
+        action1 = MakeTriggerAction(action1_record);
+        action2 = MakeTriggerAction(action2_record);
         return true;
 
       case KN_ESC:

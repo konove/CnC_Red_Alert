@@ -83,8 +83,8 @@ void TriggerType::Detach(const Target target) {
       }
     }
   }
-  action1.Detach(target);
-  action2.Detach(target);
+  action1->Detach(target);
+  action2->Detach(target);
 }
 
 std::string TriggerType::Description() const {
@@ -230,8 +230,8 @@ void TriggerType::ReadIniEntry(const std::string_view name,
 
   event1.Read_INI(tokens);
   event2.Read_INI(tokens);
-  action1 = TriggerAction(ReadTriggerActionRecord(tokens));
-  action2 = TriggerAction(ReadTriggerActionRecord(tokens));
+  action1 = MakeTriggerAction(ReadTriggerActionRecord(tokens));
+  action2 = MakeTriggerAction(ReadTriggerActionRecord(tokens));
 }
 
 void TriggerType::WriteIni(engine::file::IniFile& ini) {
@@ -262,10 +262,10 @@ std::string TriggerType::ToIniEntry() const {
   event2.Build_INI_Entry(entry);
   entry += ',';
 
-  entry += ra::ToIniEntry(action1.ToRecord());
+  entry += ra::ToIniEntry(action1->ToRecord());
   entry += ',';
 
-  entry += ra::ToIniEntry(action2.ToRecord());
+  entry += ra::ToIniEntry(action2->ToRecord());
   return entry;
 }
 
