@@ -15,6 +15,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
+#include "engine/window/display_observer.h"
 
 namespace engine::window {
 
@@ -37,8 +38,9 @@ namespace engine::window {
 //
 // Constructing a Display opens nothing: Init() creates the window once the
 // configured video mode is known, and SetVideoMode() the surface. A test
-// builds one and either leaves it closed or adopts a window and renderer it
-// made itself.
+// builds one and leaves it closed, adopts a window and renderer it made
+// itself, or sets a headless video mode: the surface alone, with the frames
+// the game ends reported to a DisplayObserver instead of shown.
 //
 // Example:
 //   Display& display = TheDisplay();
@@ -81,6 +83,16 @@ class Display : public PixelSurface {
   // Needs the renderer, from Init() or the adopting constructor. Returns
   // false, with no surface, if SDL refused either.
   bool SetVideoMode(int width, int height);
+  // Creates the width x height paletted surface with nothing behind it: no
+  // window, no renderer and no SDL subsystem, so Init() is not needed. The
+  // game draws on the surface and sets its palette as usual, and ending a
+  // frame presents nothing: it tells the observer, then pumps the client. No
+  // SDL event is polled, no redraw timer runs and nothing waits for a display
+  // refresh, so a loop runs as fast as it computes. A scaled frame or
+  // backdrop is not kept; presenting one only ends the frame. For tests of
+  // the code that draws and waits for input. Returns false, with no surface,
+  // if SDL refused it.
+  bool SetHeadlessVideoMode(int width, int height);
   // Destroys the surface and textures and cancels a pending redraw, leaving
   // the Display as it was before SetVideoMode(). The destructor calls it;
   // calling it again does nothing.
@@ -110,6 +122,11 @@ class Display : public PixelSurface {
   // Presents the surface, or the scaled frame showing instead of it,
   // immediately, ending the frame. Does nothing before SetVideoMode().
   void EndFrame();
+
+  // Attaches the observer told of every frame ended and every event pump
+  // from now on, replacing the one before; nullptr detaches it. It must stay
+  // alive while attached.
+  void set_observer(DisplayObserver* observer) { observer_ = observer; }
 
   // Presents `frame`, `width` x `height` pixels, stretched to the window by
   // SDL rather than by the game - this is how a 320x200 movie fills a 640x400
@@ -154,7 +171,8 @@ class Display : public PixelSurface {
   // Drains SDL's event queue: runs the client's Pump(), then ends the frame
   // on each redraw event and passes every other event to the client's
   // HandleEvent(). Returns once the queue is empty; it never waits for an
-  // event. Works before Init(), with no window to post events.
+  // event. Works before Init(), with no window to post events. In a headless
+  // video mode it leaves SDL's queue alone.
   //
   // It is re-entrant. Ending the frame presents, and Present() pumps again so
   // the game's wait-for-input loops keep answering, so a redraw event runs a
@@ -163,7 +181,8 @@ class Display : public PixelSurface {
 
   // Brings the window back from minimized and raises it to the front.
   void Restore();
-  // Whether the window has the keyboard focus.
+  // Whether the window has the keyboard focus. A headless Display always
+  // has it.
   [[nodiscard]] bool HasInputFocus() const;
 
   // How many window units one pixel of the game's picture spans. SDL draws the
@@ -177,6 +196,10 @@ class Display : public PixelSurface {
   void SetMouseGrab(bool grab);
 
  private:
+  // Tells the observer a frame has ended and pumps events. Every path that
+  // ends a frame finishes here.
+  void FrameEnded();
+
   // Presents what the window should show. With `end_frame` false it only arms
   // the redraw timer, so that a burst of drawing is presented once, a
   // thirtieth of a second after it started, if nothing ends the frame first.
@@ -209,6 +232,10 @@ class Display : public PixelSurface {
 
   // Where PumpEvents() sends the game's events; never null.
   DisplayClient* client_;
+  // Told of frames and pumps; nullptr when nobody watches.
+  DisplayObserver* observer_ = nullptr;
+  // Whether the video mode is a headless one: a surface and nothing else.
+  bool headless_ = false;
 
   // SDL types, held as void* so that this header pulls in no SDL headers.
   void* window_ = nullptr;    // SDL_Window*, the program's one window

@@ -29,6 +29,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
+#include "engine/window/display_observer.h"
 
 namespace engine::window {
 
@@ -65,6 +66,8 @@ DisplayClient& DroppingClient() {
 }  // namespace
 
 DisplayClient::~DisplayClient() = default;
+
+DisplayObserver::~DisplayObserver() = default;
 
 Display::Display() : client_(&DroppingClient()) {}
 
@@ -166,9 +169,22 @@ bool Display::SetVideoMode(const int width, const int height) {
   return true;
 }
 
+bool Display::SetHeadlessVideoMode(const int width, const int height) {
+  ResetVideoMode();
+  // A surface is plain memory to SDL: creating one needs no subsystem.
+  SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
+  if (surface == nullptr) {
+    return false;
+  }
+  palette_surface_ = surface;
+  headless_ = true;
+  return true;
+}
+
 void Display::ResetVideoMode() {
   CancelRedrawTimer();
   DropScaledFrame();
+  headless_ = false;
   if (window_texture_ != nullptr) {
     SDL_DestroyTexture(static_cast<SDL_Texture*>(window_texture_));
     window_texture_ = nullptr;
@@ -212,7 +228,24 @@ void Display::EndFrame() {
   }
 }
 
+void Display::FrameEnded() {
+  if (observer_ != nullptr) {
+    observer_->OnFrameEnd();
+  }
+  // The game presents from its loops that wait for input, so pumping events
+  // here keeps them answering.
+  PumpEvents();
+}
+
 void Display::Present(const bool end_frame) {
+  // Nothing to show the surface on: only the end of the frame is left.
+  if (headless_) {
+    if (end_frame) {
+      FrameEnded();
+    }
+    return;
+  }
+
   auto* renderer = static_cast<SDL_Renderer*>(renderer_);
   // A movie frame stays up until the game draws again (the mission map
   // select keeps the movie's last frame on screen indefinitely), and only an
@@ -228,7 +261,7 @@ void Display::Present(const bool end_frame) {
     SDL_RenderCopy(renderer, static_cast<SDL_Texture*>(scaled_frame_texture_),
                    nullptr, nullptr);
     PresentFrame();
-    PumpEvents();
+    FrameEnded();
     return;
   }
 
@@ -250,10 +283,7 @@ void Display::Present(const bool end_frame) {
   SDL_RenderCopy(renderer, static_cast<SDL_Texture*>(window_texture_), nullptr,
                  nullptr);
   PresentFrame();
-
-  // The game presents from its loops that wait for input, so pumping events
-  // here keeps them answering.
-  PumpEvents();
+  FrameEnded();
 }
 
 void Display::UploadSurface(const bool see_through) {
@@ -352,6 +382,10 @@ void Display::ShowScaledFrame(const std::span<const uint8_t> frame,
   const auto frame_height = base::ToSize(height);
   if (frame_width > frame.size() / frame_height ||
       palette_surface_ == nullptr) {
+    return;
+  }
+  if (headless_) {
+    FrameEnded();
     return;
   }
   CancelRedrawTimer();
@@ -460,7 +494,13 @@ void Display::PostRedrawEvent() {
 }
 
 void Display::PumpEvents() {
+  if (observer_ != nullptr) {
+    observer_->OnPump();
+  }
   client_->Pump();
+  if (headless_) {
+    return;
+  }
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
@@ -494,6 +534,9 @@ void Display::Restore() {
 }
 
 bool Display::HasInputFocus() const {
+  if (headless_) {
+    return true;
+  }
   return (SDL_GetWindowFlags(static_cast<SDL_Window*>(window_)) &
           SDL_WINDOW_INPUT_FOCUS) != 0;
 }
