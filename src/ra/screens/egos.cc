@@ -63,7 +63,7 @@ namespace {
 
 // The font of the credits and the height of its text in rows. A drop shadow
 // adds one row below and one column on each side.
-constexpr FontType kCreditFont = FontType::k6PointGradient;
+constexpr auto kCreditFont = FontType::k6PointGradient;
 constexpr int kTextHeight = 14;
 
 // The lines of CREDITS.TXT are drawn this many rows apart.
@@ -127,8 +127,8 @@ constexpr int kFadeFrames = 37;
 constexpr int kFadeStep = 255 / kFadeFrames;
 
 // The flags the text printer draws a string of the credits with.
-constexpr TextPrintType PrintFlags(CreditAlignment alignment) {
-  const TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
+constexpr TextPrintType PrintFlags(const CreditAlignment alignment) {
+  constexpr TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
   if (alignment == CreditAlignment::kCenter) {
     return flags | TPF_CENTER;
   }
@@ -165,8 +165,8 @@ class CreditLine {
            // page.
 };
 
-CreditLine::CreditLine(const CreditString& string, int page_width,
-                       int page_height)
+CreditLine::CreditLine(const CreditString& string, const int page_width,
+                       const int page_height)
     : text_(string.text),
       alignment_(string.alignment),
       x_(string.column * page_width / kCreditColumns),
@@ -188,7 +188,7 @@ void CreditLine::Render(PixelView& view) const {
 
 void CreditLine::Erase(PixelView& view, PixelView& background) const {
   // The text and the row of shadow below it.
-  const int height = kTextHeight + 1;
+  constexpr int height = kTextHeight + 1;
   // Most lines are still below the page; do not measure those.
   if (y_ >= view.height() || y_ + height <= 0) {
     return;
@@ -271,8 +271,8 @@ class SlideShow {
   PixelBuffer background_page_;
 };
 
-SlideShow::SlideShow(const RemapControlType& text_scheme, int width,
-                     int height) {
+SlideShow::SlideShow(const RemapControlType& text_scheme, const int width,
+                     const int height) {
   // Everything fades with the slides except the colours the text is drawn
   // in: the six gradient entries of the font and the scheme's own.
   fades_with_slide_.fill(1);
@@ -387,7 +387,7 @@ void SlideShow::SetSlideColors(engine::gfx::Palette& palette,
   }
 }
 
-void SlideShow::CopyStrip(PixelView& from, PixelView& to, int strip) {
+void SlideShow::CopyStrip(PixelView& from, PixelView& to, const int strip) {
   const int y = strip * kStripHeight;
   from.BlitTo(to, 0, y, 0, y, from.width(), kStripHeight);
 }
@@ -395,7 +395,7 @@ void SlideShow::CopyStrip(PixelView& from, PixelView& to, int strip) {
 // Waits until `frame` frames of scrolling have passed since `start_ticks`.
 // The deadline is measured from the start, so a slow frame is made up for by
 // the next ones. Any key cuts the wait short.
-void WaitForFrame(int64_t start_ticks, int frame) {
+void WaitForFrame(const int64_t start_ticks, const int frame) {
   while (engine::platform::SystemTicks() - start_ticks <
              static_cast<int64_t>(frame) * kTicksPerPixel &&
          !game::TheKeyboard().Peek()) {

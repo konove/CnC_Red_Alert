@@ -21,14 +21,16 @@ static void PrintTo(const CreditString& string, std::ostream* os) {
 
 namespace {
 
-CreditString Left(std::string_view text, int line, int column) {
+CreditString Left(const std::string_view text, const int line,
+                  const int column) {
   return {.text = text,
           .line = line,
           .column = column,
           .alignment = CreditAlignment::kLeft};
 }
 
-CreditString Right(std::string_view text, int line, int column) {
+CreditString Right(const std::string_view text, const int line,
+                   const int column) {
   return {.text = text,
           .line = line,
           .column = column,
@@ -36,7 +38,7 @@ CreditString Right(std::string_view text, int line, int column) {
 }
 
 // A centred string is always anchored at the middle column.
-CreditString Centered(std::string_view text, int line) {
+CreditString Centered(const std::string_view text, const int line) {
   return {.text = text,
           .line = line,
           .column = kCreditColumns / 2,

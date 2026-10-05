@@ -19,7 +19,7 @@ constexpr int kTabColumns = 8;
 constexpr int kCreditCenterColumn = kCreditColumns / 2;
 
 // True for the characters no string of the credits contains.
-constexpr bool EndsString(char ch) {
+constexpr bool EndsString(const char ch) {
   return ch == '\t' || ch == '\r' || ch == '\n';
 }
 
@@ -28,11 +28,11 @@ constexpr bool EndsString(char ch) {
 std::vector<CreditString> ParseCredits(std::string_view text) {
   std::vector<CreditString> strings;
   const base::ssize size = std::ssize(text);
-  const auto at = [text](base::ssize index) {
+  const auto at = [text](const base::ssize index) {
     return text.at(base::ToSize(index));
   };
   // True where no string can continue: past the end and at a tab or line end.
-  const auto ends_string = [size, at](base::ssize index) {
+  const auto ends_string = [size, at](const base::ssize index) {
     return index >= size || EndsString(at(index));
   };
   int line = 0;
