@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "engine/file/game_files_test_util.h"
 #include "gtest/gtest.h"
 #include "ra/startup/game.h"
 
@@ -28,8 +29,7 @@ class GameFixture : public ::testing::Test {
  protected:
   GameFixture();
 
-  // Empties the display layers, which are static and outlive the Game, and
-  // takes away the files WriteGameFile() wrote.
+  // Empties the display layers, which are static and outlive the Game.
   void TearDown() override;
 
   // Makes TextString(text_id) return `text`, for one of the game's own
@@ -40,13 +40,18 @@ class GameFixture : public ::testing::Test {
 
   // Puts a file called `name` holding `contents` where the game finds its
   // data, so that OpenGameFile(name) reads it. The files live in a directory
-  // of the test's own, which TearDown() removes.
-  void WriteGameFile(std::string_view name, std::string_view contents);
+  // of the test's own, removed when the test ends.
+  void WriteGameFile(const std::string_view name,
+                     const std::string_view contents) {
+    game_files_.Write(name, contents);
+  }
 
   // Returns where a file called `name` has to be for OpenGameFile(name) to
   // read it, for a test that writes the file itself. The directory exists;
   // the file need not.
-  std::filesystem::path GameFilePath(std::string_view name);
+  std::filesystem::path GameFilePath(const std::string_view name) {
+    return game_files_.Path(name);
+  }
 
  private:
   // One past the highest TXT_* number (ra/data/text_ids.h).
@@ -57,8 +62,7 @@ class GameFixture : public ::testing::Test {
   // borrows. Both are empty until the first SetText().
   std::vector<std::string> texts_;
   std::vector<std::byte> text_table_;
-  // Where WriteGameFile() writes; empty until its first call.
-  std::filesystem::path game_file_dir_;
+  engine::file::TestGameFiles game_files_;
 };
 
 }  // namespace ra

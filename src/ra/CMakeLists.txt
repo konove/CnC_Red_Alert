@@ -89,6 +89,7 @@ install(TARGETS rasdl)
 set(RA_GAME_TEST_UTIL
     startup/game_test_util.cc
     ${CMAKE_SOURCE_DIR}/src/engine/file/string_table_test_util.cc
+    ${CMAKE_SOURCE_DIR}/src/engine/file/game_files_test_util.cc
 )
 set(RA_UI_TEST_UTIL
     startup/ui_test_util.cc
