@@ -94,7 +94,6 @@ std::vector<CreditString> ParseCredits(std::string_view text) {
         // Whatever ended the string is still to be read.
         cursor = string_end;
         column = end_column;
-        break;
       }
     }
   }
