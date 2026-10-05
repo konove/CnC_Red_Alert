@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/buffer.h"
+#include "engine/gfx/font_test_util.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -139,6 +140,31 @@ TEST(FontStyleTest, MeasuresWithItsOwnSpacing) {
   EXPECT_EQ(StringPixelWidth(style, "\x01\x01\r\x01"), 12);
   EXPECT_EQ(StringPixelWidth(style, nullptr), 0);
   EXPECT_EQ(FontLineHeight(style), 7);
+}
+
+TEST(MakeBlockFontTest, EveryGlyphHasTheSizeAsked) {
+  const std::vector<std::byte> blob = MakeBlockFont(6, 10);
+  const FontView font(blob);
+
+  EXPECT_EQ(font.MaxWidth(), 6);
+  EXPECT_EQ(font.MaxHeight(), 10);
+  for (const uint8_t character : {uint8_t{0}, uint8_t{'A'}, uint8_t{255}}) {
+    EXPECT_EQ(font.GlyphWidth(character), 6);
+    EXPECT_EQ(font.GlyphHeight(character), 10);
+    EXPECT_EQ(font.GlyphBlankRowsAbove(character), 0);
+  }
+}
+
+TEST(MakeBlockFontTest, EveryGlyphIsSolid) {
+  const std::vector<std::byte> blob = MakeBlockFont(5, 3);
+  const FontView font(blob);
+
+  // An odd width still takes a whole byte for its last pixel: 3 bytes a row.
+  const std::span<const std::byte> glyph = font.GlyphData('x');
+  ASSERT_EQ(glyph.size(), 9U);
+  for (const std::byte pixels : glyph) {
+    EXPECT_EQ(pixels, std::byte{0x11});
+  }
 }
 
 }  // namespace
