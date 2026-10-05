@@ -274,6 +274,16 @@ add_gtest(
     LIBS base
 )
 
+# Rolls the credits in a real Game on a headless screen.
+add_gtest(
+    NAME ra_credits_roll_test
+    SOURCES screens/credits_roll_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_credits_roll_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_credits_roll_test)
+apply_language_setting(ra_credits_roll_test)
+
 add_gtest(
     NAME ra_credits_text_test
     SOURCES screens/credits_text_test.cc screens/credits_text.cc

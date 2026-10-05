@@ -10,6 +10,7 @@
 #include "absl/base/attributes.h"
 #include "engine/platform/manual_clock.h"
 #include "engine/window/scripted_player.h"
+#include "ra/core/defines.h"
 #include "ra/startup/game_test_util.h"
 
 namespace ra {
@@ -24,6 +25,8 @@ namespace ra {
 // buttons sized to it have a known size: a button is 12 pixels tall and 8
 // wider than its text. Every string of the text table is empty until the
 // test sets it with SetText(), so a button labelled from the table is 8 wide.
+// Each colour scheme draws everything it draws in one colour of its own,
+// SchemeColor(), so what a scheme drew can be told from the page.
 //
 // Example:
 //   TEST_F(UiFixture, EscClosesTheDialog) {
@@ -42,6 +45,13 @@ class UiFixture : public GameFixture {
 
  protected:
   UiFixture();
+
+  // The one palette index everything drawn in `scheme` is drawn in: 16 for
+  // the first scheme, 17 for the next, and so on. Never 0, which is what a
+  // cleared page holds.
+  static constexpr int SchemeColor(const PlayerColorType scheme) {
+    return 16 + static_cast<int>(scheme);
+  }
 
   // The player at the keyboard. Queue its whole script before calling the
   // code under test.

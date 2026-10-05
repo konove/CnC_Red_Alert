@@ -140,6 +140,18 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - Palettes and colour remaps were not needed by anything tested so far; they are added with the
     first screen that reads them.
 
+- **Phase 3, credits roll: done 2026-10-05.** `ra/screens/credits_roll.cc` went from 0 to 217 of 224
+  lines through 19 tests in `ra/screens/credits_roll_test.cc`, with no change to the file itself;
+  the whole roll takes about 10 ms. What it needed from the harness:
+  - `SleepMs()` moves a `ManualClock` instead of sleeping. The credits wait for each frame's
+    deadline in a loop that sleeps and polls the keyboard without presenting, which is the case the
+    Risks section predicted. The clock now counts 1/3000 s so that ticks and milliseconds mix
+    without drift.
+  - `GameFixture::WriteGameFile()` and `GameFilePath()` put loose files on the search path
+    (`credits.txt`, `EGOPAL.PAL`, slides written with `Write_PCX_File()`).
+  - `UiFixture` gives every colour scheme one palette index of its own, `SchemeColor()`, so text can
+    be found on the page.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

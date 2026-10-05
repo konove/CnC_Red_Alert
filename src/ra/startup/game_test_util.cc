@@ -1,9 +1,16 @@
 #include "ra/startup/game_test_util.h"
 
+#include <filesystem>
+#include <fstream>
+#include <ios>
 #include <string_view>
 
+#include "absl/log/check.h"
+#include "absl/strings/str_cat.h"
 #include "base/numeric.h"
+#include "engine/file/search_paths.h"
 #include "engine/file/string_table_test_util.h"
+#include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/assets.h"
 #include "ra/core/defines.h"
@@ -37,6 +44,10 @@ void GameFixture::TearDown() {
   for (LayerClass& layer : DisplayClass::Layer) {
     layer.Clear();
   }
+  if (!game_file_dir_.empty()) {
+    SearchPaths::Clear();
+    std::filesystem::remove_all(game_file_dir_);
+  }
 }
 
 void GameFixture::SetText(const int text_id, const std::string_view text) {
@@ -45,6 +56,27 @@ void GameFixture::SetText(const int text_id, const std::string_view text) {
   // Rebuilt whole: the table is offsets followed by packed strings.
   text_table_ = MakeStringTable(texts_);
   TheAssets().set_system_strings(text_table_);
+}
+
+void GameFixture::WriteGameFile(const std::string_view name,
+                                const std::string_view contents) {
+  std::ofstream file(GameFilePath(name), std::ios::binary);
+  file.write(contents.data(), static_cast<std::streamsize>(contents.size()));
+  CHECK(file.good()) << "could not write " << name;
+}
+
+std::filesystem::path GameFixture::GameFilePath(const std::string_view name) {
+  if (game_file_dir_.empty()) {
+    const testing::TestInfo* test =
+        testing::UnitTest::GetInstance()->current_test_info();
+    game_file_dir_ = std::filesystem::temp_directory_path() /
+                     absl::StrCat("ra_game_fixture_", test->test_suite_name(),
+                                  "_", test->name(), ".dir");
+    std::filesystem::remove_all(game_file_dir_);
+    std::filesystem::create_directories(game_file_dir_);
+    SearchPaths::Add(game_file_dir_.string());
+  }
+  return game_file_dir_ / name;
 }
 
 }  // namespace ra

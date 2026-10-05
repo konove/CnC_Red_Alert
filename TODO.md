@@ -355,12 +355,10 @@
     `SlideShow::Advance()`; the black-out on the last fade-down step then only confirms what the
     fade reached. A few lines, but the credits get visibly brighter, so it is the user's call
   - Found in the modernization run `abae42e8..eaa7551d`
-- Watch Red Alert's credits once on a real display
-  - `ShowCredits()` (`ra/screens/credits_roll.cc`) was restructured in `f77f9e76` and `830c2ff2`
-    (state in a `SlideShow` object, fades on a copy of the title palette, a 1 ms sleep in the frame
-    wait) with no test that can reach it; click the logo on the main menu and check the scroll
-    speed, the slide fades, that the text colours never fade, Esc, and the fade-out after the last
-    line
+- Look at Red Alert's credits layout once on a real display
+  - The scroll rate, the slide fades, the text colours staying put, Esc and the fade-out after the
+    last line are covered by `ra/screens/credits_roll_test.cc`; what a test cannot judge is how the
+    shipped `CREDITS.TXT` looks
   - `95181720` also changed the layout on purpose: four blank rows after "Solo Play Map Designers:",
     "Multiplay Map Designers:", "Matthew Tillett, Phillip Veale" and "Joseph B. Hewitt IV" are gone,
     and the first two sit one column further right
@@ -1188,15 +1186,7 @@
     input queue. The per-slot structs above would leave `Store()` testable without either
   - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
     builds the internal version, where it is skipped
-- Make Red Alert's credits roll testable
-  - `ra/screens/credits_roll.cc` is at 0% coverage (224 lines): `ShowCredits()` needs the screen,
-    the palettes, the game's files, the music and real time from its first statement, and
-    `CreditLine` and `SlideShow` are private to the file. `credits_text.cc`, the parser, is at 100%
-  - Seams that would open it: move `CreditLine` and `SlideShow` to a header; give `SlideShow` the
-    title palette, the slide pages and palettes, and a "show this palette" callback instead of
-    `ThePalettes()`, `Load_Title_Screen()` and `Set_Palette()`; give `CreditLine` the text printer
-    as a parameter. The timetable (`Advance()`, `SkipToFadeOut()`, `faded_out()`) and the erase
-    rectangle could then be tested on in-memory pages
+- Clear CLion's "never used" finding in `ra/screens/credits_text_test.cc`
   - `PrintTo()` in `ra/screens/credits_text_test.cc` is flagged "never used" by CLion because
     GoogleTest finds it by argument-dependent lookup; an `operator<<` or `AbslStringify` on
     `CreditString` itself would be seen
