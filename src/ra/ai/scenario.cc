@@ -917,7 +917,7 @@ void Do_Win() {
       } else {
         Play_Movie(VQ_ALLYEND);
       }
-      Show_Who_Was_Responsible();
+      ShowCredits();
       TheGameState().active() = false;
       game::TheMouse().Show();
       TheWorld().ants_enabled() = false;

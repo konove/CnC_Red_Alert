@@ -672,8 +672,8 @@ int Main_Menu(int32_t /*unused*/) {
 
   game::TheKeyboard().Clear();
 
-  const Fixed oldvolume = TheOptions().ScoreVolume;
-  if (oldvolume == 0) {
+  const Fixed saved_score_volume = TheOptions().ScoreVolume;
+  if (saved_score_volume == 0) {
     TheOptions().Set_Score_Volume(Fixed(4, 10), false);
   }
   TheTheme().Play_Song(THEME_INTRO);
@@ -742,7 +742,7 @@ int Main_Menu(int32_t /*unused*/) {
     if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
       if (Coordinates_In_Region(input_event.x, input_event.y, 18, 20, 158,
                                 48)) {
-        Show_Who_Was_Responsible();
+        ShowCredits();
         display = true;
         TheTheme().Play_Song(THEME_INTRO);
       } else if (Is_Counterstrike_Installed() &&
@@ -830,7 +830,7 @@ int Main_Menu(int32_t /*unused*/) {
     }
   }
 
-  TheOptions().Set_Score_Volume(oldvolume, false);
+  TheOptions().Set_Score_Volume(saved_score_volume, false);
 
   return retval;
 }

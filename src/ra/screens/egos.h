@@ -29,35 +29,35 @@
 namespace ra {
 
 // One string of credits text on its way up the screen.
-class EgoClass {
+class CreditLine {
  public:
   // `x` and `y` are where the text printer is given the string, in pixels on
   // the hidden page: `x` is the left edge, the centre or the right edge of
   // the text according to `flags`, `y` its top row.
-  EgoClass(int x, int y, std::string_view text, FontType font,
-           TextPrintType flags);
-  ~EgoClass() = default;
-  EgoClass(const EgoClass&) = delete;
-  EgoClass& operator=(const EgoClass&) = delete;
-  EgoClass(EgoClass&&) = delete;
-  EgoClass& operator=(EgoClass&&) = delete;
+  CreditLine(int x, int y, std::string_view text, FontType font,
+             TextPrintType flags);
+  ~CreditLine() = default;
+  CreditLine(const CreditLine&) = delete;
+  CreditLine& operator=(const CreditLine&) = delete;
+  CreditLine(CreditLine&&) = delete;
+  CreditLine& operator=(CreditLine&&) = delete;
 
-  // Moves the text up by `distance` pixels. Returns true once it has left
+  // Moves the text up by `pixels`. Returns true once it has left
   // the top of the screen for good.
-  bool Scroll(int distance);
+  bool Scroll(int pixels);
 
   // Draws the text on `view`, unless it is partly or wholly off the page.
   void Render(PixelView& view) const;
 
   // Erases the text from `view` by copying the rectangle it covers from
   // `background`, a page of the same size.
-  void Wipe(PixelView& view, PixelView& background) const;
+  void Erase(PixelView& view, PixelView& background) const;
 
-  std::string Text;
-  int XPos;
-  int YPos;  // Negative once the text has started to leave the page.
-  FontType TextFont;
-  TextPrintType Flags;
+  std::string text_;
+  int x_;
+  int y_;  // Negative once the text has started to leave the page.
+  FontType font_;
+  TextPrintType flags_;
 };
 
 // Rolls the credits from CREDITS.TXT over the slideshow, with the credits
@@ -66,7 +66,7 @@ class EgoClass {
 //
 // Leaves the screen black, the title palette overwritten and the music
 // stopped, so the caller redraws and restarts whatever it had.
-void Show_Who_Was_Responsible();
+void ShowCredits();
 
 }  // namespace ra
 

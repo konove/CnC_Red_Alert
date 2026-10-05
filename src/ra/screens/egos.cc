@@ -61,21 +61,21 @@ namespace ra {
 using enum engine::window::KeyNumber;
 
 // One entry per string of credits text still on its way up the screen, in file
-// order. Empty outside Show_Who_Was_Responsible().
-static std::vector<std::unique_ptr<EgoClass>> EgoList;
+// order. Empty outside ShowCredits().
+static std::vector<std::unique_ptr<CreditLine>> credit_lines;
 
 // Number of slideshow pictures.
-#define NUM_SLIDES 17
+constexpr int kSlideCount = 17;
 
 // Slide frames from the start of a slide to the start of its fade-out. One
 // slide frame passes per pixel of scrolling.
-#define FRAME_DELAY 150
+constexpr int kSlideHoldFrames = 150;
 
 // Slide frames a fade in or out takes.
-#define FADE_DELAY 37
+constexpr int kFadeFrames = 37;
 
 // The slideshow pictures, in the order they are shown; the show loops.
-static constexpr std::array<std::string_view, NUM_SLIDES> SlideNames = {
+static constexpr std::array<std::string_view, kSlideCount> kSlideNames = {
     "aftr_hi.pcx",  "aly1.pcx",     "apc_hi.pcx",   "aphi0049.pcx",
     "bnhi0020.pcx", "dchi0040.pcx", "frhi0166.pcx", "lab.pcx",
     "landsbrg.pcx", "mahi0107.pcx", "mig_hi.pcx",   "mtfacthi.pcx",
@@ -83,59 +83,59 @@ static constexpr std::array<std::string_view, NUM_SLIDES> SlideNames = {
     "tent.pcx"};
 
 // Each slide's own palette, as loaded from its picture.
-static std::array<engine::gfx::Palette, NUM_SLIDES> SlidePals;
+static std::array<engine::gfx::Palette, kSlideCount> slide_palettes;
 
 // The slides, decoded to screen-sized pages. All are loaded up front so that
 // no disk access stalls the scroll.
-static std::array<std::unique_ptr<PixelBuffer>, NUM_SLIDES> SlideBuffers;
+static std::array<std::unique_ptr<PixelBuffer>, kSlideCount> slide_pages;
 
 // The current slide without the text on it: what a line of text is erased
 // with before it is drawn one pixel higher.
-static std::unique_ptr<PixelBuffer> BackgroundPage;
+static std::unique_ptr<PixelBuffer> background_page;
 
 // The font's colours plus the current slide's colours: the palette a slide
 // fades up to.
-static PaletteClass ComboPalette;
+static PaletteClass combo_palette;
 
 // Non-zero for the palette entries that belong to the slides and fade with
 // them; zero for the ones the text is drawn in, which never fade.
-static std::array<char, 256> PaletteLUT;
+static std::array<char, 256> fades_with_slide;
 
 // A new slide is copied in strips of this height, one strip per frame, so
 // that the copy does not make the scroll stutter. Four strips cover the 400
 // rows of a slide.
-#define CHUNK_HEIGHT 100
+constexpr int kStripHeight = 100;
 
-EgoClass::EgoClass(int x, int y, std::string_view text, FontType font,
-                   TextPrintType flags)
-    : Text(text), XPos(x), YPos(y), TextFont(font), Flags(flags) {}
+CreditLine::CreditLine(int x, int y, std::string_view text, FontType font,
+                       TextPrintType flags)
+    : text_(text), x_(x), y_(y), font_(font), flags_(flags) {}
 
-bool EgoClass::Scroll(int distance) {
-  YPos -= distance;
+bool CreditLine::Scroll(int pixels) {
+  y_ -= pixels;
   // A line is 16 pixels high at most, and the top 16 rows of the hidden page
   // are never shown, so by now the line is long out of sight.
-  return YPos < -20;
+  return y_ < -20;
 }
 
-void EgoClass::Render(PixelView& view) const {
+void CreditLine::Render(PixelView& view) const {
   // The text printer does not clip vertically, so a line is only drawn while
   // all of it is on the page.
-  if (YPos < view.height() && YPos > -16) {
-    Fancy_Text_Print(view, Text.c_str(), XPos, YPos, Get_Color_Scheme(),
-                     kTBlack, TextFont, Flags);
+  if (y_ < view.height() && y_ > -16) {
+    Fancy_Text_Print(view, text_.c_str(), x_, y_, Get_Color_Scheme(), kTBlack,
+                     font_, flags_);
   }
 }
 
-void EgoClass::Wipe(PixelView& view, PixelView& background) const {
+void CreditLine::Erase(PixelView& view, PixelView& background) const {
   const int width =
-      StringPixelWidth(TextFontStyle(TextFont, Flags), Text.c_str());
+      StringPixelWidth(TextFontStyle(font_, flags_), text_.c_str());
   // Find the left edge the way the text printer does.
-  int x = XPos;
+  int x = x_;
 
-  if (base::Any(Flags & TPF_RIGHT)) {
+  if (base::Any(flags_ & TPF_RIGHT)) {
     x -= width;
   } else {
-    if (base::Any(Flags & TPF_CENTER)) {
+    if (base::Any(flags_ & TPF_CENTER)) {
       x -= width / 2;
     }
   }
@@ -143,14 +143,14 @@ void EgoClass::Wipe(PixelView& view, PixelView& background) const {
   // One pixel wider on each side and one row taller than the 14-pixel text,
   // for the drop shadow. The blit clips, so a line that is still below the
   // page or already above it costs nothing.
-  background.BlitTo(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1);
+  background.BlitTo(view, x - 1, y_, x - 1, y_, width + 2, 14 + 1);
 }
 
 // Makes `palette` the displayed palette at once, with no fade.
 static void Set_Pal(const PaletteClass& palette) { Set_Palette(palette); }
 
 // Advances the slideshow behind the text by one step. `slide` is the picture
-// and `frame` how long it has been current, which decides what happens:
+// and `slide_frame` how long it has been current, which decides what happens:
 //
 //   1-4      copy the slide to the background page, a strip per frame
 //   5-8      copy the background page to the hidden page the same way
@@ -160,64 +160,68 @@ static void Set_Pal(const PaletteClass& palette) { Set_Palette(palette); }
 //
 // Nothing is displayed until the fade starts, because the slide's palette
 // entries are black while its pixels are copied in.
-static void Slide_Show(int slide, int frame) {
-  if (frame >= 1 && frame <= 4) {
-    PixelView& slide_view = SlideBuffers.at(base::ToSize(slide))->view();
-    slide_view.BlitTo(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
-                      (frame - 1) * CHUNK_HEIGHT,
-                      TheScreen().visible_view().width(), CHUNK_HEIGHT);
+static void StepSlideShow(int slide, int slide_frame) {
+  if (slide_frame >= 1 && slide_frame <= 4) {
+    PixelView& slide_view = slide_pages.at(base::ToSize(slide))->view();
+    slide_view.BlitTo(background_page->view(), 0,
+                      (slide_frame - 1) * kStripHeight, 0,
+                      (slide_frame - 1) * kStripHeight,
+                      TheScreen().visible_view().width(), kStripHeight);
     return;
   }
 
-  if (frame >= 5 && frame <= 8) {
-    BackgroundPage->view().BlitTo(
-        TheScreen().hidden_view(), 0, (frame - 5) * CHUNK_HEIGHT, 0,
-        (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
-        CHUNK_HEIGHT);
+  if (slide_frame >= 5 && slide_frame <= 8) {
+    background_page->view().BlitTo(
+        TheScreen().hidden_view(), 0, (slide_frame - 5) * kStripHeight, 0,
+        (slide_frame - 5) * kStripHeight, TheScreen().visible_view().width(),
+        kStripHeight);
     return;
   }
 
-  if (frame == 9) {
+  if (slide_frame == 9) {
     for (int index = 0; index < 256; index++) {
-      if (PaletteLUT.at(base::ToSize(index))) {
-        ComboPalette.at(index) = SlidePals.at(base::ToSize(slide)).at(index);
+      if (fades_with_slide.at(base::ToSize(index))) {
+        combo_palette.at(index) =
+            slide_palettes.at(base::ToSize(slide)).at(index);
       }
     }
     return;
   }
 
-  if (frame > 10 && frame < FADE_DELAY + 10) {
+  if (slide_frame > 10 && slide_frame < kFadeFrames + 10) {
     // Each step is computed from the unfaded title palette, which is why it
     // is put back afterwards; only the last step keeps its result.
     //
     // TODO: The integer division makes a step 6/255, so the last one reaches
     // 216/255 and the slide is shown at 85% of its brightness.
-    const PaletteClass save_palette = ThePalettes().title_palette();
+    const PaletteClass unfaded_palette = ThePalettes().title_palette();
     ThePalettes().title_palette().Partial_Adjust(
-        std::min(255 / FADE_DELAY * (frame - 10), 255), ComboPalette,
-        PaletteLUT);
+        std::min(255 / kFadeFrames * (slide_frame - 10), 255), combo_palette,
+        fades_with_slide);
     Set_Pal(ThePalettes().title_palette());
-    if (frame != 9 + FADE_DELAY) {
-      ThePalettes().title_palette() = save_palette;
+    if (slide_frame != 9 + kFadeFrames) {
+      ThePalettes().title_palette() = unfaded_palette;
     } else {
       ThePalettes().title_palette() = PaletteClass::CurrentPalette;
     }
     return;
   }
 
-  if (frame > FRAME_DELAY && frame < FRAME_DELAY + FADE_DELAY) {
-    const PaletteClass save_palette = ThePalettes().title_palette();
+  if (slide_frame > kSlideHoldFrames &&
+      slide_frame < kSlideHoldFrames + kFadeFrames) {
+    const PaletteClass unfaded_palette = ThePalettes().title_palette();
     ThePalettes().title_palette().Partial_Adjust(
-        std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
-    if (frame != FRAME_DELAY + FADE_DELAY - 1) {
+        std::min(255 / kFadeFrames * (slide_frame - kSlideHoldFrames), 255),
+        fades_with_slide);
+    if (slide_frame != kSlideHoldFrames + kFadeFrames - 1) {
       Set_Pal(ThePalettes().title_palette());
-      ThePalettes().title_palette() = save_palette;
+      ThePalettes().title_palette() = unfaded_palette;
     } else {
       // The steps stop short of black (see the fade up), so the last one
       // blacks out the slide's entries outright. The next slide's pixels can
       // then be copied in unseen.
       for (int index = 0; index < 256; index++) {
-        if (PaletteLUT.at(base::ToSize(index))) {
+        if (fades_with_slide.at(base::ToSize(index))) {
           ThePalettes().title_palette().at(index) = engine::gfx::kBlackColor;
         }
       }
@@ -226,11 +230,11 @@ static void Slide_Show(int slide, int frame) {
   }
 }
 
-void Show_Who_Was_Responsible() {
+void ShowCredits() {
   engine::window::KeyNumber key = KN_NONE;
 
   // System ticks (1/60 s) per pixel of scrolling.
-  static const int speed = 3;
+  static constexpr int kTicksPerPixel = 3;
 
   // CREDITS.TXT is laid out as an 80-column page, and a string's place on
   // that page decides how it is drawn:
@@ -241,12 +245,12 @@ void Show_Who_Was_Responsible() {
   //
   // which gives the two-column "job  name" look. A string ends at a tab, at
   // the end of the line or at two spaces in a row.
-  const auto creditsfile = OpenGameFile("credits.txt");
-  if (!creditsfile) {
+  const auto credits_file = OpenGameFile("credits.txt");
+  if (!credits_file) {
     return;
   }
-  std::string credits(base::ToSize(creditsfile->Size()), '\0');
-  if (creditsfile->Read(std::as_writable_bytes(std::span(credits))) <= 0) {
+  std::string credits(base::ToSize(credits_file->Size()), '\0');
+  if (credits_file->Read(std::as_writable_bytes(std::span(credits))) <= 0) {
     return;
   }
 
@@ -256,25 +260,25 @@ void Show_Who_Was_Responsible() {
   // time, so that the text never appears half-scrolled on screen.
   PixelView& view = TheScreen().hidden_view();
 
-  // `length` counts the bytes from `cptr` to the end of the file. Columns
+  // `bytes_left` counts the bytes from `cursor` to the end of the file. Columns
   // and lines count from zero.
-  int length = static_cast<int>(creditsfile->Size());
+  int bytes_left = static_cast<int>(credits_file->Size());
   int line = 0;
   int column = 0;
-  auto cptr = credits.begin();
-  char lastchar = 0;
-  auto strstart = credits.begin();
-  auto strparse = credits.begin();
-  bool gotendstr = false;
-  int startcolumn = 0;
-  int endcolumn = 0;
+  auto cursor = credits.begin();
+  char previous_char = 0;
+  auto string_begin = credits.begin();
+  auto string_end = credits.begin();
+  bool string_ended = false;
+  int start_column = 0;
+  int end_column = 0;
   int x = 0;
   const int y = TheScreen().visible_view().height() + 2;
   // Every line starts two rows below the bottom of the screen, 16 rows
   // apart, and scrolls up from there.
   do {
-    char ch = *cptr++;
-    length--;
+    char ch = *cursor++;
+    bytes_left--;
 
     switch (ch) {
       case 13:
@@ -297,43 +301,43 @@ void Show_Who_Was_Responsible() {
         break;
 
       default:
-        // The start of a string. Find where it ends: `strparse` stops one
+        // The start of a string. Find where it ends: `string_end` stops one
         // past the character that ended it, which is left in `ch`.
-        lastchar = ch;
-        strstart = cptr - 1;
-        strparse = cptr - 1;
-        endcolumn = startcolumn = column;
-        gotendstr = false;
+        previous_char = ch;
+        string_begin = cursor - 1;
+        string_end = cursor - 1;
+        end_column = start_column = column;
+        string_ended = false;
 
         do {
-          ch = *strparse++;
+          ch = *string_end++;
           switch (ch) {
             case 9:
             case 10:
             case 13:
-              gotendstr = true;
+              string_ended = true;
               break;
 
             case 32:
-              if (lastchar == 32) {
-                gotendstr = true;
+              if (previous_char == 32) {
+                string_ended = true;
               }
-              endcolumn++;
+              end_column++;
               break;
 
             default:
-              endcolumn++;
+              end_column++;
           }
-          if (strparse >= cptr + length) {
-            gotendstr = true;
+          if (string_end >= cursor + bytes_left) {
+            string_ended = true;
           }
 
-          lastchar = ch;
-        } while (!gotendstr);
+          previous_char = ch;
+        } while (!string_ended);
 
         // TODO: A string that runs into the end of the file is dropped, so
         // the last line of credits is lost unless a CR and LF follow it.
-        if (strparse >= cptr + length) {
+        if (string_end >= cursor + bytes_left) {
           break;
         }
 
@@ -341,37 +345,38 @@ void Show_Who_Was_Responsible() {
         //
         // TODO: This also fires for one space before a tab or line end. The
         // end column is then one too low, and after a CR the line counter
-        // advances twice, because `cptr` is left on the CR and the outer loop
+        // advances twice, because `cursor` is left on the CR and the outer loop
         // counts it again.
-        if (*(strparse - 2) == 32) {
-          strparse--;
-          endcolumn -= 2;
+        if (*(string_end - 2) == 32) {
+          string_end--;
+          end_column -= 2;
         }
 
         TextPrintType flags = TPF_USE_GRAD_PAL | TPF_DROPSHADOW;
 
-        if (startcolumn < 40 && endcolumn > 40) {
+        if (start_column < 40 && end_column > 40) {
           flags = flags | TPF_CENTER;
           x = TheScreen().visible_view().width() / 2;
         } else {
-          if (startcolumn < 40) {
+          if (start_column < 40) {
             flags = flags | TPF_RIGHT;
-            x = endcolumn * TheScreen().visible_view().width() / 80;
+            x = end_column * TheScreen().visible_view().width() / 80;
           } else {
-            x = startcolumn * TheScreen().visible_view().width() / 80;
+            x = start_column * TheScreen().visible_view().width() / 80;
           }
         }
 
         // The string is everything before the character that ended it.
-        EgoList.push_back(std::make_unique<EgoClass>(
-            x, y + (line * 16), std::string_view(strstart, strparse - 1),
+        credit_lines.push_back(std::make_unique<CreditLine>(
+            x, y + (line * 16), std::string_view(string_begin, string_end - 1),
             FontType::k6PointGradient, flags));
 
         // Carry on after the string. The outer loop has already counted its
         // first character.
-        cptr = strparse;
-        column = static_cast<int>(column + (strparse - strstart));
-        length = static_cast<int>(length - (strparse - strstart - 1));
+        cursor = string_end;
+        column = static_cast<int>(column + (string_end - string_begin));
+        bytes_left =
+            static_cast<int>(bytes_left - (string_end - string_begin - 1));
 
         // The terminator was consumed with the string, so do here what the
         // outer loop would have done for it.
@@ -387,26 +392,26 @@ void Show_Who_Was_Responsible() {
         break;
     }
 
-  } while (length > 0);
+  } while (bytes_left > 0);
 
   // Everything fades with the slides except the colours the text is drawn
   // in: the six gradient entries of the font and the green scheme's own.
-  PaletteLUT.fill(1);
+  fades_with_slide.fill(1);
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
-    PaletteLUT.at(base::At(ThePalettes().color_remaps().at(pcolor).FontRemap,
-                           10 + index)) = 0;
+    fades_with_slide.at(base::At(
+        ThePalettes().color_remaps().at(pcolor).FontRemap, 10 + index)) = 0;
   }
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Color) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Background) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Corners) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Highlight) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Bright) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Underline) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Bar) = 0;
-  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Box) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Color) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Background) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Corners) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Highlight) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Bright) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Underline) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Bar) = 0;
+  fades_with_slide.at(ThePalettes().color_remaps().at(pcolor).Box) = 0;
 
   TheTheme().Stop();
 
@@ -423,11 +428,11 @@ void Show_Who_Was_Responsible() {
 
   // Start with the slide entries black, so the text can scroll on a black
   // screen until the first slide fades up.
-  ComboPalette = ThePalettes().title_palette();
+  combo_palette = ThePalettes().title_palette();
 
   for (int index = 0; index < 256; index++) {
-    if (PaletteLUT.at(base::ToSize(index))) {
-      ComboPalette.at(index) = engine::gfx::kBlackColor;
+    if (fades_with_slide.at(base::ToSize(index))) {
+      combo_palette.at(index) = engine::gfx::kBlackColor;
     }
   }
 
@@ -435,83 +440,83 @@ void Show_Who_Was_Responsible() {
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
 
-  ThePalettes().title_palette() = ComboPalette;
+  ThePalettes().title_palette() = combo_palette;
   ThePalettes().title_palette().Set();
 
-  for (int index = 0; index < NUM_SLIDES; index++) {
+  for (int index = 0; index < kSlideCount; index++) {
     auto buffer = std::make_unique<PixelBuffer>();
     buffer->Init(TheScreen().visible_view().width(),
                  TheScreen().visible_view().height(), {}, 0);
-    Load_Title_Screen(SlideNames.at(base::ToSize(index)), &buffer->view(),
-                      SlidePals.at(base::ToSize(index)));
-    SlideBuffers.at(base::ToSize(index)) = std::move(buffer);
+    Load_Title_Screen(kSlideNames.at(base::ToSize(index)), &buffer->view(),
+                      slide_palettes.at(base::ToSize(index)));
+    slide_pages.at(base::ToSize(index)) = std::move(buffer);
   }
 
   // The background page starts as a copy of the cleared screen, so the text
   // can be erased from the first frame on.
-  BackgroundPage = std::make_unique<PixelBuffer>();
-  BackgroundPage->Init(TheScreen().visible_view().width(),
-                       TheScreen().visible_view().height(), {}, 0);
+  background_page = std::make_unique<PixelBuffer>();
+  background_page->Init(TheScreen().visible_view().width(),
+                        TheScreen().visible_view().height(), {}, 0);
 
-  TheScreen().visible_view().BlitTo(BackgroundPage->view());
+  TheScreen().visible_view().BlitTo(background_page->view());
 
   // Drop the keys pressed so far; one of them would end the credits.
   game::TheKeyboard().Clear();
 
   // The credits always have music: with the score turned off, play it at
   // 40% until they end.
-  const Fixed oldvolume = TheOptions().ScoreVolume;
-  if (oldvolume == 0) {
+  const Fixed saved_score_volume = TheOptions().ScoreVolume;
+  if (saved_score_volume == 0) {
     TheOptions().Set_Score_Volume(Fixed(4, 10), false);
   }
   TheTheme().Queue_Song(THEME_CREDITS);
 
-  // `frame` counts pixels scrolled since `time`; `picture_frame` restarts
+  // `frame` counts pixels scrolled since `start_ticks`; `slide_frame` restarts
   // with every slide.
-  const int64_t time = engine::platform::SystemTicks();
+  const int64_t start_ticks = engine::platform::SystemTicks();
   int frame = 0;
-  int picture_frame = 0;
-  int slide_number = 0;
+  int slide_frame = 0;
+  int slide = 0;
 
   game::TheMouse().Hide();
 
   // Scroll one pixel per pass until every line has left the top of the
   // screen or Esc is pressed.
-  while (!EgoList.empty()) {
+  while (!credit_lines.empty()) {
     frame++;
 
     // A slide stays for 150 frames, fades for 37 and leaves the screen black
     // until frame 200. Then the next one starts, the first following the
     // last.
-    picture_frame++;
+    slide_frame++;
 
-    if (picture_frame > FRAME_DELAY + 50) {
-      if (slide_number < NUM_SLIDES - 1) {
-        slide_number++;
-        picture_frame = 0;
+    if (slide_frame > kSlideHoldFrames + 50) {
+      if (slide < kSlideCount - 1) {
+        slide++;
+        slide_frame = 0;
       } else {
-        slide_number = 0;
-        picture_frame = 0;
+        slide = 0;
+        slide_frame = 0;
       }
     }
 
-    Slide_Show(slide_number, picture_frame);
+    StepSlideShow(slide, slide_frame);
 
     // Erase every line where it was drawn and move it up. A line that has
     // left the screen is removed, which ends the pass early: the lines not
     // reached are the ones above it, which are off the screen as well and
     // go the same way in the next passes.
-    for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
-      EgoList.at(base::ToSize(i))->Wipe(view, BackgroundPage->view());
-      if (EgoList.at(base::ToSize(i))->Scroll(1)) {
-        EgoList.erase(std::next(EgoList.begin(), i));
+    for (base::ssize i = std::ssize(credit_lines) - 1; i >= 0; i--) {
+      credit_lines.at(base::ToSize(i))->Erase(view, background_page->view());
+      if (credit_lines.at(base::ToSize(i))->Scroll(1)) {
+        credit_lines.erase(std::next(credit_lines.begin(), i));
         break;
       }
     }
 
     if (view.Lock()) {
-      for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
-        EgoList.at(base::ToSize(i))->Render(view);
+      for (base::ssize i = std::ssize(credit_lines) - 1; i >= 0; i--) {
+        credit_lines.at(base::ToSize(i))->Render(view);
       }
       view.Unlock();
     }
@@ -526,8 +531,8 @@ void Show_Who_Was_Responsible() {
     // Wait for this frame's time. The deadline is measured from the start,
     // so a slow frame is made up for by the next ones. Any key cuts the wait
     // short.
-    while (engine::platform::SystemTicks() - time <
-               static_cast<int64_t>(frame) * speed &&
+    while (engine::platform::SystemTicks() - start_ticks <
+               static_cast<int64_t>(frame) * kTicksPerPixel &&
            !game::TheKeyboard().Peek()) {
     }
 
@@ -554,19 +559,19 @@ void Show_Who_Was_Responsible() {
     // The text is gone: let the slide fade out. One that is being shown
     // skips straight to its fade; one that is still fading up finishes that
     // first.
-    while (picture_frame <= FADE_DELAY + FRAME_DELAY) {
-      if (picture_frame < FRAME_DELAY && picture_frame > 10 + FADE_DELAY) {
-        picture_frame = FRAME_DELAY;
+    while (slide_frame <= kFadeFrames + kSlideHoldFrames) {
+      if (slide_frame < kSlideHoldFrames && slide_frame > 10 + kFadeFrames) {
+        slide_frame = kSlideHoldFrames;
       }
       frame++;
-      picture_frame++;
+      slide_frame++;
 
-      Slide_Show(slide_number, picture_frame);
+      StepSlideShow(slide, slide_frame);
 
       ServiceRealTime();
 
-      while (engine::platform::SystemTicks() - time <
-                 static_cast<int64_t>(frame) * speed &&
+      while (engine::platform::SystemTicks() - start_ticks <
+                 static_cast<int64_t>(frame) * kTicksPerPixel &&
              !game::TheKeyboard().Peek()) {
       }
     }
@@ -579,13 +584,13 @@ void Show_Who_Was_Responsible() {
   Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
   TheTheme().Stop();
-  TheOptions().Set_Score_Volume(oldvolume, false);
+  TheOptions().Set_Score_Volume(saved_score_volume, false);
 
-  SlideBuffers = {};
+  slide_pages = {};
 
-  BackgroundPage.reset();
+  background_page.reset();
 
-  EgoList.clear();
+  credit_lines.clear();
 }
 
 }  // namespace ra
