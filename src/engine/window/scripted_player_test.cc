@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "base/array.h"
 #include "base/installed.h"
 #include "engine/platform/manual_clock.h"
 #include "engine/platform/timer.h"
@@ -63,6 +64,42 @@ TEST_F(ScriptedPlayerTest, AKeyIsAPressThenARelease) {
   EXPECT_EQ(KeyCode(release.key), KN_A);
   EXPECT_TRUE(IsRelease(release.key));
   EXPECT_FALSE(Turn());
+}
+
+// Without SDL's keyboard there is no layout to say what a key types, so the
+// keys that type the same everywhere carry their character with them.
+TEST_F(ScriptedPlayerTest, TheEditingKeysCarryTheirCharacter) {
+  player_.Key(KN_RETURN).Key(KN_BACKSPACE).Key(KN_SPACE).Key(KN_F1);
+
+  EXPECT_EQ(Turn().character, '\r');
+  Turn();
+  EXPECT_EQ(Turn().character, '\b');
+  Turn();
+  EXPECT_EQ(Turn().character, ' ');
+  Turn();
+  EXPECT_EQ(Turn().character, '\0');
+}
+
+TEST_F(ScriptedPlayerTest, TypingPressesTheKeyOfEachCharacter) {
+  player_.Type("aZ 09");
+
+  const KeyNumber keys[] = {KN_A, KN_Z, KN_SPACE, KN_0, KN_9};
+  const char characters[] = {'a', 'Z', ' ', '0', '9'};
+  for (int i = 0; i < 5; ++i) {
+    const InputEvent press = Turn();
+    EXPECT_EQ(press.key, base::At(keys, i));
+    EXPECT_EQ(press.character, base::At(characters, i));
+    EXPECT_TRUE(IsRelease(Turn().key));
+  }
+  EXPECT_FALSE(Turn());
+}
+
+TEST_F(ScriptedPlayerTest, TypingPunctuationIsAProgrammingError) {
+  player_.Type("a!");
+
+  // The switch is inside GoogleTest's macro.
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(Turn(), "letters, digits and spaces");
 }
 
 TEST_F(ScriptedPlayerTest, StepsBeforeAnyAtHappenOnTheFirstFrame) {

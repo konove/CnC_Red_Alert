@@ -7,6 +7,8 @@
 #include <cstddef>
 #include <functional>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -80,8 +82,17 @@ class ScriptedPlayer final : public DisplayObserver {
   // frame 1.
   ScriptedPlayer& At(int frame) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
-  // Queues a press of `key`, a bare key number, and its release.
+  // Queues a press of `key`, a bare key number, and its release. Return,
+  // Backspace, Tab, Esc and Space carry the character they type, as they do
+  // from a real keyboard; for letters and digits use Type().
   ScriptedPlayer& Key(KeyNumber key) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Queues the key presses that type `text`, each carrying its character the
+  // way SDL's text input delivers it, so an upper-case letter arrives as
+  // one. All of them are queued on the same frame; a loop that reads an
+  // event a turn takes two turns a character. `text` may hold letters, digits
+  // and spaces.
+  ScriptedPlayer& Type(std::string_view text) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Queues a move of the pointer to `x`, `y`, in game pixels.
   ScriptedPlayer& MoveTo(int x, int y) ABSL_ATTRIBUTE_LIFETIME_BOUND;
@@ -120,6 +131,10 @@ class ScriptedPlayer final : public DisplayObserver {
     int frame;  // the frame it happens on, from 1
     std::function<void()> action;
   };
+
+  // Queues a press of `key` that typed `character`, '\0' for none, and the
+  // key's release.
+  void PutKey(KeyNumber key, char character);
 
   // Moves the pointer and queues one half of a click where it now is.
   void PutClick(MouseButton button, bool release, int x, int y);

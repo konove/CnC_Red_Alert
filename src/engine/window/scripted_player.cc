@@ -4,9 +4,12 @@
 #include "engine/window/scripted_player.h"
 
 #include <functional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "engine/platform/manual_clock.h"
 #include "engine/window/display.h"
@@ -21,6 +24,45 @@ namespace {
 // that waits for a key this way gets nothing from a script, which only moves
 // on frames; no real loop polls this often between two presents.
 constexpr int kMaxPumpsPerFrame = 100'000;
+
+// The character the keys that type the same thing on every layout type; '\0'
+// for any other key. The games read it from the event: without SDL's keyboard
+// there is no layout to look a key up in.
+char ControlCharacter(const KeyNumber key) {
+  if (key == KN_RETURN) {
+    return '\r';
+  }
+  if (key == KN_BACKSPACE) {
+    return '\b';
+  }
+  if (key == KN_TAB) {
+    return '\t';
+  }
+  if (key == KN_ESC) {
+    return '\x1B';
+  }
+  if (key == KN_SPACE) {
+    return ' ';
+  }
+  return '\0';
+}
+
+// The key a US keyboard types `character` with, Shift aside.
+KeyNumber KeyThatTypes(const char character) {
+  if (absl::ascii_isalpha(static_cast<unsigned char>(character))) {
+    return static_cast<KeyNumber>(
+        static_cast<int>(KN_A) +
+        (absl::ascii_tolower(static_cast<unsigned char>(character)) - 'a'));
+  }
+  if (character == '0') {
+    return KN_0;
+  }
+  if (absl::ascii_isdigit(static_cast<unsigned char>(character))) {
+    return static_cast<KeyNumber>(static_cast<int>(KN_1) + (character - '1'));
+  }
+  CHECK_EQ(character, ' ') << "Type() takes letters, digits and spaces";
+  return KN_SPACE;
+}
 
 }  // namespace
 
@@ -42,9 +84,14 @@ ScriptedPlayer& ScriptedPlayer::At(const int frame) {
 }
 
 ScriptedPlayer& ScriptedPlayer::Key(const KeyNumber key) {
-  return Do([this, key] {
-    keyboard_->PutKey(static_cast<int>(key));
-    keyboard_->PutKey(static_cast<int>(key), /*release=*/true);
+  return Do([this, key] { PutKey(key, ControlCharacter(key)); });
+}
+
+ScriptedPlayer& ScriptedPlayer::Type(const std::string_view text) {
+  return Do([this, typed = std::string(text)] {
+    for (const char character : typed) {
+      PutKey(KeyThatTypes(character), character);
+    }
   });
 }
 
@@ -104,6 +151,11 @@ void ScriptedPlayer::OnPump() {
         "frame; a script only moves when a frame ends",
         kMaxPumpsPerFrame, frame_));
   }
+}
+
+void ScriptedPlayer::PutKey(const KeyNumber key, const char character) {
+  keyboard_->Put({.key = key, .character = character});
+  keyboard_->PutKey(static_cast<int>(key), /*release=*/true);
 }
 
 void ScriptedPlayer::PutClick(const MouseButton button, const bool release,

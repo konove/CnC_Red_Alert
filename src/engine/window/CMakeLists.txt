@@ -25,7 +25,7 @@ find_package(SDL2 REQUIRED)
 target_link_libraries(engine_window
         # keyboard.h names its keys by SDL scancode, so SDL is public.
         PUBLIC engine_gfx absl::core_headers SDL2::SDL2
-        PRIVATE absl::check absl::log absl::str_format
+        PRIVATE absl::check absl::log absl::str_format absl::strings
 )
 
 # PresentScaledFrame's per-pixel palette expansion is a byte-crunching kernel:
