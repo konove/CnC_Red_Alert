@@ -96,10 +96,53 @@ const char* ActionName(TriggerActionType action);
 // NEED_TRIGGER mean the team_type or trigger_type member instead.
 NeedType ActionNeed(TriggerActionType action);
 
+// An action as the scenario INI, a saved game and the editor see it: the same
+// four fields whatever the action is. ActionNeed() says which of the last three
+// `type` uses.
+struct TriggerActionRecord {
+  TriggerActionType type = TriggerActionType::kNone;
+  TeamTypeClass* team_type = nullptr;   // nullptr for none.
+  TriggerType* trigger_type = nullptr;  // nullptr for none.
+  // The house, special weapon, movie, sound, theme, speech, quarry, flag,
+  // waypoint or number the action takes, as its number; -1 when unset.
+  int value = -1;
+
+  friend bool operator==(const TriggerActionRecord&,
+                         const TriggerActionRecord&) = default;
+
+  // Saved-game support; defined in ioobj.cc. The two types travel as their
+  // heap slots.
+  template <class Archive>
+  void Serialize(Archive& ar);
+};
+
+// Returns `record` in the scenario INI's current format:
+// "action,team,trigger,value", the middle two as positions in their type
+// lists (-1 for none).
+[[nodiscard]] std::string ToIniEntry(const TriggerActionRecord& record);
+
 // One action of a trigger type: the action and the data it needs. A trigger
 // type holds two, and carries them out with Perform() when it springs.
 class TriggerAction {
  public:
+  TriggerAction() = default;
+
+  // Makes the action `record` describes.
+  explicit TriggerAction(const TriggerActionRecord& record)
+      : type_(record.type),
+        team_type_(record.team_type),
+        trigger_type_(record.trigger_type),
+        data_{.value = record.value} {}
+
+  // Returns the action as a record; TriggerAction(record) makes an equal
+  // action from it.
+  [[nodiscard]] TriggerActionRecord ToRecord() const {
+    return {.type = type_,
+            .team_type = team_type_,
+            .trigger_type = trigger_type_,
+            .value = data_.value};
+  }
+
   // The action to perform.
   [[nodiscard]] TriggerActionType type() const { return type_; }
   void set_type(const TriggerActionType type) { type_ = type; }
@@ -155,8 +198,8 @@ class TriggerAction {
   // type it points to; called when that type is being destroyed.
   void Detach(Target target);
 
-  // Saved-game support; defined in ioobj.cc. The union travels through its
-  // widest member.
+  // Saved-game support; defined in ioobj.cc. The action travels as its
+  // record.
   template <class Archive>
   void Serialize(Archive& ar);
 
@@ -165,9 +208,7 @@ class TriggerAction {
   // ToIniEntry().
   void ReadIni(base::Tokenizer& tokens);
 
-  // Returns the action in the scenario INI's current format:
-  // "action,team,trigger,value", the middle two as positions in their type
-  // lists (-1 for none).
+  // Returns ToIniEntry() of the action's record.
   [[nodiscard]] std::string ToIniEntry() const;
 
   // Carries out the action for the trigger that sprang. `house` is the
@@ -203,6 +244,10 @@ class TriggerAction {
   std::string pending_trigger_name_;
 };
 
+extern template void TriggerActionRecord::Serialize<ArchiveWriter>(
+    ArchiveWriter&);
+extern template void TriggerActionRecord::Serialize<ArchiveReader>(
+    ArchiveReader&);
 extern template void TriggerAction::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerAction::Serialize<ArchiveReader>(ArchiveReader&);
 

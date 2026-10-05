@@ -84,6 +84,13 @@ TEST(TriggerActionDataTest, AOneByteSetterKeepsTheHighBytesOfTheValue) {
   EXPECT_EQ(action.value(), -256 + static_cast<int>(HOUSE_GREECE));
 }
 
+TEST(TriggerActionDataTest, AnActionMadeFromItsRecordIsEqual) {
+  const TriggerActionRecord record{.type = TriggerActionType::kSetTimer,
+                                   .value = 20};
+  EXPECT_EQ(TriggerAction(record).ToRecord(), record);
+  EXPECT_EQ(TriggerAction().ToRecord(), TriggerActionRecord());
+}
+
 // A Game whose only house heap is empty: no house the actions name exists.
 class TriggerActionTest : public GameFixture {
  protected:
@@ -277,6 +284,18 @@ TEST_F(TriggerActionGameTest, TheIniEntryNumbersTheTeamAndTheTrigger) {
   action.set_trigger_type(trigger_type_);
   action.set_value(-1);
   EXPECT_EQ(action.ToIniEntry(), "22,-1,0,-1");
+}
+
+TEST_F(TriggerActionGameTest, ARecordKeepsTheTeamAndTheTrigger) {
+  const TriggerActionRecord record{.type = TriggerActionType::kForceTrigger,
+                                   .team_type = team_type_,
+                                   .trigger_type = trigger_type_,
+                                   .value = 5};
+  const TriggerAction action(record);
+  EXPECT_EQ(action.team_type(), team_type_);
+  EXPECT_EQ(action.trigger_type(), trigger_type_);
+  EXPECT_EQ(action.ToRecord(), record);
+  EXPECT_EQ(ToIniEntry(record), "22,0,0,5");
 }
 
 TEST_F(TriggerActionGameTest, TheCurrentFormatReadsWhatToIniEntryWrites) {

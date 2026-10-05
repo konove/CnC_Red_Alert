@@ -204,10 +204,7 @@ void TriggerAction::ReadIni(base::Tokenizer& tokens) {
 }
 
 std::string TriggerAction::ToIniEntry() const {
-  return std::format("{},{},{},{}", std::to_underlying(type_),
-                     TheObjectHeaps().team_type().PositionOf(team_type_),
-                     TheObjectHeaps().trigger_type().PositionOf(trigger_type_),
-                     data_.value);
+  return ra::ToIniEntry(ToRecord());
 }
 
 // Not const: carries out the action.
@@ -550,6 +547,14 @@ bool TriggerAction::Perform(const HousesType house, ObjectClass* object,
       break;
   }
   return success;
+}
+
+std::string ToIniEntry(const TriggerActionRecord& record) {
+  return std::format(
+      "{},{},{},{}", std::to_underlying(record.type),
+      TheObjectHeaps().team_type().PositionOf(record.team_type),
+      TheObjectHeaps().trigger_type().PositionOf(record.trigger_type),
+      record.value);
 }
 
 const char* ActionName(const TriggerActionType action) {
