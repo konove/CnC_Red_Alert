@@ -50,11 +50,12 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
-// The options dialog, centred on the 640x400 screen.
-constexpr int kOptionWidth = 236 * 2;
-constexpr int kOptionHeight = 162 * 2;
-constexpr int kOptionX = (Screen::kWidth - kOptionWidth) / 2;
-constexpr int kOptionY = (Screen::kHeight - kOptionHeight) / 2;
+// The difficulty scale has five levels; the coarse slider offers only its two
+// ends and its middle, so one of its stops is worth kCoarseLevelStep levels.
+constexpr int kDifficultyLevels = 5;
+constexpr int kCoarseDifficultyStops = 3;
+constexpr int kCoarseLevelStep =
+    (kDifficultyLevels - 1) / (kCoarseDifficultyStops - 1);
 
 void SpecialOptions::Reset() {
   shroud_regrows = false;
@@ -68,21 +69,44 @@ void SpecialOptions::Reset() {
 }
 
 void RunSpecialOptionsDialog() {
+  // The dialog, centred on the screen.
+  constexpr int kDialogWidth = 472;
+  constexpr int kDialogHeight = 324;
+  constexpr int kDialogX = (Screen::kWidth - kDialogWidth) / 2;
+  constexpr int kDialogY = (Screen::kHeight - kDialogHeight) / 2;
+
+  // OK sits in the bottom left corner and Cancel in the bottom right.
+  constexpr int kOkButtonX = kDialogX + 30;
+  constexpr int kCancelButtonX = kDialogX + kDialogWidth - 120;
+  constexpr int kButtonY = kDialogY + kDialogHeight - 30;
+
+  // The check boxes form a column, each with its label to the right.
+  constexpr int kCheckBoxX = kDialogX + 34;
+  constexpr int kFirstCheckBoxY = kDialogY + 40;
+  constexpr int kCheckBoxSpacing = 20;
+  constexpr int kLabelOffsetX = 20;  // From the box's left edge.
+
+  // Gadget ids; Input() reports a clicked button as ButtonKey(id).
+  constexpr int kThreePointBoxId = 100;
+  constexpr int kSpeedBuildBoxId = 101;
+  constexpr int kOkButtonId = 200;
+  constexpr int kCancelButtonId = 201;
+
   // A copy the dialog edits. The installed flags change only when the event OK
   // queues is executed.
   SpecialOptions edited_options = TheSpecialOptions();
 
-  TextButtonClass ok_button(200, TXT_OK, kButtonFont, kButtonFlags,
-                            kOptionX + 30, kOptionY + kOptionHeight - 30);
-  TextButtonClass cancel_button(201, TXT_CANCEL, kButtonFont, kButtonFlags,
-                                kOptionX + kOptionWidth - 120,
-                                kOptionY + kOptionHeight - 30);
+  TextButtonClass ok_button(kOkButtonId, TXT_OK, kButtonFont, kButtonFlags,
+                            kOkButtonX, kButtonY);
+  TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL, kButtonFont,
+                                kButtonFlags, kCancelButtonX, kButtonY);
   cancel_button.Add(ok_button);
 
   // One check box per flag the dialog offers. A box toggles itself when
   // clicked, so the flags are only read back from the boxes on OK.
-  CheckBoxClass three_point_box(100, kOptionX + 34, kOptionY + 40);
-  CheckBoxClass speed_build_box(101, kOptionX + 34, kOptionY + 60);
+  CheckBoxClass three_point_box(kThreePointBoxId, kCheckBoxX, kFirstCheckBoxY);
+  CheckBoxClass speed_build_box(kSpeedBuildBoxId, kCheckBoxX,
+                                kFirstCheckBoxY + kCheckBoxSpacing);
   three_point_box.Add(ok_button);
   speed_build_box.Add(ok_button);
   if (edited_options.three_point_turns) {
@@ -119,11 +143,11 @@ void RunSpecialOptionsDialog() {
       redraw = false;
 
       game::TheMouse().Hide();
-      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
+      Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
+      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kDialogX, kDialogY, kDialogWidth);
 
       for (const auto& [label, check_box] : labels) {
-        Fancy_Text_Print(view, label, check_box.X + 20, check_box.Y,
+        Fancy_Text_Print(view, label, check_box.X + kLabelOffsetX, check_box.Y,
                          Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -132,7 +156,7 @@ void RunSpecialOptionsDialog() {
     }
 
     switch (static_cast<int>(ok_button.Input(view).key)) {
-      case engine::window::ButtonKey(200):
+      case engine::window::ButtonKey(kOkButtonId):
         process = false;
         edited_options.three_point_turns = three_point_box.IsOn;
         edited_options.speed_build = speed_build_box.IsOn;
@@ -142,7 +166,7 @@ void RunSpecialOptionsDialog() {
         break;
 
       case KN_ESC:
-      case engine::window::ButtonKey(201):
+      case engine::window::ButtonKey(kCancelButtonId):
         process = false;
         break;
 
@@ -161,7 +185,7 @@ void RunSpecialOptionsDialog() {
 DifficultyChoice DifficultyForLevel(const int level) {
   // The player's side gets easier as the computer's gets harder; only the
   // middle level has both on normal.
-  static constexpr std::array<DifficultyChoice, 5> kChoices = {{
+  static constexpr std::array<DifficultyChoice, kDifficultyLevels> kChoices = {{
       {.player = DifficultyLevel::kEasy, .computer = DifficultyLevel::kHard},
       {.player = DifficultyLevel::kNormal, .computer = DifficultyLevel::kHard},
       {.player = DifficultyLevel::kNormal,
@@ -173,11 +197,33 @@ DifficultyChoice DifficultyForLevel(const int level) {
 }
 
 DifficultyChoice PromptForDifficulty(const bool is_expansion_mission) {
-  constexpr int dialog_width = 500;
-  constexpr int dialog_height = 160;
-  constexpr int dialog_x = (Screen::kWidth - dialog_width) / 2;
-  constexpr int dialog_y = (Screen::kHeight - dialog_height) / 2;
-  constexpr int button_width = 60;
+  // The dialog, centred on the screen.
+  constexpr int kDialogWidth = 500;
+  constexpr int kDialogHeight = 160;
+  constexpr int kDialogX = (Screen::kWidth - kDialogWidth) / 2;
+  constexpr int kDialogY = (Screen::kHeight - kDialogHeight) / 2;
+
+  // The prompt, the slider and the OK button's right edge all keep this far
+  // from the dialog's sides.
+  constexpr int kMargin = 40;
+
+  constexpr int kPromptX = kDialogX + kMargin;
+  constexpr int kPromptY = kDialogY + 30;
+  constexpr int kPromptWrapWidth = kDialogWidth - 120;
+
+  constexpr int kSliderX = kDialogX + kMargin;
+  constexpr int kSliderY = kDialogY + kDialogHeight - 58;
+  constexpr int kSliderWidth = kDialogWidth - (2 * kMargin);
+  constexpr int kSliderHeight = 16;
+  constexpr int kSliderLabelY = kSliderY - 18;  // The ends' and middle's names.
+
+  constexpr int kButtonWidth = 60;
+  constexpr int kButtonX = kDialogX + kDialogWidth - kMargin - kButtonWidth;
+  constexpr int kButtonY = kDialogY + kDialogHeight - 36;
+
+  // Gadget ids; Input() reports a clicked button as ButtonKey(id).
+  constexpr int kOkButtonId = 1;
+  constexpr int kSliderId = 2;
 
   // Format_Window_String() breaks the prompt into lines by writing into it,
   // so work on a copy of the string table's text.
@@ -194,50 +240,50 @@ DifficultyChoice PromptForDifficulty(const bool is_expansion_mission) {
   int text_width = 0;
   int text_height = 0;
   Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
-                       prompt, dialog_width - 120, text_width, text_height);
+                       prompt, kPromptWrapWidth, text_width, text_height);
 
-  // The OK button is gadget 1 and the slider gadget 2.
-  TextButtonClass ok_button(1, TXT_OK, kButtonFont, kButtonFlags,
-                            dialog_x + dialog_width - (button_width + 40),
-                            dialog_y + dialog_height - 36, button_width);
+  TextButtonClass ok_button(kOkButtonId, TXT_OK, kButtonFont, kButtonFlags,
+                            kButtonX, kButtonY, kButtonWidth);
 
-  // Five stops when the rules ask for fine difficulty, otherwise three; either
-  // way the slider starts in the middle, on normal.
-  const int stops = TheRules().IsFineDifficulty ? 5 : 3;
-  SliderClass slider(2, dialog_x + 40, dialog_y + dialog_height - 58,
-                     dialog_width - 80, 16, true);
+  // Every level when the rules ask for fine difficulty, otherwise the coarse
+  // stops; either way the slider starts in the middle, on normal.
+  const int stops =
+      TheRules().IsFineDifficulty ? kDifficultyLevels : kCoarseDifficultyStops;
+  SliderClass slider(kSliderId, kSliderX, kSliderY, kSliderWidth, kSliderHeight,
+                     true);
   slider.Set_Maximum(stops);
   slider.Set_Value(stops / 2);
   slider.Add(ok_button);
 
   game::TheMouse().Hide();
-  Dialog_Box(dialog_x, dialog_y, dialog_width, dialog_height);
-  Fancy_Text_Print(view, prompt.c_str(), dialog_x + 40, dialog_y + 30,
-                   Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
-                   TPF_NOSHADOW);
+  Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
+  Fancy_Text_Print(view, prompt.c_str(), kPromptX, kPromptY, Get_Color_Scheme(),
+                   kTBlack, FontType::k6PointGradient, TPF_NOSHADOW);
 
   // Label the slider's ends and its middle.
-  Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
+  Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, kSliderLabelY,
                    Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
                    TPF_RIGHT | TPF_DROPSHADOW);
-  Fancy_Text_Print(view, TXT_EASY, slider.X, slider.Y - 18, Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_EASY, slider.X, kSliderLabelY, Get_Color_Scheme(),
                    kTBlack, FontType::k6PointGradient, TPF_DROPSHADOW);
   Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
-                   slider.Y - 18, Get_Color_Scheme(), kTBlack,
+                   kSliderLabelY, Get_Color_Scheme(), kTBlack,
                    FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
   ok_button.Draw_All(view);
   game::TheMouse().Show();
 
   engine::window::KeyNumber input = KN_NONE;
-  while (input != KN_RETURN && input != engine::window::ButtonKey(1)) {
+  while (input != KN_RETURN &&
+         input != engine::window::ButtonKey(kOkButtonId)) {
     // Keeps the music, the timers and the window serviced while waiting.
     ServiceRealTime();
     input = ok_button.Input(view).key;
   }
 
-  // The coarse slider's 0..2 is spread over the same five levels.
-  return DifficultyForLevel(slider.Get_Value() *
-                            (TheRules().IsFineDifficulty ? 1 : 2));
+  // The coarse slider's stops are spread over the whole scale.
+  return DifficultyForLevel(slider.Get_Value() * (TheRules().IsFineDifficulty
+                                                      ? 1
+                                                      : kCoarseLevelStep));
 }
 
 }  // namespace ra
