@@ -27,6 +27,7 @@
 #include <iterator>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -59,10 +60,6 @@
 namespace ra {
 
 using enum engine::window::KeyNumber;
-
-// One entry per string of credits text still on its way up the screen, in file
-// order. Empty outside ShowCredits().
-static std::vector<std::unique_ptr<CreditLine>> credit_lines;
 
 // Number of slideshow pictures.
 constexpr int kSlideCount = 17;
@@ -106,6 +103,40 @@ static std::array<char, 256> fades_with_slide;
 // rows of a slide.
 constexpr int kStripHeight = 100;
 
+namespace {
+
+// One string of credits text on its way up the screen.
+class CreditLine {
+ public:
+  // `x` and `y` are where the text printer is given the string, in pixels on
+  // the hidden page: `x` is the left edge, the centre or the right edge of
+  // the text according to `flags`, `y` its top row.
+  CreditLine(int x, int y, std::string_view text, FontType font,
+             TextPrintType flags);
+  ~CreditLine() = default;
+  CreditLine(const CreditLine&) = delete;
+  CreditLine& operator=(const CreditLine&) = delete;
+  CreditLine(CreditLine&&) = delete;
+  CreditLine& operator=(CreditLine&&) = delete;
+
+  // Moves the text up by `pixels`. Returns true once it has left
+  // the top of the screen for good.
+  bool Scroll(int pixels);
+
+  // Draws the text on `view`, unless it is partly or wholly off the page.
+  void Render(PixelView& view) const;
+
+  // Erases the text from `view` by copying the rectangle it covers from
+  // `background`, a page of the same size.
+  void Erase(PixelView& view, PixelView& background) const;
+
+  std::string text_;
+  int x_;
+  int y_;  // Negative once the text has started to leave the page.
+  FontType font_;
+  TextPrintType flags_;
+};
+
 CreditLine::CreditLine(int x, int y, std::string_view text, FontType font,
                        TextPrintType flags)
     : text_(text), x_(x), y_(y), font_(font), flags_(flags) {}
@@ -145,6 +176,12 @@ void CreditLine::Erase(PixelView& view, PixelView& background) const {
   // page or already above it costs nothing.
   background.BlitTo(view, x - 1, y_, x - 1, y_, width + 2, 14 + 1);
 }
+
+}  // namespace
+
+// One entry per string of credits text still on its way up the screen, in file
+// order. Empty outside ShowCredits().
+static std::vector<std::unique_ptr<CreditLine>> credit_lines;
 
 // Makes `palette` the displayed palette at once, with no fade.
 static void Set_Pal(const PaletteClass& palette) { Set_Palette(palette); }

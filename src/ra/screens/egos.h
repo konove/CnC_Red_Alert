@@ -20,45 +20,7 @@
 #ifndef CNC_RED_ALERT_RA_SCREENS_EGOS_H_
 #define CNC_RED_ALERT_RA_SCREENS_EGOS_H_
 
-#include <string>
-#include <string_view>
-
-#include "engine/gfx/pixel_buffer.h"
-#include "ra/core/defines.h"
-
 namespace ra {
-
-// One string of credits text on its way up the screen.
-class CreditLine {
- public:
-  // `x` and `y` are where the text printer is given the string, in pixels on
-  // the hidden page: `x` is the left edge, the centre or the right edge of
-  // the text according to `flags`, `y` its top row.
-  CreditLine(int x, int y, std::string_view text, FontType font,
-             TextPrintType flags);
-  ~CreditLine() = default;
-  CreditLine(const CreditLine&) = delete;
-  CreditLine& operator=(const CreditLine&) = delete;
-  CreditLine(CreditLine&&) = delete;
-  CreditLine& operator=(CreditLine&&) = delete;
-
-  // Moves the text up by `pixels`. Returns true once it has left
-  // the top of the screen for good.
-  bool Scroll(int pixels);
-
-  // Draws the text on `view`, unless it is partly or wholly off the page.
-  void Render(PixelView& view) const;
-
-  // Erases the text from `view` by copying the rectangle it covers from
-  // `background`, a page of the same size.
-  void Erase(PixelView& view, PixelView& background) const;
-
-  std::string text_;
-  int x_;
-  int y_;  // Negative once the text has started to leave the page.
-  FontType font_;
-  TextPrintType flags_;
-};
 
 // Rolls the credits from CREDITS.TXT over the slideshow, with the credits
 // score playing, until the last line has scrolled off or the player presses
