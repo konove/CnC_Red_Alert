@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/installed.h"
 #include "engine/platform/manual_clock.h"
 #include "engine/window/display.h"
 #include "engine/window/display_observer.h"
@@ -161,10 +160,22 @@ class ScriptedPlayer final : public DisplayObserver {
   int frame_ = 0;         // frames ended so far
   int frame_budget_ = kDefaultFrameBudget;
   int pumps_since_frame_ = 0;
+  // The buttons the player is holding down: each from its Press() to its
+  // Release().
+  class HeldButtons final : public MouseButtons {
+   public:
+    [[nodiscard]] bool IsLeftDown() const override;
+    [[nodiscard]] bool IsRightDown() const override;
+
+    bool left = false;
+    bool right = false;
+  };
+
   // What IsLeftButtonDown() and IsRightButtonDown() report while the player
-  // exists: a button is held from its Press() to its Release().
-  ScriptedMouseButtons held_;
-  base::Installed<ScriptedMouseButtons>::Scope held_scope_{held_};
+  // exists, and the mouse buttons they reported before, put back when it
+  // goes.
+  HeldButtons held_;
+  MouseButtons* previous_buttons_;
   int idle_pumps_per_frame_ = 0;  // 0 for never
 };
 

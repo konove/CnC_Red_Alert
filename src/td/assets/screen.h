@@ -41,10 +41,6 @@ class Screen {
   // window. Returns false if no mode could be set.
   bool Init();
 
-  // Init() on a headless video mode (Display::SetHeadlessVideoMode()): the
-  // pages and views are the same, with no window to show them. For tests.
-  bool InitHeadless();
-
   // The page on screen and the back buffer the game draws into before
   // blitting. Both are the size of the whole video mode.
   PixelBuffer& visible_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -79,10 +75,6 @@ class Screen {
   }
 
  private:
-  // Sizes the pages to the video mode Init() or InitHeadless() set and
-  // attaches the views to the game area.
-  void AttachPages();
-
   int mode_height_ = kHeight;
 
   // The pages come before the views attached to them, so that the views go

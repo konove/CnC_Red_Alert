@@ -1,4 +1,4 @@
-// Tests for Display: the paletted surface it lends the window page, the
+// Tests for the Displays: the paletted surface it lends the window page, the
 // palette it shows it through, the stretched movie frames it presents
 // instead of it, and the event loop that hands events to its client.
 
@@ -27,9 +27,10 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/platform/manual_clock.h"
 #include "engine/window/display_client.h"
 #include "engine/window/display_observer.h"
+#include "engine/window/headless_display.h"
+#include "engine/window/window_display.h"
 #include "gtest/gtest.h"
 
 namespace engine::window {
@@ -58,14 +59,14 @@ class RecordingFrames final : public DisplayObserver {
 // take every call and do nothing. This one has no renderer either, so any
 // SDL call that reached for one would fail the test by crashing.
 TEST(DisplayWithoutVideoModeTest, HasNoSurfaceToLock) {
-  Display display;
+  WindowDisplay display;
 
   EXPECT_FALSE(display.Lock().has_value());
   EXPECT_EQ(display.palette(), nullptr);
 }
 
 TEST(DisplayWithoutVideoModeTest, IgnoresPalettesFramesAndPresents) {
-  Display display;
+  WindowDisplay display;
   const base::Installed<Display>::Scope scope(display);
 
   display.SetPalette(PaletteWith(1, 63, 0, 0));
@@ -77,7 +78,7 @@ TEST(DisplayWithoutVideoModeTest, IgnoresPalettesFramesAndPresents) {
 }
 
 TEST(DisplayWithoutVideoModeTest, PictureScaleIsOneWithoutARenderer) {
-  const Display display;
+  const WindowDisplay display;
 
   EXPECT_EQ(display.PictureScale(), 1.0F);
 }
@@ -95,7 +96,7 @@ TEST(DisplayPictureScaleTest, IsTheWholeFactorThePictureIsDrawnAt) {
   SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
 
   {
-    const Display display(nullptr, renderer);
+    const WindowDisplay display(nullptr, renderer);
     EXPECT_EQ(display.PictureScale(), 2.0F);
   }
 
@@ -104,7 +105,7 @@ TEST(DisplayPictureScaleTest, IsTheWholeFactorThePictureIsDrawnAt) {
 }
 
 TEST(DisplayWithoutVideoModeTest, SetVideoModeNeedsARenderer) {
-  Display display;
+  WindowDisplay display;
 
   EXPECT_FALSE(display.SetVideoMode(2, 2));
   EXPECT_FALSE(display.Lock().has_value());
@@ -112,7 +113,8 @@ TEST(DisplayWithoutVideoModeTest, SetVideoModeNeedsARenderer) {
 
 // Draws through a software renderer onto a 2x2 target, so the colors that
 // reach the screen can be read back without a window.
-class DisplayTest : public ::testing::Test {
+template <class DisplayType>
+class RendererDisplayTest : public ::testing::Test {
  protected:
   void SetUp() override {
     target_ =
@@ -121,7 +123,7 @@ class DisplayTest : public ::testing::Test {
     renderer_ = SDL_CreateSoftwareRenderer(target_);
     ASSERT_NE(renderer_, nullptr);
     // The Display borrows the renderer; TearDown() still owns it.
-    display_ = std::make_unique<Display>(nullptr, renderer_);
+    display_ = std::make_unique<DisplayType>(nullptr, renderer_);
     display_scope_.emplace(*display_);
     ASSERT_TRUE(display_->SetVideoMode(2, 2));
   }
@@ -134,7 +136,7 @@ class DisplayTest : public ::testing::Test {
     SDL_FreeSurface(target_);
   }
 
-  Display& display() ABSL_ATTRIBUTE_LIFETIME_BOUND { return *display_; }
+  DisplayType& display() ABSL_ATTRIBUTE_LIFETIME_BOUND { return *display_; }
 
   // Returns the top-left pixel on screen as {red, green, blue}.
   [[nodiscard]] std::array<uint8_t, 3> ScreenColor() const {
@@ -148,9 +150,13 @@ class DisplayTest : public ::testing::Test {
  private:
   SDL_Surface* target_ = nullptr;
   SDL_Renderer* renderer_ = nullptr;
-  std::unique_ptr<Display> display_;
+  std::unique_ptr<DisplayType> display_;
   std::optional<base::Installed<Display>::Scope> display_scope_;
 };
+
+using DisplayTest = RendererDisplayTest<WindowDisplay>;
+// The window a script plays the game in, which keeps no time of its own.
+using ScriptedWindowDisplayTest = RendererDisplayTest<ScriptedWindowDisplay>;
 
 TEST_F(DisplayTest, LendsThePixelsOfTheVideoMode) {
   const std::optional<PixelSurface::Pixels> pixels = display().Lock();
@@ -331,10 +337,9 @@ TEST_F(DisplayTest, RejectsFramesThatDoNotMatchTheirSize) {
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
 }
 
-// Under a manual clock nothing may depend on real time, so the next pump
-// presents what the redraw timer would have, and no timer is armed.
-TEST_F(DisplayTest, UnderAManualClockThePumpPresentsWhatWasDrawn) {
-  const engine::platform::ManualClock clock;
+// Nothing may depend on real time, so the next pump presents what the redraw
+// timer would have, and no timer is armed.
+TEST_F(ScriptedWindowDisplayTest, ThePumpPresentsWhatWasDrawn) {
   display().SetPalette(PaletteWith(1, 63, 0, 0));
   PixelBuffer page;
   page.Init(2, 2, display());
@@ -349,8 +354,7 @@ TEST_F(DisplayTest, UnderAManualClockThePumpPresentsWhatWasDrawn) {
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
 }
 
-TEST_F(DisplayTest, UnderAManualClockAPumpWithNothingDrawnEndsNoFrame) {
-  const engine::platform::ManualClock clock;
+TEST_F(ScriptedWindowDisplayTest, APumpWithNothingDrawnEndsNoFrame) {
   RecordingFrames frames;
   display().set_observer(&frames);
 
@@ -361,8 +365,7 @@ TEST_F(DisplayTest, UnderAManualClockAPumpWithNothingDrawnEndsNoFrame) {
 }
 
 // The 70-a-second limit would make a scripted run take as long as playing.
-TEST_F(DisplayTest, UnderAManualClockPresentingDoesNotWait) {
-  const engine::platform::ManualClock clock;
+TEST_F(ScriptedWindowDisplayTest, PresentingDoesNotWait) {
   const auto start = std::chrono::steady_clock::now();
 
   for (int frame = 0; frame < 200; ++frame) {
@@ -402,7 +405,7 @@ class DisplayEventsTest : public ::testing::Test {
 };
 
 TEST_F(DisplayEventsTest, HandsEventsToTheClient) {
-  Display display(client_);
+  WindowDisplay display(client_);
   PushQuitEvent();
   display.PumpEvents();
   EXPECT_EQ(client_.events_seen, 1);
@@ -410,14 +413,14 @@ TEST_F(DisplayEventsTest, HandsEventsToTheClient) {
 }
 
 TEST_F(DisplayEventsTest, PumpsTheClientOncePerPass) {
-  Display display(client_);
+  WindowDisplay display(client_);
   display.PumpEvents();
   display.PumpEvents();
   EXPECT_EQ(client_.pumps_seen, 2);
 }
 
 TEST_F(DisplayEventsTest, DrainsTheQueueWithoutAClient) {
-  Display display;
+  WindowDisplay display;
   PushQuitEvent();
   display.PumpEvents();
   EXPECT_EQ(
@@ -450,8 +453,8 @@ class RecordingObserver final : public DisplayObserver {
 // A headless video mode has to work in a process that never starts SDL, which
 // is what a unit test of a dialog is, so none of these tests calls SDL_Init().
 TEST(HeadlessDisplayTest, LendsASurfaceOfTheSizeAsked) {
-  Display display;
-  ASSERT_TRUE(display.SetHeadlessVideoMode(640, 400));
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(640, 400));
 
   const std::optional<PixelSurface::Pixels> pixels = display.Lock();
   ASSERT_TRUE(pixels.has_value());
@@ -461,8 +464,8 @@ TEST(HeadlessDisplayTest, LendsASurfaceOfTheSizeAsked) {
 }
 
 TEST(HeadlessDisplayTest, KeepsWhatAPageDrawsOnIt) {
-  Display display;
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   PixelBuffer page;
   page.Init(8, 4, display);
 
@@ -476,8 +479,8 @@ TEST(HeadlessDisplayTest, KeepsWhatAPageDrawsOnIt) {
 }
 
 TEST(HeadlessDisplayTest, TakesThePalette) {
-  Display display;
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
 
   display.SetPalette(PaletteWith(1, 63, 0, 0));
 
@@ -494,8 +497,8 @@ TEST(HeadlessDisplayTest, TakesThePalette) {
 TEST(HeadlessDisplayTest, EndingAFrameTellsTheObserverThenPumpsTheClient) {
   RecordingClient client;
   RecordingObserver observer(client);
-  Display display(client);
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display(client);
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   display.set_observer(&observer);
 
   display.EndFrame();
@@ -510,8 +513,8 @@ TEST(HeadlessDisplayTest, EndingAFrameTellsTheObserverThenPumpsTheClient) {
 TEST(HeadlessDisplayTest, DrawingAloneEndsNoFrame) {
   RecordingClient client;
   RecordingObserver observer(client);
-  Display display(client);
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display(client);
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   display.set_observer(&observer);
 
   ASSERT_TRUE(display.Lock().has_value());
@@ -525,8 +528,8 @@ TEST(HeadlessDisplayTest, DrawingAloneEndsNoFrame) {
 TEST(HeadlessDisplayTest, AScaledFrameOnlyEndsTheFrame) {
   RecordingClient client;
   RecordingObserver observer(client);
-  Display display(client);
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display(client);
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   display.set_observer(&observer);
 
   display.PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
@@ -538,8 +541,8 @@ TEST(HeadlessDisplayTest, AScaledFrameOnlyEndsTheFrame) {
 TEST(HeadlessDisplayTest, APumpWithoutAFrameIsReportedAsOne) {
   RecordingClient client;
   RecordingObserver observer(client);
-  Display display(client);
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display(client);
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   display.set_observer(&observer);
 
   display.PumpEvents();
@@ -552,8 +555,8 @@ TEST(HeadlessDisplayTest, APumpWithoutAFrameIsReportedAsOne) {
 TEST(HeadlessDisplayTest, ADetachedObserverHearsNothingMore) {
   RecordingClient client;
   RecordingObserver observer(client);
-  Display display(client);
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display(client);
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
   display.set_observer(&observer);
   display.EndFrame();
 
@@ -564,19 +567,68 @@ TEST(HeadlessDisplayTest, ADetachedObserverHearsNothingMore) {
 }
 
 TEST(HeadlessDisplayTest, HasTheInputFocus) {
-  Display display;
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
 
   EXPECT_TRUE(display.HasInputFocus());
 }
 
 TEST(HeadlessDisplayTest, ResettingTheModeTakesTheSurfaceAway) {
-  Display display;
-  ASSERT_TRUE(display.SetHeadlessVideoMode(8, 4));
+  HeadlessDisplay display;
+  ASSERT_TRUE(display.SetVideoMode(8, 4));
 
   display.ResetVideoMode();
 
   EXPECT_FALSE(display.Lock().has_value());
+}
+
+TEST(MakeDisplayTest, MakesTheKindAsked) {
+  RecordingClient client;
+
+  const std::unique_ptr<Display> window =
+      MakeDisplay(DisplayKind::kWindow, client);
+  const std::unique_ptr<Display> scripted =
+      MakeDisplay(DisplayKind::kScriptedWindow, client);
+  const std::unique_ptr<Display> headless =
+      MakeDisplay(DisplayKind::kHeadless, client);
+
+  EXPECT_NE(dynamic_cast<WindowDisplay*>(window.get()), nullptr);
+  EXPECT_EQ(dynamic_cast<ScriptedWindowDisplay*>(window.get()), nullptr);
+  EXPECT_NE(dynamic_cast<ScriptedWindowDisplay*>(scripted.get()), nullptr);
+  EXPECT_NE(dynamic_cast<HeadlessDisplay*>(headless.get()), nullptr);
+}
+
+TEST(MakeDisplayTest, GivesTheDisplayItsClient) {
+  RecordingClient client;
+  const std::unique_ptr<Display> display =
+      MakeDisplay(DisplayKind::kHeadless, client);
+
+  display->PumpEvents();
+
+  EXPECT_EQ(client.pumps_seen, 1);
+}
+
+// A window never opened has no window to open either way.
+TEST(HeadlessDisplayTest, NeedsNoWindowOpened) {
+  HeadlessDisplay display;
+
+  EXPECT_TRUE(display.Init("title", 640, 400));
+  EXPECT_EQ(display.renderer(), nullptr);
+  EXPECT_EQ(display.PictureScale(), 1.0F);
+  EXPECT_FALSE(display.redraw_pending());
+}
+
+TEST(HeadlessDisplayTest, EndsNoFrameBeforeAVideoMode) {
+  RecordingClient client;
+  RecordingObserver observer(client);
+  HeadlessDisplay display(client);
+  display.set_observer(&observer);
+
+  display.EndFrame();
+  display.PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  EXPECT_EQ(observer.frames_ended, 0);
+  EXPECT_EQ(display.palette(), nullptr);
 }
 
 }  // namespace

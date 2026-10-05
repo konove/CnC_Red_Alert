@@ -3,6 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_STARTUP_GAME_H_
 #define CNC_RED_ALERT_RA_STARTUP_GAME_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/installed.h"
@@ -49,7 +50,14 @@ namespace ra {
 //   delete game;  // In ShutDown().
 class Game {
  public:
-  Game() { game::GadgetClass::Set_Key_Hook(&Screenshot_Key); }
+  // `display_kind` says what the game shows its picture on: its window, by
+  // default; main() asks for the scripted window when a script plays the
+  // game, and a test of a dialog for no window at all.
+  explicit Game(const engine::window::DisplayKind display_kind =
+                    engine::window::DisplayKind::kWindow)
+      : display_(engine::window::MakeDisplay(display_kind, window_events_)) {
+    game::GadgetClass::Set_Key_Hook(&Screenshot_Key);
+  }
   // Stops the IPX manager listening first: that goes through TheNetwork(),
   // which no longer resolves by the time network_ is destroyed.
   ~Game() { network_.ipx().Stop_Listening(); }
@@ -78,8 +86,8 @@ class Game {
   // Before the Display, which hands it the window's events.
   GameWindowEvents window_events_{input_};
   // Before Screen, which attaches its visible page to the window.
-  engine::window::Display display_{window_events_};
-  base::Installed<engine::window::Display>::Scope display_scope_{display_};
+  std::unique_ptr<engine::window::Display> display_;
+  base::Installed<engine::window::Display>::Scope display_scope_{*display_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

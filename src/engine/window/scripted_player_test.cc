@@ -11,6 +11,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/headless_display.h"
 #include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
 
@@ -21,7 +22,7 @@ namespace {
 // in the games, with the devices and the clock a player needs.
 class ScriptedPlayerTest : public ::testing::Test {
  protected:
-  ScriptedPlayerTest() { display_.SetHeadlessVideoMode(8, 4); }
+  ScriptedPlayerTest() { display_.SetVideoMode(8, 4); }
 
   // One turn of a dialog's loop: ends the frame, then returns the event
   // waiting in the queue, empty if there is none.
@@ -39,7 +40,7 @@ class ScriptedPlayerTest : public ::testing::Test {
     return turns;
   }
 
-  Display display_;
+  HeadlessDisplay display_;
   base::Installed<Display>::Scope display_scope_{display_};
   KeyBuffer keyboard_;
   HardwareCursor mouse_{48, 48};
@@ -197,7 +198,7 @@ TEST_F(ScriptedPlayerTest, TheClockMovesATickAFrame) {
   }
 
   EXPECT_EQ(frames, 3);
-  EXPECT_EQ(clock_.ticks(), 3);
+  EXPECT_EQ(clock_.Ticks(), 3);
 }
 
 TEST_F(ScriptedPlayerTest, ALoopTheScriptCannotEndIsCutShort) {
@@ -263,8 +264,8 @@ TEST_F(ScriptedPlayerTest, GoingBackAFrameIsAProgrammingError) {
 }
 
 TEST(ScriptedPlayerLifetimeTest, DetachesFromTheDisplayWhenDestroyed) {
-  Display display;
-  display.SetHeadlessVideoMode(8, 4);
+  HeadlessDisplay display;
+  display.SetVideoMode(8, 4);
   KeyBuffer keyboard;
   HardwareCursor mouse(48, 48);
   engine::platform::ManualClock clock;
@@ -274,7 +275,7 @@ TEST(ScriptedPlayerLifetimeTest, DetachesFromTheDisplayWhenDestroyed) {
 
   display.EndFrame();
 
-  EXPECT_EQ(clock.ticks(), 0);
+  EXPECT_EQ(clock.Ticks(), 0);
 }
 
 }  // namespace

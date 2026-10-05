@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "engine/file/game_files_test_util.h"
+#include "engine/window/display.h"
 #include "gtest/gtest.h"
 #include "ra/startup/game.h"
 
@@ -57,7 +58,8 @@ class GameFixture : public ::testing::Test {
   // One past the highest TXT_* number (ra/data/text_ids.h).
   static constexpr int kTextCount = 555;
 
-  Game game_;
+  // Without a window: the display is a surface a test may or may not use.
+  Game game_{engine::window::DisplayKind::kHeadless};
   // The strings SetText() has set, and the table made from them that Assets
   // borrows. Both are empty until the first SetText().
   std::vector<std::string> texts_;

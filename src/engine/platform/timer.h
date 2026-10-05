@@ -51,7 +51,8 @@ int64_t SystemMilliseconds();
 // needs no setup. The zero point means nothing on its own: callers compare two
 // readings to measure how much time has passed.
 //
-// While a ManualClock (manual_clock.h) exists, both functions read it instead.
+// Both functions read CurrentClock() (clock.h): the machine's clock, unless a
+// test or a scripted run has put a ManualClock in its place.
 int64_t SystemTicks();
 
 // A clock the timers below can run on: a static Tick() that never decreases.

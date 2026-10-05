@@ -8,6 +8,7 @@
 #include "engine/platform/manual_clock.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/headless_display.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/scripted_player.h"
 #include "gtest/gtest.h"
@@ -20,7 +21,7 @@ namespace {
 class PlayerScriptTest : public ::testing::Test {
  protected:
   PlayerScriptTest() {
-    display_.SetHeadlessVideoMode(8, 4);
+    display_.SetVideoMode(8, 4);
     hooks_.take_shot = [this](const std::string_view name) {
       shots_.emplace_back(name);
     };
@@ -37,7 +38,7 @@ class PlayerScriptTest : public ::testing::Test {
     return keyboard_.Peek() ? keyboard_.Read() : InputEvent{};
   }
 
-  Display display_;
+  HeadlessDisplay display_;
   base::Installed<Display>::Scope display_scope_{display_};
   KeyBuffer keyboard_;
   HardwareCursor mouse_{48, 48};

@@ -68,14 +68,25 @@ KeyNumber KeyThatTypes(const char character) {
 
 ScriptOverrun::~ScriptOverrun() = default;
 
+bool ScriptedPlayer::HeldButtons::IsLeftDown() const { return left; }
+
+bool ScriptedPlayer::HeldButtons::IsRightDown() const { return right; }
+
 ScriptedPlayer::ScriptedPlayer(Display& display, KeyBuffer& keyboard,
                                HardwareCursor& mouse,
                                engine::platform::ManualClock& clock)
-    : display_(&display), keyboard_(&keyboard), mouse_(&mouse), clock_(&clock) {
+    : display_(&display),
+      keyboard_(&keyboard),
+      mouse_(&mouse),
+      clock_(&clock),
+      previous_buttons_(&ExchangeCurrentMouseButtons(held_)) {
   display_->set_observer(this);
 }
 
-ScriptedPlayer::~ScriptedPlayer() { display_->set_observer(nullptr); }
+ScriptedPlayer::~ScriptedPlayer() {
+  display_->set_observer(nullptr);
+  ExchangeCurrentMouseButtons(*previous_buttons_);
+}
 
 ScriptedPlayer& ScriptedPlayer::At(const int frame) {
   CHECK_GE(frame, queue_frame_) << "a script is written in frame order";

@@ -78,6 +78,7 @@
 // The tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().
 #ifndef TD_NO_ENTRY_POINT
+#include <algorithm>
 #include <filesystem>
 #include <optional>
 #include <vector>
@@ -93,6 +94,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
+#include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/scripted_player.h"
 #include "td/ai/special.h"
@@ -231,8 +233,6 @@ static int Run(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  *game = std::make_unique<Game>();
-
   // Heap_Dump_Check( "first thing in main" );
   //	malloc(1);
 
@@ -265,6 +265,16 @@ static int Run(int argc, char* argv[])
   const std::vector<std::string_view> arguments(raw_arguments.begin() + 1,
                                                 raw_arguments.end());
 #endif
+
+  // The display is part of the Game, which is built before the command line
+  // is parsed, so the one switch that changes its kind is looked for here.
+  const bool scripted =
+      std::ranges::any_of(arguments, [](const std::string_view argument) {
+        return absl::StartsWithIgnoreCase(argument, "-SCRIPT");
+      });
+  *game = std::make_unique<Game>(
+      scripted ? engine::window::DisplayKind::kScriptedWindow
+               : engine::window::DisplayKind::kWindow);
 
   // Change to executable's directory (if path is present)
   const auto dir_path = program_path.parent_path();

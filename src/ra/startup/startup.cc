@@ -39,6 +39,7 @@
 // The test that links this file defines RA_NO_ENTRY_POINT; these headers
 // serve only main() and the two helpers it calls.
 #ifndef RA_NO_ENTRY_POINT
+#include <algorithm>
 #include <array>  // IWYU pragma: keep (WinMain)
 #include <cstdint>
 #include <filesystem>
@@ -52,6 +53,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -69,6 +71,7 @@
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/scripted_player.h"
 #include "ra/ai/special_options.h"
@@ -223,8 +226,6 @@ static int Run(const int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  *game = std::make_unique<Game>();
-
 #ifdef _WIN32
 
   // Westwood's own network share: refuse to run a build straight off it.
@@ -255,6 +256,16 @@ static int Run(const int argc, char* argv[])
                                                 raw_arguments.end());
 
 #endif  // _WIN32
+
+  // The display is part of the Game, which is built before the command line
+  // is parsed, so the one switch that changes its kind is looked for here.
+  const bool scripted =
+      std::ranges::any_of(arguments, [](const std::string_view argument) {
+        return absl::StartsWithIgnoreCase(argument, "-SCRIPT");
+      });
+  *game = std::make_unique<Game>(
+      scripted ? engine::window::DisplayKind::kScriptedWindow
+               : engine::window::DisplayKind::kWindow);
 
   // Run from the executable's directory, so the relative paths to the config
   // file and the local MIX files resolve however the game was launched.

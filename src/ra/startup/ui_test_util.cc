@@ -21,7 +21,7 @@ UiFixture::UiFixture()
     : font_(MakeBlockFont(6, 10)),
       player_(engine::window::TheDisplay(), game::TheKeyboard(),
               game::TheMouse(), clock_) {
-  CHECK(TheScreen().InitHeadless());
+  CHECK(TheScreen().Init());
   // A remap straight out of the constructor draws everything in colour 0,
   // which is no colour at all on a cleared page.
   for (const PlayerColorType scheme :

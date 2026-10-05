@@ -196,10 +196,21 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
     with Shift, Ctrl or Alt held.
   - A screenshot holds the game's page, not the movie frames or backdrops the display stretches
     around it.
-- **After phase 5:** the harness reaches into production code through `if` checks (is a manual clock
-  installed, is the display headless, are scripted mouse buttons installed). These are being
-  replaced by interfaces with a real and a test implementation each: the clock, the mouse buttons
-  and the display.
+- **After phase 5: the seams are interfaces, done 2026-10-05.** The harness first reached into
+  production code through checks: is a manual clock installed, is the display headless, are scripted
+  mouse buttons installed. Each is now an interface with the real thing as one implementation and
+  the test's as another, and the production functions have no branch:
+  - `engine::platform::Clock` (`clock.h`): the machine's clock and `ManualClock`. `SystemTicks()`,
+    `SystemMilliseconds()` and `SleepMs()` call `CurrentClock()`.
+  - `engine::window::Display` (`display.h`) is abstract. `WindowDisplay` is the program's window;
+    `ScriptedWindowDisplay` overrides how it schedules redraws and paces presents, which is all that
+    differs in a scripted run; `HeadlessDisplay` is the surface alone. `Game` takes a `DisplayKind`:
+    `main()` asks for the scripted window when `-SCRIPT` is given, the fixtures for the headless
+    one. `Screen::InitHeadless()` is gone: `Screen::Init()` works on any of them.
+  - `engine::window::MouseButtons` (`hardware_cursor.h`): SDL's live state, or the buttons a
+    `ScriptedPlayer` holds.
+  - Where the Components section above says "installable override" and "`InitHeadless()`", read
+    these.
 
 ## Out of scope
 

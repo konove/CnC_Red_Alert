@@ -15,7 +15,7 @@ UiFixture::UiFixture()
     : font_(MakeBlockFont(6, 10)),
       player_(engine::window::TheDisplay(), game::TheKeyboard(),
               game::TheMouse(), clock_) {
-  CHECK(TheScreen().InitHeadless());
+  CHECK(TheScreen().Init());
   // Dialogs copy their strings without asking whether there are any.
   SetText(0, "");
   for (const FontType type : magic_enum::enum_values<FontType>()) {

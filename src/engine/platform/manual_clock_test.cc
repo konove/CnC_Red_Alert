@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "engine/platform/clock.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
 #include "gtest/gtest.h"
@@ -14,6 +15,16 @@ TEST(ManualClockTest, TheSystemClockReadsItWhileItExists) {
 
   EXPECT_EQ(SystemTicks(), 0);
   EXPECT_EQ(SystemMilliseconds(), 0);
+}
+
+TEST(ManualClockTest, IsTheClockInUseWhileItExists) {
+  const Clock& machine_clock = CurrentClock();
+  {
+    const ManualClock clock;
+    EXPECT_EQ(&CurrentClock(), &clock);
+  }
+
+  EXPECT_EQ(&CurrentClock(), &machine_clock);
 }
 
 TEST(ManualClockTest, TimeMovesOnlyWhenAdvanced) {
@@ -72,8 +83,8 @@ TEST(ManualClockTest, SleepingMovesItInsteadOfWaiting) {
   // An hour, which the test would not survive sleeping through.
   SleepMs(3'600'000);
 
-  EXPECT_EQ(clock.milliseconds(), 3'600'000);
-  EXPECT_EQ(clock.ticks(), 216'000);
+  EXPECT_EQ(clock.Milliseconds(), 3'600'000);
+  EXPECT_EQ(clock.Ticks(), 216'000);
 }
 
 TEST(ManualClockTest, ASleepOfNoTimeLeavesItAlone) {
@@ -82,7 +93,7 @@ TEST(ManualClockTest, ASleepOfNoTimeLeavesItAlone) {
   SleepMs(0);
   SleepMs(-5);
 
-  EXPECT_EQ(clock.milliseconds(), 0);
+  EXPECT_EQ(clock.Milliseconds(), 0);
 }
 
 // A scripted run installs its clock over whatever a fixture installed.

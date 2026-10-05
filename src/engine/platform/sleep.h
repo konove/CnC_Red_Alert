@@ -7,28 +7,17 @@
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_
 
-#include <chrono>
-#include <thread>
-
-#include "base/installed.h"
-#include "engine/platform/manual_clock.h"
+#include "engine/platform/clock.h"
 
 namespace engine::platform {
 
-// Blocks the calling thread for at least `milliseconds`. The thread wakes no
-// earlier, but the scheduler decides how much later.
-//
-// While a ManualClock exists, moves that clock on by `milliseconds` and
-// returns at once: the time has passed as far as the caller can tell.
-inline void SleepMs(int milliseconds) {
-  if (milliseconds <= 0) {
-    return;
+// Lets at least `milliseconds` pass on the clock in use (clock.h). On the
+// machine's clock that blocks the calling thread: it wakes no earlier, but
+// the scheduler decides how much later. Zero or less returns at once.
+inline void SleepMs(const int milliseconds) {
+  if (milliseconds > 0) {
+    CurrentClock().Sleep(milliseconds);
   }
-  if (base::Installed<ManualClock>::IsInstalled()) {
-    base::Installed<ManualClock>::Get().AdvanceMilliseconds(milliseconds);
-    return;
-  }
-  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 }  // namespace engine::platform

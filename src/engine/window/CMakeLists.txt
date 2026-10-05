@@ -30,7 +30,7 @@ target_link_libraries(engine_window
 
 # PresentScaledFrame's per-pixel palette expansion is a byte-crunching kernel:
 # keep it fast when debugging everything else (cmake/OptimizeInDebug.cmake).
-optimize_in_debug(display.cc)
+optimize_in_debug(window_display.cc)
 
 # Tests
 include(Testing)

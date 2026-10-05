@@ -19,10 +19,10 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "absl/log/log.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/installed.h"
 #include "base/numeric.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/gfx/shape.h"
@@ -287,18 +287,38 @@ void HardwareCursor::RebuildCursor() {
   sdl_cursor_ = std::move(cursor);
 }
 
-bool IsLeftButtonDown() {
-  if (base::Installed<ScriptedMouseButtons>::IsInstalled()) {
-    return base::Installed<ScriptedMouseButtons>::Get().left;
+namespace {
+
+// The real mouse, read from SDL's live state.
+class SdlMouseButtons final : public MouseButtons {
+ public:
+  [[nodiscard]] bool IsLeftDown() const override {
+    return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
   }
-  return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
+  [[nodiscard]] bool IsRightDown() const override {
+    return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
+  }
+};
+
+// The mouse buttons in use, which start as the real mouse's.
+MouseButtons*& CurrentMouseButtonsSlot() {
+  static absl::NoDestructor<SdlMouseButtons> sdl_buttons;
+  static MouseButtons* current = sdl_buttons.get();
+  return current;
 }
 
-bool IsRightButtonDown() {
-  if (base::Installed<ScriptedMouseButtons>::IsInstalled()) {
-    return base::Installed<ScriptedMouseButtons>::Get().right;
-  }
-  return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
+}  // namespace
+
+MouseButtons::~MouseButtons() = default;
+
+MouseButtons& CurrentMouseButtons() { return *CurrentMouseButtonsSlot(); }
+
+MouseButtons& ExchangeCurrentMouseButtons(MouseButtons& buttons) {
+  return *std::exchange(CurrentMouseButtonsSlot(), &buttons);
 }
+
+bool IsLeftButtonDown() { return CurrentMouseButtons().IsLeftDown(); }
+
+bool IsRightButtonDown() { return CurrentMouseButtons().IsRightDown(); }
 
 }  // namespace engine::window

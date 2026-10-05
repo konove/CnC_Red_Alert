@@ -1,13 +1,11 @@
-// File: Display, the program's window and what is shown in it.
+// File: Display, where the game's picture goes and its events come from.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_
 
-#include <chrono>
 #include <cstdint>
-#include <optional>
+#include <memory>
 #include <span>
-#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
@@ -19,10 +17,11 @@
 
 namespace engine::window {
 
-// Owns the one window the program opens, the renderer that presents it, and
-// the 8-bit paletted surface the game draws the window's contents on. Each
-// game's Game owns the one Display, declared before its Screen, and
-// everything else reaches it through TheDisplay().
+// What the game shows its picture on: an 8-bit paletted surface it draws the
+// frame on, the palette that surface is seen through, and the event loop the
+// game pumps from wherever it waits. Each game's Game owns the one Display,
+// made before its Screen, and everything else reaches it through
+// TheDisplay().
 //
 // The Display is itself the PixelSurface behind the window page: the page
 // borrows the surface's pixels while it draws, and giving them back presents
@@ -32,20 +31,11 @@ namespace engine::window {
 // keeps the surface on top, so captions drawn on it at full resolution sit
 // over the art.
 //
-// It also runs the SDL event loop the games pump from wherever they wait:
-// PumpEvents() presents the frames the redraw timer asks for and hands every
-// other event to the game's DisplayClient.
-//
-// While an engine::platform::ManualClock exists the Display keeps no time of
-// its own, so that a scripted run of the game does the same thing every
-// time: drawing left in the surface is presented by the next PumpEvents()
-// instead of by the redraw timer, and PresentFrame() does not pace itself.
-//
-// Constructing a Display opens nothing: Init() creates the window once the
-// configured video mode is known, and SetVideoMode() the surface. A test
-// builds one and leaves it closed, adopts a window and renderer it made
-// itself, or sets a headless video mode: the surface alone, with the frames
-// the game ends reported to a DisplayObserver instead of shown.
+// There are three kinds, made by MakeDisplay():
+//   WindowDisplay          the program's window (window_display.h)
+//   ScriptedWindowDisplay  the same window for a scripted run, which keeps no
+//                          time of its own
+//   HeadlessDisplay        the surface alone, for tests (headless_display.h)
 //
 // Example:
 //   Display& display = TheDisplay();
@@ -55,15 +45,6 @@ namespace engine::window {
 //   display.EndFrame();
 class Display : public PixelSurface {
  public:
-  // A Display whose event loop drops the game's events. For tests.
-  Display();
-  // A Display whose event loop hands the game's events to `client`.
-  explicit Display(DisplayClient& client ABSL_ATTRIBUTE_LIFETIME_BOUND);
-  // Adopts an SDL_Window and SDL_Renderer the caller made and keeps owning,
-  // and drops the game's events. For tests that need a renderer without a
-  // game window.
-  Display(void* window ABSL_ATTRIBUTE_LIFETIME_BOUND,
-          void* renderer ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~Display() override;
 
   Display(const Display&) = delete;
@@ -71,214 +52,122 @@ class Display : public PixelSurface {
   Display(Display&&) = delete;
   Display& operator=(Display&&) = delete;
 
-  // Opens the window and its renderer, scaled up from the game's resolution,
-  // and registers the event the redraw timer posts. Returns false if SDL
-  // could not create either.
-  bool Init(const char* title, int width, int height);
+  // Opens the window and whatever presents it, scaled up from the game's
+  // resolution. Returns false if that failed. A display without a window has
+  // nothing to open and returns true.
+  virtual bool Init(const char* title, int width, int height) = 0;
 
   // Sets the picture the window manager shows for the window, in its title
   // bar and task switcher. Windows takes it from the executable's icon
   // resource unless this replaces it; Linux and macOS have no such resource,
-  // so without this the window has none. Taken by value because SDL wants the
-  // pixels writable, though it only copies them. Does nothing before Init().
-  void SetIcon(engine::gfx::IcoImage icon);
+  // so without this the window has none. Does nothing before Init().
+  virtual void SetIcon(engine::gfx::IcoImage icon) = 0;
 
-  // Creates the width x height paletted surface the game draws on and the
-  // texture it is presented through, replacing those of an earlier mode.
-  // Needs the renderer, from Init() or the adopting constructor. Returns
-  // false, with no surface, if SDL refused either.
-  bool SetVideoMode(int width, int height);
-  // Creates the width x height paletted surface with nothing behind it: no
-  // window, no renderer and no SDL subsystem, so Init() is not needed. The
-  // game draws on the surface and sets its palette as usual, and ending a
-  // frame presents nothing: it tells the observer, then pumps the client. No
-  // SDL event is polled, no redraw timer runs and nothing waits for a display
-  // refresh, so a loop runs as fast as it computes. A scaled frame or
-  // backdrop is not kept; presenting one only ends the frame. For tests of
-  // the code that draws and waits for input. Returns false, with no surface,
-  // if SDL refused it.
-  bool SetHeadlessVideoMode(int width, int height);
-  // Destroys the surface and textures and cancels a pending redraw, leaving
-  // the Display as it was before SetVideoMode(). The destructor calls it;
-  // calling it again does nothing.
-  void ResetVideoMode();
-
-  // Locks the paletted surface for a page to draw on. Fails before
-  // SetVideoMode() or if SDL cannot lock it.
-  std::optional<Pixels> Lock() override;
-  // Unlocks the surface, drops a movie frame so that what was drawn shows
-  // instead (a backdrop stays under it), and arms the redraw timer to present
-  // it.
-  void Unlock() override;
+  // Creates the width x height paletted surface the game draws on, replacing
+  // that of an earlier mode. Returns false, with no surface, on failure.
+  virtual bool SetVideoMode(int width, int height) = 0;
+  // Destroys the surface and cancels a pending redraw, leaving the Display as
+  // it was before SetVideoMode(). Calling it again does nothing.
+  virtual void ResetVideoMode() = 0;
 
   // The SDL_Renderer, as a void* so that callers need no SDL header. For
-  // engine_window's own drawing code; nullptr before Init().
-  [[nodiscard]] void* renderer() const { return renderer_; }
+  // engine_window's own drawing code; nullptr when there is none.
+  [[nodiscard]] virtual void* renderer() const = 0;
 
   // Sets the palette the paletted pixels are shown through, and redraws with
   // it. Anything already presented changes color, the way a VGA palette write
   // did. Does nothing before SetVideoMode(). The mouse cursor bakes its colors
   // in, so the games recolor it after this.
-  void SetPalette(const engine::gfx::Palette& palette);
+  virtual void SetPalette(const engine::gfx::Palette& palette) = 0;
   // The SDL_Palette of the paletted surface, as a void* so that callers need
   // no SDL header; nullptr before SetVideoMode().
-  [[nodiscard]] const void* palette() const;
+  [[nodiscard]] virtual const void* palette() const = 0;
 
   // Presents the surface, or the scaled frame showing instead of it,
-  // immediately, ending the frame. Does nothing before SetVideoMode().
-  void EndFrame();
+  // immediately, ending the frame: the observer is told, then events are
+  // pumped. Does nothing before SetVideoMode().
+  virtual void EndFrame() = 0;
 
   // Attaches the observer told of every frame ended and every event pump
   // from now on, replacing the one before; nullptr detaches it. It must stay
   // alive while attached.
   void set_observer(DisplayObserver* observer) { observer_ = observer; }
 
-  // Presents `frame`, `width` x `height` pixels, stretched to the window by
-  // SDL rather than by the game - this is how a 320x200 movie fills a 640x400
-  // screen without the game scaling every frame itself. Uses the palette
-  // already set. The frame stays on screen, following later palette changes
-  // the way a VGA screen would, until something is drawn to the surface.
-  // Does nothing before SetVideoMode(), or if `frame` holds fewer than
-  // width * height pixels.
-  void PresentScaledFrame(std::span<const uint8_t> frame, int width,
-                          int height);
+  // Presents `frame`, `width` x `height` pixels, stretched to the window -
+  // this is how a 320x200 movie fills a 640x400 screen without the game
+  // scaling every frame itself. Uses the palette already set. The frame stays
+  // on screen, following later palette changes the way a VGA screen would,
+  // until something is drawn to the surface. Does nothing before
+  // SetVideoMode(), or if `frame` holds fewer than width * height pixels.
+  virtual void PresentScaledFrame(std::span<const uint8_t> frame, int width,
+                                  int height) = 0;
   // Drops the scaled frame, so the next present shows the surface again.
   // Unlock() calls it as soon as anything draws.
-  void DropScaledFrame();
+  virtual void DropScaledFrame() = 0;
 
   // Presents `frame` stretched to the window like PresentScaledFrame(), but
   // as a backdrop: the surface is drawn over it with color 0 see-through, and
   // drawing on the surface keeps the backdrop and is presented over it. It
   // stays until ClearBackdrop(), DropScaledFrame() or a movie frame. Rejects
   // the frames PresentScaledFrame() does.
-  void PresentBackdrop(std::span<const uint8_t> frame, int width, int height);
+  virtual void PresentBackdrop(std::span<const uint8_t> frame, int width,
+                               int height) = 0;
   // Drops the scaled frame if it is a backdrop, so the next present shows the
   // surface alone; a movie frame stays.
-  void ClearBackdrop();
+  virtual void ClearBackdrop() = 0;
 
-  // Presents the renderer, at most 70 times a second. With working vsync the
-  // present itself waits for the display refresh and this never sleeps.
-  // Without it (SDL's software renderer, used by the dummy video driver,
-  // reports vsync but does not wait) this sleeps out the rest of the
-  // interval, so the many loops that present while waiting for input do not
-  // spin a core.
-  void PresentFrame();
+  // Whether drawing is waiting in the surface to be presented.
+  [[nodiscard]] virtual bool redraw_pending() const = 0;
 
-  // Posts the event that makes the event loop end the frame, so that drawing
-  // which armed the redraw timer is presented even if nothing else draws.
-  // Called from an SDL timer thread.
-  void PostRedrawEvent();
-
-  // Whether drawing is waiting in the surface to be presented: the redraw
-  // timer is armed or, under a ManualClock, the next PumpEvents() will
-  // present it.
-  [[nodiscard]] bool redraw_pending() const {
-    return redraw_timer_ != 0 || redraw_on_pump_;
-  }
-
-  // Drains SDL's event queue: runs the client's Pump(), then ends the frame
-  // on each redraw event and passes every other event to the client's
-  // HandleEvent(). Returns once the queue is empty; it never waits for an
-  // event. Works before Init(), with no window to post events. In a headless
-  // video mode it leaves SDL's queue alone.
+  // Runs the client's Pump(), then hands it every event that is waiting.
+  // Returns once there are none left; it never waits for an event.
   //
-  // It is re-entrant. Ending the frame presents, and Present() pumps again so
-  // the game's wait-for-input loops keep answering, so a redraw event runs a
-  // nested loop that drains the rest of the queue.
-  void PumpEvents();
+  // It is re-entrant. Ending a frame pumps, so that the game's
+  // wait-for-input loops keep answering.
+  virtual void PumpEvents() = 0;
 
   // Brings the window back from minimized and raises it to the front.
-  void Restore();
-  // Whether the window has the keyboard focus. A headless Display always
-  // has it.
-  [[nodiscard]] bool HasInputFocus() const;
+  virtual void Restore() = 0;
+  // Whether the window has the keyboard focus. A display without a window
+  // always has it.
+  [[nodiscard]] virtual bool HasInputFocus() const = 0;
 
-  // How many window units one pixel of the game's picture spans. SDL draws the
-  // picture at a whole number of screen pixels per game pixel, the largest
-  // that fits the window; on a high-DPI display a window unit spans several
-  // screen pixels, so the result can be fractional. The OS draws the mouse
-  // cursor in window units, which is what this sizes. Returns 1 without a
+  // How many window units one pixel of the game's picture spans. The OS draws
+  // the mouse cursor in window units, which is what this sizes. 1 without a
   // renderer.
-  [[nodiscard]] float PictureScale() const;
+  [[nodiscard]] virtual float PictureScale() const = 0;
   // Confines the mouse to the window, or releases it.
-  void SetMouseGrab(bool grab);
+  virtual void SetMouseGrab(bool grab) = 0;
+
+ protected:
+  // A Display whose event loop drops the game's events.
+  Display();
+  // A Display whose event loop hands the game's events to `client`.
+  explicit Display(DisplayClient& client ABSL_ATTRIBUTE_LIFETIME_BOUND);
+
+  // Where PumpEvents() sends the game's events.
+  [[nodiscard]] DisplayClient& client() const { return *client_; }
+
+  // Tells the observer, if there is one, that a frame has ended or that
+  // events are about to be pumped.
+  void NotifyFrameEnd();
+  void NotifyPump();
 
  private:
-  // Tells the observer a frame has ended and pumps events. Every path that
-  // ends a frame finishes here.
-  void FrameEnded();
-
-  // Presents what the window should show. With `end_frame` false it only arms
-  // the redraw timer, so that a burst of drawing is presented once, a
-  // thirtieth of a second after it started, if nothing ends the frame first.
-  void Present(bool end_frame);
-
-  // Arms a one-shot timer that posts the redraw event a thirtieth of a second
-  // from now, and does nothing if one is already pending. The game draws in
-  // bursts between waits for input; without this the last burst before a wait
-  // would not reach the window until the wait ended.
-  void ArmRedrawTimer();
-  // Cancels a pending redraw timer. Called by whatever presents the window
-  // first, and by ~Display so that no callback outlives the Display it posts
-  // its event to.
-  void CancelRedrawTimer();
-
-  // Stores `frame` as the scaled frame, a backdrop if `backdrop`, and
-  // presents it; PresentScaledFrame() and PresentBackdrop() differ only in
-  // `backdrop`.
-  void ShowScaledFrame(std::span<const uint8_t> frame, int width, int height,
-                       bool backdrop);
-
-  // Converts the paletted surface to window_texture_ in the current palette.
-  // With `see_through` set, color 0 becomes transparent, for drawing the
-  // surface over a backdrop; otherwise every pixel is opaque.
-  void UploadSurface(bool see_through);
-
-  // Converts scaled_frame_ to RGBA with the current palette and uploads it to
-  // scaled_frame_texture_. Returns false if SDL refused the texture.
-  bool UploadScaledFrame();
-
-  // Where PumpEvents() sends the game's events; never null.
-  DisplayClient* client_;
-  // Told of frames and pumps; nullptr when nobody watches.
-  DisplayObserver* observer_ = nullptr;
-  // Whether the video mode is a headless one: a surface and nothing else.
-  bool headless_ = false;
-
-  // SDL types, held as void* so that this header pulls in no SDL headers.
-  void* window_ = nullptr;    // SDL_Window*, the program's one window
-  void* renderer_ = nullptr;  // SDL_Renderer*, what presents it
-  // Whether this Display created window_ and renderer_ and must destroy them.
-  bool owns_window_ = false;
-  // SDL_Surface*, the 8-bit pixels the game draws on; null before
-  // SetVideoMode().
-  void* palette_surface_ = nullptr;
-  // SDL_Texture*, the surface converted to ARGB for presenting, with alpha
-  // blending so that it can be drawn over a backdrop; null exactly when
-  // palette_surface_ is.
-  void* window_texture_ = nullptr;
-  // SDL_Texture* holding the scaled frame, stretched to the window when
-  // presented; null while the surface is what the window shows.
-  void* scaled_frame_texture_ = nullptr;
-  int scaled_frame_width_ = 0;
-  int scaled_frame_height_ = 0;
-  // The paletted pixels behind scaled_frame_texture_, scaled_frame_width_ x
-  // scaled_frame_height_. The texture holds baked colors, so a palette change
-  // has to convert these again. Empty while there is no texture.
-  std::vector<uint8_t> scaled_frame_;
-  // Whether the scaled frame is a backdrop, shown under the surface, rather
-  // than a movie frame shown instead of it. False while there is none.
-  bool backdrop_ = false;
-  // The SDL event type PostRedrawEvent() posts, 0 before Init().
-  uint32_t redraw_event_ = 0;
-  // SDL_TimerID of the pending redraw, 0 when none is armed.
-  int redraw_timer_ = 0;
-  // Under a ManualClock, whether the next PumpEvents() presents the surface,
-  // which is what stands in for the redraw timer there.
-  bool redraw_on_pump_ = false;
-  // The earliest time the next present may happen.
-  std::chrono::steady_clock::time_point next_present_;
+  DisplayClient* client_;                // never null
+  DisplayObserver* observer_ = nullptr;  // nullptr when nobody watches
 };
+
+// The kinds of Display there are.
+enum class DisplayKind {
+  kWindow,          // the program's window
+  kScriptedWindow,  // the window of a scripted run
+  kHeadless,        // no window: the surface alone
+};
+
+// Makes a Display of `kind` that hands the game's events to `client`, which
+// must outlive it.
+std::unique_ptr<Display> MakeDisplay(DisplayKind kind, DisplayClient& client);
 
 // Returns the Display that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.

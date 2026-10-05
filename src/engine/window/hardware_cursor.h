@@ -200,18 +200,37 @@ class HardwareCursor {
   bool palette_stale_ = false;
 };
 
-// The mouse buttons a scripted player is holding down. While one is installed
-// (base::Installed<ScriptedMouseButtons>) it is what IsLeftButtonDown() and
-// IsRightButtonDown() report, since SDL knows nothing of a script's mouse.
-// ScriptedPlayer installs its own.
-struct ScriptedMouseButtons {
-  bool left = false;
-  bool right = false;
+// Which mouse buttons are held down right now, as opposed to the clicks that
+// are queued. The game asks the real mouse, through SDL; a ScriptedPlayer
+// puts its own buttons in its place, since SDL knows nothing of a script's
+// mouse.
+class MouseButtons {
+ public:
+  virtual ~MouseButtons();
+
+  MouseButtons(const MouseButtons&) = delete;
+  MouseButtons& operator=(const MouseButtons&) = delete;
+  MouseButtons(MouseButtons&&) = delete;
+  MouseButtons& operator=(MouseButtons&&) = delete;
+
+  [[nodiscard]] virtual bool IsLeftDown() const = 0;
+  [[nodiscard]] virtual bool IsRightDown() const = 0;
+
+ protected:
+  MouseButtons() = default;
 };
 
-// Returns whether the left or right mouse button is held down right now, read
-// from SDL's live state rather than from the queued clicks, or from the
-// installed ScriptedMouseButtons when there is one.
+// Returns the mouse buttons in use: the real mouse's, unless others have been
+// made current.
+MouseButtons& CurrentMouseButtons();
+
+// Makes `buttons` the mouse buttons in use and returns the ones they replace,
+// which the caller puts back the same way. `buttons` must stay alive while
+// current. Main thread only.
+MouseButtons& ExchangeCurrentMouseButtons(MouseButtons& buttons);
+
+// Returns whether the left or right mouse button is held down right now, on
+// the mouse buttons in use.
 bool IsLeftButtonDown();
 bool IsRightButtonDown();
 

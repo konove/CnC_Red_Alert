@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "engine/file/game_files_test_util.h"
+#include "engine/window/display.h"
 #include "gtest/gtest.h"
 #include "td/startup/game.h"
 
@@ -56,7 +57,8 @@ class GameFixture : public ::testing::Test {
   // More than the text table has entries; the debug strings start here.
   static constexpr int kTextCount = 1000;
 
-  Game game_;
+  // Without a window: the display is a surface a test may or may not use.
+  Game game_{engine::window::DisplayKind::kHeadless};
   // The strings SetText() has set, and the table made from them that Assets
   // borrows. Both are empty until the first SetText().
   std::vector<std::string> texts_;

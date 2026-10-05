@@ -6,30 +6,31 @@
 
 #include <cstdint>
 
-#include "base/installed.h"
+#include "engine/platform/clock.h"
 
 namespace engine::platform {
 
-// While one exists, SystemTicks() and SystemMilliseconds() (timer.h) read it
-// instead of the machine's clock, so everything that waits on real time -- a
+// A Clock that moves only when told to. While one exists it is the clock in
+// use (CurrentClock()), so everything that waits on real time -- a
 // Timer<SystemTickSource>, a fade, a frame limiter -- waits on Advance()
 // instead. A test, or a scripted run of the game, advances it a tick at a
-// time. SleepMs() (sleep.h) advances it too, instead of sleeping: a loop that
-// sleeps until a deadline reaches it at once. Code that waits without
-// sleeping or anything else advancing the clock waits forever.
+// time. Sleeping advances it too, instead of blocking: a loop that sleeps
+// until a deadline reaches it at once. Code that waits without sleeping or
+// anything else advancing the clock waits forever.
 //
-// It installs itself for its own lifetime, and puts back the clock that was
-// there before, if any.
+// It makes itself current for its own lifetime, and puts back the clock that
+// was there before. Clocks nested this way must end in the reverse order they
+// began.
 //
 // Example:
 //   ManualClock clock;
 //   const Timer<SystemTickSource> wait{3};
 //   clock.Advance(3);
 //   EXPECT_FALSE(wait.HasTimeLeft());
-class ManualClock {
+class ManualClock final : public Clock {
  public:
-  ManualClock() = default;
-  ~ManualClock() = default;
+  ManualClock();
+  ~ManualClock() override;
 
   ManualClock(const ManualClock&) = delete;
   ManualClock& operator=(const ManualClock&) = delete;
@@ -45,10 +46,18 @@ class ManualClock {
 
   // The time in ticks, counted from 0 when the clock was made and rounded
   // down.
-  [[nodiscard]] int64_t ticks() const { return units_ / kUnitsPerTick; }
+  [[nodiscard]] int64_t Ticks() const override {
+    return units_ / kUnitsPerTick;
+  }
   // The same time in milliseconds, rounded down.
-  [[nodiscard]] int64_t milliseconds() const {
+  [[nodiscard]] int64_t Milliseconds() const override {
     return units_ / kUnitsPerMillisecond;
+  }
+
+  // Moves the clock on by `milliseconds` and returns at once: the time has
+  // passed as far as the caller can tell.
+  void Sleep(const int milliseconds) override {
+    AdvanceMilliseconds(milliseconds);
   }
 
  private:
@@ -58,7 +67,8 @@ class ManualClock {
   static constexpr int64_t kUnitsPerMillisecond = 3;
 
   int64_t units_ = 0;
-  base::Installed<ManualClock>::Scope scope_{*this};
+  // The clock this one replaced, put back when it goes.
+  Clock* previous_;
 };
 
 }  // namespace engine::platform
