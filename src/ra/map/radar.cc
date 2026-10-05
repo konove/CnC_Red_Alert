@@ -110,7 +110,7 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"

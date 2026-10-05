@@ -154,7 +154,7 @@ apply_language_setting(ra_reinforcements_test)
 add_gtest(
     NAME ra_core_helpers_test
     SOURCES
-        core/inline_test.cc
+        data/text_test.cc
         core/random_pick_test.cc
         core/coord_test.cc
         startup/game_test_util.cc

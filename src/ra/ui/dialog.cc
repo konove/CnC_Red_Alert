@@ -79,7 +79,7 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
 #include "ra/ui/color_scheme.h"

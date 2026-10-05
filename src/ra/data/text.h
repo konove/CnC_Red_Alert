@@ -18,8 +18,8 @@
 
 // The text table lookup.
 
-#ifndef CNC_RED_ALERT_RA_CORE_INLINE_H_
-#define CNC_RED_ALERT_RA_CORE_INLINE_H_
+#ifndef CNC_RED_ALERT_RA_DATA_TEXT_H_
+#define CNC_RED_ALERT_RA_DATA_TEXT_H_
 
 #include <iterator>
 #include <span>
@@ -55,4 +55,4 @@ inline const char* TextString(const int text_id) {
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_CORE_INLINE_H_
+#endif  // CNC_RED_ALERT_RA_DATA_TEXT_H_

@@ -84,7 +84,7 @@
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/net/network.h"
 #include "ra/net/session.h"

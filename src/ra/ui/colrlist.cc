@@ -51,7 +51,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/list.h"

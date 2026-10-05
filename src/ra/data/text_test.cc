@@ -1,6 +1,6 @@
 // Tests the text table lookup against a real Game with no game data.
 
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 
 #include "gtest/gtest.h"
 #include "ra/data/text_ids.h"

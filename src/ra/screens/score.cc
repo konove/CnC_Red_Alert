@@ -75,7 +75,7 @@
 #include "ra/assets/theme.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/logic.h"
