@@ -1145,11 +1145,17 @@
     the new one; both decide draw and logic order, and only the 600-frame headless logic logs cover
     them now. Test a partly sorted layer: one `Sort()` pass, then where `Sorted_Add()` lands
 
-- Play a two-instance network game in each game to check `docs/COORDINATE_TYPES_PLAN.md`
+- Run a two-instance network game in each game to check `docs/COORDINATE_TYPES_PLAN.md`
   - The plan changed what `EventClass` packets carry (`Coordinate`, `Target`, `Cell` instead of
     integers) and never ran a real network game; `static_assert`s pin the packet sizes (RA 32, TD 24
     bytes) and `xcheck.sh` matched single-player logs, but nothing exchanged packets. Cover move,
     attack, sell, place (buildings and RA's Chronosphere/Iron Curtain targets) and repair
+  - What stands in the way of doing it on one machine, found in `docs/TEST_HARNESS_PLAN.md` phase 6:
+    Red Alert binds UDP port 1234 on every address and sends to the same port (`ra/net/wspudp.cc`
+    ~190, ~389), so a second instance cannot bind; a scripted run's clock moves a tick a frame, so
+    the network timeouts, which count ticks, run out in milliseconds while the other process is
+    still starting; and the lobby's timing depends on how the two processes interleave, which a
+    script keyed by frame number cannot follow. The plan sketches the way round each
 - Line up the coordinate-type tests between the games
   - RA's `target_test.cc` lives in `ra/objects/`, TD's in `td/core/`; TD's suites are `TdCellTest`
     and `TdCoordinateTest` but plain `TargetTest`; the ctest targets `ra_packed_test` and
@@ -1165,12 +1171,13 @@
   - A team type whose house is `HOUSE_NONE` kills the team list: `TeamTypeClass::Description()`
     (`ra/ai/teamtype.cc` ~1615) calls `HouseTypeClass::As_Reference(House)`, which CHECK-fails on
     -1. The team dialog always sets a house, so only a scenario file can produce one
-- Find out why some Red Alert scenarios never reach frame 1 when started headless
-  - `rasdl -NOMOVIES -NEWGAME<name> -QUITFRAME2` under `SDL_VIDEODRIVER=dummy` hangs (killed by a 60
-    s timeout, no output) for SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM multiplayer
-    maps; the other 37 campaign scenarios run. The pre-plan binary (`2d6ef8ed`) does the same, so it
-    predates `docs/CCPTR_REMOVAL_PLAN.md`
-  - Until it is fixed, headless logic logs and save/load smoke tests cannot cover those scenarios
+- Start Red Alert's multiplayer maps unattended
+  - `rasdl -NOMOVIES -NEWGAMESCM02EA -QUITFRAME10` CHECK-fails in `SidebarClass::Reload_Sidebar()`
+    (`ra/map/sidebar.cc` ~432) for 13 of the 24 SCM maps: `-NEWGAME` starts them as a campaign game,
+    the player's house keeps a multiplayer `ActLike`, and the table of sidebar art has no entry for
+    it. A multiplayer map needs a multiplayer start, which is what the two-instance network run
+    below would give; until then the headless logic logs and save/load smoke tests cannot cover
+    those maps
 - Look once at the screenshots of the UI scripts, and script the score screens
   - `tools/ui_check.py --accept` leaves PNGs of every screen the scripts reach in `build/ui_check/`:
     RA's main menu, difficulty and side prompts, options dialogs, credits, a mission, the map

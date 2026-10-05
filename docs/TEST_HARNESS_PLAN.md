@@ -212,6 +212,34 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - Where the Components section above says "installable override" and "`InitHeadless()`", read
     these.
 
+- **Phase 6, the headless "hang": done 2026-10-05.** It was not a hang. The five campaign scenarios
+  (SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA) have no briefing movie, so `Start_Scenario()`
+  restates the mission in a message box and waits for OK. A `-QUITFRAME` run now skips that box; all
+  five run, and `tools/ra_saveload_smoke.sh` passes on SCG03EA. A `-SCRIPT` run still shows the box
+  and can answer it.
+  - The multiplayer maps are another matter: 13 of the 24 CHECK-fail in
+    `SidebarClass::Reload_Sidebar()` when started with `-NEWGAME`, which starts them as a campaign
+    game. They need a multiplayer start (`TODO.md`).
+- **Phase 6, the two-instance network game: not done.** It needs decisions, so it is left as a
+  design sketch rather than built:
+  - _Two instances on one machine._ Red Alert binds UDP port 1234 on every address and sends to that
+    port, with only the IP in a player's address. Loopback has a whole /8, so a switch that binds
+    one local address (`127.0.0.1` for one instance, `127.0.0.2` for the other) and names the other
+    as the broadcast address would let both run with the protocol as it is. Tiberian Dawn plays over
+    one TCP connection and needs its own look.
+  - _The clock._ The protocol's timeouts count ticks. Under a `ManualClock` they run out in
+    milliseconds of real time, before the other process has answered. A network run has to keep the
+    machine's clock, so its script cannot be keyed by frame number as the others are.
+  - _The lobby._ When each side sees the other depends on how two processes interleave. Either the
+    script waits on the screen ("until this pixel is that colour") instead of on a frame, or the
+    lobby is skipped: a developer switch that builds the two-player session directly, as `-NEWGAME`
+    does for a campaign.
+  - _The check._ Both instances log object positions with `-QUITFRAME`; the two logs must be the
+    same, which `xcheck.sh` already compares for two binaries. Orders (move, attack, sell, place,
+    repair) come from each side's script.
+  - Skipping the lobby is the smaller build and tests the packets, which is what
+    `docs/COORDINATE_TYPES_PLAN.md` asks for; the lobby itself would stay a check by hand.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

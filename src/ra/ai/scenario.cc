@@ -166,6 +166,7 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
+#include "ra/startup/startup_options.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/msgbox.h"
@@ -410,7 +411,10 @@ bool Start_Scenario(char* name, bool briefing) {
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
                    VQName.at(TheScenario().BriefMovie));
   }
+  // Not in a -QUITFRAME run: nobody is there to read the mission and press
+  // OK, and the run would wait at the box until it was killed.
   if (TheSession().Type == GAME_NORMAL &&
+      TheStartupOptions().quit_at_frame < 0 &&
       (TheScenario().BriefMovie == VQ_NONE || !GameFileExists(buffer))) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
