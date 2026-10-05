@@ -152,6 +152,17 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - `UiFixture` gives every colour scheme one palette index of its own, `SchemeColor()`, so text can
     be found on the page.
 
+- **Phase 3, editor dialogs: done 2026-10-05.** `ra/editor/trigger_type_dialog.cc` went from 0 to
+  1,184 of 1,239 lines (`trigger_type_dialog_test.cc`: a round trip of every event and action type
+  through the dialog, the two style buttons, typing a name, OK, Cancel). The trigger and team lists
+  of `MapEditClass` are covered by `map_editor_lists_test.cc`, which closes the last manual check of
+  `docs/CCPTR_REMOVAL_PLAN.md`.
+  - `ScriptedPlayer::Type()` types text, and `Key()` gives Return, Backspace, Tab, Esc and Space
+    their character. Without SDL's keyboard there is no layout for `KeyBuffer::ToAscii()` to look a
+    key up in, so the character has to travel with the event, as SDL's text input delivers it.
+  - Not done: clicking a drop list open. The drop buttons take their size from `EBTN-UP.SHP`, which
+    the fixture does not have; a synthetic shape file would open them.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

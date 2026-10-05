@@ -274,6 +274,28 @@ add_gtest(
     LIBS base
 )
 
+# Plays the scenario editor's trigger dialog on a headless screen.
+add_gtest(
+    NAME ra_trigger_type_dialog_test
+    SOURCES editor/trigger_type_dialog_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_trigger_type_dialog_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_trigger_type_dialog_test)
+apply_language_setting(ra_trigger_type_dialog_test)
+
+# Plays the scenario editor's trigger and team lists on a headless screen.
+add_gtest(
+    NAME ra_map_editor_lists_test
+    SOURCES editor/map_editor_lists_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_map_editor_lists_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_map_editor_lists_test)
+apply_language_setting(ra_map_editor_lists_test)
+
 # Rolls the credits in a real Game on a headless screen.
 add_gtest(
     NAME ra_credits_roll_test

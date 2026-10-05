@@ -1028,8 +1028,6 @@
       expected 700. `BeginProductionAction`, `AllHuntAction`, `FireSaleAction` and
       `AutocreateAction` differ in one line each, as do the classes around a waypoint; decide
       between a `HouseAction` base like `TeamAction`, or splitting the file by payload
-    - Check the trigger dialog by hand: it opens an existing trigger with the right widgets filled,
-      switching the action type switches the value widget, and OK then reopening shows what was set
     - `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` only runs with `RA_SCENARIO_DIR` set
       to a directory of extracted scenario INIs (`mixdump <game-dir> SCG01EA.INI <out>`); it passed
       on the 42 campaign scenarios of the Steam install
@@ -1146,10 +1144,15 @@
     `td_coord_inline_test` now mostly hold the `Cell` and `Coordinate` tests, so their names mislead
   - `ra/core/cell_test.cc` repeats the four layout `static_assert`s that `ra/core/cell.h` already
     has
-- Check Red Alert's scenario editor team-type and trigger-type lists on a real display
-  - They hold plain pointers since `6f1cc3a2` (`ra/editor/mapedtm.cc`, `ra/editor/mapeddlg.cc`);
-    check that both lists are sorted by name, the current entry is selected, and edit and delete
-    work. The last open item of `docs/CCPTR_REMOVAL_PLAN.md`
+- Cover the rest of Red Alert's scenario editor dialogs (`ra/editor/mapedtm.cc` 132 of 385 lines,
+  `ra/editor/mapeddlg.cc` 166 of 1,746)
+  - The trigger and team lists are covered by `ra/editor/map_editor_lists_test.cc`: name order, the
+    entry clicked, Edit, New, Delete and OK. Still open: the team dialog (`TeamTypeClass::Edit()`,
+    `Team_Members()`), New/Load/Save scenario, `Pick_Scenario()`, `Size_Map()` and
+    `Scenario_Dialog()`, all of which `UiFixture` can now drive
+  - A team type whose house is `HOUSE_NONE` kills the team list: `TeamTypeClass::Description()`
+    (`ra/ai/teamtype.cc` ~1615) calls `HouseTypeClass::As_Reference(House)`, which CHECK-fails on
+    -1. The team dialog always sets a house, so only a scenario file can produce one
 - Find out why some Red Alert scenarios never reach frame 1 when started headless
   - `rasdl -NOMOVIES -NEWGAME<name> -QUITFRAME2` under `SDL_VIDEODRIVER=dummy` hangs (killed by a 60
     s timeout, no output) for SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM multiplayer
@@ -1182,8 +1185,12 @@
   - The placement `operator new` in `trigger_type.h` ~113 is only used by `ObjectHeap::Load()`; a
     save and load of the trigger type heap through an `ArchiveWriter` would cover it and
     `TriggerType::Serialize()`
-  - `ra/editor/trigger_type_dialog.cc` (1,227 lines, 0%) is a modal loop over the display and the
-    input queue. The per-slot structs above would leave `Store()` testable without either
+  - `ra/editor/trigger_type_dialog.cc` is at 1,184 of 1,239 lines through
+    `ra/editor/trigger_type_dialog_test.cc`. Not reached: the drop lists opened by the mouse
+    (`ActionChoice::Draw_It()` ~107, the speech and sound previews ~1385-1402, switching the event
+    or action by picking another entry), because the fixture has no `EBTN-UP.SHP`/`EBTN-DN.SHP` and
+    the drop buttons are zero-sized; and the waypoint field of an event (~318, ~1451), which no
+    event type takes
   - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
     builds the internal version, where it is skipped
 - Clear CLion's "never used" finding in `ra/screens/credits_text_test.cc`
