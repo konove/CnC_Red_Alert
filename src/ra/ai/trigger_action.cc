@@ -529,6 +529,79 @@ class ReinforcementsAction final : public TeamAction {
   }
 };
 
+// An action on another trigger type, which is null when the scenario named
+// none or once it has been destroyed.
+class TriggerReferenceAction : public TriggerAction {
+ public:
+  void Detach(const Target target) final {
+    if (target.kind() == RTTI_TRIGGERTYPE &&
+        trigger_type_ == target.AsTriggerType()) {
+      trigger_type_ = nullptr;
+    }
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const final {
+    return {.type = type(), .trigger_type = trigger_type_};
+  }
+
+ protected:
+  explicit TriggerReferenceAction(
+      TriggerType* trigger_type ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : trigger_type_(trigger_type) {}
+
+  [[nodiscard]] TriggerType* trigger_type() const { return trigger_type_; }
+
+ private:
+  TriggerType* trigger_type_;  // nullptr for none.
+};
+
+// Destroys every trigger of the type. The springing trigger may be among
+// them; TriggerClass::Spring() checks for that when Perform() returns.
+class DestroyTriggerAction final : public TriggerReferenceAction {
+ public:
+  explicit DestroyTriggerAction(TriggerType* trigger_type)
+      : TriggerReferenceAction(trigger_type) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kDestroyTrigger;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (trigger_type() == nullptr) {
+      return true;
+    }
+    // Deleting a trigger closes the gap in the heap's in-use list, so the
+    // index is stepped back to look at the trigger that moved into it.
+    for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
+      TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(index);
+      if (trigger->Class == trigger_type()) {
+        Detach_This_From_All(trigger->As_Target());
+        base::DeletePooled(trigger);
+        index--;
+      }
+    }
+    return true;
+  }
+};
+
+// Springs a trigger of the type whatever its events say, making one when none
+// exists. Nothing is sprung when the trigger heap is full and none could be
+// made.
+class ForceTriggerAction final : public TriggerReferenceAction {
+ public:
+  explicit ForceTriggerAction(TriggerType* trigger_type)
+      : TriggerReferenceAction(trigger_type) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kForceTrigger;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type());
+        forced_trigger != nullptr) {
+      forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
+    }
+    return true;
+  }
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -770,35 +843,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       }
       break;
 
-    // Destroying a trigger means that all triggers of that type_ will be
-    // destroyed. Deleting one closes the gap in the heap's in-use list, so the
-    // index is stepped back to look at the trigger that moved into it. The
-    // springing trigger may be among them; TriggerClass::Spring() checks for
-    // that when this returns.
-    case TriggerActionType::kDestroyTrigger:
-      if (trigger_type_ != nullptr) {
-        for (int index = 0; index < TheObjectHeaps().trigger().Count();
-             index++) {
-          TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(index);
-          if (trigger->Class == trigger_type_) {
-            Detach_This_From_All(trigger->As_Target());
-            base::DeletePooled(trigger);
-            index--;
-          }
-        }
-      }
-      break;
-
-    // A forced trigger will force an existing trigger of that type_ or will
-    // create a trigger of that type_ and then force it to be sprung. Nothing
-    // is sprung when the trigger heap is full and none could be made.
-    case TriggerActionType::kForceTrigger:
-      if (TriggerClass* forced_trigger = Find_Or_Make(trigger_type_);
-          forced_trigger != nullptr) {
-        forced_trigger->Spring(TEVENT_ANY, nullptr, Cell{}, true);
-      }
-      break;
-
     // Place a smoke marker at the waypoint specified.
     case TriggerActionType::kDropZoneFlare:
       base::NewPooled<AnimClass>(
@@ -826,6 +870,8 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
     case TriggerActionType::kCreateTeam:
     case TriggerActionType::kDestroyTeam:
     case TriggerActionType::kReinforcements:
+    case TriggerActionType::kDestroyTrigger:
+    case TriggerActionType::kForceTrigger:
     default:
       break;
   }
@@ -996,9 +1042,13 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
     case TriggerActionType::kReinforcements:
       return std::make_unique<ReinforcementsAction>(record.team_type);
 
-    // Not yet classes of their own.
     case TriggerActionType::kDestroyTrigger:
+      return std::make_unique<DestroyTriggerAction>(record.trigger_type);
+
     case TriggerActionType::kForceTrigger:
+      return std::make_unique<ForceTriggerAction>(record.trigger_type);
+
+    // Not yet classes of their own.
     case TriggerActionType::kDropZoneFlare:
     case TriggerActionType::kRevealSome:
     case TriggerActionType::kRevealZone:
