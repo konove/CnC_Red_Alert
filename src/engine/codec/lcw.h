@@ -41,14 +41,18 @@
 #define CNC_RED_ALERT_ENGINE_CODEC_LCW_H_
 
 #include <cstddef>
+#include <optional>
 #include <span>
+#include <vector>
 
-// Decodes one LCW stream from `source` into `dest` without reading or writing
-// outside either span. Returns the number of bytes written, or -1 if the
-// stream is malformed: an operation runs past either span, a back-reference
-// points outside the bytes written so far, or the end marker is missing.
-int LcwUncompBounded(std::span<const std::byte> source,
-                     std::span<std::byte> dest);
+#include "base/types.h"
+
+// Decodes one LCW stream from `source` and returns its output, or nullopt if
+// the stream is malformed: a command runs past `source` or would take the
+// output past `max_size` bytes, a back-reference points outside the bytes
+// written so far, or the end marker is missing.
+std::optional<std::vector<std::byte>> LcwUncompBounded(
+    std::span<const std::byte> source, base::ssize max_size);
 
 // Returns the largest stream LCW_Comp produces for `length` input bytes: the
 // input stored as literal runs of at most 63 bytes, each behind one opcode,
@@ -57,9 +61,8 @@ constexpr int LcwWorstCaseSize(int length) {
   return length + ((length + 62) / 63) + 1;
 }
 
-// Compresses in into out as one LCW stream ending in the 0x80 marker.
-// Returns the stream size, or -1 if out cannot hold
-// LcwWorstCaseSize(in.size()).
-int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out);
+// Compresses `in` and returns it as one LCW stream ending in the 0x80 marker,
+// at most LcwWorstCaseSize(in.size()) bytes long.
+std::vector<std::byte> LCW_Comp(std::span<const std::byte> in);
 
 #endif  // CNC_RED_ALERT_ENGINE_CODEC_LCW_H_

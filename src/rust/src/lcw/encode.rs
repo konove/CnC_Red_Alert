@@ -115,15 +115,13 @@ impl Chains {
 }
 
 /// The output stream being written.
-struct Writer<'a> {
-    output: &'a mut [u8],
-    written: usize,
+struct Writer {
+    output: Vec<u8>,
 }
 
-impl Writer<'_> {
+impl Writer {
     fn put(&mut self, value: u8) {
-        self.output[self.written] = value;
-        self.written += 1;
+        self.output.push(value);
     }
 
     fn put_u16(&mut self, value: usize) {
@@ -135,19 +133,17 @@ impl Writer<'_> {
     }
 }
 
-/// Compresses `input` into `output` as one LCW stream ending in the 0x80
-/// marker. Returns the stream size, or None if `output` is shorter than
-/// `worst_case_size(input.len())`.
+/// Compresses `input` and returns it as one LCW stream ending in the 0x80
+/// marker, at most `worst_case_size(input.len())` bytes long.
 // A port of the C++ LCW_Comp(): a back-reference or fill is used only when it
 // saves at least one byte over literals, which also pays for any literal
 // opcode it forces afterward, so the output never exceeds worst_case_size().
-pub fn compress(input: &[u8], output: &mut [u8]) -> Option<usize> {
+pub fn compress(input: &[u8]) -> Vec<u8> {
     let length = input.len();
-    if output.len() < worst_case_size(length) {
-        return None;
-    }
     let mut chains = Chains::new(length);
-    let mut out = Writer { output, written: 0 };
+    let mut out = Writer {
+        output: Vec::with_capacity(worst_case_size(length)),
+    };
     let mut literal_opcode: Option<usize> = None; // The open literal run's opcode.
 
     let mut pos = 0;
@@ -196,7 +192,7 @@ pub fn compress(input: &[u8], output: &mut [u8]) -> Option<usize> {
             let opcode = match literal_opcode {
                 Some(at) if out.output[at] != 0x80 + MAX_LITERAL_RUN => at,
                 _ => {
-                    let at = out.written;
+                    let at = out.output.len();
                     out.put(0x80);
                     literal_opcode = Some(at);
                     at
@@ -239,7 +235,7 @@ pub fn compress(input: &[u8], output: &mut [u8]) -> Option<usize> {
     }
 
     out.put(0x80);
-    Some(out.written)
+    out.output
 }
 
 #[cfg(test)]
@@ -278,21 +274,11 @@ mod tests {
             .collect()
     }
 
-    fn compress_all(input: &[u8]) -> Vec<u8> {
-        let mut output = vec![0_u8; worst_case_size(input.len())];
-        let size = compress(input, &mut output).expect("output sized by worst_case_size");
-        output.truncate(size);
-        output
-    }
-
     fn assert_round_trip(plain: &[u8]) {
-        let stream = compress_all(plain);
+        let stream = compress(plain);
         assert!(stream.len() <= worst_case_size(plain.len()));
-        let mut decoded = vec![0_u8; plain.len()];
-        assert_eq!(uncompress_bounded(&stream, &mut decoded), Some(plain.len()));
-        assert_eq!(
-            decoded,
-            plain,
+        assert!(
+            uncompress_bounded(&stream, plain.len()).as_deref() == Some(plain),
             "round trip changed {} bytes of input",
             plain.len()
         );
@@ -311,19 +297,19 @@ mod tests {
 
     #[test]
     fn empty_input_is_just_the_end_marker() {
-        assert_eq!(compress_all(&[]), [0x80]);
+        assert_eq!(compress(&[]), [0x80]);
     }
 
     #[test]
     fn single_byte_is_one_literal() {
-        assert_eq!(compress_all(&[42]), [0x81, 42, 0x80]);
+        assert_eq!(compress(&[42]), [0x81, 42, 0x80]);
     }
 
     #[test]
     fn repeated_pattern_becomes_a_short_copy() {
         // Three literals, then nine bytes from three back: 0x60 = (9 - 3) << 4.
         assert_eq!(
-            compress_all(b"abcabcabcabc"),
+            compress(b"abcabcabcabc"),
             [0x83, b'a', b'b', b'c', 0x60, 3, 0x80]
         );
     }
@@ -331,14 +317,7 @@ mod tests {
     #[test]
     fn long_run_becomes_a_fill() {
         // 0xfe, count 1000 = 0x03e8 little-endian, value 7.
-        assert_eq!(compress_all(&[7; 1000]), [0xfe, 0xe8, 0x03, 7, 0x80]);
-    }
-
-    #[test]
-    fn rejects_a_small_output() {
-        let input = random(100, 1);
-        let mut output = vec![0_u8; worst_case_size(input.len()) - 1];
-        assert_eq!(compress(&input, &mut output), None);
+        assert_eq!(compress(&[7; 1000]), [0xfe, 0xe8, 0x03, 7, 0x80]);
     }
 
     #[test]
@@ -360,6 +339,6 @@ mod tests {
     #[test]
     fn compresses_redundant_data() {
         let plain = repeats(8192);
-        assert!(compress_all(&plain).len() < plain.len() / 4);
+        assert!(compress(&plain).len() < plain.len() / 4);
     }
 }

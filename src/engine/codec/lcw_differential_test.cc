@@ -1,6 +1,6 @@
 // Holds the Rust LCW kernels in src/rust to the C++ ones they replace, byte
-// for byte: the same result and the same destination contents for valid,
-// damaged and random streams, and the same compressed stream.
+// for byte: the same output for valid, damaged and random streams, and the
+// same compressed stream.
 
 #include <algorithm>
 #include <cstddef>
@@ -98,28 +98,26 @@ std::vector<std::byte> Damage(Lcg& lcg, std::vector<std::byte> stream) {
   return stream;
 }
 
-// Runs both lenient decoders on `stream` into `dest_size` bytes.
+// Runs both lenient decoders on `stream` with room for `max_size` bytes.
 void ExpectLenientMatch(const std::vector<std::byte>& stream,
-                        const int dest_size) {
-  std::vector<std::byte> want(base::ToSize(dest_size), kFill);
-  std::vector<std::byte> got(want);
-  const int32_t want_size = lcw_reference::Uncompress(stream, want);
-  const auto got_size = engine_rs::lcw_uncompress(AsRustSlice(stream),
-                                                  AsRustSlice(std::span(got)));
-  EXPECT_EQ(static_cast<int64_t>(got_size), int64_t{want_size});
-  EXPECT_TRUE(got == want);
+                        const int max_size) {
+  std::vector<std::byte> want(base::ToSize(max_size), kFill);
+  want.resize(base::ToSize(lcw_reference::Uncompress(stream, want)));
+  const auto got = LcwUncompress(stream, max_size);
+  EXPECT_TRUE(std::ranges::equal(std::as_bytes(std::span(got)), want));
 }
 
-// Runs both strict decoders on `stream` into `dest_size` bytes.
+// Runs both strict decoders on `stream` with room for `max_size` bytes.
 void ExpectBoundedMatch(const std::vector<std::byte>& stream,
-                        const int dest_size) {
-  std::vector<std::byte> want(base::ToSize(dest_size), kFill);
-  std::vector<std::byte> got(want);
+                        const int max_size) {
+  std::vector<std::byte> want(base::ToSize(max_size), kFill);
   const int want_size = lcw_reference::UncompressBounded(stream, want);
-  const int got_size = engine_rs::lcw_uncompress_bounded(
-      AsRustSlice(stream), AsRustSlice(std::span(got)));
-  EXPECT_EQ(got_size, want_size);
-  EXPECT_TRUE(got == want);
+  const auto got = LcwUncompBounded(stream, max_size);
+  ASSERT_EQ(got.has_value(), want_size >= 0);
+  if (got) {
+    want.resize(base::ToSize(want_size));
+    EXPECT_TRUE(*got == want);
+  }
 }
 
 TEST(LcwDifferentialTest, CompressMatchesReference) {
@@ -127,24 +125,8 @@ TEST(LcwDifferentialTest, CompressMatchesReference) {
   for (const int size : {0, 1, 2, 3, 100, 4096, 65535, 65536, 70000, 200000}) {
     SCOPED_TRACE(size);
     const auto plain = Corpus(lcg, size);
-    const auto want = ReferenceCompress(plain);
-    std::vector<std::byte> got(base::ToSize(LcwWorstCaseSize(size)));
-    const int got_size = engine_rs::lcw_compress(AsRustSlice(plain),
-                                                 AsRustSlice(std::span(got)));
-    ASSERT_GE(got_size, 0);
-    got.resize(base::ToSize(got_size));
-    EXPECT_TRUE(got == want);
+    EXPECT_TRUE(LCW_Comp(plain) == ReferenceCompress(plain));
   }
-}
-
-TEST(LcwDifferentialTest, CompressRejectsSmallOutputLikeReference) {
-  Lcg lcg(2);
-  const auto plain = RandomBytes(lcg, 500);
-  std::vector<std::byte> output(base::ToSize(LcwWorstCaseSize(500) - 1));
-  EXPECT_EQ(lcw_reference::Compress(plain, output), -1);
-  EXPECT_EQ(engine_rs::lcw_compress(AsRustSlice(plain),
-                                    AsRustSlice(std::span(output))),
-            -1);
 }
 
 TEST(LcwDifferentialTest, DamagedStreamsMatchLenientReference) {
@@ -235,7 +217,7 @@ TEST(LcwDifferentialTest, PublicApiDecodesInPlace) {
     const int32_t want_size = lcw_reference::Uncompress(
         source(want), std::span(want).first(plain.size()));
     const int32_t got_size =
-        LCW_Uncompress(source(got), std::span(got).first(plain.size()));
+        LcwUncompressInPlace(source(got), std::span(got).first(plain.size()));
     EXPECT_EQ(got_size, want_size);
     EXPECT_TRUE(got == want);
   }
@@ -259,9 +241,9 @@ TEST(LcwDifferentialTest, PublicApiDecodesTailLayoutDisjoint) {
     const int32_t want_size = lcw_reference::Uncompress(
         std::span<const std::byte>(want).subspan(source_start),
         std::span(want).first(plain.size()));
-    const int32_t got_size =
-        LCW_Uncompress(std::span<const std::byte>(got).subspan(source_start),
-                       std::span(got).first(plain.size()));
+    const int32_t got_size = LcwUncompressInPlace(
+        std::span<const std::byte>(got).subspan(source_start),
+        std::span(got).first(plain.size()));
     EXPECT_EQ(got_size, want_size);
     EXPECT_TRUE(got == want);
   }
@@ -270,17 +252,9 @@ TEST(LcwDifferentialTest, PublicApiDecodesTailLayoutDisjoint) {
 TEST(LcwDifferentialDeathTest, PublicApiRejectsSourceOverlappingTheFront) {
   std::vector<std::byte> buffer(16, std::byte{0x80});
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH(LCW_Uncompress(std::span<const std::byte>(buffer).first(8),
-                              std::span(buffer).subspan(4, 8)),
+  EXPECT_DEATH(LcwUncompressInPlace(std::span<const std::byte>(buffer).first(8),
+                                    std::span(buffer).subspan(4, 8)),
                "overlaps the front");
-}
-
-TEST(LcwDifferentialDeathTest, BoundedRejectsOverlappingSpans) {
-  std::vector<std::byte> buffer(16, std::byte{0x80});
-  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH(LcwUncompBounded(std::span<const std::byte>(buffer).subspan(8),
-                                std::span(buffer).first(12)),
-               "separate buffers");
 }
 
 }  // namespace

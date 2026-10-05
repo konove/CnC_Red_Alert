@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/types.h"
 
@@ -52,12 +53,12 @@ struct CompressedBlockHeader {
 };
 #pragma pack(pop)
 
-// Decodes `block`, which starts with its CompressedBlockHeader, into the
-// front of `dest`. Returns the number of bytes written: uncompressed_bytes for
-// uncompressed data, what the stream produced for LCW. Returns 0 for any other
-// method, a negative skip_bytes, a `block` too short for the header and the
-// skipped area, or a `dest` too short for uncompressed_bytes.
-base::ssize UncompressBlock(std::span<const std::byte> block,
-                            std::span<std::byte> dest);
+// Decodes `block`, which starts with its CompressedBlockHeader, and returns
+// its data: uncompressed_bytes of it for uncompressed data, what the stream
+// produced for LCW, which is less if the stream is damaged. Returns nothing
+// for any other method, a negative skip_bytes, a `block` too short for the
+// header and the skipped area, or an uncompressed_bytes above `max_size`.
+std::vector<uint8_t> UncompressBlock(std::span<const std::byte> block,
+                                     base::ssize max_size);
 
 #endif  // CNC_RED_ALERT_ENGINE_CODEC_COMPRESSED_BLOCK_H_

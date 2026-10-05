@@ -1,4 +1,5 @@
-// File: Byte spans as the slices the cxx bridge to src/rust takes.
+// File: Byte spans as the slices the cxx bridge to src/rust takes, and the
+// vectors it returns as C++ ones.
 
 #ifndef CNC_RED_ALERT_ENGINE_CODEC_RUST_BYTES_H_
 #define CNC_RED_ALERT_ENGINE_CODEC_RUST_BYTES_H_
@@ -7,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "rust/cxx.h"
 
@@ -20,6 +22,15 @@ inline rust::Slice<const uint8_t> AsRustSlice(
 inline rust::Slice<uint8_t> AsRustSlice(const std::span<std::byte> bytes) {
   void* const data = bytes.data();
   return {static_cast<uint8_t*>(data), bytes.size()};
+}
+
+// Returns a copy of `bytes`, which Rust allocated, in a vector C++ owns. The
+// span's iterators let the standard library copy it as one block, which
+// rust::Vec's own do not.
+inline std::vector<std::byte> ToByteVector(const rust::Vec<uint8_t>& bytes) {
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const auto view = std::as_bytes(std::span(bytes.data(), bytes.size()));
+  return {view.begin(), view.end()};
 }
 
 // Returns whether `a` and `b` share a byte. Rust may not see one byte through

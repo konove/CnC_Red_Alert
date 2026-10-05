@@ -3,7 +3,9 @@
 #include "engine/codec/compressed_block.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -11,31 +13,33 @@
 #include "base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 
-base::ssize UncompressBlock(const std::span<const std::byte> block,
-                            const std::span<std::byte> dest) {
+std::vector<uint8_t> UncompressBlock(const std::span<const std::byte> block,
+                                     const base::ssize max_size) {
   if (block.size() < sizeof(CompressedBlockHeader)) {
-    return 0;
+    return {};
   }
   const auto header = base::ReadUnaligned<CompressedBlockHeader>(block);
   if (header.skip_bytes < 0) {
-    return 0;
+    return {};
   }
   const auto skip_bytes = base::ToSize(header.skip_bytes);
   if (skip_bytes > block.size() - sizeof(header) ||
-      header.uncompressed_bytes > dest.size()) {
-    return 0;
+      header.uncompressed_bytes > base::ToSize(max_size)) {
+    return {};
   }
   const auto payload = block.subspan(sizeof(header) + skip_bytes);
-  const auto output = dest.first(header.uncompressed_bytes);
+  const std::size_t size = header.uncompressed_bytes;
   switch (static_cast<CompressionMethod>(header.method)) {
-    case NOCOMPRESS:
-      if (payload.size() < output.size()) {
-        return 0;
+    case NOCOMPRESS: {
+      if (payload.size() < size) {
+        return {};
       }
-      base::CopyBytes(output, payload, output.size());
-      return std::ssize(output);
+      std::vector<uint8_t> data(size);
+      base::CopyBytes(std::as_writable_bytes(std::span(data)), payload, size);
+      return data;
+    }
     case LCW:
-      return LCW_Uncompress(payload, output);
+      return LcwUncompress(payload, base::ssize{header.uncompressed_bytes});
     // Westwood's library returned the size for HORIZONTAL without writing
     // anything (its RLE decoder was left out of the build) and copied LZW and
     // unknown methods as if uncompressed. Either way the caller took garbage
@@ -44,6 +48,6 @@ base::ssize UncompressBlock(const std::span<const std::byte> block,
     case LZW12:
     case LZW14:
     default:
-      return 0;
+      return {};
   }
 }

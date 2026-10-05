@@ -153,23 +153,14 @@ TEST(CodecStateTest, ShaResetRestoresKnownDigestAfterPartialInput) {
 }  // namespace
 
 TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
-  alignas(uint32_t) std::array<uint8_t, 48> output{};
-  for (int offset = 0; offset < 4; ++offset) {
-    for (int length = 4; length <= 20; ++length) {
-      output.fill(0xa5);
-      const std::array<uint8_t, 5> encoded = {
-          0xfe, static_cast<uint8_t>(length), 0, 0x6b, 0x80};
-      EXPECT_EQ(
-          LcwUncompBounded(std::as_bytes(std::span(encoded)),
-                           std::as_writable_bytes(std::span(output))
-                               .subspan(static_cast<std::size_t>(offset),
-                                        static_cast<std::size_t>(length))),
-          length);
-      for (int i = 0; const uint8_t byte : output) {
-        EXPECT_EQ(byte, i >= offset && i < offset + length ? 0x6b : 0xa5);
-        ++i;
-      }
-    }
+  for (int length = 4; length <= 20; ++length) {
+    const std::array<uint8_t, 5> encoded = {0xfe, static_cast<uint8_t>(length),
+                                            0, 0x6b, 0x80};
+    EXPECT_EQ(LcwUncompBounded(std::as_bytes(std::span(encoded)), length),
+              std::vector<std::byte>(static_cast<std::size_t>(length),
+                                     std::byte{0x6b}));
+    EXPECT_FALSE(
+        LcwUncompBounded(std::as_bytes(std::span(encoded)), length - 1));
   }
 }
 

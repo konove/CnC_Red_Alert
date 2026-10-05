@@ -58,7 +58,7 @@ void LcwBuffer::Decompress() {
   // its own end marker.
   const auto source =
       std::span<const unsigned char>(bytes_).subspan(base::ToSize(offset_));
-  SetRaw(LCW_Uncompress(source, bytes_));
+  SetRaw(LcwUncompressInPlace(source, bytes_));
 }
 
 std::span<const unsigned char> LcwBuffer::contents() const {

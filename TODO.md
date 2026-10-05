@@ -57,11 +57,11 @@
     value changes; found by the `/simplify` stage of the `base/fixed` `/modernize-file` run
     (`4e995aa2..8fd12531`)
 - Reject a keyframe shape frame whose LCW data ends early in `engine::gfx::BuildFrame()`
-  (`engine/gfx/keyframe.cc:144`, `169`)
-  - It ignores `LCW_Uncompress()`'s byte count, so a key frame that stops short leaves the rest of
-    the frame 0, which draws as transparent; returning `{}` when fewer than width \* height bytes
-    were written would drop such a frame instead. Only malformed data reaches it (the keyframe.h
-    comment documents it). Found by the `ra/2keyfram.cc` `/modernize-file` run
+  (`DecodeFrame()` in `engine/gfx/keyframe.cc`)
+  - It pads what `LcwUncompress()` returns to the frame size, so a key frame that stops short leaves
+    the rest of the frame 0, which draws as transparent; returning `{}` when fewer than width \*
+    height bytes were decoded would drop such a frame instead. Only malformed data reaches it (the
+    keyframe.h comment documents it). Found by the `ra/2keyfram.cc` `/modernize-file` run
     (`dfc0fa2b..193f2624`)
 - Find why Tiberian Dawn's simulation depends on the build directory
   - The same source (2d8a614a) built in a scratch worktree logs a different

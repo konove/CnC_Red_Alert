@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <iterator>
 #include <span>
-#include <utility>
+#include <tuple>
 #include <vector>
 
 #include "absl/strings/str_format.h"
@@ -75,9 +75,7 @@ int main() {
   std::vector<std::vector<std::byte>> streams;
   for (int block = 0; block < kBlocks; ++block) {
     plain.push_back(GameLikeBlock(static_cast<uint32_t>(block + 1)));
-    std::vector<std::byte> stream(kStreamBytes);
-    stream.resize(static_cast<std::size_t>(LCW_Comp(plain.back(), stream)));
-    streams.push_back(std::move(stream));
+    streams.push_back(LCW_Comp(plain.back()));
   }
   std::vector<std::byte> output(kBlockBytes);
   std::vector<std::byte> scratch(kStreamBytes);
@@ -88,7 +86,7 @@ int main() {
   };
   report("lenient decode", MegabytesPerSecond([&] {
            for (const auto& stream : streams) {
-             LCW_Uncompress(stream, output);
+             std::ignore = LcwUncompress(stream, kBlockSize);
            }
          }),
          MegabytesPerSecond([&] {
@@ -98,7 +96,7 @@ int main() {
          }));
   report("bounded decode", MegabytesPerSecond([&] {
            for (const auto& stream : streams) {
-             LcwUncompBounded(stream, output);
+             std::ignore = LcwUncompBounded(stream, kBlockSize);
            }
          }),
          MegabytesPerSecond([&] {
@@ -108,7 +106,7 @@ int main() {
          }));
   report("compress", MegabytesPerSecond([&] {
            for (const auto& block : plain) {
-             LCW_Comp(block, scratch);
+             std::ignore = LCW_Comp(block);
            }
          }),
          MegabytesPerSecond([&] {

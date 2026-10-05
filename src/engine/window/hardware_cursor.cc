@@ -47,10 +47,9 @@ void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
 // count.
 static std::optional<std::vector<uint8_t>> DecodeShapePixels(
     const gfx::ShapeHeader& header, const std::span<const std::byte> data) {
-  std::vector<uint8_t> rle_data(header.decompressed_bytes);
-  const int32_t rle_bytes =
-      LCW_Uncompress(data, std::as_writable_bytes(std::span(rle_data)));
-  auto input = std::span(rle_data).first(base::ToSize(rle_bytes));
+  const std::vector<uint8_t> rle_data =
+      LcwUncompress(data, header.decompressed_bytes);
+  auto input = std::span(rle_data);
   // Starts out transparent: skipped pixels stay color 0.
   std::vector<uint8_t> pixels(
       base::ToSize(int{header.width} * int{header.original_height}));

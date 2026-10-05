@@ -1,9 +1,13 @@
 #include "engine/codec/block_backends.h"
 
 #include <cstddef>
+#include <optional>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/lcw.h"
 #include "engine/codec/lzw.h"
 #include "lzo/lzo.h"
@@ -26,58 +30,72 @@ unsigned char* AsLzoBytes(void* data ABSL_ATTRIBUTE_LIFETIME_BOUND) {
 
 }  // namespace
 
-int LzoBackend::Compress(std::span<const std::byte> input,
-                         std::span<std::byte> output) {
+std::vector<std::byte> LzoBackend::Compress(
+    const std::span<const std::byte> input) {
   // The compressor indexes 16384 pointers, so a fixed 64K dictionary
   // overflowed on 64-bit hosts.
   if (work_.empty()) {
     work_.resize(LZO1X_MEM_COMPRESS);
   }
+  // LZO1X's documented worst case; the compressor does not check its output.
+  std::vector<std::byte> output(input.size() + (input.size() / 16) + 64 + 3);
   auto length = static_cast<lzo_uint>(output.size());
   lzo1x_1_compress(AsLzoBytes(input.data()),
                    static_cast<lzo_uint>(input.size()),
                    AsLzoBytes(output.data()), &length, work_.data());
-  return static_cast<int>(length);
+  output.resize(length);
+  return output;
 }
 
-int LzoBackend::Decompress(std::span<const std::byte> input,
-                           std::span<std::byte> output) {
+std::optional<std::vector<std::byte>> LzoBackend::Decompress(
+    const std::span<const std::byte> input, const base::ssize max_size) {
+  std::vector<std::byte> output(base::ToSize(max_size));
   auto length = static_cast<lzo_uint>(output.size());
   // The checked decoder keeps a corrupt payload inside both buffers.
   if (lzo1x_decompress_safe(
           AsLzoBytes(input.data()), static_cast<lzo_uint>(input.size()),
           AsLzoBytes(output.data()), &length, nullptr) != LZO_E_OK) {
-    return -1;
+    return std::nullopt;
   }
-  return static_cast<int>(length);
+  output.resize(length);
+  return output;
 }
 
 int LcwBackend::Capacity(int block_size) {
   return LcwWorstCaseSize(block_size) + kHeaderSize;
 }
 
-int LcwBackend::Compress(std::span<const std::byte> input,
-                         std::span<std::byte> output) {
-  return LCW_Comp(input, output);
+std::vector<std::byte> LcwBackend::Compress(
+    const std::span<const std::byte> input) {
+  return LCW_Comp(input);
 }
 
-int LcwBackend::Decompress(std::span<const std::byte> input,
-                           std::span<std::byte> output) {
-  return LcwUncompBounded(input, output);
+std::optional<std::vector<std::byte>> LcwBackend::Decompress(
+    const std::span<const std::byte> input, const base::ssize max_size) {
+  return LcwUncompBounded(input, max_size);
 }
 
 int LzwBackend::Capacity(int block_size) {
   return LzwWorstCaseSize(block_size) + kHeaderSize;
 }
 
-int LzwBackend::Compress(std::span<const std::byte> input,
-                         std::span<std::byte> output) {
-  return LZW_Compress(input, output);
+std::vector<std::byte> LzwBackend::Compress(
+    const std::span<const std::byte> input) {
+  std::vector<std::byte> output(
+      base::ToSize(LzwWorstCaseSize(static_cast<int>(input.size()))));
+  output.resize(base::ToSize(LZW_Compress(input, output)));
+  return output;
 }
 
-int LzwBackend::Decompress(std::span<const std::byte> input,
-                           std::span<std::byte> output) {
+std::optional<std::vector<std::byte>> LzwBackend::Decompress(
+    const std::span<const std::byte> input, const base::ssize max_size) {
+  std::vector<std::byte> output(base::ToSize(max_size));
   // The spans stop a corrupt code stream from reading or writing past
   // either buffer.
-  return LZW_Uncompress(input, output);
+  const int length = LZW_Uncompress(input, output);
+  if (length < 0) {
+    return std::nullopt;
+  }
+  output.resize(base::ToSize(length));
+  return output;
 }

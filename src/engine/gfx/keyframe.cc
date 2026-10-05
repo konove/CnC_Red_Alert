@@ -122,63 +122,60 @@ std::span<const std::byte> DataAt(const std::span<const std::byte> shape_file,
       shape_file, base::ssize{word & kOffsetMask} + header.palette_bytes);
 }
 
-// Decodes `frame` into `output`, which holds exactly the frame's pixels and
-// starts zeroed. Returns false if the offset table or an offset in it points
-// past the end of `shape_file`, or the frame names a chain that starts after
-// it.
-bool DecodeFrame(const std::span<const std::byte> shape_file,
-                 const KeyframeHeader& header, const int frame,
-                 const std::span<uint8_t> output) {
+// Returns the `pixel_count` pixels of `frame`. Returns nothing if the offset
+// table or an offset in it points past the end of `shape_file`, or the frame
+// names a chain that starts after it.
+std::vector<uint8_t> DecodeFrame(const std::span<const std::byte> shape_file,
+                                 const KeyframeHeader& header, const int frame,
+                                 const base::ssize pixel_count) {
   const auto entry = ReadFrameEntry(shape_file, frame);
   if (!entry) {
-    return false;
+    return {};
   }
   const auto frame_flags = static_cast<uint8_t>(entry->offset_word >> 24);
 
   // A key frame stands alone: its data is the whole image, LCW-compressed.
-  if ((frame_flags & kKfKeyFrame) != 0) {
-    const auto key_frame = DataAt(shape_file, header, entry->offset_word);
-    if (key_frame.empty()) {
-      return false;
-    }
-    LCW_Uncompress(key_frame, std::as_writable_bytes(output));
-    return true;
-  }
-
   // Anything else is rebuilt from the key frame by XORing on the deltas from
   // the start of its chain to `frame`. A key delta starts the chain itself; a
   // delta names the key delta that starts it (in the low 16 bits of its
   // reference word, as frame numbers are 16 bits), whose entry then gives the
   // key frame.
-  const int chain_start =
-      (frame_flags & kKfDelta) != 0
-          ? static_cast<int>(entry->reference_word & 0xffffU)
-          : frame;
-  if (chain_start > frame) {
-    return false;
+  uint32_t key_frame_word = entry->offset_word;
+  int chain_start = frame + 1;  // A key frame has no deltas to apply.
+  if ((frame_flags & kKfKeyFrame) == 0) {
+    chain_start = (frame_flags & kKfDelta) != 0
+                      ? static_cast<int>(entry->reference_word & 0xffffU)
+                      : frame;
+    if (chain_start > frame) {
+      return {};
+    }
+    const auto chain_entry = ReadFrameEntry(shape_file, chain_start);
+    if (!chain_entry) {
+      return {};
+    }
+    key_frame_word = chain_entry->reference_word;
   }
-  const auto chain_entry = ReadFrameEntry(shape_file, chain_start);
-  if (!chain_entry) {
-    return false;
-  }
-  const auto key_frame =
-      DataAt(shape_file, header, chain_entry->reference_word);
+  const auto key_frame = DataAt(shape_file, header, key_frame_word);
   if (key_frame.empty()) {
-    return false;
+    return {};
   }
-  LCW_Uncompress(key_frame, std::as_writable_bytes(output));
+
+  // One return of the named vector from here on, so it is never copied
+  // (-Wnrvo). A key frame that stops short leaves the rest of the frame 0.
+  std::vector<uint8_t> pixels = LcwUncompress(key_frame, pixel_count);
+  pixels.resize(base::ToSize(pixel_count));
   for (int delta_frame = chain_start; delta_frame <= frame; ++delta_frame) {
     const auto delta_entry = ReadFrameEntry(shape_file, delta_frame);
-    if (!delta_entry) {
-      return false;
-    }
-    const auto delta = DataAt(shape_file, header, delta_entry->offset_word);
+    const auto delta =
+        delta_entry ? DataAt(shape_file, header, delta_entry->offset_word)
+                    : std::span<const std::byte>{};
     if (delta.empty()) {
-      return false;
+      pixels.clear();
+      break;
     }
-    ApplyXorDelta(output, delta);
+    ApplyXorDelta(pixels, delta);
   }
-  return true;
+  return pixels;
 }
 
 }  // namespace
@@ -191,12 +188,7 @@ std::vector<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,
       pixel_count > kMaxFramePixels) {
     return {};
   }
-  // One return of the named vector, so it is never copied (-Wnrvo).
-  std::vector<uint8_t> pixels(base::ToSize(pixel_count));
-  if (!DecodeFrame(shape_file, header, frame, pixels)) {
-    pixels.clear();
-  }
-  return pixels;
+  return DecodeFrame(shape_file, header, frame, pixel_count);
 }
 
 int KeyframeFrameCount(const std::span<const std::byte> shape_file) {

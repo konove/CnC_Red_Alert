@@ -42,21 +42,35 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "absl/log/check.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
-// The decoder is engine_rs's lcw::uncompress (src/rust/src/lcw/decode.rs).
-int32_t LCW_Uncompress(std::span<const std::byte> source,
-                       std::span<std::byte> dest) {
+// The decoders are engine_rs's lcw::uncompress and lcw::uncompress_in_place
+// (src/rust/src/lcw/decode.rs).
+
+std::vector<uint8_t> LcwUncompress(const std::span<const std::byte> source,
+                                   const base::ssize max_size) {
+  // Rust fills the vector this returns; one it returned would need copying.
+  std::vector<uint8_t> decoded(base::ToSize(max_size));
+  decoded.resize(engine_rs::lcw_uncompress(
+      AsRustSlice(source),
+      AsRustSlice(std::as_writable_bytes(std::span(decoded)))));
+  return decoded;
+}
+
+int32_t LcwUncompressInPlace(const std::span<const std::byte> source,
+                             const std::span<std::byte> dest) {
   if (!Overlaps(source, dest)) {
     return static_cast<int32_t>(
         engine_rs::lcw_uncompress(AsRustSlice(source), AsRustSlice(dest)));
   }
-  // The stream lies in the destination's own storage, as WSA animations, VQA
-  // movies and Load_Uncompress() lay it out. Rust may not see one buffer as a
-  // shared and a mutable slice at once, so the whole of it crosses once.
+  // Rust may not see one buffer as a shared and a mutable slice at once, so
+  // the whole of it crosses once.
   const auto dest_begin = std::bit_cast<uintptr_t>(dest.data());
   const auto source_begin = std::bit_cast<uintptr_t>(source.data());
   CHECK_GE(source_begin, dest_begin)
@@ -71,7 +85,8 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
       AsRustSlice(buffer), source_start, source.size(), dest.size()));
 }
 
-int32_t LCW_Uncompress(std::span<const unsigned char> source,
-                       std::span<unsigned char> dest) {
-  return LCW_Uncompress(std::as_bytes(source), std::as_writable_bytes(dest));
+int32_t LcwUncompressInPlace(const std::span<const unsigned char> source,
+                             const std::span<unsigned char> dest) {
+  return LcwUncompressInPlace(std::as_bytes(source),
+                              std::as_writable_bytes(dest));
 }

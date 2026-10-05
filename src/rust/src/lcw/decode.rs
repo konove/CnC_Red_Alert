@@ -65,11 +65,21 @@ impl Buffers for InPlace<'_> {
 /// Decodes the LCW stream in `source` into `dest`. Stops at the end marker,
 /// when `dest` is full, or at the first malformed command, and returns the
 /// number of bytes written so far. Never panics.
-pub fn uncompress(source: &[u8], dest: &mut [u8]) -> usize {
+pub fn uncompress_into(source: &[u8], dest: &mut [u8]) -> usize {
     decode_lenient(&mut Separate { source, dest })
 }
 
-/// As `uncompress`, for a stream stored inside its own output buffer:
+/// As `uncompress_into`, returning at most `max_len` bytes of output in a
+/// vector. Allocates `max_len` bytes up front, so the caller bounds a length
+/// it read from a file.
+pub fn uncompress(source: &[u8], max_len: usize) -> Vec<u8> {
+    let mut dest = vec![0; max_len];
+    let written = uncompress_into(source, &mut dest);
+    dest.truncate(written);
+    dest
+}
+
+/// As `uncompress_into`, for a stream stored inside its own output buffer:
 /// `buffer[source_start..source_start + source_len]` is decoded into
 /// `buffer[..dest_len]`. This is how WSA animations, VQA movies and CPS
 /// pictures load; Rust may not see one buffer as both a shared and a mutable
@@ -203,12 +213,21 @@ fn copy_back(dest: &mut [u8], written: usize, from: usize, count: usize) -> Opti
     Some(written + count)
 }
 
+/// As `uncompress_bounded_into`, returning the output in a vector of at most
+/// `max_len` bytes. Allocates `max_len` bytes up front.
+pub fn uncompress_bounded(source: &[u8], max_len: usize) -> Option<Vec<u8>> {
+    let mut dest = vec![0; max_len];
+    let written = uncompress_bounded_into(source, &mut dest)?;
+    dest.truncate(written);
+    Some(dest)
+}
+
 /// Decodes the LCW stream in `source` into `dest` and returns the number of
 /// bytes written, or None if the stream is malformed: a command runs past
 /// either buffer, a copy reads from at or beyond the write position, or the
 /// end marker is missing. Never panics.
 // A port of the C++ LcwUncompBounded(), check for check.
-pub fn uncompress_bounded(source: &[u8], dest: &mut [u8]) -> Option<usize> {
+pub fn uncompress_bounded_into(source: &[u8], dest: &mut [u8]) -> Option<usize> {
     let mut read = 0;
     let mut written: usize = 0;
     while read < source.len() {
@@ -283,12 +302,25 @@ mod tests {
             &[0x83, b'a', b'b', b'c', 0xfe, 3, 0, b'a', 0x80],
         ];
         for stream in streams {
-            let mut output = [0xcc_u8; 10];
-            assert_eq!(uncompress(stream, &mut output[1..6]), 5, "{stream:x?}");
-            assert_eq!(output[0], 0xcc);
-            assert_eq!(&output[1..5], b"abca");
-            assert!(output[6..].iter().all(|&byte| byte == 0xcc));
+            let output = uncompress(stream, 5);
+            assert_eq!(output.len(), 5, "{stream:x?}");
+            assert_eq!(&output[..4], b"abca");
         }
+    }
+
+    #[test]
+    fn into_leaves_the_rest_of_the_destination_alone() {
+        let stream = [0x83, b'a', b'b', b'c', 0xfe, 9, 0, b'x', 0x80];
+        let mut output = [0xcc_u8; 10];
+        assert_eq!(uncompress_into(&stream, &mut output[1..6]), 5);
+        assert_eq!(&output, b"\xccabcxx\xcc\xcc\xcc\xcc");
+
+        let mut output = [0xcc_u8; 6];
+        assert_eq!(
+            uncompress_bounded_into(&[0x82, b'a', b'b', 0x80], &mut output[1..5]),
+            Some(2)
+        );
+        assert_eq!(&output, b"\xccab\xcc\xcc\xcc");
     }
 
     #[test]
@@ -302,10 +334,7 @@ mod tests {
             &[0x81, b'a', 0xff, 3, 0, 0xff, 0xff, 0x80],
         ];
         for stream in streams {
-            let mut output = [0xcc_u8; 8];
-            assert_eq!(uncompress(stream, &mut output), 1, "{stream:x?}");
-            assert_eq!(output[0], b'a');
-            assert!(output[1..].iter().all(|&byte| byte == 0xcc));
+            assert_eq!(uncompress(stream, 8), b"a", "{stream:x?}");
         }
     }
 
@@ -317,33 +346,26 @@ mod tests {
             &[0x81, b'a', 0xff, 5, 0, 0, 0, 0x80],
         ];
         for stream in streams {
-            let mut output = [0_u8; 7];
-            assert_eq!(uncompress(stream, &mut output), 6, "{stream:x?}");
-            assert_eq!(&output[..6], b"aaaaaa");
-            assert_eq!(output[6], 0);
+            assert_eq!(uncompress(stream, 7), b"aaaaaa", "{stream:x?}");
         }
     }
 
     #[test]
     fn accepts_empty_commands_and_end_marker() {
         let stream = [0xff, 0, 0, 0xff, 0xff, 0xfe, 0, 0, b'x', 0x80, 0];
-        let mut output = [0xcc_u8; 1];
-        assert_eq!(uncompress(&stream, &mut output), 0);
-        assert_eq!(output[0], 0xcc);
+        assert!(uncompress(&stream, 1).is_empty());
     }
 
     #[test]
     fn empty_buffers() {
-        assert_eq!(uncompress(&[], &mut []), 0);
-        assert_eq!(uncompress_bounded(&[], &mut []), None);
-        assert_eq!(uncompress_bounded(&[0x80], &mut []), Some(0));
+        assert!(uncompress(&[], 0).is_empty());
+        assert_eq!(uncompress_bounded(&[], 0), None);
+        assert_eq!(uncompress_bounded(&[0x80], 0), Some(vec![]));
     }
 
     #[test]
     fn stops_at_capacity_without_reading_next_command() {
-        let mut output = [0_u8; 1];
-        assert_eq!(uncompress(&[0x81, b'a'], &mut output), 1);
-        assert_eq!(output[0], b'a');
+        assert_eq!(uncompress(&[0x81, b'a'], 1), b"a");
     }
 
     #[test]
@@ -355,10 +377,7 @@ mod tests {
             &[0x81, b'a', 0xc0, 0],
         ];
         for stream in streams {
-            let mut output = [0_u8; 8];
-            assert_eq!(uncompress(stream, &mut output), 1, "{stream:x?}");
-            assert_eq!(output[0], b'a');
-            assert_eq!(output[1], 0);
+            assert_eq!(uncompress(stream, 8), b"a", "{stream:x?}");
         }
     }
 
@@ -398,10 +417,8 @@ mod tests {
             (&[0x81, b'a', 0x20, 1, 0x80], b"aaaaaa"),
         ];
         for (stream, plain) in cases {
-            let mut output = vec![0xcc_u8; plain.len() + 2];
-            assert_eq!(uncompress_bounded(stream, &mut output), Some(plain.len()));
-            assert_eq!(&output[..plain.len()], plain);
-            assert_eq!(&output[plain.len()..], &[0xcc, 0xcc]);
+            let output = uncompress_bounded(stream, plain.len() + 2);
+            assert_eq!(output.as_deref(), Some(plain));
         }
     }
 
@@ -419,8 +436,7 @@ mod tests {
             &[0x81, b'a', 0xc0],                   // truncated medium copy
         ];
         for stream in streams {
-            let mut output = [0_u8; 16];
-            assert_eq!(uncompress_bounded(stream, &mut output), None, "{stream:x?}");
+            assert_eq!(uncompress_bounded(stream, 16), None, "{stream:x?}");
         }
     }
 
@@ -433,8 +449,7 @@ mod tests {
             &[0x81, b'a', 0xff, 3, 0, 0, 0, 0x80],
         ];
         for stream in streams {
-            let mut output = [0_u8; 2];
-            assert_eq!(uncompress_bounded(stream, &mut output), None, "{stream:x?}");
+            assert_eq!(uncompress_bounded(stream, 2), None, "{stream:x?}");
         }
     }
 }

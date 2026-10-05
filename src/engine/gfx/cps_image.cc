@@ -11,6 +11,7 @@
 
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/compressed_block.h"
 #include "engine/gfx/palette.h"
 #include "engine/stream/byte_stream.h"
@@ -36,9 +37,8 @@ CpsImage ReadCpsImage(ByteStream& file) {
     return image;
   }
 
-  image.pixels.resize(header.uncompressed_bytes);
-  if (UncompressBlock(block, std::as_writable_bytes(std::span(image.pixels))) !=
-      std::ssize(image.pixels)) {
+  image.pixels = UncompressBlock(block, base::ssize{kCpsWidth} * kCpsHeight);
+  if (image.pixels.size() != header.uncompressed_bytes) {
     image.pixels.clear();
     return image;
   }

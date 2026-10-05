@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -34,16 +35,17 @@ constexpr bool BlockHeaderFits(int comp_count, int uncomp_count, int capacity) {
 // What a block compressor supplies to BlockCodec.
 template <class B>
 concept BlockBackend = requires(B backend, std::span<const std::byte> input,
-                                std::span<std::byte> output, int block_size) {
-  // The size both scratch buffers need for blocks of block_size bytes, and
-  // the largest count a valid block header may hold.
+                                base::ssize max_size, int block_size) {
+  // The largest count a valid block header may hold for blocks of block_size
+  // bytes: no block compresses to more, and none decompresses to more.
   { B::Capacity(block_size) } -> std::same_as<int>;
-  // Compresses input into output, which holds Capacity() bytes, and returns
-  // the compressed size.
-  { backend.Compress(input, output) } -> std::same_as<int>;
-  // Decompresses input into output and returns the decompressed size, or -1
-  // if the input is corrupt or does not fit.
-  { backend.Decompress(input, output) } -> std::same_as<int>;
+  // Returns input compressed.
+  { backend.Compress(input) } -> std::same_as<std::vector<std::byte>>;
+  // Returns input decompressed, or nullopt if it is corrupt or decompresses
+  // to more than max_size bytes.
+  {
+    backend.Decompress(input, max_size)
+  } -> std::same_as<std::optional<std::vector<std::byte>>>;
 };
 
 // A ByteCodec that compresses a stream in blocks of block_size bytes. Each
@@ -58,8 +60,7 @@ class BlockCodec {
       : mode_(mode),
         block_size_(block_size),
         capacity_(Backend::Capacity(block_size)),
-        input_(base::ToSize(capacity_)),
-        output_(base::ToSize(capacity_)) {}
+        input_(base::ToSize(capacity_)) {}
 
   bool Process(std::span<const std::byte> in, ByteSink& out) {
     bool written = true;
@@ -112,15 +113,15 @@ class BlockCodec {
   static constexpr int kHeaderSize = 4;
 
   bool CompressBlock(ByteSink& out) {
-    const int packed = backend_.Compress(
-        std::span(input_).first(base::ToSize(count_)), output_);
+    const std::vector<std::byte> block =
+        backend_.Compress(std::span(input_).first(base::ToSize(count_)));
+    const auto packed = static_cast<int>(block.size());
     const std::array<std::byte, kHeaderSize> header = {
         static_cast<std::byte>(packed), static_cast<std::byte>(packed / 256),
         static_cast<std::byte>(count_), static_cast<std::byte>(count_ / 256)};
     count_ = 0;
     const bool header_written = out.Write(header);
-    return out.Write(std::span(output_).first(base::ToSize(packed))) &&
-           header_written;
+    return out.Write(block) && header_written;
   }
 
   void ReadHeader() {
@@ -137,25 +138,24 @@ class BlockCodec {
   }
 
   bool DecompressBlock(ByteSink& out) {
-    const int produced = backend_.Decompress(
-        std::span(input_).first(base::ToSize(comp_count_)), output_);
+    const std::optional<std::vector<std::byte>> block = backend_.Decompress(
+        std::span(input_).first(base::ToSize(comp_count_)), capacity_);
     count_ = 0;
     have_header_ = false;
-    if (produced != uncomp_count_) {
+    if (!block || std::ssize(*block) != uncomp_count_) {
       corrupt_ = true;
       return false;
     }
-    return out.Write(std::span(output_).first(base::ToSize(uncomp_count_)));
+    return out.Write(*block);
   }
 
   CodecMode mode_;
   int block_size_;
   int capacity_;
   Backend backend_;
-  std::vector<std::byte> input_;   // The block being accumulated.
-  std::vector<std::byte> output_;  // The block's transformed bytes.
-  int count_ = 0;                  // Bytes of input_ filled so far.
-  bool have_header_ = false;       // Decompressing: the header has been read.
+  std::vector<std::byte> input_;  // The block being accumulated.
+  int count_ = 0;                 // Bytes of input_ filled so far.
+  bool have_header_ = false;      // Decompressing: the header has been read.
   int comp_count_ = 0;    // Decompressing: the block's compressed size.
   int uncomp_count_ = 0;  // Decompressing: its decompressed size.
   bool corrupt_ = false;  // Decompressing: the stream cannot be decoded.

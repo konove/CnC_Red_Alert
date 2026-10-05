@@ -17,5 +17,7 @@
 mod decode;
 mod encode;
 
-pub use decode::{uncompress, uncompress_bounded, uncompress_in_place};
+pub use decode::{
+    uncompress, uncompress_bounded, uncompress_bounded_into, uncompress_in_place, uncompress_into,
+};
 pub use encode::{compress, worst_case_size};

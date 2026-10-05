@@ -38,22 +38,30 @@
 #include "engine/codec/lcw.h"
 
 #include <cstddef>
+#include <optional>
 #include <span>
+#include <vector>
 
-#include "absl/log/check.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
 // The kernels are engine_rs's lcw module (src/rust/src/lcw/).
 
-int LcwUncompBounded(std::span<const std::byte> source,
-                     std::span<std::byte> dest) {
-  CHECK(!Overlaps(source, dest)) << "LCW needs separate buffers";
-  return engine_rs::lcw_uncompress_bounded(AsRustSlice(source),
-                                           AsRustSlice(dest));
+std::optional<std::vector<std::byte>> LcwUncompBounded(
+    const std::span<const std::byte> source, const base::ssize max_size) {
+  // Rust fills the vector this returns; one it returned would need copying.
+  std::vector<std::byte> decoded(base::ToSize(max_size));
+  const int size = engine_rs::lcw_uncompress_bounded(
+      AsRustSlice(source), AsRustSlice(std::span(decoded)));
+  if (size < 0) {
+    return std::nullopt;
+  }
+  decoded.resize(base::ToSize(size));
+  return decoded;
 }
 
-int LCW_Comp(std::span<const std::byte> in, std::span<std::byte> out) {
-  CHECK(!Overlaps(in, out)) << "LCW needs separate buffers";
-  return engine_rs::lcw_compress(AsRustSlice(in), AsRustSlice(out));
+std::vector<std::byte> LCW_Comp(const std::span<const std::byte> in) {
+  return ToByteVector(engine_rs::lcw_compress(AsRustSlice(in)));
 }

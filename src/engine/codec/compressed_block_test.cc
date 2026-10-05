@@ -2,7 +2,6 @@
 
 #include "engine/codec/compressed_block.h"
 
-#include <array>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -37,45 +36,43 @@ std::vector<unsigned char> Block(CompressionMethod method,
   return Block(static_cast<char>(method), uncompressed_bytes, skip_bytes, data);
 }
 
-// UncompressBlock() over the byte views of `block` and `output`.
-base::ssize Decode(std::span<const unsigned char> block,
-                   std::span<unsigned char> output) {
-  return UncompressBlock(std::as_bytes(block), std::as_writable_bytes(output));
+// UncompressBlock() over the byte view of `block`.
+std::vector<uint8_t> Decode(std::span<const unsigned char> block,
+                            base::ssize max_size) {
+  return UncompressBlock(std::as_bytes(block), max_size);
 }
 
 TEST(UncompressBlockTest, CopiesUncompressedDataAfterTheSkippedArea) {
   const auto block = Block(NOCOMPRESS, 3, 2, {1, 2, 3});
-  std::array<unsigned char, 4> output{};
-  EXPECT_EQ(Decode(block, output), 3);
-  EXPECT_EQ(output, (std::array<unsigned char, 4>{1, 2, 3, 0}));
+  EXPECT_EQ(Decode(block, 4), (std::vector<uint8_t>{1, 2, 3}));
 }
 
 TEST(UncompressBlockTest, DecodesLcw) {
   // Two literal bytes, then the end marker.
   const auto block = Block(LCW, 2, 0, {0x82, 7, 8, 0x80});
-  std::array<unsigned char, 2> output{};
-  EXPECT_EQ(Decode(block, output), 2);
-  EXPECT_EQ(output, (std::array<unsigned char, 2>{7, 8}));
+  EXPECT_EQ(Decode(block, 2), (std::vector<uint8_t>{7, 8}));
+}
+
+TEST(UncompressBlockTest, LcwStopsAtTheHeaderSize) {
+  // The stream holds three bytes and the header promises two.
+  const auto block = Block(LCW, 2, 0, {0x83, 7, 8, 9, 0x80});
+  EXPECT_EQ(Decode(block, 4), (std::vector<uint8_t>{7, 8}));
 }
 
 TEST(UncompressBlockTest, RejectsBadHeaders) {
-  std::array<unsigned char, 4> output{};
-  EXPECT_EQ(Decode(Block(NOCOMPRESS, 1, -1, {1}), output), 0);
-  EXPECT_EQ(Decode(Block(NOCOMPRESS, 1, 5, {}), output), 0);
-  EXPECT_EQ(Decode(Block(NOCOMPRESS, 5, 0, {1, 2, 3, 4, 5}), output), 0);
-  EXPECT_EQ(Decode(Block(NOCOMPRESS, 3, 0, {1, 2}), output), 0);
+  EXPECT_TRUE(Decode(Block(NOCOMPRESS, 1, -1, {1}), 4).empty());
+  EXPECT_TRUE(Decode(Block(NOCOMPRESS, 1, 5, {}), 4).empty());
+  EXPECT_TRUE(Decode(Block(NOCOMPRESS, 5, 0, {1, 2, 3, 4, 5}), 4).empty());
+  EXPECT_TRUE(Decode(Block(NOCOMPRESS, 3, 0, {1, 2}), 4).empty());
 }
 
 TEST(UncompressBlockTest, RejectsMethodsItCannotDecode) {
   for (const CompressionMethod method : {HORIZONTAL, LZW12, LZW14}) {
-    std::array<unsigned char, 3> output{9, 9, 9};
-    EXPECT_EQ(Decode(Block(method, 3, 0, {1, 2, 3}), output), 0)
+    EXPECT_TRUE(Decode(Block(method, 3, 0, {1, 2, 3}), 3).empty())
         << static_cast<int>(method);
-    EXPECT_EQ(output, (std::array<unsigned char, 3>{9, 9, 9}));
   }
-  std::array<unsigned char, 3> output{};
   // Not a CompressionMethod at all.
-  EXPECT_EQ(Decode(Block(char{9}, 3, 0, {1, 2, 3}), output), 0);
+  EXPECT_TRUE(Decode(Block(char{9}, 3, 0, {1, 2, 3}), 3).empty());
 }
 
 }  // namespace

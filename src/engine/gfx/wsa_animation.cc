@@ -180,9 +180,9 @@ void WsaAnimation::Load(ByteStream& file, engine::gfx::Palette* const palette) {
   has_loop_delta_ = ResidentFrameOffset(total_frames_ + 1) != 0;
 
   // Figure where to back load frame 0 into the delta buffer. Compressed data
-  // goes at the very end so that LCW_Uncompress() can write its output from the
-  // front of the same buffer, behind the input it has yet to read; ANIMATE's
-  // largest_frame_size is what makes the buffer big enough for that.
+  // goes at the very end so that LcwUncompressInPlace() can write its output
+  // from the front of the same buffer, behind the input it has yet to read;
+  // ANIMATE's largest_frame_size is what makes the buffer big enough for that.
   delta_buffer_.resize(base::ToSize(delta_capacity));
   const std::span delta_buffer = delta_buffer_;
   const auto compressed_delta =
@@ -192,7 +192,7 @@ void WsaAnimation::Load(ByteStream& file, engine::gfx::Palette* const palette) {
 
   // Frame 0 now waits, uncompressed, at the front of the delta buffer until the
   // first DrawFrame() applies it. With no frame 0 this decodes nothing.
-  LCW_Uncompress(compressed_delta, delta_buffer);
+  LcwUncompressInPlace(compressed_delta, delta_buffer);
 }
 
 bool WsaAnimation::DrawFrame(PixelView& view, const int frame_number) {
@@ -296,7 +296,7 @@ bool WsaAnimation::ApplyFrameDelta(const int delta_number,
 
   // Uncompress it to the beginning of the delta buffer, then XOR the delta
   // onto the view.
-  LCW_Uncompress(compressed_delta, delta_buffer);
+  LcwUncompressInPlace(compressed_delta, delta_buffer);
   ApplyXorDeltaToView(dest, delta_buffer, width_, dest_stride, /*copy=*/false);
   return true;
 }
