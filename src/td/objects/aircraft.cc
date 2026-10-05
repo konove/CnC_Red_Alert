@@ -583,11 +583,15 @@ void AircraftClass::Write_INI(engine::file::IniFile& ini) {
     AircraftClass* unit = TheObjectHeaps().aircraft().ActiveAt(index);
     if (!unit->IsInLimbo) {
       absl::SNPrintF(uname, 10, "%03d", index);
-      absl::SNPrintF(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
-                     unit->Class->IniName, unit->Health_Ratio(),
-                     Cell::Containing(unit->Coord).index(),
-                     unit->PrimaryFacing.Current(),
-                     Mission_Name(unit->Mission));
+      absl::SNPrintF(
+          buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
+          unit->Class->IniName, unit->Health_Ratio(),
+          Cell::Containing(unit->Coord).index(), unit->PrimaryFacing.Current(),
+          // Read_INI() queues the scenario's mission behind the
+          // move an aircraft enters the map with, so the queue is
+          // where an aircraft just read keeps it.
+          Mission_Name(unit->MissionQueue != MISSION_NONE ? unit->MissionQueue
+                                                          : unit->Mission));
       ini.PutString(INI_Name(), uname, buf);
     }
   }

@@ -77,14 +77,12 @@ TEST_F(ScenarioObjectsIniTest, ABuildingIsWrittenAsItWasRead) {
             "GoodGuy,NUKE,256,1960,0,None");
 }
 
-// TODO: The mission does not survive: the reader queues it behind the
-// "move" an aircraft starts with on entering the map, and the writer writes
-// the one in hand. Saving a scenario in the editor turns every aircraft's
-// mission into Move.
-TEST_F(ScenarioObjectsIniTest, AnAircraftIsWrittenWithTheMissionItStartsOn) {
+// The reader queues the mission behind the "move" an aircraft starts with on
+// entering the map; the writer has to look in the queue for it.
+TEST_F(ScenarioObjectsIniTest, AnAircraftIsWrittenAsItWasRead) {
   EXPECT_EQ(RoundTrip<AircraftClass>(
                 "[AIRCRAFT]\n000=GoodGuy,ORCA,256,1330,0,Guard\n", "000"),
-            "GoodGuy,ORCA,256,1330,0,Move");
+            "GoodGuy,ORCA,256,1330,0,Guard");
 }
 
 TEST_F(ScenarioObjectsIniTest, AnObjectOfAnUnknownHouseOrTypeIsNotBuilt) {
