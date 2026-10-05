@@ -1744,7 +1744,7 @@ static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count) {
     packet.Frame = static_cast<unsigned>(
         (game::CurrentFrame() + TheSession().MaxAhead +
          (TheSession().FrameSendRate - 1)) /
-        (TheSession().FrameSendRate * TheSession().FrameSendRate));
+        TheSession().FrameSendRate * TheSession().FrameSendRate);
   } else {
     packet.Frame =
         static_cast<unsigned>(game::CurrentFrame() + TheSession().MaxAhead);
@@ -2426,10 +2426,10 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   // Set the frame to execute this event on; this is protocol-specific
   //........................................................................
   if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    finfo->Frame = static_cast<unsigned>(
-        (game::CurrentFrame() + frame_delay +
-         (TheSession().FrameSendRate - 1)) /
-        (TheSession().FrameSendRate * TheSession().FrameSendRate));
+    finfo->Frame = static_cast<unsigned>((game::CurrentFrame() + frame_delay +
+                                          (TheSession().FrameSendRate - 1)) /
+                                         TheSession().FrameSendRate *
+                                         TheSession().FrameSendRate);
   } else {
     finfo->Frame = static_cast<unsigned>(game::CurrentFrame() + frame_delay);
   }
@@ -2802,7 +2802,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       TheNetwork().out_list().First().Frame = static_cast<unsigned>(
           (game::CurrentFrame() + frame_delay +
            (TheSession().FrameSendRate - 1)) /
-          (TheSession().FrameSendRate * TheSession().FrameSendRate));
+          TheSession().FrameSendRate * TheSession().FrameSendRate);
     } else {
       TheNetwork().out_list().First().Frame =
           static_cast<unsigned>(game::CurrentFrame() + frame_delay);
