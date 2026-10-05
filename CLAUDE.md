@@ -252,10 +252,24 @@ modernized code:
 | Variables (local/param) | `snake_case`                        | `cargo_hold`, `target_cell`          |
 | Class data members      | `snake_case_` (trailing underscore) | `attached_count_`, `cargo_hold_`     |
 | Constants               | `kPascalCase`                       | `kMaxPassengers`                     |
+| Enumerators             | `kPascalCase`, always qualified     | `MultiStyle::kAnd`                   |
 | Classes / types         | `PascalCase`                        | `Cargo`, `RTTIType`                  |
 
 Legacy code uses `PascalCase` methods/members (`How_Many()`, `Quantity`) — leave it unless you are
 modernizing that code, then rename to the Google scheme. Do not mass-rename untouched legacy code.
+
+New and modernized enums are `enum class` with `kPascalCase` enumerators written `Enum::kName`; do
+not add `using enum`. Legacy enums still carry `SCREAMING_CASE` enumerators hoisted by a
+`using enum` after the definition; `/rename-google-style` converts them.
+
+### Classes
+
+In a `class`, every data member is private (not protected) and reached through accessors; only
+constants may be public. A type that is only passive data is a `struct` with public `snake_case`
+fields. Declarations follow the style guide's
+[Declaration Order](https://google.github.io/styleguide/cppguide.html#Declaration_Order), and a
+`.cc` defines its functions in the order its header declares them. `/restructure-class` applies this
+to legacy classes.
 
 ### Includes
 
