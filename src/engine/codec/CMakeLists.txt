@@ -31,8 +31,7 @@ include(Testing)
 add_gtest(
         NAME engine_codec_test
         SOURCES aud_decoder_test.cc codec_corrupt_test.cc codec_state_test.cc
-            compressed_block_test.cc lcw_comp_test.cc lcw_differential_test.cc
-            lcw_reference_test_util.cc lcw_uncompress_test.cc stream_error_test.cc
-            stream_golden_test.cc xor_delta_test.cc
-        LIBS engine_codec engine_crypto engine_rs_cxx absl::strings
+            compressed_block_test.cc lcw_comp_test.cc lcw_uncompress_test.cc
+            stream_error_test.cc stream_golden_test.cc xor_delta_test.cc
+        LIBS engine_codec engine_crypto absl::strings
 )

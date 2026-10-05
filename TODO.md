@@ -1179,9 +1179,6 @@
   (`cmake-build-debug-ra/src/ra/`, `cmake-build-strict-ra-clang/src/ra/`)
   - An older build saved scancodes there; the hotkeys now load as Windows key codes, so those
     entries come back unbound until the section is removed and the game saves it again
-- Decide when to delete the C++ LCW reference
-  - `engine/codec/lcw_reference_test_util.cc` exists only for `LcwDifferentialTest` and `lcw_bench`;
-    once the Rust kernels have shipped without a report, both can go
 - Decide whether the strict build's `-Wnrvo` earns its keep
   - On the 2- and 4-byte trivially copyable `Coordinate`, `Target` and `Cell` it forced odd code:
     `return Cell::FromIndex(cell.index());` (`td/map/display.cc` ~2389) and restructured

@@ -105,6 +105,28 @@ TEST(LcwUncompressInPlaceTest, CopiesInAStreamStoredElsewhere) {
   EXPECT_EQ(output, (std::array<unsigned char, 3>{'a', 'b', 0xcc}));
 }
 
+// The WSA and VQA layout: the stream at the tail of the buffer, the output
+// growing from the front and into the bytes already read.
+TEST(LcwUncompressInPlaceTest, DecodesAStreamAtTheTailOfItsDestination) {
+  std::array<unsigned char, 9> buffer = {0xcc, 0xcc, 0xcc, 0x84, 'a',
+                                         'b',  'c',  'd',  0x80};
+  EXPECT_EQ(
+      LcwUncompressInPlace(std::span<const unsigned char>(buffer).subspan(3),
+                           std::span(buffer).first(4)),
+      4);
+  EXPECT_EQ(buffer, (std::array<unsigned char, 9>{'a', 'b', 'c', 'd', 'a', 'b',
+                                                  'c', 'd', 0x80}));
+}
+
+TEST(LcwUncompressInPlaceDeathTest, RejectsAStreamOverlappingTheFront) {
+  std::array<unsigned char, 16> buffer = {};
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(
+      LcwUncompressInPlace(std::span<const unsigned char>(buffer).first(8),
+                           std::span(buffer).subspan(4, 8)),
+      "overlaps the front");
+}
+
 TEST(LcwUncompressInPlaceTest, EmptyBuffersDoNotAccessStorage) {
   EXPECT_EQ(LcwUncompressInPlace(std::span<const unsigned char>{},
                                  std::span<unsigned char>{}),

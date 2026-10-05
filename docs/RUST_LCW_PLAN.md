@@ -2333,6 +2333,10 @@ Done when all of these hold on the final tree:
 Done 2026-09-30 on branch `rust-lcw`. Every C++ test passes unchanged, and `LcwDifferentialTest`
 holds the Rust kernels to the C++ reference byte for byte.
 
+The C++ reference (`lcw_reference_test_util`), `LcwDifferentialTest` and `lcw_bench` were deleted on
+2026-10-05; the numbers below are the last ones measured against it. The two in-place cases only the
+differential test covered moved to `lcw_uncompress_test.cc`.
+
 `lcw_bench` at `RelWithDebInfo`, 8 MiB of game-like data (third of three runs; the encoder varies by
 about ±8% from run to run in both directions):
 
