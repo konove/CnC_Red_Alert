@@ -170,6 +170,12 @@ T* FilledSlotOrNull(game::ObjectHeap<T>& heap, const int slot_index,
 // nuke is special weapon -255 and SCG10EA's "lch3" plays movie -170.
 constexpr int LowByte(const int value) { return static_cast<int8_t>(value); }
 
+// Returns the one-byte enum a record's `value` means, which is its low byte.
+template <class Enum>
+constexpr Enum LowByteAs(const int value) {
+  return static_cast<Enum>(LowByte(value));
+}
+
 // Returns the sound a record's `value` means: the value, or its low byte when
 // the value is no sound and the byte is one. SCU31EA and others store a sound
 // as 0xFFFF00xx; the original read it through a one-byte enum, and VocType is
@@ -332,6 +338,122 @@ class LaunchNukesAction final : public TriggerAction {
   }
 };
 
+// Declares the game won or lost. Only the player is ever flagged: the house
+// named says whether the player is the one who won (kWin) or lost (kLose).
+class DeclareWinnerAction final : public TriggerAction {
+ public:
+  DeclareWinnerAction(const TriggerActionType type, const HousesType house)
+      : type_(type), house_(house) {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    const bool names_player = house_ == ThePlayer()->Class->House;
+    if (names_player == (type_ == TriggerActionType::kWin)) {
+      ThePlayer()->Flag_To_Win();
+    } else {
+      ThePlayer()->Flag_To_Lose();
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_, .value = static_cast<int>(house_)};
+  }
+
+ private:
+  TriggerActionType type_;
+  HousesType house_;
+};
+
+// Lets the house named start building. As for the three classes below, a
+// house the scenario does not have (or HOUSE_NONE) is left alone.
+class BeginProductionAction final : public TriggerAction {
+ public:
+  explicit BeginProductionAction(const HousesType house) : house_(house) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kBeginProduction;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (HouseClass* house = HouseClass::As_Pointer(house_); house != nullptr) {
+      house->Begin_Production();
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(house_)};
+  }
+
+ private:
+  HousesType house_;
+};
+
+// Sends every unit of the house named into hunt mode.
+class AllHuntAction final : public TriggerAction {
+ public:
+  explicit AllHuntAction(const HousesType house) : house_(house) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kAllHunt;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (HouseClass* house = HouseClass::As_Pointer(house_); house != nullptr) {
+      house->Do_All_To_Hunt();
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(house_)};
+  }
+
+ private:
+  HousesType house_;
+};
+
+// Makes the house named sell all its buildings and send its units to
+// hunt. The house's AI does both once it is in the endgame state.
+class FireSaleAction final : public TriggerAction {
+ public:
+  explicit FireSaleAction(const HousesType house) : house_(house) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kFireSale;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (HouseClass* house = HouseClass::As_Pointer(house_); house != nullptr) {
+      house->State = STATE_ENDGAME;
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(house_)};
+  }
+
+ private:
+  HousesType house_;
+};
+
+// Starts the team autocreate logic of the house named.
+class AutocreateAction final : public TriggerAction {
+ public:
+  explicit AutocreateAction(const HousesType house) : house_(house) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kAutocreate;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (HouseClass* house = HouseClass::As_Pointer(house_); house != nullptr) {
+      house->IsAlerted = true;
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = static_cast<int>(house_)};
+  }
+
+ private:
+  HousesType house_;
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -416,7 +538,6 @@ class LegacyAction final : public TriggerAction {
     ThemeType theme;            // Musical theme.
     VocType sound;              // Sound effect.
     VoxType speech;             // Speech identifier.
-    HousesType house;           // House to be affected.
     SpecialWeaponType special;  // Special weapon ability.
     QuarryType quarry;          // Preferred target for attack.
     VQType movie;               // The movie to play.
@@ -611,50 +732,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
           base::At(TheScenario().Waypoint, data_.value).Center());
       break;
 
-    // Flag the house specified as the winner. Only the player is ever flagged:
-    // the house says whether the player is the one who won or lost.
-    case TriggerActionType::kWin:
-      if (data_.house == ThePlayer()->Class->House) {
-        ThePlayer()->Flag_To_Win();
-      } else {
-        ThePlayer()->Flag_To_Lose();
-      }
-      break;
-
-    // Flag the house specified as the loser; the mirror image of the above.
-    case TriggerActionType::kLose:
-      if (data_.house != ThePlayer()->Class->House) {
-        ThePlayer()->Flag_To_Win();
-      } else {
-        ThePlayer()->Flag_To_Lose();
-      }
-      break;
-
-    // This will enable production to begin for the house specified.
-    case TriggerActionType::kBeginProduction:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
-          specified_house != nullptr) {
-        specified_house->Begin_Production();
-      }
-      break;
-
-    // Cause all buildings to be sold and all units to go into hunt mode. The
-    // house's AI does both once it is in the endgame state.
-    case TriggerActionType::kFireSale:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
-          specified_house != nullptr) {
-        specified_house->State = STATE_ENDGAME;
-      }
-      break;
-
-    // Begin the team autocreate logic for the house specified.
-    case TriggerActionType::kAutocreate:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
-          specified_house != nullptr) {
-        specified_house->IsAlerted = true;
-      }
-      break;
-
     // Manually create the team specified. Counting as scenario setup makes
     // Create_One_Of() ignore the type_'s limit on how many teams may exist.
     // team_type_ is null when the INI named a team that does not exist; the
@@ -679,14 +756,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       success = team_type_ != nullptr && DeliverReinforcements(team_type_);
       break;
 
-    // Force all units of the house specified to go into hunt mode.
-    case TriggerActionType::kAllHunt:
-      if (HouseClass* specified_house = HouseClass::As_Pointer(data_.house);
-          specified_house != nullptr) {
-        specified_house->Do_All_To_Hunt();
-      }
-      break;
-
     // No action. TriggerActionType::kAllowWin is not carried out here:
     // TriggerClass and the scenario's win check look for it by type_.
     case TriggerActionType::kNone:
@@ -698,6 +767,12 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
     case TriggerActionType::kStartTimer:
     case TriggerActionType::kStopTimer:
     case TriggerActionType::kDestroyObject:
+    case TriggerActionType::kWin:
+    case TriggerActionType::kLose:
+    case TriggerActionType::kBeginProduction:
+    case TriggerActionType::kFireSale:
+    case TriggerActionType::kAutocreate:
+    case TriggerActionType::kAllHunt:
     default:
       break;
   }
@@ -838,13 +913,28 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
     case TriggerActionType::kLaunchNukes:
       return std::make_unique<LaunchNukesAction>();
 
-    // Not yet classes of their own.
     case TriggerActionType::kWin:
     case TriggerActionType::kLose:
+      return std::make_unique<DeclareWinnerAction>(
+          type, LowByteAs<HousesType>(record.value));
+
     case TriggerActionType::kBeginProduction:
+      return std::make_unique<BeginProductionAction>(
+          LowByteAs<HousesType>(record.value));
+
     case TriggerActionType::kAllHunt:
+      return std::make_unique<AllHuntAction>(
+          LowByteAs<HousesType>(record.value));
+
     case TriggerActionType::kFireSale:
+      return std::make_unique<FireSaleAction>(
+          LowByteAs<HousesType>(record.value));
+
     case TriggerActionType::kAutocreate:
+      return std::make_unique<AutocreateAction>(
+          LowByteAs<HousesType>(record.value));
+
+    // Not yet classes of their own.
     case TriggerActionType::kCreateTeam:
     case TriggerActionType::kDestroyTeam:
     case TriggerActionType::kReinforcements:
