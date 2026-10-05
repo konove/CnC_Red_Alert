@@ -61,7 +61,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/selection.h"
 #include "ra/map/world.h"

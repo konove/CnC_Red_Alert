@@ -144,7 +144,6 @@
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/random_pick.h"
 #include "ra/core/target.h"

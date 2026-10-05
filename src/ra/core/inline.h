@@ -16,27 +16,17 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Small helpers nearly every Red Alert file uses: coordinate and cell
-// geometry, the two random number streams, and the text table lookup.
+// The text table lookup.
 
 #ifndef CNC_RED_ALERT_RA_CORE_INLINE_H_
 #define CNC_RED_ALERT_RA_CORE_INLINE_H_
 
-#include <cstdint>
-#include <cstdlib>
 #include <iterator>
+#include <span>
 
 #include "base/array.h"
-#include "base/random.h"
 #include "engine/file/string_table.h"
-#include "game/sim/direction.h"
-#include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
-#include "ra/core/const.h"
-#include "ra/core/coord.h"
-#include "ra/core/defines.h"
-#include "ra/core/packed.h"  // IWYU pragma: export
-#include "ra/map/display.h"
 #include "ra/map/world.h"
 
 namespace ra {

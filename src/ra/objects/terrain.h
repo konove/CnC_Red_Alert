@@ -47,7 +47,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/objects/object.h"
 #include "ra/objects/stage.h"
 #include "ra/objects/techno.h"

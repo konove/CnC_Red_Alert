@@ -95,7 +95,6 @@
 #include "ra/assets/window_rect.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/random_pick.h"
 #include "ra/core/target.h"
 #include "ra/editor/mapedit.h"
