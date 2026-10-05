@@ -1,11 +1,14 @@
 // Tests for the trigger type in a real Game with no game data: its heap slot,
 // what it drops when a type it refers to is destroyed, how it reads and writes
-// its scenario INI entry, and the summary the scenario editor lists.
+// its scenario INI entry, how it survives a saved game, the summary the
+// scenario editor lists and how that summary is drawn as a list entry.
 
 #include "ra/ai/trigger_type.h"
 
 #include <array>
+#include <cstddef>
 #include <filesystem>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -14,12 +17,17 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/ini_file.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/env.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
+#include "ra/assets/palettes.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
@@ -27,6 +35,8 @@
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 #include "ra/startup/game_test_util.h"
+#include "ra/startup/ui_test_util.h"
+#include "ra/ui/color_scheme.h"
 
 namespace ra {
 
@@ -524,6 +534,168 @@ TEST_F(TriggerTypeObjectNameTest, TheDescriptionNamesTheInfantryAnEventTakes) {
 
   EXPECT_TRUE(DescriptionEnding().ends_with("Rifle Infantry"))
       << DescriptionEnding();
+}
+
+// A saved game holds the trigger type heap as each type's slot and contents;
+// loading constructs each type in its old slot.
+TEST_F(TriggerTypeTest, ASavedHeapLoadsEveryTriggerTypeIntoItsOldSlot) {
+  // Slots 0 and 2 are in use and slot 1 is not, so a load that filled the
+  // slots in order would put "wave" where nothing points.
+  auto* const gap = base::NewPooled<TriggerType>();
+  auto* const second = base::NewPooled<TriggerType>();
+  second->Set_Name("wave");
+  base::DeletePooled(gap);
+  trigger_type_->house = HOUSE_USSR;
+  trigger_type_->persistence = TriggerType::PERSISTANT;
+  trigger_type_->event_control = MULTI_AND;
+  trigger_type_->action_control = MULTI_AND;
+  trigger_type_->event1.Event = TEVENT_CREDITS;
+  trigger_type_->event1.Data.Value = 50;
+  trigger_type_->event2.Event = TEVENT_LEAVES_MAP;
+  trigger_type_->event2.Team = team_type_;
+  trigger_type_->action1 = MakeTriggerAction(
+      {.type = TriggerActionType::kCreateTeam, .team_type = team_type_});
+  trigger_type_->action2 = MakeTriggerAction(
+      {.type = TriggerActionType::kForceTrigger, .trigger_type = second});
+  const std::string entry = trigger_type_->ToIniEntry();
+  std::vector<std::byte> saved;
+  {
+    VectorSink sink(saved);
+    ArchiveWriter writer(sink);
+    ASSERT_TRUE(TheObjectHeaps().trigger_type().Save(writer));
+  }
+  TriggerType::DestroyAll();
+
+  SpanSource source{std::span<const std::byte>(saved)};
+  ArchiveReader reader(source);
+  ASSERT_TRUE(TheObjectHeaps().trigger_type().Load(reader)) << reader.error();
+
+  ASSERT_EQ(TheObjectHeaps().trigger_type().Count(), 2);
+  TriggerType* const loaded = TriggerType::FromName("alrm");
+  ASSERT_EQ(loaded, trigger_type_);
+  EXPECT_EQ(TriggerType::FromName("wave"), second);
+  EXPECT_TRUE(loaded->is_active);
+  EXPECT_EQ(loaded->ID, 0);
+  EXPECT_EQ(second->ID, 2);
+  EXPECT_EQ(loaded->ToIniEntry(), entry);
+  EXPECT_EQ(loaded->event2.Team, team_type_);
+  EXPECT_EQ(loaded->action2->ToRecord().trigger_type, second);
+}
+
+// Draws a trigger type as a list entry on a page of its own. Each colour
+// scheme of UiFixture draws in one colour, so the page tells which scheme
+// drew.
+class TriggerTypeDrawTest : public UiFixture {
+ protected:
+  static constexpr int kWidth = 600;
+  static constexpr int kHeight = 16;
+
+  void SetUp() override {
+    TheObjectHeaps().trigger_type().Reset(1);
+    trigger_type_ = base::NewPooled<TriggerType>();
+    trigger_type_->Set_Name("alrm");
+    previous_scheme_ = Get_Color_Scheme();
+    Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_RED));
+  }
+
+  void TearDown() override {
+    Set_Color_Scheme(previous_scheme_);
+    UiFixture::TearDown();
+  }
+
+  // Draws the entry at the page's top left corner.
+  void Draw(const bool selected, const FontType font,
+            const TextPrintType flags = TPF_NONE) {
+    PixelView& view = page_.view();
+    trigger_type_->Draw_It(view, 0, 0, 0, kWidth, kHeight, selected, font,
+                           flags);
+  }
+
+  // The number of the page's pixels that are `color`.
+  int CountOf(const int color) {
+    PixelView& view = page_.view();
+    int count = 0;
+    for (int y = 0; y < kHeight; ++y) {
+      for (int x = 0; x < kWidth; ++x) {
+        count += view.GetPixel(x, y) == color ? 1 : 0;
+      }
+    }
+    return count;
+  }
+
+  // The colour of the scheme the dialogs are set to draw in.
+  static constexpr int DialogColor() { return SchemeColor(PCOLOR_RED); }
+
+  static bool HasDescriptions() {
+    return config::kCheatKeysEnabled || config::kScenarioEditorEnabled;
+  }
+
+  PixelBuffer page_{kWidth, kHeight};
+  TriggerType* trigger_type_ = nullptr;
+  // The scheme to put back, which outlives this test's Game.
+  RemapControlType* previous_scheme_ = nullptr;
+};
+
+TEST_F(TriggerTypeDrawTest, ASelectedEntryInAGradientFontIsABarOfTheScheme) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  Draw(true, FontType::k6PointGradient);
+
+  // The bar is the whole box; the text on it is the scheme's colour too.
+  EXPECT_EQ(CountOf(DialogColor()), kWidth * kHeight);
+}
+
+TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAGradientFontHasNoBar) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  Draw(false, FontType::k6PointGradient);
+
+  const int text = CountOf(DialogColor());
+  EXPECT_GT(text, 0);
+  EXPECT_LT(text, kWidth * kHeight);
+  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+}
+
+TEST_F(TriggerTypeDrawTest, TheEditorFontIsDrawnLikeAGradientFont) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  Draw(true, FontType::kEditor);
+
+  EXPECT_EQ(CountOf(DialogColor()), kWidth * kHeight);
+}
+
+TEST_F(TriggerTypeDrawTest, ASelectedEntryInAPlainFontIsBlueTextWithoutABar) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  Draw(true, FontType::k6Point);
+
+  const int text = CountOf(SchemeColor(PCOLOR_DIALOG_BLUE));
+  EXPECT_GT(text, 0);
+  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+}
+
+TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
+  if (!HasDescriptions()) {
+    GTEST_SKIP() << "this build has no editor descriptions";
+  }
+  Draw(false, FontType::k6Point);
+
+  const int text = CountOf(SchemeColor(PCOLOR_GREY));
+  EXPECT_GT(text, 0);
+  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+}
+
+TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
+  if (HasDescriptions()) {
+    GTEST_SKIP() << "this build has the editor's descriptions";
+  }
+  Draw(true, FontType::k6PointGradient);
+
+  EXPECT_EQ(CountOf(0), kWidth * kHeight);
 }
 
 }  // namespace

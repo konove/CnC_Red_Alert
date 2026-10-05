@@ -1185,20 +1185,20 @@
     accessor for `ThemeClass::Pending` would let the music action be asserted
   - `PlayMovieAction` (~773) needs the display and a movie; the player's special weapon button
     (~892) needs the sidebar's game data; `DropZoneFlareAction` (~613) needs the animation types
-- Cover the rest of `ra/ai/trigger_type.cc` (184 of 211 lines covered)
-  - `Draw_It()` (~276-303) needs the fonts and the colour remaps; it becomes one test of the shared
-    list-entry helper when the five copies are merged
-  - The placement `operator new` in `trigger_type.h` ~113 is only used by `ObjectHeap::Load()`; a
-    save and load of the trigger type heap through an `ArchiveWriter` would cover it and
-    `TriggerType::Serialize()`
-  - `ra/editor/trigger_type_dialog.cc` is at 1,184 of 1,239 lines through
-    `ra/editor/trigger_type_dialog_test.cc`. Not reached: the drop lists opened by the mouse
-    (`ActionChoice::Draw_It()` ~107, the speech and sound previews ~1385-1402, switching the event
-    or action by picking another entry), because the fixture has no `EBTN-UP.SHP`/`EBTN-DN.SHP` and
-    the drop buttons are zero-sized; and the waypoint field of an event (~318, ~1451), which no
-    event type takes
-  - `TheDescriptionIsEmptyWithoutTheEditor` only runs in a release-version build; the local `.env`
-    builds the internal version, where it is skipped
+- Cover the rest of `ra/ai/trigger_type.cc` (207 of 211 lines covered) and
+  `ra/editor/trigger_type_dialog.cc` (1,208 of 1,213)
+  - The early returns of `Description()` (~92) and `Draw_It()` (~277) only run in a release-version
+    build; the local `.env` builds the internal version, where
+    `TheDescriptionIsEmptyWithoutTheEditor` and `NothingIsDrawnWithoutTheEditor` are skipped
+  - `ActionChoice::Draw_It()` in the dialog (~119-121) has a branch for a plain font, but the
+    dialog's lists are always in the editor font; it goes when the five copies of the list-entry
+    drawing are merged into one helper. The `default:` of the event-style switch (~1016) cannot run
+    either: the four styles are all there are
+  - The speech and sound previews (`Speak()`, `PlaySoundEffect()`) run in
+    `ra/editor/trigger_type_dialog_test.cc` but nothing checks that they played: the fixture has no
+    audio to listen to
+  - With a drop list open, Esc does not close the dialog (seen while writing
+    `TheOpenActionListHighlightsTheChoice`, cause not looked into); decide whether that is wanted
 
 ## Debugging
 
