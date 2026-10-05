@@ -133,8 +133,8 @@ inline const char* Text_String(int index) {
 // integer or an enum; the range must span less than 32768 values.
 template <class T>
 T Random_Pick(T a, T b) {
-  return T(TheScenario().sync_rng_.InRange(static_cast<int>(a),
-                                           static_cast<int>(b)));
+  return static_cast<T>(TheScenario().sync_rng_.InRange(static_cast<int>(a),
+                                                        static_cast<int>(b)));
 }
 
 // Returns true `percent` times out of 100, drawing from the synchronized
@@ -149,7 +149,8 @@ inline bool Percent_Chance(int percent) {
 // is only cosmetic: animations, sounds, what one player's screen shows.
 template <class T>
 T Sim_Random_Pick(T a, T b) {
-  return T(LocalRandom().InRange(static_cast<int>(a), static_cast<int>(b)));
+  return static_cast<T>(
+      LocalRandom().InRange(static_cast<int>(a), static_cast<int>(b)));
 }
 
 // Returns true `percent` times out of 100, drawing from LocalRandom() like
