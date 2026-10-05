@@ -17,7 +17,9 @@
 */
 
 // The action half of a scenario trigger: what happens when the trigger springs
-// (TriggerAction) and the kinds of action there are (TriggerActionType).
+// (TriggerAction), the kinds of action there are (TriggerActionType), and an
+// action as the scenario INI, a saved game and the editor store it
+// (TriggerActionRecord).
 
 #ifndef CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
 #define CNC_RED_ALERT_RA_AI_TRIGGER_ACTION_H_
@@ -90,9 +92,9 @@ enum class TriggerActionType {
 // Returns the scenario editor's name for `action`.
 const char* ActionName(TriggerActionType action);
 
-// Returns the kind of value `action` takes in TriggerAction::data, which the
-// scenario editor prompts for; NEED_NONE when it takes none. NEED_TEAM and
-// NEED_TRIGGER mean the team_type or trigger_type member instead.
+// Returns the kind of value `action` takes in TriggerActionRecord::value, which
+// the scenario editor prompts for; NEED_NONE when it takes none. NEED_TEAM and
+// NEED_TRIGGER mean the record's team_type or trigger_type instead.
 NeedType ActionNeed(TriggerActionType action);
 
 // What an action is told when its trigger springs.

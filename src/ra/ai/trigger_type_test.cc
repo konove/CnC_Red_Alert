@@ -4,11 +4,17 @@
 
 #include "ra/ai/trigger_type.h"
 
+#include <array>
+#include <filesystem>
 #include <string>
+#include <vector>
 
 #include "absl/strings/str_cat.h"
 #include "base/pooled.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
 #include "engine/file/ini_file.h"
+#include "engine/platform/env.h"
 #include "gtest/gtest.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
@@ -281,6 +287,60 @@ TEST_F(TriggerTypeTest, ReadIniResolvesTriggerNamesInTheOldFormats) {
   // A name no trigger type has resolves to none.
   EXPECT_EQ(first->action2->ToRecord().trigger_type, nullptr);
   EXPECT_EQ(last->action1->ToRecord().trigger_type, nullptr);
+}
+
+// The two action records of every trigger type, in heap order.
+std::vector<std::array<TriggerActionRecord, 2>> ActionRecords() {
+  std::vector<std::array<TriggerActionRecord, 2>> records;
+  for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
+       index++) {
+    const TriggerType* type = TheObjectHeaps().trigger_type().ActiveAt(index);
+    records.push_back({type->action1->ToRecord(), type->action2->ToRecord()});
+  }
+  return records;
+}
+
+// The shipped scenarios hold values the actions rewrite (-255 for the nuke,
+// 0xFFFF00xx sounds); what WriteIni() writes of them must read back as the
+// same actions. The tree does not carry the scenarios: set RA_SCENARIO_DIR to
+// a directory of their INI files, which mixdump extracts from the game's MIX
+// archives.
+TEST_F(TriggerTypeTest, TheShippedTriggersAreReadBackAsWritten) {
+  const auto directory = engine::platform::GetEnv("RA_SCENARIO_DIR");
+  if (!directory) {
+    GTEST_SKIP() << "RA_SCENARIO_DIR is not set";
+  }
+  // Room for the largest scenario, and a team type in every slot an action
+  // may name.
+  TheObjectHeaps().trigger_type().Reset(128);
+  constexpr int kTeamTypes = 64;
+  TheObjectHeaps().team_type().Reset(kTeamTypes);
+  for (int index = 0; index < kTeamTypes; index++) {
+    base::NewPooled<TeamTypeClass>();
+  }
+
+  int trigger_count = 0;
+  for (const auto& file : std::filesystem::directory_iterator(*directory)) {
+    SCOPED_TRACE(file.path().string());
+    engine::file::IniFile ini;
+    const auto stream = OpenDiskFile(file.path().string(), FileAccess::kRead);
+    ASSERT_NE(stream, nullptr);
+    ASSERT_TRUE(ini.Load(*stream));
+
+    TriggerType::DestroyAll();
+    TheWorld().new_ini_format() = ini.GetInt("Basic", "NewINIFormat", 0);
+    TriggerType::ReadIni(ini);
+    const auto read = ActionRecords();
+    trigger_count += static_cast<int>(read.size());
+
+    engine::file::IniFile written;
+    TriggerType::WriteIni(written);
+    TriggerType::DestroyAll();
+    TheWorld().new_ini_format() = 3;
+    TriggerType::ReadIni(written);
+    EXPECT_EQ(ActionRecords(), read);
+  }
+  EXPECT_GT(trigger_count, 0);
 }
 
 TEST_F(TriggerTypeTest, WriteIniReplacesTheSectionAndClearsTheOldOne) {

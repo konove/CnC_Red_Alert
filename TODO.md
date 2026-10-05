@@ -300,26 +300,25 @@
     fixes all three; Tiberian Dawn's copies were not checked
 - Decide whether `TriggerActionType::kDestroyObject` should kill every object its trigger is
   attached to
-  - `DestroyObjectsAttachedTo()` (`ra/ai/trigger_action.cc` ~96, TODO at ~91) walks a heap's in-use
+  - `DestroyObjectsAttachedTo()` (`ra/ai/trigger_action.cc` ~100, TODO at ~95) walks a heap's in-use
     list by index and calls `Take_Damage()`. A unit, aircraft or building that deletes itself on the
     spot closes its gap in the list, and the loop steps over the object that moved into it, so of
     two neighbours attached to the same trigger the second survives. Stepping the index back, as
-    `TriggerActionType::kDestroyTrigger` does (~412), fixes it but changes how missions play and
+    `DestroyTriggerAction::Perform()` does (~568), fixes it but changes how missions play and
     desyncs against an unfixed peer. The original game had the same loop
 - Decide what a trigger action reports when its team type is missing
-  - Since `23f1b91c` `TriggerAction::Perform()` skips a null `team_type` instead of crashing:
-    `TriggerActionType::kReinforcements` (`ra/ai/trigger_action.cc` ~502) returns false, so its
-    trigger is never used up and retries on every spring, while `TriggerActionType::kCreateTeam` and
-    `TriggerActionType::kDestroyTeam` report success. Reporting true for all three would retire the
-    trigger; one line
+  - Since `23f1b91c` the team actions skip a null team type instead of crashing:
+    `ReinforcementsAction::Perform()` (`ra/ai/trigger_action.cc` ~527) returns false, so its trigger
+    is never used up and retries on every spring, while `CreateTeamAction` and `DestroyTeamAction`
+    report success. Reporting true for all three would retire the trigger; one line
 - Validate trigger actions when a scenario loads
-  - `TriggerAction::ReadIni()` (`ra/ai/trigger_action.cc` ~167) casts an unchecked number to
-    `TriggerActionType`, and nothing checks that the action's team, waypoint or special weapon
-    exists: `base::At(Waypoint, data_.value)` aborts the game for the default -1 in
-    `TriggerActionType::kDropZoneFlare`, `TriggerActionType::kRevealSome` and
-    `TriggerActionType::kRevealZone`, and `SuperWeapon.at()` does for `SPC_NONE`. One step in
-    `TriggerType::ReadIniEntry()` (`ra/ai/trigger_type.cc`, after the two `ReadIni()` calls) could
-    log and downgrade an action that cannot be performed to `TriggerActionType::kNone`
+  - `ReadTriggerActionRecord()` (`ra/ai/trigger_action.cc` ~1005) casts an unchecked number to
+    `TriggerActionType`, and nothing checks that the action's waypoint or special weapon exists:
+    `base::At(Waypoint, waypoint_)` aborts the game for the default -1 in `DropZoneFlareAction`,
+    `RevealAroundAction` and `RevealZoneAction`, and `SuperWeapon.at()` does for `SPC_NONE` in
+    `SpecialWeaponAction`. `MakeTriggerAction()` is the one place every action is made, so it could
+    log and return a `NoAction` for a record that cannot be performed (a type number that is no
+    action already becomes one)
   - `ReadIniEntry()` itself casts four unchecked numbers to `Persistence`, `HousesType` and
     `MultiStyle` (`trigger_type.cc` ~229), and `TEventClass::Read_INI()` (`ra/ai/tevent.cc` ~665)
     does the same for the event. A house of -1 then aborts in `HouseTypeClass::As_Reference()`. A
@@ -329,8 +328,8 @@
   - `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, the four `WaypointFromLetters()`
     calls) stores whatever the field holds: "ZZ" is 701, a digit is negative, and an empty field is
     -1. `ScenarioClass::Waypoint` has `kWaypointCount` (101) entries, so the game aborts in
-    `base::At(TheScenario().Waypoint, data_.value)` (`ra/ai/trigger_action.cc` ~283, ~295, ~435)
-    when the trigger springs
+    `base::At(TheScenario().Waypoint, waypoint_)` (`ra/ai/trigger_action.cc` ~615, ~638, ~664) when
+    the trigger springs
   - Return `std::optional<int>` from `WaypointFromLetters()` (`ra/ai/waypoint_name.h`), rejecting
     empty and non-letter input, and keep the old value in `Edit()` when it is out of range; about 25
     lines plus tests. Editor behaviour only
@@ -1016,11 +1015,24 @@
     "can be `if constexpr`" findings in `trigger_type.cc` are skipped on purpose
 - Finish what the `ra/ai/trigger_action` modernization left (`7eeaf347..cd29efc1`, class shape
   `de41dba2..0036d5a1`)
-  - `TriggerAction::data_`'s union and the class around it are replaced by one class per action: see
-    `docs/TRIGGER_ACTION_CLASSES_PLAN.md`
-  - `DropUnfilledTypeReferences()` (`ra/ai/scenario.cc` ~1865) reads each action pointer into a
-    local, passes it to `DropIfUnfilled(T*&, ...)` and sets it back; returning the kept pointer from
-    `DropIfUnfilled()` would make it one line per reference (four callers)
+  - Follow-ups of `docs/TRIGGER_ACTION_CLASSES_PLAN.md` (one class per action, done 2026-10-04):
+    - `TEventClass` has the shape `TriggerAction` had (one class, a type enum, a shared `Data`
+      union) and wants the same plan of its own
+    - `ra/ai/trigger_action.cc` grew to about 1,150 lines for 29 classes, where the plan
+      expected 700. `BeginProductionAction`, `AllHuntAction`, `FireSaleAction` and
+      `AutocreateAction` differ in one line each, as do the classes around a waypoint; decide
+      between a `HouseAction` base like `TeamAction`, or splitting the file by payload
+    - Check the trigger dialog by hand: it opens an existing trigger with the right widgets filled,
+      switching the action type switches the value widget, and OK then reopening shows what was set
+    - `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` only runs with `RA_SCENARIO_DIR` set
+      to a directory of extracted scenario INIs (`mixdump <game-dir> SCG01EA.INI <out>`); it passed
+      on the 42 campaign scenarios of the Steam install
+    - `tools/ra_saveload_smoke.sh --load-fixture` fails, and did before the plan:
+      `src/ra/testdata/SAVEGAME.SCG01EA` is "not a version 18 Red Alert save", so the load waits at
+      the menu until the script's timeout. Regenerate the fixture or make the script say so
+    - `TeamTypeClass::operator new` (`ra/ai/teamtype.cc` ~324) is not `noexcept`, so
+      `base::NewPooled<TeamTypeClass>()` on a full heap constructs at null and crashes instead of
+      returning nullptr as `TriggerType`'s does
   - `tevent.h`'s `TEventClass` (~145) is declared `struct` but reads and writes its INI form and
     draws itself: it becomes a class with private data when `ra/ai/tevent` gets its pass
   - Run `/fix-ide-issues` on `ra/ai/trigger_action_test.cc`: CLion answered for the header and the
@@ -1034,26 +1046,19 @@
     `const char*` because `Conquer_Clip_Text_Print()` (`ra/ui/dialog.h` ~33) takes one; they become
     `std::string_view` when the printer does
   - `TEventClass` and `TeamTypeClass` still have `Build_INI_Entry(std::string&)`;
-    `TriggerAction::ToIniEntry()` and `TriggerType::ToIniEntry()` return the string
-  - `kTicksPerTimerUnit` (`trigger_action.cc` ~80) is also spelled `kTicksPerMinute / 10` in
+    `ToIniEntry(const TriggerActionRecord&)` and `TriggerType::ToIniEntry()` return the string
+  - `kTicksPerTimerUnit` (`trigger_action.cc` ~84) is also spelled `kTicksPerMinute / 10` in
     `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in
     `ra/core/defines.h` ~2207
-  - `Destroy()` (`trigger_action.cc` ~83), full-strength armor-piercing damage, is repeated in
+  - `Destroy()` (`trigger_action.cc` ~87), full-strength armor-piercing damage, is repeated in
     `ra/objects/aircraft.cc` ~1788 and ~4168, `unit.cc` ~1905 and `infantry.cc` ~875; a member of
     `ObjectClass` would serve all
-  - Small ones in `Perform()`: the `kWin`/`kLose` cases mirror each other (~440), four cases repeat
-    the null-checked `As_Pointer(data_.house)`, `owner` (~216) is looked up for every action though
-    three use it, and the no-op case lists beside `default:` (~546, ~619) spell out
-    `TriggerActionType::`
   - `Assets::tutorial_text()` (`ra/assets/assets.cc` ~74) turns an empty string into nullptr; a
     `std::string_view` where empty means none is cleaner (one caller)
-  - Names to confirm: `flag()` (was `Bool`; or `enabled`), `ActionNeed()` (or `ActionDataNeed()`),
-    `TriggerAction::type()` (or `kind`), `TriggerActionType::kDropZoneFlare` (was
-    `TriggerActionType::kDropZoneFlare`; or `kDz`)
+  - Names to confirm: `ActionNeed()` (or `ActionDataNeed()`), `TriggerAction::type()` (or `kind`),
+    `TriggerActionType::kDropZoneFlare` (or `kDz`)
   - `ActionChoice::Draw_It()` ignores its index parameter; the signature is `TListClass`'s
     (`ra/ui/tlist.h` ~330), shared by seven item types
-  - `trigger_action_test.cc` ~268: CLion suggests structured bindings for a `TriggerAction` read
-    from INI; not applied, the fields are asserted by name
 
 ## Testing
 
@@ -1136,15 +1141,13 @@
     `ServiceRealTime()`/`RunFrame()` and input. Splitting out the pure parts would cover the logic:
     the prompt trim as `DifficultyPrompt(text, is_expansion_mission)` and the slider's stops and
     level scaling; the loops themselves need a fixture that can queue key presses
-- Cover the rest of `ra/ai/trigger_action.cc` (325 of 355 lines covered)
-  - `TriggerActionType::kTextTrigger` with a text (~234) needs `TUTORIAL.INI`; a setter for the
-    tutorial text on `Assets`, or loading it from an `IniFile` passed in, would do
-  - `TriggerActionType::kPlaySound`, `TriggerActionType::kPlayMusic` and
-    `TriggerActionType::kPlaySpeech` (~375-387) need the audio device; an accessor for
-    `ThemeClass::Pending` would let the music action be asserted
-  - `TriggerActionType::kPlayMovie` (~365) needs the display and a movie; the player's special
-    weapon button (~400) needs the sidebar's game data; `TriggerActionType::kDropZoneFlare` (~435)
-    needs the animation types
+- Cover the rest of `ra/ai/trigger_action.cc` (605 of 639 lines covered)
+  - `TextAction` with a text (~694) needs `TUTORIAL.INI`; a setter for the tutorial text on
+    `Assets`, or loading it from an `IniFile` passed in, would do
+  - `PlaySoundAction`, `PlayMusicAction` and `PlaySpeechAction` (~798-840) need the audio device; an
+    accessor for `ThemeClass::Pending` would let the music action be asserted
+  - `PlayMovieAction` (~773) needs the display and a movie; the player's special weapon button
+    (~892) needs the sidebar's game data; `DropZoneFlareAction` (~613) needs the animation types
 - Cover the rest of `ra/ai/trigger_type.cc` (79.7% of lines after `7476793a`)
   - `Description()`'s unit, aircraft, building and infantry names (~126-145) call `Text_String()`,
     which needs the text table, and `GameFixture` builds only the house and unit type heaps. A

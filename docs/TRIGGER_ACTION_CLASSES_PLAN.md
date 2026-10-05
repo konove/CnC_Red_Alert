@@ -2,8 +2,8 @@
 
 Written 2026-10-04 against `main` at c25198d5.
 
-**Status: in progress** on branch `trigger-action-classes`, started 2026-10-04. The step list under
-Plan is the whole plan; Progress at the end records what each step did.
+**Status: done 2026-10-04** on branch `trigger-action-classes` (ae84a09d onwards), apart from the
+by-hand check of the editor dialog. See Outcome at the end for what differs from the design.
 
 ## Context
 
@@ -226,3 +226,46 @@ Each step builds, passes the tests and is one commit.
 - One full strict build before the last commit; `tools/strict_tu.py` during the steps.
 - By hand: the editor's trigger dialog opens an existing trigger with the right widgets filled,
   switching the action type switches the value widget, and OK then reopening shows what was set.
+
+## Outcome
+
+All eight steps are done, one commit each and seven for step 6. `ra::TriggerAction` is the interface
+above, `MakeTriggerAction()` makes one of 29 classes private to `trigger_action.cc`, and the union,
+the nine typed accessor pairs and `pending_trigger_name_` are gone.
+
+What differs from the design:
+
+- **No pending-name bookkeeping.** `TriggerType::ReadIni()` creates and names every trigger type
+  first and reads the entries second, so `ReadTriggerActionRecord()` resolves a trigger name
+  (formats 0 and 1) or checks a heap slot (later formats) on the spot.
+  `DropUnfilledTypeReferences()` lost its action half. `ReadIniEntry()` called on its own no longer
+  resolves a name that is defined later; only `ReadIni()` calls it in the game.
+- **The data change landed with the factory (step 5),** not class by class: a scaffolding
+  `Normalized()` gave `LegacyAction` the record as the classes would keep it, so the low-byte tests
+  went through `ToRecord()` at once and every step 6 commit was a pure refactor.
+- **`LegacyAction` was deleted with the last group** rather than in step 7: once the factory stopped
+  naming it, it was unused code, which the strict build rejects.
+- **`TriggerActionContext` has defaults** (`HOUSE_NONE`, `nullptr`, -1, cell 0), so a test names
+  only the fields it uses.
+- **A type number that is no action** makes a `NoAction` that keeps the number.
+- **`trigger_action.cc` is about 1,150 lines,** not 700. Each class carries its own `type()` and
+  `ToRecord()`; the four one-line house actions are the obvious candidates for a shared base
+  (TODO.md).
+
+Verification, as run:
+
+- `ra_trigger_action_test` (59 tests) and `ra_trigger_type_test`. The round trip over all 37 types
+  and "keeps only the fields its type uses" are `EveryActionIsMadeAgainFromItsRecord` and
+  `AnActionKeepsOnlyTheFieldsItsTypeUses`.
+- `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` passed on the 42 campaign scenarios of
+  the Steam install. It needs `RA_SCENARIO_DIR` and is skipped without it.
+- Saves written by the new binary and by the pre-plan binary each load in the other and log the same
+  unit positions to frame 120 (SCG01EA, SCU05EA). `tools/ra_saveload_smoke.sh` passes.
+- SCU01EA and SCU05EA log the same unit and vessel positions over 900 frames in both binaries,
+  harvesters excluded: their logged destination differs between two runs of one binary.
+- `tools/coverage.py src/ra/ai/trigger_action.cc`: 605 of 639 lines. It was 325 of 355 before, not
+  100%; the uncovered lines are the same ones (audio, movie, tutorial text, the sidebar button, the
+  drop zone animation).
+- Not met: the checked-in save fixture (`--load-fixture`) does not load, and did not before the plan
+  either: it is not a version 18 save.
+- Open: the by-hand check of the trigger dialog.
