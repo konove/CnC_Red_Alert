@@ -1188,12 +1188,3 @@
     `Set_Cursor_Pos()` and `Calculated_Cell()` in both games, `BuildingClass::Target_Coord()` and
     `VesselClass::Fire_Coord()` in RA. Copy elision buys nothing for such types; either disable the
     warning or accept the shapes
-- Note that commit `6475411a` (the object pool collapse) describes two things wrongly
-  - Its message calls the in-use list private (it is protected; `TFixedIHeapClass::Ptr()` and
-    `Load()` use it) and says "TD's house loader" for what is `TeamClass::Serialize()`'s house check
-    in `td/saveload/ioobj.cc`. It cannot be amended without rewriting history; record it in
-    `docs/GAME_CONTAINERS_PLAN.md` if anyone needs the correction
-- Note the commit-history slips from `docs/COORDINATE_TYPES_PLAN.md`
-  - `f0498c21` (Part A, step 1) fails the strict build on its own (four `display.h` includes it left
-    unused; `22f80cbc` fixes them), and `f7d220ed` says "117 uses in 27 files" for what was 117
-    lines in 29 files. Neither can be amended without rewriting history
