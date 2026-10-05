@@ -31,6 +31,6 @@ include(Testing)
 add_gtest(
         NAME engine_file_test
         SOURCES disk_file_test.cc disk_stream_test.cc game_file_test.cc ini_file_test.cc mix_archive_test.cc
-            search_paths_test.cc
+            search_paths_test.cc string_table_test.cc string_table_test_util.cc
         LIBS engine_file absl::strings
 )
