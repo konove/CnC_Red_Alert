@@ -1762,6 +1762,24 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   }
 }
 
+void DisplayClass::SortForDrawing(const LayerType layer,
+                                  std::vector<ObjectClass*>& objects) {
+  if (layer == LAYER_GROUND) {
+    // Sort_Y() compares y and then x, so the order is total apart from objects
+    // at the very same coordinate.
+    std::ranges::stable_sort(
+        objects, [](const ObjectClass* left, const ObjectClass* right) {
+          return *left < *right;
+        });
+  } else if (layer == LAYER_TOP) {
+    // The layer's order is the order its members joined it in, which puts a
+    // paratrooper, a top-layer object for the first third of its fall, after
+    // the plane it left.
+    std::ranges::stable_partition(
+        objects, [](const ObjectClass* object) { return object->IsFalling; });
+  }
+}
+
 // Every object is flagged before any is drawn, so an object that draws another
 // can clear that one's IsToDisplay and keep it from being drawn twice: a
 // building draws the unit docked with it (BuildingClass::Draw_It). Flags left
@@ -1782,14 +1800,8 @@ void DisplayClass::RenderObjects(PixelView& view) {
       draw_list_.push_back(object);
     }
     // The layer's own order is game state (logic walks it), so the draw
-    // order is sorted in a copy. Sort_Y() compares y and then x, so the order
-    // is total apart from objects at the very same coordinate.
-    if (layer == LAYER_GROUND) {
-      std::ranges::stable_sort(
-          draw_list_, [](const ObjectClass* left, const ObjectClass* right) {
-            return *left < *right;
-          });
-    }
+    // order is sorted in a copy.
+    SortForDrawing(layer, draw_list_);
     for (ObjectClass* object : draw_list_) {
       object->Render(view, false);
     }

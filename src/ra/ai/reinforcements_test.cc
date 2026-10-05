@@ -3,6 +3,8 @@
 
 #include "ra/ai/reinforcements.h"
 
+#include <vector>
+
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
@@ -19,12 +21,14 @@
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
+#include "ra/map/display.h"
 #include "ra/map/world.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/building.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
+#include "ra/objects/object.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -605,6 +609,29 @@ TEST_F(ReinforcementTest, AnAircraftWithAnOriginArrivesFacingIt) {
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->PrimaryFacing.Current(),
             game::DIR_S);
+}
+
+TEST_F(ReinforcementTest, AParatrooperIsDrawnBelowThePlaneItJumpedFrom) {
+  TheGameState().active() = true;
+  TheRules().ground().at(LAND_CLEAR).Cost.at(SPEED_FOOT) = Fixed(1);
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_BADGER), 1);
+  ASSERT_TRUE(DeliverReinforcements(&team_type));
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
+  AircraftClass* plane = TheObjectHeaps().aircraft().ActiveAt(0);
+  ObjectClass* trooper =
+      InfantryTypeClass::As_Reference(INFANTRY_E1).Create_One_Of(house_);
+  ASSERT_NE(trooper, nullptr);
+  ASSERT_TRUE(trooper->Paradrop(Cell::FromXY(20, 20).Center()));
+
+  // Both start in the top layer, the trooper created after the plane.
+  ASSERT_EQ(plane->In_Which_Layer(), LAYER_TOP);
+  ASSERT_EQ(trooper->In_Which_Layer(), LAYER_TOP);
+  std::vector<ObjectClass*> draw_list = {plane, trooper};
+
+  DisplayClass::SortForDrawing(LAYER_TOP, draw_list);
+
+  EXPECT_EQ(draw_list, (std::vector<ObjectClass*>{trooper, plane}));
 }
 
 TEST_F(ReinforcementTest, AHouseKeepsOneMigForEachAirstrip) {

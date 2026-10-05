@@ -78,6 +78,13 @@ class DisplayClass : public MapClass {
   */
   static base::EnumArray<LayerType, LayerClass> Layer;
 
+  // Puts `objects`, the members of `layer` in the layer's own order, into the
+  // order they are drawn in, bottom first. The ground layer goes back to
+  // front; in the top layer whatever is falling goes below everything else,
+  // so that paratroopers and bombs appear under the plane that dropped them.
+  static void SortForDrawing(LayerType layer,
+                             std::vector<ObjectClass*>& objects);
+
   /*
   **	This records the position and shape of a placement cursor to display
   **	over the map. This cursor is used when placing buildings and also used
