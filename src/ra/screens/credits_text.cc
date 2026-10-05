@@ -18,90 +18,62 @@ constexpr int kTabColumns = 8;
 // right-justified, one wholly to its right left-justified.
 constexpr int kCreditCenterColumn = kCreditColumns / 2;
 
+// True for the characters no string of the credits contains.
+constexpr bool EndsString(char ch) {
+  return ch == '\t' || ch == '\r' || ch == '\n';
+}
+
 }  // namespace
 
 std::vector<CreditString> ParseCredits(std::string_view text) {
   std::vector<CreditString> strings;
   const base::ssize size = std::ssize(text);
+  const auto at = [text](base::ssize index) {
+    return text.at(base::ToSize(index));
+  };
   int line = 0;
   int column = 0;
   base::ssize cursor = 0;
   while (cursor < size) {
-    char ch = text.at(base::ToSize(cursor++));
-    switch (ch) {
+    switch (at(cursor)) {
       case '\r':
         line++;
         column = 0;
+        cursor++;
         break;
 
       case '\n':
         // The carriage return already ended the line.
+        cursor++;
         break;
 
       case ' ':
         column++;
+        cursor++;
         break;
 
       case '\t':
         column += kTabColumns;
         column -= column % kTabColumns;
+        cursor++;
         break;
 
       default: {
-        // The start of a string. Find where it ends: `string_end` stops one
-        // past the character that ended it, which is left in `ch`.
-        const base::ssize string_begin = cursor - 1;
-        base::ssize string_end = string_begin;
+        // The start of a string. It runs up to a tab, the end of the line or
+        // the end of the text, and a space belongs to it only when another
+        // character of the string follows.
+        base::ssize string_end = cursor + 1;
+        while (string_end < size && !EndsString(at(string_end)) &&
+               (at(string_end) != ' ' ||
+                (string_end + 1 < size && at(string_end + 1) != ' ' &&
+                 !EndsString(at(string_end + 1))))) {
+          string_end++;
+        }
+
+        const std::string_view string = text.substr(
+            base::ToSize(cursor), base::ToSize(string_end - cursor));
         const int start_column = column;
-        int end_column = column;
-        char previous_char = ch;
-        bool string_ended = false;
-        do {
-          ch = text.at(base::ToSize(string_end++));
-          switch (ch) {
-            case '\t':
-            case '\n':
-            case '\r':
-              string_ended = true;
-              break;
-
-            case ' ':
-              if (previous_char == ' ') {
-                string_ended = true;
-              }
-              end_column++;
-              break;
-
-            default:
-              end_column++;
-          }
-          if (string_end >= size) {
-            string_ended = true;
-          }
-          previous_char = ch;
-        } while (!string_ended);
-
-        // TODO: A string that runs into the end of the text is dropped, so
-        // the last line of credits is lost unless a CR and LF follow it.
-        if (string_end >= size) {
-          return strings;
-        }
-
-        // Ended by two spaces: step back so that neither is in the string.
-        //
-        // TODO: This also fires for one space before a tab or line end. The
-        // end column is then one too low, and after a CR the line counter
-        // advances twice, because the cursor is left on the CR and the outer
-        // loop counts it again.
-        if (text.at(base::ToSize(string_end - 2)) == ' ') {
-          string_end--;
-          end_column -= 2;
-        }
-
-        // The string is everything before the character that ended it.
-        const std::string_view string =
-            text.substr(base::ToSize(string_begin),
-                        base::ToSize(string_end - 1 - string_begin));
+        const int end_column = column + static_cast<int>(string_end - cursor);
         if (start_column < kCreditCenterColumn &&
             end_column > kCreditCenterColumn) {
           strings.push_back({.text = string,
@@ -120,17 +92,9 @@ std::vector<CreditString> ParseCredits(std::string_view text) {
                              .alignment = CreditAlignment::kLeft});
         }
 
-        // Carry on after the string. The terminator was consumed with it, so
-        // do here what the outer loop would have done for it.
+        // Whatever ended the string is still to be read.
         cursor = string_end;
-        column += static_cast<int>(string_end - string_begin);
-        if (ch == '\r') {
-          line++;
-          column = 0;
-        } else if (ch == '\t') {
-          column += kTabColumns - 1;
-          column -= column % kTabColumns;
-        }
+        column = end_column;
         break;
       }
     }

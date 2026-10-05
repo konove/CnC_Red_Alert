@@ -263,6 +263,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_credits_text_test
+    SOURCES screens/credits_text_test.cc screens/credits_text.cc
+    LIBS base
+)
+
+add_gtest(
     NAME ra_dib_test
     SOURCES assets/dib_test.cc assets/dib.cc
     LIBS base absl::core_headers
