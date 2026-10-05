@@ -31,7 +31,6 @@ file(GLOB_RECURSE RA_HEADERS
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 list(REMOVE_ITEM RA_HEADERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/objects/crew.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/net/nullconn.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/net/nullmgr.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/net/wspudp.h"

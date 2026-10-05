@@ -338,7 +338,7 @@ void TechnoClass::Serialize(Archive& ar) {
   bool is_discovered_by_computer = IsDiscoveredByComputer;
   bool is_a_lemon = IsALemon;
   bool is_second_shot = IsSecondShot;
-  ar(Crew, is_useless, is_ticked_off, is_cloakable, is_leader, is_a_loaner,
+  ar(kills_, is_useless, is_ticked_off, is_cloakable, is_leader, is_a_loaner,
      is_locked, is_in_recoil_state, is_tethered, is_owned_by_player,
      is_discovered_by_player, is_discovered_by_computer, is_a_lemon,
      is_second_shot, ArmorBias, FirepowerBias, IdleTimer, IronCurtainCountDown,

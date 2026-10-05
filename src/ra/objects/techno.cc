@@ -1788,7 +1788,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	best.
   */
   const int rawval = object->Value();
-  value = rawval + object->Crew.Kills;
+  value = rawval + object->kills();
 
   /*
   **	If the candidate object is owned by the designated enemy of this house,
@@ -4296,7 +4296,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   }
 
   if (source != nullptr) {
-    Crew.Add_Kill();
+    Made_A_Kill();
 
     House->WhoLastHurtMe = source->Owner();
 

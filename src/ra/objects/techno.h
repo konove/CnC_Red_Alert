@@ -49,7 +49,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
@@ -77,8 +76,6 @@ class TechnoClass : public RadioClass,
                     public CargoClass,
                     public DoorClass {
  public:
-  game::CrewClass Crew;
-
   /*
   **	If this techno object has detected that it has outlived its
   **	purpose, then this flag will be true. Such object will either
@@ -375,7 +372,9 @@ class TechnoClass : public RadioClass,
   **	Combat related.
   */
   [[nodiscard]] Fixed Area_Modify(Cell cell) const;
-  virtual int Made_A_Kill() { return Crew.Add_Kill(); }
+  // Adds a kill to this object's tally and returns the new total.
+  virtual int Made_A_Kill() { return ++kills_; }
+  [[nodiscard]] int kills() const { return kills_; }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
@@ -476,6 +475,11 @@ class TechnoClass : public RadioClass,
   **	it renders 45 degree angles.
   */
   static const int BodyShape[32];
+
+ private:
+  // Kills this object has scored. It is 16 bits wide because the save game
+  // stores it that way; the tally wraps past 65535.
+  uint16_t kills_{0};
 };
 
 extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
