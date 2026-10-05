@@ -156,6 +156,7 @@ class CreditLine {
   // `background`, a page of the same size.
   void Erase(PixelView& view, PixelView& background) const;
 
+ private:
   std::string text_;
   CreditAlignment alignment_;
   int x_;  // Where `alignment_` anchors the text: its left edge, centre or
@@ -240,6 +241,7 @@ class SlideShow {
     return background_page_.view();
   }
 
+ private:
   // Gives every colour of `palette` that belongs to the slides the colour
   // `source` has there.
   void SetSlideColors(engine::gfx::Palette& palette,
