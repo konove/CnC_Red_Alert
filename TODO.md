@@ -1165,11 +1165,14 @@
     at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
     dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
     `1f60381e`
-- Cover the two dialogs in `ra/ai/special_options.cc` (20 of 141 lines covered)
-  - `RunSpecialOptionsDialog()` and `PromptForDifficulty()` need the screen, the mouse,
-    `ServiceRealTime()`/`RunFrame()` and input. Splitting out the pure parts would cover the logic:
-    the prompt trim as `DifficultyPrompt(text, is_expansion_mission)` and the slider's stops and
-    level scaling; the loops themselves need a fixture that can queue key presses
+- Cover the rest of `ra/ai/special_options.cc`
+  - `RunSpecialOptionsDialog()` is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`, phase
+    1), except its multiplayer branch, which calls `RunFrame()` instead of `ServiceRealTime()`
+  - `PromptForDifficulty()` copies `TextString(TXT_DIFFICULTY)`, which is null in the fixture; it
+    needs the in-memory string table of the plan's phase 2
+  - Esc in the special options dialog shares the OK button's branch, so it applies the edits instead
+    of cancelling (`SpecialOptionsDialogTest.EscAppliesLikeOk` pins it); decide whether that is
+    intended
 - Cover the rest of `ra/ai/trigger_action.cc` (605 of 639 lines covered)
   - `TextAction` with a text (~694) needs `TUTORIAL.INI`; a setter for the tutorial text on
     `Assets`, or loading it from an `IniFile` passed in, would do

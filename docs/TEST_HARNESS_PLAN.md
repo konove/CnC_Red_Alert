@@ -15,7 +15,7 @@ changes.
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
 | A. Modal loops                  | `ra/ai/special_options.cc` dialogs, `ra/editor/trigger_type_dialog.cc`, `ra/screens/credits_roll.cc`         | Screen, input queue and real time inside a `while` loop        |
 | B. "Check on a real display"    | TextPrintType split, keyboard and mouse refactors, fading tables, tactical redraw, page owners, VQA          | Nobody can press keys or look at pixels headlessly             |
-| C. Missing game data in fixture | `Text_String()`, fonts, `TUTORIAL.INI`, animation types, TD's INI writers                                    | `GameFixture` builds only the house and unit type heaps        |
+| C. Missing game data in fixture | `Text_String()`, fonts, `TUTORIAL.INI`, a nimation types, TD's INI writers                                   | `GameFixture` builds only the house and unit type heaps        |
 | D. Two-instance network         | Coordinate-type packets, the `rules.ini` ID in a lobby                                                       | Nothing exchanges packets                                      |
 | E. Headless hang                | SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM maps never reach frame 1 under the `dummy` driver | A bug, not a harness gap, but it limits any whole-game harness |
 
@@ -58,7 +58,7 @@ changes.
   `SDL_PollEvent`.
 - It keeps the last palette and frame, so a test or a screenshot can read what was presented.
 
-### 3. `ScriptedPlayer` (new `src/game/testing/`, shared by both games)
+### 3. `ScriptedPlayer` (`engine/window/scripted_player.h`, shared by both games)
 
 - A list of steps keyed by present count: key press and release, mouse move and click, screenshot,
   and a callback for assertions in the middle of a loop.
@@ -110,6 +110,26 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
 | 4   | TD `UiFixture`; TD editor INI save round trip and options dialog                                     | The two TD hand checks of `INI_SHARING_PLAN.md`                                            |
 | 5   | `-SCRIPT`, `tools/ui_check.py`, first scripts: menus, options, score, map editor dialogs             | The TextPrintType, keyboard and mouse, fading table, tactical redraw and page owner checks |
 | 6   | The headless frame-1 hang fixed, then a two-process scripted network game                            | The coordinate-type packet check and the `rules.ini` ID lobby check                        |
+
+## Progress
+
+- **Phase 1: done 2026-10-05.** `engine::platform::ManualClock` (`engine/platform/manual_clock.h`),
+  `Display::SetHeadlessVideoMode()` and `DisplayObserver` (`engine/window/display_observer.h`),
+  `ScriptedPlayer`, `Screen::InitHeadless()` and `ra::UiFixture` (`ra/startup/ui_test_util.h`).
+  `RunSpecialOptionsDialog()` is covered by seven scripted tests in `ra/ai/special_options_test.cc`.
+  What differs from the design above:
+  - `ScriptedPlayer` needs nothing above the engine, so it lives in `engine/window/`, not in a new
+    `src/game/testing/`.
+  - The frame hook is an observer on `Display` with two calls, `OnFrameEnd()` and `OnPump()`. The
+    second lets the player cut short a loop that polls the keyboard without ever presenting, which
+    would otherwise hang instead of failing.
+  - A headless `Display` does not keep scaled frames or backdrops; presenting one only ends the
+    frame. Phase 5 adds that when screenshots need it.
+  - The synthetic font moved up from phase 2: without a font a text button is 8x2 pixels and cannot
+    be clicked. `MakeBlockFont()` (`engine/gfx/font_test_util.h`) makes one, and `UiFixture`
+    installs it for every `FontType`.
+  - `PromptForDifficulty()` is not covered yet: it copies `TextString(TXT_DIFFICULTY)`, which is
+    null without a string table. Phase 2's text table opens it.
 
 ## Out of scope
 

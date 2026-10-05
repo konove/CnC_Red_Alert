@@ -27,7 +27,20 @@ bool Screen::Init() {
   if (!mode_set) {
     return false;
   }
+  AttachPages();
+  return true;
+}
 
+bool Screen::InitHeadless() {
+  if (!engine::window::TheDisplay().SetHeadlessVideoMode(kWidth,
+                                                         mode_height_)) {
+    return false;
+  }
+  AttachPages();
+  return true;
+}
+
+void Screen::AttachPages() {
   visible_page_.Init(kWidth, mode_height_, engine::window::TheDisplay());
   hidden_page_.Init(kWidth, mode_height_, {}, 0);
 
@@ -35,7 +48,6 @@ bool Screen::Init() {
   const int letterbox_top = (mode_height_ - kHeight) / 2;
   visible_view_.Attach(&visible_page_, 0, letterbox_top, kWidth, kHeight);
   hidden_view_.Attach(&hidden_page_, 0, letterbox_top, kWidth, kHeight);
-  return true;
 }
 
 }  // namespace ra

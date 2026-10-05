@@ -1,14 +1,26 @@
-// Tests for the special option flags' starting values and for the mapping
-// from a difficulty level to the player's and the computer's settings. The
-// two dialogs need the display and the input loop and are not covered here.
+// Tests for the special option flags' starting values, for the mapping from
+// a difficulty level to the player's and the computer's settings, and for
+// the special options dialog, played by a script on a headless screen.
+// PromptForDifficulty() reads its prompt from the string table, which the
+// fixture cannot fill yet (docs/TEST_HARNESS_PLAN.md, phase 2).
 
 #include "ra/ai/special_options.h"
 
 #include <stdexcept>
 
 #include "base/installed.h"
+#include "base/pooled.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/scripted_player.h"
 #include "gtest/gtest.h"
+#include "ra/assets/screen.h"
 #include "ra/core/defines.h"
+#include "ra/map/world.h"
+#include "ra/net/event.h"
+#include "ra/net/network.h"
+#include "ra/objects/house.h"
+#include "ra/startup/ui_test_util.h"
 
 namespace ra {
 
@@ -76,6 +88,131 @@ TEST(DifficultyForLevelTest, TheInBetweenLevelsKeepThePlayerOnNormal) {
 TEST(DifficultyForLevelTest, ALevelOffTheScaleIsRejected) {
   EXPECT_THROW(DifficultyForLevel(5), std::out_of_range);
   EXPECT_THROW(DifficultyForLevel(-1), std::out_of_range);
+}
+
+// Where the dialog puts its gadgets on the 640x400 screen: the dialog is 472
+// by 324, centred, so its corner is at 84, 38.
+constexpr int kThreePointBoxX = 84 + 34 + 3;
+constexpr int kThreePointBoxY = 38 + 40 + 3;
+constexpr int kSpeedBuildBoxX = 84 + 34 + 3;
+constexpr int kSpeedBuildBoxY = 38 + 60 + 3;
+constexpr int kOkX = 84 + 30 + 5;
+constexpr int kCancelX = 84 + 472 - 120 + 5;
+constexpr int kButtonsY = 38 + 324 - 30 + 5;
+
+// The dialog in a single-player game: it sends its result as an event from
+// the player's house, so there has to be one.
+class SpecialOptionsDialogTest : public UiFixture {
+ protected:
+  SpecialOptionsDialogTest() {
+    ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
+  }
+
+  // The flags the dialog queued for every machine to install, which is its
+  // one output. Fails the test if it queued anything but one event.
+  static SpecialOptions QueuedOptions() {
+    auto& events = TheNetwork().out_list();
+    EXPECT_EQ(events.Count(), 1);
+    if (events.Count() == 0) {
+      return {};
+    }
+    EXPECT_EQ(events.First().Type, EventClass::SPECIAL);
+    return events.First().Data.Options.Data;
+  }
+};
+
+TEST_F(SpecialOptionsDialogTest, OkQueuesTheFlagsAsTheyWere) {
+  TheSpecialOptions().speed_build = true;
+  player().At(2).Click(kOkX, kButtonsY);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_TRUE(player().finished());
+  const SpecialOptions queued = QueuedOptions();
+  EXPECT_TRUE(queued.speed_build);
+  EXPECT_FALSE(queued.three_point_turns);
+}
+
+TEST_F(SpecialOptionsDialogTest, ACheckedBoxIsQueuedButNotInstalled) {
+  player()
+      .At(2)
+      .Click(kThreePointBoxX, kThreePointBoxY)
+      .At(6)
+      .Click(kOkX, kButtonsY);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_TRUE(QueuedOptions().three_point_turns);
+  // Executing the event is what changes the game, on every machine at once.
+  EXPECT_FALSE(TheSpecialOptions().three_point_turns);
+}
+
+TEST_F(SpecialOptionsDialogTest, ClickingACheckedBoxClearsIt) {
+  TheSpecialOptions().speed_build = true;
+  player()
+      .At(2)
+      .Click(kSpeedBuildBoxX, kSpeedBuildBoxY)
+      .At(6)
+      .Click(kOkX, kButtonsY);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_FALSE(QueuedOptions().speed_build);
+}
+
+TEST_F(SpecialOptionsDialogTest, CancelQueuesNothing) {
+  player()
+      .At(2)
+      .Click(kThreePointBoxX, kThreePointBoxY)
+      .At(6)
+      .Click(kCancelX, kButtonsY);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_TRUE(player().finished());
+  EXPECT_EQ(TheNetwork().out_list().Count(), 0);
+}
+
+// Esc shares the OK button's branch, so it applies what was edited rather
+// than cancelling.
+TEST_F(SpecialOptionsDialogTest, EscAppliesLikeOk) {
+  player()
+      .At(2)
+      .Click(kThreePointBoxX, kThreePointBoxY)
+      .At(6)
+      .Key(engine::window::KN_ESC);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_TRUE(QueuedOptions().three_point_turns);
+}
+
+TEST_F(SpecialOptionsDialogTest, StaysOpenUntilAnswered) {
+  player().set_frame_budget(30);
+  player().At(2).Click(kThreePointBoxX, kThreePointBoxY);
+
+  EXPECT_THROW(RunSpecialOptionsDialog(), engine::window::ScriptOverrun);
+  EXPECT_EQ(TheNetwork().out_list().Count(), 0);
+}
+
+TEST_F(SpecialOptionsDialogTest, DrawsOnTheVisiblePage) {
+  int drawn = -1;
+  player()
+      .At(3)
+      .Do([&drawn] {
+        drawn = 0;
+        PixelView& view = TheScreen().visible_view();
+        for (int y = 0; y < Screen::kHeight; ++y) {
+          for (int x = 0; x < Screen::kWidth; ++x) {
+            drawn += view.GetPixel(x, y) != 0 ? 1 : 0;
+          }
+        }
+      })
+      .Key(engine::window::KN_ESC);
+
+  RunSpecialOptionsDialog();
+
+  EXPECT_GT(drawn, 0);
 }
 
 }  // namespace

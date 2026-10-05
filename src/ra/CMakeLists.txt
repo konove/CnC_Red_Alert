@@ -194,7 +194,8 @@ apply_language_setting(ra_options_test)
 
 add_gtest(
     NAME ra_special_options_test
-    SOURCES ai/special_options_test.cc startup/startup.cc
+    SOURCES ai/special_options_test.cc startup/game_test_util.cc startup/ui_test_util.cc
+            startup/startup.cc ${CMAKE_SOURCE_DIR}/src/engine/gfx/font_test_util.cc
     LIBS ra_engine base
 )
 target_compile_definitions(ra_special_options_test PRIVATE RA_NO_ENTRY_POINT=1)
