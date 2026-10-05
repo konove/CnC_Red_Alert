@@ -1110,12 +1110,6 @@
     `Read_Game_Options()` were converted by reading only; that saving keeps the unknown keys of
     `CONQUER.INI` is tested (`td/screens/options_dialogs_test.cc`)
   - A two-player Red Alert lobby, to confirm both sides compute the same `rules.ini` ID
-- Fix the mission Tiberian Dawn's scenario editor saves for aircraft
-  - `AircraftClass::Read_INI()` (`td/objects/aircraft.cc` ~543) queues the entry's mission with
-    `Assign_Mission()` behind the Move an aircraft starts with, and `Write_INI()` (~586) writes
-    `unit->Mission`, so a scenario saved straight after loading has every aircraft on `Move`.
-    `ScenarioObjectsIniTest.AnAircraftIsWrittenWithTheMissionItStartsOn` pins it. Writing the queued
-    mission when there is one would fix it; editor behaviour only
 - Run `IniFileTest.RemovalAcceptsTheNameOfTheElementItRemoves` under ASan
   - It passes without the guard it documents in a normal build: the names are short enough to live
     in the string's inline buffer, which still reads back after the free. `-DENABLE_ASAN=ON` would
@@ -1168,16 +1162,6 @@
     entry clicked, Edit, New, Delete and OK. Still open: the team dialog (`TeamTypeClass::Edit()`,
     `Team_Members()`), New/Load/Save scenario, `Pick_Scenario()`, `Size_Map()` and
     `Scenario_Dialog()`, all of which `UiFixture` can now drive
-  - A team type whose house is `HOUSE_NONE` kills the team list: `TeamTypeClass::Description()`
-    (`ra/ai/teamtype.cc` ~1615) calls `HouseTypeClass::As_Reference(House)`, which CHECK-fails on
-    -1. The team dialog always sets a house, so only a scenario file can produce one
-- Start Red Alert's multiplayer maps unattended
-  - `rasdl -NOMOVIES -NEWGAMESCM02EA -QUITFRAME10` CHECK-fails in `SidebarClass::Reload_Sidebar()`
-    (`ra/map/sidebar.cc` ~432) for 13 of the 24 SCM maps: `-NEWGAME` starts them as a campaign game,
-    the player's house keeps a multiplayer `ActLike`, and the table of sidebar art has no entry for
-    it. A multiplayer map needs a multiplayer start, which is what the two-instance network run
-    below would give; until then the headless logic logs and save/load smoke tests cannot cover
-    those maps
 - Look once at the screenshots of the UI scripts, and script the score screens
   - `tools/ui_check.py --accept` leaves PNGs of every screen the scripts reach in `build/ui_check/`:
     RA's main menu, difficulty and side prompts, options dialogs, credits, a mission, the map
@@ -1194,9 +1178,6 @@
   - In a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs
     a running game behind it; the rest of both dialogs is covered through `UiFixture`
     (`docs/TEST_HARNESS_PLAN.md`)
-  - Esc in the special options dialog shares the OK button's branch, so it applies the edits instead
-    of cancelling (`SpecialOptionsDialogTest.EscAppliesLikeOk` pins it); decide whether that is
-    intended
 - Cover the rest of `ra/ai/trigger_action.cc` (606 of 635 lines covered)
   - `PlaySoundAction`, `PlayMusicAction` and `PlaySpeechAction` (~798-840) need the audio device; an
     accessor for `ThemeClass::Pending` would let the music action be asserted

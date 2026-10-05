@@ -2152,6 +2152,13 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   if (TheSession().Type == GAME_NORMAL) {
     ThePlayer() = HouseClass::As_Pointer(
         GetHousesType(ini, BASIC, "Player", HOUSE_GREECE));
+    // A multiplayer map names a multiplayer house as its player. The lobby
+    // gives such a house a country to act like; started as a campaign game
+    // nothing has, and the tables of each country's art and units end before
+    // the multiplayer houses.
+    if (ThePlayer()->ActLike >= HOUSE_MULTI1) {
+      ThePlayer()->ActLike = HOUSE_GREECE;
+    }
     ThePlayer()->Assign_Handicap(TheScenario().Difficulty);
     int carryover = 0;
     if (TheScenario().CarryOverCap != -1) {
