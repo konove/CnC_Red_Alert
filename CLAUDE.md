@@ -365,6 +365,10 @@ hanging.
 hashes; `--accept` records a change that was meant. It needs the game data, so it is not a ctest:
 run it after changing what a screen looks like. `docs/TEST_HARNESS_PLAN.md` has the design.
 
+`tools/net_check.py` plays a two-player Red Alert network game between two instances on this machine
+(`-NETGAME<1|2>`, no lobby) and requires their per-frame logs of object positions to be identical.
+Run it after touching `ra/net/`, `EventClass` or anything a packet carries.
+
 ## Abseil
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.

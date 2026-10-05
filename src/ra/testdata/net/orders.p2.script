@@ -1,0 +1,9 @@
+# Player 2 selects its whole group with a drag and sends it across the map,
+# which crosses the wire as one move order per unit.
+at 250 press 150 40
+at 260 move 300 200
+at 270 move 500 340
+at 280 release 500 340
+at 300 shot selected
+at 320 click 380 320
+at 500 shot moving

@@ -141,6 +141,7 @@
 #include "ra/editor/mapedit.h"
 #include "ra/map/logic.h"
 #include "ra/map/world.h"
+#include "ra/net/local_net_game.h"
 #include "ra/net/mplayer.h"
 #include "ra/net/netdlg.h"
 #include "ra/net/network.h"
@@ -584,6 +585,19 @@ bool Select_Game(bool /*fade*/) {
 
       if (config::kWolapiEnabled && TheNetwork().wolapi() != nullptr) {
         selection = kSelMultiplayerGame;  //	We are returning from a game.
+      }
+
+      // -NETGAME<n> -NEWGAME<map>: skip the menu and the lobby and start that
+      // map as a two-player network game.
+      if (selection == kSelNone && !startup_game_started &&
+          !options.new_game.empty() && options.net_game != 0) {
+        startup_game_started = true;
+        if (StartLocalNetGame(options.net_game, options.new_game + ".INI",
+                              options.custom_seed)) {
+          process = false;
+          continue;
+        }
+        LOG(ERROR) << "-NETGAME: could not open the network";
       }
 
       // -NEWGAME<scenario>: skip the menu and start that scenario as a
@@ -1416,6 +1430,17 @@ std::optional<StartupOptions> Parse_Command_Line(
     // of the screens nobody is there to click through.
     if (string.starts_with("-SCRIPT")) {
       options.script = argument.substr(7);
+      continue;
+    }
+
+    // -NETGAME<1|2>: start the -NEWGAME map as a two-player network game
+    // against another instance on this machine, for checks that the two
+    // stay in step.
+    if (string.starts_with("-NETGAME")) {
+      options.net_game = base::ParseIntegerOr<int>(string.substr(8), 0);
+      if (options.net_game != 1 && options.net_game != 2) {
+        return std::nullopt;
+      }
       continue;
     }
 

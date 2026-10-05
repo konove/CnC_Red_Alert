@@ -81,6 +81,11 @@ struct StartupOptions {
   int save_slot = -1;          // -SAVESLOT<slot>
   uint16_t custom_seed = 0;    // -SEED<n>, 0 for a random seed
 
+  // -NETGAME<1|2>: with -NEWGAME<map>, start that map as a two-player
+  // network game against another instance on this machine, as player 1 or
+  // player 2, without the lobby (ra/net/local_net_game.h). 0 for none.
+  int net_game = 0;
+
   // -SCRIPT<file>: a script of keys, clicks and screenshots to play instead
   // of a person (ra/startup/scripted_run.h). Empty for none.
   std::string script;

@@ -64,6 +64,11 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   void Event_Handler(int /*unused*/, SocketEvent /*event*/ /*unused*/) override;
   bool Open_Socket(SOCKET socketnum) override;
   void Set_Broadcast_Address(const char* address) override;
+  // Makes Open_Socket() bind the dotted address `address` instead of every
+  // address of the machine, so that two games on one machine, each on a
+  // loopback address of its own, can use the same port. Call before the
+  // socket is opened.
+  void Set_Bind_Address(const char* address);
   void Broadcast(std::span<const std::byte> buffer, int buffer_len) override;
 
   ProtocolEnum Get_Protocol() override { return PROTOCOL_UDP; }
@@ -75,6 +80,9 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   ** Address to use when broadcasting a packet.
   */
   std::vector<uint32_t> BroadcastAddresses;
+  // The local address the socket binds, in network byte order; every address
+  // (INADDR_ANY, which is 0) unless Set_Bind_Address() named one.
+  uint32_t bind_address_ = 0;
 
   /*
   ** List of local addresses.

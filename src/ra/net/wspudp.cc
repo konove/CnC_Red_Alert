@@ -142,6 +142,10 @@ UDPInterfaceClass::~UDPInterfaceClass() {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:12PM ST : Created *
  *=============================================================================================*/
+void UDPInterfaceClass::Set_Bind_Address(const char* address) {
+  bind_address_ = inet_addr(address);
+}
+
 void UDPInterfaceClass::Set_Broadcast_Address(const char* address) {
   const char* ip_addr = address;
   DCHECK(std::string_view(ip_addr).size() <=
@@ -188,7 +192,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   */
   addr.sin_family = AF_INET;
   addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  addr.sin_addr.s_addr = bind_address_;
 
   if (bind(Socket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
     Close_Socket();

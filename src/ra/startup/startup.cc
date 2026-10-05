@@ -259,10 +259,15 @@ static int Run(const int argc, char* argv[])
 
   // The display is part of the Game, which is built before the command line
   // is parsed, so the one switch that changes its kind is looked for here.
-  const bool scripted =
-      std::ranges::any_of(arguments, [](const std::string_view argument) {
-        return absl::StartsWithIgnoreCase(argument, "-SCRIPT");
-      });
+  // A script that plays a network game leaves the clock alone, and so keeps
+  // the ordinary window; see StartScriptedRun().
+  const auto has_switch = [&arguments](const std::string_view name) {
+    return std::ranges::any_of(
+        arguments, [name](const std::string_view argument) {
+          return absl::StartsWithIgnoreCase(argument, name);
+        });
+  };
+  const bool scripted = has_switch("-SCRIPT") && !has_switch("-NETGAME");
   *game = std::make_unique<Game>(
       scripted ? engine::window::DisplayKind::kScriptedWindow
                : engine::window::DisplayKind::kWindow);
@@ -367,7 +372,9 @@ static int Run(const int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  if (!options->script.empty() && !StartScriptedRun(options->script)) {
+  if (!options->script.empty() &&
+      !StartScriptedRun(options->script,
+                        /*real_time=*/options->net_game != 0)) {
     ShutDown();
     return EXIT_FAILURE;
   }

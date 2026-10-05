@@ -19,7 +19,13 @@ namespace ra {
 // false, having said why on stderr, when the file cannot be read or holds a
 // line that is no step. tools/ui_check.py runs scripts and compares their
 // screenshots.
-bool StartScriptedRun(const std::string& path);
+//
+// With `real_time` the game keeps the machine's clock and only the keys and
+// clicks are the script's: for a network game against another instance,
+// where each side waits for the other in real time. What frame a step lands
+// on then varies, so such a script leaves wide gaps and its screenshots are
+// not compared.
+bool StartScriptedRun(const std::string& path, bool real_time = false);
 
 }  // namespace ra
 

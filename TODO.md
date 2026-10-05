@@ -1138,17 +1138,18 @@
     the new one; both decide draw and logic order, and only the 600-frame headless logic logs cover
     them now. Test a partly sorted layer: one `Sort()` pass, then where `Sorted_Add()` lands
 
-- Run a two-instance network game in each game to check `docs/COORDINATE_TYPES_PLAN.md`
-  - The plan changed what `EventClass` packets carry (`Coordinate`, `Target`, `Cell` instead of
-    integers) and never ran a real network game; `static_assert`s pin the packet sizes (RA 32, TD 24
-    bytes) and `xcheck.sh` matched single-player logs, but nothing exchanged packets. Cover move,
-    attack, sell, place (buildings and RA's Chronosphere/Iron Curtain targets) and repair
-  - What stands in the way of doing it on one machine, found in `docs/TEST_HARNESS_PLAN.md` phase 6:
-    Red Alert binds UDP port 1234 on every address and sends to the same port (`ra/net/wspudp.cc`
-    ~190, ~389), so a second instance cannot bind; a scripted run's clock moves a tick a frame, so
-    the network timeouts, which count ticks, run out in milliseconds while the other process is
-    still starting; and the lobby's timing depends on how the two processes interleave, which a
-    script keyed by frame number cannot follow. The plan sketches the way round each
+- Extend the two-instance network check (`tools/net_check.py`, `docs/TEST_HARNESS_PLAN.md`)
+  - `src/ra/testdata/net/orders` plays SCM01EA between two instances for 600 frames; player 2
+    drag-selects its group and orders a move, and both logs of object positions must be the same.
+    That covers move orders. Still to script, for `docs/COORDINATE_TYPES_PLAN.md`: attack, sell,
+    place (buildings and the Chronosphere and Iron Curtain targets) and repair, which need a base
+    built first
+  - Player 1's view starts off its own units in that map (its screen is black until it scrolls);
+    find out whether the home cell is set for a `-NETGAME` start as the lobby would set it
+  - Tiberian Dawn has no such check: it plays over one TCP connection (`td/net/tcp_transport.h`) and
+    needs its own direct start
+  - The lobby itself (`ra/net/netdlg.cc`, 7,383 lines) is skipped by `-NETGAME` and stays a check by
+    hand, including that both sides compute the same `rules.ini` ID
 - Line up the coordinate-type tests between the games
   - RA's `target_test.cc` lives in `ra/objects/`, TD's in `td/core/`; TD's suites are `TdCellTest`
     and `TdCoordinateTest` but plain `TargetTest`; the ctest targets `ra_packed_test` and

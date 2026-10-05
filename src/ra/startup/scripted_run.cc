@@ -47,7 +47,7 @@ void SaveShot(const std::filesystem::path& path) {
 
 }  // namespace
 
-bool StartScriptedRun(const std::string& path) {
+bool StartScriptedRun(const std::string& path, const bool real_time) {
   std::ifstream file(path, std::ios::binary);
   if (!file) {
     absl::FPrintF(stderr, "-SCRIPT: cannot read %s\n", path);
@@ -60,7 +60,9 @@ bool StartScriptedRun(const std::string& path) {
   // Display it is attached to goes with the Game.
   static absl::NoDestructor<std::unique_ptr<engine::window::ScriptedRun>> run;
   *run = std::make_unique<engine::window::ScriptedRun>(
-      engine::window::TheDisplay(), game::TheKeyboard(), game::TheMouse());
+      engine::window::TheDisplay(), game::TheKeyboard(), game::TheMouse(),
+      real_time ? engine::window::ScriptedRun::Pace::kRealTime
+                : engine::window::ScriptedRun::Pace::kFrames);
 
   const std::filesystem::path shot_directory =
       std::filesystem::absolute(path).parent_path();

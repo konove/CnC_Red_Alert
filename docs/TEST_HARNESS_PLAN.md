@@ -220,36 +220,24 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - The multiplayer maps are another matter: 13 of the 24 CHECK-fail in
     `SidebarClass::Reload_Sidebar()` when started with `-NEWGAME`, which starts them as a campaign
     game. They need a multiplayer start (`TODO.md`).
-- **Phase 6, the two-instance network game: not done.** It needs decisions, so it is left as a
-  design sketch rather than built:
-  - _Two instances on one machine._ Red Alert binds UDP port 1234 on every address and sends to that
-    port, with only the IP in a player's address. Loopback has a whole /8, so a switch that binds
-    one local address (`127.0.0.1` for one instance, `127.0.0.2` for the other) and names the other
-    as the broadcast address would let both run with the protocol as it is. Tiberian Dawn plays over
-    one TCP connection and needs its own look.
-  - _The clock._ The protocol's timeouts count ticks. Under a `ManualClock` they run out in
-    milliseconds of real time, before the other process has answered. A network run has to keep the
-    machine's clock, so its script cannot be keyed by frame number as the others are.
-  - _The lobby._ When each side sees the other depends on how two processes interleave. Either the
-    script waits on the screen ("until this pixel is that colour") instead of on a frame, or the
-    lobby is skipped: a developer switch that builds the two-player session directly, as `-NEWGAME`
-    does for a campaign.
-  - _The check._ Both instances log object positions with `-QUITFRAME`; the two logs must be the
-    same, which `xcheck.sh` already compares for two binaries. Orders (move, attack, sell, place,
-    repair) come from each side's script.
-  - Skipping the lobby is the smaller build and tests the packets, which is what
-    `docs/COORDINATE_TYPES_PLAN.md` asks for; the lobby itself would stay a check by hand.
-
-- **More scripts, 2026-10-05.** Eleven scripts now, about 55 screenshots.
-  - A script can hold keys (`keydown`/`keyup`; `engine::window::KeyboardState` is the interface
-    behind `IsShiftDown()` and `KeyBuffer::IsDown()`), which gave RA's Shift-click for the ant
-    missions and Alt-W.
-  - `-PLAYTEST` turns the developers' keys on without a pass phrase, in a build that has them. With
-    Alt-W the scripts win a mission and reach both games' score screens, halls of fame and mission
-    maps, and the mission after.
-  - A screenshot is `Display::Capture()`: what the window shows, movie frame or backdrop included.
-    It no longer locks the page, which used to end an extra frame after every shot.
-  - No shot is taken while TD's map dissolves in; the order of its pixels is random on purpose.
+- **Phase 6, the two-instance network game: done for Red Alert, 2026-10-05.** The lobby is skipped,
+  as decided: `-NETGAME<1|2>` with `-NEWGAME<map>` builds the two-player session the lobby would
+  have (`ra/net/local_net_game.h`). Player 1 binds `127.0.0.1` and player 2 `127.0.0.2`
+  (`UDPInterfaceClass::Set_Bind_Address()`), so both can use the game's one port.
+  - `tools/net_check.py` starts both with `-QUITFRAME`, which logs every mobile object's position
+    each frame, and requires the two logs to be identical. `src/ra/testdata/net/orders` runs 600
+    frames with a scripted drag-select and move order; three runs in a row passed.
+  - A script in a network game keeps real time (`ScriptedRun::Pace::kRealTime`, the ordinary
+    window): the protocol's timeouts count ticks, and each side waits for the other in real time.
+    Its frame numbers are presents, about 70 a second, and its screenshots are for aiming clicks,
+    not for comparing.
+  - It found the bug it was built to find. Three expressions in `ra/net/queue.cc` that round a frame
+    number up to a multiple of `FrameSendRate` had become a division by
+    `FrameSendRate * FrameSendRate`. Every frame-sync packet then carried a frame number below the
+    receiver's starting one, no player ever counted as ready, and a Red Alert network game could not
+    get past its first frame. Fixed against the original `QUEUE.CPP`.
+  - Not done: attack, sell, place and repair orders (they need a base); Tiberian Dawn, which plays
+    over TCP; the lobby.
 
 ## Out of scope
 
