@@ -2,8 +2,8 @@
 
 Written 2026-10-04 against `main` at c25198d5.
 
-**Status: done 2026-10-04** on branch `trigger-action-classes` (ae84a09d onwards), apart from the
-by-hand check of the editor dialog. See Outcome at the end for what differs from the design.
+**Status: done 2026-10-04,** merged to `main` (ae84a09d..062b07d5), apart from the by-hand check of
+the editor dialog. See Outcome at the end for what differs from the design.
 
 ## Context
 
