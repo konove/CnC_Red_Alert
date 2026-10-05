@@ -149,15 +149,21 @@ target_compile_definitions(ra_reinforcements_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_reinforcements_test)
 apply_language_setting(ra_reinforcements_test)
 
-# The text table lookup in a real Game.
+# The text table lookup, the random picks and the coordinate helpers in a real
+# Game.
 add_gtest(
-    NAME ra_inline_test
-    SOURCES core/inline_test.cc startup/game_test_util.cc startup/startup.cc
+    NAME ra_core_helpers_test
+    SOURCES
+        core/inline_test.cc
+        core/random_pick_test.cc
+        core/coord_test.cc
+        startup/game_test_util.cc
+        startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
-target_compile_definitions(ra_inline_test PRIVATE RA_NO_ENTRY_POINT=1)
-apply_dotenv_settings(ra_inline_test)
-apply_language_setting(ra_inline_test)
+target_compile_definitions(ra_core_helpers_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_core_helpers_test)
+apply_language_setting(ra_core_helpers_test)
 
 add_gtest(
     NAME ra_drop_test
