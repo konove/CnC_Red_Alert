@@ -138,6 +138,16 @@ target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_carryover_test)
 apply_language_setting(ra_carryover_test)
 
+# Records a kill between two vehicles in a real Game.
+add_gtest(
+    NAME ra_techno_test
+    SOURCES objects/techno_test.cc startup/game_test_util.cc startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_techno_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_techno_test)
+apply_language_setting(ra_techno_test)
+
 # Delivers teams and launches an air strike in a real Game.
 add_gtest(
     NAME ra_reinforcements_test

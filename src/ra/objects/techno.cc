@@ -4296,7 +4296,9 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   }
 
   if (source != nullptr) {
-    Made_A_Kill();
+    // The original credited the kill to the object that died, so no living
+    // object ever had one.
+    source->Made_A_Kill();
 
     House->WhoLastHurtMe = source->Owner();
 

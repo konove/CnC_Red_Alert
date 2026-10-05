@@ -2,16 +2,6 @@
 
 ## Bugs
 
-- Credit Red Alert's kills to the killer, or delete the tally (`b3411636`..`3423029b` replaced
-  `CrewClass` with `TechnoClass::kills_` and kept this as it was)
-  - `TechnoClass::Record_The_Kill()` (`ra/objects/techno.cc` ~4299) calls `Made_A_Kill()` on the
-    object that died, not on `source`, as the original `Crew.Made_A_Kill()` did; Tiberian Dawn
-    (`td/objects/techno.cc` ~2915) calls `source->Made_A_Kill()`. So no living RA object ever has a
-    kill, and the `rawval + object->kills()` term of `Evaluate_Object()` (~1791) is always zero
-  - Calling it on `source` makes the computer prefer targets that have scored kills, which changes
-    the simulation (and multiplayer sync against older builds). The other option keeps today's play:
-    delete `kills_`, `kills()` and `Made_A_Kill()` (virtual, no override, no other caller) from RA,
-    which drops two bytes from each techno in the save game
 - Make the Chronosphere's synthetic right-click actually end targeting mode
   - `TechnoClass::Take_Damage()` (`ra/objects/techno.cc`) hands `TheMap().AI()` a right-click event,
     but no map layer acts on one there: the tactical gadget takes real right-clicks before `AI()`
