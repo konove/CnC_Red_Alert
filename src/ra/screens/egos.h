@@ -50,8 +50,8 @@ class EgoClass {
   void Render(PixelView& view) const;
 
   // Erases the text from `view` by copying the rectangle it covers from
-  // `background`, which must not be null.
-  void Wipe(PixelView& view, PixelBuffer* background) const;
+  // `background`, a page of the same size.
+  void Wipe(PixelView& view, PixelView& background) const;
 
   std::string Text;
   int XPos;

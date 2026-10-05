@@ -28,10 +28,10 @@
 #include <memory>
 #include <span>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -75,8 +75,7 @@ static std::vector<std::unique_ptr<EgoClass>> EgoList;
 #define FADE_DELAY 37
 
 // The slideshow pictures, in the order they are shown; the show loops.
-static char SlideNames[NUM_SLIDES][13] = {
-
+static constexpr std::array<std::string_view, NUM_SLIDES> SlideNames = {
     "aftr_hi.pcx",  "aly1.pcx",     "apc_hi.pcx",   "aphi0049.pcx",
     "bnhi0020.pcx", "dchi0040.pcx", "frhi0166.pcx", "lab.pcx",
     "landsbrg.pcx", "mahi0107.pcx", "mig_hi.pcx",   "mtfacthi.pcx",
@@ -84,11 +83,11 @@ static char SlideNames[NUM_SLIDES][13] = {
     "tent.pcx"};
 
 // Each slide's own palette, as loaded from its picture.
-static engine::gfx::Palette SlidePals[NUM_SLIDES];
+static std::array<engine::gfx::Palette, NUM_SLIDES> SlidePals;
 
 // The slides, decoded to screen-sized pages. All are loaded up front so that
 // no disk access stalls the scroll.
-static std::unique_ptr<PixelBuffer> SlideBuffers[NUM_SLIDES];
+static std::array<std::unique_ptr<PixelBuffer>, NUM_SLIDES> SlideBuffers;
 
 // The current slide without the text on it: what a line of text is erased
 // with before it is drawn one pixel higher.
@@ -100,7 +99,7 @@ static PaletteClass ComboPalette;
 
 // Non-zero for the palette entries that belong to the slides and fade with
 // them; zero for the ones the text is drawn in, which never fade.
-static char PaletteLUT[256];
+static std::array<char, 256> PaletteLUT;
 
 // A new slide is copied in strips of this height, one strip per frame, so
 // that the copy does not make the scroll stutter. Four strips cover the 400
@@ -127,7 +126,7 @@ void EgoClass::Render(PixelView& view) const {
   }
 }
 
-void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
+void EgoClass::Wipe(PixelView& view, PixelView& background) const {
   const int width =
       StringPixelWidth(TextFontStyle(TextFont, Flags), Text.c_str());
   // Find the left edge the way the text printer does.
@@ -144,11 +143,11 @@ void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
   // One pixel wider on each side and one row taller than the 14-pixel text,
   // for the drop shadow. The blit clips, so a line that is still below the
   // page or already above it costs nothing.
-  background->view().BlitTo(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1);
+  background.BlitTo(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1);
 }
 
 // Makes `palette` the displayed palette at once, with no fade.
-static void Set_Pal(const PaletteClass* palette) { Set_Palette(*palette); }
+static void Set_Pal(const PaletteClass& palette) { Set_Palette(palette); }
 
 // Advances the slideshow behind the text by one step. `slide` is the picture
 // and `frame` how long it has been current, which decides what happens:
@@ -163,7 +162,7 @@ static void Set_Pal(const PaletteClass* palette) { Set_Palette(*palette); }
 // entries are black while its pixels are copied in.
 static void Slide_Show(int slide, int frame) {
   if (frame >= 1 && frame <= 4) {
-    PixelView& slide_view = base::At(SlideBuffers, slide)->view();
+    PixelView& slide_view = SlideBuffers.at(base::ToSize(slide))->view();
     slide_view.BlitTo(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
                       (frame - 1) * CHUNK_HEIGHT,
                       TheScreen().visible_view().width(), CHUNK_HEIGHT);
@@ -180,8 +179,8 @@ static void Slide_Show(int slide, int frame) {
 
   if (frame == 9) {
     for (int index = 0; index < 256; index++) {
-      if (base::At(PaletteLUT, index)) {
-        ComboPalette.at(index) = base::At(SlidePals, slide).at(index);
+      if (PaletteLUT.at(base::ToSize(index))) {
+        ComboPalette.at(index) = SlidePals.at(base::ToSize(slide)).at(index);
       }
     }
     return;
@@ -197,7 +196,7 @@ static void Slide_Show(int slide, int frame) {
     ThePalettes().title_palette().Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - 10), 255), ComboPalette,
         PaletteLUT);
-    Set_Pal(&ThePalettes().title_palette());
+    Set_Pal(ThePalettes().title_palette());
     if (frame != 9 + FADE_DELAY) {
       ThePalettes().title_palette() = save_palette;
     } else {
@@ -211,24 +210,24 @@ static void Slide_Show(int slide, int frame) {
     ThePalettes().title_palette().Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
-      Set_Pal(&ThePalettes().title_palette());
+      Set_Pal(ThePalettes().title_palette());
       ThePalettes().title_palette() = save_palette;
     } else {
       // The steps stop short of black (see the fade up), so the last one
       // blacks out the slide's entries outright. The next slide's pixels can
       // then be copied in unseen.
       for (int index = 0; index < 256; index++) {
-        if (base::At(PaletteLUT, index)) {
+        if (PaletteLUT.at(base::ToSize(index))) {
           ThePalettes().title_palette().at(index) = engine::gfx::kBlackColor;
         }
       }
-      Set_Pal(&ThePalettes().title_palette());
+      Set_Pal(ThePalettes().title_palette());
     }
   }
 }
 
 void Show_Who_Was_Responsible() {
-  int key = 0;
+  engine::window::KeyNumber key = KN_NONE;
 
   // System ticks (1/60 s) per pixel of scrolling.
   static const int speed = 3;
@@ -242,16 +241,12 @@ void Show_Who_Was_Responsible() {
   //
   // which gives the two-column "job  name" look. A string ends at a tab, at
   // the end of the line or at two spaces in a row.
-  //
-  // The buffer is one byte longer than the file so that a string can be
-  // terminated in place.
   const auto creditsfile = OpenGameFile("credits.txt");
   if (!creditsfile) {
     return;
   }
-  std::vector<char> credits(base::ToSize(creditsfile->Size()) + 1);
-  if (creditsfile->Read(std::as_writable_bytes(
-          std::span(credits).first(credits.size() - 1))) <= 0) {
+  std::string credits(base::ToSize(creditsfile->Size()), '\0');
+  if (creditsfile->Read(std::as_writable_bytes(std::span(credits))) <= 0) {
     return;
   }
 
@@ -268,7 +263,6 @@ void Show_Who_Was_Responsible() {
   int column = 0;
   auto cptr = credits.begin();
   char lastchar = 0;
-  char oldchar = 0;
   auto strstart = credits.begin();
   auto strparse = credits.begin();
   bool gotendstr = false;
@@ -368,15 +362,10 @@ void Show_Who_Was_Responsible() {
           }
         }
 
-        // Terminate the string in place for as long as it takes to copy it.
-        oldchar = *(strparse - 1);
-        *(strparse - 1) = 0;
-
+        // The string is everything before the character that ended it.
         EgoList.push_back(std::make_unique<EgoClass>(
-            x, y + (line * 16), std::to_address(strstart),
+            x, y + (line * 16), std::string_view(strstart, strparse - 1),
             FontType::k6PointGradient, flags));
-
-        *(strparse - 1) = oldchar;
 
         // Carry on after the string. The outer loop has already counted its
         // first character.
@@ -402,23 +391,22 @@ void Show_Who_Was_Responsible() {
 
   // Everything fades with the slides except the colours the text is drawn
   // in: the six gradient entries of the font and the green scheme's own.
-  base::FillBytes(base::ObjectBytes(PaletteLUT), 1, sizeof(PaletteLUT));
+  PaletteLUT.fill(1);
   const PlayerColorType pcolor = PCOLOR_GREEN;
 
   for (int index = 0; index < 6; index++) {
-    base::At(PaletteLUT,
-             base::At(ThePalettes().color_remaps().at(pcolor).FontRemap,
-                      10 + index)) = 0;
+    PaletteLUT.at(base::At(ThePalettes().color_remaps().at(pcolor).FontRemap,
+                           10 + index)) = 0;
   }
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Color) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Background) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Corners) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Highlight) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Bright) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Underline) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Bar) = 0;
-  base::At(PaletteLUT, ThePalettes().color_remaps().at(pcolor).Box) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Color) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Shadow) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Background) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Corners) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Highlight) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Bright) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Underline) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Bar) = 0;
+  PaletteLUT.at(ThePalettes().color_remaps().at(pcolor).Box) = 0;
 
   TheTheme().Stop();
 
@@ -438,7 +426,7 @@ void Show_Who_Was_Responsible() {
   ComboPalette = ThePalettes().title_palette();
 
   for (int index = 0; index < 256; index++) {
-    if (base::At(PaletteLUT, index)) {
+    if (PaletteLUT.at(base::ToSize(index))) {
       ComboPalette.at(index) = engine::gfx::kBlackColor;
     }
   }
@@ -451,13 +439,12 @@ void Show_Who_Was_Responsible() {
   ThePalettes().title_palette().Set();
 
   for (int index = 0; index < NUM_SLIDES; index++) {
-    base::At(SlideBuffers, index) = std::make_unique<PixelBuffer>();
-    base::At(SlideBuffers, index)
-        ->Init(TheScreen().visible_view().width(),
-               TheScreen().visible_view().height(), {}, 0);
-    Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
-                      &base::At(SlideBuffers, index)->view(),
-                      base::At(SlidePals, index));
+    auto buffer = std::make_unique<PixelBuffer>();
+    buffer->Init(TheScreen().visible_view().width(),
+                 TheScreen().visible_view().height(), {}, 0);
+    Load_Title_Screen(SlideNames.at(base::ToSize(index)), &buffer->view(),
+                      SlidePals.at(base::ToSize(index)));
+    SlideBuffers.at(base::ToSize(index)) = std::move(buffer);
   }
 
   // The background page starts as a copy of the cleared screen, so the text
@@ -481,7 +468,7 @@ void Show_Who_Was_Responsible() {
 
   // `frame` counts pixels scrolled since `time`; `picture_frame` restarts
   // with every slide.
-  const int time = static_cast<int>(engine::platform::SystemTicks());
+  const int64_t time = engine::platform::SystemTicks();
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;
@@ -515,7 +502,7 @@ void Show_Who_Was_Responsible() {
     // reached are the ones above it, which are off the screen as well and
     // go the same way in the next passes.
     for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
-      EgoList.at(base::ToSize(i))->Wipe(view, BackgroundPage.get());
+      EgoList.at(base::ToSize(i))->Wipe(view, BackgroundPage->view());
       if (EgoList.at(base::ToSize(i))->Scroll(1)) {
         EgoList.erase(std::next(EgoList.begin(), i));
         break;
@@ -594,9 +581,7 @@ void Show_Who_Was_Responsible() {
   TheTheme().Stop();
   TheOptions().Set_Score_Volume(oldvolume, false);
 
-  for (int index = 0; index < NUM_SLIDES; index++) {
-    base::At(SlideBuffers, index).reset();
-  }
+  SlideBuffers = {};
 
   BackgroundPage.reset();
 
