@@ -602,11 +602,40 @@
   - `Lepton_Cell()`, `Lepton_Fraction()` and `Make_Lepton()` were new in Part A of
     `docs/COORDINATE_TYPES_PLAN.md` but took the legacy `Underscore_Pascal` names of their
     neighbours; `/rename-google-style` on `packed.h`. While there, decide whether `packed.h` should
-    stay re-exported (`// IWYU pragma: export`) by `ra/core/defines.h`, `coord.h` and `inline.h` or
-    be included directly by its callers
-- Update the EA function index at the top of `ra/core/inline.h`
-  - It still lists `Cell_Coord`, `Cell_To_Lepton`, `Coord_Add` and the other helpers that moved to
-    `ra/core/packed.h` or became `Coordinate`/`Cell` members; `/update-comments`
+    stay re-exported (`// IWYU pragma: export`) by `ra/core/defines.h` and `coord.h` or be included
+    directly by its callers
+- Finish what dissolving `ra/core/inline.h` left open (`2691ac0a`..`bb4cf4eb`: its helpers went to
+  `ra/core/coord.h`, `ra/core/random_pick.h` and `ra/data/text.h`)
+  - `TextString()` (`ra/data/text.h`) returns `nullptr` for a text number the table lacks, because
+    `Extract_String()` returns an empty view and the function hands out its `.data()`; callers pass
+    the result to `SafeCopy`, `"%s"` and `std::string_view` unchecked. TD's `Text_String()`
+    (`td/data/text.h:42`) does the same. Returning `std::string_view` fixes both and is the type the
+    data wants, but 231 call sites in 39 RA files (189 in TD) feed printers that read to the NUL;
+    `UiSkin::Text_String()` in both games and `game/ui/list.h`, `textbtn.h` move with it. A one-line
+    stopgap is to return `""` for an empty view
+  - `ra/core/random_pick.h` includes `ra/ai/scenario.h` and `ra/map/world.h` for the one expression
+    `TheScenario().sync_rng_`, and 29 files include it. A `RandomClass& SyncRandom()` defined in a
+    new `random_pick.cc` would leave the header with `base/random.h` alone
+  - `LocalRandom()` is a function-local static rather than part of `Game`, so it is never reseeded
+    between games or tests; decide whether it belongs in `World` beside `sync_rng_` (not saved)
+  - `PointDistance()` in `ra/objects/techno.cc` (~232) repeats the "longer axis plus half the
+    shorter" body of `Distance(Coordinate, Coordinate)` in `ra/core/coord.cc:127`; share one
+    `constexpr` helper over two `int` deltas
+  - Move `kAdjacentCellOffsets` and `kAdjacentCoordOffsets` from `ra/core/const.h` (~154-175) to
+    `ra/core/coord.h`: `AdjacentCell()` there and `CellClass::Adjacent_Offset()`
+    (`ra/objects/cell.cc:1689`) are their only users, and `coord.h` includes `const.h` just for them
+  - `Rescale()` in `ra/core/coord.h` (~99-112) has no test; `/cover-files src/ra/core/coord.h`
+  - `game::Desired_Facing256()` returns 0x3F for due east, one step short of `DIR_E` (0x40);
+    `ra/core/coord_test.cc` pins it. It is shipped simulation behaviour shared by both games, so
+    recorded only so nobody "fixes" it without deciding to
+  - `td/core/inline.h` is the same mix (pixel/lepton conversions, `Direction()`, `Adjacent_Cell()`,
+    two `Distance()` overloads) and still carries EA banners; `/modernize-file` on it, sending the
+    geometry to `td/core/coord.h` as RA did. TD's `Random_Pick` is still a macro over
+    `Random_Picky()` with unused `__FILE__`/`__LINE__` parameters (`td/core/rand.h:12-18`)
+  - `ra/objects/building.cc:5262-5264` keeps a commented-out `Force_Track(... Adjacent_Cell(...))`
+    call; `/remove-dead-code src/ra/objects/building.cc`
+  - CLion returned no inspections for `ra/core/coord.h`, `ra/core/random_pick.h` and the three new
+    tests (it timed out once); run `/fix-ide-issues` on them with the files open
 - Give the unused `Target`/`Cell` accessors callers or delete them
   - Red Alert: `Target::NoneWithAllValueBits()` (no callers), `Target::AsMovementCoordinate()` (no
     callers) and `Target::cell_index()` (only for `AsMovementCoordinate()`), all in
