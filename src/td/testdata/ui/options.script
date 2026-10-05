@@ -1,0 +1,6 @@
+# The options menu of a mission.
+at 301 click 320 58
+at 501 click 160 200
+at 3000 key ESC
+at 3040 shot options_menu
+at 3041 quit

@@ -1,0 +1,15 @@
+# The dialogs behind the main menu, and the credits behind the Westwood logo.
+at 300 click 320 255
+at 340 shot load_mission
+at 341 key ESC
+at 381 click 320 279
+at 420 shot multiplayer
+at 421 key ESC
+at 460 shot menu_again
+at 461 click 88 34
+at 1500 shot credits_first_slide
+at 4000 shot credits_between_slides
+at 9000 shot credits_later_slide
+at 9001 key ESC
+at 10000 shot menu_after_credits
+at 10001 quit

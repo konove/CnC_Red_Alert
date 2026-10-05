@@ -1412,6 +1412,26 @@ std::optional<StartupOptions> Parse_Command_Line(
       continue;
     }
 
+    // -SCRIPT<file>: play the keys and clicks of a script file, for checks
+    // of the screens nobody is there to click through.
+    if (string.starts_with("-SCRIPT")) {
+      options.script = argument.substr(7);
+      continue;
+    }
+
+    // -EDITOR: start in the scenario editor, as the editor's pass phrases
+    // do, in a build that has one. For scripts, which cannot be given a
+    // phrase to keep.
+    if (std::string_view(string) == "-EDITOR") {
+      if constexpr (config::kScenarioEditorEnabled) {
+        options.map_editor_active = true;
+        options.unshroud = true;
+        options.developer_mode = true;
+        options.playtest = true;
+      }
+      continue;
+    }
+
     /*
     **	Specify destination connection for network play
     */

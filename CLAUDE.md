@@ -353,6 +353,18 @@ keeps its own clang build with source-based coverage in `build-coverage` (config
 about 2.5 minutes cold, seconds after that) and runs every gtest executable; `--tests <regex>`
 narrows the run to some of them. `/cover-files` uses it to take a file to 100%.
 
+Code that blocks in its own loop until the player answers (a dialog, a menu, a timed screen) is
+tested with `UiFixture` (`ra/startup/ui_test_util.h`, `td/startup/ui_test_util.h`): a real `Game` on
+a headless screen, a clock that moves a tick a frame and a `ScriptedPlayer` whose clicks and keys
+the loop reads. Queue the script, call the dialog, check what it did; see
+`ra/ai/special_options_test.cc`. A loop the script cannot end throws `ScriptOverrun` instead of
+hanging.
+
+`tools/ui_check.py` plays the scripts in `src/<game>/testdata/ui/` into the whole game
+(`-SCRIPT<file>`, offscreen, about a second each) and compares their screenshots with the recorded
+hashes; `--accept` records a change that was meant. It needs the game data, so it is not a ctest:
+run it after changing what a screen looks like. `docs/TEST_HARNESS_PLAN.md` has the design.
+
 ## Abseil
 
 Auto-fetched via CMake. Prefer Abseil over std/custom implementations.

@@ -1120,17 +1120,22 @@
   - It passes without the guard it documents in a normal build: the names are short enough to live
     in the string's inline buffer, which still reads back after the free. `-DENABLE_ASAN=ON` would
     catch it; no CI job builds with ASan
-- Check the keyboard and mouse refactors on a real display (headless runs cannot press keys)
-  - Keys: typing, Backspace, Enter and Esc in edit boxes and the message line; hall-of-fame name
-    entry; battle hotkeys, including a Steam `REDALERT.INI` whose `[WinHotkeys]` holds Windows key
-    codes; TD's debug hotkeys (Home, F7-F10, 0-9) and map-editor waypoint keys
-  - Clicks: gadget and slider drags; map clicks, drag-select and right-click deselect; the
-    multiplayer color pickers; RA's title logo click and Shift-click; TD's side choice and ending
-  - Map editor: right-click menu, object and trigger placement, map-size drag handles, the team
-    editor's held +/- buttons
-  - Iron Curtain and Chronosphere targeting, alone and in a two-player game
-  - The hardware cursor after the `SetShape()` rewrite: shapes, hot spots and transparency at 1x, 2x
-    and 4x display scale, and its colors through fades
+- Script the rest of the keyboard and mouse checks (`tools/ui_check.py`, `docs/TEST_HARNESS_PLAN.md`
+  phase 5)
+  - Scripted so far: menu and dialog clicks, Esc and Return, the arrow keys in the editor's menus,
+    drag-select, a move order and right-click deselect on the map, RA's title logo click, TD's side
+    choice
+  - Keys still to script: typing, Backspace and Enter in edit boxes and the message line;
+    hall-of-fame name entry; battle hotkeys, including a Steam `REDALERT.INI` whose `[WinHotkeys]`
+    holds Windows key codes; TD's debug hotkeys (Home, F7-F10, 0-9) and map-editor waypoint keys. A
+    script cannot hold Shift, Ctrl or Alt yet: `KeyBuffer` reads them from SDL's live state, as
+    `IsLeftButtonDown()` did before `ScriptedPlayer` got its own buttons
+  - Clicks still to script: gadget and slider drags; the multiplayer color pickers; RA's Shift-click
+    for the ant missions; TD's ending; object and trigger placement, map-size drag handles and the
+    team editor's held +/- buttons in the map editor; Iron Curtain and Chronosphere targeting
+  - Stays a check by eye: the hardware cursor after the `SetShape()` rewrite (shapes, hot spots and
+    transparency at 1x, 2x and 4x display scale, and its colors through fades). SDL draws it, so it
+    is in no screenshot
 - Turn the `Fixed::FromString()` tests (`base/fixed_test.cc`) into one table of text and raw value
   - About 20 tests each spend five lines checking `whole()` and `fraction()`; one `{text, raw}`
     table checked with `EXPECT_EQ(Fixed::FromString(text), Fixed(raw, 256))` saves about 150 lines.
@@ -1166,13 +1171,17 @@
     maps; the other 37 campaign scenarios run. The pre-plan binary (`2d6ef8ed`) does the same, so it
     predates `docs/CCPTR_REMOVAL_PLAN.md`
   - Until it is fixed, headless logic logs and save/load smoke tests cannot cover those scenarios
-- Check the TextPrintType split on a real display in both games
-  - `docs/TEXT_PRINT_SPLIT_PLAN.md` moved the font out of `TextPrintType` into a `FontType`
-    parameter of every printer and text widget. The golden tests (`ra_text_style_test`,
-    `td_text_style_test`) pin font, spacing and glyph palette per combination, but nobody has looked
-    at the screen: RA main menu, options dialog, sidebar tooltips, map editor trigger and team
-    dialogs, score screen; TD main menu, map selection, score screen. Text must look as on
-    `1f60381e`
+- Look once at the screenshots of the UI scripts, and script the score screens
+  - `tools/ui_check.py --accept` leaves PNGs of every screen the scripts reach in `build/ui_check/`:
+    RA's main menu, difficulty and side prompts, options dialogs, credits, a mission, the map
+    editor's menus, team and trigger lists and dialogs; TD's main menu and a mission. The hashes
+    recorded on 2026-10-05 are of the code as it is, which nobody has compared by eye with
+    `1f60381e` (`docs/TEXT_PRINT_SPLIT_PLAN.md`); do that once, then the hashes hold it
+  - Not scripted: RA's and TD's score screens and TD's map selection, which need a mission won. A
+    `-NEWGAME` scenario that is won on its first frame, or a cheat key in the script, would reach
+    them
+  - A screenshot holds the game's page only. TD's side-choice pictures and other movie frames, which
+    the display stretches over or under the page, are not in it
 - Cover the multiplayer branch of `RunSpecialOptionsDialog()` (`ra/ai/special_options.cc`, 137 of
   141 lines covered)
   - In a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs

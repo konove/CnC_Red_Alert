@@ -1,0 +1,17 @@
+# The options dialogs of a mission: the menu Esc opens, the game controls,
+# and the visual and sound controls behind them.
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 key ESC
+at 520 shot options_menu
+at 521 click 320 200
+at 560 shot game_controls
+at 561 click 320 244
+at 600 shot visual_controls
+at 601 key ESC
+at 641 click 320 272
+at 680 shot sound_controls
+at 681 key ESC
+at 720 shot game_controls_again
+at 721 quit

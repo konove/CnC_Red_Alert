@@ -99,6 +99,10 @@ struct StartupOptions {
   int save_slot = -1;        // -SAVESLOT<slot>
   uint16_t custom_seed = 0;  // -SEED<n>, 0 for a random seed
 
+  // -SCRIPT<file>: a script of keys, clicks and screenshots to play instead
+  // of a person (td/startup/scripted_run.h). Empty for none.
+  std::string script;
+
   // Switches that fill one part of the game with known values before saving,
   // so a save/load check covers it: -GLOBALTEST, -MAPTEST and the rest.
   bool globals_test = false;

@@ -80,6 +80,10 @@ struct StartupOptions {
   int64_t quit_at_frame = -1;  // -QUITFRAME<frame>
   int save_slot = -1;          // -SAVESLOT<slot>
   uint16_t custom_seed = 0;    // -SEED<n>, 0 for a random seed
+
+  // -SCRIPT<file>: a script of keys, clicks and screenshots to play instead
+  // of a person (ra/startup/scripted_run.h). Empty for none.
+  std::string script;
 };
 
 // Returns the options Game was given. CHECK-fails outside a Game's lifetime

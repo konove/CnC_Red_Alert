@@ -176,6 +176,31 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - Not done: a whole shipped scenario through the editor's Save. That needs the game data and
     belongs to the scripted runs of phase 5.
 
+- **Phase 5: done 2026-10-05.** Both games take `-SCRIPT<file>` (and `-EDITOR`, the scenario editor
+  without its pass phrase, in a build that has one). `tools/ui_check.py` runs the scripts in
+  `src/<game>/testdata/ui/` under the offscreen driver and compares each screenshot's SHA-256 with
+  the `.hashes` file beside the script. Eight scripts, 37 screenshots, about ten seconds for all;
+  three runs in a row gave the same hashes.
+  - The script format is `engine/window/player_script.h`; `engine::window::ScriptedRun` holds the
+    clock and the player for a game.
+  - What a whole game needed that one dialog did not: frames ended for loops that only poll the
+    keyboard (`set_idle_pumps_per_frame()`); held mouse buttons (`IsLeftButtonDown()` read SDL's
+    live state, so a drag selected nothing); no redraw timer and no frame pacing in the display; no
+    sound, which plays in real time; and silent movies paced by the game's clock (`MovieClock`).
+  - Two bugs found on the way. `AudioMixer::Play()` on a mixer that was never opened left the sound
+    "playing" for good, so Tiberian Dawn's side choice, which waits for a voice to end, hung on a
+    machine without a sound device; it now returns -1. And the map editor's pop-up menus draw their
+    text at the screen's corner, away from their box, which `TODO.md` already had as the
+    `WinX`/`WinY` item; the screenshot shows it.
+  - Not scripted: the score screens and TD's map selection (they need a mission won), and anything
+    with Shift, Ctrl or Alt held.
+  - A screenshot holds the game's page, not the movie frames or backdrops the display stretches
+    around it.
+- **After phase 5:** the harness reaches into production code through `if` checks (is a manual clock
+  installed, is the display headless, are scripted mouse buttons installed). These are being
+  replaced by interfaces with a real and a test implementation each: the clock, the mouse buttons
+  and the display.
+
 ## Out of scope
 
 - Audio output assertions, beyond the accessor for `ThemeClass::Pending` that `TODO.md` already asks

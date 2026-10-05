@@ -53,6 +53,7 @@
 
 #include "absl/base/no_destructor.h"
 #include "absl/strings/match.h"
+#include "absl/strings/str_format.h"  // IWYU pragma: keep (main, Windows)
 #include "base/buffer.h"  // IWYU pragma: keep (used only with an entry point)
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/ini_file.h"
@@ -93,11 +94,13 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/scripted_player.h"
 #include "td/ai/special.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
+#include "td/startup/scripted_run.h"
 #endif  // TD_NO_ENTRY_POINT
 
 #ifdef _WIN32
@@ -323,7 +326,11 @@ static int Run(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       CCDebugString("C&C95 - Initialising audio.\n");
 
+      // A scripted run stays silent: sound plays in real time on a thread of
+      // its own, and the screens that wait for a voice or a tune to end would
+      // wait a different number of frames every run.
       TheGameState().sound_on() =
+          options->script.empty() &&
           engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
 
       ThePalettes().title_palette() = engine::gfx::Palette();
@@ -406,7 +413,18 @@ static int Run(int argc, char* argv[])
       }
 
       CCDebugString("C&C95 - Entering main game.\n");
-      Main_Game();
+      if (!options->script.empty() && !StartScriptedRun(options->script)) {
+        ShutDown();
+        return EXIT_FAILURE;
+      }
+      try {
+        Main_Game();
+      } catch (const engine::window::ScriptOverrun& overrun) {
+        // A -SCRIPT run whose script ended with the game still waiting.
+        absl::FPrintF(stderr, "-SCRIPT: %s\n", overrun.what());
+        ShutDown();
+        return EXIT_FAILURE;
+      }
 
       TheScreen().visible_page().view().Clear();
       TheScreen().hidden_page().view().Clear();

@@ -1,0 +1,20 @@
+# The mouse on the map of a mission: a drag that selects a group, an order to
+# move, a right click that lets the group go, and the help text of a sidebar
+# button.
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 shot start
+at 501 press 190 95
+at 505 move 230 120
+at 510 move 290 160
+at 515 shot dragging
+at 516 release 290 160
+at 530 shot selected
+at 531 click 200 220
+at 600 shot moving
+at 601 rclick 300 300
+at 620 shot deselected
+at 621 move 517 160
+at 760 shot sidebar_hover
+at 761 quit

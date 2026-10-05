@@ -2093,6 +2093,24 @@ std::optional<StartupOptions> Parse_Command_Line(
           base::ParseIntegerOr<uint16_t>(string.substr(5), options.custom_seed);
       continue;
     }
+    // -SCRIPT<file>: play the keys and clicks of a script file, for checks
+    // of the screens nobody is there to click through. The argument as
+    // given keeps the case of the path.
+    if (string.starts_with("-SCRIPT")) {
+      options.script = argument.substr(7);
+      continue;
+    }
+    // -EDITOR: start in the scenario editor, as the editor's pass phrases
+    // do, in a build that has one. For scripts, which cannot be given a
+    // phrase to keep.
+    if (string == "-EDITOR") {
+      if constexpr (config::kScenarioEditorEnabled) {
+        options.map_editor_active = true;
+        options.unshroud = true;
+        options.developer_mode = true;
+      }
+      continue;
+    }
     if (string.starts_with("-NEWGAME")) {
       options.new_game = string.substr(8);
       if (options.new_game.size() < 3) {

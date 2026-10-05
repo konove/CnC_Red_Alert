@@ -1,0 +1,11 @@
+# Starts a new Allied campaign from the main menu: the difficulty prompt, the
+# choice of side, and the first mission under way.
+at 300 shot main_menu
+at 301 click 320 231
+at 340 shot difficulty
+at 341 key RETURN
+at 400 shot choose_side
+at 401 click 260 228
+at 500 shot mission_start
+at 1500 shot mission_under_way
+at 1501 quit

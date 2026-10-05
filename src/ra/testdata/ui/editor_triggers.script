@@ -1,0 +1,19 @@
+# The scenario editor on the first Allied mission: the trigger list and the
+# trigger dialog.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 257 key DOWN
+at 261 key DOWN
+at 271 key RETURN
+at 311 key DOWN
+at 320 key RETURN
+at 360 shot trigger_list
+at 361 click 160 225
+at 400 shot trigger_dialog
+at 401 key ESC
+at 440 shot trigger_list_again
+at 441 quit

@@ -70,6 +70,7 @@
 #include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/scripted_player.h"
 #include "ra/ai/special_options.h"
 #include "ra/assets/installation.h"
 #include "ra/core/config.h"
@@ -84,6 +85,7 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/init.h"
+#include "ra/startup/scripted_run.h"
 #include "ra/startup/startup_options.h"
 #include "ra/startup/winstub.h"
 #endif  // RA_NO_ENTRY_POINT
@@ -342,11 +344,19 @@ static int Run(const int argc, char* argv[])
   ReadConfigOptions(ini, *options);
 
   Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
-  // 22050 Hz mono.
+  // 22050 Hz mono. A scripted run stays silent: sound plays in real time on
+  // a thread of its own, and the screens that wait for a voice or a tune to
+  // end would wait a different number of frames every run.
   TheGameState().sound_on() =
+      options->script.empty() &&
       engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
 
   if (!TheScreen().Init()) {
+    ShutDown();
+    return EXIT_FAILURE;
+  }
+
+  if (!options->script.empty() && !StartScriptedRun(options->script)) {
     ShutDown();
     return EXIT_FAILURE;
   }
@@ -392,7 +402,14 @@ static int Run(const int argc, char* argv[])
     }
   }
 
-  RunGame();
+  try {
+    RunGame();
+  } catch (const engine::window::ScriptOverrun& overrun) {
+    // A -SCRIPT run whose script ended with the game still waiting.
+    absl::FPrintF(stderr, "-SCRIPT: %s\n", overrun.what());
+    ShutDown();
+    return EXIT_FAILURE;
+  }
 
   TheScreen().visible_page().view().Clear();
   TheScreen().hidden_page().view().Clear();

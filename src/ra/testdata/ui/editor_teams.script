@@ -1,0 +1,23 @@
+# The scenario editor on the first Allied mission: its right-click menu, the
+# AI menu, the team list and the team dialog.
+# args: -EDITOR
+at 200 shot editor
+at 201 rclick 400 150
+at 240 shot main_menu
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 257 key DOWN
+at 261 key DOWN
+at 271 key RETURN
+at 310 shot ai_menu
+at 311 key DOWN
+at 315 key DOWN
+at 320 key RETURN
+at 360 shot team_list
+at 361 click 160 225
+at 400 shot team_dialog
+at 401 click 345 225
+at 440 shot team_list_again
+at 441 quit
