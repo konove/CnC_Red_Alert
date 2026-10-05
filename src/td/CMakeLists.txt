@@ -149,14 +149,3 @@ add_gtest(
 )
 target_compile_definitions(td_cell_adjacent_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_cell_adjacent_test)
-
-if (EMSCRIPTEN)
-    set_target_properties(tdsdl PROPERTIES
-            SUFFIX ".html"
-            LINK_FLAGS "-sENVIRONMENT=web -sASYNCIFY -sASYNCIFY_STACK_SIZE=8192 -sFORCE_FILESYSTEM -sINITIAL_MEMORY=32mb"
-    )
-    # this does not include the files, that would require something like
-    # file_packager files.data --js-output=files.js --preload *.mix
-    # (which is huge if you include the movies)
-    # and adding files.js to the shell html
-endif ()

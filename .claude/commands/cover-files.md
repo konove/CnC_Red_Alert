@@ -105,7 +105,7 @@ none of them is a test written only to make the number move:
 | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | No caller can produce the state (a `default:` over a full enum, a null check after a `CHECK`) | It is dead code. Remove it under `.claude/commands/remove-dead-code.md`, as a separate change, and say so in the report.                                        |
 | It needs the display, the audio device, a socket, real game data or the main loop             | Leave it uncovered and list it. If a small seam would make it testable (pass the stream in, split the pure part out), propose the seam; don't refactor unasked. |
-| It is a platform branch that does not compile here (`_WIN32`, Emscripten)                     | Not in the report at all; nothing to do.                                                                                                                        |
+| It is a platform branch that does not compile here (`_WIN32`)                                 | Not in the report at all; nothing to do.                                                                                                                        |
 | It is reachable, but only through a long set-up the fixture cannot build yet                  | Extend the fixture when that is modest (`afd00292` added `Init_Cells()`); otherwise list it with what the fixture lacks.                                        |
 
 Do not add coverage-exclusion comments or pragmas: the project has none, and an excluded line reads

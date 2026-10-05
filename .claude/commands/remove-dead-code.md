@@ -95,7 +95,7 @@ The signature lives in more places than the `.h`/`.cc` pair:
 parameter and fix what breaks — misses two kinds of caller:
 
 - Calls the default build never sees: `#ifdef WIN32`, the WOLAPI sources, `CHEAT_KEYS` /
-  `config::k...` blocks, Emscripten branches. They rot silently if skipped.
+  `config::k...` blocks. They rot silently if skipped.
 - Calls that still compile and now mean something else. Remove the `int` from
   `F(obj, int frame, bool redraw = true)` and `F(obj, 1)` compiles happily with `redraw = 1`.
   Whenever a later parameter has a default, or is convertible from the removed one's type, check

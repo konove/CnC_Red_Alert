@@ -30,10 +30,6 @@
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten/emscripten.h>
-#endif
-
 namespace engine::window {
 
 namespace {
@@ -464,12 +460,6 @@ void Display::PostRedrawEvent() {
 }
 
 void Display::PumpEvents() {
-#ifdef __EMSCRIPTEN__
-  // The games wait for input by spinning on this loop, and the browser only
-  // delivers input while it has control, so yield to it on every pass.
-  emscripten_sleep(0);
-#endif
-
   client_->Pump();
 
   SDL_Event event;
