@@ -27,7 +27,5 @@ inline constexpr int kWindowPadding = 0x1000;
 inline constexpr int kWindowCount = 7;
 
 extern int WindowList[kWindowCount][8];
-extern unsigned int WinX;
-extern unsigned int WinY;
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_TEXT_WINDOW_H_

@@ -12,12 +12,6 @@
   - It records `current_shape_` even when `SDL_CreateColorCursor()` fails, so the same shape is
     never tried again and SDL shows its default cursor
   - The hot spot is not checked against the shape size; SDL rejects one outside the cursor
-- Decide what `WinX`/`WinY` (`engine/gfx/text_window.h`) should be now nothing writes them
-  - The original `Change_Window()` set them to the active text window's origin; since it was stubbed
-    (and deleted in `09717739`) they are always 0, so `ra/screens/menus.cc`, `td/screens/menus.cc`,
-    `ra/objects/object.cc` and `td/objects/object.cc` place menus and text as if every window sat at
-    the screen's top-left
-  - Either delete them (no visible change) or set them from `WindowList` where the window changes
 - Make Red Alert's cloak shimmer walk the other way on the right half of the window
   - `CC_Draw_Shape()` (`ra/assets/shape_draw.cc:163`) negates the predator offset when
     `x > WindowList[window][kWindowWidth] * 4`, TD's formula; TD stores window widths in 8-pixel
