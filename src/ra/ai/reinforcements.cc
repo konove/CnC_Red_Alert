@@ -32,7 +32,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/random_pick.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/objects/aircraft.h"
@@ -314,6 +313,16 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   // compass point, so the group starts out facing off the map.
   const game::DirType entry_dir =
       game::Facing_Dir(game::AsFacing(static_cast<int>(edge) * 2));
+  // Aircraft face the other way, onto the map: a fixed-wing one flies where its
+  // nose points and turns slowly, so any other heading sends it on a detour
+  // along or off the edge before it comes about.
+  const game::DirType inward_dir = entry_dir + game::DIR_S;
+  // With an origin waypoint they face that instead: Calculated_Cell() then
+  // picks the edge nearest the waypoint, which need not be the house's.
+  const Cell origin_cell =
+      team_type->Origin != -1
+          ? base::At(TheScenario().Waypoint, team_type->Origin)
+          : Cell::None();
 
   Cell place_cell = TheMap().Calculated_Cell(
       edge, team_type->Origin, Cell::None(), group->Techno_Type_Class()->Speed);
@@ -344,8 +353,11 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   bool any_placed = false;
   while (place_cell.index() > 0 && member != nullptr) {
     const bool is_aircraft = member->What_Am_I() == RTTI_AIRCRAFT;
-    const game::DirType facing =
-        is_aircraft ? RandomPick(game::DIR_N, kMaxRandomDirection) : entry_dir;
+    game::DirType facing = entry_dir;
+    if (is_aircraft) {
+      facing = origin_cell != Cell::None() ? Direction(place_cell, origin_cell)
+                                           : inward_dir;
+    }
 
     // scenario_init places the member on the edge cell without asking whether
     // it can enter it.

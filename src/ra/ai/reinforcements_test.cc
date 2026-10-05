@@ -572,6 +572,41 @@ TEST_F(ReinforcementTest, AHouseWithoutAnAirstripBorrowsItsAircraft) {
   EXPECT_EQ(KeptAircraftCount(), 0);
 }
 
+TEST_F(ReinforcementTest, AnAircraftArrivesFacingInwardFromItsEdge) {
+  TheGameState().active() = true;
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_YAK), 2);
+
+  house_->Control.Edge = SOURCE_EAST;
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+  house_->Control.Edge = SOURCE_NORTH;
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 4);
+  for (int index = 0; index < 4; index++) {
+    const AircraftClass* yak = TheObjectHeaps().aircraft().ActiveAt(index);
+    EXPECT_EQ(yak->PrimaryFacing.Current(),
+              index < 2 ? game::DIR_W : game::DIR_S);
+  }
+}
+
+TEST_F(ReinforcementTest, AnAircraftWithAnOriginArrivesFacingIt) {
+  // The origin is next to the north edge, so that is where the Yak enters,
+  // whatever the house's own edge.
+  TheScenario().Waypoint[0] = Cell::FromXY(20, 3);
+  TheGameState().active() = true;
+  house_->Control.Edge = SOURCE_EAST;
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_YAK), 1);
+  team_type.Origin = 0;
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
+  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->PrimaryFacing.Current(),
+            game::DIR_S);
+}
+
 TEST_F(ReinforcementTest, AHouseKeepsOneMigForEachAirstrip) {
   TheGameState().active() = true;
   Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
