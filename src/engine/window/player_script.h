@@ -24,7 +24,9 @@ struct PlayerScriptHooks {
 //
 //   at <frame> key <name>          press and release a key: ESC, RETURN, A,
 //                                  F1, UP, ... (the KN_ names without KN_)
-//   at <frame> type <text>         type letters, digits and spaces
+//   at <frame> keydown <name>      hold a key down: SHIFT, CTRL, ALT or any
+//   at <frame> keyup <name>        other, until its keyup
+//   at <frame> type <text>         type letters and digits
 //   at <frame> click <x> <y>       click the left button there
 //   at <frame> rclick <x> <y>      click the right button there
 //   at <frame> press <x> <y>       hold the left button down there ...

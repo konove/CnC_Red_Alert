@@ -22,22 +22,40 @@ namespace engine::window {
 namespace {
 
 // The keys a script can name, beyond the single letters and digits.
-constexpr std::array<std::pair<std::string_view, KeyNumber>, 30> kNamedKeys = {{
-    {"ESC", KN_ESC},       {"RETURN", KN_RETURN},
-    {"SPACE", KN_SPACE},   {"BACKSPACE", KN_BACKSPACE},
-    {"TAB", KN_TAB},       {"UP", KN_UP},
-    {"DOWN", KN_DOWN},     {"LEFT", KN_LEFT},
-    {"RIGHT", KN_RIGHT},   {"HOME", KN_HOME},
-    {"END", KN_END},       {"PGUP", KN_PGUP},
-    {"PGDN", KN_PGDN},     {"INSERT", KN_INSERT},
-    {"DELETE", KN_DELETE}, {"COMMA", KN_COMMA},
-    {"PERIOD", KN_PERIOD}, {"SLASH", KN_SLASH},
-    {"F1", KN_F1},         {"F2", KN_F2},
-    {"F3", KN_F3},         {"F4", KN_F4},
-    {"F5", KN_F5},         {"F6", KN_F6},
-    {"F7", KN_F7},         {"F8", KN_F8},
-    {"F9", KN_F9},         {"F10", KN_F10},
-    {"F11", KN_F11},       {"F12", KN_F12},
+constexpr std::array<std::pair<std::string_view, KeyNumber>, 33> kNamedKeys = {{
+    {"SHIFT", KN_LSHIFT},
+    {"CTRL", KN_LCTRL},
+    {"ALT", KN_LALT},
+    {"ESC", KN_ESC},
+    {"RETURN", KN_RETURN},
+    {"SPACE", KN_SPACE},
+    {"BACKSPACE", KN_BACKSPACE},
+    {"TAB", KN_TAB},
+    {"UP", KN_UP},
+    {"DOWN", KN_DOWN},
+    {"LEFT", KN_LEFT},
+    {"RIGHT", KN_RIGHT},
+    {"HOME", KN_HOME},
+    {"END", KN_END},
+    {"PGUP", KN_PGUP},
+    {"PGDN", KN_PGDN},
+    {"INSERT", KN_INSERT},
+    {"DELETE", KN_DELETE},
+    {"COMMA", KN_COMMA},
+    {"PERIOD", KN_PERIOD},
+    {"SLASH", KN_SLASH},
+    {"F1", KN_F1},
+    {"F2", KN_F2},
+    {"F3", KN_F3},
+    {"F4", KN_F4},
+    {"F5", KN_F5},
+    {"F6", KN_F6},
+    {"F7", KN_F7},
+    {"F8", KN_F8},
+    {"F9", KN_F9},
+    {"F10", KN_F10},
+    {"F11", KN_F11},
+    {"F12", KN_F12},
 }};
 
 std::optional<int> ParseInt(const std::string_view text) {
@@ -81,7 +99,8 @@ std::string QueueStep(const std::vector<std::string_view>& words,
     return {};
   }
 
-  if (verb == "key" || verb == "shot" || verb == "type") {
+  if (verb == "key" || verb == "keydown" || verb == "keyup" || verb == "shot" ||
+      verb == "type") {
     if (arguments != 1) {
       return absl::StrFormat("%s takes one word", verb);
     }
@@ -105,7 +124,13 @@ std::string QueueStep(const std::vector<std::string_view>& words,
     if (!key) {
       return absl::StrFormat("no key is called %s", word);
     }
-    player.Key(*key);
+    if (verb == "keydown") {
+      player.KeyDown(*key);
+    } else if (verb == "keyup") {
+      player.KeyUp(*key);
+    } else {
+      player.Key(*key);
+    }
     return {};
   }
 

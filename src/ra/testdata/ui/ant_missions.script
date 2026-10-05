@@ -1,0 +1,12 @@
+# The Shift-click in the main menu's top right corner that starts the ant
+# missions, the mission restated in a message box (there is no briefing
+# movie), and the first ant mission.
+at 300 keydown SHIFT
+at 301 click 580 50
+at 305 keyup SHIFT
+at 340 shot difficulty
+at 341 key RETURN
+at 600 shot briefing
+at 601 key RETURN
+at 900 shot mission_start
+at 901 quit

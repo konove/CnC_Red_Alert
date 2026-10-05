@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -86,6 +87,13 @@ class ScriptedPlayer final : public DisplayObserver {
   // Backspace, Tab, Esc and Space carry the character they type, as they do
   // from a real keyboard; for letters and digits use Type().
   ScriptedPlayer& Key(KeyNumber key) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Queues `key`, a bare key number, going down and staying down, and its
+  // coming up: for Shift, Ctrl and Alt around other steps, and for anything
+  // the game asks about as held (IsShiftDown(), KeyBuffer::IsDown()). A key
+  // pressed or a button clicked in between carries the modifiers held.
+  ScriptedPlayer& KeyDown(KeyNumber key) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  ScriptedPlayer& KeyUp(KeyNumber key) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Queues the key presses that type `text`, each carrying its character the
   // way SDL's text input delivers it, so an upper-case letter arrives as
@@ -171,11 +179,27 @@ class ScriptedPlayer final : public DisplayObserver {
     bool right = false;
   };
 
+  // The keys the player is holding down: each from its KeyDown() to its
+  // KeyUp().
+  class HeldKeys final : public KeyboardState {
+   public:
+    [[nodiscard]] bool IsShiftDown() const override;
+    [[nodiscard]] bool IsCtrlDown() const override;
+    [[nodiscard]] bool IsAltDown() const override;
+    [[nodiscard]] bool IsKeyDown(int key) const override;
+
+    std::set<int> keys;  // bare key codes
+  };
+
   // What IsLeftButtonDown() and IsRightButtonDown() report while the player
   // exists, and the mouse buttons they reported before, put back when it
   // goes.
   HeldButtons held_;
   MouseButtons* previous_buttons_;
+  // The same for the keyboard: IsShiftDown(), KeyBuffer::IsDown() and the
+  // modifier bits of a queued key.
+  HeldKeys held_keys_;
+  KeyboardState* previous_keyboard_;
   int idle_pumps_per_frame_ = 0;  // 0 for never
 };
 

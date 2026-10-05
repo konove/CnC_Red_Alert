@@ -229,8 +229,42 @@ constexpr int ButtonId(const KeyNumber key) {
   return static_cast<int>(static_cast<uint32_t>(key) & ~kKeyButtonBit);
 }
 
+// Which keys are held down right now, as opposed to the presses that are
+// queued. The game asks the real keyboard, through SDL; a ScriptedPlayer puts
+// the keys it is holding in its place, since SDL knows nothing of a script's
+// keyboard.
+class KeyboardState {
+ public:
+  virtual ~KeyboardState();
+
+  KeyboardState(const KeyboardState&) = delete;
+  KeyboardState& operator=(const KeyboardState&) = delete;
+  KeyboardState(KeyboardState&&) = delete;
+  KeyboardState& operator=(KeyboardState&&) = delete;
+
+  // Whether Shift, Ctrl or Alt is held, on either side of the keyboard.
+  [[nodiscard]] virtual bool IsShiftDown() const = 0;
+  [[nodiscard]] virtual bool IsCtrlDown() const = 0;
+  [[nodiscard]] virtual bool IsAltDown() const = 0;
+  // Whether the key with the bare key code `key` is held. Shift, Ctrl and
+  // Alt are asked through the functions above.
+  [[nodiscard]] virtual bool IsKeyDown(int key) const = 0;
+
+ protected:
+  KeyboardState() = default;
+};
+
+// Returns the keyboard state in use: the real keyboard's, unless another has
+// been made current.
+KeyboardState& CurrentKeyboardState();
+
+// Makes `state` the keyboard state in use and returns the one it replaces,
+// which the caller puts back the same way. `state` must stay alive while
+// current. Main thread only.
+KeyboardState& ExchangeCurrentKeyboardState(KeyboardState& state);
+
 // Returns whether Shift, Ctrl or Alt is held down right now, on either side
-// of the keyboard.
+// of the keyboard, in the keyboard state in use.
 bool IsShiftDown();
 bool IsCtrlDown();
 bool IsAltDown();
@@ -351,11 +385,11 @@ class KeyBuffer {
   // Discards every pending entry.
   void Clear();
 
-  // Returns whether `key` is held down right now, read from SDL's live state
-  // rather than from the buffer. Covers either side of the keyboard for Shift,
-  // Ctrl and Alt. `key` is a bare key code: with modifier bits set it names a
-  // different scancode. The mouse buttons are IsLeftButtonDown() and
-  // IsRightButtonDown() in hardware_cursor.h.
+  // Returns whether `key` is held down right now, read from the keyboard
+  // state in use rather than from the buffer. Covers either side of the
+  // keyboard for Shift, Ctrl and Alt. `key` is a bare key code: with modifier
+  // bits set it names a different scancode. The mouse buttons are
+  // IsLeftButtonDown() and IsRightButtonDown() in hardware_cursor.h.
   static bool IsDown(int key);
 
   // Queues the key or click an SDL event carries, and gives a text-input

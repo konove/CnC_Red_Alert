@@ -69,6 +69,17 @@ TEST_F(PlayerScriptTest, KeysAreNamedWithoutRegardToCase) {
   EXPECT_EQ(Turn().key, KN_F10);
 }
 
+TEST_F(PlayerScriptTest, KeydownAndKeyupHoldAModifierAroundOtherSteps) {
+  ASSERT_EQ(Load("at 1 keydown SHIFT\nat 2 click 5 6\nat 4 keyup shift\n"), "");
+
+  Turn();
+  EXPECT_TRUE(IsShiftDown());
+  Turn();
+  Turn();
+  Turn();
+  EXPECT_FALSE(IsShiftDown());
+}
+
 TEST_F(PlayerScriptTest, AClickStepClicksThere) {
   ASSERT_EQ(Load("at 1 click 320 200\n"), "");
 

@@ -165,6 +165,42 @@ TEST_F(ScriptedPlayerTest, AClickLeavesNoButtonHeld) {
   EXPECT_FALSE(IsRightButtonDown());
 }
 
+// Shift, Ctrl and Alt are asked about as held, and mark the keys pressed
+// while they are.
+TEST_F(ScriptedPlayerTest, AKeyHeldDownReadsAsDownUntilItComesUp) {
+  player_.At(1).KeyDown(KN_LSHIFT).At(3).KeyUp(KN_LSHIFT);
+
+  EXPECT_FALSE(IsShiftDown());
+  Turn();
+  EXPECT_TRUE(IsShiftDown());
+  EXPECT_TRUE(KeyBuffer::IsDown(KN_LSHIFT));
+  EXPECT_FALSE(IsCtrlDown());
+  Turn();
+  Turn();
+  EXPECT_FALSE(IsShiftDown());
+}
+
+TEST_F(ScriptedPlayerTest, AKeyPressedWithAModifierHeldCarriesIt) {
+  player_.At(1).KeyDown(KN_LCTRL).At(2).Key(KN_Q).At(3).KeyUp(KN_LCTRL);
+
+  Turn();  // Ctrl goes down
+  const InputEvent press = Turn();
+
+  EXPECT_EQ(KeyCode(press.key), KN_Q);
+  EXPECT_TRUE(HasCtrl(press.key));
+  EXPECT_FALSE(HasShift(press.key));
+}
+
+TEST_F(ScriptedPlayerTest, AnyHeldKeyCanBeAskedAbout) {
+  player_.At(1).KeyDown(KN_Q).At(2).KeyUp(KN_Q);
+
+  Turn();
+  EXPECT_TRUE(KeyBuffer::IsDown(KN_Q));
+  EXPECT_FALSE(KeyBuffer::IsDown(KN_W));
+  Turn();
+  EXPECT_FALSE(KeyBuffer::IsDown(KN_Q));
+}
+
 TEST_F(ScriptedPlayerTest, StepsOfOneFramePlayInTheOrderQueued) {
   std::vector<int> order;
   player_.At(2).Do([&order] { order.push_back(1); }).Do([&order] {

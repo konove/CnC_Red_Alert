@@ -3,6 +3,7 @@
 
 #include "engine/window/scripted_player.h"
 
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <string_view>
@@ -68,6 +69,22 @@ KeyNumber KeyThatTypes(const char character) {
 
 ScriptOverrun::~ScriptOverrun() = default;
 
+bool ScriptedPlayer::HeldKeys::IsShiftDown() const {
+  return keys.contains(KN_LSHIFT);
+}
+
+bool ScriptedPlayer::HeldKeys::IsCtrlDown() const {
+  return keys.contains(KN_LCTRL);
+}
+
+bool ScriptedPlayer::HeldKeys::IsAltDown() const {
+  return keys.contains(KN_LALT);
+}
+
+bool ScriptedPlayer::HeldKeys::IsKeyDown(const int key) const {
+  return keys.contains(key);
+}
+
 bool ScriptedPlayer::HeldButtons::IsLeftDown() const { return left; }
 
 bool ScriptedPlayer::HeldButtons::IsRightDown() const { return right; }
@@ -79,12 +96,14 @@ ScriptedPlayer::ScriptedPlayer(Display& display, KeyBuffer& keyboard,
       keyboard_(&keyboard),
       mouse_(&mouse),
       clock_(&clock),
-      previous_buttons_(&ExchangeCurrentMouseButtons(held_)) {
+      previous_buttons_(&ExchangeCurrentMouseButtons(held_)),
+      previous_keyboard_(&ExchangeCurrentKeyboardState(held_keys_)) {
   display_->set_observer(this);
 }
 
 ScriptedPlayer::~ScriptedPlayer() {
   display_->set_observer(nullptr);
+  ExchangeCurrentKeyboardState(*previous_keyboard_);
   ExchangeCurrentMouseButtons(*previous_buttons_);
 }
 
@@ -96,6 +115,21 @@ ScriptedPlayer& ScriptedPlayer::At(const int frame) {
 
 ScriptedPlayer& ScriptedPlayer::Key(const KeyNumber key) {
   return Do([this, key] { PutKey(key, ControlCharacter(key)); });
+}
+
+ScriptedPlayer& ScriptedPlayer::KeyDown(const KeyNumber key) {
+  return Do([this, key] {
+    // Held before it is queued: a Shift going down is itself shifted.
+    held_keys_.keys.insert(static_cast<int>(key));
+    keyboard_->PutKey(static_cast<int>(key));
+  });
+}
+
+ScriptedPlayer& ScriptedPlayer::KeyUp(const KeyNumber key) {
+  return Do([this, key] {
+    held_keys_.keys.erase(static_cast<int>(key));
+    keyboard_->PutKey(static_cast<int>(key), /*release=*/true);
+  });
 }
 
 ScriptedPlayer& ScriptedPlayer::Type(const std::string_view text) {
@@ -173,7 +207,20 @@ void ScriptedPlayer::OnPump() {
 }
 
 void ScriptedPlayer::PutKey(const KeyNumber key, const char character) {
-  keyboard_->Put({.key = key, .character = character});
+  // The press is built here rather than by KeyBuffer::PutKey(), which has no
+  // way to be given the character; the modifier bits are the ones it adds.
+  auto bits = static_cast<uint32_t>(key);
+  if (held_keys_.IsShiftDown()) {
+    bits |= kKeyShiftBit;
+  }
+  if (held_keys_.IsCtrlDown()) {
+    bits |= kKeyCtrlBit;
+  }
+  if (held_keys_.IsAltDown()) {
+    bits |= kKeyAltBit;
+  }
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  keyboard_->Put({.key = static_cast<KeyNumber>(bits), .character = character});
   keyboard_->PutKey(static_cast<int>(key), /*release=*/true);
 }
 

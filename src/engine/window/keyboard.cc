@@ -8,19 +8,14 @@
 
 #include <cstdint>
 #include <span>
+#include <utility>
 
+#include "absl/base/no_destructor.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/window/display.h"
 
 namespace engine::window {
-
-// Mask for modifier keys that affect gameplay input.
-// Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
-// state doesn't interfere with keyboard handling.
-constexpr auto kInputModifierMask =
-    static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
-                            uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
 // A Windows virtual-key code and the key number it names.
 struct WindowsKey {
@@ -191,15 +186,14 @@ bool KeyBuffer::PutKey(const int key_code, const bool release) {
   }
   auto key_number = static_cast<uint32_t>(key_code);
 
-  const auto keymod =
-      static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
-  if (keymod & KMOD_SHIFT) {
+  const KeyboardState& keyboard = CurrentKeyboardState();
+  if (keyboard.IsShiftDown()) {
     key_number |= kKeyShiftBit;
   }
-  if (keymod & KMOD_CTRL) {
+  if (keyboard.IsCtrlDown()) {
     key_number |= kKeyCtrlBit;
   }
-  if (keymod & KMOD_ALT) {
+  if (keyboard.IsAltDown()) {
     key_number |= kKeyAltBit;
   }
   if (release) {
@@ -292,17 +286,7 @@ bool KeyBuffer::IsDown(const int key) {
       break;
   }
 
-  int key_count = 0;
-  const auto* key_states = SDL_GetKeyboardState(&key_count);
-
-  if (key >= 0 && key < key_count) {
-    // SDL_GetKeyboardState returns exactly key_count state bytes.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span states(key_states, base::ToSize(key_count));
-    return base::At(states, key) != 0;
-  }
-
-  return false;
+  return CurrentKeyboardState().IsKeyDown(key);
 }
 
 bool KeyBuffer::HandleEvent(const SDL_Event& event) {
@@ -384,10 +368,54 @@ int WindowsKeyFromKey(const KeyNumber key) {
   return 0;
 }
 
-bool IsShiftDown() { return (SDL_GetModState() & KMOD_SHIFT) != 0; }
+namespace {
 
-bool IsCtrlDown() { return (SDL_GetModState() & KMOD_CTRL) != 0; }
+// The real keyboard, read from SDL's live state.
+class SdlKeyboardState final : public KeyboardState {
+ public:
+  [[nodiscard]] bool IsShiftDown() const override {
+    return (SDL_GetModState() & KMOD_SHIFT) != 0;
+  }
+  [[nodiscard]] bool IsCtrlDown() const override {
+    return (SDL_GetModState() & KMOD_CTRL) != 0;
+  }
+  [[nodiscard]] bool IsAltDown() const override {
+    return (SDL_GetModState() & KMOD_ALT) != 0;
+  }
+  [[nodiscard]] bool IsKeyDown(const int key) const override {
+    int key_count = 0;
+    const auto* key_states = SDL_GetKeyboardState(&key_count);
+    if (key < 0 || key >= key_count) {
+      return false;
+    }
+    // SDL_GetKeyboardState returns exactly key_count state bytes.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    const std::span states(key_states, base::ToSize(key_count));
+    return base::At(states, key) != 0;
+  }
+};
 
-bool IsAltDown() { return (SDL_GetModState() & KMOD_ALT) != 0; }
+// The keyboard state in use, which starts as the real keyboard's.
+KeyboardState*& CurrentKeyboardStateSlot() {
+  static absl::NoDestructor<SdlKeyboardState> sdl_keyboard;
+  static KeyboardState* current = sdl_keyboard.get();
+  return current;
+}
+
+}  // namespace
+
+KeyboardState::~KeyboardState() = default;
+
+KeyboardState& CurrentKeyboardState() { return *CurrentKeyboardStateSlot(); }
+
+KeyboardState& ExchangeCurrentKeyboardState(KeyboardState& state) {
+  return *std::exchange(CurrentKeyboardStateSlot(), &state);
+}
+
+bool IsShiftDown() { return CurrentKeyboardState().IsShiftDown(); }
+
+bool IsCtrlDown() { return CurrentKeyboardState().IsCtrlDown(); }
+
+bool IsAltDown() { return CurrentKeyboardState().IsAltDown(); }
 
 }  // namespace engine::window
