@@ -602,6 +602,164 @@ class ForceTriggerAction final : public TriggerReferenceAction {
   }
 };
 
+// Places a drop zone smoke marker at a waypoint.
+class DropZoneFlareAction final : public TriggerAction {
+ public:
+  explicit DropZoneFlareAction(const int waypoint) : waypoint_(waypoint) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kDropZoneFlare;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    base::NewPooled<AnimClass>(
+        ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, waypoint_).Center());
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = waypoint_};
+  }
+
+ private:
+  int waypoint_;
+};
+
+// Reveals the map around a waypoint to the player. Like RevealZoneAction,
+// it has nothing to do once the player sees everything.
+class RevealAroundAction final : public TriggerAction {
+ public:
+  explicit RevealAroundAction(const int waypoint) : waypoint_(waypoint) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kRevealSome;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (!ThePlayer()->IsVisionary) {
+      TheMap().Sight_From(base::At(TheScenario().Waypoint, waypoint_),
+                          TheRules().GapShroudRadius, ThePlayer(), false);
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = waypoint_};
+  }
+
+ private:
+  int waypoint_;
+};
+
+// Reveals every cell of the movement zone a waypoint is in, which shows
+// whole islands or bodies of water. Zones are compared as the heaviest
+// vehicles see them (MZONE_CRUSHER), where crushable walls do not divide the
+// land.
+class RevealZoneAction final : public TriggerAction {
+ public:
+  explicit RevealZoneAction(const int waypoint) : waypoint_(waypoint) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kRevealZone;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (!ThePlayer()->IsVisionary) {
+      const int zone = TheMap()
+                           .at(base::At(TheScenario().Waypoint, waypoint_))
+                           .Zones.at(MZONE_CRUSHER);
+      for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+        const Cell cell = Cell::FromIndex(cell_index);
+        if (std::cmp_equal(TheMap().at(cell).Zones.at(MZONE_CRUSHER), zone)) {
+          TheMap().Map_Cell(cell, ThePlayer());
+        }
+      }
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = waypoint_};
+  }
+
+ private:
+  int waypoint_;
+};
+
+// Displays a line of the mission's tutorial text over the tactical map. An
+// ID with no text displays nothing.
+class TextAction final : public TriggerAction {
+ public:
+  explicit TextAction(const int text_id) : text_id_(text_id) {}
+
+  [[nodiscard]] TriggerActionType type() const override {
+    return TriggerActionType::kTextTrigger;
+  }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    if (const char* message = TheAssets().tutorial_text(text_id_);
+        message != nullptr) {
+      TheSession().Messages.Add_Message(
+          nullptr, 0, message, PCOLOR_GREEN, FontType::k6PointGradient,
+          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          TheRules().MessageDelay * kTicksPerMinute);
+    }
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type(), .value = text_id_};
+  }
+
+ private:
+  int text_id_;
+};
+
+// Changes the time on the mission timer by an amount in tenths of a minute:
+// adds it (kAddTimer), takes it off, stopping at zero (kSubTimer), or sets the
+// timer to it and starts it (kSetTimer).
+class TimerAdjustAction final : public TriggerAction {
+ public:
+  TimerAdjustAction(const TriggerActionType type, const int tenths_of_minute)
+      : type_(type), tenths_of_minute_(tenths_of_minute) {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    auto& timer = TheScenario().MissionTimer;
+    const int64_t ticks = tenths_of_minute_ * kTicksPerTimerUnit;
+    if (type_ == TriggerActionType::kAddTimer) {
+      timer.Set(timer.Remaining() + ticks);
+    } else if (type_ == TriggerActionType::kSubTimer) {
+      timer.Set(std::max<int64_t>(0, timer.Remaining() - ticks));
+    } else {
+      timer.Set(ticks);
+      timer.Start();
+    }
+    TheMap().Redraw_Tab();
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_, .value = tenths_of_minute_};
+  }
+
+ private:
+  TriggerActionType type_;
+  int tenths_of_minute_;
+};
+
+// Sets (kSetGlobal) or clears (kClearGlobal) a scenario global.
+class GlobalAction final : public TriggerAction {
+ public:
+  GlobalAction(const TriggerActionType type, const int global)
+      : type_(type), global_(global) {}
+
+  [[nodiscard]] TriggerActionType type() const override { return type_; }
+  bool Perform(const TriggerActionContext& /*context*/) override {
+    TheScenario().Set_Global_To(global_,
+                                type_ == TriggerActionType::kSetGlobal);
+    return true;
+  }
+  [[nodiscard]] TriggerActionRecord ToRecord() const override {
+    return {.type = type_, .value = global_};
+  }
+
+ private:
+  TriggerActionType type_;
+  int global_;
+};
+
 // Returns `record` as an action keeps it: the fields its type does not use at
 // their defaults, and the value as the number of what the action acts on.
 // TODO: scaffolding for LegacyAction; each action class converts its own
@@ -710,20 +868,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
   HouseClass* owner = HouseClass::As_Pointer(context.house);
 
   switch (type_) {
-    // Display a line of the mission's tutorial text over the tactical map.
-    // An ID with no text displays nothing.
-    case TriggerActionType::kTextTrigger: {
-      const char* message = TheAssets().tutorial_text(data_.value);
-      if (message == nullptr) {
-        break;
-      }
-      TheSession().Messages.Add_Message(
-          nullptr, 0, message, PCOLOR_GREEN, FontType::k6PointGradient,
-          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          TheRules().MessageDelay * kTicksPerMinute);
-      break;
-    }
-
     // Set the preferred target for the house.
     case TriggerActionType::kPreferredTarget:
       if (owner != nullptr) {
@@ -738,66 +882,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       if (owner != nullptr) {
         owner->IsBaseBuilding = data_.flag;
       }
-      break;
-
-    // Set or clear a scenario global.
-    case TriggerActionType::kSetGlobal:
-    case TriggerActionType::kClearGlobal:
-      TheScenario().Set_Global_To(data_.value,
-                                  type_ == TriggerActionType::kSetGlobal);
-      break;
-
-    // Reveal the map around the waypoint to the player. Nothing to do once the
-    // player sees everything.
-    case TriggerActionType::kRevealSome:
-      if (!ThePlayer()->IsVisionary) {
-        TheMap().Sight_From(base::At(TheScenario().Waypoint, data_.value),
-                            TheRules().GapShroudRadius, ThePlayer(), false);
-      }
-      break;
-
-    // Reveal every cell of the movement zone the waypoint is in, which shows
-    // whole islands or bodies of water. Zones are compared as the heaviest
-    // vehicles see them (MZONE_CRUSHER), where crushable walls do not divide
-    // the land.
-    case TriggerActionType::kRevealZone:
-      if (!ThePlayer()->IsVisionary) {
-        const int zone = TheMap()
-                             .at(base::At(TheScenario().Waypoint, data_.value))
-                             .Zones.at(MZONE_CRUSHER);
-
-        for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
-             ++map_cell_index) {
-          const Cell map_cell = Cell::FromIndex(map_cell_index);
-          if (std::cmp_equal(TheMap().at(map_cell).Zones.at(MZONE_CRUSHER),
-                             zone)) {
-            TheMap().Map_Cell(map_cell, ThePlayer());
-          }
-        }
-      }
-      break;
-
-    // Add time to the mission timer. The value is in tenths of a minute, as
-    // for the two actions below.
-    case TriggerActionType::kAddTimer:
-      TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
-                                     (data_.value * kTicksPerTimerUnit));
-      TheMap().Redraw_Tab();
-      break;
-
-    // Remove time from the mission timer, stopping at zero.
-    case TriggerActionType::kSubTimer:
-      TheScenario().MissionTimer.Set(
-          std::max<int64_t>(0, TheScenario().MissionTimer.Remaining() -
-                                   (data_.value * kTicksPerTimerUnit)));
-      TheMap().Redraw_Tab();
-      break;
-
-    // Set the mission timer to the value specified.
-    case TriggerActionType::kSetTimer:
-      TheScenario().MissionTimer.Set(data_.value * kTicksPerTimerUnit);
-      TheScenario().MissionTimer.Start();
-      TheMap().Redraw_Tab();
       break;
 
     // Play a movie immediately. The game is suspended while it plays; the
@@ -843,13 +927,6 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
       }
       break;
 
-    // Place a smoke marker at the waypoint specified.
-    case TriggerActionType::kDropZoneFlare:
-      base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE,
-          base::At(TheScenario().Waypoint, data_.value).Center());
-      break;
-
     // No action. TriggerActionType::kAllowWin is not carried out here:
     // TriggerClass and the scenario's win check look for it by type_.
     case TriggerActionType::kNone:
@@ -872,6 +949,15 @@ bool LegacyAction::Perform(const TriggerActionContext& context) {
     case TriggerActionType::kReinforcements:
     case TriggerActionType::kDestroyTrigger:
     case TriggerActionType::kForceTrigger:
+    case TriggerActionType::kSetGlobal:
+    case TriggerActionType::kClearGlobal:
+    case TriggerActionType::kRevealSome:
+    case TriggerActionType::kRevealZone:
+    case TriggerActionType::kAddTimer:
+    case TriggerActionType::kSubTimer:
+    case TriggerActionType::kSetTimer:
+    case TriggerActionType::kDropZoneFlare:
+    case TriggerActionType::kTextTrigger:
     default:
       break;
   }
@@ -1048,16 +1134,28 @@ std::unique_ptr<TriggerAction> MakeTriggerAction(
     case TriggerActionType::kForceTrigger:
       return std::make_unique<ForceTriggerAction>(record.trigger_type);
 
-    // Not yet classes of their own.
     case TriggerActionType::kDropZoneFlare:
+      return std::make_unique<DropZoneFlareAction>(record.value);
+
     case TriggerActionType::kRevealSome:
+      return std::make_unique<RevealAroundAction>(record.value);
+
     case TriggerActionType::kRevealZone:
+      return std::make_unique<RevealZoneAction>(record.value);
+
     case TriggerActionType::kTextTrigger:
+      return std::make_unique<TextAction>(record.value);
+
     case TriggerActionType::kAddTimer:
     case TriggerActionType::kSubTimer:
     case TriggerActionType::kSetTimer:
+      return std::make_unique<TimerAdjustAction>(type, record.value);
+
     case TriggerActionType::kSetGlobal:
     case TriggerActionType::kClearGlobal:
+      return std::make_unique<GlobalAction>(type, record.value);
+
+    // Not yet classes of their own.
     case TriggerActionType::kPlayMovie:
     case TriggerActionType::kPlaySound:
     case TriggerActionType::kPlayMusic:
