@@ -1,0 +1,13 @@
+# The developers' special options dialog, which the slash key opens in a
+# mission: as it comes up, and with the speed build box ticked.
+# args: -PLAYTEST
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 key SLASH
+at 520 shot dialog
+at 521 click 121 101
+at 540 shot speed_build_ticked
+at 541 click 441 337
+at 560 shot closed
+at 561 quit
