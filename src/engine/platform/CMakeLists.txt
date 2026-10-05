@@ -32,7 +32,8 @@ target_link_libraries(engine_platform
 include(Testing)
 add_gtest(
         NAME engine_platform_test
-        SOURCES env_test.cc file_system_test.cc timer_test.cc random_seed_test.cc sleep_test.cc
+        SOURCES env_test.cc file_system_test.cc timer_test.cc manual_clock_test.cc random_seed_test.cc
+            sleep_test.cc
             win32/win32_com_test.cc win32/win32_system_test.cc
         LIBS engine_platform engine_stream
 )

@@ -50,6 +50,8 @@ int64_t SystemMilliseconds();
 // Returns real time in ticks of 1/60 second, read from a monotonic clock that
 // needs no setup. The zero point means nothing on its own: callers compare two
 // readings to measure how much time has passed.
+//
+// While a ManualClock (manual_clock.h) exists, both functions read it instead.
 int64_t SystemTicks();
 
 // A clock the timers below can run on: a static Tick() that never decreases.
