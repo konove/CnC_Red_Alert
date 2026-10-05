@@ -10,12 +10,22 @@
 #include <chrono>
 #include <thread>
 
+#include "base/installed.h"
+#include "engine/platform/manual_clock.h"
+
 namespace engine::platform {
 
 // Blocks the calling thread for at least `milliseconds`. The thread wakes no
 // earlier, but the scheduler decides how much later.
+//
+// While a ManualClock exists, moves that clock on by `milliseconds` and
+// returns at once: the time has passed as far as the caller can tell.
 inline void SleepMs(int milliseconds) {
   if (milliseconds <= 0) {
+    return;
+  }
+  if (base::Installed<ManualClock>::IsInstalled()) {
+    base::Installed<ManualClock>::Get().AdvanceMilliseconds(milliseconds);
     return;
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));

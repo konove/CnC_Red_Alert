@@ -9,10 +9,6 @@
 
 namespace engine::platform {
 
-int64_t ManualClock::milliseconds() const {
-  return ticks_ * 1000 / kSystemTicksPerSecond;
-}
-
 int64_t SystemMilliseconds() {
   if (base::Installed<ManualClock>::IsInstalled()) {
     return base::Installed<ManualClock>::Get().milliseconds();

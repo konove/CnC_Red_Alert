@@ -14,7 +14,9 @@ namespace engine::platform {
 // instead of the machine's clock, so everything that waits on real time -- a
 // Timer<SystemTickSource>, a fade, a frame limiter -- waits on Advance()
 // instead. A test, or a scripted run of the game, advances it a tick at a
-// time; code that waits without anything advancing it waits forever.
+// time. SleepMs() (sleep.h) advances it too, instead of sleeping: a loop that
+// sleeps until a deadline reaches it at once. Code that waits without
+// sleeping or anything else advancing the clock waits forever.
 //
 // It installs itself for its own lifetime, and puts back the clock that was
 // there before, if any.
@@ -35,15 +37,27 @@ class ManualClock {
   ManualClock& operator=(ManualClock&&) = delete;
 
   // Moves the clock forward by `ticks` sixtieths of a second.
-  void Advance(int64_t ticks) { ticks_ += ticks; }
+  void Advance(int64_t ticks) { units_ += ticks * kUnitsPerTick; }
+  // Moves the clock forward by `milliseconds`.
+  void AdvanceMilliseconds(int64_t milliseconds) {
+    units_ += milliseconds * kUnitsPerMillisecond;
+  }
 
-  // The time in ticks, counted from 0 when the clock was made.
-  [[nodiscard]] int64_t ticks() const { return ticks_; }
+  // The time in ticks, counted from 0 when the clock was made and rounded
+  // down.
+  [[nodiscard]] int64_t ticks() const { return units_ / kUnitsPerTick; }
   // The same time in milliseconds, rounded down.
-  [[nodiscard]] int64_t milliseconds() const;
+  [[nodiscard]] int64_t milliseconds() const {
+    return units_ / kUnitsPerMillisecond;
+  }
 
  private:
-  int64_t ticks_ = 0;
+  // The clock counts 1/3000 s, the largest unit both a tick (1/60 s) and a
+  // millisecond are a whole number of, so neither kind of step drifts.
+  static constexpr int64_t kUnitsPerTick = 50;
+  static constexpr int64_t kUnitsPerMillisecond = 3;
+
+  int64_t units_ = 0;
   base::Installed<ManualClock>::Scope scope_{*this};
 };
 
