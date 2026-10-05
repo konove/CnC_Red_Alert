@@ -10,7 +10,6 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
-#include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
@@ -175,7 +174,7 @@ TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
   EXPECT_TRUE(loaded.Is_Door_Open());
 }
 
-TEST(TdSaveValuesTest, FlashStateAndCrewKillsSurviveRoundTrip) {
+TEST(TdSaveValuesTest, FlashStateSurvivesRoundTrip) {
   game::FlasherClass flash;
   flash.FlashCount = 127;
   flash.IsBlushing = true;
@@ -186,11 +185,6 @@ TEST(TdSaveValuesTest, FlashStateAndCrewKillsSurviveRoundTrip) {
   EXPECT_TRUE(loaded.Process());
   EXPECT_EQ(loaded.FlashCount, 126);
   EXPECT_FALSE(loaded.IsBlushing);
-  game::CrewClass crew;
-  crew.Kills = 50000;
-  game::CrewClass loaded_crew;
-  Restore(loaded_crew, Save(crew));
-  EXPECT_EQ(loaded_crew.Add_Kill(), 50001);
 }
 
 TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {

@@ -1657,9 +1657,9 @@ bool Select_Game(bool fade) {
       }
       // Non-default limbo state supplements the campaign's moving/firing units.
       vehicle->Attach(passenger);
-      vehicle->Kills = 51;
-      passenger->Kills = 73;
-      plane->Kills = 95;
+      vehicle->set_kills(51);
+      passenger->set_kills(73);
+      plane->set_kills(95);
       vehicle->Flagged = HOUSE_BAD;
       vehicle->Tiberium = 7;
       vehicle->IsHarvesting = true;
@@ -1733,7 +1733,7 @@ bool Select_Game(bool fade) {
       }
       building->Factory = factory;
       building->Attach(passenger);
-      building->Kills = 75;
+      building->set_kills(75);
       building->PurchasePrice = 1234;
       building->Mission = MISSION_REPAIR;
       building->SuspendedMission = MISSION_GUARD;

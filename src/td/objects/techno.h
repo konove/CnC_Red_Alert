@@ -46,7 +46,6 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "game/sim/crew.h"
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "td/core/defines.h"
@@ -71,8 +70,7 @@ class TechnoClass : public RadioClass,
                     public game::FlasherClass,
                     public StageClass,
                     public CargoClass,
-                    public DoorClass,
-                    public game::CrewClass {
+                    public DoorClass {
  public:
   /*
   **	This flag will be true if the object has been damaged with malace.
@@ -265,7 +263,10 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  virtual int Made_A_Kill() { return game::CrewClass::Add_Kill(); }
+  // Adds a kill to this object's tally and returns the new total.
+  virtual int Made_A_Kill() { return ++kills_; }
+  [[nodiscard]] int kills() const { return kills_; }
+  void set_kills(int kills) { kills_ = static_cast<uint16_t>(kills); }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
@@ -348,6 +349,11 @@ class TechnoClass : public RadioClass,
   */
   static const int BodyShape[32];
   //		static int const TurretShape[32];
+
+ private:
+  // Kills this object has scored. It is 16 bits wide because the save game
+  // stores it that way; the tally wraps past 65535.
+  uint16_t kills_{0};
 };
 
 extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);

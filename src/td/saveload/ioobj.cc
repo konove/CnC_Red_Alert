@@ -47,7 +47,6 @@
 #include "base/array.h"
 #include "engine/stream/archive.h"
 #include "game/core/object_heap.h"
-#include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
@@ -490,7 +489,7 @@ void TechnoClass::Serialize(Archive& ar) {
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
   DoorClass::Serialize(ar);
-  game::CrewClass::Serialize(ar);
+  ar(kills_);
   bool ticked = IsTickedOff;
   bool cloakable = IsCloakable;
   bool leader = IsLeader;

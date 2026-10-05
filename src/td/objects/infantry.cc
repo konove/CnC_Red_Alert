@@ -3281,7 +3281,7 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *=============================================================================================*/
 int InfantryClass::Made_A_Kill() {
   Validate();
-  if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < Kills) {
+  if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < kills()) {
     IsStoked = true;
     Comment.Set(int64_t{kTicksPerSecond} * 2);
   }

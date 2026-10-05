@@ -1326,7 +1326,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	best target available.
   */
   const int rawval = object->Value();
-  value = rawval + object->Kills;
+  value = rawval + object->kills();
 
 #ifdef ADVANCED
   /*
