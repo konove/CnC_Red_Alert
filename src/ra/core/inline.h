@@ -83,7 +83,8 @@ inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
 // `dir`. A `dir` outside the eight facings, FACING_NONE included, wraps into
 // them. No map edge check: the result may lie off the map.
 inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
-  return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)
+  return (kAdjacentCoordOffsets.at(game::AsFacing(static_cast<int>(dir))) +
+          coord)
       .Snapped();
 }
 
@@ -98,12 +99,13 @@ inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
 inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
   // Wrapped so that FACING_NONE (-1) does not index before the start of the
   // table.
-  return cell.Offset(AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
+  return cell.Offset(
+      kAdjacentCellOffsets.at(game::AsFacing(static_cast<int>(dir))));
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
 inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
-  return cell.Offset(AdjacentCell.at(game::Dir_Facing(dir)));
+  return cell.Offset(kAdjacentCellOffsets.at(game::Dir_Facing(dir)));
 }
 
 // Returns the text for the text number `index`, or nullptr when the table has

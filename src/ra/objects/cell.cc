@@ -1686,11 +1686,11 @@ int CellClass::Adjacent_Offset(game::FacingType face) const {
 
   // Check the index before forming the pointer: pointer arithmetic that leaves
   // the cell array is undefined even if the result is never dereferenced.
-  const int adjacent = Cell_Number().index() + AdjacentCell.at(face);
+  const int adjacent = Cell_Number().index() + kAdjacentCellOffsets.at(face);
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return 0;
   }
-  return AdjacentCell.at(face);
+  return kAdjacentCellOffsets.at(face);
 }
 
 /***************************************************************************

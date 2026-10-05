@@ -151,7 +151,7 @@ constexpr unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-constexpr base::EnumArray<game::FacingType, int> AdjacentCell = {
+constexpr base::EnumArray<game::FacingType, int> kAdjacentCellOffsets = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -164,15 +164,15 @@ constexpr base::EnumArray<game::FacingType, int> AdjacentCell = {
 
 // The lepton offset of the adjacent cell in each direction. Negative
 // components wrap to their 16-bit words, which operator+ undoes.
-constexpr base::EnumArray<game::FacingType, Coordinate> AdjacentCoord = {
-    Coordinate::FromLeptons(0, -0x100),        // North
-    Coordinate::FromLeptons(0x100, -0x100),    // North East
-    Coordinate::FromLeptons(0x100, 0),         // East
-    Coordinate::FromLeptons(0x100, 0x100),     // South East
-    Coordinate::FromLeptons(0, 0x100),         // South
-    Coordinate::FromLeptons(-0x100, 0x100),    // South West
-    Coordinate::FromLeptons(-0x100, 0),        // West
-    Coordinate::FromLeptons(-0x100, -0x100)};  // North West
+constexpr base::EnumArray<game::FacingType, Coordinate> kAdjacentCoordOffsets =
+    {Coordinate::FromLeptons(0, -0x100),        // North
+     Coordinate::FromLeptons(0x100, -0x100),    // North East
+     Coordinate::FromLeptons(0x100, 0),         // East
+     Coordinate::FromLeptons(0x100, 0x100),     // South East
+     Coordinate::FromLeptons(0, 0x100),         // South
+     Coordinate::FromLeptons(-0x100, 0x100),    // South West
+     Coordinate::FromLeptons(-0x100, 0),        // West
+     Coordinate::FromLeptons(-0x100, -0x100)};  // North West
 
 constexpr base::EnumArray<CrateType, const char*> CrateNames = {
     "Money",           "Unit",         "ParaBomb", "HealBase",
