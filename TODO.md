@@ -1172,10 +1172,6 @@
     hold it
   - A stretched movie frame or backdrop is in a screenshot at the nearest pixel, where the window
     blends
-- Find out why Red Alert's hall of fame shows 16777218 for a score of 3000
-  - The `hall_of_fame` shot of `src/ra/testdata/ui/win_mission.script` has the new entry at 16777218
-    (0x1000002) under a score screen that totals 3000; the older rows read 7162, 9198 and so on.
-    Seen after winning SCG01EA with Alt-W on normal difficulty
 - Show a help text in a UI script
   - Resting the pointer on a sidebar button for 140 frames in `map_mouse.script` showed none, so the
     step was dropped; find what the help text waits for (`ra/map/help.cc`)

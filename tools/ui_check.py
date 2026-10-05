@@ -45,10 +45,22 @@ class Game:
     binary: str  # the executable's name
     data_env: str  # the variable that overrides the data directory
     data_default: Path
+    # Files every run starts with in its directory, by name. The game reads a
+    # file from there before it looks in the data directory, so these keep
+    # whatever the data directory happens to hold out of the screenshots.
+    start_files: tuple[tuple[str, bytes], ...] = ()
 
 
 GAMES = {
-    "ra": Game("ra", "rasdl", "RA_CD", STEAM / "Command & Conquer Red Alert"),
+    "ra": Game(
+        "ra",
+        "rasdl",
+        "RA_CD",
+        STEAM / "Command & Conquer Red Alert",
+        # An empty hall of fame: seven 24-byte rows (ra/screens/hall_of_fame.h).
+        # The one in the data directory is the player's own.
+        start_files=(("HALLFAME.DAT", bytes(7 * 24)),),
+    ),
     "td": Game("td", "tdsdl", "TD_CD", STEAM / "Command & Conquer"),
 }
 
@@ -172,7 +184,7 @@ def is_kept(path: Path) -> bool:
     return path.suffix.upper() == ".MIX" or path.name.endswith(BASE_SUFFIX)
 
 
-def reset_run_dir(run_dir: Path) -> None:
+def reset_run_dir(game: Game, run_dir: Path) -> None:
     """Puts the run directory back as it was after the warm-up run.
 
     A script may change the options or save a game; the next script, or the
@@ -183,6 +195,8 @@ def reset_run_dir(run_dir: Path) -> None:
             path.unlink()
     for base in run_dir.glob(f"*{BASE_SUFFIX}"):
         shutil.copy(base, base.with_name(base.name.removesuffix(BASE_SUFFIX)))
+    for name, contents in game.start_files:
+        (run_dir / name).write_bytes(contents)
 
 
 def warm_up(game: Game, binary: Path, data: Path, run_dir: Path) -> None:
@@ -225,7 +239,7 @@ def check(script: Path, args: argparse.Namespace) -> bool:
     run_dir = work / "run"
     run_dir.mkdir(parents=True, exist_ok=True)
     warm_up(game, binary.resolve(), data, run_dir)
-    reset_run_dir(run_dir)
+    reset_run_dir(game, run_dir)
 
     # The game writes its screenshots beside the script it was given.
     shot_dir = work / script.stem
