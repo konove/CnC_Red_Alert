@@ -161,6 +161,36 @@ TEST_F(AudioMixerTest, PlaysASampleAndEndsWhenItIsDrained) {
   EXPECT_FALSE(mixer_.IsPlaying(sample.data()));
 }
 
+// The games wait for a voice to end. On a machine with no sound device the
+// mixer is never opened, nothing would ever mix the voice to its end, and
+// the wait would last for good.
+TEST(AudioMixerClosedTest, PlaysNothingSoNothingIsLeftPlaying) {
+  AudioMixer mixer;
+  const auto sample = ConstantSample(100, 1000);
+
+  EXPECT_EQ(mixer.Play(sample), -1);
+  EXPECT_FALSE(mixer.IsPlaying(sample.data()));
+}
+
+TEST(AudioMixerClosedTest, StreamsNothingAndClosesTheFile) {
+  AudioMixer mixer;
+  const auto score = ConstantSample(100, 1000);
+  open_files = 0;
+
+  EXPECT_EQ(mixer.Stream(std::make_unique<ScoreStream>(score), 255), -1);
+  EXPECT_EQ(open_files, 0);
+}
+
+TEST_F(AudioMixerTest, ClosingItStopsWhatWasPlaying) {
+  const auto sample = ConstantSample(100, 1000);
+  ASSERT_NE(mixer_.Play(sample), -1);
+
+  mixer_.Close();
+
+  EXPECT_FALSE(mixer_.IsPlaying(sample.data()));
+  EXPECT_EQ(mixer_.Play(sample), -1);
+}
+
 TEST_F(AudioMixerTest, AddsChannelsTogether) {
   const auto sample = ConstantSample(kCallbackSamples, 1000);
   ASSERT_NE(mixer_.Play(sample), -1);

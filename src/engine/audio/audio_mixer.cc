@@ -251,7 +251,8 @@ int AudioMixer::Stream(const std::string_view file_name, const int volume) {
 
 int AudioMixer::Stream(std::unique_ptr<ByteStream> file, const int volume) {
   AudHeader header{};
-  if (!file || !file->ReadObject(header)) {
+  // Without a device or a test to mix it, a score would never end either.
+  if (mix_buffer_.empty() || !file || !file->ReadObject(header)) {
     return -1;
   }
 
@@ -432,7 +433,10 @@ void AudioMixer::Stop(const void* sample) {
 
 int AudioMixer::Play(std::span<const std::byte> sample, int priority,
                      int volume, int16_t /*pan*/) {
-  if (sample.size() < sizeof(AudHeader)) {
+  // A sound started on a mixer that was never opened would stay "playing"
+  // for good: nothing mixes it to its end. The games wait for a voice to
+  // finish, and on a machine without a sound device would wait forever.
+  if (mix_buffer_.empty() || sample.size() < sizeof(AudHeader)) {
     return -1;
   }
   const auto header = base::ReadUnaligned<AudHeader>(sample);

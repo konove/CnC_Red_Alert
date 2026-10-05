@@ -94,15 +94,16 @@ class AudioMixer {
   // Plays `sample`, a whole .AUD file image that must stay alive until the
   // sound ends or is stopped. `volume` is 0..255. If all channels are busy the
   // first one playing at a lower `priority` is cut off. `pan` is ignored:
-  // output is mixed in mono. Returns -1 if no channel could be had or the
-  // sample is not mono 16-bit ADPCM or 8-bit Westwood compressed.
+  // output is mixed in mono. Returns -1 if the mixer is not open, no channel
+  // could be had or the sample is not mono 16-bit ADPCM or 8-bit Westwood
+  // compressed.
   int Play(std::span<const std::byte> sample, int priority = 0xFF,
            int volume = 0xFF, int16_t pan = 0);
 
   // Plays the score in the game file `file_name`, loose or packed in a
   // mixfile, at `volume` times the score volume, reading it a block at a time
-  // from PumpStreams(). Returns -1 if there is no free channel, the file
-  // cannot be opened, or it is not mono 16-bit ADPCM.
+  // from PumpStreams(). Returns -1 if the mixer is not open, there is no
+  // free channel, the file cannot be opened, or it is not mono 16-bit ADPCM.
   int Stream(std::string_view file_name, int volume);
 
   // As above, from `file`, which must be open for reading at the AudHeader.
