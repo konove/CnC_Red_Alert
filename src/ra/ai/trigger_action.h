@@ -96,7 +96,8 @@ NeedType ActionNeed(TriggerActionType action);
 
 // One action of a trigger type: the action and the data it needs. A trigger
 // type holds two, and carries them out with Perform() when it springs.
-struct TriggerAction {
+class TriggerAction {
+ public:
   TriggerActionType type{TriggerActionType::kNone};  // Action to perform.
 
   TeamTypeClass* team_type = nullptr;  // Team type for this action (if needed).
