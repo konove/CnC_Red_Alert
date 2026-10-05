@@ -87,6 +87,22 @@ static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
 static MenuConfig menu_config;
 
 static int MenuUpdate = 1;
+
+namespace {
+
+// The top-left corner of the window Do_Menu() draws its box in: the column in
+// 8-pixel units and the row in pixels. The menu's own position is relative to
+// it.
+int MenuWindowColumn() {
+  return base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)),
+                  kWindowX);
+}
+int MenuWindowY() {
+  return base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)),
+                  kWindowY);
+}
+
+}  // namespace
 static int MenuSkip;
 
 /*=========================================================================*/
@@ -245,8 +261,8 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
                 std::span<const char* const> labels,
                 const uint32_t visible_items, const int bit_offset,
                 const int line_spacing) {
-  const int menu_x = (static_cast<int>(WinX) + menu.x) * 8;
-  const int menu_y = static_cast<int>(WinY) + menu.y;
+  const int menu_x = (MenuWindowColumn() + menu.x) * 8;
+  const int menu_y = MenuWindowY() + menu.y;
 
   const int selected_entry =
       Select_To_Entry(menu.selected, visible_items, bit_offset);
@@ -297,8 +313,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
       FontMaxHeight(font) + MenuSkip;                 /* calc new font height	*/
   const int halfskip = MenuSkip / 2;                  /* adjustment for menus	*/
 
-  const int menuy = static_cast<int>(WinY) + menu.y; /* get the absolute */
-  const int menux = (static_cast<int>(WinX) + menu.x) * 8; /* coords of menu */
+  const int menuy = MenuWindowY() + menu.y;            /* get the absolute */
+  const int menux = (MenuWindowColumn() + menu.x) * 8; /* coords of menu */
   const int normcol = menu.normal_color;
   const int litcol = menu.highlight_color;
 
@@ -325,8 +341,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu */
-  const int mx1 = (static_cast<int>(WinX) * 8) + (menu.x * FontMaxWidth(font));
-  const int my1 = static_cast<int>(WinY) + menu.y - halfskip;
+  const int mx1 = (MenuWindowColumn() * 8) + (menu.x * FontMaxWidth(font));
+  const int my1 = MenuWindowY() + menu.y - halfskip;
   const int mx2 = mx1 + (menu.item_width * FontMaxWidth(font)) -
                   1; /*		structure as		*/
   const int my2 = my1 + (menu.item_count * menuskip) -

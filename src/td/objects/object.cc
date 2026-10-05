@@ -888,9 +888,12 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger) {
-          Fancy_Text_Print(view, Trigger->Get_Name(),
-                           x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
-                           FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              view, Trigger->Get_Name(),
+              x + (base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
+                            kWindowX) *
+                   8),
+              y, kPink, kTBlack, FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
         }
       }
 
