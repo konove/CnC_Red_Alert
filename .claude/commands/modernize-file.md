@@ -109,7 +109,10 @@ parameters, and the locals, not just the functions and members. Settling the typ
 lets stage 10 name the file once instead of twice. Leave out of the table anything the ledger
 already marks as being deleted in stage 5 (a derivable member, a parameter nobody passes); renaming
 what is about to be deleted is churn in two commits. What is on the **misplaced** list is renamed
-like the rest: it survives, and should arrive at its new home with its final name. A class data
+like the rest: it survives, and should arrive at its new home with its final name. Decide here, with
+`/restructure-class` section 2's test, whether each `struct` the files declare is really a class (it
+has behaviour or an invariant: `TriggerAction`), and treat its fields as class data members from
+this stage on - not as struct fields to be given their final `snake_case` names now. A class data
 member that code outside the class reads or writes gets its row in the table but is **not applied
 here**: put the row on the ledger's **noticed** list for stage 6, which renames it and puts it
 behind its accessor in one edit of each caller (`obj.Quantity` -> `obj.quantity()`, never by way of
@@ -123,14 +126,16 @@ the commit before stage 1) and apply what it finds on those files. Anything that
 behaviour goes to **for the user**. Last, work through the **misplaced** list under "Moving out what
 does not belong" below, one commit per move.
 
-**6. Class shape** - `/restructure-class <files>`, both of its jobs, on every class the files still
-declare after stage 5's moves. Per class: the data members go private (applying the member rows
-stage 4 deferred), then the header's declarations and the `.cc`'s definitions are put in the Google
-declaration order, as the two commits that command describes. The plain `build` must pass before
-each - the accessor fan-out is tree-wide. Verb methods it added, `mutable_` accessors, and writers
-that break an invariant go on the ledger (**noticed**, or **for the user** when the fix would change
-behaviour). A file that declares no class and whose `.cc` is already in its header's order gets one
-line in the report and no commit.
+**6. Class shape** - `/restructure-class <files>`, both of its jobs, on every class and struct the
+files still declare after stage 5's moves. A struct that stage 4 judged to be a class gets the
+`class` keyword first, in its own commit; one that is passive data stays a struct and is only
+checked against the declaration order. Per class: the data members go private (applying the member
+rows stage 4 deferred), then the header's declarations and the `.cc`'s definitions are put in the
+Google declaration order, as the two commits that command describes. The plain `build` must pass
+before each - the accessor fan-out is tree-wide. Verb methods it added, `mutable_` accessors, and
+writers that break an invariant go on the ledger (**noticed**, or **for the user** when the fix
+would change behaviour). A file that declares no class and whose `.cc` is already in its header's
+order gets one line in the report and no commit.
 
 **7. Namespace** - `/migrate-namespaces <files>`, for a file under `src/engine` that is not in its
 library's namespace yet; otherwise one line in the report and no commit. It runs in its single-file

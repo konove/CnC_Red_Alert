@@ -1,5 +1,5 @@
 ---
-description: Give the classes a file declares the Google C++ class shape - every data member private behind accessors, the declarations in the style guide's Declaration Order (public/protected/private; types, constants, factories, constructors, destructor, functions, data), and the .cc definitions in the same order as the header. Use whenever the user asks to make a class's members/variables/fields private, to "encapsulate" a class, to add accessors, to reorder or sort a class's declarations or a .cc file's functions, to "follow the declaration order", or pastes the cppguide #Declaration_Order or #Access_Control link.
+description: 'Give the classes a file declares the Google C++ class shape - a struct that behaves like a class becomes one, every data member private behind accessors, the declarations in the style guide''s Declaration Order (public/protected/private; types, constants, factories, constructors, destructor, functions, data), and the .cc definitions in the same order as the header. Use whenever the user asks to make a class''s members/variables/fields private, to "encapsulate" a class, to add accessors, to reorder or sort a class''s declarations or a .cc file''s functions, to "follow the declaration order", to turn a struct into a class (or says one "feels like a class"), or pastes the cppguide #Declaration_Order, #Access_Control or #Structs_vs._Classes link.'
 ---
 
 Restructure the classes declared in: $ARGUMENTS
@@ -26,15 +26,41 @@ Left alone:
 
 ## 2. Class or struct
 
-Decide this first; it settles which rule applies.
+Decide this first; it settles which rule applies. The rule is the style guide's
+<https://google.github.io/styleguide/cppguide.html#Structs_vs._Classes>: a struct is only for
+passive objects that carry data; everything else is a class.
 
 | The type is...                                                                                                                      | It becomes                                                                |
 | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Passive data: fields a caller sets and reads freely, no invariant between them, at most a constructor, comparison and `Serialize()` | A `struct` with public fields named `snake_case` (no trailing underscore) |
 | Anything else: it has behaviour, an invariant, virtual functions or a base class                                                    | A `class` with **every** data member private                              |
 
-A legacy `struct` with behaviour becomes a `class`, and a legacy `class` that is only data becomes a
-`struct`. Changing the keyword means fixing its forward declarations too
+The keyword the type has today is not evidence: legacy code picked it by habit, and an earlier
+stage's snake_case field names only record that nobody had asked yet. Judge by what the type
+**does**. Any one of these makes it a class:
+
+- A member function that acts rather than reports: it reads or changes the game, parses or formats
+  itself, or carries out what the fields describe (`Perform()`, `Detach()`, `ReadIni()`,
+  `ToIniEntry()`, `Draw()`).
+- Fields that only make sense together: one says which of the others is live (a tag beside a union,
+  a `need`/`kind` beside the pointers it selects), or a count mirrors a list.
+- A field callers must not set freely: it is fixed up after load, cleared when its target dies, or
+  kept in step with something outside the type.
+- A base class or a virtual function.
+- More functionality than helper methods that neither need nor enforce an invariant, or a type many
+  files use and that is expected to grow.
+
+Stateless types (traits, template metafunctions, some functors) may stay `struct`, as in the STL.
+
+`ra::TriggerAction` (`ra/ai/trigger_action.h`) is the model case: declared `struct`, but it holds a
+tagged union, detaches itself from dying types, reads and writes its INI form and performs the
+action. It is a class. `Coordinate`-like value types with only a constructor, comparison and
+`Serialize()` are structs.
+
+A legacy `struct` that meets the test becomes a `class` - including one an earlier pass already gave
+snake_case fields - and a legacy `class` that is only data becomes a `struct`. The keyword change is
+its own commit, **before** section 3: `struct X {` -> `class X {` + `public:`, which changes no
+access. Fix the forward declarations in the same commit
 (`git grep -nE '(class|struct) <Name>;' -- src`); `-Wmismatched-tags` is an error in the strict
 build. When in doubt it is a class.
 
@@ -59,9 +85,10 @@ getter/setter pair on all of them. The uses are what the compiler reports once t
 | Used only by derived classes                                                                             | The same accessors, in the `protected` section.                                                                                                                            |
 
 - Accessors are named like the variable (`CLAUDE.md` Naming): `quantity_` -> `quantity()`,
-  `set_quantity()`, `mutable_quantity()`. A member still under its legacy name (`Quantity`) is
-  renamed to `snake_case_` in this same step, with the better name `/rename-google-style` section 3
-  would give it, so every caller is edited once.
+  `set_quantity()`, `mutable_quantity()`. A member still under its legacy name (`Quantity`), or
+  under the plain `snake_case` it had as a field of a struct that section 2 made a class, is renamed
+  to `snake_case_` in this same step, with the better name `/rename-google-style` section 3 would
+  give it, so every caller is edited once.
 - Getters are `const`. They and the setters are one-liners defined inline in the class, each with
   the member's comment moved up to the getter when the member's own comment would only repeat it.
 - Inside the class's own member functions use the member (`quantity_`), not the accessor.
@@ -159,7 +186,7 @@ The `.cc` reads top to bottom like its header:
 
 Commit only when asked, through `/commit`: per class, "Make `<Class>`'s data members private", then
 "Put `<Class>`'s declarations in the Google declaration order" (header and `.cc` together); a
-`class`/`struct` keyword change and a twin's accessor each on their own.
+`class`/`struct` keyword change ("Make `<Name>` a class") and a twin's accessor each on their own.
 
 ## 7. Report
 

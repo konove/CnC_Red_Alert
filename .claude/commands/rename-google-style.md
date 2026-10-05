@@ -59,7 +59,9 @@ is in checking, not in typing:
 
 - Functions `PascalCase`, no underscores: `Set_Frame_Timer()` -> `StartFrameTimer()`.
 - Accessors and mutators are named like the variable: `count()`, `set_count(int)`.
-- Locals, parameters, struct fields `snake_case`; class data members `snake_case_`.
+- Locals, parameters, struct fields `snake_case`; class data members `snake_case_`. A legacy
+  `struct` with behaviour or an invariant is a class in waiting (`/restructure-class` section 2): do
+  not settle its fields as plain `snake_case`; report it, or leave the fields for that pass.
 - Constants, including `static constexpr` and `const` with static storage, `kPascalCase`.
 - Enum types `PascalCase`, enumerators `kPascalCase`, always written `Enum::kName`. No
   `SCREAMING_CASE` enumerators and no `using enum` anywhere, header or `.cc`; see "Enums" in
