@@ -149,6 +149,16 @@ target_compile_definitions(ra_reinforcements_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_reinforcements_test)
 apply_language_setting(ra_reinforcements_test)
 
+# The text table lookup in a real Game.
+add_gtest(
+    NAME ra_inline_test
+    SOURCES core/inline_test.cc startup/game_test_util.cc startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_inline_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_inline_test)
+apply_language_setting(ra_inline_test)
+
 add_gtest(
     NAME ra_drop_test
     SOURCES ui/drop_test.cc ui/tlist_test.cc startup/startup.cc

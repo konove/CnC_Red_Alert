@@ -115,10 +115,7 @@ inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
 // The pointer is into the loaded table or the override and stays valid until
 // the next scenario starts.
 inline const char* Text_String(int index) {
-  // TODO: the test should be <=. The last override slot gives
-  // index == -size, which fails it and falls through to the text table, where
-  // a negative index finds nothing and the caller gets nullptr.
-  if (index < 0 && -index < std::ssize(TheWorld().name_override())) {
+  if (index < 0 && -index <= std::ssize(TheWorld().name_override())) {
     return base::At(std::span(TheWorld().name_override()), -index - 1).c_str();
   }
 
