@@ -120,24 +120,24 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
-    TeamTypeClass::TMissions = {"Attack...",
-                                "Attack Waypoint...",
-                                "Change Formation to...",
-                                "Move to waypoint...",
-                                "Move to Cell...",
-                                "Guard area (1/10th min)...",
-                                "Jump to line #...",
-                                "Attack Tarcom",
-                                "Unload",
-                                "Deploy",
-                                "Follow friendlies",
-                                "Do this...",
-                                "Set global...",
-                                "Invulnerable",
-                                "Load onto Transport",
-                                "Spy on bldg @ waypt...",
-                                "Patrol to waypoint..."};
+base::EnumArray<TeamMissionType, const char*> TeamTypeClass::TMissions = {
+    "Attack...",
+    "Attack Waypoint...",
+    "Change Formation to...",
+    "Move to waypoint...",
+    "Move to Cell...",
+    "Guard area (1/10th min)...",
+    "Jump to line #...",
+    "Attack Tarcom",
+    "Unload",
+    "Deploy",
+    "Follow friendlies",
+    "Do this...",
+    "Set global...",
+    "Invulnerable",
+    "Load onto Transport",
+    "Spy on bldg @ waypt...",
+    "Patrol to waypoint..."};
 
 TeamTypeClass::TeamTypeClass()
     : AbstractTypeClass(RTTI_TEAMTYPE,
@@ -161,8 +161,6 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
 }
 
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
-  DCHECK(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
-
   return TMissions.at(order);
 }
 
@@ -281,7 +279,6 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
     case TeamMissionType::TMISSION_HOUND_DOG:
     case TeamMissionType::TMISSION_INVULNERABLE:
     case TeamMissionType::TMISSION_LOAD:
-    case TeamMissionType::TMISSION_COUNT:
     default:
       break;
   }
@@ -525,7 +522,7 @@ bool TeamTypeClass::Edit() {
                              reinforcebtn.Y + 15, 170, 8 * 8,
                              MixArchive::RetrieveData("EBTN-UP.SHP"),
                              MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (TeamMissionType tm = TMISSION_ATTACK; tm < TMISSION_COUNT; tm++) {
+  for (const TeamMissionType tm : magic_enum::enum_values<TeamMissionType>()) {
     missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(tm));
   }
   missionlist1.Set_Selected_Index(0);

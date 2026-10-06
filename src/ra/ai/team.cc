@@ -737,7 +737,6 @@ void TeamClass::AI() {
         case TeamMissionType::TMISSION_SET_GLOBAL:
         case TeamMissionType::TMISSION_INVULNERABLE:
         case TeamMissionType::TMISSION_LOAD:
-        case TeamMissionType::TMISSION_COUNT:
         default:
           Assign_Mission_Target(ra::Target{});
           break;
@@ -841,7 +840,6 @@ void TeamClass::AI() {
         TMission_Loop();
         break;
       case TeamMissionType::TMISSION_NONE:
-      case TeamMissionType::TMISSION_COUNT:
       default:
         break;
     }

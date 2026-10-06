@@ -31,7 +31,6 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
-#include "base/enum_step.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
@@ -67,8 +66,6 @@ enum class TeamMissionType {
   TMISSION_LOAD,          // Load onto the team's transport.
   TMISSION_SPY,           // Send a spy into the building at the given waypoint.
   TMISSION_PATROL,        // Move to the given waypoint, engaging on the way.
-
-  TMISSION_COUNT,
 };
 using enum TeamMissionType;
 
@@ -301,9 +298,7 @@ class TeamTypeClass : public AbstractTypeClass {
   TeamMemberClass Members[kMaxTeamClasscount];
 
   // The scenario editor's name for each team mission.
-  static base::EnumArray<TeamMissionType, const char*,
-                         static_cast<int>(TMISSION_COUNT)>
-      TMissions;
+  static base::EnumArray<TeamMissionType, const char*> TMissions;
 };
 
 // Returns the kind of argument a team mission takes, NEED_NONE for a mission
@@ -317,8 +312,5 @@ extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
-
-template <>
-inline constexpr bool base::kIsSteppableEnum<ra::TeamMissionType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
