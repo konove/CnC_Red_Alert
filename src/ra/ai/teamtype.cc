@@ -34,7 +34,6 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -203,8 +202,6 @@ TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
-    DCHECK(candidate != nullptr);
-
     // A team type on the wrong side of the alert is treated as full.
     int limit = candidate->MaxAllowed;
     if ((alerted && !candidate->IsAutocreate) ||
@@ -216,8 +213,7 @@ TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
       break;
     }
 
-    if (candidate != nullptr && candidate->House == house->Class->House &&
-        candidate->Number < limit) {
+    if (candidate->House == house->Class->House && candidate->Number < limit) {
       base::At(choices, choice_count++) = candidate;
     }
   }
@@ -607,6 +603,64 @@ bool TeamType::Edit() {
                                 kEButtonFlags, kCancelX, kCancelY, kCancelW,
                                 kCancelH);
 
+  // Returns the work mission: the mission selected in mission_drop with the
+  // argument its control holds.
+  const auto work_mission = [&] {
+    TeamMission mission{};
+    mission.Mission = TeamMissionType(mission_drop.Current_Index());
+    mission.Data.Value = 0;
+    switch (TeamMissionNeeds(mission.Mission)) {
+      case NEED_MISSION:
+        mission.Data.Mission = MissionType(unit_mission_drop.Current_Index());
+        break;
+
+      case NEED_FORMATION:
+        mission.Data.Formation = FormationType(formation_drop.Current_Index());
+        break;
+
+      case NEED_QUARRY:
+        mission.Data.Quarry = QuarryType(quarry_drop.Current_Index());
+        break;
+
+      case NEED_NUMBER:
+        mission.Data.Value =
+            base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
+        break;
+
+      case NEED_HEX_NUMBER:
+        mission.Data.Value = atoh(argument_edit.Get_Text());
+        break;
+
+      // A waypoint the scenario does not have becomes waypoint A.
+      case NEED_WAYPOINT:
+        mission.Data.Value = WaypointFromLetters(argument_edit.Get_Text());
+        if (mission.Data.Value < 0 ||
+            mission.Data.Value >= ScenarioClass::kHomeWaypoint) {
+          mission.Data.Value = 0;
+        }
+        break;
+
+      case NeedType::NEED_NONE:
+      case NeedType::NEED_THEME:
+      case NeedType::NEED_MOVIE:
+      case NeedType::NEED_SOUND:
+      case NeedType::NEED_SPEECH:
+      case NeedType::NEED_INFANTRY:
+      case NeedType::NEED_UNIT:
+      case NeedType::NEED_AIRCRAFT:
+      case NeedType::NEED_STRUCTURE:
+      case NeedType::NEED_TRIGGER:
+      case NeedType::NEED_TEAM:
+      case NeedType::NEED_HOUSE:
+      case NeedType::NEED_TIME:
+      case NeedType::NEED_BOOL:
+      case NeedType::NEED_SPECIAL:
+      default:
+        break;
+    }
+    return mission;
+  };
+
   PixelView& view = TheScreen().visible_view();
 
   ok_button.Add(*commands);
@@ -803,63 +857,10 @@ bool TeamType::Edit() {
       // lines from there on move down.
       case engine::window::ButtonKey(kButtonInsert):
         if (script_list.Count() < kMaxMissions) {
-          auto* mission =
-              missions.emplace_back(std::make_unique<TeamMission>()).get();
-          mission->Mission = TeamMissionType(mission_drop.Current_Index());
-          mission->Data.Value = 0;
-          switch (TeamMissionNeeds(mission->Mission)) {
-            case NEED_MISSION:
-              mission->Data.Mission =
-                  MissionType(unit_mission_drop.Current_Index());
-              break;
-
-            case NEED_FORMATION:
-              mission->Data.Formation =
-                  FormationType(formation_drop.Current_Index());
-              break;
-
-            case NEED_QUARRY:
-              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
-              break;
-
-            case NEED_NUMBER:
-              mission->Data.Value =
-                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
-              break;
-
-            case NEED_HEX_NUMBER:
-              mission->Data.Value = atoh(argument_edit.Get_Text());
-              break;
-
-            case NEED_WAYPOINT:
-              mission->Data.Value =
-                  WaypointFromLetters(argument_edit.Get_Text());
-              if (mission->Data.Value < 0 ||
-                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                mission->Data.Value = 0;
-              }
-              break;
-
-            case NeedType::NEED_NONE:
-            case NeedType::NEED_THEME:
-            case NeedType::NEED_MOVIE:
-            case NeedType::NEED_SOUND:
-            case NeedType::NEED_SPEECH:
-            case NeedType::NEED_INFANTRY:
-            case NeedType::NEED_UNIT:
-            case NeedType::NEED_AIRCRAFT:
-            case NeedType::NEED_STRUCTURE:
-            case NeedType::NEED_TRIGGER:
-            case NeedType::NEED_TEAM:
-            case NeedType::NEED_HOUSE:
-            case NeedType::NEED_TIME:
-            case NeedType::NEED_BOOL:
-            case NeedType::NEED_SPECIAL:
-            default:
-              mission->Data.Value = 0;
-              break;
-          }
-          script_list.Insert_Item(mission);
+          script_list.Insert_Item(
+              missions
+                  .emplace_back(std::make_unique<TeamMission>(work_mission()))
+                  .get());
         }
         redraw = true;
         break;
@@ -867,63 +868,10 @@ bool TeamType::Edit() {
       // Append the work mission to the script.
       case engine::window::ButtonKey(kButtonAdd):
         if (script_list.Count() < kMaxMissions) {
-          auto* mission =
-              missions.emplace_back(std::make_unique<TeamMission>()).get();
-          mission->Mission = TeamMissionType(mission_drop.Current_Index());
-          mission->Data.Value = 0;
-          switch (TeamMissionNeeds(mission->Mission)) {
-            case NEED_MISSION:
-              mission->Data.Mission =
-                  MissionType(unit_mission_drop.Current_Index());
-              break;
-
-            case NEED_FORMATION:
-              mission->Data.Formation =
-                  FormationType(formation_drop.Current_Index());
-              break;
-
-            case NEED_QUARRY:
-              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
-              break;
-
-            case NEED_NUMBER:
-              mission->Data.Value =
-                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
-              break;
-
-            case NEED_HEX_NUMBER:
-              mission->Data.Value = atoh(argument_edit.Get_Text());
-              break;
-
-            case NEED_WAYPOINT:
-              mission->Data.Value =
-                  WaypointFromLetters(argument_edit.Get_Text());
-              if (mission->Data.Value < 0 ||
-                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                mission->Data.Value = 0;
-              }
-              break;
-
-            case NeedType::NEED_NONE:
-            case NeedType::NEED_THEME:
-            case NeedType::NEED_MOVIE:
-            case NeedType::NEED_SOUND:
-            case NeedType::NEED_SPEECH:
-            case NeedType::NEED_INFANTRY:
-            case NeedType::NEED_UNIT:
-            case NeedType::NEED_AIRCRAFT:
-            case NeedType::NEED_STRUCTURE:
-            case NeedType::NEED_TRIGGER:
-            case NeedType::NEED_TEAM:
-            case NeedType::NEED_HOUSE:
-            case NeedType::NEED_TIME:
-            case NeedType::NEED_BOOL:
-            case NeedType::NEED_SPECIAL:
-            default:
-              mission->Data.Value = 0;
-              break;
-          }
-          script_list.Add_Item(mission);
+          script_list.Add_Item(
+              missions
+                  .emplace_back(std::make_unique<TeamMission>(work_mission()))
+                  .get());
           redraw = true;
         }
         break;
@@ -931,62 +879,7 @@ bool TeamType::Edit() {
       // Overwrite the selected line of the script with the work mission.
       case engine::window::ButtonKey(kButtonReplace):
         if (script_list.Count()) {
-          TeamMission* mission = script_list.Current_Item();
-          mission->Mission = TeamMissionType(mission_drop.Current_Index());
-          mission->Data.Value = 0;
-          switch (TeamMissionNeeds(mission->Mission)) {
-            case NEED_MISSION:
-              mission->Data.Mission =
-                  MissionType(unit_mission_drop.Current_Index());
-              break;
-
-            case NEED_FORMATION:
-              mission->Data.Formation =
-                  FormationType(formation_drop.Current_Index());
-              break;
-
-            case NEED_QUARRY:
-              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
-              break;
-
-            case NEED_NUMBER:
-              mission->Data.Value =
-                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
-              break;
-
-            case NEED_HEX_NUMBER:
-              mission->Data.Value = atoh(argument_edit.Get_Text());
-              break;
-
-            case NEED_WAYPOINT:
-              mission->Data.Value =
-                  WaypointFromLetters(argument_edit.Get_Text());
-              if (mission->Data.Value < 0 ||
-                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                mission->Data.Value = 0;
-              }
-              break;
-
-            case NeedType::NEED_NONE:
-            case NeedType::NEED_THEME:
-            case NeedType::NEED_MOVIE:
-            case NeedType::NEED_SOUND:
-            case NeedType::NEED_SPEECH:
-            case NeedType::NEED_INFANTRY:
-            case NeedType::NEED_UNIT:
-            case NeedType::NEED_AIRCRAFT:
-            case NeedType::NEED_STRUCTURE:
-            case NeedType::NEED_TRIGGER:
-            case NeedType::NEED_TEAM:
-            case NeedType::NEED_HOUSE:
-            case NeedType::NEED_TIME:
-            case NeedType::NEED_BOOL:
-            case NeedType::NEED_SPECIAL:
-            default:
-              mission->Data.Value = 0;
-              break;
-          }
-          script_list.at(script_list.Current_Index()) = mission;
+          *script_list.Current_Item() = work_mission();
         }
         redraw = true;
         break;
@@ -1046,7 +939,6 @@ bool TeamType::Edit() {
 
         MissionCount = script_list.Count();
         for (int index = 0; index < MissionCount; index++) {
-          base::At(MissionList, index).Data.Value = 0;
           base::At(MissionList, index) = *script_list.at(index);
         }
 
@@ -1346,8 +1238,6 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
 }
 
 void TeamType::WriteIni(engine::file::IniFile& ini) {
-  // TODO: the same section is cleared twice.
-  ini.Clear("TeamTypes");
   ini.Clear(kIniSection);
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
