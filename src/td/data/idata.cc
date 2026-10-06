@@ -70,10 +70,10 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -1941,8 +1941,8 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  *=============================================================================================*/
 int InfantryTypeClass::Full_Name() const {
   if (TheDebugState().map_editor_active() || !IsNominal ||
-      TheSpecial().IsNamed || Type == INFANTRY_C10 || Type == INFANTRY_DELPHI ||
-      Type == INFANTRY_MOEBIUS) {
+      TheSpecialFlags().named_civilians || Type == INFANTRY_C10 ||
+      Type == INFANTRY_DELPHI || Type == INFANTRY_MOEBIUS) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN;

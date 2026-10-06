@@ -101,11 +101,11 @@
 #include "game/sim/enums.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
+#include "td/core/special_flags.h"
 #include "td/core/support.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
@@ -384,7 +384,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
   if (ThePlayer()->ActLike != _house) {
     std::string name;
 
-    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+    if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
       name = "RADAR.JP";
     } else {
       name = std::filesystem::path("RADAR")

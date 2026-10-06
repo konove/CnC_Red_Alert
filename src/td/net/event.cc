@@ -66,12 +66,12 @@
 #include "base/strings/format.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -153,7 +153,7 @@ base::EnumArray<EventClass::EventType, const char*,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(SpecialClass data) : EventClass() {
+EventClass::EventClass(SpecialFlags data) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -468,7 +468,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      TheSpecial() = Data.Options.Data;
+      TheSpecialFlags() = Data.Options.Data;
       HouseClass* sender = TheObjectHeaps().house().Slot(ID);
 
       std::string message =
@@ -520,7 +520,7 @@ void EventClass::Execute() {
       anim = base::NewPooled<AnimClass>(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
                    ThePlayer()->Class->House != Data.Anim.Owner &&
-                   !TheSpecial().IsVisibleTarget)) {
+                   !TheSpecialFlags().visible_target)) {
         anim->Make_Invisible();
       }
 
@@ -638,8 +638,8 @@ void EventClass::Execute() {
             break;
         }
 
-        if (object &&
-            (ThePlayer()->Is_Ally(techno) || TheSpecial().IsVisibleTarget)) {
+        if (object && (ThePlayer()->Is_Ally(techno) ||
+                       TheSpecialFlags().visible_target)) {
           object->Clicked_As_Target();
         }
 
@@ -792,7 +792,7 @@ void EventClass::Execute() {
       *not then
       ** deliberately break the max ahead value
       */
-      if (TheSpecial().IsFromWChat) {
+      if (TheSpecialFlags().from_wchat) {
 #ifdef _WIN32
         TheSession().max_ahead() +=
             DDEServer.Time_Since_Heartbeat() / (70 * 60);

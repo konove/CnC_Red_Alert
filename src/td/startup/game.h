@@ -12,12 +12,12 @@
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
 #include "td/net/network.h"
@@ -99,8 +99,8 @@ class Game {
   base::Installed<GameState>::Scope game_state_scope_{game_state_};
   GameOptionsClass options_;
   base::Installed<GameOptionsClass>::Scope options_scope_{options_};
-  SpecialClass special_{};
-  base::Installed<SpecialClass>::Scope special_scope_{special_};
+  SpecialFlags special_ = InitialSpecialFlags();
+  base::Installed<SpecialFlags>::Scope special_scope_{special_};
   // The mixer comes before the music player, which plays through it.
   engine::audio::AudioMixer audio_;
   base::Installed<engine::audio::AudioMixer>::Scope audio_scope_{audio_};

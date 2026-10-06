@@ -79,7 +79,6 @@
 #include "game/sim/enums.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
-#include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/assets/theme.h"
@@ -88,6 +87,7 @@
 #include "td/core/inline.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini_io.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -401,7 +401,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Jurassic scenarios are allowed to build the full multiplayer set
   **	of objects.
   */
-  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+  if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
     TheWorld().build_level() = 98;
   }
 
@@ -457,7 +457,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     ThePlayer()->Credits += carryover;
     ThePlayer()->InitialCredits += carryover;
 
-    if (TheSpecial().IsJurassic) {
+    if (TheSpecialFlags().jurassic) {
       ThePlayer()->ActLike = TheWorld().whom();
     }
   } else {
@@ -1160,7 +1160,7 @@ static void Create_Units() {
         if (obj) {
           hptr->FlagHome = Cell{};
           hptr->FlagLocation = Target{};
-          if (TheSpecial().IsCaptureTheFlag) {
+          if (TheSpecialFlags().capture_the_flag) {
             hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
           }
         }
@@ -1176,7 +1176,7 @@ static void Create_Units() {
           scaleval = 1;
         }
 
-        if (TheSpecial().IsCaptureTheFlag) {
+        if (TheSpecialFlags().capture_the_flag) {
           obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
           if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
               (!Scan_Place_Object(obj, centroid))) {
@@ -1194,7 +1194,7 @@ static void Create_Units() {
       capture-the-flag mode.
       ---------------------------------------------------------------------*/
       scaleval = 1;
-      if (TheSpecial().IsCaptureTheFlag) {
+      if (TheSpecialFlags().capture_the_flag) {
         obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
         obj->Unlimbo(centroid.Center(), game::DIR_N);
         hptr->FlagHome = Cell{};  // turn house's flag off

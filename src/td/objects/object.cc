@@ -124,13 +124,13 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"
@@ -821,7 +821,7 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
     **	Draw the path as lines on the map if so directed and the object is one
     *that *	contains a path.
     */
-    if (TheSpecial().IsShowPath && IsSelected) {
+    if (TheSpecialFlags().show_find_path && IsSelected) {
       switch (What_Am_I()) {
         case RTTIType::RTTI_NONE:
         case RTTIType::RTTI_INFANTRYTYPE:

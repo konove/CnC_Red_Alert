@@ -61,9 +61,9 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/utracker.h"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini_io.h"
 #include "td/map/world.h"
 #include "td/net/network.h"
@@ -254,7 +254,7 @@ void Send_Statistics_Packet() {
     */
     stats.Add_Field(FIELD_AI_PLAYERS, TheSession().ghosts() ? "ON" : "OFF");
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
-                    TheSpecial().IsCaptureTheFlag ? "ON" : "OFF");
+                    TheSpecialFlags().capture_the_flag ? "ON" : "OFF");
 
     /*
     ** Start unit count

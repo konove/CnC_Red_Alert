@@ -190,7 +190,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
@@ -199,6 +198,7 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/layer.h"
@@ -361,9 +361,9 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
   **	For computer controlled buildings, slow down production on
   **	cheaper buildings.
   */
-  if (!TheSpecial().IsDifficult && TheSession().type() == GAME_NORMAL &&
+  if (!TheSpecialFlags().difficult && TheSession().type() == GAME_NORMAL &&
       What_Am_I() == RTTI_BUILDINGTYPE && ThePlayer()->Class->House != house) {
-    cost = (cost + (TheSpecial().IsEasy ? 4000 : 2000)) / 2;
+    cost = (cost + (TheSpecialFlags().easy ? 4000 : 2000)) / 2;
   }
 
   /*
@@ -893,7 +893,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
 void TechnoClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
   Clear_Redraw_Flag();
-  if (IsSelected || TheSpecial().IsBarOn) {
+  if (IsSelected || TheSpecialFlags().all_health_bars) {
     PixelView draw_window(
         view.buffer(),
         (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
@@ -927,7 +927,8 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
     int height = 0;
     Class_Of().Dimensions(width, height);
 
-    if (Strength && (House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar)) {
+    if (Strength &&
+        (House->Is_Ally(ThePlayer()) || TheSpecialFlags().enemy_health_bars)) {
       const int ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
@@ -969,7 +970,9 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       const int dx = width / 5;
       const int dy = height / 5;
       const int fudge =
-          House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar ? 4 : 0;
+          House->Is_Ally(ThePlayer()) || TheSpecialFlags().enemy_health_bars
+              ? 4
+              : 0;
 
       // Upper left corner.
       draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
@@ -2154,7 +2157,7 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
     **	If this is firing from a moving platform, then the projectile is
     *inaccurate.
     */
-    if (TheSpecial().IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
+    if (TheSpecialFlags().defender_advantage && What_Am_I() != RTTI_BUILDING &&
         dynamic_cast<const FootClass*>(this)->IsDriving) {
       bullet->IsInaccurate = true;
     }
@@ -2422,7 +2425,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     */
     if ((IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
          (ctrldown || object->Class_Of().IsLegalTarget ||
-          (TheSpecial().IsTreeTarget &&
+          (TheSpecialFlags().tree_target &&
            object->What_Am_I() == RTTI_TERRAIN))) &&
         (Can_Player_Move() || In_Range(object, 0))) {
       return ACTION_ATTACK;

@@ -50,9 +50,9 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
-#include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/credits.h"
@@ -194,7 +194,7 @@ void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	in certain areas. If the special scroll modification is not active, then
     **	the tabs never work when the mouse is at the top of the screen.
     */
-    if (y > 0 || (TheSpecial().IsScrollMod &&
+    if (y > 0 || (TheSpecialFlags().no_scroll_over_tabs &&
                   ((x > 3 && x < Eva_Width) ||
                    (x < width - 3 && x > width - Eva_Width)))) {
       ok = true;

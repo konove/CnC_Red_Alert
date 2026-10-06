@@ -47,8 +47,8 @@
 
 #include "base/buffer.h"
 #include "base/enum_array.h"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 
 namespace td {
 
@@ -134,7 +134,7 @@ class EventClass {
   */
   union {
     struct {
-      SpecialClass Data;  // The special option flags.
+      SpecialFlags Data;  // The special option flags.
     } Options;
     struct {
       td::Target Whom;  // The object to apply the event to.
@@ -222,7 +222,7 @@ class EventClass {
   EventClass() {
     base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass));
   }
-  explicit EventClass(SpecialClass data);
+  explicit EventClass(SpecialFlags data);
   EventClass(EventType type, td::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);

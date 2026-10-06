@@ -78,11 +78,11 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/gscreen.h"
 #include "td/map/world.h"
@@ -1052,7 +1052,8 @@ void MapClass::Logic() {
   /*
   **	Bail early if there is no allowed growth or spread of Tiberium.
   */
-  if (!TheSpecial().IsTGrowth && !TheSpecial().IsTSpread) {
+  if (!TheSpecialFlags().tiberium_grows &&
+      !TheSpecialFlags().tiberium_spreads) {
     return;
   }
 
@@ -1069,7 +1070,7 @@ void MapClass::Logic() {
     }
     const CellClass* ptr = &(*this).at(cell);
 
-    if (TheSpecial().IsTGrowth && ptr->Land_Type() == LAND_TIBERIUM &&
+    if (TheSpecialFlags().tiberium_grows && ptr->Land_Type() == LAND_TIBERIUM &&
         ptr->OverlayData < 11) {
       if (TiberiumGrowthCount < std::ssize(TiberiumGrowth)) {
         base::At(TiberiumGrowth, TiberiumGrowthCount++) = cell;
@@ -1083,8 +1084,8 @@ void MapClass::Logic() {
     **	Heavy Tiberium growth can spread.
     */
     const TerrainClass* terrain = ptr->Cell_Terrain();
-    if ((TheSpecial().IsTSpread && ptr->Land_Type() == LAND_TIBERIUM &&
-         ptr->OverlayData > 6) ||
+    if ((TheSpecialFlags().tiberium_spreads &&
+         ptr->Land_Type() == LAND_TIBERIUM && ptr->OverlayData > 6) ||
         (terrain && terrain->Class->IsTiberiumSpawn)) {
       int tries = 1;
       if (terrain) {
@@ -1108,7 +1109,7 @@ void MapClass::Logic() {
 
   if (TiberiumScan.index() >= MAP_CELL_TOTAL) {
     int tries = 1;
-    if (TheSpecial().IsTFast || TheSession().type() != GAME_NORMAL) {
+    if (TheSpecialFlags().tiberium_fast || TheSession().type() != GAME_NORMAL) {
       tries = 2;
     }
     TiberiumScan = Cell{};

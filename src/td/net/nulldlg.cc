@@ -88,12 +88,12 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -3413,7 +3413,7 @@ int Com_Scenario_Dialog() {
     TheSession().tiberium() = 0;
     TheSession().crates() = 0;
     TheSession().ghosts() = 0;
-    TheSpecial().IsCaptureTheFlag = 0;
+    TheSpecialFlags().capture_the_flag = 0;
     TheSession().unit_count() =
         (base::At(TheSession().unit_count_max(), TheSession().bases()) +
          base::At(TheSession().unit_count_min(), TheSession().bases())) /
@@ -3440,7 +3440,7 @@ int Com_Scenario_Dialog() {
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
   }
-  if (TheSpecial().IsCaptureTheFlag) {
+  if (TheSpecialFlags().capture_the_flag) {
     TheSession().ghosts() = 0;
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
@@ -3463,8 +3463,10 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  TheSpecial().IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
-  TheSpecial().IsTSpread = static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_grows =
+      static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_spreads =
+      static_cast<unsigned>(TheSession().tiberium());
   int transmit = 1;  // 1 = re-transmit new game options
 
   /*........................................................................
@@ -3862,14 +3864,14 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           if (TheSession().tiberium()) {
             TheSession().tiberium() = 0;
-            TheSpecial().IsTGrowth = 0;
-            TheSpecial().IsTSpread = 0;
+            TheSpecialFlags().tiberium_grows = 0;
+            TheSpecialFlags().tiberium_spreads = 0;
             tiberiumbtn.Turn_Off();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_OFF);
           } else {
             TheSession().tiberium() = 1;
-            TheSpecial().IsTGrowth = 1;
-            TheSpecial().IsTSpread = 1;
+            TheSpecialFlags().tiberium_grows = 1;
+            TheSpecialFlags().tiberium_spreads = 1;
             tiberiumbtn.Turn_On();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
           }
@@ -3905,19 +3907,20 @@ int Com_Scenario_Dialog() {
       case engine::window::ButtonKey(kButtonGhosts):
         if (!ready_to_go) {
           if (!TheSession().ghosts() &&
-              !TheSpecial().IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
+              !TheSpecialFlags().capture_the_flag) {  // ghosts OFF => ghosts ON
             TheSession().ghosts() = 1;
-            TheSpecial().IsCaptureTheFlag = 0;
+            TheSpecialFlags().capture_the_flag = 0;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
           } else if (TheSession().ghosts()) {  // ghosts ON => capture-flag
             TheSession().ghosts() = 0;
-            TheSpecial().IsCaptureTheFlag = 1;
+            TheSpecialFlags().capture_the_flag = 1;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
-          } else if (TheSpecial().IsCaptureTheFlag) {  // capture-flag => AI OFF
+          } else if (TheSpecialFlags()
+                         .capture_the_flag) {  // capture-flag => AI OFF
             TheSession().ghosts() = 0;
-            TheSpecial().IsCaptureTheFlag = 0;
+            TheSpecialFlags().capture_the_flag = 0;
             ghostsbtn.Turn_Off();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
           }
@@ -4193,7 +4196,7 @@ int Com_Scenario_Dialog() {
       SendPacket.UnitCount =
           static_cast<unsigned char>(TheSession().unit_count());
       SendPacket.Seed = TheWorld().seed();
-      SendPacket.Special = TheSpecial();
+      SendPacket.Special = TheSpecialFlags();
       SendPacket.GameSpeed = TheOptions().GameSpeed;
       SendPacket.ID =
           static_cast<unsigned char>(TheNetwork().modem_game_type());
@@ -5081,7 +5084,7 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Capture the flag or AI player ON/OFF
             ............................................................*/
-            if (TheSpecial().IsCaptureTheFlag) {
+            if (TheSpecialFlags().capture_the_flag) {
               base::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
               base::SafeAppend(txt, ":");
               Fancy_Text_Print(view, txt, d_dialog_cx - (3 * factor),
@@ -5532,15 +5535,15 @@ int Com_Show_Scenario_Dialog() {
             TheWorld().build_level() = ReceivePacket.BuildLevel;
             TheSession().unit_count() = ReceivePacket.UnitCount;
             TheWorld().seed() = ReceivePacket.Seed;
-            TheSpecial() = ReceivePacket.Special;
+            TheSpecialFlags() = ReceivePacket.Special;
             TheOptions().GameSpeed = ReceivePacket.GameSpeed;
 
             if (TheSession().tiberium()) {
-              TheSpecial().IsTGrowth = 1;
-              TheSpecial().IsTSpread = 1;
+              TheSpecialFlags().tiberium_grows = 1;
+              TheSpecialFlags().tiberium_spreads = 1;
             } else {
-              TheSpecial().IsTGrowth = 0;
-              TheSpecial().IsTSpread = 0;
+              TheSpecialFlags().tiberium_grows = 0;
+              TheSpecialFlags().tiberium_spreads = 0;
             }
 
             /*...............................................................

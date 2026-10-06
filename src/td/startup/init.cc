@@ -100,7 +100,6 @@
 #include "game/ui/input.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -114,6 +113,7 @@
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -280,11 +280,11 @@ bool Init_Game() {
   DLOG(INFO) << "C&C95 - About to set palette";
   ThePalettes().black_palette() =
       engine::gfx::Palette(engine::gfx::kNearBlackColor);
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialFlags().from_install) {
     Set_Palette(ThePalettes().black_palette());
   }
   ThePalettes().black_palette() = engine::gfx::Palette();
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialFlags().from_install) {
     Set_Palette(ThePalettes().black_palette());
     DLOG(INFO) << "C&C95 - About to clear visible page";
     TheScreen().visible_page().view().Clear();
@@ -443,14 +443,14 @@ bool Init_Game() {
   (void)MixArchive::Register("SOUNDS.MIX");
 
   if (TheGameState().spawned_from_chat()) {
-    TheSpecial().IsFromWChat = true;
+    TheSpecialFlags().from_wchat = true;
   }
 
   /*
   **	Play the introduction movies.
   */
   DLOG(INFO) << "C&C95 - About to play the intro movie";
-  if (!TheSpecial().IsFromInstall && !TheSpecial().IsFromWChat) {
+  if (!TheSpecialFlags().from_install && !TheSpecialFlags().from_wchat) {
     Play_Intro(true);
   }
 
@@ -463,13 +463,13 @@ bool Init_Game() {
   */
   CurrentPalette = engine::gfx::Palette(engine::gfx::kNearBlackColor);
 
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialFlags().from_install) {
     Load_Title_Page(true);
   }
 
   game::TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
-  if (!TheSpecial().IsFromInstall) {
+  if (!TheSpecialFlags().from_install) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     game::TheMouse().Show();
@@ -489,7 +489,7 @@ bool Init_Game() {
   MixArchive::Cache("CONQUER.MIX");
   if (engine::audio::TheAudio().is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
-    if (TheSpecial().IsJuvenile) {
+    if (TheSpecialFlags().juvenile_sounds) {
       (void)MixArchive::Register("ZOUNDS.MIX");
       MixArchive::Cache("ZOUNDS.MIX");
     }
@@ -673,7 +673,7 @@ bool Select_Game(bool fade) {
   DDEServer.Enable();
 #endif
 
-  if (TheSpecial().IsFromInstall) {
+  if (TheSpecialFlags().from_install) {
     {
       display = false;
       game::TheMouse().Show();
@@ -704,7 +704,7 @@ bool Select_Game(bool fade) {
   **   be at least 2 * MPlayerMaxAhead
   */
   TheSession().comm_protocol() = COMM_PROTOCOL_SINGLE_NO_COMP;
-  if (!TheSpecial().IsFromWChat) {
+  if (!TheSpecialFlags().from_wchat) {
     TheSession().frame_send_rate() = 3;
   }
 
@@ -772,7 +772,7 @@ bool Select_Game(bool fade) {
     ** Handle case where we were spawned from Wchat
     */
     if (TheGameState().spawned_from_chat()) {
-      TheSpecial().IsFromInstall =
+      TheSpecialFlags().from_install =
           false;  // Dont play intro if we were spawned from wchat
       selection = kSelInternet;
       TheTheme().Queue_Song(THEME_NONE);
@@ -854,7 +854,7 @@ bool Select_Game(bool fade) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (TheSpecial().IsFromInstall) {
+      if (TheSpecialFlags().from_install) {
         selection = kSelStartNewGame;
         TheTheme().Queue_Song(THEME_NONE);
       }
@@ -863,7 +863,7 @@ bool Select_Game(bool fade) {
       /*
       ** Handle case where we were spawned from Wchat
       */
-      if (TheSpecial().IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
+      if (TheSpecialFlags().from_wchat && DDEServer.Get_MPlayer_Game_Info()) {
         Check_From_WChat(NULL);
         selection = kSelMultiplayerGame;
         TheTheme().Queue_Song(THEME_NONE);
@@ -1022,7 +1022,7 @@ bool Select_Game(bool fade) {
           ** GDI or NOD.  Ini.cpp will set the player's ActLike to mirror the
           ** Whom value.
           */
-          if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+          if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
             TheWorld().scen_player() = SCEN_PLAYER_JP;
             TheWorld().scen_dir() = game::SCEN_DIR_EAST;
           }
@@ -1129,7 +1129,7 @@ bool Select_Game(bool fade) {
             */
             case GAME_INTERNET:
               DLOG(INFO) << "C&C95 - case GAME_INTERNET:";
-              if (TheSpecial().IsFromWChat) {
+              if (TheSpecialFlags().from_wchat) {
                 // MessageBox (NULL, "About to restore focus to C&C95", "C&C95",
                 // MB_OK);
                 DLOG(INFO) << "C&C95 - About to give myself focus.";
@@ -1180,7 +1180,7 @@ bool Select_Game(bool fade) {
                   DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
                   TheSession().type() = GAME_NORMAL;
                   selection = kSelExit;
-                  TheSpecial().IsFromWChat = false;
+                  TheSpecialFlags().from_wchat = false;
                   break;
                 }
 
@@ -1219,7 +1219,7 @@ bool Select_Game(bool fade) {
                                                          // go round in an
                                                          // infinite loop
 #endif
-                  // Special.IsFromWChat = false;
+                  // Special.from_wchat = false;
                   break;
                 }
                 DLOG(INFO) << "C&C95 - About to call Client_Remote_Connect.";
@@ -1242,7 +1242,7 @@ bool Select_Game(bool fade) {
                                                        // go round in an
                                                        // infinite loop
 #endif
-                // Special.IsFromWChat = false;
+                // Special.from_wchat = false;
                 break;
               }
               TheSession().type() = Select_MPlayer_Game();
@@ -1468,7 +1468,7 @@ bool Select_Game(bool fade) {
     * on, set to load that scenario
     */
     TheWorld().scenario() = 1;
-    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+    if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
       TheWorld().scen_player() = SCEN_PLAYER_JP;
       TheWorld().scen_dir() = game::SCEN_DIR_EAST;
     }
@@ -1477,7 +1477,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (TheSession().type() == GAME_INTERNET) {
     TheSession().comm_protocol() = COMM_PROTOCOL_MULTI_E_COMP;
-    if (!TheSpecial().IsFromWChat) {
+    if (!TheSpecialFlags().from_wchat) {
       TheSession().frame_send_rate() = 5;  // 3;
     }
   }
@@ -1561,7 +1561,7 @@ bool Select_Game(bool fade) {
     }
     game::TheMouse().Show();
 
-    TheSpecial().IsFromInstall = 0;
+    TheSpecialFlags().from_install = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
     if (!Start_Scenario(TheWorld().scenario_name())) {
       return false;
@@ -1921,7 +1921,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (TheSession().comm_protocol() == COMM_PROTOCOL_MULTI_E_COMP &&
       TheSession().type() != GAME_NORMAL) {
-    if (!TheSpecial().IsFromWChat) {
+    if (!TheSpecialFlags().from_wchat) {
       TheSession().max_ahead() = TheSession().frame_send_rate() * 3;  // 2;
     } else {
       TheSession().max_ahead() = TheNetwork().chat_max_ahead();
@@ -2671,7 +2671,7 @@ void Save_Recording_Values(ByteStream& file) {
   file.WriteObject(TheWorld().scen_player());
   file.WriteObject(TheWorld().scen_dir());
   file.WriteObject(TheWorld().whom());
-  file.WriteObject(TheSpecial());
+  file.WriteObject(TheSpecialFlags());
   file.WriteObject(TheOptions());
   file.WriteObject(TheSession().frame_send_rate());
   file.WriteObject(TheSession().comm_protocol());
@@ -2721,7 +2721,7 @@ void Load_Recording_Values(ByteStream& file) {
   file.ReadObject(TheWorld().scen_player());
   file.ReadObject(TheWorld().scen_dir());
   file.ReadObject(TheWorld().whom());
-  file.ReadObject(TheSpecial());
+  file.ReadObject(TheSpecialFlags());
   file.ReadObject(TheOptions());
   file.ReadObject(TheSession().frame_send_rate());
   file.ReadObject(TheSession().comm_protocol());

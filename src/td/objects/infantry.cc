@@ -137,7 +137,6 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
@@ -148,6 +147,7 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
@@ -717,18 +717,18 @@ void InfantryClass::Per_Cell_Process(bool center) {
   if (center && Mission == MISSION_SABOTAGE) {
     BuildingClass* building = cellptr->Cell_Building();
     if (building && building->As_Target() == NavCom) {
-      const bool temp = TheSpecial().IsScatter;
+      const bool temp = TheSpecialFlags().scatter;
 
       building->IsGoingToBlow = true;
       building->Clicked_As_Target(20);
       building->CountDown.Set(20);
       building->WhomToRepay = As_Target();
-      TheSpecial().IsScatter = true;
+      TheSpecialFlags().scatter = true;
       NavCom = Target{};
       Do_Uncloak();
       Arm = static_cast<unsigned char>(Rearm_Delay(true));
       Scatter(building->Center_Coord(), true);  // RUN AWAY!
-      TheSpecial().IsScatter = temp;
+      TheSpecialFlags().scatter = temp;
       return;
     }
   }
@@ -1074,7 +1074,7 @@ void InfantryClass::AI() {
       *moving *	and the special elite flag is active.
       */
       if (Fear >= FEAR_ANXIOUS &&
-          ((!NavCom && !IsDriving) || !TheSpecial().IsDefenderAdvantage)) {
+          ((!NavCom && !IsDriving) || !TheSpecialFlags().defender_advantage)) {
         Do_Action(DO_LIE_DOWN);
       }
     }
@@ -1893,7 +1893,7 @@ game::FireErrorType InfantryClass::Can_Fire(Target target, int which) const {
   /*
   **	If this unit cannot fire while moving, then bail.
   */
-  if ((IsDriving && TheSpecial().IsDefenderAdvantage) ||
+  if ((IsDriving && TheSpecialFlags().defender_advantage) ||
       (Doing != DO_NOTHING && !MasterDoControls.at(Doing).Interrupt)) {
     return game::FIRE_MOVING;
   }
@@ -1901,7 +1901,7 @@ game::FireErrorType InfantryClass::Can_Fire(Target target, int which) const {
   /*
   ** If we're moving, but not facing the right direction, then exit.
   */
-  if (!TheSpecial().IsDefenderAdvantage && IsDriving) {
+  if (!TheSpecialFlags().defender_advantage && IsDriving) {
     const int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) >= 32) {
       return game::FIRE_MOVING;
@@ -2114,7 +2114,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced) {
   **	For human players, don't scatter the infantry, if the special
   **	flag has not been enabled that allows infantry scatter.
   */
-  if (!TheSpecial().IsScatter && House->IsHuman && !forced && !Team) {
+  if (!TheSpecialFlags().scatter && House->IsHuman && !forced && !Team) {
     return;
   }
 

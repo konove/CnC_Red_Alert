@@ -158,11 +158,11 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -1302,7 +1302,7 @@ static int Net_Join_Dialog() {
           /*............................................................
           Computer AI players
           ............................................................*/
-          if (TheSpecial().IsCaptureTheFlag) {
+          if (TheSpecialFlags().capture_the_flag) {
             p = Text_String(TXT_CAPTURE_THE_FLAG_COLON);
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
@@ -2613,16 +2613,16 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       TheSession().unit_count() =
           TheNetwork().global_packet().ScenarioInfo.UnitCount;
       TheWorld().seed() = TheNetwork().global_packet().ScenarioInfo.Seed;
-      TheSpecial() = TheNetwork().global_packet().ScenarioInfo.Special;
+      TheSpecialFlags() = TheNetwork().global_packet().ScenarioInfo.Special;
       TheOptions().GameSpeed =
           TheNetwork().global_packet().ScenarioInfo.GameSpeed;
 
       if (TheSession().tiberium()) {
-        TheSpecial().IsTGrowth = 1;
-        TheSpecial().IsTSpread = 1;
+        TheSpecialFlags().tiberium_grows = 1;
+        TheSpecialFlags().tiberium_spreads = 1;
       } else {
-        TheSpecial().IsTGrowth = 0;
-        TheSpecial().IsTSpread = 0;
+        TheSpecialFlags().tiberium_grows = 0;
+        TheSpecialFlags().tiberium_spreads = 0;
       }
 
       if (TheNetwork().winsock().Get_Connected()) {
@@ -3098,7 +3098,7 @@ static int Net_New_Dialog() {
     TheSession().tiberium() = 0;
     TheSession().crates() = 0;
     TheSession().ghosts() = 0;
-    TheSpecial().IsCaptureTheFlag = 0;
+    TheSpecialFlags().capture_the_flag = 0;
     TheSession().unit_count() =
         (base::At(TheSession().unit_count_max(), TheSession().bases()) +
          base::At(TheSession().unit_count_min(), TheSession().bases())) /
@@ -3125,7 +3125,7 @@ static int Net_New_Dialog() {
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
   }
-  if (TheSpecial().IsCaptureTheFlag) {
+  if (TheSpecialFlags().capture_the_flag) {
     TheSession().ghosts() = 0;
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
@@ -3148,8 +3148,10 @@ static int Net_New_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  TheSpecial().IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
-  TheSpecial().IsTSpread = static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_grows =
+      static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_spreads =
+      static_cast<unsigned>(TheSession().tiberium());
   int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
@@ -3472,14 +3474,14 @@ static int Net_New_Dialog() {
       case engine::window::ButtonKey(kButtonTiberium):
         if (TheSession().tiberium()) {
           TheSession().tiberium() = 0;
-          TheSpecial().IsTGrowth = 0;
-          TheSpecial().IsTSpread = 0;
+          TheSpecialFlags().tiberium_grows = 0;
+          TheSpecialFlags().tiberium_spreads = 0;
           tiberiumbtn.Turn_Off();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_OFF);
         } else {
           TheSession().tiberium() = 1;
-          TheSpecial().IsTGrowth = 1;
-          TheSpecial().IsTSpread = 1;
+          TheSpecialFlags().tiberium_grows = 1;
+          TheSpecialFlags().tiberium_spreads = 1;
           tiberiumbtn.Turn_On();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
         }
@@ -3509,21 +3511,21 @@ static int Net_New_Dialog() {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonGhosts):
         if (!TheSession().ghosts() &&
-            !TheSpecial().IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
+            !TheSpecialFlags().capture_the_flag) {  // ghosts OFF => ghosts ON
           TheSession().ghosts() = 1;
-          TheSpecial().IsCaptureTheFlag = 0;
+          TheSpecialFlags().capture_the_flag = 0;
           ghostsbtn.Turn_On();
           ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
         } else {
           if (TheSession().ghosts()) {  // ghosts ON => capture-flag
             TheSession().ghosts() = 0;
-            TheSpecial().IsCaptureTheFlag = 1;
+            TheSpecialFlags().capture_the_flag = 1;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
           } else {
-            if (TheSpecial().IsCaptureTheFlag) {  // capture-flag => AI OFF
+            if (TheSpecialFlags().capture_the_flag) {  // capture-flag => AI OFF
               TheSession().ghosts() = 0;
-              TheSpecial().IsCaptureTheFlag = 0;
+              TheSpecialFlags().capture_the_flag = 0;
               ghostsbtn.Turn_Off();
               ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
             }
@@ -3842,7 +3844,7 @@ static int Net_New_Dialog() {
         TheNetwork().global_packet().ScenarioInfo.UnitCount =
             static_cast<unsigned char>(TheSession().unit_count());
         TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
-        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecial();
+        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecialFlags();
         TheNetwork().global_packet().ScenarioInfo.GameSpeed =
             TheOptions().GameSpeed;
 
@@ -4551,8 +4553,10 @@ static int Net_Fake_New_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  TheSpecial().IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
-  TheSpecial().IsTSpread = static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_grows =
+      static_cast<unsigned>(TheSession().tiberium());
+  TheSpecialFlags().tiberium_spreads =
+      static_cast<unsigned>(TheSession().tiberium());
   int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
@@ -4805,7 +4809,7 @@ static int Net_Fake_New_Dialog() {
         TheNetwork().global_packet().ScenarioInfo.UnitCount =
             static_cast<unsigned char>(TheSession().unit_count());
         TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
-        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecial();
+        TheNetwork().global_packet().ScenarioInfo.Special = TheSpecialFlags();
         TheNetwork().global_packet().ScenarioInfo.GameSpeed =
             TheOptions().GameSpeed;
 

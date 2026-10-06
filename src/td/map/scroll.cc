@@ -51,9 +51,9 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
-#include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/map/help.h"
 #include "td/screens/goptions.h"
 
@@ -114,7 +114,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	Special check to not scroll within the special no-scroll regions.
     */
     bool noscroll = false;
-    if (TheSpecial().IsScrollMod && y == 0 &&
+    if (TheSpecialFlags().no_scroll_over_tabs && y == 0 &&
         ((x > 3 && x < EVA_WIDTH) ||
          (x > TheScreen().visible_view().width() - EVA_WIDTH &&
           x < TheScreen().visible_view().width() - 3))) {

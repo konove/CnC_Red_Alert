@@ -103,7 +103,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/ai/trigger.h"
 #include "td/assets/window_rect.h"
 #include "td/core/config.h"
@@ -112,6 +111,7 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/display.h"
@@ -1827,7 +1827,7 @@ void CellClass::Incoming(Coordinate threat, bool forced) {
     /*
     **	Special check to make sure that friendly units never scatter.
     */
-    if (TheSpecial().IsScatter ||
+    if (TheSpecialFlags().scatter ||
         (object->Is_Techno() &&
          !dynamic_cast<TechnoClass*>(object)->House->IsHuman)) {
       object->Scatter(threat, forced);

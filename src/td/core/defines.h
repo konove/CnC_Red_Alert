@@ -53,9 +53,9 @@
 #include "engine/gfx/wwstd.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/special.h"
 #include "td/core/cell.h"        // IWYU pragma: export
 #include "td/core/coordinate.h"  // IWYU pragma: export
+#include "td/core/special_flags.h"
 #include "td/core/target.h"      // IWYU pragma: export
 
 namespace td {
@@ -2319,7 +2319,7 @@ struct SerialPacketType {
   unsigned char BuildLevel;             // buildable level
   unsigned char UnitCount;              // max # units
   int Seed;                             // random number seed
-  SpecialClass Special;                 // command-line options
+  SpecialFlags Special;                 // command-line options
   unsigned int GameSpeed;               // Game Speed
   uint32_t ResponseTime;                // packet response time
   char Message[COMPAT_MESSAGE_LENGTH];  // inter-player message
@@ -2386,7 +2386,7 @@ struct GlobalPacketType {
       unsigned char BuildLevel;     // buildable level
       unsigned char UnitCount;      // max # units
       int Seed;                     // random number seed
-      SpecialClass Special;         // command-line options
+      SpecialFlags Special;         // command-line options
       unsigned int GameSpeed;       // Game Speed
     } ScenarioInfo;
     struct {

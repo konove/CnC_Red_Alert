@@ -68,7 +68,6 @@
 #include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "td/ai/prebuilt_base.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -80,6 +79,7 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"
@@ -152,7 +152,7 @@ bool Start_Scenario(char* root, bool briefing) {
   ** we don't want a briefing movie on GDI scenario 1.
   */
   if (TheWorld().scenario() < 20 &&
-      (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled())) {
+      (!TheSpecialFlags().jurassic || !TheGameState().thingies_enabled())) {
     if (TheWorld().scenario() != 1 || TheWorld().whom() == HOUSE_GOOD) {
       Play_Movie(TheWorld().intro_movie());
     }
@@ -495,13 +495,13 @@ void Do_Win() {
       return;
     }
 
-    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled() &&
+    if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled() &&
         TheWorld().scenario() == 5) {
       ShutDown();
       exit(0);
     }
 
-    if (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled()) {
+    if (!TheSpecialFlags().jurassic || !TheGameState().thingies_enabled()) {
       game::TheKeyboard().Clear();
       TheWorld().score().Show();
 

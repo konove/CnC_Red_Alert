@@ -62,12 +62,12 @@
 #include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
-#include "td/ai/special.h"
 #include "td/core/config.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
 #include "td/objects/cell.h"
@@ -270,7 +270,8 @@ bool OverlayClass::Mark(MarkType mark) {
           /*
           **	Don't show the squish unless the gross flag is active.
           */
-          if (!TheSpecial().IsGross && Class->Type != OVERLAY_SQUISH) {
+          if (!TheSpecialFlags().squish_marks &&
+              Class->Type != OVERLAY_SQUISH) {
             cellptr->Overlay = Class->Type;
             cellptr->OverlayData = 0;
           }

@@ -158,7 +158,6 @@
 #include "game/sim/utracker.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -171,6 +170,7 @@
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
@@ -445,7 +445,7 @@ HouseClass::HouseClass(HousesType house)
   BrightColor = Class->BrightColor;
   // Give the special units their own radar color; otherwise they would be the
   // same color as the player.
-  if (house == HOUSE_JP && TheSpecial().IsJurassic &&
+  if (house == HOUSE_JP && TheSpecialFlags().jurassic &&
       TheGameState().thingies_enabled()) {
     const HouseTypeClass& bad = HouseTypeClass::As_Reference(HOUSE_BAD);
     Color = bad.Color;
@@ -563,7 +563,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   **	Multiplayer game uses a different legality check for building.
   */
   if (TheSession().type() != GAME_NORMAL ||
-      (TheSpecial().IsJurassic && TheGameState().thingies_enabled())) {
+      (TheSpecialFlags().jurassic && TheGameState().thingies_enabled())) {
     return (pre & flags) == pre &&
            std::cmp_less_equal(type->Level, TheWorld().build_level());
   }
@@ -923,10 +923,10 @@ void HouseClass::AI() {
         TheWorld().scenario_init()--;
       }
     }
-    if (TheSpecial().IsDifficult) {
+    if (TheSpecialFlags().difficult) {
       AlertTime.Set(kTicksPerMinute * Random_Pick(4, 10));
     } else {
-      if (TheSpecial().IsEasy) {
+      if (TheSpecialFlags().easy) {
         AlertTime.Set(kTicksPerMinute * Random_Pick(16, 40));
       } else {
         AlertTime.Set(kTicksPerMinute * Random_Pick(5, 20));
@@ -950,8 +950,8 @@ void HouseClass::AI() {
     **	someone sitting on it.  If so, make the scatter.  If they
     *refuse, *	blow them up.
     */
-    if (TheSpecial().IsCaptureTheFlag && TheSession().type() != GAME_NORMAL &&
-        FlagHome.index() != 0) {
+    if (TheSpecialFlags().capture_the_flag &&
+        TheSession().type() != GAME_NORMAL && FlagHome.index() != 0) {
       TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
@@ -990,7 +990,7 @@ void HouseClass::AI() {
     if (TheSession().type() != GAME_NORMAL && Class->House == HOUSE_JP) {
       int rlimit = 0;
 
-      if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+      if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
         rlimit = 450;
       } else {
         rlimit = 1000;
@@ -999,7 +999,7 @@ void HouseClass::AI() {
       if (GameRandomRange(0, rlimit) == 0) {
         UnitClass* obj = nullptr;
 
-        if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+        if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
           obj = base::NewPooled<UnitClass>(Random_Pick(UNIT_TRIC, UNIT_STEG),
                                            HOUSE_JP);
         } else {
@@ -3260,7 +3260,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         **	harvester if possible. Never replace harvesters if the game
         **	is in easy mode.
         */
-        if (!TheSpecial().IsEasy && !IsHuman &&
+        if (!TheSpecialFlags().easy && !IsHuman &&
             ActiveBScan & kStructFlagRefinery &&
             !(UScan & kUnitFlagHarvester)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
@@ -3791,7 +3791,7 @@ void HouseClass::MPlayer_Defeated() {
   /*------------------------------------------------------------------------
   Remove this house's flag & flag home cell
   ------------------------------------------------------------------------*/
-  if (TheSpecial().IsCaptureTheFlag) {
+  if (TheSpecialFlags().capture_the_flag) {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {

@@ -581,7 +581,7 @@ PendingObject/cursor fixup.
 - `CarryoverClass`: drop the `LinkClass` base; global `std::vector<CarryoverClass> Carryover`
   (`globals.cc:607`); callers are five loops in `scenario.cc:613-617, 946-1015` and
   `saveload.cc:808-834`. Removes `Zap()` and the NoInit ctor.
-- `SpecialClass`: lives in the `EventClass` union → must stay trivially constructible, no ctor;
+- `SpecialFlags`: lives in the `EventClass` union → must stay trivially constructible, no ctor;
   `Serialize` writes one `uint8` bitmask.
 - `OptionsClass`/`GameOptionsClass`: serialize `GameSpeed` only (raw image today restores the
   saver's key bindings and volumes into the loader — a bug). Call out in the commit message.

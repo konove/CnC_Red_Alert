@@ -71,10 +71,10 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/objects/building.h"
@@ -1471,7 +1471,7 @@ void UnitTypeClass::One_Time() {
     **	Fetch a pointer to the unit's shape data.
     */
     if (!uclass.IsPieceOfEight ||
-        (TheSpecial().IsJurassic && TheGameState().thingies_enabled())) {
+        (TheSpecialFlags().jurassic && TheGameState().thingies_enabled())) {
       const auto fullname = std::filesystem::path(uclass.IniName)
                                 .replace_extension(".SHP")
                                 .string();

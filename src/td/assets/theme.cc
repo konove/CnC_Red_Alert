@@ -62,9 +62,9 @@
 #include "base/enum_array.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
@@ -359,7 +359,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
-  if (_themes.at(theme).Variation && TheSpecial().IsVariation) {
+  if (_themes.at(theme).Variation && TheSpecialFlags().score_variations) {
     static auto name = std::filesystem::path(_themes.at(theme).Name)
                            .replace_extension(".VAR")
                            .string();
@@ -479,13 +479,13 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   return _themes.at(index).Available &&
          (_themes.at(index).Normal ||
           //		(index == THEME_MAP1 && ScenarioInit) ||
-          (TheSpecial().IsVariation && _themes.at(index).Variation &&
+          (TheSpecialFlags().score_variations && _themes.at(index).Variation &&
            index != THEME_WIN1 &&
 #ifndef DEMO
            (TheSession().type() != GAME_NORMAL ||
             _themes.at(index).Scenario <= TheWorld().scenario()) &&
 #endif
-           (index != THEME_J1 || TheSpecial().IsJurassic)));
+           (index != THEME_J1 || TheSpecialFlags().jurassic)));
 }
 
 /***********************************************************************************************
@@ -554,7 +554,7 @@ ThemeType ThemeClass::From_Name(std::string_view name) {
  *=============================================================================================*/
 void ThemeClass::Scan() {
   for (ThemeType theme = THEME_AIRSTRIKE; theme < THEME_COUNT; theme++) {
-    //		if (theme == THEME_J1 && !Special.IsJurassic) {
+    //		if (theme == THEME_J1 && !Special.jurassic) {
     //			_themes[theme].Available = false;
     //		} else {
     _themes.at(theme).Available = GameFileExists(Theme_File_Name(theme));

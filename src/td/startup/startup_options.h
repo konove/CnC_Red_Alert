@@ -43,7 +43,7 @@ struct StartupOptions {
   bool quiet = false;      // -XQ
   bool check_map = false;  // -CHECKMAP
 
-  // SpecialClass flags that the options dialog can change later: the two
+  // SpecialFlags flags that the options dialog can change later: the two
   // difficulty phrases, the bonus scenarios, and the -X switches.
   bool easy = false;
   bool hard = false;

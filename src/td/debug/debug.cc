@@ -326,7 +326,8 @@ void Debug_Key(unsigned input) {
 
 #ifdef NEVER
       case Shift(KN_F1):
-        TheSpecial().IsBarOn = (TheSpecial().IsBarOn == false);
+        TheSpecialFlags().all_health_bars =
+            (TheSpecialFlags().all_health_bars == false);
         TheMap().Flag_To_Redraw(true);
         break;
 
@@ -431,7 +432,8 @@ void Debug_Key(unsigned input) {
 
 #ifdef NEVER
       case KN_F5:
-        TheSpecial().IsShowPath = (TheSpecial().IsShowPath == false);
+        TheSpecialFlags().show_find_path =
+            (TheSpecialFlags().show_find_path == false);
         // PlayerPtr->Credits += 1000;
         break;
 

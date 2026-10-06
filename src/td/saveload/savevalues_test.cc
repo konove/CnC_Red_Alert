@@ -15,11 +15,11 @@
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "gtest/gtest.h"
-#include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/objects/abstract.h"
 #include "td/objects/cell.h"
 #include "td/objects/door.h"
@@ -37,8 +37,8 @@ namespace td {
 namespace {
 game::GameClock game_clock;
 const base::Installed<game::GameClock>::Scope game_clock_scope(game_clock);
-SpecialClass special{};
-const base::Installed<SpecialClass>::Scope special_scope(special);
+SpecialFlags special{};
+const base::Installed<SpecialFlags>::Scope special_scope(special);
 
 template <class T>
 std::array<uint8_t, 64> Save(T& value) {

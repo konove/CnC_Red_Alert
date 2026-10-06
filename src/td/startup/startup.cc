@@ -97,7 +97,7 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/scripted_player.h"
-#include "td/ai/special.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
 #include "td/screens/goptions.h"
@@ -190,23 +190,23 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_check_map(options.check_map);
 
   if (options.easy) {
-    TheSpecial().IsHealthBar = true;
-    TheSpecial().IsEasy = true;
-    TheSpecial().IsDifficult = false;
+    TheSpecialFlags().enemy_health_bars = true;
+    TheSpecialFlags().easy = true;
+    TheSpecialFlags().difficult = false;
   }
   if (options.hard) {
-    TheSpecial().IsHealthBar = false;
-    TheSpecial().IsEasy = false;
-    TheSpecial().IsDifficult = true;
+    TheSpecialFlags().enemy_health_bars = false;
+    TheSpecialFlags().easy = false;
+    TheSpecialFlags().difficult = true;
   }
   if (options.jurassic) {
-    TheSpecial().IsJurassic = true;
+    TheSpecialFlags().jurassic = true;
     TheGameState().thingies_enabled() = true;
   }
-  TheSpecial().IsFromInstall = options.from_install;
-  TheSpecial().IsInert = options.inert_weapons;
-  TheSpecial().IsSpeedBuild = options.speed_build;
-  TheSpecial().IsVisibleTarget = options.visible_target;
+  TheSpecialFlags().from_install = options.from_install;
+  TheSpecialFlags().inert_weapons = options.inert_weapons;
+  TheSpecialFlags().speed_build = options.speed_build;
+  TheSpecialFlags().visible_target = options.visible_target;
 
   TheSession().record_game() = options.record;
   TheSession().playback_game() = options.playback;
@@ -296,7 +296,6 @@ static int Run(int argc, char* argv[])
   TheWorld().scen_player() = SCEN_PLAYER_GDI;
   TheWorld().scen_dir() = game::SCEN_DIR_EAST;
   TheWorld().whom() = HOUSE_GOOD;
-  TheSpecial().Init();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (options.has_value()) {
@@ -377,7 +376,7 @@ static int Run(int argc, char* argv[])
       **	Check for forced intro movie run disabling. If the conquer
       **	configuration file says "no", then don't run the intro.
       */
-      TheSpecial().IsFromInstall =
+      TheSpecialFlags().from_install =
           !absl::EqualsIgnoreCase(
               conquer_ini.GetString("Intro", "PlayIntro", "Yes"), "No") &&
           !TheGameState().spawned_from_chat();
@@ -408,7 +407,7 @@ static int Run(int argc, char* argv[])
       } else {
         CCDebugString("C&C95 - C&CSPAWN.INI packet not arrived yet.\n");
         // Check_From_WChat("C&CSPAWN.INI");
-        // if (Special.IsFromWChat){
+        // if (Special.from_wchat){
         //	DDEServer.Disable();
         // }
       }
@@ -418,7 +417,7 @@ static int Run(int argc, char* argv[])
       **	If the intro is being run for the first time, then don't
       **	allow breaking out of it with the <ESC> key.
       */
-      if (TheSpecial().IsFromInstall) {
+      if (TheSpecialFlags().from_install) {
         TheGameState().breakout_allowed() = false;
       }
 

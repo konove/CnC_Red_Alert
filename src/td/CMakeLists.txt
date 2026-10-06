@@ -127,6 +127,16 @@ add_gtest(
 target_compile_definitions(td_options_dialogs_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_options_dialogs_test)
 
+# Plays the developer options dialog in a real Game.
+add_gtest(
+    NAME td_special_options_test
+    SOURCES screens/special_options_test.cc ${TD_GAME_TEST_UTIL} ${TD_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS td_engine base
+)
+target_compile_definitions(td_special_options_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_special_options_test)
+
 add_gtest(
     NAME td_reinforcements_test
     SOURCES ai/reinforcements_test.cc startup/startup.cc

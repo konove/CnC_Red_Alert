@@ -87,7 +87,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
@@ -97,6 +96,7 @@
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"
@@ -689,7 +689,7 @@ void ScoreClass::Show() {
     absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
   }
 
-  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+  if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
     return;
   }
 

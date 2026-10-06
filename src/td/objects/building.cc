@@ -165,7 +165,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
-#include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/assets/assets.h"
@@ -178,6 +177,7 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/power.h"
@@ -1170,7 +1170,7 @@ void BuildingClass::AI() {
       *last frame is replaced by the first frame of *	the loop.
       */
       if (Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
-          (TheSpecial().IsMCVDeploy && *this == STRUCT_CONST &&
+          (TheSpecialFlags().mcv_deploy && *this == STRUCT_CONST &&
            Mission == MISSION_DECONSTRUCTION && Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
@@ -1978,7 +1978,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
       if (*this != STRUCT_SAM && !House->Is_Ally(source) &&
           Class->Primary != WEAPON_NONE && (!TarCom || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
-            (!House->IsHuman || TheSpecial().IsSmartDefense)) {
+            (!House->IsHuman || TheSpecialFlags().smart_defense)) {
           Assign_Target(source->As_Target());
         } else {
           /*
@@ -4246,7 +4246,7 @@ int BuildingClass::Mission_Deconstruction() {
         **	members leaving is equal to the unrecovered cost of the building
         **	divided by 100 (the typical cost of a minigunner infantryman).
         */
-        if (!TheSpecial().IsMCVDeploy || *this != STRUCT_CONST) {
+        if (!TheSpecialFlags().mcv_deploy || *this != STRUCT_CONST) {
           int divisor = 200;
           if (IsCaptured) {
             divisor *= 2;
@@ -4313,7 +4313,7 @@ int BuildingClass::Mission_Deconstruction() {
         **	Construction yards that deconstruct, really just revert back
         **	to an MCV.
         */
-        if (TheSpecial().IsMCVDeploy && *this == STRUCT_CONST &&
+        if (TheSpecialFlags().mcv_deploy && *this == STRUCT_CONST &&
             House->IsHuman) {
           TheWorld().scenario_init()++;
           auto* unit =
@@ -4625,12 +4625,12 @@ int BuildingClass::Mission_Harvest() {
         /*
         **	Force any bib squaters to scatter.
         */
-        const bool old = TheSpecial().IsScatter;
-        TheSpecial().IsScatter = true;
+        const bool old = TheSpecialFlags().scatter;
+        TheSpecialFlags().scatter = true;
         TheMap()
             .at(Adjacent_Cell(Cell::Containing(Center_Coord()), game::DIR_SW))
             .Incoming(Coordinate{}, true);
-        TheSpecial().IsScatter = old;
+        TheSpecialFlags().scatter = old;
 
         FootClass* techno = Attached_Object();
         if (techno) {

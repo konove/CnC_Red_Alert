@@ -84,12 +84,12 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -4172,13 +4172,13 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
   Cell cell{};
 
   if ((placement && Bib_And_Offset(bib, cell)) ||
-      (TheSpecial().IsRoad &&
+      (TheSpecialFlags().no_road_pieces &&
        (*this == STRUCT_BARRACKS || (placement && *this == STRUCT_REFINERY)))) {
     /*
     **	The barracks is always considered to have a bib under it for placement
     *reasons even *	if the bib logic is turned off.
     */
-    if (TheSpecial().IsRoad && *this == STRUCT_BARRACKS) {
+    if (TheSpecialFlags().no_road_pieces && *this == STRUCT_BARRACKS) {
       bib = SMUDGE_BIB3;
       cell = Cell{};
     }
@@ -4187,7 +4187,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     **	If bibs are disabled, then always ensure that the refinery bib is marked
     **	as occupied.
     */
-    if (TheSpecial().IsRoad && *this == STRUCT_REFINERY) {
+    if (TheSpecialFlags().no_road_pieces && *this == STRUCT_REFINERY) {
       bib = SMUDGE_BIB2;
       cell = Cell::FromIndex(MAP_CELL_W);
     }
@@ -4353,7 +4353,7 @@ int BuildingTypeClass::Repair_Step() const { return kRepairStep; }
 bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
   bib = SMUDGE_NONE;
 
-  if (IsBibbed && !TheSpecial().IsRoad) {
+  if (IsBibbed && !TheSpecialFlags().no_road_pieces) {
     switch (Width()) {
       case 2:
         bib = SMUDGE_BIB3;
@@ -4421,7 +4421,7 @@ int BuildingTypeClass::Full_Name() const {
   if (TheWorld().scenario() == 3 && Type == STRUCT_MISSION) {
     return TXT_PRISON;
   }
-  if (!IsNominal || TheSpecial().IsNamed || IsWall ||
+  if (!IsNominal || TheSpecialFlags().named_civilians || IsWall ||
       TheDebugState().map_editor_active() || Type == STRUCT_V23 ||
       Type == STRUCT_V30 || Type == STRUCT_MISSION || Type == STRUCT_BIO_LAB) {
     return TechnoTypeClass::Full_Name();
@@ -4453,7 +4453,7 @@ int BuildingTypeClass::Raw_Cost() const {
 }
 
 int BuildingTypeClass::Cost_Of() const {
-  if (TheSpecial().IsSeparate && Type == STRUCT_HELIPAD) {
+  if (TheSpecialFlags().separate_helipad && Type == STRUCT_HELIPAD) {
     return Raw_Cost();
   }
 

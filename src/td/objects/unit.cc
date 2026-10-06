@@ -151,7 +151,6 @@
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
@@ -162,6 +161,7 @@
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/layer.h"
 #include "td/map/mouse.h"
@@ -470,7 +470,7 @@ void UnitClass::AI() {
   ** for Jurassic objects, animate them if they're walking
   */
   // Only animate if they're walking
-  if ((Class->IsPieceOfEight && TheSpecial().IsJurassic &&
+  if ((Class->IsPieceOfEight && TheSpecialFlags().jurassic &&
        TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
     if (!Fetch_Rate()) {
@@ -980,7 +980,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	typically is the only one that will qualify here.
     */
     if (!Team && source && !IsTethered && !House->Is_Ally(source) &&
-        (!House->IsHuman || TheSpecial().IsSmartDefense)) {
+        (!House->IsHuman || TheSpecialFlags().smart_defense)) {
       /*
       **	Try to crush the attacker if it can be crushed by this unit and
       *this unit is *	not equipped with a flame type weapon. If this unit has
@@ -993,8 +993,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
             BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
                     .Warhead != WARHEAD_FIRE)) &&
           (TheSession().type() != GAME_NORMAL || *this != UNIT_HARVESTER ||
-           TheWorld().build_level() > 8 || TheSpecial().IsDifficult) &&
-          !TheSpecial().IsEasy && Class->IsCrusher && source->Is_Techno() &&
+           TheWorld().build_level() > 8 || TheSpecialFlags().difficult) &&
+          !TheSpecialFlags().easy && Class->IsCrusher && source->Is_Techno() &&
           source->Class_Of().IsCrushable) {
         Assign_Destination(source->As_Target());
         Assign_Mission(MISSION_MOVE);
@@ -1837,7 +1837,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   /*
   **	Certain units require some setup time after they come to a halt.
   */
-  if (TheSpecial().IsDefenderAdvantage && /*center &&*/ !NavCom &&
+  if (TheSpecialFlags().defender_advantage && /*center &&*/ !NavCom &&
       base::At(Path, 0) == game::FACING_NONE) {
     if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
       Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);

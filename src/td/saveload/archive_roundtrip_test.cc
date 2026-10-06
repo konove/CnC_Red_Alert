@@ -19,11 +19,11 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/map.h"
@@ -55,8 +55,8 @@ SessionClass session;
 const base::Installed<SessionClass>::Scope session_scope(session);
 // Object validation reports through the debug switches, which read the
 // command overrides.
-SpecialClass special{};
-const base::Installed<SpecialClass>::Scope special_scope(special);
+SpecialFlags special{};
+const base::Installed<SpecialFlags>::Scope special_scope(special);
 // The serializers also read the run-state flags.
 GameState game_state;
 const base::Installed<GameState>::Scope game_state_scope(game_state);
@@ -214,7 +214,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     e.Data.Anim.Owner = HOUSE_GOOD;
     e.Data.Anim.Where = Coordinate::FromPacked(100);
   }, ANIM_FIRE_SMALL, HOUSE_GOOD, Coordinate::FromPacked(100));
-  SpecialClass options{};
+  SpecialFlags options{};
   check([&options](EventClass& e) {
     e.Type = EventClass::SPECIAL;
     e.Data.Options.Data = options;

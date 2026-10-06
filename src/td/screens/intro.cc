@@ -62,13 +62,13 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/presentation.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
+#include "td/core/special_flags.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
 #include "td/screens/movie_screen.h"
@@ -158,7 +158,7 @@ void Choose_Side() {
   //	speechg = MixArchive::RetrieveData("GDI_SLCT.AUD");
   //	speechn = MixArchive::RetrieveData("NOD_SLCT.AUD");
 
-  if (TheSpecial().IsFromInstall) {
+  if (TheSpecialFlags().from_install) {
     {
       TheScreen().visible_page().view().Clear();
       TheGameState().preserve_movie_screen() = true;
@@ -177,7 +177,7 @@ void Choose_Side() {
   TheScreen().hidden_page().view().Clear();
   show.page().view().Clear();
   TheScreen().sys_mem_page().view().Clear();
-  // if (!Special.IsFromInstall) {
+  // if (!Special.from_install) {
   TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().title_palette());
   //} else {
@@ -291,7 +291,7 @@ void Choose_Side() {
   /*
   ** Skip the briefings if we're in special mode.
   */
-  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+  if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled()) {
     nodbrief.reset();
     gdibrief.reset();
   }

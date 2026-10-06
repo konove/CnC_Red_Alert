@@ -14,8 +14,8 @@
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
-#include "td/ai/special.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini_io.h"
 #include "td/debug/debug_state.h"
 #include "td/net/mplayer.h"
@@ -69,8 +69,8 @@ class MultiPlayerSettingsTest : public testing::Test {
  private:
   SessionClass session_;
   base::Installed<SessionClass>::Scope session_scope_{session_};
-  SpecialClass special_{};
-  base::Installed<SpecialClass>::Scope special_scope_{special_};
+  SpecialFlags special_{};
+  base::Installed<SpecialFlags>::Scope special_scope_{special_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
   Network network_;

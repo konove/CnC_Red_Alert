@@ -374,7 +374,7 @@
     {
       "id": "T-17",
       "title": "Cover the multiplayer branch of RunSpecialOptionsDialog()",
-      "details": "`ra/ai/special_options.cc`, 137 of 141 lines covered.\n\nIn a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs a running game behind it; the rest of both dialogs is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`).",
+      "details": "`ra/screens/special_options.cc` (moved from `ra/ai/special_options.cc` by T-136, so this item's anchor is lost; the code is the `if (TheSession().Type == GAME_NORMAL)` at the top of the dialog loop).\n\nIn a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs a running game behind it; the rest of the dialog is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`).\n\nTD's twin, `td/screens/special_options.cc`, has the same uncovered branch (`Main_Loop()`).",
       "priority": "p3",
       "tags": [
         "testing",
@@ -383,7 +383,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
-      "updated": "2026-10-06T00:32:46Z",
+      "updated": "2026-10-06T01:05:07Z",
       "anchor": {
         "path": "src/ra/ai/special_options.cc",
         "startLine": 132,
@@ -399,7 +399,7 @@
           "      }",
           "    }"
         ],
-        "lost": false
+        "lost": true
       }
     },
     {
@@ -718,7 +718,7 @@
         "endLine": 2628,
         "text": "      if (TheNetwork().winsock().Get_Connected()) {",
         "before": [
-          "        TheSpecial().IsTSpread = 0;",
+          "        TheSpecialFlags().tiberium_spreads = 0;",
           "      }",
           ""
         ],
@@ -819,8 +819,8 @@
       "updated": "2026-10-06T00:43:35Z",
       "anchor": {
         "path": "src/ra/objects/combat.cc",
-        "startLine": 457,
-        "endLine": 457,
+        "startLine": 456,
+        "endLine": 456,
         "text": "      (static_cast<uint16_t>(radius) + game::kCellWidthLeptons - 1) /",
         "before": [
           "  // The radius was a 16-bit lepton word; an exploding unit's strength times",
@@ -983,7 +983,7 @@
           " *=============================================================================================*/"
         ],
         "after": [
-          "  if (In_Radar(cell) && !TheSpecialOptions().capture_the_flag) {",
+          "  if (In_Radar(cell) && !TheSpecialFlags().capture_the_flag) {",
           "    const CellClass* cellptr = &(*this).at(cell);",
           "    TemplateType ttype = cellptr->TType;"
         ],
@@ -1036,8 +1036,8 @@
       "updated": "2026-10-06T00:35:14Z",
       "anchor": {
         "path": "src/td/objects/techno.cc",
-        "startLine": 3067,
-        "endLine": 3067,
+        "startLine": 3070,
+        "endLine": 3070,
         "text": "Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {",
         "before": [
           " *                                                                                             *",
@@ -3053,16 +3053,16 @@
     {
       "id": "T-136",
       "title": "Finish what the ra/ai/special_options modernization left",
-      "details": "`2d3c8713..820577e9`.\n\n- Decide what to do with `SpecialOptions::three_point_turns` (`ra/ai/special_options.h` ~65): nothing in Red Alert reads it, so its check box in `RunSpecialOptionsDialog()` (`special_options.cc` ~83) does nothing. Either drop the check box (one file, changes the developer dialog) or wire the flag into the unit turning code as TD does (a simulation change).\n- `ore_grows` and `ore_spreads` are written at about 14 sites in `ra/net/netdlg.cc`, `ra/net/nulldlg.cc` and `ra/wol/wol_gsup.cc` beside the rules' `IsTGrowth`/`IsTSpread`, and only the rules' copies are read. Turning the three unread flags into reserved bits and deleting the writers keeps the layout but changes bits 5-7 of the saved byte and of the game-options packet, so it needs a multiplayer check.\n- The flags stay `unsigned x : 1` (8 bits, `sizeof` 4): `EventClass`'s union and the packets in `ra/net/session.h` (~339, ~412) send the struct raw, so `bool x : 1` would be a wire change.\n- Replace `SpecialOptions::Reset()` with an initializer at the owner: `SpecialOptions special_{.ore_grows = true, .ore_spreads = true};` in `ra/startup/game.h` and no call in `ra/startup/startup.cc` (~302). Four files; test-built `Game`s would then start with the ore bits set, and `-Wmissing-designated-field-initializers` may object. Default member initializers are not an option: `EventClass`'s `Data{}` would set bits 6-7 in every event.\n- Split the header: the flag struct is included by about 20 files, the two dialogs by three, and none of it is AI. The struct could be a header under `ra/core/` or `ra/data/`, the options dialog and `PromptForDifficulty()` (campaign start, no relation to the flags) files under `ra/screens/`; about 25 include sites.\n- `RunSpecialOptionsDialog()` applies the boxes on Escape as well as on OK (TD's `Special_Dialog()` does the same); decide whether Escape should cancel.\n- Its `redraw` flag is one-shot like the one `PromptForDifficulty()` lost, but hoisting the draw would move it in front of the first `RunFrame()`.\n- Give TD's twin the same pass: `td/ai/special.cc` still has `SpecialClass`, `TheSpecial()`, the label-keyed `_options` table with its `Setting` mirror, raw `Button` pointers and the always-true `if (Button)`.\n- Names to confirm: `SpecialOptions` (or `SpecialFlags`), `shroud_regrows` (or `shadow_grows`, as in the rules' `IsMPShadowGrow`), `PromptForDifficulty()` (or `AskDifficulty()`).\n- `special_options_test.cc` (~40): CLion warns that the RAII `Installed<>::Scope` local is unused; a false positive, the same form as in `ra/saveload/saveglobals_test.cc`.",
+      "details": "Follow-up to `2d3c8713..820577e9`. Done 2026-10-05 in two commits, one per game; decisions taken interactively with the user.\n\n**Decisions**\n\n1. `three_point_turns`: the check box is gone from RA's dialog; the bit stays.\n2. The unread flags (`ore_grows`, `ore_spreads`, `three_point_turns`) and their writers stay: no save or wire change.\n3. Escape cancels in both games. RA already did (only its header comment was stale); TD's dialog now does too.\n4. Names: `SpecialFlags` / `TheSpecialFlags()`, `shadow_grows`, `AskDifficulty()`, in both games where they apply.\n5. The flag struct lives in `<game>/core/special_flags.h`.\n6. `Reset()` (RA) and `Init()` (TD) are gone; the owner in `startup/game.h` starts from the flags' defaults.\n7. The one-shot `redraw` flag stays.\n\n**What changed**\n\n- RA: `ra/ai/special_options.*` split into `ra/core/special_flags.h` (the struct), `ra/screens/special_options.{h,cc}` (`RunSpecialOptionsDialog()`, now one check box, speed build, on the first row) and `ra/screens/difficulty.{h,cc}` (`DifficultyChoice`, `DifficultyForLevel()`, `AskDifficulty()`). Tests split the same way; new ctest target `ra_difficulty_test`.\n- TD: `td/ai/special.*` became `td/core/special_flags.h` (`SpecialClass` → struct `SpecialFlags`, `TheSpecial()` → `TheSpecialFlags()`, all 29 `Is...` members renamed to snake_case, e.g. `IsRoad` → `no_road_pieces`, `IsBarOn` → `all_health_bars`, `IsHealthBar` → `enemy_health_bars`) and `td/screens/special_options.{h,cc}` (`Special_Dialog()` → `RunSpecialOptionsDialog()`, rewritten around a constexpr table of label + get/set per flag; no `Setting` mirror, no label switch). New `td/screens/special_options_test.cc` (six scripted tests, target `td_special_options_test`).\n- Deviation from decision 6: the initializer is `SpecialFlags special_ = InitialSpecialFlags();`, a constexpr function in each `special_flags.h`, not `{.ore_grows = true, .ore_spreads = true}`. The designated form fails the strict build twice over: `-Wmissing-designated-field-initializers` wants every flag named and `readability-implicit-bool-conversion` rejects `true` for an `unsigned` bit-field.\n- The flags stay `unsigned x : 1` with no default member initializers (raw in `EventClass`'s union and the packets).\n\n**Verified**\n\nFull strict build clean; 1,612 ctests pass in `build` and `build-strict`; `tools/net_check.py` in step for 600 frames; `tools/ui_check.py` all 12 scripts ok after re-recording `src/ra/testdata/ui/special_options` (two shots changed because the three-point box is gone; the script's click moved from row two to row one).\n\n**Left open**\n\n- Not checked by hand: TD's dialog on a real display, and a TD multiplayer game (there is no TD net check). TD's wire layout is unchanged (same bit order), only names moved.\n- `ra/core/special_flags_test.cc`: CLion's \"unused local\" on the RAII `Installed<>::Scope` is a false positive, as in `ra/saveload/saveglobals_test.cc`.\n- The multiplayer branch of both dialogs is uncovered: T-17.",
       "priority": "p3",
       "tags": [
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T01:17:46Z"
     },
     {
       "id": "T-137",

@@ -57,11 +57,11 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
-#include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/screens/goptions.h"
@@ -420,7 +420,8 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   *appropriate and desired.
   */
   const char* ext = ".AUD";
-  if (TheSpecial().IsJuvenile && SoundEffectName.at(voc).Where == IN_JUV) {
+  if (TheSpecialFlags().juvenile_sounds &&
+      SoundEffectName.at(voc).Where == IN_JUV) {
     ext = ".JUV";
   } else {
     if (SoundEffectName.at(voc).Where == IN_VAR) {

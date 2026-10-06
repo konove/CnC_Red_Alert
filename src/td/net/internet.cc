@@ -70,12 +70,12 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini_io.h"
 #include "td/data/text.h"
 #include "td/map/world.h"
@@ -182,7 +182,7 @@ void Check_From_WChat(const char* wchat_name) {
 
     TheNetwork().westwood_is_host() = host.contains('1');
 
-    TheSpecial().IsFromWChat = true;
+    TheSpecialFlags().from_wchat = true;
   }
 
   if (wchat_name) {
@@ -266,7 +266,7 @@ int Read_Game_Options(const char* name) {
   TheWorld().build_level() = ini.GetInt("Options", "BuildLevel", 0);
   TheSession().unit_count() = ini.GetInt("Options", "UnitCount", 0);
   TheWorld().seed() = ini.GetInt("Options", "Seed", 0);
-  TheSpecial().IsCaptureTheFlag =
+  TheSpecialFlags().capture_the_flag =
       static_cast<unsigned>(ini.GetInt("Options", "CaptureTheFlag", 0));
   // externs.h declares these unsigned long; the INI stores them as ints.
   TheNetwork().westwood_game_id() =
@@ -277,11 +277,11 @@ int Read_Game_Options(const char* name) {
   TheNetwork().internet_max_players() = ini.GetInt("Internet", "MaxPlayers", 2);
 
   if (TheSession().tiberium()) {
-    TheSpecial().IsTGrowth = 1;
-    TheSpecial().IsTSpread = 1;
+    TheSpecialFlags().tiberium_grows = 1;
+    TheSpecialFlags().tiberium_spreads = 1;
   } else {
-    TheSpecial().IsTGrowth = 0;
-    TheSpecial().IsTSpread = 0;
+    TheSpecialFlags().tiberium_grows = 0;
+    TheSpecialFlags().tiberium_spreads = 0;
   }
   TheSession().scenario_index() = ini.GetInt("Options", "Scenario", 0);
   TheWorld().scenario() =
@@ -461,7 +461,7 @@ bool Do_The_Internet_Menu_Thang() {
   const int buffer_len = sizeof(users_name);
   engine::window::KeyNumber input = engine::window::KN_NONE;
 
-  if (!TheSpecial().IsFromWChat && !TheGameState().spawned_from_chat()) {
+  if (!TheSpecialFlags().from_wchat && !TheGameState().spawned_from_chat()) {
     /*
     ** If the user is registered with Planet Westwood then spawn WChat.
     */

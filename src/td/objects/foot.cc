@@ -113,7 +113,6 @@
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
@@ -123,6 +122,7 @@
 #include "td/core/inline.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/event.h"
@@ -1162,7 +1162,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
            BulletTypeClass::As_Reference(
                Weapons.at(Techno_Type_Class()->Primary).Fires)
                .IsAntiAircraft) &&
-          (!TarCom || ((!House->IsHuman || TheSpecial().IsSmartDefense) &&
+          (!TarCom || ((!House->IsHuman || TheSpecialFlags().smart_defense) &&
                        (!tweap || !In_Range(TarCom)))) &&
           //				!NavCom &&
           (Mission == MISSION_AMBUSH || Mission == MISSION_GUARD ||
@@ -1193,7 +1193,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
             **	Simple retaliation cannot occur because the source of the damage
             **	is too far away. If scatter logic is enabled, then scatter now.
             */
-            if (TheSpecial().IsScatter) {
+            if (TheSpecialFlags().scatter) {
               Scatter(Coordinate{}, true);
             }
           }
@@ -1202,7 +1202,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
         /*
         **	If this object isn't doing anything important, then scatter.
         */
-        if (!IsDriving && !TarCom && !NavCom && TheSpecial().IsScatter &&
+        if (!IsDriving && !TarCom && !NavCom && TheSpecialFlags().scatter &&
             What_Am_I() != RTTI_AIRCRAFT) {
           Scatter(Coordinate{}, true);
         }

@@ -1141,7 +1141,7 @@ was to change types, not to add casts:
 Some values look like flags but carry more states, and stay `int` with explicit `1`/`0`: the dialog
 return codes (`-1` means cancelled), `ScenarioInit` and `Blockage` (counters), `Activate`'s -1/0/1
 control, the game options sent in packets, the network send and receive status results, and the
-recorded `GameOptionsClass`. Layout-sensitive bitfields keep `unsigned`: `SpecialClass`,
+recorded `GameOptionsClass`. Layout-sensitive bitfields keep `unsigned`: `SpecialFlags`,
 `EventClass`, the packet structs and the cell flag unions. Small multi-bit fields next to the new
 `bool` flags use `uint8_t` storage so the Microsoft ABI still packs them. Saves copy bitfields
 through `bool` temporaries, so the archive format and the save versions are unchanged; the RA and TD

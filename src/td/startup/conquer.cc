@@ -119,7 +119,6 @@
 #include "game/ui/input.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
-#include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
@@ -132,6 +131,7 @@
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/data/text.h"
 #include "td/debug/debug.h"
 #include "td/debug/debug_state.h"
@@ -168,6 +168,7 @@
 #include "td/screens/goptions.h"
 #include "td/screens/movie_screen.h"
 #include "td/screens/score.h"
+#include "td/screens/special_options.h"
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
 #include "td/startup/startup.h"
@@ -325,7 +326,7 @@ void Main_Game() {
               case SDLG_SPECIAL:
                 TheMap().Help_Text(TXT_NONE);
                 TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
-                Special_Dialog();
+                RunSpecialOptionsDialog();
                 TheMap().Revert_Mouse_Shape();
                 TheGameState().special_dialog() = SDLG_NONE;
                 break;
@@ -386,7 +387,7 @@ void Main_Game() {
             case SDLG_SPECIAL:
               TheMap().Help_Text(TXT_NONE);
               TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
-              Special_Dialog();
+              RunSpecialOptionsDialog();
               TheMap().Revert_Mouse_Shape();
               TheGameState().special_dialog() = SDLG_NONE;
               break;
@@ -482,10 +483,10 @@ void Main_Game() {
     *menu after all
     */
 #ifdef FORCE_WINSOCK
-    if (TheSpecial().IsFromWChat) {
+    if (TheSpecialFlags().from_wchat) {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
       TheNetwork().winsock().Close();
-      TheSpecial().IsFromWChat = false;
+      TheSpecialFlags().from_wchat = false;
       TheGameState().spawned_from_chat() = false;
 #ifdef _WIN32
       DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont use the same
@@ -598,7 +599,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
       TheGameState().special_dialog() = SDLG_SPECIAL;
       input = KN_NONE;
     } else {
-      Special_Dialog();
+      RunSpecialOptionsDialog();
     }
   }
   // #endif

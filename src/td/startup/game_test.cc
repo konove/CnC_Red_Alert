@@ -11,6 +11,7 @@
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/core/object_heaps.h"
+#include "td/core/special_flags.h"
 #include "td/map/world.h"
 
 namespace td {
@@ -25,6 +26,22 @@ TEST(GameTest, BuildsAndTearsDownWithoutAWindowOrGameData) {
   auto game = std::make_unique<Game>();
   EXPECT_NE(game, nullptr);
   game.reset();
+}
+
+TEST(GameTest, StartsWithItsDefaultSpecialFlags) {
+  const Game game{};
+
+  const SpecialFlags& flags = TheSpecialFlags();
+  EXPECT_TRUE(flags.enemy_health_bars);
+  EXPECT_TRUE(flags.defender_advantage);
+  EXPECT_TRUE(flags.tiberium_grows);
+  EXPECT_TRUE(flags.tiberium_spreads);
+  EXPECT_TRUE(flags.tiberium_fast);
+  EXPECT_FALSE(flags.easy);
+  EXPECT_FALSE(flags.difficult);
+  EXPECT_FALSE(flags.scatter);
+  EXPECT_FALSE(flags.three_point_turns);
+  EXPECT_FALSE(flags.from_wchat);
 }
 
 TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {

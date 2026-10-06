@@ -82,11 +82,11 @@
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/input.h"
-#include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini.h"
 #include "td/data/ini_io.h"
 #include "td/data/text.h"
@@ -446,7 +446,7 @@ void ReadMultiPlayerSettings(const engine::file::IniFile& ini) {
   ------------------------------------------------------------------------*/
   TheNetwork().phone_book().clear();
 
-  if (!TheSpecial().IsFromWChat) {
+  if (!TheSpecialFlags().from_wchat) {
     /*------------------------------------------------------------------------
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/

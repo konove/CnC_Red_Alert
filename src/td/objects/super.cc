@@ -75,6 +75,7 @@
 #include "td/assets/audio.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 
 namespace td {
 
@@ -186,7 +187,7 @@ bool SuperClass::Recharge(bool player) {
     IsSuspended = false;
     OldStage = -1;
     if constexpr (config::kCheatKeysEnabled) {
-      if (TheSpecial().IsSpeedBuild) {
+      if (TheSpecialFlags().speed_build) {
         Control.Set(1);
       } else {
         Control.Set(RechargeTime);

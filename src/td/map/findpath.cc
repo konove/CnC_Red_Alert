@@ -70,12 +70,12 @@
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
+#include "td/core/special_flags.h"
 #include "td/core/support.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -597,7 +597,7 @@ PathType* FootClass::Find_Path(Cell dest,
   ** if necessary.
   */
   if (!TheDebugState().trace_path_search()) {
-    DrawPath = IsSelected && TheSpecial().IsShowPath;
+    DrawPath = IsSelected && TheSpecialFlags().show_find_path;
   } else {
     DrawPath = IsSelected;
   }

@@ -80,11 +80,11 @@
 #include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
-#include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/core/defines.h"
+#include "td/core/special_flags.h"
 #include "td/data/ini_io.h"
 #include "td/net/session.h"
 #include "td/startup/game_state.h"
@@ -498,7 +498,7 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   */
   if (HashKeyPhrase(ini.GetString("Options", "TrueNames", "")) ==
       PARM_TRUENAME) {
-    TheSpecial().IsNamed = true;
+    TheSpecialFlags().named_civilians = true;
   }
 
   /*
@@ -512,21 +512,21 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   **	Enable three point turning logic as indicated.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Rotation", "")) == PARM_3POINT) {
-    TheSpecial().IsThreePoint = true;
+    TheSpecialFlags().three_point_turns = true;
   }
 
   /*
   **	Allow purchase of the helipad separately from the helicopter.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Helipad", "")) == PARM_HELIPAD) {
-    TheSpecial().IsSeparate = true;
+    TheSpecialFlags().separate_helipad = true;
   }
 
   /*
   **	Allow the MCV to undeploy rather than sell.
   */
   if (HashKeyPhrase(ini.GetString("Options", "MCV", "")) == PARM_MCV) {
-    TheSpecial().IsMCVDeploy = true;
+    TheSpecialFlags().mcv_deploy = true;
   }
 
   /*
@@ -534,7 +534,7 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   *occur.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Bibs", "")) == PARM_BIB) {
-    TheSpecial().IsRoad = true;
+    TheSpecialFlags().no_road_pieces = true;
   }
 
   /*
@@ -542,7 +542,7 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   */
   if (HashKeyPhrase(ini.GetString("Options", "TreeTarget", "")) ==
       PARM_TREETARGET) {
-    TheSpecial().IsTreeTarget = true;
+    TheSpecialFlags().tree_target = true;
   }
 
   /*
@@ -550,14 +550,14 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   *flag.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Combat", "")) == PARM_COMBAT) {
-    TheSpecial().IsDefenderAdvantage = false;
+    TheSpecialFlags().defender_advantage = false;
   }
 
   /*
   **	Allow custom scores.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Scores", "")) == PARM_SCORE) {
-    TheSpecial().IsVariation = true;
+    TheSpecialFlags().score_variations = true;
   }
 
   /*
@@ -567,22 +567,22 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   *or damage that can't be directly addressed.
   */
   if (HashKeyPhrase(ini.GetString("Options", "CombatIQ", "")) == PARM_IQ) {
-    TheSpecial().IsSmartDefense = true;
-    TheSpecial().IsScatter = true;
+    TheSpecialFlags().smart_defense = true;
+    TheSpecialFlags().scatter = true;
   }
 
   /*
   **	Enable the infantry squish marks when run over by a vehicle.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Overrun", "")) == PARM_SQUISH) {
-    TheSpecial().IsGross = true;
+    TheSpecialFlags().squish_marks = true;
   }
 
   /*
   **	Enable the human generated sound effects.
   */
   if (HashKeyPhrase(ini.GetString("Options", "Sounds", "")) == PARM_HUMAN) {
-    TheSpecial().IsJuvenile = true;
+    TheSpecialFlags().juvenile_sounds = true;
   }
 
   /*
@@ -590,7 +590,7 @@ void OptionsClass::ReadSettings(const engine::file::IniFile& ini) {
   */
   if (HashKeyPhrase(ini.GetString("Options", "Scrolling", "")) ==
       PARM_SCROLLING) {
-    TheSpecial().IsScrollMod = true;
+    TheSpecialFlags().no_scroll_over_tabs = true;
   }
 }
 
