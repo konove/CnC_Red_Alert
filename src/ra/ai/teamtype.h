@@ -205,7 +205,7 @@ class TeamType : public AbstractTypeClass {
   // false if it was cancelled, which leaves the team type as it was apart from
   // a missing house, which becomes HOUSE_GOOD either way. The members are
   // edited by a second dialog (MapEditClass::Team_Members()) that this one
-  // only opens.
+  // only opens. Defined in editor/team_type_dialog.cc.
   bool Edit();
   // Returns the members as "TYPE:count,TYPE:count", cut to 25 characters with
   // a trailing "..." when longer. The text is empty in a build without the

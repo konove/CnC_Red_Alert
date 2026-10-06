@@ -315,8 +315,18 @@ target_compile_definitions(ra_trigger_type_dialog_test PRIVATE RA_NO_ENTRY_POINT
 apply_dotenv_settings(ra_trigger_type_dialog_test)
 apply_language_setting(ra_trigger_type_dialog_test)
 
-# Reads and writes team types and plays the scenario editor's team type dialog
-# on a headless screen.
+# Plays the scenario editor's team type dialog on a headless screen.
+add_gtest(
+    NAME ra_team_type_dialog_test
+    SOURCES editor/team_type_dialog_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_team_type_dialog_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_team_type_dialog_test)
+apply_language_setting(ra_team_type_dialog_test)
+
+# Reads and writes team types in a real Game.
 add_gtest(
     NAME ra_teamtype_test
     SOURCES ai/teamtype_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL} startup/startup.cc
