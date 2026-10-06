@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nextId": 145,
+  "nextId": 161,
   "items": [
     {
       "id": "T-2",
@@ -312,7 +312,7 @@
     {
       "id": "T-14",
       "title": "Cover the rest of Red Alert's scenario editor dialogs",
-      "details": "`ra/editor/mapedtm.cc` 132 of 385 lines, `ra/editor/mapeddlg.cc` 166 of 1,746.\n\nThe trigger and team lists are covered by `ra/editor/map_editor_lists_test.cc`: name order, the entry clicked, Edit, New, Delete and OK.\n\nStill open: the team dialog (`TeamTypeClass::Edit()`, `Team_Members()`), New/Load/Save scenario, `Pick_Scenario()`, `Size_Map()` and `Scenario_Dialog()`, all of which `UiFixture` can now drive.",
+      "details": "`ra/editor/mapedtm.cc` 132 of 385 lines, `ra/editor/mapeddlg.cc` 166 of 1,746.\n\nThe trigger and team lists are covered by `ra/editor/map_editor_lists_test.cc`: name order, the entry clicked, Edit, New, Delete and OK. The team type dialog (`TeamType::Edit()`, now `ra/editor/team_type_dialog.cc`) is covered by `ra/editor/team_type_dialog_test.cc` (`8dfc9bb9`, 501 of 506 lines) except its Members button.\n\nStill open: `MapEditClass::Team_Members()` and the Members button that opens it, New/Load/Save scenario, `Pick_Scenario()`, `Size_Map()` and `Scenario_Dialog()`, all of which `UiFixture` can now drive.",
       "priority": "p3",
       "tags": [
         "testing",
@@ -322,7 +322,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
-      "updated": "2026-10-06T00:32:46Z"
+      "updated": "2026-10-06T09:17:29Z"
     },
     {
       "id": "T-15",
@@ -417,8 +417,8 @@
       "updated": "2026-10-06T00:32:46Z",
       "anchor": {
         "path": "src/ra/ai/trigger_action.cc",
-        "startLine": 759,
-        "endLine": 784,
+        "startLine": 757,
+        "endLine": 782,
         "text": "class PlayMovieAction final : public TriggerAction {\n public:\n  explicit PlayMovieAction(const VQType movie) : movie_(movie) {}\n\n  [[nodiscard]] TriggerActionType type() const override {\n    return TriggerActionType::kPlayMovie;\n  }\n  bool Perform(const TriggerActionContext& /*context*/) override {\n    game::TheMouse().Hide();\n    TheScreen().visible_view().Clear();\n    Play_Movie(movie_, THEME_NONE, true);\n    ThePalettes().game_palette().Set();\n    TheMap().Flag_To_Redraw(true);\n    game::TheMouse().Show();\n    return true;\n  }\n  [[nodiscard]] TriggerActionRecord ToRecord() const override {\n    return {.type = type(), .value = static_cast<int>(movie_)};\n  }\n\n private:\n  VQType movie_;\n};\n\n// Plays a sound effect.\nclass PlaySoundAction final : public TriggerAction {",
         "before": [
           "// Plays a movie at once. The game is suspended while it plays; the movie",
@@ -771,8 +771,8 @@
       "updated": "2026-10-06T00:35:14Z",
       "anchor": {
         "path": "src/ra/ai/team.cc",
-        "startLine": 1183,
-        "endLine": 1183,
+        "startLine": 1180,
+        "endLine": 1180,
         "text": "int TeamClass::Recruit(int typeindex) {",
         "before": [
           " * HISTORY: * 12/29/1994 JLB : Created. * 04/10/1995 JLB : Scans for units too.",
@@ -790,7 +790,7 @@
     {
       "id": "T-32",
       "title": "Check that Red Alert's scenario INI numbers team and trigger types the same way both ways",
-      "details": "The writers emit a type's position in its heap's in-use list (`PositionOf()`), the readers resolve the number as a slot index (`SlotOrNull()`): `ra/ai/tevent.cc` (~651 write, ~674 read), `ra/ai/trigger_action.cc` (~161, ~174), `ra/ai/teamtype.cc` (~2007, ~1841 and ~1937). They agree only while the type heaps have no holes, which holds after a fresh INI load; a type deleted in the scenario editor leaves one. The original game had the same pairing. Either write `SlotIndexOf()` or check that the editor saves its types in slot order.",
+      "details": "The writers emit a type's position in its heap's in-use list (`PositionOf()`), the readers resolve the number as a slot index (`SlotOrNull()`): `ra/ai/tevent.cc` (~651 write, ~674 read), `ra/ai/trigger_action.cc` (~161, ~174), `ra/ai/team_type.cc` (`TeamType::ToIniEntry()` writes the trigger's position, `ReadIniEntry()` reads a slot, in both scenario formats). They agree only while the type heaps have no holes, which holds after a fresh INI load; a type deleted in the scenario editor leaves one. The original game had the same pairing. Either write `SlotIndexOf()` or check that the editor saves its types in slot order.",
       "priority": "p2",
       "tags": [
         "bugs",
@@ -799,7 +799,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:17:29Z"
     },
     {
       "id": "T-33",
@@ -1476,8 +1476,8 @@
       "updated": "2026-10-06T00:35:14Z",
       "anchor": {
         "path": "src/ra/ai/trigger_action.cc",
-        "startLine": 998,
-        "endLine": 998,
+        "startLine": 996,
+        "endLine": 996,
         "text": "TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {",
         "before": [
           "  return NEED_NONE;",
@@ -1495,7 +1495,7 @@
     {
       "id": "T-62",
       "title": "Range-check the waypoints typed into the trigger editor",
-      "details": "- `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, the four `WaypointFromLetters()` calls) stores whatever the field holds: \"ZZ\" is 701, a digit is negative, and an empty field is -1. `ScenarioClass::Waypoint` has `kWaypointCount` (101) entries, so the game aborts in `base::At(TheScenario().Waypoint, waypoint_)` (`ra/ai/trigger_action.cc` ~615, ~638, ~664) when the trigger springs.\n- Return `std::optional<int>` from `WaypointFromLetters()` (`ra/ai/waypoint_name.h`), rejecting empty and non-letter input, and keep the old value in `Edit()` when it is out of range; about 25 lines plus tests. Editor behaviour only.",
+      "details": "- `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, the four `WaypointFromLetters()` calls) stores whatever the field holds: \"ZZ\" is 701, a digit is negative, and an empty field is -1. `ScenarioClass::Waypoint` has `kWaypointCount` (101) entries, so the game aborts in `base::At(TheScenario().Waypoint, waypoint_)` (`ra/ai/trigger_action.cc` ~615, ~638, ~664) when the trigger springs.\n- Return `std::optional<int>` from `WaypointFromLetters()` (`ra/ai/waypoint_name.h`), rejecting empty and non-letter input, and keep the old value in `Edit()` when it is out of range; about 25 lines plus tests. Editor behaviour only.\n- The team type dialog (`ra/editor/team_type_dialog.cc`) had the same hole and is closed at its own end (`43b480fb`, `dad23940`): `TeamType::set_origin()` takes anything outside the scenario's waypoints as -1, and a script line's waypoint outside 0..97 becomes 0. A letter followed by a space still comes out of `WaypointFromLetters()` negative (\"A \" is -7); rejecting non-letters there would let both dialogs drop their own checks.",
       "priority": "p2",
       "tags": [
         "bugs",
@@ -1504,7 +1504,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:17:29Z"
     },
     {
       "id": "T-63",
@@ -1521,8 +1521,8 @@
       "updated": "2026-10-06T00:35:14Z",
       "anchor": {
         "path": "src/ra/ai/team.cc",
-        "startLine": 1372,
-        "endLine": 1372,
+        "startLine": 1369,
+        "endLine": 1369,
         "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
         "before": [
           " *                                                                                             *",
@@ -1539,31 +1539,31 @@
     },
     {
       "id": "T-64",
-      "title": "Make TeamTypeClass::operator new noexcept",
-      "details": "`ra/ai/teamtype.h` ~148 returns nullptr from a full heap without `noexcept`, so `new` runs the constructor at address zero instead of testing the result; `fa858859` fixed the same crash in `TriggerType`. Check `TeamTypeClass::Read_INI()` for the null dereference that fix also needed.",
+      "title": "Make TeamType::operator new noexcept",
+      "details": "Fixed in `de5c7029`: `TeamType::operator new()` (`ra/ai/team_type.h`) is `noexcept`, so a full heap gives nullptr instead of constructing at address zero. `TeamType::ReadIni()` already tested the result. `ReadIniDropsTheEntriesTheHeapHasNoRoomFor` and `AFullHeapGivesNoTeamType` in `ra/ai/team_type_test.cc` crash against the code before it.",
       "priority": "p2",
       "tags": [
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z",
+      "updated": "2026-10-06T09:17:29Z",
       "anchor": {
-        "path": "src/ra/ai/teamtype.h",
-        "startLine": 150,
-        "endLine": 150,
-        "text": "                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {",
+        "path": "src/ra/ai/team_type.h",
+        "startLine": 169,
+        "endLine": 169,
+        "text": "  void* operator new(std::size_t /*unused*/) noexcept;",
         "before": [
-          "",
-          "  void* operator new(std::size_t /*unused*/);",
-          "  void* operator new(std::size_t /*unused*/,"
+          "  // Allocates from the team type heap. Returns nullptr when the heap is full;",
+          "  // noexcept is what makes a new-expression test for that instead of",
+          "  // constructing at null."
         ],
         "after": [
-          "    return ptr;",
-          "  }",
-          "  void operator delete(void* ptr);"
+          "  void* operator new(std::size_t /*unused*/,",
+          "                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {",
+          "    return ptr;"
         ],
         "lost": false
       }
@@ -2531,8 +2531,8 @@
     },
     {
       "id": "T-109",
-      "title": "Replace TeamTypeClass::Number with a count of live teams",
-      "details": "Red Alert keeps the number of live teams of a type on the type itself, bumped and dropped through `TeamClass::Class` in the `TeamClass` constructor and destructor (`ra/ai/team.cc` ~295, ~342); a count over `TheObjectHeaps().team()` would remove the write through the pointer.",
+      "title": "Replace TeamType's team counter with a count of live teams",
+      "details": "Red Alert keeps the number of live teams of a type on the type itself. Since `07482138` it is private (`team_count_`, read through `TeamType::team_count()`), and the `TeamClass` constructor and destructor report through `OnTeamCreated()` / `OnTeamDeleted()` (`ra/ai/team.cc` ~295, ~343) instead of writing the member. A count over `TheObjectHeaps().team()` would remove the stored number and those two calls; it is saved (`TeamType::Serialize()` in `ra/saveload/ioobj.cc`), so dropping the field changes the save format.",
       "priority": "p3",
       "tags": [
         "refactoring",
@@ -2541,7 +2541,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:17:29Z"
     },
     {
       "id": "T-110",
@@ -2974,8 +2974,8 @@
       "updated": "2026-10-06T00:43:35Z",
       "anchor": {
         "path": "src/ra/ai/scenario.cc",
-        "startLine": 2008,
-        "endLine": 2008,
+        "startLine": 2009,
+        "endLine": 2009,
         "text": "      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {",
         "before": [
           "",
@@ -3021,7 +3021,7 @@
     {
       "id": "T-134",
       "title": "Follow-ups from the ra/ai/reinforcements.cc modernization",
-      "details": "`ef09a028`..`47b4ae18`.\n\n- Give `World` a scoped `scenario_init` guard. The counter is raised and lowered by hand at about 40 sites in 20 files per game (`building.cc` alone has 37 references), nine of them with a duplicated `--` before an early return (`building.cc:2428/2431`, `2452/2455`, `2468/2471`, `2613/2616`, `2650/2653`, `2760/2763`, `bullet.cc:204/208`, `mapedplc.cc:1789/1792`, `crate.cc:155/159`), and `2abc87b6` fixed one that had none. A `World::ScopedScenarioInit`, plus a \"suspend to 0\" variant for `crate.cc:131`, `carryover.cc:54` and `scenario.cc:2286`, makes the imbalance impossible; `reinforcements.cc` has five pairs to start with.\n- Give `Exit_Object()` an `enum class ExitResult` (refund 0, retry later 1, done 2). It is a `virtual int` in `object.h:243`, `techno.h:452`, `building.h:319` and `aircraft.h:169`, with about ten return sites, documented only in the banner above `building.cc:2397`; callers switch on the literals (`building.cc:5981`), compare with 2 (`reinforcements.cc:77`) or test for non-zero (`aircraft.cc:1255`, `house.cc:2815`, which must stay \"not refunded\"). Both games.\n- `CreateGroup()` could return a `std::vector<FootClass*>` (or a struct of transports and riders) instead of a list through `ObjectClass::Next`, so that \"delete what was not placed\" is one loop and cannot miss a member (`81867a0a` fixed two that were missed). About 60 lines in four functions; keep the reverse creation order, which decides the placement cells.\n- `DeliverReinforcements()` gives a team type with no missions an attack-waypoint mission and leaves it on the type (`:279`), which is why it takes a non-const `TeamTypeClass*` where Tiberian Dawn's takes const. `house.cc:2521` sets its own, so only trigger teams rely on it. Applying the default where team types are loaded (`teamtype.cc` ~1912) would let the parameter be const but gives every mission-less type the mission: a behaviour change to decide on.\n- `LaunchAirStrike()`'s result is ignored by both callers (`house.cc:2556`, `:2569`); it could return void, at the cost of the assertion in `ra_reinforcements_test`. Its `DCHECK`s range-check two `enum class` values through `static_cast<unsigned>` (`:381`, `:384`).\n- The unload-mission scan in `CreateGroup()` (`:124`) and the three-way ant comparison (`:322`, repeated in `unit.cc:1141`) want a `TeamTypeClass::HasMission()` and a `UnitClass` ant predicate.\n- `house.cc:2543` holds a commented-out `LaunchAirStrike()` call for the paratroopers.\n- CLion's \"can be replaced with structured bindings\" on `entry` (`:140`) was left: binding `TeamMemberClass` by position would break silently if its members were reordered.\n- Names to confirm: `DeliverReinforcements()` (or `BringInReinforcements()`), `riders` for the non-transport list in `CreateGroup()` (or `passengers`), `FindHostNear()`.",
+      "details": "`ef09a028`..`47b4ae18`.\n\n- Give `World` a scoped `scenario_init` guard. The counter is raised and lowered by hand at about 40 sites in 20 files per game (`building.cc` alone has 37 references), nine of them with a duplicated `--` before an early return (`building.cc:2428/2431`, `2452/2455`, `2468/2471`, `2613/2616`, `2650/2653`, `2760/2763`, `bullet.cc:204/208`, `mapedplc.cc:1789/1792`, `crate.cc:155/159`), and `2abc87b6` fixed one that had none. A `World::ScopedScenarioInit`, plus a \"suspend to 0\" variant for `crate.cc:131`, `carryover.cc:54` and `scenario.cc:2286`, makes the imbalance impossible; `reinforcements.cc` has five pairs to start with.\n- Give `Exit_Object()` an `enum class ExitResult` (refund 0, retry later 1, done 2). It is a `virtual int` in `object.h:243`, `techno.h:452`, `building.h:319` and `aircraft.h:169`, with about ten return sites, documented only in the banner above `building.cc:2397`; callers switch on the literals (`building.cc:5981`), compare with 2 (`reinforcements.cc:77`) or test for non-zero (`aircraft.cc:1255`, `house.cc:2815`, which must stay \"not refunded\"). Both games.\n- `CreateGroup()` could return a `std::vector<FootClass*>` (or a struct of transports and riders) instead of a list through `ObjectClass::Next`, so that \"delete what was not placed\" is one loop and cannot miss a member (`81867a0a` fixed two that were missed). About 60 lines in four functions; keep the reverse creation order, which decides the placement cells.\n- `DeliverReinforcements()` gives a team type with no missions an attack-waypoint mission and leaves it on the type (`:279`), which is why it takes a non-const `TeamType*` where Tiberian Dawn's takes const. `house.cc:2521` sets its own, so only trigger teams rely on it. Applying the default where team types are loaded (`TeamType::ReadIniEntry()` in `ra/ai/team_type.cc`) would let the parameter be const but gives every mission-less type the mission: a behaviour change to decide on.\n- `LaunchAirStrike()`'s result is ignored by both callers (`house.cc:2556`, `:2569`); it could return void, at the cost of the assertion in `ra_reinforcements_test`. Its `DCHECK`s range-check two `enum class` values through `static_cast<unsigned>` (`:381`, `:384`).\n- The unload-mission scan in `CreateGroup()` (`:124`) and the three-way ant comparison (`:322`, repeated in `unit.cc:1141`) want a `TeamType::HasMission()` and a `UnitClass` ant predicate.\n- `house.cc:2543` holds a commented-out `LaunchAirStrike()` call for the paratroopers.\n- CLion's \"can be replaced with structured bindings\" on `entry` (`:140`) was left: binding `TeamMemberClass` by position would break silently if its members were reordered.\n- Names to confirm: `DeliverReinforcements()` (or `BringInReinforcements()`), `riders` for the non-transport list in `CreateGroup()` (or `passengers`), `FindHostNear()`.",
       "priority": "p3",
       "tags": [
         "refactoring",
@@ -3030,7 +3030,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:19:17Z"
     },
     {
       "id": "T-135",
@@ -3109,7 +3109,7 @@
     {
       "id": "T-139",
       "title": "Finish what the ra/ai/trigger_type modernization left",
-      "details": "`7e448b91..57fdf1fc`.\n\n- Rebuild `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, 1,550 lines) around one struct per slot: an event slot (list, house, team, number, building, infantry, aircraft and unit gadgets) used twice and an action slot used twice, each with `Show()` and `Store()`. Every block is written two or four times today; roughly 400 lines after. Needs a by-hand check in the editor.\n- The same file carries dead gadgets: no event needs a waypoint or a time (`Event_Needs()`, `ra/ai/tevent.cc` ~720, never returns `NEED_WAYPOINT` or `NEED_TIME`), so the two event waypoint fields (`event1_waypoint_edit`, `event2_waypoint_edit`, `kEvent1Waypoint`, `kEvent2Waypoint`), their `NEED_WAYPOINT` cases in the redraw pass and on OK, and the `NEED_TIME` labels on the event switches cannot run. `fd64bc8a` removed the matching case from `Description()`.\n- One list-entry drawing helper in `ra/ui/`. `TriggerType::Draw_It()` (`ra/ai/trigger_type.cc` ~276), `ActionChoice::Draw_It()` (`trigger_type_dialog.cc` ~100), `EventChoiceClass::Draw_It()` (`ra/ai/tevent.cc` ~176), `TeamTypeClass::Draw_It()` (`ra/ai/teamtype.cc` ~150) and `TriggerClass::Draw_It()` (`ra/ai/trigger.cc` ~120) are the same body. The last has no caller: no `TListClass<TriggerClass*>` exists, so it and `TriggerClass::Description()` can go.\n- Give `TEventClass` a `Detach(Target)` (`ra/ai/tevent.h`) so `TriggerType::Detach()` is four symmetric calls instead of reaching into `event1.Team`; about 15 lines, no behaviour change.\n- Use `WaypointLetters()`/`WaypointFromLetters()` (`ra/ai/waypoint_name.h`) where the letter arithmetic is still written out: `ra/ai/teamtype.cc` ~771, ~1157, ~1221, ~1288, ~1355, ~1463, ~1607, ~1678 and `ra/objects/cell.cc` ~1079; about 60 lines removed. `WaypointLetters(-1)` gives \"@\", as the open-coded version did; an empty string would read better.\n- One case-insensitive less-than in `base/strings/`. The `lexicographical_compare` over `absl::ascii_tolower` is written in `trigger_type_dialog.cc` ~90, `ra/ai/tevent.h` ~220, `ra/editor/mapedtm.cc` ~290, `ra/editor/mapeddlg.cc` ~2725 and `ra/wol/rawolapi.cc` ~517.\n- A find-by-name on `game::ObjectHeap` (`game/core/object_heap.h`): `TriggerType::FromName()`, `TeamTypeClass::From_Name()` and `TeamTypeClass::As_Pointer()` (`ra/ai/teamtype.cc` ~248, ~488) are the same loop, and the last two are the same function under two names.\n- The `is_active` writes in `TriggerType::operator new`/`operator delete` (`trigger_type.cc` ~63-76) look redundant: the member initializer sets the flag, `Allocate()` hands out zeroed slots, and the only reader is `Serialize()` on live objects. Pin that with a save/load test, then drop them and the comment in `trigger_type.h` ~65.\n- `TriggerType::ToIniEntry()` formats with `std::format`, as `ra/ai/tevent.cc` ~643 and `ra/ai/trigger_action.cc` ~160 do; CLAUDE.md prefers Abseil. Check `HousesType`'s underlying type before `absl::StrCat`, which prints a `char` as a character.\n- `TeamTypeClass::Detach()` and `TeamClass::Detach()` ignore their `all` parameter, as `TriggerType::Detach()` did (`b3914ac1`); `ra/objects/tracker.cc` ~93-96 is the caller.\n- `TeamTypeClass::Description()` and `Member_Description()` (`ra/ai/teamtype.cc` ~1547, ~1594) still return a pointer into a static buffer, and `teamtype.h` ~204 still has the `operator const char*` that `TriggerType` lost in `022e3617`.\n- `TriggerType::WriteIni()` could take the trigger types in a range-for once the heap offers one.\n- Names to confirm: the data members have no trailing underscore though `TriggerType` is a class (they are public, like `TriggerAction`'s); `MultiStyle` (or `SecondaryMode`); `DestroyAll()` (its siblings in `ra/ai/scenario.cc` ~761 are still `Init()`); `event_style` in `Edit()`. `Draw_It()` and `Description()` keep their names for `ra/ui/tlist.h` and `drop.h`.\n- Run `/fix-ide-issues` on `ra/editor/trigger_type_dialog.cc`, `ra/ai/trigger_type_test.cc` and `ra/ai/waypoint_name.{h,cc}` once CLion has reloaded the CMake project: it returned no findings for the files this run created, which means not analyzed rather than clean (`ActionChoice::Draw_It()` has the by-value parameters it flagged in `trigger_type.cc`). Its two \"can be `if constexpr`\" findings in `trigger_type.cc` are skipped on purpose.",
+      "details": "`7e448b91..57fdf1fc`.\n\n- Rebuild `TriggerType::Edit()` (`ra/editor/trigger_type_dialog.cc`, 1,550 lines) around one struct per slot: an event slot (list, house, team, number, building, infantry, aircraft and unit gadgets) used twice and an action slot used twice, each with `Show()` and `Store()`. Every block is written two or four times today; roughly 400 lines after. Needs a by-hand check in the editor.\n- The same file carries dead gadgets: no event needs a waypoint or a time (`Event_Needs()`, `ra/ai/tevent.cc` ~720, never returns `NEED_WAYPOINT` or `NEED_TIME`), so the two event waypoint fields (`event1_waypoint_edit`, `event2_waypoint_edit`, `kEvent1Waypoint`, `kEvent2Waypoint`), their `NEED_WAYPOINT` cases in the redraw pass and on OK, and the `NEED_TIME` labels on the event switches cannot run. `fd64bc8a` removed the matching case from `Description()`.\n- One list-entry drawing helper in `ra/ui/`. `TriggerType::Draw_It()` (`ra/ai/trigger_type.cc` ~276), `ActionChoice::Draw_It()` (`trigger_type_dialog.cc` ~100), `EventChoiceClass::Draw_It()` (`ra/ai/tevent.cc` ~176), `DrawListEntry()` (`ra/ai/team_type.cc` ~120, which the team type and its script line share since `e12e176a`) and `TriggerClass::Draw_It()` (`ra/ai/trigger.cc` ~120) are the same body. The last has no caller: no `TListClass<TriggerClass*>` exists, so it and `TriggerClass::Description()` can go.\n- Give `TEventClass` a `Detach(Target)` (`ra/ai/tevent.h`) so `TriggerType::Detach()` is four symmetric calls instead of reaching into `event1.Team`; about 15 lines, no behaviour change.\n- Use `WaypointLetters()`/`WaypointFromLetters()` (`ra/ai/waypoint_name.h`) where the letter arithmetic is still written out: `ra/objects/cell.cc` ~1079 (the eight sites in the team type code were done in the team type run, `30c6f6ae..e9ac6245`). `WaypointLetters(-1)` gives \"@\", as the open-coded version did; an empty string would read better.\n- One case-insensitive less-than in `base/strings/`. The `lexicographical_compare` over `absl::ascii_tolower` is written in `trigger_type_dialog.cc` ~90, `ra/ai/tevent.h` ~220, `ra/editor/mapedtm.cc` ~290, `ra/editor/mapeddlg.cc` ~2725 and `ra/wol/rawolapi.cc` ~517.\n- A find-by-name on `game::ObjectHeap` (`game/core/object_heap.h`): `TriggerType::FromName()` and `TeamType::FromName()` (`ra/ai/team_type.cc`) are the same loop (`TeamTypeClass::As_Pointer()` was folded into the latter in `ba630578`).\n- The `is_active` writes in `TriggerType::operator new`/`operator delete` (`trigger_type.cc` ~63-76) look redundant: the member initializer sets the flag, `Allocate()` hands out zeroed slots, and the only reader is `Serialize()` on live objects. Pin that with a save/load test, then drop them and the comment in `trigger_type.h` ~65.\n- `TriggerType::ToIniEntry()` formats with `std::format`, as `ra/ai/tevent.cc` ~643 and `ra/ai/trigger_action.cc` ~160 do; CLAUDE.md prefers Abseil. Check `HousesType`'s underlying type before `absl::StrCat`, which prints a `char` as a character.\n- `TeamType::Detach()` and `TeamClass::Detach()` ignore their `all` parameter, as `TriggerType::Detach()` did (`b3914ac1`); `ra/objects/tracker.cc` ~93-96 is the caller.\n- Done in `1b25f6ae`: `TeamType::Description()` and `MemberDescription()` return a `std::string` and the `operator const char*` is gone.\n- `TriggerType::WriteIni()` could take the trigger types in a range-for once the heap offers one.\n- Names to confirm: the data members have no trailing underscore though `TriggerType` is a class (they are public, like `TriggerAction`'s); `MultiStyle` (or `SecondaryMode`); `DestroyAll()` (its siblings in `ra/ai/scenario.cc` ~761 are still `Init()`); `event_style` in `Edit()`. `Draw_It()` and `Description()` keep their names for `ra/ui/tlist.h` and `drop.h`.\n- Run `/fix-ide-issues` on `ra/editor/trigger_type_dialog.cc`, `ra/ai/trigger_type_test.cc` and `ra/ai/waypoint_name.{h,cc}` once CLion has reloaded the CMake project: it returned no findings for the files this run created, which means not analyzed rather than clean (`ActionChoice::Draw_It()` has the by-value parameters it flagged in `trigger_type.cc`). Its two \"can be `if constexpr`\" findings in `trigger_type.cc` are skipped on purpose.",
       "priority": "p3",
       "tags": [
         "refactoring",
@@ -3118,12 +3118,12 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:19:17Z"
     },
     {
       "id": "T-140",
       "title": "Finish what the ra/ai/trigger_action modernization left",
-      "details": "`7eeaf347..cd29efc1`, class shape `de41dba2..0036d5a1`.\n\n- Follow-ups of `docs/TRIGGER_ACTION_CLASSES_PLAN.md` (one class per action, done 2026-10-04):\n  - `TEventClass` has the shape `TriggerAction` had (one class, a type enum, a shared `Data` union) and wants the same plan of its own.\n  - `ra/ai/trigger_action.cc` grew to about 1,150 lines for 29 classes, where the plan expected 700. `BeginProductionAction`, `AllHuntAction`, `FireSaleAction` and `AutocreateAction` differ in one line each, as do the classes around a waypoint; decide between a `HouseAction` base like `TeamAction`, or splitting the file by payload.\n  - `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` only runs with `RA_SCENARIO_DIR` set to a directory of extracted scenario INIs (`mixdump <game-dir> SCG01EA.INI <out>`); it passed on the 42 campaign scenarios of the Steam install.\n  - `TeamTypeClass::operator new` (`ra/ai/teamtype.cc` ~324) is not `noexcept`, so `base::NewPooled<TeamTypeClass>()` on a full heap constructs at null and crashes instead of returning nullptr as `TriggerType`'s does.\n- `tevent.h`'s `TEventClass` (~145) is declared `struct` but reads and writes its INI form and draws itself: it becomes a class with private data when `ra/ai/tevent` gets its pass.\n- Run `/fix-ide-issues` on `ra/ai/trigger_action_test.cc`: CLion answered for the header and the `.cc` (no findings) but timed out on the test after `0036d5a1`.\n- Run the same pass on `ra/ai/tevent`: `TEventClass` -> `TriggerEvent`, and `EventChoiceClass` with its `EventChoices` table belongs in `ra/editor/trigger_type_dialog.cc` beside `ActionChoice` (~75), its only user. The two classes are member-for-member copies; one `Choice<E, NameFn>` template would serve both, and `EventChoices` can become a local filled from the enum as `action_choices` did (`ee567c17`).\n- `Name_From_Action()`'s successor `ActionName()` and `ActionChoice::Description()` return `const char*` because `Conquer_Clip_Text_Print()` (`ra/ui/dialog.h` ~33) takes one; they become `std::string_view` when the printer does.\n- `TEventClass` and `TeamTypeClass` still have `Build_INI_Entry(std::string&)`; `ToIniEntry(const TriggerActionRecord&)` and `TriggerType::ToIniEntry()` return the string.\n- `kTicksPerTimerUnit` (`trigger_action.cc` ~84) is also spelled `kTicksPerMinute / 10` in `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in `ra/core/defines.h` ~2207.\n- `Assets::tutorial_text()` (`ra/assets/assets.cc` ~74) turns an empty string into nullptr; a `std::string_view` where empty means none is cleaner (one caller).\n- Names to confirm: `ActionNeed()` (or `ActionDataNeed()`), `TriggerAction::type()` (or `kind`), `TriggerActionType::kDropZoneFlare` (or `kDz`).\n- `ActionChoice::Draw_It()` ignores its index parameter; the signature is `TListClass`'s (`ra/ui/tlist.h` ~330), shared by seven item types.",
+      "details": "`7eeaf347..cd29efc1`, class shape `de41dba2..0036d5a1`.\n\n- Follow-ups of `docs/TRIGGER_ACTION_CLASSES_PLAN.md` (one class per action, done 2026-10-04):\n  - `TEventClass` has the shape `TriggerAction` had (one class, a type enum, a shared `Data` union) and wants the same plan of its own.\n  - `ra/ai/trigger_action.cc` grew to about 1,150 lines for 29 classes, where the plan expected 700. `BeginProductionAction`, `AllHuntAction`, `FireSaleAction` and `AutocreateAction` differ in one line each, as do the classes around a waypoint; decide between a `HouseAction` base like `TeamAction`, or splitting the file by payload.\n  - `TriggerTypeTest.TheShippedTriggersAreReadBackAsWritten` only runs with `RA_SCENARIO_DIR` set to a directory of extracted scenario INIs (`mixdump <game-dir> SCG01EA.INI <out>`); it passed on the 42 campaign scenarios of the Steam install.\n  - Done in `de5c7029`: `TeamType::operator new` is `noexcept`, so a full heap gives nullptr.\n- `tevent.h`'s `TEventClass` (~145) is declared `struct` but reads and writes its INI form and draws itself: it becomes a class with private data when `ra/ai/tevent` gets its pass.\n- Run `/fix-ide-issues` on `ra/ai/trigger_action_test.cc`: CLion answered for the header and the `.cc` (no findings) but timed out on the test after `0036d5a1`.\n- Run the same pass on `ra/ai/tevent`: `TEventClass` -> `TriggerEvent`, and `EventChoiceClass` with its `EventChoices` table belongs in `ra/editor/trigger_type_dialog.cc` beside `ActionChoice` (~75), its only user. The two classes are member-for-member copies; one `Choice<E, NameFn>` template would serve both, and `EventChoices` can become a local filled from the enum as `action_choices` did (`ee567c17`).\n- `Name_From_Action()`'s successor `ActionName()` and `ActionChoice::Description()` return `const char*` because `Conquer_Clip_Text_Print()` (`ra/ui/dialog.h` ~33) takes one; they become `std::string_view` when the printer does.\n- `TEventClass` still has `Build_INI_Entry(std::string&)` (`TeamType::ToIniEntry()` returns the string since `1b25f6ae`); `ToIniEntry(const TriggerActionRecord&)` and `TriggerType::ToIniEntry()` return the string.\n- `kTicksPerTimerUnit` (`trigger_action.cc` ~84) is also spelled `kTicksPerMinute / 10` in `ra/ai/tevent.cc` ~219 and `ra/ai/team.cc` ~688; it belongs beside `kTicksPerMinute` in `ra/core/defines.h` ~2207.\n- `Assets::tutorial_text()` (`ra/assets/assets.cc` ~74) turns an empty string into nullptr; a `std::string_view` where empty means none is cleaner (one caller).\n- Names to confirm: `ActionNeed()` (or `ActionDataNeed()`), `TriggerAction::type()` (or `kind`), `TriggerActionType::kDropZoneFlare` (or `kDz`).\n- `ActionChoice::Draw_It()` ignores its index parameter; the signature is `TListClass`'s (`ra/ui/tlist.h` ~330), shared by seven item types.",
       "priority": "p3",
       "tags": [
         "refactoring",
@@ -3132,7 +3132,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-06T09:19:17Z"
     },
     {
       "id": "T-141",
@@ -3192,6 +3192,469 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z"
+    },
+    {
+      "id": "T-145",
+      "title": "Decide what a bad house or mission number in a team type entry becomes",
+      "details": "`TeamType::ReadIniEntry()` (`ra/ai/team_type.cc`, the `TODO` at the anchor) casts the house number and each script line's mission number from the scenario file unchecked. An out-of-range house reaches `HouseClass::As_Pointer()` in `CreateTeam()` and `ra/ai/reinforcements.cc` ~306 and `HouseTypeClass::As_Reference()` in `Description()`; an out-of-range mission reaches `kMissionNames.at()` in the editor list. Well-formed scenarios are unaffected.\n\nTo decide: validate with `magic_enum::enum_contains<>` and then either (a) drop the bad script line and take a bad house as `HOUSE_NONE`, about 15 lines, or (b) reject the whole entry, which makes `ReadIniEntry()` return bool and `ReadIni()` delete the team type, about 30 lines. Found by the `30c6f6ae..e9ac6245` run.",
+      "priority": "p2",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.cc",
+        "startLine": 277,
+        "endLine": 280,
+        "text": "  // TODO: the house and the mission numbers below are taken from the file\n  // unchecked; an out-of-range one CHECK-fails later, where the team type is\n  // used.\n  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+        "before": [
+          "  Set_Name(name);",
+          "",
+          "  base::Tokenizer tokens(entry);"
+        ],
+        "after": [
+          "",
+          "  // The scenario's NewINIFormat: 0 and 1 list each option and end the entry",
+          "  // with the trigger; the later ones pack the options into one bit field and"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-146",
+      "title": "Decide how a team type entry's counts above 255 or below 0 are read",
+      "details": "`TeamType::ReadIniEntry()` (`ra/ai/team_type.cc`) casts the initial number and the maximum number of teams to the `unsigned char` the team type stores (it is in the saved game, so the type stays): a scenario's 999 is read as 231 and 256 as 0, which means the team is never created (`CreateTeam()` compares `team_count_ < max_teams_`). `2d9b4f60` clamped the same two fields in the editor dialog to 0..255.\n\nTo decide: above 255 should clearly clamp to 255, but -1 wraps to 255 today, effectively \"no limit\", and a plain `std::clamp(value, 0, 255)` would turn it into 0, never created. Either clamp and keep the wrap for negatives, or clamp both ends knowingly. A `set_max_teams(int)` / `set_initial_count(int)` pair on `TeamType` would then own the conversion for the reader and the dialog (about 15 lines plus tests). Run `30c6f6ae..e9ac6245`.",
+      "priority": "p2",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.cc",
+        "startLine": 303,
+        "endLine": 306,
+        "text": "  initial_count_ =\n      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  max_teams_ =\n      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+        "before": [
+          "  }",
+          "",
+          "  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);"
+        ],
+        "after": [
+          "  set_origin(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+          "",
+          "  if (lists_options) {"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-147",
+      "title": "Check the unguarded waypoint index in TeamClass::Is_Leaving_Map",
+      "details": "A review during the team type run (`30c6f6ae..e9ac6245`) reported, and nobody has yet confirmed, that `TeamClass::Is_Leaving_Map()` (`ra/ai/team.cc`, the anchor) indexes `TheScenario().Waypoint` with a script line's argument without the `static_cast<unsigned>(value) < kWaypointCount` test that the other uses in `team.cc` (~698, ~717, ~2967) have. It is also called from `ra/objects/foot.cc` ~2435. Two ways a bad index could get there: a `kMove` line with an argument such as 500 in a scenario file, and the -1 that `ra/ai/reinforcements.cc` ~282 writes as the argument of the fallback mission of a team type with no script and no origin.\n\nConfirm with a test that builds such a team and calls `Is_Leaving_Map()`; if it aborts, add the same range test (a few lines). Not a change for a well-formed scenario.",
+      "priority": "p2",
+      "tags": [
+        "bugs",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/ai/team.cc",
+        "startLine": 2420,
+        "endLine": 2420,
+        "text": "            base::At(TheScenario().Waypoint, mission->value()))) {",
+        "before": [
+          "",
+          "    if (mission->mission() == TeamMissionType::kMove &&",
+          "        !TheMap().In_Radar("
+        ],
+        "after": [
+          "      return true;",
+          "    }",
+          "  }"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-148",
+      "title": "Decide whether a cancelled team type dialog should still set the house",
+      "details": "`TeamType::Edit()` (`ra/editor/team_type_dialog.cc`, the anchor) turns a team type's `HOUSE_NONE` into `HOUSE_GOOD` while it builds the house list, before the player has answered, so Cancel leaves the team type changed in that one field. `CancelLeavesTheTeamTypeAsItWasButForAMissingHouse` in `ra/editor/team_type_dialog_test.cc` pins the present behaviour.\n\nTo decide: keep it (a new team type always ends up with a house), or select `HOUSE_GOOD` in the list only and store the house on OK, about 5 lines plus the test. Editor behaviour only. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "bugs",
+        "ra",
+        "editor",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/editor/team_type_dialog.cc",
+        "startLine": 175,
+        "endLine": 175,
+        "text": "  if (house_ == HOUSE_NONE) {",
+        "before": [
+          "  for (const HousesType house : magic_enum::enum_values<HousesType>()) {",
+          "    house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);",
+          "  }"
+        ],
+        "after": [
+          "    house_ = HOUSE_GOOD;",
+          "  }",
+          "  house_drop.Set_Selected_Index(static_cast<int>(house_));"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-149",
+      "title": "Decide whether the team editor's hex field should use the shared hex parser",
+      "details": "`ParseHexDigits()` in `ra/editor/team_type_dialog.cc` (was `atoh()`) is a hand-written hex parser for the cell-number argument of a team mission. `base::ParseHexOr<int>(text, 0)` (`base/strings/number_parse.h`) would replace its 14 lines, but reads differently: a stray character makes the whole number 0 where `ParseHexDigits()` counts it as a 0 digit (\"12z\" is 0x120 today), and it accepts a sign and surrounding spaces. Editor behaviour only; decide whether that difference is acceptable. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "editor",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/editor/team_type_dialog.cc",
+        "startLine": 81,
+        "endLine": 81,
+        "text": "int ParseHexDigits(const std::string_view text) {",
+        "before": [
+          "",
+          "// Returns the value of the hex digits in `text`, for the editor's cell-number",
+          "// field. A character that is not a hex digit counts as 0."
+        ],
+        "after": [
+          "  int value = 0;",
+          "  for (const char digit : text) {",
+          "    value *= 16;"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-150",
+      "title": "Share one list entry drawing routine among the editor's list items",
+      "details": "`DrawListEntry()` in `ra/ai/team_type.cc` (the anchor) draws a team type and a script line as list box entries. The same body is copied in `TriggerType::Draw_It` (`ra/ai/trigger_type.cc` ~272), `TriggerClass::Draw_It` (`ra/ai/trigger.cc` ~119), `EventChoiceClass::Draw_It` (`ra/ai/tevent.cc` ~176) and `MultiMission::Draw_It` (`ra/net/session.cc` ~1269), and `UiSkin::Draw_List_Entry` (`ra/ui/ui_skin.cc` ~122) does the gradient/editor-font half of it. Either give `UiSkin::Draw_List_Entry` the plain-font branch (blue or grey remap, no bar) and call it from all five, or move `DrawListEntry()` beside it. The plain-font branch is unreachable for the team type lists, which are all built with `FontType::kEditor`; check the other callers before dropping it. About 80 lines removed. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.cc",
+        "startLine": 120,
+        "endLine": 120,
+        "text": "void DrawListEntry(PixelView& view, const std::string& text,",
+        "before": [
+          "",
+          "// Draws `text` as a list box entry in the given rectangle, highlighted when",
+          "// `selected`. `tab_stops` are the pixel columns its tabs advance to."
+        ],
+        "after": [
+          "                   const std::span<const int> tab_stops, const int x,",
+          "                   const int y, const int width, const int height,",
+          "                   const bool selected, const FontType font,"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-151",
+      "title": "Name the two rules for what counts as a waypoint",
+      "details": "Red Alert tests a waypoint number against two limits without saying which is meant. Below `ScenarioClass::kHomeWaypoint` (98) is \"a waypoint the designer names by letters\": the team editor's mission argument (`ra/editor/team_type_dialog.cc`, the anchor), `ra/editor/mapedit.cc` ~961 and ~979, `ra/objects/cell.cc` ~1073. Below `kWaypointCount` (101) is \"a valid index\", which must admit the home, reinforcement and special waypoints: `TeamType::set_origin()` and the four `static_cast<unsigned>(...) < kWaypointCount` tests in `ra/ai/team.cc`.\n\nAdd `static constexpr bool ScenarioClass::IsWaypoint(int)` and `IsLetterWaypoint(int)` in `ra/ai/scenario.h` and use them at those sites; behaviour-preserving, about 20 lines. Do not unify the two limits: the paratrooper drop uses waypoint 100 as origin and argument. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/editor/team_type_dialog.cc",
+        "startLine": 416,
+        "endLine": 416,
+        "text": "            mission.value() >= ScenarioClass::kHomeWaypoint) {",
+        "before": [
+          "      case NEED_WAYPOINT:",
+          "        mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));",
+          "        if (mission.value() < 0 ||"
+        ],
+        "after": [
+          "          mission.set_value(0);",
+          "        }",
+          "        break;"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-152",
+      "title": "Decide whether the computer should pick among more than twenty team types",
+      "details": "`TeamType::SuggestNewTeam()` (`ra/ai/team_type.cc`, the anchor) collects candidates into a fixed array of 20 in heap order and draws one at random, so in a scenario with more than 20 eligible team types for a house the later ones are never created by the house's own AI. `TheTwentyFirstCandidateIsNeverOffered` in `ra/ai/team_type_test.cc` pins it.\n\nTo decide: it is the shipped behaviour. Lifting the cap (a `std::vector`, 5 lines) changes which team a house builds and what the synchronized random stream returns afterwards, so missions with many team types play differently and a multiplayer game against an unchanged peer desyncs. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-06T09:18:07Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.cc",
+        "startLine": 422,
+        "endLine": 422,
+        "text": "  TeamType* choices[20];",
+        "before": [
+          "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
+          "                                   const bool alerted) {",
+          "  // Only the first 20 candidates in heap order take part in the draw."
+        ],
+        "after": [
+          "  int choice_count = 0;",
+          "",
+          "  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-153",
+      "title": "Decide whether to drop the three team type fields nothing reads",
+      "details": "`TeamType` (`ra/ai/team_type.h`) stores three fields no code reads: `is_transient_` (set by the paratrooper drop in `ra/objects/house.cc` ~2500 through `set_is_transient()`, never tested; the anchor), `initial_count_` (the scenario's \"Num\" field: read, shown and written by the editor and the INI, but nothing creates teams from it) and `fear_` (never set at all).\n\nTo decide: all three are in `TeamType::Serialize()` (`ra/saveload/ioobj.cc`), and `initial_count_` is a field of the scenario INI and of the editor dialog. Removing `is_transient_` and `fear_` is about 10 lines but changes the save format (bump `kSaveGameVersion`, run `tools/ra_saveload_smoke.sh`); `initial_count_` has to stay as long as scenarios round-trip through the editor. `set_is_transient()` is the one line of `team_type.h` no test covers. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.h",
+        "startLine": 327,
+        "endLine": 327,
+        "text": "  bool is_transient_ : 1 = false;",
+        "before": [
+          "",
+          "  // Created only to bring on reinforcements for one special event (the",
+          "  // paratrooper drop), not by the scenario."
+        ],
+        "after": [
+          "",
+          "  // Rank among teams when recruiting, 0 to 15: a team takes members from",
+          "  // teams of lower priority."
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-154",
+      "title": "Return only the live entries from TeamType's script and member lists",
+      "details": "`TeamType::missions()` and `members()` (`ra/ai/team_type.h`, the anchor) return the whole fixed arrays (20 and 5 entries) and callers bound their own loops with `mission_count()` / `member_count()`. They were left that way in `07482138` because `ra/ai/team.cc` reads entries by `CurrentMission` through `base::Suffix(Class->missions(), CurrentMission).data()` and `base::At(..., CurrentMission + 1)` (~686, ~768, ~1971 and nine more), some of which may address an entry at or past the count, and a narrower accessor would have turned that into an abort.\n\nReview each of those sites in `team.cc` for whether `CurrentMission` is always below `mission_count()`, guard the ones that are not, then return `std::span<const TeamMission>` of the first `mission_count_` entries (and the same for members) and drop the two count accessors where `.size()` serves. About 40 lines across `team.cc`, `reinforcements.cc`, `house.cc` and `mapedtm.cc`; simulation code, so run `tools/net_check.py` and the save/load smoke test. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.h",
+        "startLine": 279,
+        "endLine": 279,
+        "text": "  [[nodiscard]] const MissionArray& missions() const",
+        "before": [
+          "  // The script: the first mission_count() entries of missions(). The rest",
+          "  // are unused.",
+          "  [[nodiscard]] int mission_count() const { return mission_count_; }"
+        ],
+        "after": [
+          "      ABSL_ATTRIBUTE_LIFETIME_BOUND {",
+          "    return missions_;",
+          "  }"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-155",
+      "title": "Pass the team type to the editor's members dialog instead of using CurTeam",
+      "details": "The Members button of `TeamType::Edit()` (`ra/editor/team_type_dialog.cc`, the anchor) calls `MapEditClass::Team_Members(house)` (`ra/editor/mapedtm.cc` ~450), which edits the map editor's `CurTeam`, not the team type whose dialog is open. It works only because `Handle_Teams()` always calls `Edit()` on `CurTeam`; called on any other team type the button edits the wrong one, or dereferences null. It is also why those five lines are the only part of the dialog `ra/editor/team_type_dialog_test.cc` does not cover.\n\nGive `Team_Members()` a `TeamType&` parameter (it already uses `ClearMembers()` / `AddMember()` on it), pass `*this` from `Edit()`, and add a dialog test that opens it and closes it again. About 15 lines plus the test. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "editor",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z",
+      "anchor": {
+        "path": "src/ra/editor/team_type_dialog.cc",
+        "startLine": 661,
+        "endLine": 661,
+        "text": "      case engine::window::ButtonKey(kButtonMembers):",
+        "before": [
+          "        break;",
+          "",
+          "      // Invoke the members dialog"
+        ],
+        "after": [
+          "",
+          "        // The button stays pressed otherwise: the other dialog takes the",
+          "        // release."
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-156",
+      "title": "Give the Red Alert test fixtures one helper that builds the type heaps",
+      "details": "Eight test files repeat the same block to get the types a test needs: `TheTypeHeaps().<kind>().Reset(magic_enum::enum_count<...>())` followed by `<Kind>TypeClass::Init_Heap()` for each of aircraft, infantry, vessel, building and template, then `Reset()` of the team type and trigger type heaps. They are `ra/ai/team_type_test.cc` (the anchor), `ra/editor/team_type_dialog_test.cc`, `ra/ai/carryover_test.cc`, `ra/ai/trigger_type_test.cc`, `ra/ai/reinforcements_test.cc`, `ra/ai/trigger_action_test.cc`, `ra/editor/map_editor_lists_test.cc` and `ra/editor/trigger_type_dialog_test.cc`.\n\nAdd a `GameFixture` helper in `ra/startup/game_test_util.h`, for example `InitTypeHeaps(kinds...)` or one call that builds them all, and use it in those fixtures. About 60 lines removed. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "testing",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:19:17Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type_test.cc",
+        "startLine": 51,
+        "endLine": 51,
+        "text": "  void SetUp() override {",
+        "before": [
+          "// reading the current scenario format, and one team type to work on.",
+          "class TeamTypeTest : public UiFixture {",
+          " protected:"
+        ],
+        "after": [
+          "    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());",
+          "    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());",
+          "    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-157",
+      "title": "Run the modernization pass on Tiberian Dawn's team type files",
+      "details": "`td/ai/teamtype.cc` and `td/ai/teamtype.h` are the twin of the Red Alert files that `30c6f6ae..e9ac6245` took through `/modernize-file` (now `ra/ai/team_type.*` and `ra/editor/team_type_dialog.cc`). Nothing was carried over: the three bugs fixed in Red Alert do not exist there (no quarry list, no origin field, no `index == 0` break in the member loop, and its `operator new` is already `noexcept`), and Tiberian Dawn's `Suggested_New_Team()` really uses its type masks.\n\nRun `/modernize-file src/td/ai/teamtype.cc src/td/ai/teamtype.h`. The Red Alert result is the model for the names (`TeamType`, `TeamMission`, `TeamMember`, `TeamMissionType::kName`, `ReadIni()`, `ToIniEntry()`, `CreateTeam()`), for moving the editor dialog out to `td/editor/` and for the tests.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z"
+    },
+    {
+      "id": "T-158",
+      "title": "Measure coverage in a build without the scenario editor too",
+      "details": "The two `return \"\";` lines that end `TeamType::Description()` and `TeamMission::Description()` (`ra/ai/team_type.cc` ~194 and ~486) and the empty `TeamType::Draw_It()` are only compiled in when `config::kCheatKeysEnabled` and `config::kScenarioEditorEnabled` are both false. `tools/coverage.py` builds one configuration, with the editor, so those lines read as uncovered and the tests written for them (`TheDescriptionsAreEmptyWithoutTheEditor`, `NothingIsDrawnWithoutTheEditor` in `ra/ai/team_type_test.cc`, and the same pair in `ra/ai/trigger_type_test.cc`) are always skipped.\n\nEither let `tools/coverage.py` take a second build directory configured without the editor and merge the two profiles, or run those skipped tests in a CI job built that way. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "testing",
+        "tools",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z"
+    },
+    {
+      "id": "T-159",
+      "title": "Look at the three unnamed CLion findings left in the team type files",
+      "details": "After `11ac6ba2` CLion still marks three places with an Info finding whose message comes back empty through `mcp__ide__getDiagnostics`: the local `member` in `TeamType::ReadIniEntry()` (the anchor) and in `MemberDescription()` (`ra/ai/team_type.cc` ~462), and the constant `kCheckTextOffsetX` in `TeamType::Edit()` (`ra/editor/team_type_dialog.cc` ~111). Open the files in the IDE, read what the inspection says, and apply `/fix-ide-issues`' rule for that kind, or note here why it is left.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z",
+      "anchor": {
+        "path": "src/ra/ai/team_type.cc",
+        "startLine": 338,
+        "endLine": 338,
+        "text": "      TeamMember& member = base::At(members_, member_count_++);",
+        "before": [
+          "    // next member takes its place in Members.",
+          "    const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);",
+          "    if (member_type != nullptr) {"
+        ],
+        "after": [
+          "      member.type = member_type;",
+          "      member.quantity = base::ParseIntegerOr<int>(quantity_text, 0);",
+          "    }"
+        ],
+        "lost": false
+      }
+    },
+    {
+      "id": "T-160",
+      "title": "Pair the team editor's work mission reader with a loader",
+      "details": "In `TeamType::Edit()` (`ra/editor/team_type_dialog.cc`) the lambda `work_mission` reads the mission list and its argument control into a `TeamMission`; the double-click handler of the script list (`case ButtonKey(kButtonMission2)`, ~553-606) is its exact inverse, writing a script line into those controls, but is still a fifty-line switch inside the event loop. Move it into a `load_work_mission(const TeamMission&)` lambda beside `work_mission` so the pair reads together. Behaviour-preserving; the `ALineWith...IsCopiedWithIt` tests in `ra/editor/team_type_dialog_test.cc` cover every branch. Run `30c6f6ae..e9ac6245`.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "editor",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-06T09:18:45Z",
+      "updated": "2026-10-06T09:18:45Z"
     }
   ]
 }
