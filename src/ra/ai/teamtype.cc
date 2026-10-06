@@ -1390,9 +1390,6 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
       base::At(Members, index).Quantity = base::ParseIntegerOr<int>(p2, 0);
     } else {
       ClassCount--;
-      if (index == 0) {
-        break;
-      }
       index--;
     }
   }

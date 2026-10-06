@@ -46,6 +46,18 @@ constexpr int kAppendY = 119;
 constexpr int kOkX = 264 + 5;
 constexpr int kOkY = 221 + 4;
 
+TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
+  team_type_->Fill_In("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
+
+  ASSERT_EQ(team_type_->ClassCount, 1);
+  EXPECT_EQ(team_type_->Members[0].Class,
+            &InfantryTypeClass::As_Reference(INFANTRY_E1));
+  EXPECT_EQ(team_type_->Members[0].Quantity, 3);
+  ASSERT_EQ(team_type_->MissionCount, 1);
+  EXPECT_EQ(team_type_->MissionList[0].Mission, TMISSION_MOVE);
+  EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);
+}
+
 // The second click on a script line loads it into the work mission, which
 // Append then adds to the script.
 TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
