@@ -374,7 +374,7 @@
     {
       "id": "T-17",
       "title": "Cover the multiplayer branch of RunSpecialOptionsDialog()",
-      "details": "`ra/screens/special_options.cc` (moved from `ra/ai/special_options.cc` by T-136, so this item's anchor is lost; the code is the `if (TheSession().Type == GAME_NORMAL)` at the top of the dialog loop).\n\nIn a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs a running game behind it; the rest of the dialog is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`).\n\nTD's twin, `td/screens/special_options.cc`, has the same uncovered branch (`Main_Loop()`).",
+      "details": "`ra/screens/special_options.cc`.\n\nIn a multiplayer game the dialog calls `RunFrame()` instead of `ServiceRealTime()`, which needs a running game behind it; the rest of the dialog is covered through `UiFixture` (`docs/TEST_HARNESS_PLAN.md`).\n\nTD's twin, `td/screens/special_options.cc`, has the same uncovered branch (`Main_Loop()`).",
       "priority": "p3",
       "tags": [
         "testing",
@@ -383,11 +383,11 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
-      "updated": "2026-10-06T01:05:07Z",
+      "updated": "2026-10-06T01:24:05Z",
       "anchor": {
-        "path": "src/ra/ai/special_options.cc",
-        "startLine": 132,
-        "endLine": 137,
+        "path": "src/ra/screens/special_options.cc",
+        "startLine": 92,
+        "endLine": 97,
         "text": "    // keep coming, so the game runs on behind it. RunFrame() returns true when\n    // that game is over, which closes the dialog without applying anything.\n    if (TheSession().Type == GAME_NORMAL) {\n      ServiceRealTime();\n    } else {\n      if (RunFrame()) {",
         "before": [
           "  bool process = true;",
@@ -399,7 +399,7 @@
           "      }",
           "    }"
         ],
-        "lost": true
+        "lost": false
       }
     },
     {
