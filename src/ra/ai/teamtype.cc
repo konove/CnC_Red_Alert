@@ -248,37 +248,37 @@ TeamTypeClass* TeamTypeClass::From_Name(const std::string_view name) {
 
 NeedType TeamMission_Needs(TeamMissionType tmtype) {
   switch (tmtype) {
-    case TMISSION_FORMATION:
+    case TeamMissionType::kFormation:
       return NEED_FORMATION;
 
-    case TMISSION_ATTACK:
+    case TeamMissionType::kAttack:
       return NEED_QUARRY;
 
     // A cell number, which the editor shows and reads in hex.
-    case TMISSION_MOVECELL:
+    case TeamMissionType::kMoveCell:
       return NEED_HEX_NUMBER;
 
-    case TMISSION_SET_GLOBAL:
-    case TMISSION_GUARD:
-    case TMISSION_LOOP:
+    case TeamMissionType::kSetGlobal:
+    case TeamMissionType::kGuard:
+    case TeamMissionType::kLoop:
       return NEED_NUMBER;
 
-    case TMISSION_PATROL:
-    case TMISSION_MOVE:
-    case TMISSION_ATT_WAYPT:
-    case TMISSION_SPY:
+    case TeamMissionType::kPatrol:
+    case TeamMissionType::kMove:
+    case TeamMissionType::kAttackWaypoint:
+    case TeamMissionType::kSpy:
       return NEED_WAYPOINT;
 
-    case TMISSION_DO:
+    case TeamMissionType::kDo:
       return NEED_MISSION;
 
-    case TeamMissionType::TMISSION_NONE:
-    case TeamMissionType::TMISSION_ATTACKTARCOM:
-    case TeamMissionType::TMISSION_UNLOAD:
-    case TeamMissionType::TMISSION_DEPLOY:
-    case TeamMissionType::TMISSION_HOUND_DOG:
-    case TeamMissionType::TMISSION_INVULNERABLE:
-    case TeamMissionType::TMISSION_LOAD:
+    case TeamMissionType::kNone:
+    case TeamMissionType::kAttackTarcom:
+    case TeamMissionType::kUnload:
+    case TeamMissionType::kDeploy:
+    case TeamMissionType::kHoundDog:
+    case TeamMissionType::kInvulnerable:
+    case TeamMissionType::kLoad:
     default:
       break;
   }

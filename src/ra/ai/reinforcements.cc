@@ -125,7 +125,7 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
   for (int mission_index = 0; mission_index < team_type->MissionCount;
        mission_index++) {
     if (base::At(team_type->MissionList, mission_index).Mission ==
-        TMISSION_UNLOAD) {
+        TeamMissionType::kUnload) {
       has_unload_mission = true;
       break;
     }
@@ -278,7 +278,7 @@ bool DeliverReinforcements(TeamTypeClass* team_type) {
   // is given one: attack its origin waypoint. The team type keeps it.
   if (team_type->MissionCount == 0) {
     team_type->MissionCount = 1;
-    team_type->MissionList[0].Mission = TMISSION_ATT_WAYPT;
+    team_type->MissionList[0].Mission = TeamMissionType::kAttackWaypoint;
     team_type->MissionList[0].Data.Value = team_type->Origin;
   }
 

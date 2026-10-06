@@ -54,7 +54,7 @@ TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
   EXPECT_EQ(team_type_->Members[0].Quantity, 3);
   ASSERT_EQ(team_type_->MissionCount, 1);
-  EXPECT_EQ(team_type_->MissionList[0].Mission, TMISSION_MOVE);
+  EXPECT_EQ(team_type_->MissionList[0].Mission, TeamMissionType::kMove);
   EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);
 }
 
@@ -68,7 +68,7 @@ TEST_F(TeamTypeTest, FillInTakesAnOriginThatIsNoWaypointAsNone) {
 // Append then adds to the script.
 TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   team_type_->MissionCount = 1;
-  team_type_->MissionList[0].Mission = TMISSION_ATTACK;
+  team_type_->MissionList[0].Mission = TeamMissionType::kAttack;
   team_type_->MissionList[0].Data.Quarry = QUARRY_BUILDINGS;
   player()
       .At(3)
@@ -83,7 +83,7 @@ TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->MissionCount, 2);
-  EXPECT_EQ(team_type_->MissionList[1].Mission, TMISSION_ATTACK);
+  EXPECT_EQ(team_type_->MissionList[1].Mission, TeamMissionType::kAttack);
   EXPECT_EQ(team_type_->MissionList[1].Data.Quarry, QUARRY_BUILDINGS);
 }
 

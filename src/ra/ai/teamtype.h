@@ -47,27 +47,26 @@ namespace ra {
 // stores, so their order is part of the file format. TeamMission_Needs() says
 // which of them take an argument.
 enum class TeamMissionType {
-  TMISSION_NONE = -1,
-  TMISSION_ATTACK,        // Attack the given quarry type.
-  TMISSION_ATT_WAYPT,     // Attack whatever is at the given waypoint.
-  TMISSION_FORMATION,     // Change the team's formation.
-  TMISSION_MOVE,          // Move to the given waypoint.
-  TMISSION_MOVECELL,      // Move to the given cell number.
-  TMISSION_GUARD,         // Guard the area for the given tenths of a minute.
-  TMISSION_LOOP,          // Jump to the given line of the script.
-  TMISSION_ATTACKTARCOM,  // Attack the target the team already has.
-  TMISSION_UNLOAD,        // Unload at the current location.
-  TMISSION_DEPLOY,        // Deploy a mobile building (an MCV).
-  TMISSION_HOUND_DOG,     // Follow the nearest friendly unit.
-  TMISSION_DO,            // Give each member the given unit mission and stay
-                          // on this step.
-  TMISSION_SET_GLOBAL,    // Set the given scenario global.
-  TMISSION_INVULNERABLE,  // Make the members invulnerable (iron curtain).
-  TMISSION_LOAD,          // Load onto the team's transport.
-  TMISSION_SPY,           // Send a spy into the building at the given waypoint.
-  TMISSION_PATROL,        // Move to the given waypoint, engaging on the way.
+  kNone = -1,
+  kAttack,          // Attack the given quarry type.
+  kAttackWaypoint,  // Attack whatever is at the given waypoint.
+  kFormation,       // Change the team's formation.
+  kMove,            // Move to the given waypoint.
+  kMoveCell,        // Move to the given cell number.
+  kGuard,           // Guard the area for the given tenths of a minute.
+  kLoop,            // Jump to the given line of the script.
+  kAttackTarcom,    // Attack the target the team already has.
+  kUnload,          // Unload at the current location.
+  kDeploy,          // Deploy a mobile building (an MCV).
+  kHoundDog,        // Follow the nearest friendly unit.
+  kDo,              // Give each member the given unit mission and stay
+                    // on this step.
+  kSetGlobal,       // Set the given scenario global.
+  kInvulnerable,    // Make the members invulnerable (iron curtain).
+  kLoad,            // Load onto the team's transport.
+  kSpy,             // Send a spy into the building at the given waypoint.
+  kPatrol,          // Move to the given waypoint, engaging on the way.
 };
-using enum TeamMissionType;
 
 // One line of a team type's script: a mission and its argument.
 class TeamMissionClass {
@@ -80,8 +79,8 @@ class TeamMissionClass {
 
   // Returns the line the team editor shows for this mission: `index`, a tab,
   // the mission's name and its argument. `index` is the line's number in the
-  // script, shown because TMISSION_LOOP refers to lines by number. The text is
-  // empty in a build without the scenario editor or the cheat keys.
+  // script, shown because TeamMissionType::kLoop refers to lines by number. The
+  // text is empty in a build without the scenario editor or the cheat keys.
   [[nodiscard]] std::string Description(int index) const;
   // Draws Description(index) as a list box entry in the given rectangle,
   // highlighted when `selected`.
@@ -92,9 +91,9 @@ class TeamMissionClass {
   // The mission's argument; TeamMission_Needs(Mission) says which member is
   // meant. A mission that takes none leaves it 0.
   union {
-    FormationType Formation;  // TMISSION_FORMATION
-    QuarryType Quarry;        // TMISSION_ATTACK
-    MissionType Mission;      // TMISSION_DO
+    FormationType Formation;  // TeamMissionType::kFormation
+    QuarryType Quarry;        // TeamMissionType::kAttack
+    MissionType Mission;      // TeamMissionType::kDo
     int Value;  // A waypoint, cell, script line, global or duration.
   } Data;
 };
@@ -198,7 +197,7 @@ class TeamTypeClass : public AbstractTypeClass {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
   // Returns the editor's name for a team mission, which must not be
-  // TMISSION_NONE.
+  // TeamMissionType::kNone.
   static const char* Name_From_Mission(TeamMissionType order);
   // Picks, at random, a team type the computer could create for `house` now:
   // one of the house's own with fewer than MaxAllowed teams in the field.
