@@ -160,19 +160,6 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
   return nullptr;
 }
 
-TeamMissionType TeamTypeClass::Mission_From_Name(const std::string_view name) {
-  if (!name.empty()) {
-    for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
-         order++) {
-      if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
-        return order;
-      }
-    }
-  }
-
-  return TMISSION_NONE;
-}
-
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   DCHECK(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
 

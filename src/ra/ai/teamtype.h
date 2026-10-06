@@ -203,9 +203,6 @@ class TeamTypeClass : public AbstractTypeClass {
   // Returns the editor's name for a team mission, which must not be
   // TMISSION_NONE.
   static const char* Name_From_Mission(TeamMissionType order);
-  // Returns the team mission with this editor name, ignoring case, or
-  // TMISSION_NONE.
-  static TeamMissionType Mission_From_Name(std::string_view name);
   // Picks, at random, a team type the computer could create for `house` now:
   // one of the house's own with fewer than MaxAllowed teams in the field.
   // An alerted house picks only among its autocreate team types, any other
