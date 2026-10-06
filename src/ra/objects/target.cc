@@ -54,7 +54,7 @@
 #include "absl/log/check.h"
 #include "game/core/object_heap.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/core/defines.h"

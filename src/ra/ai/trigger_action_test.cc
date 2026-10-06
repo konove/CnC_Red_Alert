@@ -12,7 +12,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/assets/assets.h"

@@ -68,7 +68,7 @@
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/editor/mapedit.h"

@@ -177,7 +177,7 @@
 #include "game/sim/utracker.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/assets/assets.h"

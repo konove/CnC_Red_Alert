@@ -24,7 +24,7 @@
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
 #include "ra/assets/palettes.h"

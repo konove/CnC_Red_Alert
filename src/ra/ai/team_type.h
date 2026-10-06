@@ -22,8 +22,8 @@
 // a scenario INI declares them; TeamClass (team.h) is a team in the field
 // built from one.
 
-#ifndef CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
-#define CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
+#ifndef CNC_RED_ALERT_RA_AI_TEAM_TYPE_H_
+#define CNC_RED_ALERT_RA_AI_TEAM_TYPE_H_
 
 #include <cstddef>
 #include <string>
@@ -377,4 +377,4 @@ extern template void TeamType::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
+#endif  // CNC_RED_ALERT_RA_AI_TEAM_TYPE_H_

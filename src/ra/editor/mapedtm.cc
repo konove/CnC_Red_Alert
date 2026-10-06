@@ -58,7 +58,7 @@
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"

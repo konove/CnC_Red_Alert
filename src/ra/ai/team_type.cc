@@ -19,7 +19,7 @@
 // Team types: reading and writing them in a scenario INI, picking one for the
 // computer to build, and the scenario editor's list text for them.
 
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 
 #include <cctype>
 #include <cstdint>

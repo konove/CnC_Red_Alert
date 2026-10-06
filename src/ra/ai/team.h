@@ -45,7 +45,7 @@
 #include "absl/base/attributes.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/core/defines.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/house.h"

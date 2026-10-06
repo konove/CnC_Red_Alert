@@ -27,7 +27,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/assets/audio.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

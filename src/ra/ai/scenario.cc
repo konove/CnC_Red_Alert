@@ -110,7 +110,7 @@
 #include "ra/ai/carryover.h"
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_action.h"

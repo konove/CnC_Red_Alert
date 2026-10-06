@@ -3,7 +3,7 @@
 // teams it creates and destroys, how it survives a saved game, and the text
 // the scenario editor lists for it and for a line of its script.
 
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 
 #include <cstddef>
 #include <span>

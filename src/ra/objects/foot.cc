@@ -104,7 +104,7 @@
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigger_type.h"

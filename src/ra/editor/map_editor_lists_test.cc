@@ -8,7 +8,7 @@
 #include "engine/window/scripted_player.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"

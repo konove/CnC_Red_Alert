@@ -66,7 +66,7 @@
 #include "game/core/object_heap.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"

@@ -62,7 +62,7 @@
 #include "game/sim/direction.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/core/defines.h"
 #include "ra/map/mouse.h"
 #include "ra/objects/object.h"

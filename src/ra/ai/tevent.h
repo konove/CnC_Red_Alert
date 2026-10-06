@@ -54,7 +54,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "ra/ai/teamtype.h"
+#include "ra/ai/team_type.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 
