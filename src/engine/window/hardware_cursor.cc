@@ -4,6 +4,7 @@
 
 #include "engine/window/hardware_cursor.h"
 
+#include <SDL_error.h>
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_pixels.h>
@@ -174,6 +175,14 @@ void HardwareCursor::SetShape(const int hot_x, const int hot_y,
     return;
   }
 
+  // SDL makes no cursor whose hot spot lies outside it.
+  if (hot_x < 0 || hot_y < 0 || std::cmp_greater_equal(hot_x, header.width) ||
+      std::cmp_greater_equal(hot_y, header.original_height)) {
+    DLOG(INFO) << "SetShape: hot spot " << hot_x << "," << hot_y
+               << " outside the shape";
+    return;
+  }
+
   // Only format 0 (LCW compressed, 256-color) is supported here.
   if (header.format != 0) {
     DLOG(INFO) << "SetShape: shape type " << header.format;
@@ -184,13 +193,18 @@ void HardwareCursor::SetShape(const int hot_x, const int hot_y,
     return;
   }
 
+  // The shape is recorded only once SDL has a cursor for it, so that one SDL
+  // could not make is tried again the next time it is set.
+  if (!MakeCursor(*pixels, header.width, header.original_height, hot_x, hot_y,
+                  CursorScale())) {
+    return;
+  }
   current_shape_ = shape.data();
   shape_pixels_ = *std::move(pixels);
   shape_width_ = header.width;
   shape_height_ = header.original_height;
   hot_x_ = hot_x;
   hot_y_ = hot_y;
-  DrawSurface(CursorScale());
 }
 
 // Only the transitions between a count of 0 and 1 reach SDL.
@@ -251,40 +265,61 @@ void HardwareCursor::UpdateScale() {
   }
   const int scale = CursorScale();
   if (scale != scale_) {
-    DrawSurface(scale);
+    MakeCursor(shape_pixels_, shape_width_, shape_height_, hot_x_, hot_y_,
+               scale);
   }
 }
 
-void HardwareCursor::DrawSurface(const int scale) {
+bool HardwareCursor::MakeCursor(const std::span<const uint8_t> pixels,
+                                const int width, const int height,
+                                const int hot_x, const int hot_y,
+                                const int scale) {
   // Scaled pixels are new ones, so the surface owns them rather than
   // borrowing through SDL_CreateRGBSurfaceFrom.
-  SdlSurfacePtr surface(SDL_CreateRGBSurface(
-      0, shape_width_ * scale, shape_height_ * scale, 8, 0, 0, 0, 0));
+  SdlSurfacePtr surface(
+      SDL_CreateRGBSurface(0, width * scale, height * scale, 8, 0, 0, 0, 0));
   if (!surface) {
-    return;
+    return false;
   }
-  ScaleUpNearest(shape_pixels_, shape_width_, *surface);
+  ScaleUpNearest(pixels, width, *surface);
 
-  if (const SDL_Palette* game_palette = GamePalette()) {
+  const SDL_Palette* game_palette = GamePalette();
+  if (game_palette != nullptr) {
     CopyGameColors(*game_palette, *surface->format->palette);
     // An 8-bit surface's palette has 256 entries. SDL_CreateColorCursor()
     // converts the surface to ARGB through it, so an alpha of 0 on entry 0 is
     // what makes color 0 see-through.
     surface->format->palette->colors->a = 0;
+  }
+
+  if (!InstallCursor(*surface, hot_x * scale, hot_y * scale)) {
+    return false;
+  }
+  sdl_surface_ = std::move(surface);
+  scale_ = scale;
+  if (game_palette != nullptr) {
     // The new cursor has the current colors already.
     palette_stale_ = false;
   }
-
-  sdl_surface_ = std::move(surface);
-  scale_ = scale;
-  RebuildCursor();
+  return true;
 }
 
 void HardwareCursor::RebuildCursor() {
-  SdlCursorPtr cursor(SDL_CreateColorCursor(sdl_surface_.get(), hot_x_ * scale_,
-                                            hot_y_ * scale_));
+  InstallCursor(*sdl_surface_, hot_x_ * scale_, hot_y_ * scale_);
+}
+
+// The old cursor is freed only after SDL has the new one: freeing the cursor
+// SDL is showing makes it fall back to its default.
+bool HardwareCursor::InstallCursor(SDL_Surface& surface, const int hot_x,
+                                   const int hot_y) {
+  SdlCursorPtr cursor(SDL_CreateColorCursor(&surface, hot_x, hot_y));
+  if (!cursor) {
+    DLOG(WARNING) << "SDL_CreateColorCursor: " << SDL_GetError();
+    return false;
+  }
   SDL_SetCursor(cursor.get());
   sdl_cursor_ = std::move(cursor);
+  return true;
 }
 
 namespace {

@@ -101,10 +101,11 @@ class HardwareCursor {
   // game's picture (see UpdateScale()). `shape` is a ShapeHeader header
   // followed by its LCW-compressed pixels; the hot spot is in the shape's own,
   // unscaled pixels. Only 256-color shapes (format 0) no larger than the size
-  // given to the constructor are accepted. Anything else, and a shape whose
-  // data is corrupt, leaves the previous cursor in place. Handing over the same
-  // buffer as last time does nothing: the cursor is recognized by its address,
-  // not its contents.
+  // given to the constructor are accepted, and the hot spot has to lie inside
+  // the shape. Anything else, a shape whose data is corrupt and one SDL can
+  // make no cursor of leave the previous cursor in place. Handing over the
+  // buffer of the shape now showing does nothing: the cursor is recognized by
+  // its address, not its contents.
   void SetShape(int hot_x, int hot_y, std::span<const std::byte> shape);
 
   // Reference-counted visibility control. Hide increments the hide count,
@@ -157,11 +158,18 @@ class HardwareCursor {
   }
 
  private:
-  // Draws shape_pixels_ into a new sdl_surface_ at `scale` and makes it the
-  // SDL cursor.
-  void DrawSurface(int scale);
-  // Makes sdl_surface_ the SDL cursor, with the hot spot scaled like it.
+  // Draws the width x height `pixels` into a new sdl_surface_ at `scale` and
+  // makes it the SDL cursor; the hot spot is in unscaled pixels. Returns false,
+  // with the cursor and its surface unchanged, if SDL could not create them.
+  bool MakeCursor(std::span<const uint8_t> pixels, int width, int height,
+                  int hot_x, int hot_y, int scale);
+  // Makes sdl_surface_ the SDL cursor again, with the hot spot scaled like it.
+  // Keeps the cursor it had if SDL cannot create one.
   void RebuildCursor();
+  // Makes a cursor of `surface`, with the hot spot in the surface's pixels,
+  // SDL's cursor and sdl_cursor_. Returns false, with both unchanged, if SDL
+  // could not create it.
+  bool InstallCursor(SDL_Surface& surface, int hot_x, int hot_y);
 
   // The cursor SDL is showing, or null before the first SetShape().
   SdlCursorPtr sdl_cursor_;
