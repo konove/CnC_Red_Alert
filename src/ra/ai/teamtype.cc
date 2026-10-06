@@ -59,6 +59,7 @@
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/trigger_type.h"
+#include "ra/ai/waypoint_name.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -421,16 +422,7 @@ bool TeamType::Edit() {
                         FontType::kEditor, TPF_NOSHADOW,
                         initial_edit.X + initial_edit.Width + kFieldSpacingX,
                         initial_edit.Y, 20, 9, EditClass::kAlpha);
-  *origin_edit.Get_Text() = '\0';
-  if (Origin != -1) {
-    if (Origin < 26) {
-      absl::SNPrintF(origin_edit.Get_Text(), sizeof(origin_text), "%c",
-                     Origin + 'A');
-    } else {
-      absl::SNPrintF(origin_edit.Get_Text(), sizeof(origin_text), "%c%c",
-                     (Origin / 26) + 'A' - 1, (Origin % 26) + 'A');
-    }
-  }
+  base::SafeCopy(origin_text, Origin != -1 ? WaypointLetters(Origin) : "");
   origin_edit.Add(*commands);
 
   // Button that opens the members dialog.
@@ -779,16 +771,9 @@ bool TeamType::Edit() {
               break;
 
             case NEED_WAYPOINT:
-              if (script_list.Current_Item()->Data.Value < 26) {
-                absl::SNPrintF(argument_edit.Get_Text(), sizeof(argument_text),
-                               "%c",
-                               script_list.Current_Item()->Data.Value + 'A');
-              } else {
-                absl::SNPrintF(
-                    argument_edit.Get_Text(), sizeof(argument_text), "%c%c",
-                    (script_list.Current_Item()->Data.Value / 26) + 'A' - 1,
-                    (script_list.Current_Item()->Data.Value % 26) + 'A');
-              }
+              base::SafeCopy(
+                  argument_text,
+                  WaypointLetters(script_list.Current_Item()->Data.Value));
               break;
             case NeedType::NEED_NONE:
             case NeedType::NEED_THEME:
@@ -847,13 +832,8 @@ bool TeamType::Edit() {
               break;
 
             case NEED_WAYPOINT:
-              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
-              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
-                mission->Data.Value = (mission->Data.Value + 1) * 26;
-                mission->Data.Value +=
-                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
-                    'A';
-              }
+              mission->Data.Value =
+                  WaypointFromLetters(argument_edit.Get_Text());
               if (mission->Data.Value < 0 ||
                   mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 mission->Data.Value = 0;
@@ -916,13 +896,8 @@ bool TeamType::Edit() {
               break;
 
             case NEED_WAYPOINT:
-              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
-              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
-                mission->Data.Value = (mission->Data.Value + 1) * 26;
-                mission->Data.Value +=
-                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
-                    'A';
-              }
+              mission->Data.Value =
+                  WaypointFromLetters(argument_edit.Get_Text());
               if (mission->Data.Value < 0 ||
                   mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 mission->Data.Value = 0;
@@ -984,13 +959,8 @@ bool TeamType::Edit() {
               break;
 
             case NEED_WAYPOINT:
-              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
-              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
-                mission->Data.Value = (mission->Data.Value + 1) * 26;
-                mission->Data.Value +=
-                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
-                    'A';
-              }
+              mission->Data.Value =
+                  WaypointFromLetters(argument_edit.Get_Text());
               if (mission->Data.Value < 0 ||
                   mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
                 mission->Data.Value = 0;
@@ -1080,17 +1050,7 @@ bool TeamType::Edit() {
           base::At(MissionList, index) = *script_list.at(index);
         }
 
-        if (!std::string_view(origin_edit.Get_Text()).empty()) {
-          if (std::string_view(origin_edit.Get_Text()).size() == 1) {
-            Origin = toupper(*origin_edit.Get_Text()) - 'A';
-          } else {
-            Origin = (toupper(*origin_edit.Get_Text()) + 1 - 'A') * 26;
-            Origin +=
-                toupper(std::string_view(origin_edit.Get_Text()).at(1)) - 'A';
-          }
-        } else {
-          Origin = -1;
-        }
+        Origin = WaypointFromLetters(origin_edit.Get_Text());
         // Letters past the scenario's last waypoint name none.
         if (Origin >= ScenarioClass::kWaypointCount) {
           Origin = -1;
@@ -1172,23 +1132,15 @@ std::string TeamType::MemberDescription() const {
 
 std::string TeamType::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    // The origin waypoint in the editor's letters: "A" to "Z", then "AA" on.
-    char loc[3] = {};
-    if (Origin > -1) {
-      if (Origin < 26) {
-        loc[0] = static_cast<char>('A' + Origin);
-      } else {
-        loc[0] = static_cast<char>((Origin / 26) + 'A' - 1);
-        loc[1] = static_cast<char>((Origin % 26) + 'A');
-      }
-    }
+    const std::string origin_letters =
+        Origin > -1 ? WaypointLetters(Origin) : "";
 
     // A team read from a scenario that names no house for it has none.
     const char* const house_suffix =
         House == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(House).Suffix;
     return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
-                           IsAutocreate ? '*' : ' ', loc, MissionCount,
-                           MemberDescription());
+                           IsAutocreate ? '*' : ' ', origin_letters,
+                           MissionCount, MemberDescription());
   }
   return "";
 }
@@ -1221,12 +1173,7 @@ std::string TeamMission::Description(int index) const {
         break;
 
       case NEED_WAYPOINT:
-        if (Data.Value < 26) {
-          absl::StrAppendFormat(&text, "%c", Data.Value + 'A');
-        } else {
-          absl::StrAppendFormat(&text, "%c%c", (Data.Value / 26) + 'A' - 1,
-                                (Data.Value % 26) + 'A');
-        }
+        text += WaypointLetters(Data.Value);
         break;
       case NeedType::NEED_NONE:
       case NeedType::NEED_THEME:
