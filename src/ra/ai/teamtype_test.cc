@@ -47,7 +47,7 @@ constexpr int kOkX = 264 + 5;
 constexpr int kOkY = 221 + 4;
 
 TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
-  team_type_->Fill_In("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
+  team_type_->ReadIniEntry("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
 
   ASSERT_EQ(team_type_->ClassCount, 1);
   EXPECT_EQ(team_type_->Members[0].Class,
@@ -59,7 +59,7 @@ TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
 }
 
 TEST_F(TeamTypeTest, FillInTakesAnOriginThatIsNoWaypointAsNone) {
-  team_type_->Fill_In("tanks", "2,0,7,0,1,500,-1,0,0");
+  team_type_->ReadIniEntry("tanks", "2,0,7,0,1,500,-1,0,0");
 
   EXPECT_EQ(team_type_->Origin, -1);
 }

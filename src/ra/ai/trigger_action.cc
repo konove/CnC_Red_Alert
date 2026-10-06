@@ -483,7 +483,7 @@ class CreateTeamAction final : public TeamAction {
   bool Perform(const TriggerActionContext& /*context*/) override {
     if (team_type() != nullptr) {
       TheWorld().scenario_init()++;
-      team_type()->Create_One_Of();
+      team_type()->CreateTeam();
       TheWorld().scenario_init()--;
     }
     return true;
@@ -500,7 +500,7 @@ class DestroyTeamAction final : public TeamAction {
   }
   bool Perform(const TriggerActionContext& /*context*/) override {
     if (team_type() != nullptr) {
-      team_type()->Destroy_All_Of();
+      team_type()->DestroyTeams();
     }
     return true;
   }
@@ -1010,7 +1010,7 @@ TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
         base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
   } else {
     // The shipped scenarios: the team and the trigger are given by name.
-    record.team_type = TeamType::From_Name(tokens.Next());
+    record.team_type = TeamType::FromName(tokens.Next());
     if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
       DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
                     << " names a team that does not exist";

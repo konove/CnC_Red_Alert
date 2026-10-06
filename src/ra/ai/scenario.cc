@@ -767,7 +767,7 @@ void Clear_Scenario() {
 
   HouseClass::Init();
   ObjectClass::Init();
-  TeamType::Init();
+  TeamType::FreeAll();
   TeamClass::Init();
   TriggerClass::Init();
   TriggerType::DestroyAll();
@@ -2142,7 +2142,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in the team-type data. The team types must be created before any
   **	triggers can be created.
   */
-  TeamType::Read_INI(ini);
+  TeamType::ReadIni(ini);
   ServiceRealTime();
 
   /*
@@ -2378,7 +2378,7 @@ void Write_Scenario_INI(const char* fname) {
     ini.PutInt(BASIC, "Percent", TheScenario().Percent);
 
     HouseClass::Write_INI(ini);
-    TeamType::Write_INI(ini);
+    TeamType::WriteIni(ini);
     TriggerType::WriteIni(ini);
     TheMap().Write_INI(ini);
     TerrainClass::Write_INI(ini);

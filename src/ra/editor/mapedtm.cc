@@ -794,7 +794,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamType::kMaxTeamClasscount) {
+          if (numclasses == TeamType::kMaxMemberTypes) {
             continue;
           }
           numclasses++;

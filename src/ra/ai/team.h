@@ -285,7 +285,7 @@ class TeamClass : public AbstractClass {
   */
   FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamType::kMaxTeamClasscount] = {};
+  unsigned char Quantity[TeamType::kMaxMemberTypes] = {};
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TeamClass() = default;

@@ -1423,7 +1423,7 @@ bool TriggerType::Edit() {
 
 
           case NEED_TEAM:
-            event1.Team = TeamType::From_Name(SelectedName(event1_team_list));
+            event1.Team = TeamType::FromName(SelectedName(event1_team_list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_WAYPOINT:
@@ -1477,7 +1477,7 @@ bool TriggerType::Edit() {
 
 
           case NEED_TEAM:
-            event2.Team = TeamType::From_Name(SelectedName(event2_team_list));
+            event2.Team = TeamType::FromName(SelectedName(event2_team_list));
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_WAYPOINT:
@@ -1517,7 +1517,7 @@ bool TriggerType::Edit() {
 
           case NEED_TEAM:
             action1_record.team_type =
-                TeamType::From_Name(SelectedName(action1_team_list));
+                TeamType::FromName(SelectedName(action1_team_list));
             break;
 
           case NEED_NUMBER:
@@ -1584,7 +1584,7 @@ bool TriggerType::Edit() {
 
           case NEED_TEAM:
             action2_record.team_type =
-                TeamType::From_Name(SelectedName(action2_team_list));
+                TeamType::FromName(SelectedName(action2_team_list));
             break;
 
           case NEED_NUMBER:

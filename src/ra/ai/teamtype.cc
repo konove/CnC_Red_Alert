@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer Red Alert(tm)
+**	Command & Conquer Red Alert(mission)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -87,6 +87,13 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
+namespace {
+
+// The scenario INI section that lists the team types.
+constexpr const char* kIniSection = "TeamTypes";
+
+}  // namespace
+
 // Parses a hex number for the editor's cell-number field.
 static int atoh(std::string_view str);
 
@@ -97,7 +104,7 @@ void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
     RemapControlType* scheme = Get_Color_Scheme();
     // Pixel columns of Description()'s fields after the name: house, origin,
     // mission count, members.
-    static const int _tabs[] = {35, 60, 80, 100};
+    static const int kTabStops[] = {35, 60, 80, 100};
     if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
@@ -109,18 +116,18 @@ void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
       }
 
       Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
-                              kTBlack, font, flags, width, _tabs);
+                              kTBlack, font, flags, width, kTabStops);
     } else {
       Conquer_Clip_Text_Print(
           view, Description().c_str(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, font, flags, width, _tabs);
+          kTBlack, font, flags, width, kTabStops);
     }
   }
 }
 
-base::EnumArray<TeamMissionType, const char*> TeamType::TMissions = {
+const base::EnumArray<TeamMissionType, const char*> TeamType::kMissionNames = {
     "Attack...",
     "Attack Waypoint...",
     "Change Formation to...",
@@ -146,10 +153,10 @@ TeamType::TeamType()
 
 TeamType::~TeamType() = default;
 
-void TeamType::Init() { TheObjectHeaps().team_type().FreeAll(); }
+void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
 
-const char* TeamType::Name_From_Mission(TeamMissionType order) {
-  return TMissions.at(order);
+const char* TeamType::MissionName(TeamMissionType order) {
+  return kMissionNames.at(order);
 }
 
 void* TeamType::operator new(std::size_t /*unused*/) {
@@ -167,14 +174,14 @@ void TeamType::operator delete(void* ptr) {
   TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
-TeamClass* TeamType::Create_One_Of() {
+TeamClass* TeamType::CreateTeam() {
   if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
 }
 
-void TeamType::Destroy_All_Of() const {
+void TeamType::DestroyTeams() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
@@ -187,42 +194,42 @@ void TeamType::Destroy_All_Of() const {
   }
 }
 
-TeamType* TeamType::Suggested_New_Team(HouseClass* house, uint64_t /*unused*/,
-                                       uint64_t /*unused*/, uint64_t /*unused*/,
-                                       uint64_t /*unused*/, bool alerted) {
+TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t /*unused*/,
+                                   uint64_t /*unused*/, uint64_t /*unused*/,
+                                   uint64_t /*unused*/, bool alerted) {
   // Only the first 20 candidates in heap order take part in the draw.
   TeamType* choices[20];
-  int choicecount = 0;
+  int choice_count = 0;
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamType* ttype = TheObjectHeaps().team_type().ActiveAt(index);
+    TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
-    DCHECK(ttype != nullptr);
+    DCHECK(candidate != nullptr);
 
     // A team type on the wrong side of the alert is treated as full.
-    int maxnum = ttype->MaxAllowed;
-    if ((alerted && !ttype->IsAutocreate) ||
-        (!alerted && ttype->IsAutocreate)) {
-      maxnum = 0;
+    int limit = candidate->MaxAllowed;
+    if ((alerted && !candidate->IsAutocreate) ||
+        (!alerted && candidate->IsAutocreate)) {
+      limit = 0;
     }
 
-    if (choicecount >= std::ssize(choices)) {
+    if (choice_count >= std::ssize(choices)) {
       break;
     }
 
-    if (ttype != nullptr && ttype->House == house->Class->House &&
-        ttype->Number < maxnum) {
-      base::At(choices, choicecount++) = ttype;
+    if (candidate != nullptr && candidate->House == house->Class->House &&
+        candidate->Number < limit) {
+      base::At(choices, choice_count++) = candidate;
     }
   }
 
-  if (choicecount > 0) {
-    return base::At(choices, RandomPick(0, choicecount - 1));
+  if (choice_count > 0) {
+    return base::At(choices, RandomPick(0, choice_count - 1));
   }
   return nullptr;
 }
 
-TeamType* TeamType::From_Name(const std::string_view name) {
+TeamType* TeamType::FromName(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
@@ -234,8 +241,8 @@ TeamType* TeamType::From_Name(const std::string_view name) {
   return nullptr;
 }
 
-NeedType TeamMission_Needs(TeamMissionType tmtype) {
-  switch (tmtype) {
+NeedType TeamMissionNeeds(TeamMissionType mission) {
+  switch (mission) {
     case TeamMissionType::kFormation:
       return NEED_FORMATION;
 
@@ -279,7 +286,7 @@ void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
   RemapControlType* scheme = Get_Color_Scheme();
   // Pixel columns of the mission's name and of a second field
   // Description() never writes.
-  static const int _tabs[] = {13, 40};
+  static const int kTabStops[] = {13, 40};
   if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
@@ -291,41 +298,41 @@ void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
     }
 
     Conquer_Clip_Text_Print(view, Description(index).c_str(), x, y, scheme,
-                            kTBlack, font, flags, width, _tabs);
+                            kTBlack, font, flags, width, kTabStops);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(index).c_str(), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-        kTBlack, font, flags, width, _tabs);
+        kTBlack, font, flags, width, kTabStops);
   }
 }
 
 bool TeamType::Edit() {
   // Dialog and button dimensions, in pixels of the editor's 640x400 screen.
-  constexpr int kDDialogW = 400;
-  constexpr int kDDialogH = 250;
-  constexpr int kDDialogX = 0;
-  constexpr int kDDialogY = 0;
-  constexpr int kDNameX = kDDialogX + 35;
-  constexpr int kDNameY = kDDialogY + 27;
-  constexpr int kEdWidth = 40;
-  constexpr int kDCheckX =
-      kDDialogX + 35;  // Start of check box attribute list.
-  constexpr int kDCheckY = kDNameY + 25;
-  constexpr int kCbSpacingY = 9;  // Vertical spacing between check box lines.
-  constexpr int kCbSpacingX =
+  constexpr int kDialogW = 400;
+  constexpr int kDialogH = 250;
+  constexpr int kDialogX = 0;
+  constexpr int kDialogY = 0;
+  constexpr int kNameX = kDialogX + 35;
+  constexpr int kNameY = kDialogY + 27;
+  constexpr int kEditWidth = 40;
+  constexpr int kCheckX = kDialogX + 35;  // Start of check box attribute list.
+  constexpr int kCheckY = kNameY + 25;
+  constexpr int kCheckSpacingY =
+      9;  // Vertical spacing between check box lines.
+  constexpr int kCheckTextOffsetX =
       8;  // Horizontal spacing for check box description text.
-  constexpr int kDSpacingX =
+  constexpr int kFieldSpacingX =
       9;  // Horizontal spacing between data entry fields.
-  constexpr int kDCancelW = 50;
-  constexpr int kDCancelH = 9;
-  constexpr int kDCancelX = kDDialogX + kDDialogW - (kDCancelW + 35);
-  constexpr int kDCancelY = kDDialogY + kDDialogH - (kDCancelH + 20);
-  constexpr int kDOkW = 50;
-  constexpr int kDOkH = 9;
-  constexpr int kDOkX = kDDialogX + kDDialogW - ((kDOkW + 18) * 2);
-  constexpr int kDOkY = kDCancelY;
+  constexpr int kCancelW = 50;
+  constexpr int kCancelH = 9;
+  constexpr int kCancelX = kDialogX + kDialogW - (kCancelW + 35);
+  constexpr int kCancelY = kDialogY + kDialogH - (kCancelH + 20);
+  constexpr int kOkW = 50;
+  constexpr int kOkH = 9;
+  constexpr int kOkX = kDialogX + kDialogW - ((kOkW + 18) * 2);
+  constexpr int kOkY = kCancelY;
 
   // Control IDs; Input() returns the one that was used.
   constexpr int kButtonName = 100;
@@ -359,276 +366,284 @@ bool TeamType::Edit() {
   RemapControlType* scheme = Get_Color_Scheme();
 
   // Team name edit field.
-  char name_buf[10];
-  EditClass name_edt(kButtonName, name_buf, sizeof(name_buf), FontType::kEditor,
-                     TPF_NOSHADOW, kDNameX, kDNameY, kEdWidth, 9,
-                     EditClass::kAlphanumeric);
-  base::SafeCopy(name_buf, IniName);
-  commands = &name_edt;
+  char name_text[10];
+  EditClass name_edit(kButtonName, name_text, sizeof(name_text),
+                      FontType::kEditor, TPF_NOSHADOW, kNameX, kNameY,
+                      kEditWidth, 9, EditClass::kAlphanumeric);
+  base::SafeCopy(name_text, IniName);
+  commands = &name_edit;
 
   // House ownership of this team.
-  char housetext[25] = "";
-  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
-                         FontType::kEditor, TPF_NOSHADOW,
-                         name_edt.X + name_edt.Width + kDSpacingX, name_edt.Y,
-                         55, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
-                         MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char house_text[25] = "";
+  DropListClass house_drop(
+      kButtonHouse, house_text, sizeof(house_text), FontType::kEditor,
+      TPF_NOSHADOW, name_edit.X + name_edit.Width + kFieldSpacingX, name_edit.Y,
+      55, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    housebtn.Add_Item(HouseTypeClass::As_Reference(house).IniName);
+    house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
   if (House == HOUSE_NONE) {
     House = HOUSE_GOOD;
   }
-  housebtn.Set_Selected_Index(static_cast<int>(House));
-  housebtn.Add(*commands);
+  house_drop.Set_Selected_Index(static_cast<int>(House));
+  house_drop.Add(*commands);
 
   // Recruit priority for this team.
-  char recr_buf[4];
-  EditClass recr_edt(kButtonRecruit, recr_buf, sizeof(recr_buf),
-                     FontType::kEditor, TPF_NOSHADOW,
-                     housebtn.X + housebtn.Width + 5 + kDSpacingX, housebtn.Y,
-                     kEdWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", RecruitPriority);
-  recr_edt.Add(*commands);
+  char priority_text[4];
+  EditClass priority_edit(kButtonRecruit, priority_text, sizeof(priority_text),
+                          FontType::kEditor, TPF_NOSHADOW,
+                          house_drop.X + house_drop.Width + 5 + kFieldSpacingX,
+                          house_drop.Y, kEditWidth, 9, EditClass::kNumeric);
+  absl::SNPrintF(priority_text, sizeof(priority_text), "%d", RecruitPriority);
+  priority_edit.Add(*commands);
 
   // Maximum allowed for this team type.
-  char maxnum_buf[4];
-  EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, sizeof(maxnum_buf),
-                       FontType::kEditor, TPF_NOSHADOW,
-                       recr_edt.X + recr_edt.Width + kDSpacingX, recr_edt.Y,
-                       kEdWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", MaxAllowed);
-  maxnum_edt.Add(*commands);
+  char max_text[4];
+  EditClass max_edit(kButtonMaxnum, max_text, sizeof(max_text),
+                     FontType::kEditor, TPF_NOSHADOW,
+                     priority_edit.X + priority_edit.Width + kFieldSpacingX,
+                     priority_edit.Y, kEditWidth, 9, EditClass::kNumeric);
+  absl::SNPrintF(max_text, sizeof(max_text), "%d", MaxAllowed);
+  max_edit.Add(*commands);
 
   // Initial number for this team type.
-  char initnum_buf[4];
-  EditClass initnum_edt(kButtonInitnum, initnum_buf, sizeof(initnum_buf),
-                        FontType::kEditor, TPF_NOSHADOW,
-                        maxnum_edt.X + maxnum_edt.Width + kDSpacingX,
-                        maxnum_edt.Y, kEdWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", InitNum);
-  initnum_edt.Add(*commands);
+  char initial_text[4];
+  EditClass initial_edit(kButtonInitnum, initial_text, sizeof(initial_text),
+                         FontType::kEditor, TPF_NOSHADOW,
+                         max_edit.X + max_edit.Width + kFieldSpacingX,
+                         max_edit.Y, kEditWidth, 9, EditClass::kNumeric);
+  absl::SNPrintF(initial_text, sizeof(initial_text), "%d", InitNum);
+  initial_edit.Add(*commands);
 
   // Waypoint to create or reinforce this team at, as the editor's letters;
   // empty for none.
-  char origin[4];
-  EditClass originbtn(kButtonOrigin, origin, sizeof(origin), FontType::kEditor,
-                      TPF_NOSHADOW,
-                      initnum_edt.X + initnum_edt.Width + kDSpacingX,
-                      initnum_edt.Y, 20, 9, EditClass::kAlpha);
-  *originbtn.Get_Text() = '\0';
+  char origin_text[4];
+  EditClass origin_edit(kButtonOrigin, origin_text, sizeof(origin_text),
+                        FontType::kEditor, TPF_NOSHADOW,
+                        initial_edit.X + initial_edit.Width + kFieldSpacingX,
+                        initial_edit.Y, 20, 9, EditClass::kAlpha);
+  *origin_edit.Get_Text() = '\0';
   if (Origin != -1) {
     if (Origin < 26) {
-      absl::SNPrintF(originbtn.Get_Text(), sizeof(origin), "%c", Origin + 'A');
+      absl::SNPrintF(origin_edit.Get_Text(), sizeof(origin_text), "%c",
+                     Origin + 'A');
     } else {
-      absl::SNPrintF(originbtn.Get_Text(), sizeof(origin), "%c%c",
+      absl::SNPrintF(origin_edit.Get_Text(), sizeof(origin_text), "%c%c",
                      (Origin / 26) + 'A' - 1, (Origin % 26) + 'A');
     }
   }
-  originbtn.Add(*commands);
+  origin_edit.Add(*commands);
 
   // Button that opens the members dialog.
-  TextButtonClass membersbtn(kButtonMembers, "Members", kEButtonFont,
-                             kEButtonFlags, name_edt.X, name_edt.Y + 12, 50);
-  membersbtn.Add(*commands);
+  TextButtonClass members_button(kButtonMembers, "Members", kEButtonFont,
+                                 kEButtonFlags, name_edit.X, name_edit.Y + 12,
+                                 50);
+  members_button.Add(*commands);
 
   // Trigger to assign to each member of this team (when object joins team).
   // Entry 0 is "<NONE>", so a trigger type's entry is its heap position + 1.
-  char trigtext[25] = "";
-  DropListClass triggerbtn(kButtonTrigger, trigtext, sizeof(trigtext),
-                           FontType::kEditor, TPF_NOSHADOW,
-                           kDDialogX + kDDialogW - 95, membersbtn.Y, 60, 8 * 5,
-                           MixArchive::RetrieveData("EBTN-UP.SHP"),
-                           MixArchive::RetrieveData("EBTN-DN.SHP"));
-  triggerbtn.Add_Item("<NONE>");
+  char trigger_text[25] = "";
+  DropListClass trigger_drop(kButtonTrigger, trigger_text, sizeof(trigger_text),
+                             FontType::kEditor, TPF_NOSHADOW,
+                             kDialogX + kDialogW - 95, members_button.Y, 60,
+                             8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                             MixArchive::RetrieveData("EBTN-DN.SHP"));
+  trigger_drop.Add_Item("<NONE>");
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    triggerbtn.Add_Item(
+    trigger_drop.Add_Item(
         TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
   if (Trigger != nullptr) {
-    triggerbtn.Set_Selected_Index(Trigger->Name());
+    trigger_drop.Set_Selected_Index(Trigger->Name());
   } else {
-    triggerbtn.Set_Selected_Index(0);
+    trigger_drop.Set_Selected_Index(0);
   }
-  triggerbtn.Add(*commands);
+  trigger_drop.Add(*commands);
 
   // Roundabout travel logic attribute for this team.
-  CheckBoxClass roundbtn(kButtonRoundabout, kDCheckX, kDCheckY);
+  CheckBoxClass roundabout_check(kButtonRoundabout, kCheckX, kCheckY);
   if (IsRoundAbout) {
-    roundbtn.Turn_On();
+    roundabout_check.Turn_On();
   } else {
-    roundbtn.Turn_Off();
+    roundabout_check.Turn_Off();
   }
-  roundbtn.Add(*commands);
+  roundabout_check.Add(*commands);
 
   // Suicide travel to target attribute.
-  CheckBoxClass suicidebtn(kButtonSuicide, kDCheckX, roundbtn.Y + kCbSpacingY);
+  CheckBoxClass suicide_check(kButtonSuicide, kCheckX,
+                              roundabout_check.Y + kCheckSpacingY);
   if (IsSuicide) {
-    suicidebtn.Turn_On();
+    suicide_check.Turn_On();
   } else {
-    suicidebtn.Turn_Off();
+    suicide_check.Turn_Off();
   }
-  suicidebtn.Add(*commands);
+  suicide_check.Add(*commands);
 
   // Autocreate attribute for this team.
-  CheckBoxClass autocreatebtn(kButtonAuto, kDCheckX,
-                              suicidebtn.Y + kCbSpacingY);
+  CheckBoxClass autocreate_check(kButtonAuto, kCheckX,
+                                 suicide_check.Y + kCheckSpacingY);
   if (IsAutocreate) {
-    autocreatebtn.Turn_On();
+    autocreate_check.Turn_On();
   } else {
-    autocreatebtn.Turn_Off();
+    autocreate_check.Turn_Off();
   }
-  autocreatebtn.Add(*commands);
+  autocreate_check.Add(*commands);
 
   // Prebuild team members attribute for this team.
-  CheckBoxClass prebuildbtn(kButtonPrebuilt, kDCheckX,
-                            autocreatebtn.Y + kCbSpacingY);
+  CheckBoxClass prebuilt_check(kButtonPrebuilt, kCheckX,
+                               autocreate_check.Y + kCheckSpacingY);
   if (IsPrebuilt) {
-    prebuildbtn.Turn_On();
+    prebuilt_check.Turn_On();
   } else {
-    prebuildbtn.Turn_Off();
+    prebuilt_check.Turn_Off();
   }
-  prebuildbtn.Add(*commands);
+  prebuilt_check.Add(*commands);
 
   // Reinforce this team in progress attribute.
-  CheckBoxClass reinforcebtn(kButtonReinforce, kDCheckX,
-                             prebuildbtn.Y + kCbSpacingY);
+  CheckBoxClass reinforce_check(kButtonReinforce, kCheckX,
+                                prebuilt_check.Y + kCheckSpacingY);
   if (IsReinforcable) {
-    reinforcebtn.Turn_On();
+    reinforce_check.Turn_On();
   } else {
-    reinforcebtn.Turn_Off();
+    reinforce_check.Turn_Off();
   }
-  reinforcebtn.Add(*commands);
+  reinforce_check.Add(*commands);
 
   // Drop list of the possible team missions, in TeamMissionType order so an
   // entry's index is its mission. It and the argument control beside it hold
   // the "work mission" that Append, Insert and Replace put into the script.
-  char droptext[45];
-  DropListClass missionlist1(kButtonMission1, droptext, sizeof(droptext),
-                             FontType::kEditor, TPF_NOSHADOW, reinforcebtn.X,
-                             reinforcebtn.Y + 15, 170, 8 * 8,
-                             MixArchive::RetrieveData("EBTN-UP.SHP"),
-                             MixArchive::RetrieveData("EBTN-DN.SHP"));
-  for (const TeamMissionType tm : magic_enum::enum_values<TeamMissionType>()) {
-    missionlist1.Add_Item(TeamType::Name_From_Mission(tm));
+  char mission_text[45];
+  DropListClass mission_drop(
+      kButtonMission1, mission_text, sizeof(mission_text), FontType::kEditor,
+      TPF_NOSHADOW, reinforce_check.X, reinforce_check.Y + 15, 170, 8 * 8,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  for (const TeamMissionType mission :
+       magic_enum::enum_values<TeamMissionType>()) {
+    mission_drop.Add_Item(TeamType::MissionName(mission));
   }
-  missionlist1.Set_Selected_Index(0);
-  missionlist1.Add_Tail(*commands);
+  mission_drop.Set_Selected_Index(0);
+  mission_drop.Add_Tail(*commands);
 
   // The mission's argument. Four controls share the spot beside the mission
   // list and the redraw links in the one the selected mission needs: a text
   // field for a number or waypoint, or a list of quarries, formations or unit
   // missions.
-  char arg_buf[6] = {0};
-  EditClass arg_edt(kButtonArg, arg_buf, sizeof(arg_buf), FontType::kEditor,
-                    TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
-                    missionlist1.Y, 60, -1, EditClass::kAlphanumeric);
+  char argument_text[6] = {0};
+  EditClass argument_edit(kButtonArg, argument_text, sizeof(argument_text),
+                          FontType::kEditor, TPF_NOSHADOW,
+                          mission_drop.X + mission_drop.Width + 15,
+                          mission_drop.Y, 60, -1, EditClass::kAlphanumeric);
 
-  char qtext[55];
-  DropListClass qlist(kButtonQuarry, qtext, sizeof(qtext), FontType::kEditor,
-                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
-                      missionlist1.Y, 100, 5 * 8,
-                      MixArchive::RetrieveData("EBTN-UP.SHP"),
-                      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char quarry_text[55];
+  DropListClass quarry_drop(
+      kButtonQuarry, quarry_text, sizeof(quarry_text), FontType::kEditor,
+      TPF_NOSHADOW, mission_drop.X + mission_drop.Width + 15, mission_drop.Y,
+      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
-    qlist.Add_Item(QuarryName.at(q));
+    quarry_drop.Add_Item(QuarryName.at(q));
   }
-  qlist.Set_Selected_Index(0);
-  qlist.Add_Tail(*commands);
+  quarry_drop.Set_Selected_Index(0);
+  quarry_drop.Add_Tail(*commands);
 
-  char ftext[55];
-  DropListClass flist(kButtonFormation, ftext, sizeof(ftext), FontType::kEditor,
-                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
-                      missionlist1.Y, 100, 5 * 8,
-                      MixArchive::RetrieveData("EBTN-UP.SHP"),
-                      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char formation_text[55];
+  DropListClass formation_drop(
+      kButtonFormation, formation_text, sizeof(formation_text),
+      FontType::kEditor, TPF_NOSHADOW, mission_drop.X + mission_drop.Width + 15,
+      mission_drop.Y, 100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
-    flist.Add_Item(FormationName.at(f));
+    formation_drop.Add_Item(FormationName.at(f));
   }
-  flist.Set_Selected_Index(0);
-  flist.Add_Tail(*commands);
+  formation_drop.Set_Selected_Index(0);
+  formation_drop.Add_Tail(*commands);
 
-  char mtext[55];
-  DropListClass mlist(kButtonMission, mtext, sizeof(mtext), FontType::kEditor,
-                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
-                      missionlist1.Y, 100, 5 * 8,
-                      MixArchive::RetrieveData("EBTN-UP.SHP"),
-                      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  char unit_mission_text[55];
+  DropListClass unit_mission_drop(
+      kButtonMission, unit_mission_text, sizeof(unit_mission_text),
+      FontType::kEditor, TPF_NOSHADOW, mission_drop.X + mission_drop.Width + 15,
+      mission_drop.Y, 100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const MissionType m : magic_enum::enum_values<MissionType>()) {
-    mlist.Add_Item(MissionClass::Mission_Name(m));
+    unit_mission_drop.Add_Item(MissionClass::Mission_Name(m));
   }
-  mlist.Set_Selected_Index(0);
-  mlist.Add_Tail(*commands);
+  unit_mission_drop.Set_Selected_Index(0);
+  unit_mission_drop.Add_Tail(*commands);
 
-  // Owns the missions missionlist2 shows: copies of the team type's own, and
+  // Owns the missions script_list shows: copies of the team type's own, and
   // the ones the dialog adds.
   std::vector<std::unique_ptr<TeamMission>> missions;
-  TListClass<TeamMission*> missionlist2(
-      kButtonMission2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
+  TListClass<TeamMission*> script_list(
+      kButtonMission2, mission_drop.X + 60, mission_drop.Y + 22, 240, 8 * 7,
       FontType::kEditor, TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
-    missionlist2.Add_Item(missions
-                              .emplace_back(std::make_unique<TeamMission>(
-                                  base::At(MissionList, index)))
-                              .get());
+    script_list.Add_Item(missions
+                             .emplace_back(std::make_unique<TeamMission>(
+                                 base::At(MissionList, index)))
+                             .get());
   }
   static const int tabs[] = {13, 40};  // list box tab stops, in pixels
-  missionlist2.Set_Tabs(tabs);
-  missionlist2.Add_Tail(*commands);
+  script_list.Set_Tabs(tabs);
+  script_list.Add_Tail(*commands);
 
   // Mission editing command buttons.
-  TextButtonClass addbtn(kButtonAdd, "Append", kEButtonFont, kEButtonFlags,
-                         kDNameX, missionlist1.Y + missionlist1.Height + 1, 50);
-  addbtn.Add(*commands);
+  TextButtonClass append_button(kButtonAdd, "Append", kEButtonFont,
+                                kEButtonFlags, kNameX,
+                                mission_drop.Y + mission_drop.Height + 1, 50);
+  append_button.Add(*commands);
 
-  TextButtonClass insertbtn(kButtonInsert, "Insert", kEButtonFont,
-                            kEButtonFlags, addbtn.X, addbtn.Y + 10, 50);
-  insertbtn.Add(*commands);
+  TextButtonClass insert_button(kButtonInsert, "Insert", kEButtonFont,
+                                kEButtonFlags, append_button.X,
+                                append_button.Y + 10, 50);
+  insert_button.Add(*commands);
 
-  TextButtonClass delbtn(kButtonDelete, "Delete", kEButtonFont, kEButtonFlags,
-                         insertbtn.X, insertbtn.Y + 10, 50);
-  delbtn.Add(*commands);
+  TextButtonClass delete_button(kButtonDelete, "Delete", kEButtonFont,
+                                kEButtonFlags, insert_button.X,
+                                insert_button.Y + 10, 50);
+  delete_button.Add(*commands);
 
-  TextButtonClass repbtn(kButtonReplace, "Replace", kEButtonFont, kEButtonFlags,
-                         delbtn.X, delbtn.Y + 10, 50);
-  repbtn.Add(*commands);
+  TextButtonClass replace_button(kButtonReplace, "Replace", kEButtonFont,
+                                 kEButtonFlags, delete_button.X,
+                                 delete_button.Y + 10, 50);
+  replace_button.Add(*commands);
 
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
-                        kDOkY, kDOkW, kDOkH);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
-                            kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
-                            kDCancelH);
+  TextButtonClass ok_button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
+                            kOkX, kOkY, kOkW, kOkH);
+  TextButtonClass cancel_button(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                                kEButtonFlags, kCancelX, kCancelY, kCancelW,
+                                kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
-  okbtn.Add(*commands);
-  cancelbtn.Add_Tail(*commands);
+  ok_button.Add(*commands);
+  cancel_button.Add_Tail(*commands);
 
   // Main processing loop. The last* values are the script list's selection,
   // its length and the control used on the previous event (-1 before any):
   // clicking the same script line twice in a row loads it into the work
   // mission.
-  int lastindex = -1;
-  int lastcount = -1;
-  int lastbutton = -1;
-  bool cancel = false;
-  bool display = true;
-  bool process = true;
-  while (process) {
+  int last_script_index = -1;
+  int last_script_count = -1;
+  int last_control = -1;
+  bool cancelled = false;
+  bool redraw = true;
+  bool running = true;
+  while (running) {
     // Keep the sound, timers and network serviced while the dialog is up.
     ServiceRealTime();
 
     // Refresh display if needed
-    if (display) {
+    if (redraw) {
       // Link in only the argument control the work mission needs.
-      arg_edt.Remove();
-      qlist.Remove();
-      flist.Remove();
-      mlist.Remove();
-      switch (
-          TeamMission_Needs(TeamMissionType(missionlist1.Current_Index()))) {
+      argument_edit.Remove();
+      quarry_drop.Remove();
+      formation_drop.Remove();
+      unit_mission_drop.Remove();
+      switch (TeamMissionNeeds(TeamMissionType(mission_drop.Current_Index()))) {
         case NeedType::NEED_NONE:
         case NeedType::NEED_THEME:
         case NeedType::NEED_MOVIE:
@@ -648,75 +663,78 @@ bool TeamType::Edit() {
           break;
 
         case NEED_MISSION:
-          mlist.Add(*commands);
+          unit_mission_drop.Add(*commands);
           break;
 
         case NEED_FORMATION:
-          flist.Add(*commands);
+          formation_drop.Add(*commands);
           break;
 
         case NEED_WAYPOINT:
         case NEED_NUMBER:
         case NEED_HEX_NUMBER:
-          arg_edt.Add(*commands);
+          argument_edit.Add(*commands);
           break;
 
         case NEED_QUARRY:
-          qlist.Add(*commands);
+          quarry_drop.Add(*commands);
           break;
       }
 
       // Display the dialog box
       game::TheMouse().Hide();
-      Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
+      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
 
-      Draw_Caption(view, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
+      Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
 
       // Draw the captions
-      Fancy_Text_Print(view, "Name:", name_edt.X, name_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Name:", name_edit.X, name_edit.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "House:", housebtn.X, housebtn.Y - 7, scheme,
+      Fancy_Text_Print(view, "House:", house_drop.X, house_drop.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Pri:", recr_edt.X, recr_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Pri:", priority_edit.X, priority_edit.Y - 7,
+                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
+      Fancy_Text_Print(view, "Max:", max_edit.X, max_edit.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Max:", maxnum_edt.X, maxnum_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Num:", initial_edit.X, initial_edit.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Num:", initnum_edt.X, initnum_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Loc:", origin_edit.X, origin_edit.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Loc:", originbtn.X, originbtn.Y - 7, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "#  Team Mission", missionlist2.X,
-                       missionlist2.Y - 7, scheme, kTBlack, FontType::kEditor,
+      Fancy_Text_Print(view, "#  Team Mission", script_list.X,
+                       script_list.Y - 7, scheme, kTBlack, FontType::kEditor,
                        TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Trigger:", triggerbtn.X - 4, triggerbtn.Y + 1,
+      Fancy_Text_Print(view, "Trigger:", trigger_drop.X - 4, trigger_drop.Y + 1,
                        scheme, kTBlack, FontType::kEditor,
                        TPF_RIGHT | TPF_NOSHADOW);
 
-      Fancy_Text_Print(view, Member_Description().c_str(),
-                       membersbtn.X + membersbtn.Width + 3, membersbtn.Y + 1,
-                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
+      Fancy_Text_Print(view, MemberDescription().c_str(),
+                       members_button.X + members_button.Width + 3,
+                       members_button.Y + 1, scheme, kTBlack, FontType::kEditor,
+                       TPF_NOSHADOW);
 
       Fancy_Text_Print(view, "Use safest, possibly longer, route to target?",
-                       roundbtn.X + kCbSpacingX, roundbtn.Y, scheme, kTBlack,
-                       FontType::kEditor, TPF_NOSHADOW);
+                       roundabout_check.X + kCheckTextOffsetX,
+                       roundabout_check.Y, scheme, kTBlack, FontType::kEditor,
+                       TPF_NOSHADOW);
       Fancy_Text_Print(view, "Charge toward target ignoring distractions?",
-                       suicidebtn.X + kCbSpacingX, suicidebtn.Y, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       suicide_check.X + kCheckTextOffsetX, suicide_check.Y,
+                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Only 'Autocreate A.I.' uses this team type?",
-                       autocreatebtn.X + kCbSpacingX, autocreatebtn.Y, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       autocreate_check.X + kCheckTextOffsetX,
+                       autocreate_check.Y, scheme, kTBlack, FontType::kEditor,
+                       TPF_NOSHADOW);
       Fancy_Text_Print(view, "Prebuild team members before team is created?",
-                       prebuildbtn.X + kCbSpacingX, prebuildbtn.Y, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       prebuilt_check.X + kCheckTextOffsetX, prebuilt_check.Y,
+                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Automatically reinforce team whenever possible?",
-                       reinforcebtn.X + kCbSpacingX, reinforcebtn.Y, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       reinforce_check.X + kCheckTextOffsetX, reinforce_check.Y,
+                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
 
       // Redraw the buttons
       commands->Draw_All(view);
       game::TheMouse().Show();
 
-      display = false;
+      redraw = false;
     }
 
     // Get user input
@@ -728,48 +746,50 @@ bool TeamType::Edit() {
       // other control used in between, copies that line into the work mission
       // and its argument control as an aid to editing.
       case engine::window::ButtonKey(kButtonMission2):
-        if (missionlist2.Count() && lastcount == missionlist2.Count() &&
-            lastbutton == kButtonMission2 &&
-            lastindex == missionlist2.Current_Index()) {
-          missionlist1.Set_Selected_Index(
-              static_cast<int>(missionlist2.Current_Item()->Mission));
+        if (script_list.Count() && last_script_count == script_list.Count() &&
+            last_control == kButtonMission2 &&
+            last_script_index == script_list.Current_Index()) {
+          mission_drop.Set_Selected_Index(
+              static_cast<int>(script_list.Current_Item()->Mission));
 
-          switch (TeamMission_Needs(missionlist2.Current_Item()->Mission)) {
+          switch (TeamMissionNeeds(script_list.Current_Item()->Mission)) {
             case NEED_MISSION:
-              mlist.Set_Selected_Index(
-                  static_cast<int>(missionlist2.Current_Item()->Data.Mission));
+              unit_mission_drop.Set_Selected_Index(
+                  static_cast<int>(script_list.Current_Item()->Data.Mission));
               break;
 
             case NEED_FORMATION:
-              flist.Set_Selected_Index(static_cast<int>(
-                  missionlist2.Current_Item()->Data.Formation));
+              formation_drop.Set_Selected_Index(
+                  static_cast<int>(script_list.Current_Item()->Data.Formation));
               break;
 
             case NEED_NUMBER:
-              absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%d",
-                             missionlist2.Current_Item()->Data.Value);
+              absl::SNPrintF(argument_edit.Get_Text(), sizeof(argument_text),
+                             "%d", script_list.Current_Item()->Data.Value);
               break;
 
             case NEED_HEX_NUMBER:
-              absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%x",
+              absl::SNPrintF(argument_edit.Get_Text(), sizeof(argument_text),
+                             "%x",
                              static_cast<unsigned int>(
-                                 missionlist2.Current_Item()->Data.Value));
+                                 script_list.Current_Item()->Data.Value));
               break;
 
             case NEED_QUARRY:
-              qlist.Set_Selected_Index(
-                  static_cast<int>(missionlist2.Current_Item()->Data.Quarry));
+              quarry_drop.Set_Selected_Index(
+                  static_cast<int>(script_list.Current_Item()->Data.Quarry));
               break;
 
             case NEED_WAYPOINT:
-              if (missionlist2.Current_Item()->Data.Value < 26) {
-                absl::SNPrintF(arg_edt.Get_Text(), sizeof(arg_buf), "%c",
-                               missionlist2.Current_Item()->Data.Value + 'A');
+              if (script_list.Current_Item()->Data.Value < 26) {
+                absl::SNPrintF(argument_edit.Get_Text(), sizeof(argument_text),
+                               "%c",
+                               script_list.Current_Item()->Data.Value + 'A');
               } else {
                 absl::SNPrintF(
-                    arg_edt.Get_Text(), sizeof(arg_buf), "%c%c",
-                    (missionlist2.Current_Item()->Data.Value / 26) + 'A' - 1,
-                    (missionlist2.Current_Item()->Data.Value % 26) + 'A');
+                    argument_edit.Get_Text(), sizeof(argument_text), "%c%c",
+                    (script_list.Current_Item()->Data.Value / 26) + 'A' - 1,
+                    (script_list.Current_Item()->Data.Value % 26) + 'A');
               }
               break;
             case NeedType::NEED_NONE:
@@ -791,50 +811,54 @@ bool TeamType::Edit() {
               break;
           }
         }
-        lastindex = missionlist2.Current_Index();
-        lastcount = missionlist2.Count();
-        display = true;
+        last_script_index = script_list.Current_Index();
+        last_script_count = script_list.Count();
+        redraw = true;
         break;
 
       // Insert the work mission at the selected line of the script; the
       // lines from there on move down.
       case engine::window::ButtonKey(kButtonInsert):
-        if (missionlist2.Count() < kMaxTeamMissions) {
-          auto* tm =
+        if (script_list.Count() < kMaxMissions) {
+          auto* mission =
               missions.emplace_back(std::make_unique<TeamMission>()).get();
-          tm->Mission = TeamMissionType(missionlist1.Current_Index());
-          tm->Data.Value = 0;
-          switch (TeamMission_Needs(tm->Mission)) {
+          mission->Mission = TeamMissionType(mission_drop.Current_Index());
+          mission->Data.Value = 0;
+          switch (TeamMissionNeeds(mission->Mission)) {
             case NEED_MISSION:
-              tm->Data.Mission = MissionType(mlist.Current_Index());
+              mission->Data.Mission =
+                  MissionType(unit_mission_drop.Current_Index());
               break;
 
             case NEED_FORMATION:
-              tm->Data.Formation = FormationType(flist.Current_Index());
+              mission->Data.Formation =
+                  FormationType(formation_drop.Current_Index());
               break;
 
             case NEED_QUARRY:
-              tm->Data.Quarry = QuarryType(qlist.Current_Index());
+              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              mission->Data.Value =
+                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
-              tm->Data.Value = atoh(arg_edt.Get_Text());
+              mission->Data.Value = atoh(argument_edit.Get_Text());
               break;
 
             case NEED_WAYPOINT:
-              tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
-                tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
+              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
+              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
+                mission->Data.Value = (mission->Data.Value + 1) * 26;
+                mission->Data.Value +=
+                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
+                    'A';
               }
-              if (tm->Data.Value < 0 ||
-                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                tm->Data.Value = 0;
+              if (mission->Data.Value < 0 ||
+                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
+                mission->Data.Value = 0;
               }
               break;
 
@@ -854,52 +878,56 @@ bool TeamType::Edit() {
             case NeedType::NEED_BOOL:
             case NeedType::NEED_SPECIAL:
             default:
-              tm->Data.Value = 0;
+              mission->Data.Value = 0;
               break;
           }
-          missionlist2.Insert_Item(tm);
+          script_list.Insert_Item(mission);
         }
-        display = true;
+        redraw = true;
         break;
 
       // Append the work mission to the script.
       case engine::window::ButtonKey(kButtonAdd):
-        if (missionlist2.Count() < kMaxTeamMissions) {
-          auto* tm =
+        if (script_list.Count() < kMaxMissions) {
+          auto* mission =
               missions.emplace_back(std::make_unique<TeamMission>()).get();
-          tm->Mission = TeamMissionType(missionlist1.Current_Index());
-          tm->Data.Value = 0;
-          switch (TeamMission_Needs(tm->Mission)) {
+          mission->Mission = TeamMissionType(mission_drop.Current_Index());
+          mission->Data.Value = 0;
+          switch (TeamMissionNeeds(mission->Mission)) {
             case NEED_MISSION:
-              tm->Data.Mission = MissionType(mlist.Current_Index());
+              mission->Data.Mission =
+                  MissionType(unit_mission_drop.Current_Index());
               break;
 
             case NEED_FORMATION:
-              tm->Data.Formation = FormationType(flist.Current_Index());
+              mission->Data.Formation =
+                  FormationType(formation_drop.Current_Index());
               break;
 
             case NEED_QUARRY:
-              tm->Data.Quarry = QuarryType(qlist.Current_Index());
+              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              mission->Data.Value =
+                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
-              tm->Data.Value = atoh(arg_edt.Get_Text());
+              mission->Data.Value = atoh(argument_edit.Get_Text());
               break;
 
             case NEED_WAYPOINT:
-              tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
-                tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
+              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
+              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
+                mission->Data.Value = (mission->Data.Value + 1) * 26;
+                mission->Data.Value +=
+                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
+                    'A';
               }
-              if (tm->Data.Value < 0 ||
-                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                tm->Data.Value = 0;
+              if (mission->Data.Value < 0 ||
+                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
+                mission->Data.Value = 0;
               }
               break;
 
@@ -919,51 +947,55 @@ bool TeamType::Edit() {
             case NeedType::NEED_BOOL:
             case NeedType::NEED_SPECIAL:
             default:
-              tm->Data.Value = 0;
+              mission->Data.Value = 0;
               break;
           }
-          missionlist2.Add_Item(tm);
-          display = true;
+          script_list.Add_Item(mission);
+          redraw = true;
         }
         break;
 
       // Overwrite the selected line of the script with the work mission.
       case engine::window::ButtonKey(kButtonReplace):
-        if (missionlist2.Count()) {
-          TeamMission* tm = missionlist2.Current_Item();
-          tm->Mission = TeamMissionType(missionlist1.Current_Index());
-          tm->Data.Value = 0;
-          switch (TeamMission_Needs(tm->Mission)) {
+        if (script_list.Count()) {
+          TeamMission* mission = script_list.Current_Item();
+          mission->Mission = TeamMissionType(mission_drop.Current_Index());
+          mission->Data.Value = 0;
+          switch (TeamMissionNeeds(mission->Mission)) {
             case NEED_MISSION:
-              tm->Data.Mission = MissionType(mlist.Current_Index());
+              mission->Data.Mission =
+                  MissionType(unit_mission_drop.Current_Index());
               break;
 
             case NEED_FORMATION:
-              tm->Data.Formation = FormationType(flist.Current_Index());
+              mission->Data.Formation =
+                  FormationType(formation_drop.Current_Index());
               break;
 
             case NEED_QUARRY:
-              tm->Data.Quarry = QuarryType(qlist.Current_Index());
+              mission->Data.Quarry = QuarryType(quarry_drop.Current_Index());
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              mission->Data.Value =
+                  base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
-              tm->Data.Value = atoh(arg_edt.Get_Text());
+              mission->Data.Value = atoh(argument_edit.Get_Text());
               break;
 
             case NEED_WAYPOINT:
-              tm->Data.Value = toupper(*arg_edt.Get_Text()) - 'A';
-              if (std::string_view(arg_edt.Get_Text()).size() > 1) {
-                tm->Data.Value = (tm->Data.Value + 1) * 26;
-                tm->Data.Value +=
-                    toupper(std::string_view(arg_edt.Get_Text()).at(1)) - 'A';
+              mission->Data.Value = toupper(*argument_edit.Get_Text()) - 'A';
+              if (std::string_view(argument_edit.Get_Text()).size() > 1) {
+                mission->Data.Value = (mission->Data.Value + 1) * 26;
+                mission->Data.Value +=
+                    toupper(std::string_view(argument_edit.Get_Text()).at(1)) -
+                    'A';
               }
-              if (tm->Data.Value < 0 ||
-                  tm->Data.Value >= ScenarioClass::kHomeWaypoint) {
-                tm->Data.Value = 0;
+              if (mission->Data.Value < 0 ||
+                  mission->Data.Value >= ScenarioClass::kHomeWaypoint) {
+                mission->Data.Value = 0;
               }
               break;
 
@@ -983,23 +1015,24 @@ bool TeamType::Edit() {
             case NeedType::NEED_BOOL:
             case NeedType::NEED_SPECIAL:
             default:
-              tm->Data.Value = 0;
+              mission->Data.Value = 0;
               break;
           }
-          missionlist2.at(missionlist2.Current_Index()) = tm;
+          script_list.at(script_list.Current_Index()) = mission;
         }
-        display = true;
+        redraw = true;
         break;
 
       // Delete the currently selected mission.
       case engine::window::ButtonKey(kButtonDelete):
-        if (missionlist2.Count()) {
-          const TeamMission* tm = missionlist2.Current_Item();
-          missionlist2.Remove_Index(missionlist2.Current_Index());
-          std::erase_if(missions,
-                        [tm](const auto& owned) { return owned.get() == tm; });
+        if (script_list.Count()) {
+          const TeamMission* mission = script_list.Current_Item();
+          script_list.Remove_Index(script_list.Current_Index());
+          std::erase_if(missions, [mission](const auto& owned) {
+            return owned.get() == mission;
+          });
         }
-        display = true;
+        redraw = true;
         break;
 
       // Invoke the members dialog
@@ -1007,54 +1040,55 @@ bool TeamType::Edit() {
 
         // The button stays pressed otherwise: the other dialog takes the
         // release.
-        membersbtn.Turn_Off();
+        members_button.Turn_Off();
 
-        TheMap().Team_Members(HousesType(housebtn.Current_Index()));
+        TheMap().Team_Members(HousesType(house_drop.Current_Index()));
 
-        display = true;
+        redraw = true;
         break;
 
       // OK: copy the dialog's values into the team type. A blank name becomes
       // "----" so the team type can still be listed and written to the INI.
       case engine::window::ButtonKey(kButtonOk):
-        strtrim(name_edt.Get_Text_Buffer());
-        if (!std::string_view(name_edt.Get_Text()).empty()) {
-          base::SafeCopy(IniName, name_edt.Get_Text());
+        strtrim(name_edit.Get_Text_Buffer());
+        if (!std::string_view(name_edit.Get_Text()).empty()) {
+          base::SafeCopy(IniName, name_edit.Get_Text());
         } else {
           base::SafeCopy(IniName, "----");
         }
 
-        IsRoundAbout = roundbtn.IsOn;
-        IsSuicide = suicidebtn.IsOn;
-        IsAutocreate = autocreatebtn.IsOn;
-        IsPrebuilt = prebuildbtn.IsOn;
-        IsReinforcable = reinforcebtn.IsOn;
+        IsRoundAbout = roundabout_check.IsOn;
+        IsSuicide = suicide_check.IsOn;
+        IsAutocreate = autocreate_check.IsOn;
+        IsPrebuilt = prebuilt_check.IsOn;
+        IsReinforcable = reinforce_check.IsOn;
 
-        RecruitPriority = base::ParseIntegerOr<int>(recr_edt.Get_Text(), 0);
+        RecruitPriority =
+            base::ParseIntegerOr<int>(priority_edit.Get_Text(), 0);
         InitNum = static_cast<unsigned char>(
-            base::ParseIntegerOr<int>(initnum_edt.Get_Text(), 0));
+            base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0));
         MaxAllowed = static_cast<unsigned char>(
-            base::ParseIntegerOr<int>(maxnum_edt.Get_Text(), 0));
-        House = HousesType(housebtn.Current_Index());
+            base::ParseIntegerOr<int>(max_edit.Get_Text(), 0));
+        House = HousesType(house_drop.Current_Index());
         Trigger = nullptr;
-        if (triggerbtn.Current_Index() > 0) {
+        if (trigger_drop.Current_Index() > 0) {
           Trigger = TheObjectHeaps().trigger_type().ActiveAt(
-              triggerbtn.Current_Index() - 1);
+              trigger_drop.Current_Index() - 1);
         }
 
-        MissionCount = missionlist2.Count();
+        MissionCount = script_list.Count();
         for (int index = 0; index < MissionCount; index++) {
           base::At(MissionList, index).Data.Value = 0;
-          base::At(MissionList, index) = *missionlist2.at(index);
+          base::At(MissionList, index) = *script_list.at(index);
         }
 
-        if (!std::string_view(originbtn.Get_Text()).empty()) {
-          if (std::string_view(originbtn.Get_Text()).size() == 1) {
-            Origin = toupper(*originbtn.Get_Text()) - 'A';
+        if (!std::string_view(origin_edit.Get_Text()).empty()) {
+          if (std::string_view(origin_edit.Get_Text()).size() == 1) {
+            Origin = toupper(*origin_edit.Get_Text()) - 'A';
           } else {
-            Origin = (toupper(*originbtn.Get_Text()) + 1 - 'A') * 26;
+            Origin = (toupper(*origin_edit.Get_Text()) + 1 - 'A') * 26;
             Origin +=
-                toupper(std::string_view(originbtn.Get_Text()).at(1)) - 'A';
+                toupper(std::string_view(origin_edit.Get_Text()).at(1)) - 'A';
           }
         } else {
           Origin = -1;
@@ -1063,14 +1097,14 @@ bool TeamType::Edit() {
         if (Origin >= ScenarioClass::kWaypointCount) {
           Origin = -1;
         }
-        cancel = false;
-        process = false;
+        cancelled = false;
+        running = false;
         break;
 
       // Cancel: leave the team type as it was.
       case engine::window::ButtonKey(kButtonCancel):
-        cancel = true;
-        process = false;
+        cancelled = true;
+        running = false;
         break;
 
       // Unrecognized events are ignored. If any button related event is
@@ -1078,10 +1112,10 @@ bool TeamType::Edit() {
       // dialog box clean.
       default:
         if (input & KN_BUTTON) {
-          housebtn.Collapse();
-          missionlist1.Collapse();
-          triggerbtn.Collapse();
-          display = true;
+          house_drop.Collapse();
+          mission_drop.Collapse();
+          trigger_drop.Collapse();
+          redraw = true;
         }
         break;
     }
@@ -1089,11 +1123,11 @@ bool TeamType::Edit() {
     // Record the last dialog control touched so that a double click
     // can be detected.
     if (input & KN_BUTTON) {
-      lastbutton = ButtonId(input);
+      last_control = ButtonId(input);
     }
   }
 
-  return (!cancel);
+  return (!cancelled);
 }
 
 // Returns the value of the hex digits in `str`. A character that is not a
@@ -1117,7 +1151,7 @@ int atoh(const std::string_view str) {
   return retval;
 }
 
-std::string TeamType::Member_Description() const {
+std::string TeamType::MemberDescription() const {
   std::string text;
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // "TYPE:count" for each kind of member, comma separated.
@@ -1156,7 +1190,7 @@ std::string TeamType::Description() const {
         House == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(House).Suffix;
     return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
                            IsAutocreate ? '*' : ' ', loc, MissionCount,
-                           Member_Description());
+                           MemberDescription());
   }
   return "";
 }
@@ -1164,9 +1198,9 @@ std::string TeamType::Description() const {
 std::string TeamMission::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     std::string text =
-        absl::StrFormat("%d\t%s", index, TeamType::Name_From_Mission(Mission));
+        absl::StrFormat("%d\t%s", index, TeamType::MissionName(Mission));
 
-    switch (TeamMission_Needs(Mission)) {
+    switch (TeamMissionNeeds(Mission)) {
       case NEED_MISSION:
         text += MissionClass::Mission_Name(Data.Mission);
         break;
@@ -1227,16 +1261,16 @@ void TeamType::Detach(Target target, bool /*unused*/) {
   }
 }
 
-void TeamType::Read_INI(engine::file::IniFile& ini) {
-  for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    auto* team = base::NewPooled<TeamType>();
-    if (team != nullptr) {
-      team->Fill_In(entry, value);
+void TeamType::ReadIni(engine::file::IniFile& ini) {
+  for (const auto& [entry, value] : ini.Entries(kIniSection)) {
+    auto* team_type = base::NewPooled<TeamType>();
+    if (team_type != nullptr) {
+      team_type->ReadIniEntry(entry, value);
     }
   }
 }
 
-void TeamType::Fill_In(std::string_view name, std::string_view entry) {
+void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   Set_Name(name);
@@ -1250,15 +1284,15 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
   // The scenario's NewINIFormat: 2 and up pack the options into one bit
   // field and put the trigger after the origin; 0 and 1 list each option and
   // end the entry with the trigger.
-  uint32_t code = 0;
+  uint32_t flags = 0;
   switch (TheWorld().new_ini_format()) {
     default:
-      code = base::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
-      IsRoundAbout = (code & 0x0001) != 0;
-      IsSuicide = (code & 0x0002) != 0;
-      IsAutocreate = (code & 0x0004) != 0;
-      IsPrebuilt = (code & 0x0008) != 0;
-      IsReinforcable = (code & 0x0010) != 0;
+      flags = base::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
+      IsRoundAbout = (flags & 0x0001) != 0;
+      IsSuicide = (flags & 0x0002) != 0;
+      IsAutocreate = (flags & 0x0004) != 0;
+      IsPrebuilt = (flags & 0x0008) != 0;
+      IsReinforcable = (flags & 0x0010) != 0;
       break;
 
     case 0:
@@ -1297,37 +1331,37 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
 
   // The members: a count, then that many Type:Quantity pairs.
   ClassCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (ClassCount < 0 || ClassCount > kMaxTeamClasscount) {
+  if (ClassCount < 0 || ClassCount > kMaxMemberTypes) {
     ClassCount = 0;
     MissionCount = 0;
     return;
   }
   for (int index = 0; index < ClassCount; index++) {
-    const std::string_view p1 = tokens.Next(",:");
-    const std::string_view p2 = tokens.Next(",:");
-    if (p1.empty() || p2.empty()) {
+    const std::string_view type_name = tokens.Next(",:");
+    const std::string_view quantity_text = tokens.Next(",:");
+    if (type_name.empty() || quantity_text.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;
     }
-    const TechnoTypeClass* otype = nullptr;
+    const TechnoTypeClass* member_type = nullptr;
 
     // The name may be of an infantry, unit, aircraft or vessel type.
-    const InfantryType i_id = InfantryTypeClass::From_Name(p1);
-    if (i_id != INFANTRY_NONE) {
-      otype = &InfantryTypeClass::As_Reference(i_id);
+    const InfantryType infantry = InfantryTypeClass::From_Name(type_name);
+    if (infantry != INFANTRY_NONE) {
+      member_type = &InfantryTypeClass::As_Reference(infantry);
     } else {
-      const UnitType u_id = UnitTypeClass::From_Name(p1);
-      if (u_id != UNIT_NONE) {
-        otype = &UnitTypeClass::As_Reference(u_id);
+      const UnitType unit = UnitTypeClass::From_Name(type_name);
+      if (unit != UNIT_NONE) {
+        member_type = &UnitTypeClass::As_Reference(unit);
       } else {
-        const AircraftType a_id = AircraftTypeClass::From_Name(p1);
-        if (a_id != AIRCRAFT_NONE) {
-          otype = &AircraftTypeClass::As_Reference(a_id);
+        const AircraftType aircraft = AircraftTypeClass::From_Name(type_name);
+        if (aircraft != AIRCRAFT_NONE) {
+          member_type = &AircraftTypeClass::As_Reference(aircraft);
         } else {
-          const VesselType v_id = VesselTypeClass::From_Name(p1);
-          if (v_id != VESSEL_NONE) {
-            otype = &VesselTypeClass::As_Reference(v_id);
+          const VesselType vessel = VesselTypeClass::From_Name(type_name);
+          if (vessel != VESSEL_NONE) {
+            member_type = &VesselTypeClass::As_Reference(vessel);
           }
         }
       }
@@ -1335,9 +1369,10 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
 
     // An unknown type (a unit this build does not have) is dropped and the
     // next member takes its place in Members.
-    if (otype) {
-      base::At(Members, index).Class = otype;
-      base::At(Members, index).Quantity = base::ParseIntegerOr<int>(p2, 0);
+    if (member_type) {
+      base::At(Members, index).Class = member_type;
+      base::At(Members, index).Quantity =
+          base::ParseIntegerOr<int>(quantity_text, 0);
     } else {
       ClassCount--;
       index--;
@@ -1346,7 +1381,7 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
 
   // The script: a count, then that many Mission:Argument pairs.
   MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
+  if (MissionCount < 0 || MissionCount > kMaxMissions) {
     ClassCount = 0;
     MissionCount = 0;
     return;
@@ -1365,43 +1400,43 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
   }
 }
 
-void TeamType::Write_INI(engine::file::IniFile& ini) {
+void TeamType::WriteIni(engine::file::IniFile& ini) {
   // TODO: the same section is cleared twice.
   ini.Clear("TeamTypes");
-  ini.Clear(INI_Name());
+  ini.Clear(kIniSection);
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-    ini.PutString(INI_Name(), team->IniName, team->Build_INI_Entry());
+    const TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(index);
+    ini.PutString(kIniSection, team_type->IniName, team_type->ToIniEntry());
   }
 }
 
-std::string TeamType::Build_INI_Entry() const {
-  uint32_t code = 0;
-  code |= IsRoundAbout ? 0x0001U : 0U;
-  code |= IsSuicide ? 0x0002U : 0U;
-  code |= IsAutocreate ? 0x0004U : 0U;
-  code |= IsPrebuilt ? 0x0008U : 0U;
-  code |= IsReinforcable ? 0x0010U : 0U;
+std::string TeamType::ToIniEntry() const {
+  uint32_t flags = 0;
+  flags |= IsRoundAbout ? 0x0001U : 0U;
+  flags |= IsSuicide ? 0x0002U : 0U;
+  flags |= IsAutocreate ? 0x0004U : 0U;
+  flags |= IsPrebuilt ? 0x0008U : 0U;
+  flags |= IsReinforcable ? 0x0010U : 0U;
 
-  std::string buf = absl::StrFormat(
-      "%d,%d,%d,%d,%d,%d,%d", House, code, RecruitPriority, InitNum, MaxAllowed,
-      Origin, TheObjectHeaps().trigger_type().PositionOf(Trigger));
+  std::string entry = absl::StrFormat(
+      "%d,%d,%d,%d,%d,%d,%d", House, flags, RecruitPriority, InitNum,
+      MaxAllowed, Origin, TheObjectHeaps().trigger_type().PositionOf(Trigger));
 
   // The members: a count, then Type:Quantity for each.
-  absl::StrAppendFormat(&buf, ",%d", ClassCount);
+  absl::StrAppendFormat(&entry, ",%d", ClassCount);
   for (int i = 0; i < ClassCount; i++) {
-    absl::StrAppendFormat(&buf, ",%s:%d", base::At(Members, i).Class->IniName,
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Members, i).Class->IniName,
                           base::At(Members, i).Quantity);
   }
 
   // The script: a count, then Mission:Argument for each, both as numbers.
-  absl::StrAppendFormat(&buf, ",%d", MissionCount);
+  absl::StrAppendFormat(&entry, ",%d", MissionCount);
   for (int i = 0; i < MissionCount; i++) {
-    absl::StrAppendFormat(&buf, ",%d:%d", base::At(MissionList, i).Mission,
+    absl::StrAppendFormat(&entry, ",%d:%d", base::At(MissionList, i).Mission,
                           base::At(MissionList, i).Data.Value);
   }
-  return buf;
+  return entry;
 }
 
 }  // namespace ra

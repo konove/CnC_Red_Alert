@@ -863,7 +863,7 @@ void HouseClass::AI() {
       TeamType* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
         TheWorld().scenario_init()++;
-        ttype->Create_One_Of();
+        ttype->CreateTeam();
         TheWorld().scenario_init()--;
       }
     }
@@ -921,7 +921,7 @@ void HouseClass::AI() {
   if (!IsAlerted && TeamTime.IsFinished()) {
     TeamType* ttype = Suggested_New_Team(false);
     if (ttype) {
-      ttype->Create_One_Of();
+      ttype->CreateTeam();
     }
 
     TeamTime.Set(TheRules().TeamDelay * kTicksPerMinute);
@@ -2160,8 +2160,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
 TeamType* HouseClass::Suggested_New_Team(bool alertcheck) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  return TeamType::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
-                                      alertcheck);
+  return TeamType::SuggestNewTeam(this, AScan, UScan, IScan, VScan, alertcheck);
 }
 
 /***********************************************************************************************
@@ -2495,7 +2494,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
 
     case SPC_PARA_INFANTRY:
       if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
-        TeamType* ttype = TeamType::From_Name("@PINF");
+        TeamType* ttype = TeamType::FromName("@PINF");
         if (ttype == nullptr) {
           ttype = base::NewPooled<TeamType>();
           if (ttype != nullptr) {

@@ -222,7 +222,7 @@ class TeamListTest : public UiFixture {
   }
 
   static bool Exists(const char* name) {
-    return TeamType::From_Name(name) != nullptr;
+    return TeamType::FromName(name) != nullptr;
   }
 };
 
@@ -263,7 +263,7 @@ TEST_F(TeamListTest, DeleteRemovesTheEntryClicked) {
 
 // A scenario can hold a team with no house; the list shows it all the same.
 TEST_F(TeamListTest, ATeamWithoutAHouseIsListed) {
-  TeamType::From_Name("Alfa")->House = HOUSE_NONE;
+  TeamType::FromName("Alfa")->House = HOUSE_NONE;
   player().At(3).Click(kDeleteX, kButtonsY).At(10).Click(kOkX, kButtonsY);
 
   TheMap().Handle_Teams("Teams");

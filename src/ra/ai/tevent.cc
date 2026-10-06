@@ -696,7 +696,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       tokens.Next();  // Old-format field, unused.
       tokens.Next();  // Old-format field, unused.
 
-      Team = TeamType::From_Name(tokens.Next());
+      Team = TeamType::FromName(tokens.Next());
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       tokens.Next();  // Old-format field, unused.
       break;
