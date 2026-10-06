@@ -536,24 +536,24 @@
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z",
+      "updated": "2026-10-06T01:50:12Z",
       "anchor": {
         "path": "src/ra/assets/shape_draw.cc",
-        "startLine": 158,
-        "endLine": 158,
-        "text": "      // The predator (cloaking) effect samples the screen at an offset that",
+        "startLine": 182,
+        "endLine": 184,
+        "text": "int PredatorOffset(const int frame, const int x, const int window_width) {\n  return x > window_width / 2 ? -frame : frame;\n}",
         "before": [
-          "        height *= 2;",
-          "      }",
-          ""
+          "// The offset walks with the frame counter, which is what makes the cloak",
+          "// shimmer. Shapes on the right half of the window walk it the other way, so",
+          "// that two cloaked objects side by side do not ripple in lockstep."
         ],
         "after": [
-          "      // walks with the frame counter, which is what makes it shimmer. Objects",
-          "      // on the right half of the window walk it the other way, so that two",
-          "      // cloaked objects side by side do not ripple in lockstep."
+          "",
+          "Rect Shape_Dimensions(const std::span<const std::byte> shapedata,",
+          "                      const int shape_num) {"
         ],
         "lost": false
       }

@@ -49,6 +49,11 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    game::DirType rotation = game::DIR_N,
                    int32_t scale = 0x0100);
 
+// Returns the offset the predator (cloak) effect samples the page at for a
+// shape drawn at x in a window window_width pixels wide on game frame `frame`:
+// the frame number, negated for a shape past the middle of the window.
+int PredatorOffset(int frame, int x, int window_width);
+
 // Returns the smallest rectangle enclosing the shape's non-transparent pixels,
 // positioned relative to the center of the shape's maximum extent. Used to
 // tighten the map's dirty-rectangle logic.

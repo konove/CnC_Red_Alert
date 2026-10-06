@@ -155,17 +155,10 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
         height *= 2;
       }
 
-      // The predator (cloaking) effect samples the screen at an offset that
-      // walks with the frame counter, which is what makes it shimmer. Objects
-      // on the right half of the window walk it the other way, so that two
-      // cloaked objects side by side do not ripple in lockstep.
-      int pred_offset = static_cast<int>(game::CurrentFrame());
-
-      if (x > base::At(base::At(WindowList, static_cast<int>(window)),
-                       kWindowWidth) *
-                  4) {
-        pred_offset = -pred_offset;
-      }
+      const int pred_offset = PredatorOffset(
+          static_cast<int>(game::CurrentFrame()), x,
+          base::At(base::At(WindowList, static_cast<int>(window)),
+                   kWindowWidth));
 
       if (draw_window.Lock()) {
         const engine::gfx::ShapeEffects effects{
@@ -181,6 +174,13 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       }
     }
   }
+}
+
+// The offset walks with the frame counter, which is what makes the cloak
+// shimmer. Shapes on the right half of the window walk it the other way, so
+// that two cloaked objects side by side do not ripple in lockstep.
+int PredatorOffset(const int frame, const int x, const int window_width) {
+  return x > window_width / 2 ? -frame : frame;
 }
 
 Rect Shape_Dimensions(const std::span<const std::byte> shapedata,

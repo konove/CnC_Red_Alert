@@ -234,6 +234,15 @@ apply_dotenv_settings(ra_text_style_test)
 apply_language_setting(ra_text_style_test)
 
 add_gtest(
+    NAME ra_shape_draw_test
+    SOURCES assets/shape_draw_test.cc startup/startup.cc
+    LIBS ra_engine
+)
+target_compile_definitions(ra_shape_draw_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_shape_draw_test)
+apply_language_setting(ra_shape_draw_test)
+
+add_gtest(
     NAME ra_assets_test
     SOURCES assets/assets_test.cc assets/assets.cc
     LIBS base engine_file magic_enum::magic_enum absl::strings absl::check absl::log
