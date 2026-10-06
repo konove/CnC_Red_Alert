@@ -4216,24 +4216,6 @@ game::ResultType TechnoClass::Take_Damage(int& damage, int distance,
         //				int radius = damage/2;
         Wide_Area_Damage(Center_Coord(), radius, explosion_damage, source, wh);
       }
-
-      if (this ==
-          dynamic_cast<TechnoClass*>(House->UnitToTeleport.AsObject())) {
-        House->UnitToTeleport = Target{};
-        if (!TheScenario().IsFadingColor) {
-          TheScenario().IsFadingBW = false;
-          TheScenario().IsFadingColor = true;
-          TheScenario().FadeTimer.Set(kGrayFadeTime);
-        }
-        if (TheMap().IsTargettingMode == kSpcChrono2) {
-          // Meant to end the Chronosphere's targeting, but no map layer acts
-          // on a right-click handed to AI(): the tactical gadget takes those
-          // before AI() runs. See docs/INPUT_EVENTS_PLAN.md.
-          engine::window::InputEvent right_click{
-              .button = engine::window::MouseButton::kRight};
-          TheMap().AI(right_click, 0, 0);
-        }
-      }
       break;
 
     /*
@@ -4307,8 +4289,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     */
     source->House->PointTotal += points;
   }
-  // Hack check: if they were trying to teleport this unit when it died, take
-  //	the map mode out of teleportation mode.
+  // The unit the player was about to teleport died: end the Chronosphere's
+  // targeting. ObjectClass::Take_Damage() forgets the unit right after this.
   if (IsOwnedByPlayer && TheMap().IsTargettingMode == kSpcChrono2 &&
       House->UnitToTeleport == As_Target()) {
     TheMap().IsTargettingMode = SPC_NONE;

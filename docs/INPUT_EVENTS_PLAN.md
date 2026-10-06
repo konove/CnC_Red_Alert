@@ -134,6 +134,7 @@ Manual check on a real display:
 
 ## Open
 
-- `TechnoClass::Take_Damage()` (RA) hands the map a synthetic right-click to end the Chronosphere's
-  targeting, but no map layer acts on a right-click passed to `AI()`: the tactical gadget takes real
-  ones first. It never worked, before or after this plan.
+Nothing. The synthetic right-click `TechnoClass::Take_Damage()` (RA) handed the map to end the
+Chronosphere's targeting is deleted: the block never ran, because `ObjectClass::Take_Damage()`
+clears `UnitToTeleport` before it returns, and `TechnoClass::Record_The_Kill()` has already ended
+the mode by then. `techno_test.cc` pins that.

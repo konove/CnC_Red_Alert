@@ -4,6 +4,7 @@
 #include "ra/objects/techno.h"
 
 #include "base/pooled.h"
+#include "game/sim/enums.h"
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
@@ -50,6 +51,38 @@ TEST_F(TechnoTest, ADeathWithNoKillerCreditsNobody) {
   EXPECT_EQ(bystander.kills(), 0);
   EXPECT_EQ(victim.kills(), 0);
   EXPECT_EQ(victim.House->UnitsLost, 1);
+}
+
+// The mode ends in Record_The_Kill(), which Take_Damage() reaches through
+// ObjectClass::Take_Damage().
+TEST_F(TechnoTest, KillingTheUnitBeingTeleportedEndsChronosphereTargeting) {
+  TechnoClass& victim = MakeUnit(HOUSE_GREECE);
+  victim.House->UnitToTeleport = victim.As_Target();
+  TheMap().IsTargettingMode = kSpcChrono2;
+
+  victim.Strength = 10;
+  int damage = 10;
+  EXPECT_EQ(
+      victim.TechnoClass::Take_Damage(damage, 0, WARHEAD_HE, nullptr, true),
+      game::ResultType::RESULT_DESTROYED);
+
+  EXPECT_EQ(TheMap().IsTargettingMode, SPC_NONE);
+  EXPECT_FALSE(victim.House->UnitToTeleport.is_valid());
+}
+
+TEST_F(TechnoTest, KillingAnotherHousesTeleportUnitKeepsThePlayersTargeting) {
+  const TechnoClass& own = MakeUnit(HOUSE_GREECE);
+  TechnoClass& victim = MakeUnit(HOUSE_USSR);
+  own.House->UnitToTeleport = own.As_Target();
+  victim.House->UnitToTeleport = victim.As_Target();
+  TheMap().IsTargettingMode = kSpcChrono2;
+
+  victim.Strength = 10;
+  int damage = 10;
+  victim.TechnoClass::Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+
+  EXPECT_EQ(TheMap().IsTargettingMode, kSpcChrono2);
+  EXPECT_EQ(own.House->UnitToTeleport, own.As_Target());
 }
 
 }  // namespace
