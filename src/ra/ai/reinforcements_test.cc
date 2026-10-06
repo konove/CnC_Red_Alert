@@ -667,10 +667,9 @@ TEST_F(ReinforcementTest, YaksAndMigsShareTheAirstrips) {
   EXPECT_TRUE(TheObjectHeaps().aircraft().ActiveAt(2)->IsALoaner);
 }
 
-TEST_F(ReinforcementTest, AnAirstripCountsOnlyThePlayersAircraftAsUsingIt) {
+TEST_F(ReinforcementTest, AComputerHouseKeepsOneMigForEachAirstrip) {
   TheGameState().active() = true;
-  // The house is no longer the player's, so its kept MiG does not count
-  // against its airstrip and it keeps the second one as well.
+  // The house is no longer the player's; its airstrip limits it all the same.
   ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
   Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
         Cell::FromXY(40, 50));
@@ -680,7 +679,26 @@ TEST_F(ReinforcementTest, AnAirstripCountsOnlyThePlayersAircraftAsUsingIt) {
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 2);
-  EXPECT_EQ(KeptAircraftCount(), 2);
+  EXPECT_EQ(KeptAircraftCount(), 1);
+}
+
+TEST_F(ReinforcementTest, AnotherHousesMigUsesNoAirstrip) {
+  TheGameState().active() = true;
+  ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
+  const auto* players_mig =
+      base::NewPooled<AircraftClass>(AIRCRAFT_MIG, HOUSE_GREECE);
+  ASSERT_NE(players_mig, nullptr);
+  ASSERT_FALSE(players_mig->IsALoaner);
+  Place(base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_USSR),
+        Cell::FromXY(40, 50));
+  TeamTypeClass& team_type =
+      MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_MIG), 1);
+
+  EXPECT_TRUE(DeliverReinforcements(&team_type));
+
+  // The house's own airstrip is free, so it keeps the MiG it is sent.
+  ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 2);
+  EXPECT_FALSE(TheObjectHeaps().aircraft().ActiveAt(1)->IsALoaner);
 }
 
 TEST_F(ReinforcementTest, AHelicopterOrABorrowedMigUsesNoAirstrip) {

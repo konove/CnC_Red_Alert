@@ -536,10 +536,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T01:50:12Z",
+      "updated": "2026-10-06T02:03:47Z",
       "anchor": {
         "path": "src/ra/assets/shape_draw.cc",
         "startLine": 182,
@@ -1255,18 +1255,17 @@
     },
     {
       "id": "T-50",
-      "title": "Decide whether HouseKeepsAircraft() should count the owning house's aircraft",
-      "details": "- `ra/ai/reinforcements.cc:102` (was `Need_To_Take()`) decides whether a reinforcement Yak or MiG is kept or is a loaner by subtracting, from the house's airstrips, every kept Yak/MiG with `IsOwnedByPlayer`: the human player's, whichever house the new aircraft belongs to. A computer house with one airstrip therefore keeps every Yak/MiG it is sent.\n- `other->House == aircraft->House` is a one-line change, but it changes which reinforcement aircraft leave the map, so it needs a sync check. Found in the reinforcements modernization (`ef09a028`..`47b4ae18`).",
+      "title": "HouseKeepsAircraft() counts the owning house's aircraft",
+      "details": "- Decided 2026-10-05: count the reinforcing house's own kept Yaks/MiGs. `ra/ai/reinforcements.cc` `HouseKeepsAircraft()` now tests `other->House == aircraft->House` instead of `other->IsOwnedByPlayer`, so a computer house keeps one Yak/MiG per airstrip and another house's aircraft no longer use up its airstrips. This also drops a per-machine input (`IsOwnedByPlayer` differs between network peers).\n- Tests: `AComputerHouseKeepsOneMigForEachAirstrip` (replaces `AnAirstripCountsOnlyThePlayersAircraftAsUsingIt`) and `AnotherHousesMigUsesNoAirstrip` in `ra/ai/reinforcements_test.cc`.\n- `tools/net_check.py` passes (600 frames in step), but its `orders` check delivers no Yak/MiG reinforcements, so it does not exercise this path. Not checked: a campaign mission that sends Yak/MiG reinforcements to a computer house, where those aircraft now leave after one sortie once the airstrips are full.",
       "priority": "p2",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:43:35Z"
+      "updated": "2026-10-06T05:04:35Z"
     },
     {
       "id": "T-51",
@@ -3059,10 +3058,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T01:17:46Z"
+      "updated": "2026-10-06T02:03:44Z"
     },
     {
       "id": "T-137",

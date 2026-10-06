@@ -93,13 +93,13 @@ static bool HouseKeepsAircraft(const AircraftClass* aircraft) {
     return false;
   }
 
-  // Each Yak or MiG that is already kept uses up one airstrip. Only the human
-  // player's aircraft are counted, whichever house `aircraft` belongs to.
+  // Each Yak or MiG the house already keeps uses up one of its airstrips.
   int free_airstrips = aircraft->House->Get_Quantity(STRUCT_AIRSTRIP);
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
     const AircraftClass* other = TheObjectHeaps().aircraft().ActiveAt(index);
     if ((*other == AIRCRAFT_YAK || *other == AIRCRAFT_MIG) &&
-        other->IsOwnedByPlayer && !other->IsALoaner && other != aircraft) {
+        other->House == aircraft->House && !other->IsALoaner &&
+        other != aircraft) {
       free_airstrips -= 1;
       if (free_airstrips == 0) {
         break;
