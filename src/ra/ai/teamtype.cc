@@ -785,9 +785,8 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_QUARRY:
-              base::SafeCopy(
-                  qlist.Get_Text_Buffer(),
-                  QuarryName.at(missionlist2.Current_Item()->Data.Quarry));
+              qlist.Set_Selected_Index(
+                  static_cast<int>(missionlist2.Current_Item()->Data.Quarry));
               break;
 
             case NEED_WAYPOINT:

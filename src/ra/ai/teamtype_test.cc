@@ -1,0 +1,73 @@
+// Tests for the team types: reading and writing their scenario INI entries,
+// and the scenario editor's team type dialog played by a script on a headless
+// screen.
+
+#include "ra/ai/teamtype.h"
+
+#include "base/pooled.h"
+#include "gtest/gtest.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/core/defines.h"
+#include "ra/core/object_heaps.h"
+#include "ra/core/type_heaps.h"
+#include "ra/map/world.h"
+#include "ra/objects/type.h"
+#include "ra/startup/ui_test_util.h"
+
+namespace ra {
+namespace {
+
+// A Game with every type a team can have as a member, reading the current
+// scenario format, and one team type to work on.
+class TeamTypeTest : public UiFixture {
+ protected:
+  void SetUp() override {
+    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
+    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
+    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());
+    AircraftTypeClass::Init_Heap();
+    InfantryTypeClass::Init_Heap();
+    VesselTypeClass::Init_Heap();
+    TheObjectHeaps().team_type().Reset(4);
+    TheObjectHeaps().trigger_type().Reset(4);
+    TheWorld().new_ini_format() = 3;
+    team_type_ = base::NewPooled<TeamTypeClass>();
+  }
+
+  TeamTypeClass* team_type_ = nullptr;
+};
+
+// The dialog is 400 by 250 in the screen's top left corner. A point inside
+// the first line of the script list, the Append button and the OK button.
+constexpr int kScriptX = 95 + 20;
+constexpr int kScriptRow0Y = 125 + 4;
+constexpr int kAppendX = 35 + 5;
+constexpr int kAppendY = 119;
+constexpr int kOkX = 264 + 5;
+constexpr int kOkY = 221 + 4;
+
+// The second click on a script line loads it into the work mission, which
+// Append then adds to the script.
+TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
+  team_type_->MissionCount = 1;
+  team_type_->MissionList[0].Mission = TMISSION_ATTACK;
+  team_type_->MissionList[0].Data.Quarry = QUARRY_BUILDINGS;
+  player()
+      .At(3)
+      .Click(kScriptX, kScriptRow0Y)
+      .At(6)
+      .Click(kScriptX, kScriptRow0Y)
+      .At(9)
+      .Click(kAppendX, kAppendY)
+      .At(12)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  ASSERT_EQ(team_type_->MissionCount, 2);
+  EXPECT_EQ(team_type_->MissionList[1].Mission, TMISSION_ATTACK);
+  EXPECT_EQ(team_type_->MissionList[1].Data.Quarry, QUARRY_BUILDINGS);
+}
+
+}  // namespace
+}  // namespace ra
