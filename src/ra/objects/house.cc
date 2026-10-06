@@ -2507,13 +2507,13 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
             ttype->MissionList[0].Mission = TeamMissionType::kAttackWaypoint;
             ttype->MissionList[0].Data.Value = ScenarioClass::kSpecialWaypoint;
             ttype->ClassCount = 2;
-            ttype->Members[0].Quantity =
+            ttype->Members[0].quantity =
                 AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)
                     .Max_Passengers();
-            ttype->Members[0].Class =
+            ttype->Members[0].type =
                 &InfantryTypeClass::As_Reference(INFANTRY_E1);
-            ttype->Members[1].Quantity = 1;
-            ttype->Members[1].Class =
+            ttype->Members[1].quantity = 1;
+            ttype->Members[1].type =
                 &AircraftTypeClass::As_Reference(AIRCRAFT_BADGER);
           }
         }
@@ -5503,7 +5503,7 @@ int HouseClass::AI_Unit() {
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
             const TechnoTypeClass* memtype =
-                base::At(team->Members, subindex).Class;
+                base::At(team->Members, subindex).type;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
               counter.at(dynamic_cast<const UnitTypeClass*>(memtype)->Type) = 1;
             }
@@ -5523,14 +5523,14 @@ int HouseClass::AI_Unit() {
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
           const TechnoTypeClass* memtype =
-              base::At(team->Members, subindex).Class;
+              base::At(team->Members, subindex).type;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
             const UnitType subtype =
                 dynamic_cast<const UnitTypeClass*>(memtype)->Type;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).Quantity);
+                         base::At(team->Members, subindex).quantity);
           }
         }
       }
@@ -5649,10 +5649,10 @@ int HouseClass::AI_Vessel() {
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (base::At(team->Members, subindex).Class->What_Am_I() ==
+            if (base::At(team->Members, subindex).type->What_Am_I() ==
                 RTTI_VESSELTYPE) {
               counter.at(dynamic_cast<const VesselTypeClass*>(
-                             base::At(team->Members, subindex).Class)
+                             base::At(team->Members, subindex).type)
                              ->Type) = 1;
             }
           }
@@ -5670,15 +5670,15 @@ int HouseClass::AI_Vessel() {
       if (team && (team->House == Class->House && team->IsPrebuilt &&
                    (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+          if (base::At(team->Members, subindex).type->What_Am_I() ==
               RTTI_VESSELTYPE) {
             const VesselType subtype =
                 dynamic_cast<const VesselTypeClass*>(
-                    base::At(team->Members, subindex).Class)
+                    base::At(team->Members, subindex).type)
                     ->Type;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).Quantity);
+                         base::At(team->Members, subindex).quantity);
           }
         }
       }
@@ -5775,12 +5775,12 @@ int HouseClass::AI_Infantry() {
               !tptr->JustAltered)) &&
             team->House == Class->House) {
           for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (base::At(team->Members, subindex).Class->What_Am_I() ==
+            if (base::At(team->Members, subindex).type->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
               counter.at(dynamic_cast<const InfantryTypeClass*>(
-                             base::At(team->Members, subindex).Class)
+                             base::At(team->Members, subindex).type)
                              ->Type) +=
-                  base::At(team->Members, subindex).Quantity +
+                  base::At(team->Members, subindex).quantity +
                   (team->IsReinforcable ? 1 : 0);
             }
           }
@@ -5799,17 +5799,17 @@ int HouseClass::AI_Infantry() {
           (team->House == Class->House && team->IsPrebuilt &&
            (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+          if (base::At(team->Members, subindex).type->What_Am_I() ==
               RTTI_INFANTRYTYPE) {
             const InfantryType subtype =
                 dynamic_cast<const InfantryTypeClass*>(
-                    base::At(team->Members, subindex).Class)
+                    base::At(team->Members, subindex).type)
                     ->Type;
             //									counter[subtype]
             //= 1;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).Quantity);
+                         base::At(team->Members, subindex).quantity);
             counter.at(subtype) = std::min(counter.at(subtype), 5);
           }
         }

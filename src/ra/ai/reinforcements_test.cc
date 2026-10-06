@@ -84,8 +84,8 @@ class ReinforcementTest : public GameFixture {
     EXPECT_NE(team_type, nullptr);
     team_type->House = HOUSE_USSR;
     team_type->ClassCount = 1;
-    team_type->Members[0].Class = &member_type;
-    team_type->Members[0].Quantity = count;
+    team_type->Members[0].type = &member_type;
+    team_type->Members[0].quantity = count;
     return *team_type;
   }
 
@@ -93,8 +93,8 @@ class ReinforcementTest : public GameFixture {
   static void AddMembers(TeamType& team_type,
                          const TechnoTypeClass& member_type, const int count) {
     TeamMember& member = base::At(team_type.Members, team_type.ClassCount);
-    member.Class = &member_type;
-    member.Quantity = count;
+    member.type = &member_type;
+    member.quantity = count;
     team_type.ClassCount++;
   }
 

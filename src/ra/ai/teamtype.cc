@@ -1158,7 +1158,7 @@ std::string TeamType::MemberDescription() const {
     for (int index = 0; index < ClassCount; index++) {
       const TeamMember& member = base::At(Members, index);
       absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
-                            member.Class->IniName, member.Quantity);
+                            member.type->IniName, member.quantity);
     }
 
     // The team list's last column has room for 25 characters.
@@ -1370,8 +1370,8 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
     // An unknown type (a unit this build does not have) is dropped and the
     // next member takes its place in Members.
     if (member_type) {
-      base::At(Members, index).Class = member_type;
-      base::At(Members, index).Quantity =
+      base::At(Members, index).type = member_type;
+      base::At(Members, index).quantity =
           base::ParseIntegerOr<int>(quantity_text, 0);
     } else {
       ClassCount--;
@@ -1426,8 +1426,8 @@ std::string TeamType::ToIniEntry() const {
   // The members: a count, then Type:Quantity for each.
   absl::StrAppendFormat(&entry, ",%d", ClassCount);
   for (int i = 0; i < ClassCount; i++) {
-    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Members, i).Class->IniName,
-                          base::At(Members, i).Quantity);
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Members, i).type->IniName,
+                          base::At(Members, i).quantity);
   }
 
   // The script: a count, then Mission:Argument for each, both as numbers.

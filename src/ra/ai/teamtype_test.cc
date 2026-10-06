@@ -50,9 +50,9 @@ TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
   team_type_->ReadIniEntry("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
 
   ASSERT_EQ(team_type_->ClassCount, 1);
-  EXPECT_EQ(team_type_->Members[0].Class,
+  EXPECT_EQ(team_type_->Members[0].type,
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
-  EXPECT_EQ(team_type_->Members[0].Quantity, 3);
+  EXPECT_EQ(team_type_->Members[0].quantity, 3);
   ASSERT_EQ(team_type_->MissionCount, 1);
   EXPECT_EQ(team_type_->MissionList[0].Mission, TeamMissionType::kMove);
   EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);

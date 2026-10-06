@@ -138,9 +138,9 @@ static FootClass* CreateGroup(TeamType* team_type) {
   for (int member_index = 0; member_index < team_type->ClassCount;
        member_index++) {
     const TeamMember& entry = base::At(team_type->Members, member_index);
-    const TechnoTypeClass* member_type = entry.Class;
+    const TechnoTypeClass* member_type = entry.type;
 
-    for (int copy = 0; copy < entry.Quantity; copy++) {
+    for (int copy = 0; copy < entry.quantity; copy++) {
       TheWorld().scenario_init()++;
       auto* member =
           dynamic_cast<FootClass*>(member_type->Create_One_Of(house));

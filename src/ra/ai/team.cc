@@ -461,7 +461,7 @@ void TeamClass::AI() {
     **	Figure out the total number of objects that this team type requires.
     */
     for (int index = 0; index < Class->ClassCount; index++) {
-      desired += base::At(Class->Members, index).Quantity;
+      desired += base::At(Class->Members, index).quantity;
     }
     DCHECK(desired != 0);
 
@@ -641,7 +641,7 @@ void TeamClass::AI() {
     //{
     for (int index = 0; index < Class->ClassCount; index++) {
       if (std::cmp_less(base::At(Quantity, index),
-                        base::At(Class->Members, index).Quantity)) {
+                        base::At(Class->Members, index).quantity)) {
         Recruit(index);
       }
     }
@@ -1007,7 +1007,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	occur.
   */
   for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
-    if (base::At(Class->Members, typeindex).Class == &obj->Class_Of()) {
+    if (base::At(Class->Members, typeindex).type == &obj->Class_Of()) {
       break;
     }
   }
@@ -1020,7 +1020,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   *allowed. *	Return with a failure flag in this case.
   */
   if (std::cmp_greater_equal(base::At(Quantity, typeindex),
-                             base::At(Class->Members, typeindex).Quantity)) {
+                             base::At(Class->Members, typeindex).quantity)) {
     return false;
   }
 
@@ -1078,7 +1078,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   */
   if (typeindex == -1) {
     for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
-      if (base::At(Class->Members, typeindex).Class == &obj->Class_Of()) {
+      if (base::At(Class->Members, typeindex).type == &obj->Class_Of()) {
         break;
       }
     }
@@ -1193,9 +1193,9 @@ int TeamClass::Recruit(int typeindex) {
   **	Quick check to see if recruiting is really allowed for this index or
   *not.
   */
-  if (std::cmp_greater(base::At(Class->Members, typeindex).Quantity,
+  if (std::cmp_greater(base::At(Class->Members, typeindex).quantity,
                        base::At(Quantity, typeindex))) {
-    switch (base::At(Class->Members, typeindex).Class->What_Am_I()) {
+    switch (base::At(Class->Members, typeindex).type->What_Am_I()) {
       /*
       **	For infantry objects, sweep through the infantry in the game
       *looking for *	ones owned by the house that owns the team. When found,
@@ -1259,7 +1259,7 @@ int TeamClass::Recruit(int typeindex) {
           const int d = unit->Distance(center);
 
           if (unit->House == House &&
-              unit->Class == base::At(Class->Members, typeindex).Class &&
+              unit->Class == base::At(Class->Members, typeindex).type &&
               (d < bestdist || bestdist == -1) && Can_Add(unit, typeindex)) {
             best = unit;
             bestdist = d;
@@ -1294,7 +1294,7 @@ int TeamClass::Recruit(int typeindex) {
           const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
-              vessel->Class == base::At(Class->Members, typeindex).Class &&
+              vessel->Class == base::At(Class->Members, typeindex).type &&
               (d < bestdist || bestdist == -1) && Can_Add(vessel, typeindex)) {
             best = vessel;
             bestdist = d;

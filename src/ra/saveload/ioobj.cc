@@ -99,7 +99,7 @@ template void Carryover::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TeamMember::Serialize(Archive& ar) {
-  ar(Quantity, TechnoTypePtr(Class));
+  ar(quantity, TechnoTypePtr(type));
 }
 template void TeamMember::Serialize(ArchiveWriter&);
 template void TeamMember::Serialize(ArchiveReader&);

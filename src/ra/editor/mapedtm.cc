@@ -585,8 +585,8 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (base::At(CurTeam->Members, i).Class == base::At(teamclass, j)) {
-        base::At(teamcount, j) = base::At(CurTeam->Members, i).Quantity;
+      if (base::At(CurTeam->Members, i).type == base::At(teamclass, j)) {
+        base::At(teamcount, j) = base::At(CurTeam->Members, i).quantity;
         break;
       }
     }
@@ -850,8 +850,8 @@ int MapEditClass::Team_Members(HousesType house) {
     i = 0;  // current team class index
     for (int j = 0; j < maxclasses; j++) {
       if (base::At(teamcount, j) > 0) {
-        base::At(CurTeam->Members, i).Quantity = base::At(teamcount, j);
-        base::At(CurTeam->Members, i).Class = base::At(teamclass, j);
+        base::At(CurTeam->Members, i).quantity = base::At(teamcount, j);
+        base::At(CurTeam->Members, i).type = base::At(teamclass, j);
         i++;
       }
     }

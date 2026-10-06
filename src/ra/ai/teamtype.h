@@ -99,16 +99,15 @@ class TeamMission {
 };
 
 // One kind of member a team type asks for, and how many of it.
-class TeamMember {
- public:
-  int Quantity = 0;
-  // An infantry, unit, aircraft or vessel type; nullptr only in an unused
-  // entry.
-  const TechnoTypeClass* Class = nullptr;
-
+struct TeamMember {
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
+
+  int quantity = 0;
+  // An infantry, unit, aircraft or vessel type; nullptr only in an unused
+  // entry.
+  const TechnoTypeClass* type = nullptr;
 };
 
 // A recipe for a team: its house, members, script and creation rules. Team
