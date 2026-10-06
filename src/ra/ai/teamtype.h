@@ -30,7 +30,6 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "base/enum_array.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
@@ -285,8 +284,6 @@ class TeamType : public AbstractTypeClass {
   int ClassCount = 0;
   TeamMember Members[kMaxMemberTypes];
 
-  // The scenario editor's name for each team mission.
-  static const base::EnumArray<TeamMissionType, const char*> kMissionNames;
 };
 
 // Returns the kind of argument a team mission takes, NEED_NONE for a mission

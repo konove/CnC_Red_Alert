@@ -47,7 +47,7 @@ constexpr int kAppendY = 119;
 constexpr int kOkX = 264 + 5;
 constexpr int kOkY = 221 + 4;
 
-TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
+TEST_F(TeamTypeTest, ReadIniEntrySkipsAnUnknownFirstMember) {
   team_type_->ReadIniEntry("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
 
   ASSERT_EQ(team_type_->ClassCount, 1);
@@ -59,7 +59,7 @@ TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
   EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);
 }
 
-TEST_F(TeamTypeTest, FillInTakesAnOriginThatIsNoWaypointAsNone) {
+TEST_F(TeamTypeTest, ReadIniEntryTakesAnOriginThatIsNoWaypointAsNone) {
   team_type_->ReadIniEntry("tanks", "2,0,7,0,1,500,-1,0,0");
 
   EXPECT_EQ(team_type_->Origin, -1);
@@ -88,14 +88,15 @@ TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   EXPECT_EQ(team_type_->MissionList[1].Data.Quarry, QUARRY_BUILDINGS);
 }
 
-// The origin field, the last of the row of fields along the top.
+// The maximum and origin fields, in the row of fields along the top.
+constexpr int kMaxX = 202 + 3;
 constexpr int kOriginX = 300 + 3;
-constexpr int kOriginY = 27 + 3;
+constexpr int kFieldRowY = 27 + 3;
 
 TEST_F(TeamTypeTest, TheDialogReadsTheOriginAsWaypointLetters) {
   player()
       .At(3)
-      .Click(kOriginX, kOriginY)
+      .Click(kOriginX, kFieldRowY)
       .At(5)
       .Type("AB")
       .At(12)
@@ -110,7 +111,7 @@ TEST_F(TeamTypeTest, TheDialogReadsTheOriginAsWaypointLetters) {
 TEST_F(TeamTypeTest, TheDialogTakesOriginLettersPastTheLastWaypointAsNone) {
   player()
       .At(3)
-      .Click(kOriginX, kOriginY)
+      .Click(kOriginX, kFieldRowY)
       .At(5)
       .Type("ZZ")
       .At(12)
@@ -123,10 +124,9 @@ TEST_F(TeamTypeTest, TheDialogTakesOriginLettersPastTheLastWaypointAsNone) {
 
 // The count fields take three digits and the team type stores a byte.
 TEST_F(TeamTypeTest, TheDialogCapsTheMaximumAtWhatTheTeamTypeHolds) {
-  constexpr int kMaxX = 202 + 3;
   player()
       .At(3)
-      .Click(kMaxX, kOriginY)
+      .Click(kMaxX, kFieldRowY)
       .At(5)
       .Key(engine::window::KN_BACKSPACE)
       .At(7)
