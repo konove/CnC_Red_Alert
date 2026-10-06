@@ -505,10 +505,10 @@
         "bugs",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T06:30:57Z",
+      "updated": "2026-10-06T06:40:40Z",
       "anchor": {
         "path": "src/engine/window/hardware_cursor.cc",
         "startLine": 163,
@@ -561,17 +561,16 @@
     {
       "id": "T-23",
       "title": "Decide what a ghost or fading draw without its table should do",
-      "details": "- `engine::gfx::DrawShapeFrame()` (`engine/gfx/shape_blitter.cc`) silently draws nothing when the table a `ShapeFlags::kGhost` or `kFading` draw needs is missing or too short; RA's `CC_Draw_Shape()` substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the \"E3 kludge\", `ra/assets/shape_draw.cc:118-127`), TD's (`td/startup/conquer.cc`) does not.\n- Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash).",
+      "details": "- `engine::gfx::DrawShapeFrame()` (`engine/gfx/shape_blitter.cc`) silently draws nothing when the table a `ShapeFlags::kGhost` or `kFading` draw needs is missing or too short; RA's `CC_Draw_Shape()` substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the \"E3 kludge\"), TD's (`td/startup/conquer.cc`) did not.\n- Decided 2026-10-06: TD's `CC_Draw_Shape()` gets the same substitution; the blitter keeps its no-op for a table that is still missing or too short (no `CHECK`).",
       "priority": "p2",
       "tags": [
         "bugs",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:43:35Z",
+      "updated": "2026-10-06T07:06:41Z",
       "anchor": {
         "path": "src/engine/gfx/shape_blitter.cc",
         "startLine": 159,

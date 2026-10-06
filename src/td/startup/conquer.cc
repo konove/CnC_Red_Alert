@@ -2352,10 +2352,10 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
  *parameters       * are used (if any). *
  *                                                                                             *
  *          fadingdata  -- If ShapeFlags::kFading is desired, then this points
- * to the fading          * data table. *
+ * to the fading data table. Left empty, DisplayClass::FadingShade is used.
  *                                                                                             *
  *          ghostdata   -- If ShapeFlags::kGhost is desired, then this points to
- * the ghost remap      * table. *
+ * the ghost remap table. Left empty, DisplayClass::SpecialGhost is used.
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -2367,6 +2367,16 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shapenum, int x, int y, WindowNumberType window,
                    ShapeFlags flags, std::span<const uint8_t> fadingdata,
                    std::span<const uint8_t> ghostdata) {
+  // The blitter draws nothing for an effect whose table is missing, so a
+  // caller that asks for ghosting or fading without one gets the display's
+  // default, as in Red Alert.
+  if (base::Any(flags & ShapeFlags::kGhost) && ghostdata.empty()) {
+    ghostdata = MouseClass::SpecialGhost;
+  }
+  if (base::Any(flags & ShapeFlags::kFading) && fadingdata.empty()) {
+    fadingdata = MouseClass::FadingShade;
+  }
+
   if (!shapefile.empty() && shapenum >= 0) {
     /*
     ** Build frame returns a pointer now instead of the shapes length
