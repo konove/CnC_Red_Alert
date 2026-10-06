@@ -367,7 +367,6 @@ void TeamTypeClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TeamClass* TeamTypeClass::Create_One_Of() {
   if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
-    //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
@@ -431,13 +430,7 @@ void TeamTypeClass::Destroy_All_Of() const {
  *=============================================================================================*/
 TeamTypeClass* TeamTypeClass::Suggested_New_Team(
     HouseClass* house, uint64_t /*unused*/, uint64_t /*unused*/,
-    uint64_t /*unused*/, uint64_t /*unused*/, bool alerted)
-// TeamTypeClass const * TeamTypeClass::Suggested_New_Team(HouseClass * house,
-// long atypes, long utypes, long itypes, long vtypes, bool alerted)
-{
-  //	TeamTypeClass const * best = nullptr;
-  //	int bestvalue = 0;
-
+    uint64_t /*unused*/, uint64_t /*unused*/, bool alerted) {
   TeamTypeClass* choices[20];
   int choicecount = 0;
 
@@ -466,8 +459,6 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
     return base::At(choices, RandomPick(0, choicecount - 1));
   }
   return nullptr;
-
-  //	return(best);
 }
 
 /***********************************************************************************************
@@ -886,7 +877,6 @@ bool TeamTypeClass::Edit() {
   EditClass arg_edt(kButtonArg, arg_buf, sizeof(arg_buf), FontType::kEditor,
                     TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
                     missionlist1.Y, 60, -1, EditClass::kAlphanumeric);
-  //	arg_edt.Add(*commands);
 
   char qtext[55];
   DropListClass qlist(kButtonQuarry, qtext, sizeof(qtext), FontType::kEditor,
@@ -936,7 +926,6 @@ bool TeamTypeClass::Edit() {
                               .emplace_back(std::make_unique<TeamMissionClass>(
                                   base::At(MissionList, index)))
                               .get());
-    //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);
   }
   static const int tabs[] = {13, 40};  // list box tab stops
   missionlist2.Set_Tabs(tabs);
@@ -1602,7 +1591,6 @@ const char* TeamTypeClass::Description() const {
       extra = '*';
     }
     if (Origin > -1) {
-      //	if (Origin != -1) {
       if (Origin < 26) {
         loc[0] = static_cast<char>('A' + Origin);
       } else {
@@ -1958,7 +1946,6 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
   **	Now write all the team data out
   */
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    //	for (int index = TeamTypes.Count()-1; index >= 0; index--) {
     TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
     std::string buf;
     team->Build_INI_Entry(buf);
