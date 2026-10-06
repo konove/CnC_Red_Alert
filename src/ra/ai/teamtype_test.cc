@@ -5,6 +5,7 @@
 #include "ra/ai/teamtype.h"
 
 #include "base/pooled.h"
+#include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
@@ -118,6 +119,24 @@ TEST_F(TeamTypeTest, TheDialogTakesOriginLettersPastTheLastWaypointAsNone) {
   EXPECT_TRUE(team_type_->Edit());
 
   EXPECT_EQ(team_type_->Origin, -1);
+}
+
+// The count fields take three digits and the team type stores a byte.
+TEST_F(TeamTypeTest, TheDialogCapsTheMaximumAtWhatTheTeamTypeHolds) {
+  constexpr int kMaxX = 202 + 3;
+  player()
+      .At(3)
+      .Click(kMaxX, kOriginY)
+      .At(5)
+      .Key(engine::window::KN_BACKSPACE)
+      .At(7)
+      .Type("999")
+      .At(14)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  EXPECT_EQ(team_type_->MaxAllowed, 255);
 }
 
 }  // namespace

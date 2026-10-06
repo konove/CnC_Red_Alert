@@ -21,6 +21,7 @@
 
 #include "ra/ai/teamtype.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdint>
 #include <cstdio>
@@ -926,10 +927,11 @@ bool TeamType::Edit() {
 
         RecruitPriority =
             base::ParseIntegerOr<int>(priority_edit.Get_Text(), 0);
-        InitNum = static_cast<unsigned char>(
-            base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0));
-        MaxAllowed = static_cast<unsigned char>(
-            base::ParseIntegerOr<int>(max_edit.Get_Text(), 0));
+        // The fields take three digits; the team type stores a byte.
+        InitNum = static_cast<unsigned char>(std::clamp(
+            base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0), 0, 255));
+        MaxAllowed = static_cast<unsigned char>(std::clamp(
+            base::ParseIntegerOr<int>(max_edit.Get_Text(), 0), 0, 255));
         House = HousesType(house_drop.Current_Index());
         Trigger = nullptr;
         if (trigger_drop.Current_Index() > 0) {
