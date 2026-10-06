@@ -479,7 +479,7 @@ TEST_F(ReinforcementTest, AGroundTransportThatUnloadsIsNotALoaner) {
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_APC), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
   team_type.MissionCount = 1;
-  team_type.MissionList[0].Mission = TeamMissionType::kUnload;
+  team_type.MissionList[0].set_mission(TeamMissionType::kUnload);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -501,7 +501,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterIsALoanerOnlyWhenTheTeamUnloads) {
   TeamType& unloading = MakeTeamType(helicopter, 1);
   AddMembers(unloading, soldier, 1);
   unloading.MissionCount = 1;
-  unloading.MissionList[0].Mission = TeamMissionType::kUnload;
+  unloading.MissionList[0].set_mission(TeamMissionType::kUnload);
   TeamType& empty = MakeTeamType(helicopter, 1);
 
   EXPECT_TRUE(DeliverReinforcements(&unloading));
@@ -731,8 +731,9 @@ TEST_F(ReinforcementTest, ATeamTypeWithoutMissionsAttacksItsOrigin) {
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kAttackWaypoint);
-  EXPECT_EQ(team_type.MissionList[0].Data.Value, -1);
+  EXPECT_EQ(team_type.MissionList[0].mission(),
+            TeamMissionType::kAttackWaypoint);
+  EXPECT_EQ(team_type.MissionList[0].value(), -1);
 }
 
 TEST_F(ReinforcementTest, ATeamTypeWithoutMembersDeliversNothing) {

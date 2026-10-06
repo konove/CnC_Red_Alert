@@ -73,7 +73,7 @@ class TeamMission {
   // Saved-game support. The union travels through its widest member.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(Mission, Data.Value);
+    ar(mission_, argument_.value);
   }
 
   // Returns the line the team editor shows for this mission: `index`, a tab,
@@ -86,15 +86,36 @@ class TeamMission {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
-  TeamMissionType Mission;
-  // The mission's argument; TeamMissionNeeds(Mission) says which member is
-  // meant. A mission that takes none leaves it 0.
+  [[nodiscard]] TeamMissionType mission() const { return mission_; }
+  void set_mission(const TeamMissionType mission) { mission_ = mission; }
+
+  // The mission's argument, read as the kind TeamMissionNeeds(mission())
+  // names: a quarry for kAttack, a formation for kFormation, a unit mission
+  // for kDo, and otherwise a number (a waypoint, cell, script line, global
+  // or duration). A mission that takes no argument leaves it 0.
+  [[nodiscard]] int value() const { return argument_.value; }
+  void set_value(const int value) { argument_.value = value; }
+  [[nodiscard]] QuarryType quarry() const { return argument_.quarry; }
+  void set_quarry(const QuarryType quarry) { argument_.quarry = quarry; }
+  [[nodiscard]] FormationType formation() const { return argument_.formation; }
+  void set_formation(const FormationType formation) {
+    argument_.formation = formation;
+  }
+  [[nodiscard]] MissionType unit_mission() const {
+    return argument_.unit_mission;
+  }
+  void set_unit_mission(const MissionType unit_mission) {
+    argument_.unit_mission = unit_mission;
+  }
+
+ private:
+  TeamMissionType mission_;
   union {
-    FormationType Formation;  // TeamMissionType::kFormation
-    QuarryType Quarry;        // TeamMissionType::kAttack
-    MissionType Mission;      // TeamMissionType::kDo
-    int Value;  // A waypoint, cell, script line, global or duration.
-  } Data;
+    FormationType formation;
+    QuarryType quarry;
+    MissionType unit_mission;
+    int value;
+  } argument_;
 };
 
 // One kind of member a team type asks for, and how many of it.

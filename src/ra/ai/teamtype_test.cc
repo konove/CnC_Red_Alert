@@ -43,8 +43,8 @@ TEST_F(TeamTypeTest, ReadIniEntrySkipsAnUnknownFirstMember) {
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
   EXPECT_EQ(team_type_->Members[0].quantity, 3);
   ASSERT_EQ(team_type_->MissionCount, 1);
-  EXPECT_EQ(team_type_->MissionList[0].Mission, TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);
+  EXPECT_EQ(team_type_->MissionList[0].mission(), TeamMissionType::kMove);
+  EXPECT_EQ(team_type_->MissionList[0].value(), 5);
 }
 
 TEST_F(TeamTypeTest, ReadIniEntryTakesAnOriginThatIsNoWaypointAsNone) {

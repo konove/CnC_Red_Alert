@@ -685,21 +685,20 @@ void TeamClass::AI() {
       const TeamMission* mission =
           base::Suffix(Class->MissionList, CurrentMission).data();
 
-      TimeOut.Set(mission->Data.Value * (kTicksPerMinute / 10));
+      TimeOut.Set(mission->value() * (kTicksPerMinute / 10));
       Target = ra::Target{};
-      switch (mission->Mission) {
+      switch (mission->mission()) {
         case TeamMissionType::kMoveCell:
           Assign_Mission_Target(
-              ra::Target::FromCell(Cell::FromIndex(mission->Data.Value)));
+              ra::Target::FromCell(Cell::FromIndex(mission->value())));
           break;
 
         case TeamMissionType::kMove:
-          if (static_cast<unsigned>(mission->Data.Value) <
+          if (static_cast<unsigned>(mission->value()) <
                   ScenarioClass::kWaypointCount &&
               Member != nullptr) {
             const FootClass* leader = Fetch_A_Leader();
-            Cell movecell =
-                base::At(TheScenario().Waypoint, mission->Data.Value);
+            Cell movecell = base::At(TheScenario().Waypoint, mission->value());
             if ((!Is_Leaving_Map()) &&
                 (leader->Can_Enter_Cell(movecell) != game::MOVE_OK)) {
               movecell = TheMap().Nearby_Location(
@@ -714,15 +713,15 @@ void TeamClass::AI() {
         case TeamMissionType::kAttackWaypoint:
         case TeamMissionType::kPatrol:
         case TeamMissionType::kSpy:
-          if (static_cast<unsigned>(mission->Data.Value) <
+          if (static_cast<unsigned>(mission->value()) <
               ScenarioClass::kWaypointCount) {
             Assign_Mission_Target(ra::Target::FromCell(
-                base::At(TheScenario().Waypoint, mission->Data.Value)));
+                base::At(TheScenario().Waypoint, mission->value())));
           }
           break;
 
         case TeamMissionType::kAttackTarcom:
-          Assign_Mission_Target(ra::Target::FromPacked(mission->Data.Value));
+          Assign_Mission_Target(ra::Target::FromPacked(mission->value()));
           break;
 
         case TeamMissionType::kUnload:
@@ -769,7 +768,7 @@ void TeamClass::AI() {
         base::Suffix(Class->MissionList, CurrentMission).data();
     //		FootClass	* member = Member;
 
-    switch (mission->Mission) {
+    switch (mission->mission()) {
       case TeamMissionType::kPatrol:
         TMission_Patrol();
         break;
@@ -849,7 +848,7 @@ void TeamClass::AI() {
     *out, then *	flag it so that the team mission list will advance.
     */
     //			case TeamMissionType::kUnload:
-    if (mission->Mission == TeamMissionType::kGuard && TimeOut.IsFinished()) {
+    if (mission->mission() == TeamMissionType::kGuard && TimeOut.IsFinished()) {
       IsNextMission = true;
     }
 
@@ -1436,7 +1435,7 @@ void TeamClass::Calc_Center(ra::Target& center,
   */
   // A newly formed team has CurrentMission == -1 until its first order.
   if (CurrentMission >= 0 && CurrentMission < Class->MissionCount &&
-      base::At(Class->MissionList, CurrentMission).Mission ==
+      base::At(Class->MissionList, CurrentMission).mission() ==
           TeamMissionType::kHoundDog) {
     /*
     **	First pick a member of the team. The closest friendly object to that
@@ -1711,7 +1710,7 @@ void TeamClass::Coordinate_Attack() {
             base::Suffix(Class->MissionList, CurrentMission).data();
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
-            mission->Mission != TeamMissionType::kSpy) {
+            mission->mission() != TeamMissionType::kSpy) {
           // Clear the target so the team goes on to its next mission.
           Target = ra::Target{};
         }
@@ -1731,13 +1730,13 @@ void TeamClass::Coordinate_Attack() {
       Coordinate_Conscript(unit);
 
       if (Is_It_Playing(unit)) {
-        if (mission->Mission == TeamMissionType::kSpy &&
+        if (mission->mission() == TeamMissionType::kSpy &&
             unit->What_Am_I() == RTTI_INFANTRY &&
             *dynamic_cast<InfantryClass*>(unit) == INFANTRY_SPY) {
           unit->Assign_Mission(MISSION_CAPTURE);
           unit->Assign_Target(Target);
         } else {
-          if (mission->Mission == TeamMissionType::kSpy &&
+          if (mission->mission() == TeamMissionType::kSpy &&
               unit->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
             auto* tank = dynamic_cast<UnitClass*>(unit);
@@ -1855,7 +1854,7 @@ void TeamClass::Coordinate_Do() {
 
   FootClass* unit = Member;
   const MissionType do_mission =
-      base::At(Class->MissionList, CurrentMission).Data.Mission;
+      base::At(Class->MissionList, CurrentMission).unit_mission();
 
   /*
   **	For each unit either head it back to the team center or give it the main
@@ -1969,7 +1968,7 @@ void TeamClass::Coordinate_Move() {
                unit->Height > 0 &&
                Cell::Containing(unit->Center_Coord()) != Target.AsCell() &&
                !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
-               base::At(Class->MissionList, CurrentMission + 1).Mission !=
+               base::At(Class->MissionList, CurrentMission + 1).mission() !=
                    TeamMissionType::kMove)) {
             bool wasform = false;
 
@@ -2416,9 +2415,9 @@ bool TeamClass::Is_Leaving_Map() const {
     const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
 
-    if (mission->Mission == TeamMissionType::kMove &&
+    if (mission->mission() == TeamMissionType::kMove &&
         !TheMap().In_Radar(
-            base::At(TheScenario().Waypoint, mission->Data.Value))) {
+            base::At(TheScenario().Waypoint, mission->value()))) {
       return true;
     }
   }
@@ -2509,7 +2508,7 @@ int TeamClass::TMission_Formation() {
   FootClass* member = Member;
   const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
-  Formation = mission->Data.Formation;
+  Formation = mission->formation();
   const int group = ID + 10;
   int xdir = 0;
   int ydir = 0;
@@ -2729,7 +2728,7 @@ int TeamClass::TMission_Attack() {
     /*
     **	Have the team leader pick what the next team target will be.
     */
-    switch (mission->Data.Quarry) {
+    switch (mission->quarry()) {
       case QUARRY_ANYTHING:
         Assign_Mission_Target(candidate->Greatest_Threat(THREAT_NORMAL));
         break;
@@ -2881,7 +2880,7 @@ int TeamClass::TMission_Follow() {
 int TeamClass::TMission_Loop() {
   const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
-  CurrentMission = mission->Data.Value - 1;
+  CurrentMission = mission->value() - 1;
   IsNextMission = true;
   return 1;
 }
@@ -2933,7 +2932,7 @@ int TeamClass::TMission_Invulnerable() {
 int TeamClass::TMission_Set_Global() {
   const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
-  TheScenario().Set_Global_To(mission->Data.Value, true);
+  TheScenario().Set_Global_To(mission->value(), true);
   IsNextMission = true;
   return 1;
 }
@@ -2964,10 +2963,10 @@ int TeamClass::TMission_Patrol() {
   if (!Target) {
     const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
-    if (static_cast<unsigned>(mission->Data.Value) <
+    if (static_cast<unsigned>(mission->value()) <
         ScenarioClass::kWaypointCount) {
       Assign_Mission_Target(ra::Target::FromCell(
-          base::At(TheScenario().Waypoint, mission->Data.Value)));
+          base::At(TheScenario().Waypoint, mission->value())));
     }
   }
 

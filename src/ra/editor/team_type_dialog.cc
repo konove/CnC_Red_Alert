@@ -381,36 +381,37 @@ bool TeamType::Edit() {
   // argument its control holds.
   const auto work_mission = [&] {
     TeamMission mission{};
-    mission.Mission = TeamMissionType(mission_drop.Current_Index());
-    mission.Data.Value = 0;
-    switch (TeamMissionNeeds(mission.Mission)) {
+    mission.set_mission(TeamMissionType(mission_drop.Current_Index()));
+    mission.set_value(0);
+    switch (TeamMissionNeeds(mission.mission())) {
       case NEED_MISSION:
-        mission.Data.Mission = MissionType(unit_mission_drop.Current_Index());
+        mission.set_unit_mission(
+            MissionType(unit_mission_drop.Current_Index()));
         break;
 
       case NEED_FORMATION:
-        mission.Data.Formation = FormationType(formation_drop.Current_Index());
+        mission.set_formation(FormationType(formation_drop.Current_Index()));
         break;
 
       case NEED_QUARRY:
-        mission.Data.Quarry = QuarryType(quarry_drop.Current_Index());
+        mission.set_quarry(QuarryType(quarry_drop.Current_Index()));
         break;
 
       case NEED_NUMBER:
-        mission.Data.Value =
-            base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0);
+        mission.set_value(
+            base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0));
         break;
 
       case NEED_HEX_NUMBER:
-        mission.Data.Value = ParseHexDigits(argument_edit.Get_Text());
+        mission.set_value(ParseHexDigits(argument_edit.Get_Text()));
         break;
 
       // A waypoint the scenario does not have becomes waypoint A.
       case NEED_WAYPOINT:
-        mission.Data.Value = WaypointFromLetters(argument_edit.Get_Text());
-        if (mission.Data.Value < 0 ||
-            mission.Data.Value >= ScenarioClass::kHomeWaypoint) {
-          mission.Data.Value = 0;
+        mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));
+        if (mission.value() < 0 ||
+            mission.value() >= ScenarioClass::kHomeWaypoint) {
+          mission.set_value(0);
         }
         break;
 
@@ -555,36 +556,35 @@ bool TeamType::Edit() {
             last_control == kButtonMission2 &&
             last_script_index == script_list.Current_Index()) {
           const TeamMission& line = *script_list.Current_Item();
-          mission_drop.Set_Selected_Index(static_cast<int>(line.Mission));
+          mission_drop.Set_Selected_Index(static_cast<int>(line.mission()));
 
-          switch (TeamMissionNeeds(line.Mission)) {
+          switch (TeamMissionNeeds(line.mission())) {
             case NEED_MISSION:
               unit_mission_drop.Set_Selected_Index(
-                  static_cast<int>(line.Data.Mission));
+                  static_cast<int>(line.unit_mission()));
               break;
 
             case NEED_FORMATION:
               formation_drop.Set_Selected_Index(
-                  static_cast<int>(line.Data.Formation));
+                  static_cast<int>(line.formation()));
               break;
 
             case NEED_NUMBER:
               absl::SNPrintF(argument_text, sizeof(argument_text), "%d",
-                             line.Data.Value);
+                             line.value());
               break;
 
             case NEED_HEX_NUMBER:
               absl::SNPrintF(argument_text, sizeof(argument_text), "%x",
-                             static_cast<unsigned int>(line.Data.Value));
+                             static_cast<unsigned int>(line.value()));
               break;
 
             case NEED_QUARRY:
-              quarry_drop.Set_Selected_Index(
-                  static_cast<int>(line.Data.Quarry));
+              quarry_drop.Set_Selected_Index(static_cast<int>(line.quarry()));
               break;
 
             case NEED_WAYPOINT:
-              base::SafeCopy(argument_text, WaypointLetters(line.Data.Value));
+              base::SafeCopy(argument_text, WaypointLetters(line.value()));
               break;
             case NeedType::NEED_NONE:
             case NeedType::NEED_THEME:

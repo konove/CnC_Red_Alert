@@ -49,8 +49,8 @@ constexpr int kOkY = 221 + 4;
 // Append then adds to the script.
 TEST_F(TeamTypeDialogTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   team_type_->MissionCount = 1;
-  team_type_->MissionList[0].Mission = TeamMissionType::kAttack;
-  team_type_->MissionList[0].Data.Quarry = QUARRY_BUILDINGS;
+  team_type_->MissionList[0].set_mission(TeamMissionType::kAttack);
+  team_type_->MissionList[0].set_quarry(QUARRY_BUILDINGS);
   player()
       .At(3)
       .Click(kScriptX, kScriptRow0Y)
@@ -64,8 +64,8 @@ TEST_F(TeamTypeDialogTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->MissionCount, 2);
-  EXPECT_EQ(team_type_->MissionList[1].Mission, TeamMissionType::kAttack);
-  EXPECT_EQ(team_type_->MissionList[1].Data.Quarry, QUARRY_BUILDINGS);
+  EXPECT_EQ(team_type_->MissionList[1].mission(), TeamMissionType::kAttack);
+  EXPECT_EQ(team_type_->MissionList[1].quarry(), QUARRY_BUILDINGS);
 }
 
 // The maximum and origin fields, in the row of fields along the top.

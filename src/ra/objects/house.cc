@@ -2504,8 +2504,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
             ttype->IsReinforcable = false;
             ttype->Origin = ScenarioClass::kSpecialWaypoint;
             ttype->MissionCount = 1;
-            ttype->MissionList[0].Mission = TeamMissionType::kAttackWaypoint;
-            ttype->MissionList[0].Data.Value = ScenarioClass::kSpecialWaypoint;
+            ttype->MissionList[0].set_mission(TeamMissionType::kAttackWaypoint);
+            ttype->MissionList[0].set_value(ScenarioClass::kSpecialWaypoint);
             ttype->ClassCount = 2;
             ttype->Members[0].quantity =
                 AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)

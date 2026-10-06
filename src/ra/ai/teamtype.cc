@@ -323,32 +323,32 @@ std::string TeamType::Description() const {
 std::string TeamMission::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     std::string text =
-        absl::StrFormat("%d\t%s", index, TeamType::MissionName(Mission));
+        absl::StrFormat("%d\t%s", index, TeamType::MissionName(mission_));
 
-    switch (TeamMissionNeeds(Mission)) {
+    switch (TeamMissionNeeds(mission_)) {
       case NEED_MISSION:
-        text += MissionClass::Mission_Name(Data.Mission);
+        text += MissionClass::Mission_Name(argument_.unit_mission);
         break;
 
       case NEED_FORMATION:
-        text += FormationName.at(Data.Formation);
+        text += FormationName.at(argument_.formation);
         break;
 
       case NEED_NUMBER:
-        absl::StrAppendFormat(&text, "%d", Data.Value);
+        absl::StrAppendFormat(&text, "%d", argument_.value);
         break;
 
       case NEED_HEX_NUMBER:
         absl::StrAppendFormat(&text, "%x",
-                              static_cast<unsigned int>(Data.Value));
+                              static_cast<unsigned int>(argument_.value));
         break;
 
       case NEED_QUARRY:
-        text += QuarryName.at(Data.Quarry);
+        text += QuarryName.at(argument_.quarry);
         break;
 
       case NEED_WAYPOINT:
-        text += WaypointLetters(Data.Value);
+        text += WaypointLetters(argument_.value);
         break;
       case NeedType::NEED_NONE:
       case NeedType::NEED_THEME:
@@ -474,10 +474,11 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
     return;
   }
   for (int index = 0; index < MissionCount; index++) {
-    base::At(MissionList, index).Mission = static_cast<TeamMissionType>(
-        base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
-    base::At(MissionList, index).Data.Value =
-        base::ParseIntegerOr<int>(tokens.Next(",:"), 0);
+    base::At(MissionList, index)
+        .set_mission(static_cast<TeamMissionType>(
+            base::ParseIntegerOr<int>(tokens.Next(",:"), 0)));
+    base::At(MissionList, index)
+        .set_value(base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
   }
 
   if (format < 2) {
@@ -518,8 +519,8 @@ std::string TeamType::ToIniEntry() const {
   // The script: a count, then Mission:Argument for each, both as numbers.
   absl::StrAppendFormat(&entry, ",%d", MissionCount);
   for (int i = 0; i < MissionCount; i++) {
-    absl::StrAppendFormat(&entry, ",%d:%d", base::At(MissionList, i).Mission,
-                          base::At(MissionList, i).Data.Value);
+    absl::StrAppendFormat(&entry, ",%d:%d", base::At(MissionList, i).mission(),
+                          base::At(MissionList, i).value());
   }
   return entry;
 }
