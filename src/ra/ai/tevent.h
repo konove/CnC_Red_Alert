@@ -154,7 +154,7 @@ struct TEventClass {
   **	union because Watcom compiler won't allow a class that has a
   **	constructor to be declared in a union.
   */
-  TeamTypeClass* Team = nullptr;
+  TeamType* Team = nullptr;
 
   union {
     StructType Structure;   // Used for structure type checking.

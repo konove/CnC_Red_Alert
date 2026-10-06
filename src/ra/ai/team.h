@@ -68,7 +68,7 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  TeamTypeClass* Class = nullptr;
+  TeamType* Class = nullptr;
 
   /*
   **	This specifies the owner of this team.
@@ -204,7 +204,7 @@ class TeamClass : public AbstractClass {
   TriggerClass* Trigger = nullptr;
 
   //------------------------------------------------------------
-  explicit TeamClass(TeamTypeClass* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  explicit TeamClass(TeamType* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
                      HouseClass* owner ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
@@ -285,7 +285,7 @@ class TeamClass : public AbstractClass {
   */
   FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamTypeClass::kMaxTeamClasscount] = {};
+  unsigned char Quantity[TeamType::kMaxTeamClasscount] = {};
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TeamClass() = default;

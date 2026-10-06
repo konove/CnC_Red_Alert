@@ -775,7 +775,7 @@ class HouseClass {
   [[nodiscard]] Fixed Power_Fraction() const;
   [[nodiscard]] Fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
-  TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  TeamType* Suggested_New_Team(bool alertcheck = false);
   // Adds `threat` to `region` and a share of it to the eight regions around
   // it; negative when an object leaves.
   void Adjust_Threat(int region, int threat);

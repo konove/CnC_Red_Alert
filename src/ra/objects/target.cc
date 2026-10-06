@@ -301,7 +301,7 @@ TeamClass* Target::AsTeam() const {
   return kind() == RTTI_TEAM ? TheObjectHeaps().team().Slot(value()) : nullptr;
 }
 
-TeamTypeClass* Target::AsTeamType() const {
+TeamType* Target::AsTeamType() const {
   return kind() == RTTI_TEAMTYPE ? TheObjectHeaps().team_type().Slot(value())
                                  : nullptr;
 }

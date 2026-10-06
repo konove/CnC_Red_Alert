@@ -22,7 +22,7 @@ class BulletClass;
 class InfantryClass;
 class ObjectClass;
 class TeamClass;
-class TeamTypeClass;
+class TeamType;
 class TechnoClass;
 class TechnoTypeClass;
 class TriggerClass;
@@ -180,7 +180,7 @@ class Target {
   [[nodiscard]] BulletClass* AsBullet() const;
   [[nodiscard]] InfantryClass* AsInfantry() const;
   [[nodiscard]] TeamClass* AsTeam() const;
-  [[nodiscard]] TeamTypeClass* AsTeamType() const;
+  [[nodiscard]] TeamType* AsTeamType() const;
   [[nodiscard]] TriggerClass* AsTrigger() const;
   [[nodiscard]] TriggerType* AsTriggerType() const;
   [[nodiscard]] UnitClass* AsUnit() const;

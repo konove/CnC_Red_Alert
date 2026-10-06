@@ -95,13 +95,12 @@ using enum engine::window::KeyNumber;
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Handle_Teams(const char* caption) {
-
   /*
   **	Team dialog processing loop:
   **	- Invoke the team selection dialog. If a team's selected, break
   **	  & return
   **	- If user wants to edit the current team, do so
-  **	- If user wants to create new team, new a TeamTypeClass & edit it
+  **	- If user wants to create new team, new a TeamType & edit it
   **	- If user wants to delete team, delete the current team
   **	- Keep looping until 'OK'
   */
@@ -135,7 +134,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
         /*
         **	Create a new team
         */
-        CurTeam = base::NewPooled<TeamTypeClass>();
+        CurTeam = base::NewPooled<TeamType>();
         if (CurTeam) {
           /*
           **	delete it if user cancels
@@ -260,10 +259,10 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   */
   game::GadgetClass* commands = nullptr;  // the button list
 
-  TListClass<TeamTypeClass*> teamlist(kTeamList, kListX, kListY, kListW, kListH,
-                                      FontType::kEditor, TPF_NOSHADOW,
-                                      MixArchive::RetrieveData("EBTN-UP.SHP"),
-                                      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  TListClass<TeamType*> teamlist(kTeamList, kListX, kListY, kListW, kListH,
+                                 FontType::kEditor, TPF_NOSHADOW,
+                                 MixArchive::RetrieveData("EBTN-UP.SHP"),
+                                 MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   TextButtonClass editbtn(kButtonEdit, "Edit", kEButtonFont, kEButtonFlags,
                           kEditX, kEditY, kEditW);
@@ -286,7 +285,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     teamlist.Add_Item(TheObjectHeaps().team_type().ActiveAt(index));
   }
 
-  teamlist.Sort([](const TeamTypeClass* left, const TeamTypeClass* right) {
+  teamlist.Sort([](const TeamType* left, const TeamType* right) {
     return std::ranges::lexicographical_compare(
         std::string_view(left->Name()), std::string_view(right->Name()), {},
         absl::ascii_tolower, absl::ascii_tolower);
@@ -795,7 +794,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamTypeClass::kMaxTeamClasscount) {
+          if (numclasses == TeamType::kMaxTeamClasscount) {
             continue;
           }
           numclasses++;

@@ -77,7 +77,7 @@ class ObjectHeaps {
   game::ObjectHeap<TeamClass>& team() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_;
   }
-  game::ObjectHeap<TeamTypeClass>& team_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TeamType>& team_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_type_;
   }
   game::ObjectHeap<TemplateClass>& tmplate() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -116,7 +116,7 @@ class ObjectHeaps {
   game::ObjectHeap<OverlayClass> overlay_;
   game::ObjectHeap<SmudgeClass> smudge_;
   game::ObjectHeap<TeamClass> team_;
-  game::ObjectHeap<TeamTypeClass> team_type_;
+  game::ObjectHeap<TeamType> team_type_;
   game::ObjectHeap<TemplateClass> tmplate_;
   game::ObjectHeap<TerrainClass> terrain_;
   game::ObjectHeap<TriggerClass> trigger_;

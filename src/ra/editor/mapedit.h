@@ -318,7 +318,7 @@ class MapEditClass : public MouseClass {
   /*
   **	The "current" team type for editing & associating with a trigger
   */
-  TeamTypeClass* CurTeam;  // current team
+  TeamType* CurTeam;  // current team
 
   /*
   **	Bitfields for flags & such

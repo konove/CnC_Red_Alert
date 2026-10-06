@@ -90,9 +90,9 @@ using enum engine::window::KeyNumber;
 // Parses a hex number for the editor's cell-number field.
 static int atoh(std::string_view str);
 
-void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                            int width, int height, bool selected, FontType font,
-                            TextPrintType flags) const {
+void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
+                       int height, bool selected, FontType font,
+                       TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     // Pixel columns of Description()'s fields after the name: house, origin,
@@ -120,7 +120,7 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-base::EnumArray<TeamMissionType, const char*> TeamTypeClass::TMissions = {
+base::EnumArray<TeamMissionType, const char*> TeamType::TMissions = {
     "Attack...",
     "Attack Waypoint...",
     "Change Formation to...",
@@ -139,16 +139,16 @@ base::EnumArray<TeamMissionType, const char*> TeamTypeClass::TMissions = {
     "Spy on bldg @ waypt...",
     "Patrol to waypoint..."};
 
-TeamTypeClass::TeamTypeClass()
+TeamType::TeamType()
     : AbstractTypeClass(RTTI_TEAMTYPE,
                         TheObjectHeaps().team_type().SlotIndexOf(this),
                         TXT_NONE, "") {}
 
-TeamTypeClass::~TeamTypeClass() = default;
+TeamType::~TeamType() = default;
 
-void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
+void TeamType::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
-TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
+TeamType* TeamType::As_Pointer(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
@@ -160,33 +160,33 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
   return nullptr;
 }
 
-const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+const char* TeamType::Name_From_Mission(TeamMissionType order) {
   return TMissions.at(order);
 }
 
-void* TeamTypeClass::operator new(std::size_t /*unused*/) {
+void* TeamType::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
-    static_cast<TeamTypeClass*>(ptr)->IsActive = true;
+    static_cast<TeamType*>(ptr)->IsActive = true;
   }
   return ptr;
 }
 
-void TeamTypeClass::operator delete(void* ptr) {
+void TeamType::operator delete(void* ptr) {
   if (ptr) {
-    static_cast<TeamTypeClass*>(ptr)->IsActive = false;
+    static_cast<TeamType*>(ptr)->IsActive = false;
   }
-  TheObjectHeaps().team_type().Free(static_cast<TeamTypeClass*>(ptr));
+  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
-TeamClass* TeamTypeClass::Create_One_Of() {
+TeamClass* TeamType::Create_One_Of() {
   if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
 }
 
-void TeamTypeClass::Destroy_All_Of() const {
+void TeamType::Destroy_All_Of() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
@@ -199,15 +199,15 @@ void TeamTypeClass::Destroy_All_Of() const {
   }
 }
 
-TeamTypeClass* TeamTypeClass::Suggested_New_Team(
-    HouseClass* house, uint64_t /*unused*/, uint64_t /*unused*/,
-    uint64_t /*unused*/, uint64_t /*unused*/, bool alerted) {
+TeamType* TeamType::Suggested_New_Team(HouseClass* house, uint64_t /*unused*/,
+                                       uint64_t /*unused*/, uint64_t /*unused*/,
+                                       uint64_t /*unused*/, bool alerted) {
   // Only the first 20 candidates in heap order take part in the draw.
-  TeamTypeClass* choices[20];
+  TeamType* choices[20];
   int choicecount = 0;
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamTypeClass* ttype = TheObjectHeaps().team_type().ActiveAt(index);
+    TeamType* ttype = TheObjectHeaps().team_type().ActiveAt(index);
 
     DCHECK(ttype != nullptr);
 
@@ -234,7 +234,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   return nullptr;
 }
 
-TeamTypeClass* TeamTypeClass::From_Name(const std::string_view name) {
+TeamType* TeamType::From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
@@ -285,9 +285,9 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
   return NEED_NONE;
 }
 
-void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
-                               int width, int height, bool selected,
-                               FontType font, TextPrintType flags) const {
+void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
+                          int height, bool selected, FontType font,
+                          TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   // Pixel columns of the mission's name and of a second field
   // Description() never writes.
@@ -313,7 +313,7 @@ void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
   }
 }
 
-bool TeamTypeClass::Edit() {
+bool TeamType::Edit() {
   // Dialog and button dimensions, in pixels of the editor's 640x400 screen.
   constexpr int kDDialogW = 400;
   constexpr int kDDialogH = 250;
@@ -523,7 +523,7 @@ bool TeamTypeClass::Edit() {
                              MixArchive::RetrieveData("EBTN-UP.SHP"),
                              MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const TeamMissionType tm : magic_enum::enum_values<TeamMissionType>()) {
-    missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(tm));
+    missionlist1.Add_Item(TeamType::Name_From_Mission(tm));
   }
   missionlist1.Set_Selected_Index(0);
   missionlist1.Add_Tail(*commands);
@@ -575,14 +575,14 @@ bool TeamTypeClass::Edit() {
 
   // Owns the missions missionlist2 shows: copies of the team type's own, and
   // the ones the dialog adds.
-  std::vector<std::unique_ptr<TeamMissionClass>> missions;
-  TListClass<TeamMissionClass*> missionlist2(
+  std::vector<std::unique_ptr<TeamMission>> missions;
+  TListClass<TeamMission*> missionlist2(
       kButtonMission2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
       FontType::kEditor, TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
     missionlist2.Add_Item(missions
-                              .emplace_back(std::make_unique<TeamMissionClass>(
+                              .emplace_back(std::make_unique<TeamMission>(
                                   base::At(MissionList, index)))
                               .get());
   }
@@ -813,7 +813,7 @@ bool TeamTypeClass::Edit() {
       case engine::window::ButtonKey(kButtonInsert):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm =
-              missions.emplace_back(std::make_unique<TeamMissionClass>()).get();
+              missions.emplace_back(std::make_unique<TeamMission>()).get();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -878,7 +878,7 @@ bool TeamTypeClass::Edit() {
       case engine::window::ButtonKey(kButtonAdd):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm =
-              missions.emplace_back(std::make_unique<TeamMissionClass>()).get();
+              missions.emplace_back(std::make_unique<TeamMission>()).get();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -942,7 +942,7 @@ bool TeamTypeClass::Edit() {
       // Overwrite the selected line of the script with the work mission.
       case engine::window::ButtonKey(kButtonReplace):
         if (missionlist2.Count()) {
-          TeamMissionClass* tm = missionlist2.Current_Item();
+          TeamMission* tm = missionlist2.Current_Item();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1006,7 +1006,7 @@ bool TeamTypeClass::Edit() {
       // Delete the currently selected mission.
       case engine::window::ButtonKey(kButtonDelete):
         if (missionlist2.Count()) {
-          const TeamMissionClass* tm = missionlist2.Current_Item();
+          const TeamMission* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
           std::erase_if(missions,
                         [tm](const auto& owned) { return owned.get() == tm; });
@@ -1129,12 +1129,12 @@ int atoh(const std::string_view str) {
   return retval;
 }
 
-std::string TeamTypeClass::Member_Description() const {
+std::string TeamType::Member_Description() const {
   std::string text;
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // "TYPE:count" for each kind of member, comma separated.
     for (int index = 0; index < ClassCount; index++) {
-      const TeamMemberClass& member = base::At(Members, index);
+      const TeamMember& member = base::At(Members, index);
       absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
                             member.Class->IniName, member.Quantity);
     }
@@ -1150,7 +1150,7 @@ std::string TeamTypeClass::Member_Description() const {
   return text;
 }
 
-std::string TeamTypeClass::Description() const {
+std::string TeamType::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // The origin waypoint in the editor's letters: "A" to "Z", then "AA" on.
     char loc[3] = {};
@@ -1173,10 +1173,10 @@ std::string TeamTypeClass::Description() const {
   return "";
 }
 
-std::string TeamMissionClass::Description(int index) const {
+std::string TeamMission::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    std::string text = absl::StrFormat(
-        "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
+    std::string text =
+        absl::StrFormat("%d\t%s", index, TeamType::Name_From_Mission(Mission));
 
     switch (TeamMission_Needs(Mission)) {
       case NEED_MISSION:
@@ -1232,23 +1232,23 @@ std::string TeamMissionClass::Description(int index) const {
   return "";
 }
 
-void TeamTypeClass::Detach(Target target, bool /*unused*/) {
+void TeamType::Detach(Target target, bool /*unused*/) {
   if (target.kind() == RTTI_TRIGGERTYPE && Trigger != nullptr &&
       Trigger == target.AsTriggerType()) {
     Trigger = nullptr;
   }
 }
 
-void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
+void TeamType::Read_INI(engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    auto* team = base::NewPooled<TeamTypeClass>();
+    auto* team = base::NewPooled<TeamType>();
     if (team != nullptr) {
       team->Fill_In(entry, value);
     }
   }
 }
 
-void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
+void TeamType::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   Set_Name(name);
@@ -1377,18 +1377,18 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   }
 }
 
-void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
+void TeamType::Write_INI(engine::file::IniFile& ini) {
   // TODO: the same section is cleared twice.
   ini.Clear("TeamTypes");
   ini.Clear(INI_Name());
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+    TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
     ini.PutString(INI_Name(), team->IniName, team->Build_INI_Entry());
   }
 }
 
-std::string TeamTypeClass::Build_INI_Entry() const {
+std::string TeamType::Build_INI_Entry() const {
   uint32_t code = 0;
   code |= IsRoundAbout ? 0x0001U : 0U;
   code |= IsSuicide ? 0x0002U : 0U;

@@ -267,7 +267,7 @@ class TriggerActionGameTest : public TriggerActionTest {
     ThePlayer() = house_;
     // The heaps have to be sized before anything is allocated from them.
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
-    team_type_ = base::NewPooled<TeamTypeClass>();
+    team_type_ = base::NewPooled<TeamType>();
     team_type_->Set_Name("tanks");
     team_type_->House = HOUSE_USSR;
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
@@ -284,7 +284,7 @@ class TriggerActionGameTest : public TriggerActionTest {
   }
 
   HouseClass* house_ = nullptr;
-  TeamTypeClass* team_type_ = nullptr;
+  TeamType* team_type_ = nullptr;
   TriggerType* trigger_type_ = nullptr;
 };
 
@@ -358,7 +358,7 @@ TEST_F(TriggerActionGameTest, DetachLeavesAnotherTeamOrTriggerTypeAlone) {
       MakeTriggerAction({.type = TriggerActionType::kForceTrigger,
                          .trigger_type = trigger_type_});
 
-  team_action->Detach(base::NewPooled<TeamTypeClass>()->As_Target());
+  team_action->Detach(base::NewPooled<TeamType>()->As_Target());
   trigger_action->Detach(base::NewPooled<TriggerType>()->As_Target());
 
   EXPECT_EQ(team_action->ToRecord().team_type, team_type_);

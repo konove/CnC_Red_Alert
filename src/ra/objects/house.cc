@@ -860,7 +860,7 @@ void HouseClass::AI() {
     */
     const int maxteams = RandomPick(2, ((Control.TechLevel - 1) / 3) + 1);
     for (int index = 0; index < maxteams; index++) {
-      TeamTypeClass* ttype = Suggested_New_Team(true);
+      TeamType* ttype = Suggested_New_Team(true);
       if (ttype != nullptr) {
         TheWorld().scenario_init()++;
         ttype->Create_One_Of();
@@ -919,7 +919,7 @@ void HouseClass::AI() {
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
   if (!IsAlerted && TeamTime.IsFinished()) {
-    TeamTypeClass* ttype = Suggested_New_Team(false);
+    TeamType* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
     }
@@ -2157,11 +2157,11 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
+TeamType* HouseClass::Suggested_New_Team(bool alertcheck) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  return TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
-                                           alertcheck);
+  return TeamType::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
+                                      alertcheck);
 }
 
 /***********************************************************************************************
@@ -2495,9 +2495,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
 
     case SPC_PARA_INFANTRY:
       if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
-        TeamTypeClass* ttype = TeamTypeClass::As_Pointer("@PINF");
+        TeamType* ttype = TeamType::As_Pointer("@PINF");
         if (ttype == nullptr) {
-          ttype = base::NewPooled<TeamTypeClass>();
+          ttype = base::NewPooled<TeamType>();
           if (ttype != nullptr) {
             base::SafeCopy(ttype->IniName, "@PINF");
             ttype->IsTransient = true;
@@ -5497,7 +5497,7 @@ int HouseClass::AI_Unit() {
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
       const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr != nullptr) {
-        const TeamTypeClass* team = tptr->Class;
+        const TeamType* team = tptr->Class;
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
               !tptr->JustAltered)) &&
@@ -5519,7 +5519,7 @@ int HouseClass::AI_Unit() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+      const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
       if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
@@ -5643,7 +5643,7 @@ int HouseClass::AI_Vessel() {
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
       const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr) {
-        const TeamTypeClass* team = tptr->Class;
+        const TeamType* team = tptr->Class;
 
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
@@ -5667,7 +5667,7 @@ int HouseClass::AI_Vessel() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+      const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
       if (team && (team->House == Class->House && team->IsPrebuilt &&
                    (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
@@ -5769,7 +5769,7 @@ int HouseClass::AI_Infantry() {
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
       const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr != nullptr) {
-        const TeamTypeClass* team = tptr->Class;
+        const TeamType* team = tptr->Class;
 
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
@@ -5795,7 +5795,7 @@ int HouseClass::AI_Infantry() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+      const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
       if ((team != nullptr) &&
           (team->House == Class->House && team->IsPrebuilt &&
            (!team->IsAutocreate || IsAlerted))) {

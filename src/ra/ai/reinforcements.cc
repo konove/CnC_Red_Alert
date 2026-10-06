@@ -113,7 +113,7 @@ static bool HouseKeepsAircraft(const AircraftClass* aircraft) {
 // head of a list linked through `Next`: the transports, with every other
 // member loaded into the first one, or the members themselves when the type
 // has no transport. Returns nullptr when no member could be created.
-static FootClass* CreateGroup(TeamTypeClass* team_type) {
+static FootClass* CreateGroup(TeamType* team_type) {
   DCHECK(team_type != nullptr);
 
   auto* team = base::NewPooled<TeamClass>(team_type);
@@ -137,7 +137,7 @@ static FootClass* CreateGroup(TeamTypeClass* team_type) {
   HouseClass* const house = HouseClass::As_Pointer(team_type->House);
   for (int member_index = 0; member_index < team_type->ClassCount;
        member_index++) {
-    const TeamMemberClass& entry = base::At(team_type->Members, member_index);
+    const TeamMember& entry = base::At(team_type->Members, member_index);
     const TechnoTypeClass* member_type = entry.Class;
 
     for (int copy = 0; copy < entry.Quantity; copy++) {
@@ -266,7 +266,7 @@ static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
   return Cell::None();
 }
 
-bool DeliverReinforcements(TeamTypeClass* team_type) {
+bool DeliverReinforcements(TeamType* team_type) {
   DCHECK(team_type != nullptr);
 
   // A type with no members has nothing to bring on.

@@ -31,10 +31,10 @@ class TeamTypeTest : public UiFixture {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     TheWorld().new_ini_format() = 3;
-    team_type_ = base::NewPooled<TeamTypeClass>();
+    team_type_ = base::NewPooled<TeamType>();
   }
 
-  TeamTypeClass* team_type_ = nullptr;
+  TeamType* team_type_ = nullptr;
 };
 
 // The dialog is 400 by 250 in the screen's top left corner. A point inside

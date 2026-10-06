@@ -98,14 +98,14 @@ template void Carryover::Serialize(ArchiveWriter&);
 template void Carryover::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TeamMemberClass::Serialize(Archive& ar) {
+void TeamMember::Serialize(Archive& ar) {
   ar(Quantity, TechnoTypePtr(Class));
 }
-template void TeamMemberClass::Serialize(ArchiveWriter&);
-template void TeamMemberClass::Serialize(ArchiveReader&);
+template void TeamMember::Serialize(ArchiveWriter&);
+template void TeamMember::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TeamTypeClass::Serialize(Archive& ar) {
+void TeamType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
   bool is_active = IsActive;
   bool is_round_about = IsRoundAbout;
@@ -126,8 +126,8 @@ void TeamTypeClass::Serialize(Archive& ar) {
   IsReinforcable = is_reinforcable;
   IsTransient = is_transient;
 }
-template void TeamTypeClass::Serialize(ArchiveWriter&);
-template void TeamTypeClass::Serialize(ArchiveReader&);
+template void TeamType::Serialize(ArchiveWriter&);
+template void TeamType::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TeamClass::Serialize(Archive& ar) {

@@ -767,7 +767,7 @@ void Clear_Scenario() {
 
   HouseClass::Init();
   ObjectClass::Init();
-  TeamTypeClass::Init();
+  TeamType::Init();
   TeamClass::Init();
   TriggerClass::Init();
   TriggerType::DestroyAll();
@@ -1857,7 +1857,7 @@ void DropUnfilledTypeReferences() {
   auto& team_types = TheObjectHeaps().team_type();
   auto& trigger_types = TheObjectHeaps().trigger_type();
   for (int i = 0; i < team_types.Count(); i++) {
-    TeamTypeClass& team_type = *team_types.ActiveAt(i);
+    TeamType& team_type = *team_types.ActiveAt(i);
     DropIfUnfilled(team_type.Trigger, trigger_types, team_type.Name(),
                    "trigger");
   }
@@ -2142,7 +2142,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in the team-type data. The team types must be created before any
   **	triggers can be created.
   */
-  TeamTypeClass::Read_INI(ini);
+  TeamType::Read_INI(ini);
   ServiceRealTime();
 
   /*
@@ -2378,7 +2378,7 @@ void Write_Scenario_INI(const char* fname) {
     ini.PutInt(BASIC, "Percent", TheScenario().Percent);
 
     HouseClass::Write_INI(ini);
-    TeamTypeClass::Write_INI(ini);
+    TeamType::Write_INI(ini);
     TriggerType::WriteIni(ini);
     TheMap().Write_INI(ini);
     TerrainClass::Write_INI(ini);

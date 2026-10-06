@@ -50,7 +50,7 @@ template class game::ObjectHeap<ra::HouseTypeClass>;
 template class game::ObjectHeap<ra::InfantryTypeClass>;
 template class game::ObjectHeap<ra::OverlayTypeClass>;
 template class game::ObjectHeap<ra::SmudgeTypeClass>;
-template class game::ObjectHeap<ra::TeamTypeClass>;
+template class game::ObjectHeap<ra::TeamType>;
 template class game::ObjectHeap<ra::TemplateTypeClass>;
 template class game::ObjectHeap<ra::TerrainTypeClass>;
 template class game::ObjectHeap<ra::TriggerType>;

@@ -69,7 +69,7 @@ enum class TeamMissionType {
 };
 
 // One line of a team type's script: a mission and its argument.
-class TeamMissionClass {
+class TeamMission {
  public:
   // Saved-game support. The union travels through its widest member.
   template <class Archive>
@@ -99,7 +99,7 @@ class TeamMissionClass {
 };
 
 // One kind of member a team type asks for, and how many of it.
-class TeamMemberClass {
+class TeamMember {
  public:
   int Quantity = 0;
   // An infantry, unit, aircraft or vessel type; nullptr only in an unused
@@ -117,11 +117,11 @@ class TeamMemberClass {
 // scenario starts.
 //
 // Example:
-//   TeamTypeClass* type = TeamTypeClass::From_Name("atk1");
+//   TeamType* type = TeamType::From_Name("atk1");
 //   if (type != nullptr) {
 //     type->Create_One_Of();
 //   }
-class TeamTypeClass : public AbstractTypeClass {
+class TeamType : public AbstractTypeClass {
  public:
   // The most kinds of member, and the most script lines, a team type holds.
   // Both size arrays that are saved.
@@ -130,12 +130,12 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // Takes its ID from the heap slot it is constructed in, so it must be
   // created through operator new.
-  TeamTypeClass();
-  ~TeamTypeClass() override;
-  TeamTypeClass(const TeamTypeClass&) = delete;
-  TeamTypeClass& operator=(const TeamTypeClass&) = delete;
-  TeamTypeClass(TeamTypeClass&&) = delete;
-  TeamTypeClass& operator=(TeamTypeClass&&) = delete;
+  TeamType();
+  ~TeamType() override;
+  TeamType(const TeamType&) = delete;
+  TeamType& operator=(const TeamType&) = delete;
+  TeamType(TeamType&&) = delete;
+  TeamType& operator=(TeamType&&) = delete;
 
   // Allocates from the team type heap. Returns nullptr when the heap is full.
   void* operator new(std::size_t /*unused*/);
@@ -175,7 +175,7 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty. Same as From_Name().
-  static TeamTypeClass* As_Pointer(std::string_view name);
+  static TeamType* As_Pointer(std::string_view name);
 
   // Creates a team of this type for its house. Returns nullptr when
   // MaxAllowed teams of the type already exist (a limit scenario setup
@@ -204,14 +204,12 @@ class TeamTypeClass : public AbstractTypeClass {
   // An alerted house picks only among its autocreate team types, any other
   // house only among the rest. Returns nullptr when there is no candidate. The
   // four type masks are unused.
-  static TeamTypeClass* Suggested_New_Team(HouseClass* house,
-                                                 uint64_t atypes,
-                                                 uint64_t utypes,
-                                                 uint64_t itypes,
-                                                 uint64_t vtypes, bool alerted);
+  static TeamType* Suggested_New_Team(HouseClass* house, uint64_t atypes,
+                                      uint64_t utypes, uint64_t itypes,
+                                      uint64_t vtypes, bool alerted);
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty.
-  static TeamTypeClass* From_Name(std::string_view name);
+  static TeamType* From_Name(std::string_view name);
   // Runs the scenario editor's team type dialog on this team type and blocks
   // until the player closes it. Returns true if it was confirmed with OK, and
   // false if it was cancelled, which leaves the team type as it was apart from
@@ -290,25 +288,25 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // The script: the first MissionCount entries of MissionList.
   int MissionCount = 0;
-  TeamMissionClass MissionList[kMaxTeamMissions]{};
+  TeamMission MissionList[kMaxTeamMissions]{};
 
   // The members wanted: the first ClassCount entries of Members.
   int ClassCount = 0;
-  TeamMemberClass Members[kMaxTeamClasscount];
+  TeamMember Members[kMaxTeamClasscount];
 
   // The scenario editor's name for each team mission.
   static base::EnumArray<TeamMissionType, const char*> TMissions;
 };
 
 // Returns the kind of argument a team mission takes, NEED_NONE for a mission
-// that takes none; it says which member of TeamMissionClass::Data is in use
+// that takes none; it says which member of TeamMission::Data is in use
 // and which control the team editor offers.
 NeedType TeamMission_Needs(TeamMissionType tmtype);
 
-extern template void TeamMemberClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TeamMemberClass::Serialize<ArchiveReader>(ArchiveReader&);
-extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TeamMember::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamMember::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TeamType::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamType::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
 

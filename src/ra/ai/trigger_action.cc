@@ -462,20 +462,20 @@ class TeamAction : public TriggerAction {
   }
 
  protected:
-  explicit TeamAction(TeamTypeClass* team_type ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit TeamAction(TeamType* team_type ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : team_type_(team_type) {}
 
-  [[nodiscard]] TeamTypeClass* team_type() const { return team_type_; }
+  [[nodiscard]] TeamType* team_type() const { return team_type_; }
 
  private:
-  TeamTypeClass* team_type_;  // nullptr for none.
+  TeamType* team_type_;  // nullptr for none.
 };
 
 // Creates a team of the type. Counting as scenario setup makes Create_One_Of()
 // ignore the type's limit on how many teams may exist.
 class CreateTeamAction final : public TeamAction {
  public:
-  explicit CreateTeamAction(TeamTypeClass* team_type) : TeamAction(team_type) {}
+  explicit CreateTeamAction(TeamType* team_type) : TeamAction(team_type) {}
 
   [[nodiscard]] TriggerActionType type() const override {
     return TriggerActionType::kCreateTeam;
@@ -493,8 +493,7 @@ class CreateTeamAction final : public TeamAction {
 // Destroys every team of the type.
 class DestroyTeamAction final : public TeamAction {
  public:
-  explicit DestroyTeamAction(TeamTypeClass* team_type)
-      : TeamAction(team_type) {}
+  explicit DestroyTeamAction(TeamType* team_type) : TeamAction(team_type) {}
 
   [[nodiscard]] TriggerActionType type() const override {
     return TriggerActionType::kDestroyTeam;
@@ -511,8 +510,7 @@ class DestroyTeamAction final : public TeamAction {
 // names. Fails when none could be created, so the trigger tries again.
 class ReinforcementsAction final : public TeamAction {
  public:
-  explicit ReinforcementsAction(TeamTypeClass* team_type)
-      : TeamAction(team_type) {}
+  explicit ReinforcementsAction(TeamType* team_type) : TeamAction(team_type) {}
 
   [[nodiscard]] TriggerActionType type() const override {
     return TriggerActionType::kReinforcements;
@@ -1012,7 +1010,7 @@ TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
         base::ParseIntegerOr<int>(tokens.Next(), 0), "trigger");
   } else {
     // The shipped scenarios: the team and the trigger are given by name.
-    record.team_type = TeamTypeClass::From_Name(tokens.Next());
+    record.team_type = TeamType::From_Name(tokens.Next());
     if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
       DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
                     << " names a team that does not exist";

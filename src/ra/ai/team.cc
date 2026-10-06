@@ -324,7 +324,7 @@ TeamClass::~TeamClass() {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
+TeamClass::TeamClass(TeamType* type, HouseClass* owner)
     : AbstractClass(RTTI_TEAM, TheObjectHeaps().team().SlotIndexOf(this)),
       Class(type),
       House(owner) {
@@ -682,7 +682,7 @@ void TeamClass::AI() {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      const TeamMissionClass* mission =
+      const TeamMission* mission =
           base::Suffix(Class->MissionList, CurrentMission).data();
 
       TimeOut.Set(mission->Data.Value * (kTicksPerMinute / 10));
@@ -765,7 +765,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    const TeamMissionClass* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
     //		FootClass	* member = Member;
 
@@ -1707,7 +1707,7 @@ void TeamClass::Coordinate_Attack() {
           tt != TEMPLATE_BRIDGE_2A && tt != TEMPLATE_BRIDGE_2B &&
           tt != TEMPLATE_BRIDGE_3A && tt != TEMPLATE_BRIDGE_3B) {
         FootClass* unit = Member;
-        const TeamMissionClass* mission =
+        const TeamMission* mission =
             base::Suffix(Class->MissionList, CurrentMission).data();
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
@@ -1723,7 +1723,7 @@ void TeamClass::Coordinate_Attack() {
     IsNextMission = true;
 
   } else {
-    const TeamMissionClass* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
 
     FootClass* unit = Member;
@@ -2413,7 +2413,7 @@ bool TeamClass::Is_Leaving_Map() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
   if (IsMoving && CurrentMission >= 0) {
-    const TeamMissionClass* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
 
     if (mission->Mission == TeamMissionType::kMove &&
@@ -2507,7 +2507,7 @@ void TeamClass::Scan_Limit() {
  *=============================================================================================*/
 int TeamClass::TMission_Formation() {
   FootClass* member = Member;
-  const TeamMissionClass* mission =
+  const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
   Formation = mission->Data.Formation;
   const int group = ID + 10;
@@ -2716,7 +2716,7 @@ int TeamClass::TMission_Formation() {
  *=============================================================================================*/
 int TeamClass::TMission_Attack() {
   if (!MissionTarget && Member != nullptr) {
-    const TeamMissionClass* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
 
     /*
@@ -2879,7 +2879,7 @@ int TeamClass::TMission_Follow() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Loop() {
-  const TeamMissionClass* mission =
+  const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
   CurrentMission = mission->Data.Value - 1;
   IsNextMission = true;
@@ -2931,7 +2931,7 @@ int TeamClass::TMission_Invulnerable() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Set_Global() {
-  const TeamMissionClass* mission =
+  const TeamMission* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
   TheScenario().Set_Global_To(mission->Data.Value, true);
   IsNextMission = true;
@@ -2962,7 +2962,7 @@ int TeamClass::TMission_Patrol() {
   **	cleared (probably because the object has been destroyed).
   */
   if (!Target) {
-    const TeamMissionClass* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
     if (static_cast<unsigned>(mission->Data.Value) <
         ScenarioClass::kWaypointCount) {

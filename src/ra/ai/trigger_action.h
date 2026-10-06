@@ -38,7 +38,7 @@ class ArchiveWriter;
 namespace ra {
 
 class ObjectClass;
-class TeamTypeClass;
+class TeamType;
 class TriggerType;
 
 // What a trigger action does. Scenario INI files and saved games store the
@@ -115,7 +115,7 @@ struct TriggerActionContext {
 // `type` uses.
 struct TriggerActionRecord {
   TriggerActionType type = TriggerActionType::kNone;
-  TeamTypeClass* team_type = nullptr;   // nullptr for none.
+  TeamType* team_type = nullptr;        // nullptr for none.
   TriggerType* trigger_type = nullptr;  // nullptr for none.
   // The house, special weapon, movie, sound, theme, speech, quarry, flag,
   // waypoint or number the action takes, as its number; -1 when unset.

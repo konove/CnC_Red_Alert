@@ -52,13 +52,13 @@ class TriggerTypeDialogTest : public UiFixture {
     InfantryTypeClass::Init_Heap();
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
-    team_type_ = base::NewPooled<TeamTypeClass>();
+    team_type_ = base::NewPooled<TeamType>();
     team_type_->Set_Name("tanks");
     trigger_type_ = base::NewPooled<TriggerType>();
     trigger_type_->Set_Name("alrm");
   }
 
-  TeamTypeClass* team_type_ = nullptr;
+  TeamType* team_type_ = nullptr;
   TriggerType* trigger_type_ = nullptr;
 };
 
@@ -191,8 +191,8 @@ struct Contents {
   MultiStyle action_control;
   TEventType event1;
   TEventType event2;
-  const TeamTypeClass* event1_team;
-  const TeamTypeClass* event2_team;
+  const TeamType* event1_team;
+  const TeamType* event2_team;
   int event1_value;
   int event2_value;
   TriggerActionRecord action1;

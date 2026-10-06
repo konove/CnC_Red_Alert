@@ -49,7 +49,7 @@ class TriggerTypeTest : public GameFixture {
   void SetUp() override {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
-    team_type_ = base::NewPooled<TeamTypeClass>();
+    team_type_ = base::NewPooled<TeamType>();
     team_type_->Set_Name("tanks");
     trigger_type_ = base::NewPooled<TriggerType>();
     trigger_type_->Set_Name("alrm");
@@ -70,7 +70,7 @@ class TriggerTypeTest : public GameFixture {
                         marks, "  ");
   }
 
-  TeamTypeClass* team_type_ = nullptr;
+  TeamType* team_type_ = nullptr;
   TriggerType* trigger_type_ = nullptr;
 };
 
@@ -146,7 +146,7 @@ TEST_F(TriggerTypeTest, DetachLeavesAnotherTeamTypeAlone) {
   trigger_type_->event1.Team = team_type_;
   trigger_type_->event2.Team = team_type_;
 
-  trigger_type_->Detach(base::NewPooled<TeamTypeClass>()->As_Target());
+  trigger_type_->Detach(base::NewPooled<TeamType>()->As_Target());
 
   EXPECT_EQ(trigger_type_->event1.Team, team_type_);
   EXPECT_EQ(trigger_type_->event2.Team, team_type_);
@@ -351,7 +351,7 @@ TEST_F(TriggerTypeTest, TheShippedTriggersAreReadBackAsWritten) {
   constexpr int kTeamTypes = 64;
   TheObjectHeaps().team_type().Reset(kTeamTypes);
   for (int index = 0; index < kTeamTypes; index++) {
-    base::NewPooled<TeamTypeClass>();
+    base::NewPooled<TeamType>();
   }
 
   int trigger_count = 0;

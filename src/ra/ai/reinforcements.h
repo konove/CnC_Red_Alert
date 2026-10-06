@@ -10,7 +10,7 @@
 namespace ra {
 
 class HouseClass;
-class TeamTypeClass;
+class TeamType;
 
 // Creates a team of type `team_type` and brings it into play, announcing it
 // when it belongs to the player's house. The members follow the team's
@@ -26,7 +26,7 @@ class TeamTypeClass;
 // object limit), or when none of the infantry could leave the building.
 // Members that find no room at the map edge, or that eight edge cells in a row
 // fail to take, are dropped and the result is still true.
-bool DeliverReinforcements(TeamTypeClass* team_type);
+bool DeliverReinforcements(TeamType* team_type);
 
 // Launches an air strike: creates up to `count` aircraft of `aircraft_type`
 // for `house` at its map edge (north when it has none), each a loaner that

@@ -208,7 +208,7 @@ class TeamListTest : public UiFixture {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     for (const char* const name : {"zulu", "Alfa", "mike"}) {
-      auto* team_type = base::NewPooled<TeamTypeClass>();
+      auto* team_type = base::NewPooled<TeamType>();
       team_type->Set_Name(name);
       // The list shows each team's house; the team dialog always sets one.
       team_type->House = HOUSE_GREECE;
@@ -222,7 +222,7 @@ class TeamListTest : public UiFixture {
   }
 
   static bool Exists(const char* name) {
-    return TeamTypeClass::From_Name(name) != nullptr;
+    return TeamType::From_Name(name) != nullptr;
   }
 };
 
@@ -263,7 +263,7 @@ TEST_F(TeamListTest, DeleteRemovesTheEntryClicked) {
 
 // A scenario can hold a team with no house; the list shows it all the same.
 TEST_F(TeamListTest, ATeamWithoutAHouseIsListed) {
-  TeamTypeClass::From_Name("Alfa")->House = HOUSE_NONE;
+  TeamType::From_Name("Alfa")->House = HOUSE_NONE;
   player().At(3).Click(kDeleteX, kButtonsY).At(10).Click(kOkX, kButtonsY);
 
   TheMap().Handle_Teams("Teams");
