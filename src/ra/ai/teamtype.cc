@@ -211,7 +211,7 @@ TeamType::TeamType()
 
 TeamType::~TeamType() = default;
 
-void* TeamType::operator new(std::size_t /*unused*/) {
+void* TeamType::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
     static_cast<TeamType*>(ptr)->is_active_ = true;

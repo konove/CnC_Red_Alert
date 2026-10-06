@@ -163,8 +163,10 @@ class TeamType : public AbstractTypeClass {
   TeamType& operator=(TeamType&&) = delete;
   ~TeamType() override;
 
-  // Allocates from the team type heap. Returns nullptr when the heap is full.
-  void* operator new(std::size_t /*unused*/);
+  // Allocates from the team type heap. Returns nullptr when the heap is full;
+  // noexcept is what makes a new-expression test for that instead of
+  // constructing at null.
+  void* operator new(std::size_t /*unused*/) noexcept;
   void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
