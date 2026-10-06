@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names (enums and enumerators included), simplification, moving out what belongs in another file, private data members and the Google declaration order, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /restructure-class, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names (enums and enumerators included), simplification, moving out what belongs in another file, private data members and the Google declaration order, the engine namespace, unit-test coverage, IDE inspections, and the file name and folder - committing each stage, then recording every open item in the TODO list (Not My TODO, .todos/items.json). Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /restructure-class, /migrate-namespaces, /cover-files and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -46,8 +46,8 @@ Each stage makes the next one cheaper or more accurate:
     detection holds and every earlier commit reads under the path reviewers know. Where a file
     belongs is decided by what it holds, and that is only settled once the dead code is gone and the
     stray functions have been moved out.
-11. **Leftovers to `TODO.md`** at the very end, once the ledger has stopped growing and every entry
-    can name the file by its final path.
+11. **Leftovers to the TODO list** at the very end, once the ledger has stopped growing and every
+    item can name the file by its final path.
 
 ## Before starting
 
@@ -164,18 +164,22 @@ that moves with the file is its own commit. A move that step does not make - out
 engine libraries, or a split - goes to **for the user** with what stands in the way, and so to
 stage 11. If the name and the folder already fit, record why and make no commit.
 
-**11. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
-`/add-todo` for wording and section: bugs not fixed (behaviour-changing, out of scope, twin not
-done), **noticed** items not acted on, **misplaced** items not moved, **for the user** decisions,
-design ideas `/simplify` raised but did not apply, lines stage 8 left uncovered and what would make
-them testable, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things
-spotted outside the files' scope. Give each entry what it takes to act without re-reading the run:
-the files and lines, what is wrong or possible, the options with their size, and the run's commit
-range. Before adding, grep `TODO.md` for an entry that already covers it (an existing item may only
-need the new file name or an extra detail); delete entries this run finished (a "move X into its
-namespace" item the namespace stage closed). Run Prettier on `TODO.md` (the pre-commit hook rejects
-it otherwise) and commit it alone, as `c8a9d6c4` did: "Add the <file> modernization's leftovers to
-TODO.md". A run whose ledger ends empty says so in the report and makes no commit.
+**11. Leftovers to the TODO list** - every open item from the ledger, however small, as a Not My
+TODO item (`mcp__clion__todo_create`), following `/add-todo` for the title, details, tags, priority
+and anchor: bugs not fixed (behaviour-changing, out of scope, twin not done), **noticed** items not
+acted on, **misplaced** items not moved, **for the user** decisions, design ideas `/simplify` raised
+but did not apply, lines stage 8 left uncovered and what would make them testable, stages skipped (a
+CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things spotted outside the files' scope.
+One ledger entry is one item, anchored to the lines it means when it is about one place; a **for the
+user** decision is its own item with the `needs-decision` tag, not a bullet inside an item an agent
+could otherwise fix. Give each item what it takes to act without re-reading the run: the files, what
+is wrong or possible, the options with their size, and the run's commit range. Before adding, look
+through `mcp__clion__todo_list` (or grep `.todos/items.json`) for an item that already covers it (an
+existing item may only need the new file name or an extra detail: `mcp__clion__todo_update`); set
+items this run finished to `status: fixed` (a "move X into its namespace" item the namespace stage
+closed) and check that the anchors of the items in the files the run renamed or moved are not
+`lost`. Commit `.todos/items.json` alone: "Add the <file> modernization's leftovers to the TODO
+list". A run whose ledger ends empty says so in the report and makes no commit.
 
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
@@ -252,5 +256,5 @@ and stage 10 names and places the file by it.
 - Coverage of each file before and after stage 8, and the lines still uncovered.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
-- The `TODO.md` commit from stage 11, with its entries in one line each.
+- The TODO list commit from stage 11, with its items (`T-<n>` and title) in one line each.
 - What is still uncommitted, if anything, and why.

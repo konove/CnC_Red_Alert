@@ -291,7 +291,8 @@ Work from the narrowest scope outwards.
    `grep -rnw '<old>'` over the scope must come back empty, or show only the other game's own
    function.
 6. **Everything that mentions the old name in prose:** the header's file comment, tests,
-   `docs/*.md`, `CLAUDE.md` (its Key Files and examples name real functions), `TODO.md`.
+   `docs/*.md`, `CLAUDE.md` (its Key Files and examples name real functions), and the TODO items
+   that name it (grep `.todos/items.json`, fix with `mcp__clion__todo_update`).
 7. **The file rename and move, last** - after the type rename of section 1, since the file is named
    after its type and doing it the other way round means renaming the file twice. A new name and a
    new folder are one `git mv` to the final path, not two. `git mv` the `.h`, the `.cc` and the
@@ -309,9 +310,12 @@ Work from the narrowest scope outwards.
      the file sits in a folder `tools/engine_layout.py` knows.
    - `git grep` the old basename, with and without extension, and fix what names the file:
      `CMakeLists.txt` files (sources are globbed, but tests, `optimize_in_debug()`, per-platform
-     lists and glob exclusions name files), `cmake/`, `.iwyu_mappings`, `CLAUDE.md`, `TODO.md`,
-     living `docs/`, `tools/` and `.claude/commands/`. Leave historical records alone - a baseline
-     or a finished plan's log (`docs/MEMBER_INIT_BASELINE.tsv`) describes the tree as it was.
+     lists and glob exclusions name files), `cmake/`, `.iwyu_mappings`, `CLAUDE.md`, living `docs/`,
+     `tools/`, `.claude/commands/` and the TODO items in `.todos/items.json` (their text through
+     `mcp__clion__todo_update`; an item anchored in the file follows the move by itself only if the
+     IDE sees it, so check with `mcp__clion__todo_list` that none came back `lost`). Leave
+     historical records alone - a baseline or a finished plan's log
+     (`docs/MEMBER_INIT_BASELINE.tsv`) describes the tree as it was.
    - Grep the old folder-qualified path too (`ai/old`), not only the basename: a move with no rename
      leaves the basename everywhere and only the path stale.
    - Do not rename the other game's twin in the same pass; it gets its own. A twin that moves with

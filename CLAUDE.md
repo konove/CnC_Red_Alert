@@ -483,6 +483,17 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 - **Linux/macOS:** Primary platforms. Requires `libsdl2-dev` (apt) or `sdl2` (brew).
 - **Windows:** Links `wsock32`, includes `dde.cc`, `ccdde.cc`, `cc_icon.rc`.
 
+## TODO List
+
+Open work is kept by CLion's Not My TODO plugin in `.todos/items.json`, not in a Markdown file. Read
+and change it through the `mcp__clion__todo_list` / `todo_get` / `todo_create` / `todo_update` tools
+(`/add-todo` has the conventions: a kind tag such as `bugs` or `refactoring`, an area tag, `p2` for
+bugs and `p3` otherwise, an anchor on the code the item is about). An item tagged `needs-decision`
+waits for the user: do not fix it unasked, and add the tag (with what has to be decided) to an item
+whose fix turns out to need the user's call. Finished items are set to `fixed` for review, not
+deleted. Do not hand-edit the JSON for a single item; the plugin reads the file from disk, so a
+scripted bulk change is possible but must keep its schema and `nextId`.
+
 ## Git Commits
 
 - Do NOT include `Co-Authored-By` lines in commit messages.
