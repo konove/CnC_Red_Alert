@@ -194,9 +194,7 @@ void TeamType::DestroyTeams() const {
   }
 }
 
-TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t /*unused*/,
-                                   uint64_t /*unused*/, uint64_t /*unused*/,
-                                   uint64_t /*unused*/, bool alerted) {
+TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
   // Only the first 20 candidates in heap order take part in the draw.
   TeamType* choices[20];
   int choice_count = 0;

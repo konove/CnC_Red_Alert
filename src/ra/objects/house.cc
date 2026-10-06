@@ -2160,7 +2160,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
 TeamType* HouseClass::Suggested_New_Team(bool alertcheck) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  return TeamType::SuggestNewTeam(this, AScan, UScan, IScan, VScan, alertcheck);
+  return TeamType::SuggestNewTeam(this, alertcheck);
 }
 
 /***********************************************************************************************

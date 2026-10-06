@@ -196,11 +196,8 @@ class TeamType : public AbstractTypeClass {
   // Picks, at random, a team type the computer could create for `house` now:
   // one of the house's own with fewer than MaxAllowed teams in the field.
   // An alerted house picks only among its autocreate team types, any other
-  // house only among the rest. Returns nullptr when there is no candidate. The
-  // four type masks are unused.
-  static TeamType* SuggestNewTeam(HouseClass* house, uint64_t atypes,
-                                  uint64_t utypes, uint64_t itypes,
-                                  uint64_t vtypes, bool alerted);
+  // house only among the rest. Returns nullptr when there is no candidate.
+  static TeamType* SuggestNewTeam(HouseClass* house, bool alerted);
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty.
   static TeamType* FromName(std::string_view name);
