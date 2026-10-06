@@ -33,6 +33,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -167,21 +168,21 @@ const char* TeamType::MissionName(TeamMissionType order) {
 void* TeamType::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
-    static_cast<TeamType*>(ptr)->IsActive = true;
+    static_cast<TeamType*>(ptr)->is_active_ = true;
   }
   return ptr;
 }
 
 void TeamType::operator delete(void* ptr) {
   if (ptr) {
-    static_cast<TeamType*>(ptr)->IsActive = false;
+    static_cast<TeamType*>(ptr)->is_active_ = false;
   }
   TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
 TeamClass* TeamType::CreateTeam() {
-  if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
-    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
+  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {
+    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }
   return nullptr;
 }
@@ -211,8 +212,9 @@ TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
 
     // A team type on the wrong side of the alert is treated as full.
     const int limit =
-        alerted == candidate->IsAutocreate ? candidate->MaxAllowed : 0;
-    if (candidate->House == house->Class->House && candidate->Number < limit) {
+        alerted == candidate->is_autocreate() ? candidate->max_teams() : 0;
+    if (candidate->house() == house->Class->House &&
+        candidate->team_count() < limit) {
       base::At(choices, choice_count++) = candidate;
     }
   }
@@ -288,8 +290,8 @@ std::string TeamType::MemberDescription() const {
   std::string text;
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // "TYPE:count" for each kind of member, comma separated.
-    for (int index = 0; index < ClassCount; index++) {
-      const TeamMember& member = base::At(Members, index);
+    for (int index = 0; index < member_count_; index++) {
+      const TeamMember& member = base::At(members_, index);
       absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
                             member.type->IniName, member.quantity);
     }
@@ -308,14 +310,14 @@ std::string TeamType::MemberDescription() const {
 std::string TeamType::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     const std::string origin_letters =
-        Origin > -1 ? WaypointLetters(Origin) : "";
+        origin_ > -1 ? WaypointLetters(origin_) : "";
 
     // A team read from a scenario that names no house for it has none.
     const char* const house_suffix =
-        House == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(House).Suffix;
+        house_ == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(house_).Suffix;
     return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
-                           IsAutocreate ? '*' : ' ', origin_letters,
-                           MissionCount, MemberDescription());
+                           is_autocreate_ ? '*' : ' ', origin_letters,
+                           mission_count_, MemberDescription());
   }
   return "";
 }
@@ -374,10 +376,25 @@ std::string TeamMission::Description(int index) const {
   return "";
 }
 
+void TeamType::set_origin(const WAYPOINT waypoint) {
+  origin_ =
+      waypoint >= 0 && waypoint < ScenarioClass::kWaypointCount ? waypoint : -1;
+}
+
+void TeamType::AddMission(const TeamMission& mission) {
+  CHECK(mission_count_ < kMaxMissions);
+  base::At(missions_, mission_count_++) = mission;
+}
+
+void TeamType::AddMember(const TeamMember& member) {
+  CHECK(member_count_ < kMaxMemberTypes);
+  base::At(members_, member_count_++) = member;
+}
+
 void TeamType::Detach(Target target, bool /*unused*/) {
-  if (target.kind() == RTTI_TRIGGERTYPE && Trigger != nullptr &&
-      Trigger == target.AsTriggerType()) {
-    Trigger = nullptr;
+  if (target.kind() == RTTI_TRIGGERTYPE && trigger_ != nullptr &&
+      trigger_ == target.AsTriggerType()) {
+    trigger_ = nullptr;
   }
 }
 
@@ -399,7 +416,7 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   // TODO: the house and the mission numbers below are taken from the file
   // unchecked; an out-of-range one CHECK-fails later, where the team type is
   // used.
-  House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   // The scenario's NewINIFormat: 0 and 1 list each option and end the entry
   // with the trigger; the later ones pack the options into one bit field and
@@ -407,52 +424,49 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   const int format = TheWorld().new_ini_format();
   const bool lists_options = format == 0 || format == 1;
   if (lists_options) {
-    IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-    IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-    IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-    IsPrebuilt = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-    IsReinforcable = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+    is_roundabout_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+    is_suicide_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+    is_autocreate_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+    is_prebuilt_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+    is_reinforceable_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
   } else {
     const auto flags = base::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
-    IsRoundAbout = (flags & 0x0001) != 0;
-    IsSuicide = (flags & 0x0002) != 0;
-    IsAutocreate = (flags & 0x0004) != 0;
-    IsPrebuilt = (flags & 0x0008) != 0;
-    IsReinforcable = (flags & 0x0010) != 0;
+    is_roundabout_ = (flags & 0x0001) != 0;
+    is_suicide_ = (flags & 0x0002) != 0;
+    is_autocreate_ = (flags & 0x0004) != 0;
+    is_prebuilt_ = (flags & 0x0008) != 0;
+    is_reinforceable_ = (flags & 0x0010) != 0;
   }
 
-  RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
-  InitNum =
+  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  initial_count_ =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  MaxAllowed =
+  max_teams_ =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  Origin = base::ParseIntegerOr<int>(tokens.Next(), 0);
-  if (Origin < 0 || Origin >= ScenarioClass::kWaypointCount) {
-    Origin = -1;
-  }
+  set_origin(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   if (lists_options) {
     tokens.Next();  // Old-format trigger field, unused.
   } else {
     // The trigger types are read after the team types; the slot is where
     // that trigger type will be. -1 gives nullptr.
-    Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
+    trigger_ = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 
   // The members: a count, then that many Type:Quantity pairs.
   const int listed_count = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  ClassCount = 0;
+  member_count_ = 0;
   if (listed_count < 0 || listed_count > kMaxMemberTypes) {
-    MissionCount = 0;
+    mission_count_ = 0;
     return;
   }
   for (int listed = 0; listed < listed_count; listed++) {
     const std::string_view type_name = tokens.Next(",:");
     const std::string_view quantity_text = tokens.Next(",:");
     if (type_name.empty() || quantity_text.empty()) {
-      ClassCount = 0;
-      MissionCount = 0;
+      member_count_ = 0;
+      mission_count_ = 0;
       return;
     }
 
@@ -460,30 +474,30 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
     // next member takes its place in Members.
     const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
     if (member_type != nullptr) {
-      TeamMember& member = base::At(Members, ClassCount++);
+      TeamMember& member = base::At(members_, member_count_++);
       member.type = member_type;
       member.quantity = base::ParseIntegerOr<int>(quantity_text, 0);
     }
   }
 
   // The script: a count, then that many Mission:Argument pairs.
-  MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (MissionCount < 0 || MissionCount > kMaxMissions) {
-    ClassCount = 0;
-    MissionCount = 0;
+  mission_count_ = base::ParseIntegerOr<int>(tokens.Next(), -1);
+  if (mission_count_ < 0 || mission_count_ > kMaxMissions) {
+    member_count_ = 0;
+    mission_count_ = 0;
     return;
   }
-  for (int index = 0; index < MissionCount; index++) {
-    base::At(MissionList, index)
+  for (int index = 0; index < mission_count_; index++) {
+    base::At(missions_, index)
         .set_mission(static_cast<TeamMissionType>(
             base::ParseIntegerOr<int>(tokens.Next(",:"), 0)));
-    base::At(MissionList, index)
+    base::At(missions_, index)
         .set_value(base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
   }
 
   if (format < 2) {
     // The older formats put the trigger last.
-    Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
+    trigger_ = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
@@ -499,28 +513,29 @@ void TeamType::WriteIni(engine::file::IniFile& ini) {
 
 std::string TeamType::ToIniEntry() const {
   uint32_t flags = 0;
-  flags |= IsRoundAbout ? 0x0001U : 0U;
-  flags |= IsSuicide ? 0x0002U : 0U;
-  flags |= IsAutocreate ? 0x0004U : 0U;
-  flags |= IsPrebuilt ? 0x0008U : 0U;
-  flags |= IsReinforcable ? 0x0010U : 0U;
+  flags |= is_roundabout_ ? 0x0001U : 0U;
+  flags |= is_suicide_ ? 0x0002U : 0U;
+  flags |= is_autocreate_ ? 0x0004U : 0U;
+  flags |= is_prebuilt_ ? 0x0008U : 0U;
+  flags |= is_reinforceable_ ? 0x0010U : 0U;
 
-  std::string entry = absl::StrFormat(
-      "%d,%d,%d,%d,%d,%d,%d", House, flags, RecruitPriority, InitNum,
-      MaxAllowed, Origin, TheObjectHeaps().trigger_type().PositionOf(Trigger));
+  std::string entry =
+      absl::StrFormat("%d,%d,%d,%d,%d,%d,%d", house_, flags, recruit_priority_,
+                      initial_count_, max_teams_, origin_,
+                      TheObjectHeaps().trigger_type().PositionOf(trigger_));
 
   // The members: a count, then Type:Quantity for each.
-  absl::StrAppendFormat(&entry, ",%d", ClassCount);
-  for (int i = 0; i < ClassCount; i++) {
-    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Members, i).type->IniName,
-                          base::At(Members, i).quantity);
+  absl::StrAppendFormat(&entry, ",%d", member_count_);
+  for (int i = 0; i < member_count_; i++) {
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(members_, i).type->IniName,
+                          base::At(members_, i).quantity);
   }
 
   // The script: a count, then Mission:Argument for each, both as numbers.
-  absl::StrAppendFormat(&entry, ",%d", MissionCount);
-  for (int i = 0; i < MissionCount; i++) {
-    absl::StrAppendFormat(&entry, ",%d:%d", base::At(MissionList, i).mission(),
-                          base::At(MissionList, i).value());
+  absl::StrAppendFormat(&entry, ",%d", mission_count_);
+  for (int i = 0; i < mission_count_; i++) {
+    absl::StrAppendFormat(&entry, ",%d:%d", base::At(missions_, i).mission(),
+                          base::At(missions_, i).value());
   }
   return entry;
 }

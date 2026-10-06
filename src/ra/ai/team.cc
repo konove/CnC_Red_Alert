@@ -292,7 +292,7 @@ TeamClass::~TeamClass() {
     while (Member != nullptr) {
       Remove(Member);
     }
-    Class->Number--;
+    Class->OnTeamDeleted();
 
     /*
     **	When the team dies, any trigger associated with it, dies as well. This
@@ -329,25 +329,25 @@ TeamClass::TeamClass(TeamType* type, HouseClass* owner)
       Class(type),
       House(owner) {
   DCHECK(Class);
-  DCHECK(Class->IsActive);
-  DCHECK(Class->ClassCount > 0);
+  DCHECK(Class->is_active());
+  DCHECK(Class->member_count() > 0);
 
   if (owner == nullptr) {
-    House = HouseClass::As_Pointer(Class->House);
+    House = HouseClass::As_Pointer(Class->house());
   }
 
-  if (Class->Origin != -1) {
+  if (Class->origin() != -1) {
     Zone =
-        ra::Target::FromCell(base::At(TheScenario().Waypoint, Class->Origin));
+        ra::Target::FromCell(base::At(TheScenario().Waypoint, Class->origin()));
   }
-  Class->Number++;
+  Class->OnTeamCreated();
 
   /*
   **	If there is a trigger tightly associated with this team, then
   **	create an instance of that trigger and attach it to the team.
   */
-  if (Class->Trigger != nullptr) {
-    Trigger = base::NewPooled<TriggerClass>(Class->Trigger);
+  if (Class->trigger() != nullptr) {
+    Trigger = base::NewPooled<TriggerClass>(Class->trigger());
   }
 }
 
@@ -460,8 +460,8 @@ void TeamClass::AI() {
     /*
     **	Figure out the total number of objects that this team type requires.
     */
-    for (int index = 0; index < Class->ClassCount; index++) {
-      desired += base::At(Class->Members, index).quantity;
+    for (int index = 0; index < Class->member_count(); index++) {
+      desired += base::At(Class->members(), index).quantity;
     }
     DCHECK(desired != 0);
 
@@ -476,7 +476,7 @@ void TeamClass::AI() {
       *strength *	mode when the members transition the magic 1/3 strength
       *threshold.
       */
-      if (Class->IsReinforcable) {
+      if (Class->is_reinforceable()) {
         if (desired > 2) {
           IsUnderStrength = Total <= desired / 3;
         } else {
@@ -634,14 +634,14 @@ void TeamClass::AI() {
   **	Try to recruit members if there is room to do so for this team.
   **	Only try to recruit members for a non player controlled team.
   */
-  if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
+  if ((!IsMoving || (!IsFullStrength && Class->is_reinforceable())) &&
       (!House->IsHuman || !IsHasBeen) && TheSession().Type == GAME_NORMAL) {
     //	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
     //((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL))
     //{
-    for (int index = 0; index < Class->ClassCount; index++) {
+    for (int index = 0; index < Class->member_count(); index++) {
       if (std::cmp_less(base::At(Quantity, index),
-                        base::At(Class->Members, index).quantity)) {
+                        base::At(Class->members(), index).quantity)) {
         Recruit(index);
       }
     }
@@ -681,9 +681,9 @@ void TeamClass::AI() {
   if (IsMoving && !IsReforming && IsNextMission) {
     IsNextMission = false;
     CurrentMission++;
-    if (CurrentMission < Class->MissionCount) {
+    if (CurrentMission < Class->mission_count()) {
       const TeamMission* mission =
-          base::Suffix(Class->MissionList, CurrentMission).data();
+          base::Suffix(Class->missions(), CurrentMission).data();
 
       TimeOut.Set(mission->value() * (kTicksPerMinute / 10));
       Target = ra::Target{};
@@ -765,7 +765,7 @@ void TeamClass::AI() {
     **	mission in the list or disband the team.
     */
     const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+        base::Suffix(Class->missions(), CurrentMission).data();
     //		FootClass	* member = Member;
 
     switch (mission->mission()) {
@@ -987,7 +987,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	then no further processing is allowed -- bail.
   */
   if (obj->Team != nullptr &&
-      obj->Team->Class->RecruitPriority >= Class->RecruitPriority) {
+      obj->Team->Class->recruit_priority() >= Class->recruit_priority()) {
     return false;
   }
 
@@ -1005,12 +1005,12 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	If no match could be found, then adding the object to the team cannot
   **	occur.
   */
-  for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
-    if (base::At(Class->Members, typeindex).type == &obj->Class_Of()) {
+  for (typeindex = 0; typeindex < Class->member_count(); typeindex++) {
+    if (base::At(Class->members(), typeindex).type == &obj->Class_Of()) {
       break;
     }
   }
-  if (typeindex == Class->ClassCount) {
+  if (typeindex == Class->member_count()) {
     return false;
   }
 
@@ -1019,7 +1019,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   *allowed. *	Return with a failure flag in this case.
   */
   if (std::cmp_greater_equal(base::At(Quantity, typeindex),
-                             base::At(Class->Members, typeindex).quantity)) {
+                             base::At(Class->members(), typeindex).quantity)) {
     return false;
   }
 
@@ -1076,8 +1076,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *object from the team is a good idea.
   */
   if (typeindex == -1) {
-    for (typeindex = 0; typeindex < Class->ClassCount; typeindex++) {
-      if (base::At(Class->Members, typeindex).type == &obj->Class_Of()) {
+    for (typeindex = 0; typeindex < Class->member_count(); typeindex++) {
+      if (base::At(Class->members(), typeindex).type == &obj->Class_Of()) {
         break;
       }
     }
@@ -1088,7 +1088,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *object type.
   */
   if (static_cast<unsigned>(typeindex) <
-      static_cast<unsigned>(Class->ClassCount)) {
+      static_cast<unsigned>(Class->member_count())) {
     base::At(Quantity, typeindex)--;
   }
 
@@ -1182,8 +1182,8 @@ int TeamClass::Recruit(int typeindex) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
   Coordinate center = Zone.AsCoordinate();
 
-  if (Class->Origin != -1) {
-    center = base::At(TheScenario().Waypoint, Class->Origin).Center();
+  if (Class->origin() != -1) {
+    center = base::At(TheScenario().Waypoint, Class->origin()).Center();
   }
 
   int added = 0;  // Total number added to team.
@@ -1192,9 +1192,9 @@ int TeamClass::Recruit(int typeindex) {
   **	Quick check to see if recruiting is really allowed for this index or
   *not.
   */
-  if (std::cmp_greater(base::At(Class->Members, typeindex).quantity,
+  if (std::cmp_greater(base::At(Class->members(), typeindex).quantity,
                        base::At(Quantity, typeindex))) {
-    switch (base::At(Class->Members, typeindex).type->What_Am_I()) {
+    switch (base::At(Class->members(), typeindex).type->What_Am_I()) {
       /*
       **	For infantry objects, sweep through the infantry in the game
       *looking for *	ones owned by the house that owns the team. When found,
@@ -1258,7 +1258,7 @@ int TeamClass::Recruit(int typeindex) {
           const int d = unit->Distance(center);
 
           if (unit->House == House &&
-              unit->Class == base::At(Class->Members, typeindex).type &&
+              unit->Class == base::At(Class->members(), typeindex).type &&
               (d < bestdist || bestdist == -1) && Can_Add(unit, typeindex)) {
             best = unit;
             bestdist = d;
@@ -1293,7 +1293,7 @@ int TeamClass::Recruit(int typeindex) {
           const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
-              vessel->Class == base::At(Class->Members, typeindex).type &&
+              vessel->Class == base::At(Class->members(), typeindex).type &&
               (d < bestdist || bestdist == -1) && Can_Add(vessel, typeindex)) {
             best = vessel;
             bestdist = d;
@@ -1434,8 +1434,8 @@ void TeamClass::Calc_Center(ra::Target& center,
   **	average center location for the team.
   */
   // A newly formed team has CurrentMission == -1 until its first order.
-  if (CurrentMission >= 0 && CurrentMission < Class->MissionCount &&
-      base::At(Class->MissionList, CurrentMission).mission() ==
+  if (CurrentMission >= 0 && CurrentMission < Class->mission_count() &&
+      base::At(Class->missions(), CurrentMission).mission() ==
           TeamMissionType::kHoundDog) {
     /*
     **	First pick a member of the team. The closest friendly object to that
@@ -1615,7 +1615,7 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
-  if (result != game::RESULT_NONE && !Class->IsSuicide) {
+  if (result != game::RESULT_NONE && !Class->is_suicide()) {
     if (!IsMoving) {
       // TCTCTC
       // Should run to a better hiding place or disband into a group of hunting
@@ -1707,7 +1707,7 @@ void TeamClass::Coordinate_Attack() {
           tt != TEMPLATE_BRIDGE_3A && tt != TEMPLATE_BRIDGE_3B) {
         FootClass* unit = Member;
         const TeamMission* mission =
-            base::Suffix(Class->MissionList, CurrentMission).data();
+            base::Suffix(Class->missions(), CurrentMission).data();
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
             mission->mission() != TeamMissionType::kSpy) {
@@ -1723,7 +1723,7 @@ void TeamClass::Coordinate_Attack() {
 
   } else {
     const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+        base::Suffix(Class->missions(), CurrentMission).data();
 
     FootClass* unit = Member;
     while (unit != nullptr) {
@@ -1854,7 +1854,7 @@ void TeamClass::Coordinate_Do() {
 
   FootClass* unit = Member;
   const MissionType do_mission =
-      base::At(Class->MissionList, CurrentMission).unit_mission();
+      base::At(Class->missions(), CurrentMission).unit_mission();
 
   /*
   **	For each unit either head it back to the team center or give it the main
@@ -1968,7 +1968,7 @@ void TeamClass::Coordinate_Move() {
                unit->Height > 0 &&
                Cell::Containing(unit->Center_Coord()) != Target.AsCell() &&
                !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
-               base::At(Class->MissionList, CurrentMission + 1).mission() !=
+               base::At(Class->missions(), CurrentMission + 1).mission() !=
                    TeamMissionType::kMove)) {
             bool wasform = false;
 
@@ -2380,7 +2380,7 @@ void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
     **	destroyed. The team members are then free to be reassigned.
     */
     if (team != nullptr && team->House == house &&
-        team->Class->RecruitPriority < priority) {
+        team->Class->recruit_priority() < priority) {
       while (team->Member) {
         team->Remove(team->Member);
       }
@@ -2413,7 +2413,7 @@ bool TeamClass::Is_Leaving_Map() const {
 
   if (IsMoving && CurrentMission >= 0) {
     const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+        base::Suffix(Class->missions(), CurrentMission).data();
 
     if (mission->mission() == TeamMissionType::kMove &&
         !TheMap().In_Radar(
@@ -2507,7 +2507,7 @@ void TeamClass::Scan_Limit() {
 int TeamClass::TMission_Formation() {
   FootClass* member = Member;
   const TeamMission* mission =
-      base::Suffix(Class->MissionList, CurrentMission).data();
+      base::Suffix(Class->missions(), CurrentMission).data();
   Formation = mission->formation();
   const int group = ID + 10;
   int xdir = 0;
@@ -2716,7 +2716,7 @@ int TeamClass::TMission_Formation() {
 int TeamClass::TMission_Attack() {
   if (!MissionTarget && Member != nullptr) {
     const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+        base::Suffix(Class->missions(), CurrentMission).data();
 
     /*
     **	Pick a team leader that has a weapon. Only in the case of no
@@ -2879,7 +2879,7 @@ int TeamClass::TMission_Follow() {
  *=============================================================================================*/
 int TeamClass::TMission_Loop() {
   const TeamMission* mission =
-      base::Suffix(Class->MissionList, CurrentMission).data();
+      base::Suffix(Class->missions(), CurrentMission).data();
   CurrentMission = mission->value() - 1;
   IsNextMission = true;
   return 1;
@@ -2931,7 +2931,7 @@ int TeamClass::TMission_Invulnerable() {
  *=============================================================================================*/
 int TeamClass::TMission_Set_Global() {
   const TeamMission* mission =
-      base::Suffix(Class->MissionList, CurrentMission).data();
+      base::Suffix(Class->missions(), CurrentMission).data();
   TheScenario().Set_Global_To(mission->value(), true);
   IsNextMission = true;
   return 1;
@@ -2962,7 +2962,7 @@ int TeamClass::TMission_Patrol() {
   */
   if (!Target) {
     const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+        base::Suffix(Class->missions(), CurrentMission).data();
     if (static_cast<unsigned>(mission->value()) <
         ScenarioClass::kWaypointCount) {
       Assign_Mission_Target(ra::Target::FromCell(

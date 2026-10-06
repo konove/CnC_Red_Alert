@@ -291,7 +291,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
         absl::ascii_tolower, absl::ascii_tolower);
   });
 
-  if (!CurTeam || !CurTeam->IsActive) {
+  if (!CurTeam || !CurTeam->is_active()) {
     CurTeam = nullptr;
   }
 
@@ -575,7 +575,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Loop through all classes in the team.
   */
-  for (i = 0; i < CurTeam->ClassCount; i++) {
+  for (i = 0; i < CurTeam->member_count(); i++) {
     /*
     **	Find this class in our array.
     */
@@ -585,14 +585,15 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (base::At(CurTeam->Members, i).type == base::At(teamclass, j)) {
-        base::At(teamcount, j) = base::At(CurTeam->Members, i).quantity;
+      if (base::At(CurTeam->members(), i).type == base::At(teamclass, j)) {
+        base::At(teamcount, j) = base::At(CurTeam->members(), i).quantity;
         break;
       }
     }
   }
   int numclasses =
-      CurTeam->ClassCount;  // current # classes in the team (limited to <=5)
+      CurTeam
+          ->member_count();  // current # classes in the team (limited to <=5)
 
   /*
   **	Set up the dialog dimensions based on number of classes we have to draw
@@ -846,13 +847,11 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Copy data into team.
   */
   if (!cancel) {
-    CurTeam->ClassCount = numclasses;
-    i = 0;  // current team class index
+    CurTeam->ClearMembers();
     for (int j = 0; j < maxclasses; j++) {
       if (base::At(teamcount, j) > 0) {
-        base::At(CurTeam->Members, i).quantity = base::At(teamcount, j);
-        base::At(CurTeam->Members, i).type = base::At(teamclass, j);
-        i++;
+        CurTeam->AddMember({.quantity = base::At(teamcount, j),
+                            .type = base::At(teamclass, j)});
       }
     }
   }

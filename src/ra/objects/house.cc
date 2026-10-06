@@ -2499,27 +2499,24 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
           ttype = base::NewPooled<TeamType>();
           if (ttype != nullptr) {
             base::SafeCopy(ttype->IniName, "@PINF");
-            ttype->IsTransient = true;
-            ttype->IsPrebuilt = false;
-            ttype->IsReinforcable = false;
-            ttype->Origin = ScenarioClass::kSpecialWaypoint;
-            ttype->MissionCount = 1;
-            ttype->MissionList[0].set_mission(TeamMissionType::kAttackWaypoint);
-            ttype->MissionList[0].set_value(ScenarioClass::kSpecialWaypoint);
-            ttype->ClassCount = 2;
-            ttype->Members[0].quantity =
-                AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)
-                    .Max_Passengers();
-            ttype->Members[0].type =
-                &InfantryTypeClass::As_Reference(INFANTRY_E1);
-            ttype->Members[1].quantity = 1;
-            ttype->Members[1].type =
-                &AircraftTypeClass::As_Reference(AIRCRAFT_BADGER);
+            ttype->set_is_transient(true);
+            ttype->set_is_prebuilt(false);
+            ttype->set_is_reinforceable(false);
+            ttype->set_origin(ScenarioClass::kSpecialWaypoint);
+            ttype->AddMission({TeamMissionType::kAttackWaypoint,
+                               ScenarioClass::kSpecialWaypoint});
+            ttype->AddMember(
+                {.quantity = AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)
+                                 .Max_Passengers(),
+                 .type = &InfantryTypeClass::As_Reference(INFANTRY_E1)});
+            ttype->AddMember(
+                {.quantity = 1,
+                 .type = &AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)});
           }
         }
 
         if (ttype != nullptr) {
-          ttype->House = Class->House;
+          ttype->set_house(Class->House);
           TheScenario().Waypoint[ScenarioClass::kSpecialWaypoint] =
               TheMap().Nearby_Location(cell, SPEED_FOOT);
           DeliverReinforcements(ttype);
@@ -3004,7 +3001,7 @@ void HouseClass::Clobber_All() {
     }
   }
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    if (TheObjectHeaps().team_type().ActiveAt(i)->House == Class->House) {
+    if (TheObjectHeaps().team_type().ActiveAt(i)->house() == Class->House) {
       base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(i));
       i--;
     }
@@ -5497,13 +5494,13 @@ int HouseClass::AI_Unit() {
       const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr != nullptr) {
         const TeamType* team = tptr->Class;
-        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+        if (((team->is_reinforceable() && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
               !tptr->JustAltered)) &&
-            team->House == Class->House) {
-          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+            team->house() == Class->House) {
+          for (int subindex = 0; subindex < team->member_count(); subindex++) {
             const TechnoTypeClass* memtype =
-                base::At(team->Members, subindex).type;
+                base::At(team->members(), subindex).type;
             if (memtype->What_Am_I() == RTTI_UNITTYPE) {
               counter.at(dynamic_cast<const UnitTypeClass*>(memtype)->Type) = 1;
             }
@@ -5519,18 +5516,18 @@ int HouseClass::AI_Unit() {
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-      if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
-          (!team->IsAutocreate || IsAlerted)) {
-        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+      if (team != nullptr && team->house() == Class->House &&
+          team->is_prebuilt() && (!team->is_autocreate() || IsAlerted)) {
+        for (int subindex = 0; subindex < team->member_count(); subindex++) {
           const TechnoTypeClass* memtype =
-              base::At(team->Members, subindex).type;
+              base::At(team->members(), subindex).type;
 
           if (memtype->What_Am_I() == RTTI_UNITTYPE) {
             const UnitType subtype =
                 dynamic_cast<const UnitTypeClass*>(memtype)->Type;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).quantity);
+                         base::At(team->members(), subindex).quantity);
           }
         }
       }
@@ -5644,15 +5641,15 @@ int HouseClass::AI_Vessel() {
       if (tptr) {
         const TeamType* team = tptr->Class;
 
-        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+        if (((team->is_reinforceable() && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
               !tptr->JustAltered)) &&
-            team->House == Class->House) {
-          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (base::At(team->Members, subindex).type->What_Am_I() ==
+            team->house() == Class->House) {
+          for (int subindex = 0; subindex < team->member_count(); subindex++) {
+            if (base::At(team->members(), subindex).type->What_Am_I() ==
                 RTTI_VESSELTYPE) {
               counter.at(dynamic_cast<const VesselTypeClass*>(
-                             base::At(team->Members, subindex).type)
+                             base::At(team->members(), subindex).type)
                              ->Type) = 1;
             }
           }
@@ -5667,18 +5664,18 @@ int HouseClass::AI_Vessel() {
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-      if (team && (team->House == Class->House && team->IsPrebuilt &&
-                   (!team->IsAutocreate || IsAlerted))) {
-        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (base::At(team->Members, subindex).type->What_Am_I() ==
+      if (team && (team->house() == Class->House && team->is_prebuilt() &&
+                   (!team->is_autocreate() || IsAlerted))) {
+        for (int subindex = 0; subindex < team->member_count(); subindex++) {
+          if (base::At(team->members(), subindex).type->What_Am_I() ==
               RTTI_VESSELTYPE) {
             const VesselType subtype =
                 dynamic_cast<const VesselTypeClass*>(
-                    base::At(team->Members, subindex).type)
+                    base::At(team->members(), subindex).type)
                     ->Type;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).quantity);
+                         base::At(team->members(), subindex).quantity);
           }
         }
       }
@@ -5770,18 +5767,18 @@ int HouseClass::AI_Infantry() {
       if (tptr != nullptr) {
         const TeamType* team = tptr->Class;
 
-        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+        if (((team->is_reinforceable() && !tptr->IsFullStrength) ||
              (!tptr->IsForcedActive && !tptr->IsHasBeen &&
               !tptr->JustAltered)) &&
-            team->House == Class->House) {
-          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-            if (base::At(team->Members, subindex).type->What_Am_I() ==
+            team->house() == Class->House) {
+          for (int subindex = 0; subindex < team->member_count(); subindex++) {
+            if (base::At(team->members(), subindex).type->What_Am_I() ==
                 RTTI_INFANTRYTYPE) {
               counter.at(dynamic_cast<const InfantryTypeClass*>(
-                             base::At(team->Members, subindex).type)
+                             base::At(team->members(), subindex).type)
                              ->Type) +=
-                  base::At(team->Members, subindex).quantity +
-                  (team->IsReinforcable ? 1 : 0);
+                  base::At(team->members(), subindex).quantity +
+                  (team->is_reinforceable() ? 1 : 0);
             }
           }
         }
@@ -5796,20 +5793,20 @@ int HouseClass::AI_Infantry() {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
       if ((team != nullptr) &&
-          (team->House == Class->House && team->IsPrebuilt &&
-           (!team->IsAutocreate || IsAlerted))) {
-        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
-          if (base::At(team->Members, subindex).type->What_Am_I() ==
+          (team->house() == Class->House && team->is_prebuilt() &&
+           (!team->is_autocreate() || IsAlerted))) {
+        for (int subindex = 0; subindex < team->member_count(); subindex++) {
+          if (base::At(team->members(), subindex).type->What_Am_I() ==
               RTTI_INFANTRYTYPE) {
             const InfantryType subtype =
                 dynamic_cast<const InfantryTypeClass*>(
-                    base::At(team->Members, subindex).type)
+                    base::At(team->members(), subindex).type)
                     ->Type;
             //									counter[subtype]
             //= 1;
             counter.at(subtype) =
                 std::max(counter.at(subtype),
-                         base::At(team->Members, subindex).quantity);
+                         base::At(team->members(), subindex).quantity);
             counter.at(subtype) = std::min(counter.at(subtype), 5);
           }
         }

@@ -172,10 +172,10 @@ bool TeamType::Edit() {
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
-  if (House == HOUSE_NONE) {
-    House = HOUSE_GOOD;
+  if (house_ == HOUSE_NONE) {
+    house_ = HOUSE_GOOD;
   }
-  house_drop.Set_Selected_Index(static_cast<int>(House));
+  house_drop.Set_Selected_Index(static_cast<int>(house_));
   house_drop.Add(*commands);
 
   // Recruit priority for this team.
@@ -184,7 +184,7 @@ bool TeamType::Edit() {
                           FontType::kEditor, TPF_NOSHADOW,
                           house_drop.X + house_drop.Width + 5 + kFieldSpacingX,
                           house_drop.Y, kEditWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(priority_text, sizeof(priority_text), "%d", RecruitPriority);
+  absl::SNPrintF(priority_text, sizeof(priority_text), "%d", recruit_priority_);
   priority_edit.Add(*commands);
 
   // Maximum allowed for this team type.
@@ -193,7 +193,7 @@ bool TeamType::Edit() {
                      FontType::kEditor, TPF_NOSHADOW,
                      priority_edit.X + priority_edit.Width + kFieldSpacingX,
                      priority_edit.Y, kEditWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(max_text, sizeof(max_text), "%d", MaxAllowed);
+  absl::SNPrintF(max_text, sizeof(max_text), "%d", max_teams_);
   max_edit.Add(*commands);
 
   // Initial number for this team type.
@@ -202,7 +202,7 @@ bool TeamType::Edit() {
                          FontType::kEditor, TPF_NOSHADOW,
                          max_edit.X + max_edit.Width + kFieldSpacingX,
                          max_edit.Y, kEditWidth, 9, EditClass::kNumeric);
-  absl::SNPrintF(initial_text, sizeof(initial_text), "%d", InitNum);
+  absl::SNPrintF(initial_text, sizeof(initial_text), "%d", initial_count_);
   initial_edit.Add(*commands);
 
   // Waypoint to create or reinforce this team at, as the editor's letters;
@@ -212,7 +212,7 @@ bool TeamType::Edit() {
                         FontType::kEditor, TPF_NOSHADOW,
                         initial_edit.X + initial_edit.Width + kFieldSpacingX,
                         initial_edit.Y, 20, 9, EditClass::kAlpha);
-  base::SafeCopy(origin_text, Origin != -1 ? WaypointLetters(Origin) : "");
+  base::SafeCopy(origin_text, origin_ != -1 ? WaypointLetters(origin_) : "");
   origin_edit.Add(*commands);
 
   // Button that opens the members dialog.
@@ -234,8 +234,8 @@ bool TeamType::Edit() {
     trigger_drop.Add_Item(
         TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
-  if (Trigger != nullptr) {
-    trigger_drop.Set_Selected_Index(Trigger->Name());
+  if (trigger_ != nullptr) {
+    trigger_drop.Set_Selected_Index(trigger_->Name());
   } else {
     trigger_drop.Set_Selected_Index(0);
   }
@@ -251,31 +251,31 @@ bool TeamType::Edit() {
 
   // Roundabout travel logic attribute for this team.
   CheckBoxClass roundabout_check(kButtonRoundabout, kCheckX, kCheckY);
-  set_check(roundabout_check, IsRoundAbout);
+  set_check(roundabout_check, is_roundabout_);
   roundabout_check.Add(*commands);
 
   // Suicide travel to target attribute.
   CheckBoxClass suicide_check(kButtonSuicide, kCheckX,
                               roundabout_check.Y + kCheckSpacingY);
-  set_check(suicide_check, IsSuicide);
+  set_check(suicide_check, is_suicide_);
   suicide_check.Add(*commands);
 
   // Autocreate attribute for this team.
   CheckBoxClass autocreate_check(kButtonAuto, kCheckX,
                                  suicide_check.Y + kCheckSpacingY);
-  set_check(autocreate_check, IsAutocreate);
+  set_check(autocreate_check, is_autocreate_);
   autocreate_check.Add(*commands);
 
   // Prebuild team members attribute for this team.
   CheckBoxClass prebuilt_check(kButtonPrebuilt, kCheckX,
                                autocreate_check.Y + kCheckSpacingY);
-  set_check(prebuilt_check, IsPrebuilt);
+  set_check(prebuilt_check, is_prebuilt_);
   prebuilt_check.Add(*commands);
 
   // Reinforce this team in progress attribute.
   CheckBoxClass reinforce_check(kButtonReinforce, kCheckX,
                                 prebuilt_check.Y + kCheckSpacingY);
-  set_check(reinforce_check, IsReinforcable);
+  set_check(reinforce_check, is_reinforceable_);
   reinforce_check.Add(*commands);
 
   // Drop list of the possible team missions, in TeamMissionType order so an
@@ -342,10 +342,10 @@ bool TeamType::Edit() {
   TListClass<TeamMission*> script_list(
       kButtonMission2, mission_drop.X + 60, mission_drop.Y + 22, 240, 8 * 7,
       FontType::kEditor, TPF_NOSHADOW, up_shape, down_shape);
-  for (int index = 0; index < MissionCount; index++) {
+  for (int index = 0; index < mission_count_; index++) {
     script_list.Add_Item(missions
                              .emplace_back(std::make_unique<TeamMission>(
-                                 base::At(MissionList, index)))
+                                 base::At(missions_, index)))
                              .get());
   }
   script_list.Add_Tail(*commands);
@@ -673,37 +673,34 @@ bool TeamType::Edit() {
                                     ? "----"
                                     : name_edit.Get_Text());
 
-        IsRoundAbout = roundabout_check.IsOn;
-        IsSuicide = suicide_check.IsOn;
-        IsAutocreate = autocreate_check.IsOn;
-        IsPrebuilt = prebuilt_check.IsOn;
-        IsReinforcable = reinforce_check.IsOn;
+        is_roundabout_ = roundabout_check.IsOn;
+        is_suicide_ = suicide_check.IsOn;
+        is_autocreate_ = autocreate_check.IsOn;
+        is_prebuilt_ = prebuilt_check.IsOn;
+        is_reinforceable_ = reinforce_check.IsOn;
 
-        RecruitPriority =
+        recruit_priority_ =
             base::ParseIntegerOr<int>(priority_edit.Get_Text(), 0);
         // The fields take three digits; the team type stores a byte.
-        InitNum = static_cast<unsigned char>(std::clamp(
+        initial_count_ = static_cast<unsigned char>(std::clamp(
             base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0), 0, 255));
-        MaxAllowed = static_cast<unsigned char>(std::clamp(
+        max_teams_ = static_cast<unsigned char>(std::clamp(
             base::ParseIntegerOr<int>(max_edit.Get_Text(), 0), 0, 255));
-        House = HousesType(house_drop.Current_Index());
-        Trigger = nullptr;
+        house_ = HousesType(house_drop.Current_Index());
+        trigger_ = nullptr;
         if (trigger_drop.Current_Index() > 0) {
-          Trigger = TheObjectHeaps().trigger_type().ActiveAt(
+          trigger_ = TheObjectHeaps().trigger_type().ActiveAt(
               trigger_drop.Current_Index() - 1);
         }
 
-        MissionCount = script_list.Count();
-        for (int index = 0; index < MissionCount; index++) {
-          base::At(MissionList, index) = *script_list.at(index);
+        mission_count_ = script_list.Count();
+        for (int index = 0; index < mission_count_; index++) {
+          base::At(missions_, index) = *script_list.at(index);
         }
 
-        Origin = WaypointFromLetters(origin_edit.Get_Text());
         // Text that names no waypoint of the scenario - letters past the last
         // one, or a letter and a space, which comes out negative - is none.
-        if (Origin < 0 || Origin >= ScenarioClass::kWaypointCount) {
-          Origin = -1;
-        }
+        set_origin(WaypointFromLetters(origin_edit.Get_Text()));
         return true;
 
       // Cancel: leave the team type as it was.

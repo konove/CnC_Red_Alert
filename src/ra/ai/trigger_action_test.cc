@@ -269,7 +269,7 @@ class TriggerActionGameTest : public TriggerActionTest {
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     team_type_ = base::NewPooled<TeamType>();
     team_type_->Set_Name("tanks");
-    team_type_->House = HOUSE_USSR;
+    team_type_->set_house(HOUSE_USSR);
     // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     trigger_type_ = base::NewPooled<TriggerType>();
     trigger_type_->Set_Name("alarm");

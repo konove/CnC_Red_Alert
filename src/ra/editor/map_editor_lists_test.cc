@@ -211,7 +211,7 @@ class TeamListTest : public UiFixture {
       auto* team_type = base::NewPooled<TeamType>();
       team_type->Set_Name(name);
       // The list shows each team's house; the team dialog always sets one.
-      team_type->House = HOUSE_GREECE;
+      team_type->set_house(HOUSE_GREECE);
     }
   }
 
@@ -263,7 +263,7 @@ TEST_F(TeamListTest, DeleteRemovesTheEntryClicked) {
 
 // A scenario can hold a team with no house; the list shows it all the same.
 TEST_F(TeamListTest, ATeamWithoutAHouseIsListed) {
-  TeamType::FromName("Alfa")->House = HOUSE_NONE;
+  TeamType::FromName("Alfa")->set_house(HOUSE_NONE);
   player().At(3).Click(kDeleteX, kButtonsY).At(10).Click(kOkX, kButtonsY);
 
   TheMap().Handle_Teams("Teams");

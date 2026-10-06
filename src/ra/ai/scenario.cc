@@ -1858,8 +1858,9 @@ void DropUnfilledTypeReferences() {
   auto& trigger_types = TheObjectHeaps().trigger_type();
   for (int i = 0; i < team_types.Count(); i++) {
     TeamType& team_type = *team_types.ActiveAt(i);
-    DropIfUnfilled(team_type.Trigger, trigger_types, team_type.Name(),
-                   "trigger");
+    TriggerType* trigger = team_type.trigger();
+    DropIfUnfilled(trigger, trigger_types, team_type.Name(), "trigger");
+    team_type.set_trigger(trigger);
   }
   for (int i = 0; i < trigger_types.Count(); i++) {
     TriggerType& trigger_type = *trigger_types.ActiveAt(i);

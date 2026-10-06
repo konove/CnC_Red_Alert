@@ -86,6 +86,11 @@ class TeamMission {
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
 
+  TeamMission() = default;
+  // A mission with a number for its argument.
+  TeamMission(const TeamMissionType mission, const int value)
+      : mission_(mission), argument_{.value = value} {}
+
   [[nodiscard]] TeamMissionType mission() const { return mission_; }
   void set_mission(const TeamMissionType mission) { mission_ = mission; }
 
@@ -146,6 +151,8 @@ class TeamType : public AbstractTypeClass {
   // Both size arrays that are saved.
   static constexpr int kMaxMemberTypes = 5;
   static constexpr int kMaxMissions = 20;
+  using MemberArray = TeamMember[kMaxMemberTypes];
+  using MissionArray = TeamMission[kMaxMissions];
 
   // Takes its ID from the heap slot it is constructed in, so it must be
   // created through operator new.
@@ -238,73 +245,122 @@ class TeamType : public AbstractTypeClass {
   // in a build without the scenario editor or the cheat keys.
   [[nodiscard]] std::string Description() const;
 
+  // The accessors below are documented at the data members.
+  [[nodiscard]] bool is_active() const { return is_active_; }
+  [[nodiscard]] bool is_roundabout() const { return is_roundabout_; }
+  [[nodiscard]] bool is_suicide() const { return is_suicide_; }
+  [[nodiscard]] bool is_autocreate() const { return is_autocreate_; }
+  [[nodiscard]] bool is_prebuilt() const { return is_prebuilt_; }
+  void set_is_prebuilt(const bool value) { is_prebuilt_ = value; }
+  [[nodiscard]] bool is_reinforceable() const { return is_reinforceable_; }
+  void set_is_reinforceable(const bool value) { is_reinforceable_ = value; }
+  void set_is_transient(const bool value) { is_transient_ = value; }
+  [[nodiscard]] int recruit_priority() const { return recruit_priority_; }
+  [[nodiscard]] int max_teams() const { return max_teams_; }
+  [[nodiscard]] HousesType house() const { return house_; }
+  void set_house(const HousesType value) { house_ = value; }
+  [[nodiscard]] TriggerType* trigger() const { return trigger_; }
+  void set_trigger(TriggerType* const value) { trigger_ = value; }
+  [[nodiscard]] WAYPOINT origin() const { return origin_; }
+  // Takes a `waypoint` the scenario does not have as -1, none.
+  void set_origin(WAYPOINT waypoint);
+
+  // The number of teams of this type that exist now. TeamClass reports its
+  // own creation and deletion.
+  [[nodiscard]] int team_count() const { return team_count_; }
+  void OnTeamCreated() { team_count_++; }
+  void OnTeamDeleted() { team_count_--; }
+
+  // The script: the first mission_count() entries of missions(). The rest
+  // are unused.
+  [[nodiscard]] int mission_count() const { return mission_count_; }
+  [[nodiscard]] const MissionArray& missions() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return missions_;
+  }
+  // Appends a line to the script, which must have fewer than kMaxMissions.
+  void AddMission(const TeamMission& mission);
+
+  // The members wanted: the first member_count() entries of members(). The
+  // rest are unused.
+  [[nodiscard]] int member_count() const { return member_count_; }
+  [[nodiscard]] const MemberArray& members() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return members_;
+  }
+  // Appends a kind of member, of which there must be fewer than
+  // kMaxMemberTypes.
+  void AddMember(const TeamMember& member);
+  // Leaves the team type with no members.
+  void ClearMembers() { member_count_ = 0; }
+
+ private:
   // True while the object occupies its heap slot. operator new sets it
   // before the constructor runs, so the initializer must agree with it;
   // operator delete clears it.
-  bool IsActive : 1 = true;
+  bool is_active_ : 1 = true;
 
   // The team's members route around high-threat areas.
-  bool IsRoundAbout : 1 = false;
+  bool is_roundabout_ : 1 = false;
 
   // The team does not stop for distractions until it achieves its mission or
   // is dead.
-  bool IsSuicide : 1 = false;
+  bool is_suicide_ : 1 = false;
 
   // Only a house that has been alerted (the "autocreate" trigger action)
   // creates teams of this type on its own; see SuggestNewTeam().
-  bool IsAutocreate : 1 = false;
+  bool is_autocreate_ : 1 = false;
 
   // The computer builds the members of this team type ahead of time, whether
   // or not a team of the type exists yet.
-  bool IsPrebuilt : 1 = true;
+  bool is_prebuilt_ : 1 = true;
 
   // A team in the field keeps recruiting replacements for lost members. If
   // false it fights until it is dead; unlike a suicide team, its members
   // still defend themselves.
-  bool IsReinforcable : 1 = true;
+  bool is_reinforceable_ : 1 = true;
 
   // Created only to bring on reinforcements for one special event (the
   // paratrooper drop), not by the scenario.
-  bool IsTransient : 1 = false;
+  bool is_transient_ : 1 = false;
 
   // Rank among teams when recruiting, 0 to 15: a team takes members from
   // teams of lower priority.
-  int RecruitPriority = 7;
+  int recruit_priority_ = 7;
 
   // The scenario's "initial number" of teams of this type. Read, written and
   // saved, but nothing creates teams from it.
-  unsigned char InitNum = 0;
+  unsigned char initial_count_ = 0;
 
   // The most teams of this type that may exist at one time.
-  unsigned char MaxAllowed = 0;
+  unsigned char max_teams_ = 0;
 
   // Unused; kept because it is in the saved game.
-  unsigned char Fear = 0;
+  unsigned char fear_ = 0;
 
   // The house the teams belong to. HOUSE_NONE until ReadIniEntry() or the
   // editor sets it.
-  HousesType House = HOUSE_NONE;
+  HousesType house_ = HOUSE_NONE;
 
   // The trigger attached to each object as it joins a team of this type;
   // nullptr for none.
-  TriggerType* Trigger = nullptr;
+  TriggerType* trigger_ = nullptr;
 
   // The waypoint where a team of this type is created or brought on as a
   // reinforcement; -1 for none, otherwise below
   // ScenarioClass::kWaypointCount.
-  WAYPOINT Origin = -1;
+  WAYPOINT origin_ = -1;
 
   // The number of teams of this type that exist now.
-  int Number = 0;
+  int team_count_ = 0;
 
-  // The script: the first MissionCount entries of MissionList.
-  int MissionCount = 0;
-  TeamMission MissionList[kMaxMissions]{};
+  // The script: the first mission_count_ entries of missions_.
+  int mission_count_ = 0;
+  MissionArray missions_{};
 
-  // The members wanted: the first ClassCount entries of Members.
-  int ClassCount = 0;
-  TeamMember Members[kMaxMemberTypes];
-
+  // The members wanted: the first member_count_ entries of members_.
+  int member_count_ = 0;
+  MemberArray members_;
 };
 
 // Returns the kind of argument a team mission takes, NEED_NONE for a mission

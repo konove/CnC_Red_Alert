@@ -107,24 +107,25 @@ template void TeamMember::Serialize(ArchiveReader&);
 template <class Archive>
 void TeamType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
-  bool is_active = IsActive;
-  bool is_round_about = IsRoundAbout;
-  bool is_suicide = IsSuicide;
-  bool is_autocreate = IsAutocreate;
-  bool is_prebuilt = IsPrebuilt;
-  bool is_reinforcable = IsReinforcable;
-  bool is_transient = IsTransient;
+  bool is_active = is_active_;
+  bool is_round_about = is_roundabout_;
+  bool is_suicide = is_suicide_;
+  bool is_autocreate = is_autocreate_;
+  bool is_prebuilt = is_prebuilt_;
+  bool is_reinforcable = is_reinforceable_;
+  bool is_transient = is_transient_;
   ar(is_active, is_round_about, is_suicide, is_autocreate, is_prebuilt,
-     is_reinforcable, is_transient, RecruitPriority, InitNum, MaxAllowed, Fear,
-     House, game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger_type()), Origin,
-     Number, MissionCount, MissionList, ClassCount, Members);
-  IsActive = is_active;
-  IsRoundAbout = is_round_about;
-  IsSuicide = is_suicide;
-  IsAutocreate = is_autocreate;
-  IsPrebuilt = is_prebuilt;
-  IsReinforcable = is_reinforcable;
-  IsTransient = is_transient;
+     is_reinforcable, is_transient, recruit_priority_, initial_count_,
+     max_teams_, fear_, house_,
+     game::HeapSlotPtr(trigger_, TheObjectHeaps().trigger_type()), origin_,
+     team_count_, mission_count_, missions_, member_count_, members_);
+  is_active_ = is_active;
+  is_roundabout_ = is_round_about;
+  is_suicide_ = is_suicide;
+  is_autocreate_ = is_autocreate;
+  is_prebuilt_ = is_prebuilt;
+  is_reinforceable_ = is_reinforcable;
+  is_transient_ = is_transient;
 }
 template void TeamType::Serialize(ArchiveWriter&);
 template void TeamType::Serialize(ArchiveReader&);

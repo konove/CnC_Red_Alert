@@ -1181,9 +1181,9 @@ int AircraftClass::Mission_Unload() {
         if (!Is_LZ_Clear(NavCom)) {
           const FootClass* foot = Attached_Object();
           if (foot != nullptr && foot->Team &&
-              foot->Team->Class->Origin != -1) {
+              foot->Team->Class->origin() != -1) {
             Assign_Destination(Target::FromCell(
-                base::At(TheScenario().Waypoint, foot->Team->Class->Origin)));
+                base::At(TheScenario().Waypoint, foot->Team->Class->origin())));
           } else {
             Assign_Destination(New_LZ(Target::FromCell(
                 base::At(TheScenario().Waypoint,

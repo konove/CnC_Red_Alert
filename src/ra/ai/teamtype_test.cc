@@ -38,19 +38,19 @@ class TeamTypeTest : public UiFixture {
 TEST_F(TeamTypeTest, ReadIniEntrySkipsAnUnknownFirstMember) {
   team_type_->ReadIniEntry("tanks", "2,0,7,0,1,-1,-1,2,BOGUS:1,E1:3,1,3:5");
 
-  ASSERT_EQ(team_type_->ClassCount, 1);
-  EXPECT_EQ(team_type_->Members[0].type,
+  ASSERT_EQ(team_type_->member_count(), 1);
+  EXPECT_EQ(team_type_->members()[0].type,
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
-  EXPECT_EQ(team_type_->Members[0].quantity, 3);
-  ASSERT_EQ(team_type_->MissionCount, 1);
-  EXPECT_EQ(team_type_->MissionList[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->MissionList[0].value(), 5);
+  EXPECT_EQ(team_type_->members()[0].quantity, 3);
+  ASSERT_EQ(team_type_->mission_count(), 1);
+  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
+  EXPECT_EQ(team_type_->missions()[0].value(), 5);
 }
 
 TEST_F(TeamTypeTest, ReadIniEntryTakesAnOriginThatIsNoWaypointAsNone) {
   team_type_->ReadIniEntry("tanks", "2,0,7,0,1,500,-1,0,0");
 
-  EXPECT_EQ(team_type_->Origin, -1);
+  EXPECT_EQ(team_type_->origin(), -1);
 }
 
 }  // namespace

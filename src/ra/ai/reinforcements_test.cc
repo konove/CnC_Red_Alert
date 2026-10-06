@@ -5,7 +5,6 @@
 
 #include <vector>
 
-#include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "game/sim/direction.h"
@@ -82,20 +81,15 @@ class ReinforcementTest : public GameFixture {
                                 const int count) {
     auto* team_type = base::NewPooled<TeamType>();
     EXPECT_NE(team_type, nullptr);
-    team_type->House = HOUSE_USSR;
-    team_type->ClassCount = 1;
-    team_type->Members[0].type = &member_type;
-    team_type->Members[0].quantity = count;
+    team_type->set_house(HOUSE_USSR);
+    team_type->AddMember({.quantity = count, .type = &member_type});
     return *team_type;
   }
 
   // Adds `count` objects of `member_type` to `team_type`.
   static void AddMembers(TeamType& team_type,
                          const TechnoTypeClass& member_type, const int count) {
-    TeamMember& member = base::At(team_type.Members, team_type.ClassCount);
-    member.type = &member_type;
-    member.quantity = count;
-    team_type.ClassCount++;
+    team_type.AddMember({.quantity = count, .type = &member_type});
   }
 
   // Puts `object` on the map in `cell`.
@@ -209,7 +203,7 @@ TEST_F(ReinforcementTest, GivesUpOnATeamThatNoEdgeCellTakes) {
   // Nothing leaves limbo while the game is not active, so every cell fails.
   TheGameState().active() = false;
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 2);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -313,7 +307,7 @@ TEST_F(ReinforcementTest, InfantryThatCannotLeaveTheBuildingIsDeleted) {
   Place(base::NewPooled<BuildingClass>(STRUCT_BARRACKS, HOUSE_USSR), kOrigin);
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_FALSE(DeliverReinforcements(&team_type));
 
@@ -328,7 +322,7 @@ TEST_F(ReinforcementTest,
   TheScenario().Waypoint[0] = Cell::FromXY(3, 20);
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -348,7 +342,7 @@ TEST_F(ReinforcementTest,
   Place(jeep, kOrigin);
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -367,7 +361,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportOnItsOrigin) {
   Place(apc, kOrigin);
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -389,7 +383,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamLeavesTheBuildingAtItsOrigin) {
   TheWorld().scenario_init()--;
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -413,7 +407,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportAtItsOrigin) {
   Place(apc, kOrigin.Offset(-1));
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -435,7 +429,7 @@ TEST_F(ReinforcementTest, AVehicleTeamIgnoresTheTransportAtItsOrigin) {
   auto* apc = base::NewPooled<UnitClass>(UNIT_APC, HOUSE_USSR);
   Place(apc, kOrigin);
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 1);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -478,8 +472,7 @@ TEST_F(ReinforcementTest, AGroundTransportThatUnloadsIsNotALoaner) {
   house_->Control.Edge = SOURCE_WEST;
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_APC), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
-  team_type.MissionCount = 1;
-  team_type.MissionList[0].set_mission(TeamMissionType::kUnload);
+  team_type.AddMission({TeamMissionType::kUnload, 0});
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -500,8 +493,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterIsALoanerOnlyWhenTheTeamUnloads) {
   // empty transport helicopter is handed to the house afterwards.
   TeamType& unloading = MakeTeamType(helicopter, 1);
   AddMembers(unloading, soldier, 1);
-  unloading.MissionCount = 1;
-  unloading.MissionList[0].set_mission(TeamMissionType::kUnload);
+  unloading.AddMission({TeamMissionType::kUnload, 0});
   TeamType& empty = MakeTeamType(helicopter, 1);
 
   EXPECT_TRUE(DeliverReinforcements(&unloading));
@@ -520,7 +512,7 @@ TEST_F(ReinforcementTest, AnAntTeamComesOutOfTheAntHillAtItsOrigin) {
   TheScenario().Waypoint[0] = kHill;
   TheMap().at(kHill).TType = TEMPLATE_HILL01;
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_ANT1), 1);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -536,12 +528,12 @@ TEST_F(ReinforcementTest, AnAntTeamWithoutAnAntHillEntersFromTheEdge) {
   TheRules().ground().at(LAND_CLEAR).Cost.at(SPEED_FOOT) = Fixed(1);
   TheScenario().Waypoint[0] = Cell::FromXY(3, 20);
   TeamType& ants = MakeTeamType(UnitTypeClass::As_Reference(UNIT_ANT1), 1);
-  ants.Origin = 0;
+  ants.set_origin(0);
   // Only ants use the hill.
   TheScenario().Waypoint[1] = Cell::FromXY(3, 40);
   TheMap().at(TheScenario().Waypoint[1]).TType = TEMPLATE_HILL01;
   TeamType& jeeps = MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 1);
-  jeeps.Origin = 1;
+  jeeps.set_origin(1);
 
   EXPECT_TRUE(DeliverReinforcements(&ants));
   EXPECT_TRUE(DeliverReinforcements(&jeeps));
@@ -592,7 +584,7 @@ TEST_F(ReinforcementTest, AnAircraftWithAnOriginArrivesFacingIt) {
   house_->Control.Edge = SOURCE_EAST;
   TeamType& team_type =
       MakeTeamType(AircraftTypeClass::As_Reference(AIRCRAFT_YAK), 1);
-  team_type.Origin = 0;
+  team_type.set_origin(0);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
@@ -730,15 +722,15 @@ TEST_F(ReinforcementTest, ATeamTypeWithoutMissionsAttacksItsOrigin) {
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
-  ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].mission(),
+  ASSERT_EQ(team_type.mission_count(), 1);
+  EXPECT_EQ(team_type.missions()[0].mission(),
             TeamMissionType::kAttackWaypoint);
-  EXPECT_EQ(team_type.MissionList[0].value(), -1);
+  EXPECT_EQ(team_type.missions()[0].value(), -1);
 }
 
 TEST_F(ReinforcementTest, ATeamTypeWithoutMembersDeliversNothing) {
   TeamType& team_type = MakeTeamType(UnitTypeClass::As_Reference(UNIT_JEEP), 1);
-  team_type.ClassCount = 0;
+  team_type.ClearMembers();
 
   EXPECT_FALSE(DeliverReinforcements(&team_type));
 

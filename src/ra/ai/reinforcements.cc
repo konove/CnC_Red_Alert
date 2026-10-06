@@ -122,9 +122,9 @@ static FootClass* CreateGroup(TeamType* team_type) {
   }
 
   bool has_unload_mission = false;
-  for (int mission_index = 0; mission_index < team_type->MissionCount;
+  for (int mission_index = 0; mission_index < team_type->mission_count();
        mission_index++) {
-    if (base::At(team_type->MissionList, mission_index).mission() ==
+    if (base::At(team_type->missions(), mission_index).mission() ==
         TeamMissionType::kUnload) {
       has_unload_mission = true;
       break;
@@ -134,10 +134,10 @@ static FootClass* CreateGroup(TeamType* team_type) {
   // Create the members, sorting them into transports and everything else.
   FootClass* transports = nullptr;
   FootClass* riders = nullptr;
-  HouseClass* const house = HouseClass::As_Pointer(team_type->House);
-  for (int member_index = 0; member_index < team_type->ClassCount;
+  HouseClass* const house = HouseClass::As_Pointer(team_type->house());
+  for (int member_index = 0; member_index < team_type->member_count();
        member_index++) {
-    const TeamMember& entry = base::At(team_type->Members, member_index);
+    const TeamMember& entry = base::At(team_type->members(), member_index);
     const TechnoTypeClass* member_type = entry.type;
 
     for (int copy = 0; copy < entry.quantity; copy++) {
@@ -270,16 +270,15 @@ bool DeliverReinforcements(TeamType* team_type) {
   DCHECK(team_type != nullptr);
 
   // A type with no members has nothing to bring on.
-  if (team_type->ClassCount == 0) {
+  if (team_type->member_count() == 0) {
     return false;
   }
 
   // HACK ALERT! A team without missions would sit where it arrived, so the type
   // is given one: attack its origin waypoint. The team type keeps it.
-  if (team_type->MissionCount == 0) {
-    team_type->MissionCount = 1;
-    team_type->MissionList[0].set_mission(TeamMissionType::kAttackWaypoint);
-    team_type->MissionList[0].set_value(team_type->Origin);
+  if (team_type->mission_count() == 0) {
+    team_type->AddMission(
+        {TeamMissionType::kAttackWaypoint, team_type->origin()});
   }
 
   FootClass* group = CreateGroup(team_type);
@@ -292,9 +291,9 @@ bool DeliverReinforcements(TeamType* team_type) {
   // Infantry with an origin waypoint comes out of a building or a transport
   // there, if there is one. This relies on infantry never being a transport, so
   // the head of the list is a member and not a carrier.
-  if (team_type->Origin != -1 && IsAllInfantry(group)) {
+  if (team_type->origin() != -1 && IsAllInfantry(group)) {
     TechnoClass* host =
-        FindHostNear(base::At(TheScenario().Waypoint, team_type->Origin));
+        FindHostNear(base::At(TheScenario().Waypoint, team_type->origin()));
 
     if (host != nullptr) {
       return SendGroupOutOf(group, host);
@@ -303,7 +302,7 @@ bool DeliverReinforcements(TeamType* team_type) {
 
   // Otherwise the group moves onto the map under its own power, from the
   // house's map edge, or north when it has none.
-  SourceType edge = HouseClass::As_Pointer(team_type->House)->Control.Edge;
+  SourceType edge = HouseClass::As_Pointer(team_type->house())->Control.Edge;
   if (edge == SOURCE_NONE) {
     edge = SOURCE_NORTH;
   }
@@ -320,18 +319,20 @@ bool DeliverReinforcements(TeamType* team_type) {
   // With an origin waypoint they face that instead: Calculated_Cell() then
   // picks the edge nearest the waypoint, which need not be the house's.
   const Cell origin_cell =
-      team_type->Origin != -1
-          ? base::At(TheScenario().Waypoint, team_type->Origin)
+      team_type->origin() != -1
+          ? base::At(TheScenario().Waypoint, team_type->origin())
           : Cell::None();
 
-  Cell place_cell = TheMap().Calculated_Cell(
-      edge, team_type->Origin, Cell::None(), group->Techno_Type_Class()->Speed);
+  Cell place_cell =
+      TheMap().Calculated_Cell(edge, team_type->origin(), Cell::None(),
+                               group->Techno_Type_Class()->Speed);
   // Ants come straight out of the ant hill at their origin waypoint instead.
   const auto* lead_unit = dynamic_cast<UnitClass*>(group);
-  if (team_type->Origin != -1 && lead_unit != nullptr &&
+  if (team_type->origin() != -1 && lead_unit != nullptr &&
       (*lead_unit == UNIT_ANT1 || *lead_unit == UNIT_ANT2 ||
        *lead_unit == UNIT_ANT3)) {
-    const Cell hill_cell = base::At(TheScenario().Waypoint, team_type->Origin);
+    const Cell hill_cell =
+        base::At(TheScenario().Waypoint, team_type->origin());
     if (hill_cell != Cell::None() &&
         TheMap().at(hill_cell).TType == TEMPLATE_HILL01) {
       place_cell = hill_cell;
@@ -391,7 +392,7 @@ bool DeliverReinforcements(TeamType* team_type) {
   }
 
   // Announce the reinforcements to the player they belong to.
-  if (any_placed && team_type->House == ThePlayer()->Class->House) {
+  if (any_placed && team_type->house() == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
 

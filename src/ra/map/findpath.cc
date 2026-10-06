@@ -466,7 +466,7 @@ PathType* FootClass::Find_Path(Cell dest,
     return nullptr;
   }
 
-  if (Team && Team->Class->IsRoundAbout) {
+  if (Team && Team->Class->is_roundabout()) {
     unit_threat = Team ? Team->Risk : Risk();
     threat_stage = 0;
     threat = 0;

@@ -48,9 +48,9 @@ constexpr int kOkY = 221 + 4;
 // The second click on a script line loads it into the work mission, which
 // Append then adds to the script.
 TEST_F(TeamTypeDialogTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
-  team_type_->MissionCount = 1;
-  team_type_->MissionList[0].set_mission(TeamMissionType::kAttack);
-  team_type_->MissionList[0].set_quarry(QUARRY_BUILDINGS);
+  TeamMission attack(TeamMissionType::kAttack, 0);
+  attack.set_quarry(QUARRY_BUILDINGS);
+  team_type_->AddMission(attack);
   player()
       .At(3)
       .Click(kScriptX, kScriptRow0Y)
@@ -63,9 +63,9 @@ TEST_F(TeamTypeDialogTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
 
   EXPECT_TRUE(team_type_->Edit());
 
-  ASSERT_EQ(team_type_->MissionCount, 2);
-  EXPECT_EQ(team_type_->MissionList[1].mission(), TeamMissionType::kAttack);
-  EXPECT_EQ(team_type_->MissionList[1].quarry(), QUARRY_BUILDINGS);
+  ASSERT_EQ(team_type_->mission_count(), 2);
+  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kAttack);
+  EXPECT_EQ(team_type_->missions()[1].quarry(), QUARRY_BUILDINGS);
 }
 
 // The maximum and origin fields, in the row of fields along the top.
@@ -84,7 +84,7 @@ TEST_F(TeamTypeDialogTest, TheDialogReadsTheOriginAsWaypointLetters) {
 
   EXPECT_TRUE(team_type_->Edit());
 
-  EXPECT_EQ(team_type_->Origin, 27);
+  EXPECT_EQ(team_type_->origin(), 27);
 }
 
 // "ZZ" names waypoint 701; the scenario has 101.
@@ -100,7 +100,7 @@ TEST_F(TeamTypeDialogTest,
 
   EXPECT_TRUE(team_type_->Edit());
 
-  EXPECT_EQ(team_type_->Origin, -1);
+  EXPECT_EQ(team_type_->origin(), -1);
 }
 
 // The field takes a space after the first letter, and letters followed by a
@@ -116,7 +116,7 @@ TEST_F(TeamTypeDialogTest, TheDialogTakesOriginLettersThatAreNoWaypointAsNone) {
 
   EXPECT_TRUE(team_type_->Edit());
 
-  EXPECT_EQ(team_type_->Origin, -1);
+  EXPECT_EQ(team_type_->origin(), -1);
 }
 
 // The count fields take three digits and the team type stores a byte.
@@ -133,7 +133,7 @@ TEST_F(TeamTypeDialogTest, TheDialogCapsTheMaximumAtWhatTheTeamTypeHolds) {
 
   EXPECT_TRUE(team_type_->Edit());
 
-  EXPECT_EQ(team_type_->MaxAllowed, 255);
+  EXPECT_EQ(team_type_->max_teams(), 255);
 }
 
 }  // namespace

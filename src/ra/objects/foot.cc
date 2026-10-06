@@ -456,7 +456,7 @@ int FootClass::Mission_Move() {
   //	if (!TarCom && !House->IsPlayerControl && !House->IsHuman)
   //{
   if (!TarCom && !House->IsPlayerControl && !House->IsHuman &&
-      (Team == nullptr || !Team->Class->IsSuicide)) {
+      (Team == nullptr || !Team->Class->is_suicide())) {
     Target_Something_Nearby(THREAT_RANGE);
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
@@ -2574,9 +2574,9 @@ int FootClass::Mission_Retreat() {
         **	If this is part of a team, then pick the edge where the team as
         *likely *	entered from.
         */
-        if (Team != nullptr && Team->Class->Origin != -1) {
+        if (Team != nullptr && Team->Class->origin() != -1) {
           cell = TheMap().Calculated_Cell(
-              House->Control.Edge, Team->Class->Origin,
+              House->Control.Edge, Team->Class->origin(),
               Cell::Containing(Center_Coord()), Techno_Type_Class()->Speed);
         }
 

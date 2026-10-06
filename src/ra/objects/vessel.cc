@@ -1910,7 +1910,7 @@ int VesselClass::Mission_Retreat() {
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
         const Cell cell = TheMap().Calculated_Cell(
-            House->Control.Edge, Team != nullptr ? Team->Class->Origin : -1,
+            House->Control.Edge, Team != nullptr ? Team->Class->origin() : -1,
             Cell::Containing(Center_Coord()), Class->Speed);
         if (Team != nullptr) {
           Team->Remove(this);

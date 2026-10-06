@@ -5378,7 +5378,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *allow retaliation.
   */
   if (Is_Foot() && dynamic_cast<const FootClass*>(this)->Team != nullptr &&
-      dynamic_cast<const FootClass*>(this)->Team->Class->IsSuicide) {
+      dynamic_cast<const FootClass*>(this)->Team->Class->is_suicide()) {
     return false;
   }
 
