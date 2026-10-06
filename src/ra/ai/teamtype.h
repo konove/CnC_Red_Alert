@@ -170,7 +170,8 @@ class TeamTypeClass : public AbstractTypeClass {
   // Names this team type `name` and sets it from `entry`, a [TeamTypes] value
   // as Build_INI_Entry() writes it. The older scenario formats (NewINIFormat
   // 0 and 1) list the five options as separate 0/1 fields and put the trigger
-  // last. A member whose type name is unknown is skipped; a member or mission
+  // last. A member whose type name is unknown is skipped, and an origin that
+  // is not a waypoint of the scenario is taken as none; a member or mission
   // count that is missing or out of range leaves the team type with no
   // members and no missions.
   void Fill_In(std::string_view name, std::string_view entry);
@@ -296,7 +297,8 @@ class TeamTypeClass : public AbstractTypeClass {
   TriggerType* Trigger = nullptr;
 
   // The waypoint where a team of this type is created or brought on as a
-  // reinforcement; -1 for none.
+  // reinforcement; -1 for none, otherwise below
+  // ScenarioClass::kWaypointCount.
   WAYPOINT Origin = -1;
 
   // The number of teams of this type that exist now.

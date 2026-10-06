@@ -58,6 +58,12 @@ TEST_F(TeamTypeTest, FillInSkipsAnUnknownFirstMember) {
   EXPECT_EQ(team_type_->MissionList[0].Data.Value, 5);
 }
 
+TEST_F(TeamTypeTest, FillInTakesAnOriginThatIsNoWaypointAsNone) {
+  team_type_->Fill_In("tanks", "2,0,7,0,1,500,-1,0,0");
+
+  EXPECT_EQ(team_type_->Origin, -1);
+}
+
 // The second click on a script line loads it into the work mission, which
 // Append then adds to the script.
 TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
@@ -79,6 +85,39 @@ TEST_F(TeamTypeTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   ASSERT_EQ(team_type_->MissionCount, 2);
   EXPECT_EQ(team_type_->MissionList[1].Mission, TMISSION_ATTACK);
   EXPECT_EQ(team_type_->MissionList[1].Data.Quarry, QUARRY_BUILDINGS);
+}
+
+// The origin field, the last of the row of fields along the top.
+constexpr int kOriginX = 300 + 3;
+constexpr int kOriginY = 27 + 3;
+
+TEST_F(TeamTypeTest, TheDialogReadsTheOriginAsWaypointLetters) {
+  player()
+      .At(3)
+      .Click(kOriginX, kOriginY)
+      .At(5)
+      .Type("AB")
+      .At(12)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  EXPECT_EQ(team_type_->Origin, 27);
+}
+
+// "ZZ" names waypoint 701; the scenario has 101.
+TEST_F(TeamTypeTest, TheDialogTakesOriginLettersPastTheLastWaypointAsNone) {
+  player()
+      .At(3)
+      .Click(kOriginX, kOriginY)
+      .At(5)
+      .Type("ZZ")
+      .At(12)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  EXPECT_EQ(team_type_->Origin, -1);
 }
 
 }  // namespace

@@ -1087,6 +1087,10 @@ bool TeamTypeClass::Edit() {
         } else {
           Origin = -1;
         }
+        // Letters past the scenario's last waypoint name none.
+        if (Origin >= ScenarioClass::kWaypointCount) {
+          Origin = -1;
+        }
         cancel = false;
         process = false;
         break;
@@ -1295,9 +1299,9 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
-  // TODO: the house, the origin waypoint and the mission numbers below are
-  // taken from the file unchecked; an out-of-range one CHECK-fails later, where
-  // the team type is used.
+  // TODO: the house and the mission numbers below are taken from the file
+  // unchecked; an out-of-range one CHECK-fails later, where the team type is
+  // used.
   House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   // The scenario's NewINIFormat: 2 and up pack the options into one bit
@@ -1330,6 +1334,9 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   MaxAllowed =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   Origin = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  if (Origin < 0 || Origin >= ScenarioClass::kWaypointCount) {
+    Origin = -1;
+  }
 
   switch (TheWorld().new_ini_format()) {
     default:
