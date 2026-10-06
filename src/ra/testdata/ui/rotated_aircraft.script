@@ -1,0 +1,12 @@
+# The Yaks of the first Soviet mission. Fixed-wing aircraft are the only
+# objects drawn through the rotate-and-scale path: a plane has 16 pictures and
+# is turned by up to a 32nd of a circle for the facings between them. The Yaks
+# fly in, strafe the village and land on the airstrips, where they stay turned.
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 320 228
+at 650 shot flying_in
+at 950 shot over_the_village
+at 1200 shot landing
+at 1400 shot landed
+at 1401 quit
