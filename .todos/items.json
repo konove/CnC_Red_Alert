@@ -542,8 +542,8 @@
       "updated": "2026-10-06T02:03:47Z",
       "anchor": {
         "path": "src/ra/assets/shape_draw.cc",
-        "startLine": 182,
-        "endLine": 184,
+        "startLine": 195,
+        "endLine": 197,
         "text": "int PredatorOffset(const int frame, const int x, const int window_width) {\n  return x > window_width / 2 ? -frame : frame;\n}",
         "before": [
           "// The offset walks with the frame counter, which is what makes the cloak",
@@ -2017,27 +2017,26 @@
     },
     {
       "id": "T-88",
-      "title": "Consider stepping the source coordinates incrementally in ScaleRotateShape()",
-      "details": "`ra/assets/shape_draw.cc`.\n\nEach destination pixel recomputes `bx`/`by` with four multiplies; adding a constant per x (DDA) is cheaper, but the accumulated rounding can move pixels, so check it against a pixel diff of rotated and scaled shapes.",
-      "priority": "p3",
+      "title": "Fix the source sampling in ScaleRotateShape(), then step the coordinates incrementally",
+      "details": "`ra/assets/shape_draw.cc`.\n\nThe destination-to-source mapping has three defects, visible on an 8x6 test shape at a half turn, at west, and at north with scale 0x180:\n\n- It maps each destination pixel's corner (`x - width`), not its centre, so the result sits one pixel off the centre of the doubled frame.\n- `static_cast<int>` truncates toward zero, so source coordinates in (-1, 1) all become 0: the first source row and column are drawn one pixel too wide (13 columns where 12 are right at scale 1.5).\n- At quarter turns `std::cos`/`std::sin` return about 1e-16 instead of 0, so coordinates that should be exact integers fall on either side of a pixel boundary and rows come out spliced or duplicated.\n\nFix: sample the pixel centre (`x + 0.5 - width`, `y + 0.5 - height`), take `floor`, and use exact matrix entries (0, +-1) when the angle is a multiple of 64. Expected results: a half turn of an 8x6 shape is the source reversed in columns 4..11, rows 3..8; north at scale 1.5 is 12x9 in columns 2..13, rows 1..9 with every source pixel 1 or 2 wide. Add golden unit tests for these (the function has none); it changes how every rotated or scaled shape draws, usually by a one-pixel shift, so re-record the `tools/ui_check.py` screenshots that change.\n\nThen step the source coordinates per x (start computed once per row, a constant added per pixel) instead of four multiplies per pixel. Measured 2026-10-05 on the current mapping: 11.3 -> 8.0 us per 48x48 shape, but 5,503 of 10,240 rotation/scale/size cases moved pixels, 90% of them at quarter turns, because the accumulated rounding crosses the same exact boundaries. With centre sampling only 175 cases differ (odd-sized shapes at quarter turns, where a half-pixel centre still lands on a boundary); keep the stepping only if the golden tests and a sweep of all 256 rotations show it reproduces the corrected output exactly, e.g. by using the exact integer path for quarter turns. `std::floor` is a libm call without SSE4.1 and cost more than the stepping saved (30 vs 11 us), so floor with integer arithmetic or an offset that keeps the value positive.",
+      "priority": "p2",
       "tags": [
-        "refactoring",
-        "ra",
-        "needs-decision"
+        "bugs",
+        "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:43:35Z",
+      "updated": "2026-10-06T06:16:10Z",
       "anchor": {
         "path": "src/ra/assets/shape_draw.cc",
-        "startLine": 56,
-        "endLine": 56,
+        "startLine": 65,
+        "endLine": 65,
         "text": "std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,",
         "before": [
-          "// (2 * width) x (2 * height) image with the shape's centre at its centre, so a",
-          "// quarter turn of a non-square shape still fits. Pixel 0 is transparent, and",
-          "// whatever falls outside the doubled frame is cropped."
+          "",
+          "}  // namespace",
+          ""
         ],
         "after": [
           "                                      const int width, const int height,",

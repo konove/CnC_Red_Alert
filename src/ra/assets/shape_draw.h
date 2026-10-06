@@ -49,6 +49,15 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    game::DirType rotation = game::DIR_N,
                    int32_t scale = 0x0100);
 
+// Returns the width x height shape `pixels` scaled by `scale` (24.8 fixed
+// point, 0x100 = 1.0; zero draws nothing) and turned to `rotation`: a
+// (2 * width) x (2 * height) image with the shape's centre at its centre, so a
+// quarter turn of a non-square shape still fits. Pixel 0 is transparent, and
+// whatever falls outside the doubled frame is cropped.
+std::vector<uint8_t> ScaleRotateShape(std::span<const uint8_t> pixels,
+                                      int width, int height,
+                                      game::DirType rotation, int32_t scale);
+
 // Returns the offset the predator (cloak) effect samples the page at for a
 // shape drawn at x in a window window_width pixels wide on game frame `frame`:
 // the frame number, negated for a shape past the middle of the window.

@@ -48,11 +48,20 @@ using engine::gfx::ShapeFlags;
 
 namespace {
 
-// Returns the width x height shape `pixels` scaled by `scale` (24.8 fixed
-// point, 0x100 = 1.0; zero draws nothing) and turned to `rotation`: a
-// (2 * width) x (2 * height) image with the shape's centre at its centre, so a
-// quarter turn of a non-square shape still fits. Pixel 0 is transparent, and
-// whatever falls outside the doubled frame is cropped.
+// ScaleRotateShape() counts source coordinates in 2^32nds of a pixel.
+constexpr int64_t kSourceOne = 0x1'0000'0000;
+
+// ScaleRotateShape() counts destination positions in 512ths of a pixel, and
+// samples each destination pixel 2/512 up and left of its centre. At the
+// centre itself a quarter turn of an odd-sized shape, or a scale like 1.5,
+// puts samples exactly on the line between two source pixels, where the
+// rounding of the matrix would pick the side. Off the centre they fall the
+// same way at every rotation, and the shift is far too small to see.
+constexpr int kSamplesPerPixel = 512;
+constexpr int kSamplePoint = (kSamplesPerPixel / 2) - 2;
+
+}  // namespace
+
 std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
                                       const int width, const int height,
                                       const game::DirType rotation,
@@ -75,40 +84,44 @@ std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
   const auto angle =
       static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64);
   const double radians = angle * 2.0 * std::numbers::pi / 256.0;
-  const double cos_a = std::cos(radians);
-  const double sin_a = std::sin(radians);
 
   // scale is 24.8 fixed point, so 256 / scale is its reciprocal, which is
   // what the destination-to-source direction needs. The matrix's determinant
   // is 1, so undoing the scale is this single multiply.
-  const double inv_scale = 256.0 / scale;
-  const double src_cx = width / 2.0;
-  const double src_cy = height / 2.0;
+  //
+  // The matrix is rounded to fixed point once and everything after it is
+  // integer arithmetic. That makes stepping along a row exact, where adding a
+  // double per pixel would drift, and it rounds the 1e-16 that std::cos and
+  // std::sin return at a quarter turn to the zero it stands for.
+  const double sample_scale = (256.0 / scale) * kSourceOne / kSamplesPerPixel;
+  const int64_t sin_step = std::llround(std::sin(radians) * sample_scale);
+  const int64_t cos_step = std::llround(std::cos(radians) * sample_scale);
 
+  const int64_t src_width = width * kSourceOne;
+  const int64_t src_height = height * kSourceOne;
+  const int64_t rx = (kSamplesPerPixel * int64_t{-width}) + kSamplePoint;
   for (int y = 0; y < out_height; y++) {
-    const double ry = y - height;
-    const double row_x = cos_a * ry;
-    const double row_y = sin_a * ry;
+    const int64_t ry = (kSamplesPerPixel * int64_t{y - height}) + kSamplePoint;
+    int64_t src_x = (src_width / 2) + (sin_step * rx) + (cos_step * ry);
+    int64_t src_y = (src_height / 2) - (cos_step * rx) + (sin_step * ry);
     for (int x = 0; x < out_width; x++) {
-      const double rx = x - width;
-      const int bx =
-          static_cast<int>((((sin_a * rx) + row_x) * inv_scale) + src_cx);
-      const int by =
-          static_cast<int>((((-cos_a * rx) + row_y) * inv_scale) + src_cy);
-
       // Destination pixels that map outside the shape stay transparent.
-      if (bx >= 0 && bx < width && by >= 0 && by < height) {
+      // Testing before dividing keeps the division away from negative
+      // coordinates, which it would round up towards zero.
+      if (src_x >= 0 && src_x < src_width && src_y >= 0 && src_y < src_height) {
+        const int64_t bx = src_x / kSourceOne;
+        const int64_t by = src_y / kSourceOne;
         const uint8_t pixel = base::At(pixels, (by * width) + bx);
         if (pixel != 0) {
           dst.at(base::ToSize((y * out_width) + x)) = pixel;
         }
       }
+      src_x += sin_step * kSamplesPerPixel;
+      src_y -= cos_step * kSamplesPerPixel;
     }
   }
   return dst;
 }
-
-}  // namespace
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
