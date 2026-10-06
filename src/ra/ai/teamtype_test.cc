@@ -122,6 +122,22 @@ TEST_F(TeamTypeTest, TheDialogTakesOriginLettersPastTheLastWaypointAsNone) {
   EXPECT_EQ(team_type_->Origin, -1);
 }
 
+// The field takes a space after the first letter, and letters followed by a
+// space come out below zero.
+TEST_F(TeamTypeTest, TheDialogTakesOriginLettersThatAreNoWaypointAsNone) {
+  player()
+      .At(3)
+      .Click(kOriginX, kFieldRowY)
+      .At(5)
+      .Type("A ")
+      .At(12)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  EXPECT_EQ(team_type_->Origin, -1);
+}
+
 // The count fields take three digits and the team type stores a byte.
 TEST_F(TeamTypeTest, TheDialogCapsTheMaximumAtWhatTheTeamTypeHolds) {
   player()

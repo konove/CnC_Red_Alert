@@ -925,8 +925,9 @@ bool TeamType::Edit() {
         }
 
         Origin = WaypointFromLetters(origin_edit.Get_Text());
-        // Letters past the scenario's last waypoint name none.
-        if (Origin >= ScenarioClass::kWaypointCount) {
+        // Text that names no waypoint of the scenario - letters past the last
+        // one, or a letter and a space, which comes out negative - is none.
+        if (Origin < 0 || Origin >= ScenarioClass::kWaypointCount) {
           Origin = -1;
         }
         return true;
