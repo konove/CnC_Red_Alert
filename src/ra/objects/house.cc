@@ -2495,7 +2495,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
 
     case SPC_PARA_INFANTRY:
       if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
-        TeamType* ttype = TeamType::As_Pointer("@PINF");
+        TeamType* ttype = TeamType::From_Name("@PINF");
         if (ttype == nullptr) {
           ttype = base::NewPooled<TeamType>();
           if (ttype != nullptr) {

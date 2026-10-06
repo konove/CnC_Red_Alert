@@ -173,10 +173,6 @@ class TeamType : public AbstractTypeClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  // Returns the team type with this INI name, ignoring case, or nullptr if
-  // there is none or `name` is empty. Same as From_Name().
-  static TeamType* As_Pointer(std::string_view name);
-
   // Creates a team of this type for its house. Returns nullptr when
   // MaxAllowed teams of the type already exist (a limit scenario setup
   // ignores) or the team heap is full.

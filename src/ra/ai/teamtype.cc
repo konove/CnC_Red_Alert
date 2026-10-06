@@ -148,18 +148,6 @@ TeamType::~TeamType() = default;
 
 void TeamType::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
-TeamType* TeamType::As_Pointer(const std::string_view name) {
-  if (!name.empty()) {
-    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      if (absl::EqualsIgnoreCase(
-              name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
-        return TheObjectHeaps().team_type().ActiveAt(index);
-      }
-    }
-  }
-  return nullptr;
-}
-
 const char* TeamType::Name_From_Mission(TeamMissionType order) {
   return TMissions.at(order);
 }
