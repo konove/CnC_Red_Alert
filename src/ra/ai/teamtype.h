@@ -70,6 +70,11 @@ enum class TeamMissionType {
 // One line of a team type's script: a mission and its argument.
 class TeamMission {
  public:
+  TeamMission() = default;
+  // A mission with a number for its argument.
+  TeamMission(const TeamMissionType mission, const int value)
+      : mission_(mission), argument_{.value = value} {}
+
   // Saved-game support. The union travels through its widest member.
   template <class Archive>
   void Serialize(Archive& ar) {
@@ -85,11 +90,6 @@ class TeamMission {
   // highlighted when `selected`.
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
                bool selected, FontType font, TextPrintType flags) const;
-
-  TeamMission() = default;
-  // A mission with a number for its argument.
-  TeamMission(const TeamMissionType mission, const int value)
-      : mission_(mission), argument_{.value = value} {}
 
   [[nodiscard]] TeamMissionType mission() const { return mission_; }
   void set_mission(const TeamMissionType mission) { mission_ = mission; }
@@ -157,11 +157,11 @@ class TeamType : public AbstractTypeClass {
   // Takes its ID from the heap slot it is constructed in, so it must be
   // created through operator new.
   TeamType();
-  ~TeamType() override;
   TeamType(const TeamType&) = delete;
   TeamType& operator=(const TeamType&) = delete;
   TeamType(TeamType&&) = delete;
   TeamType& operator=(TeamType&&) = delete;
+  ~TeamType() override;
 
   // Allocates from the team type heap. Returns nullptr when the heap is full.
   void* operator new(std::size_t /*unused*/);

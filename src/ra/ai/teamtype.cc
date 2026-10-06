@@ -140,188 +140,6 @@ void DrawListEntry(PixelView& view, const std::string& text,
 
 }  // namespace
 
-void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
-                       int height, bool selected, FontType font,
-                       TextPrintType flags) const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    // Pixel columns of Description()'s fields after the name: house, origin,
-    // mission count, members.
-    static constexpr int kTabStops[] = {35, 60, 80, 100};
-    DrawListEntry(view, Description(), kTabStops, x, y, width, height, selected,
-                  font, flags);
-  }
-}
-
-TeamType::TeamType()
-    : AbstractTypeClass(RTTI_TEAMTYPE,
-                        TheObjectHeaps().team_type().SlotIndexOf(this),
-                        TXT_NONE, "") {}
-
-TeamType::~TeamType() = default;
-
-void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
-
-const char* TeamType::MissionName(TeamMissionType order) {
-  return kMissionNames.at(order);
-}
-
-void* TeamType::operator new(std::size_t /*unused*/) {
-  void* ptr = TheObjectHeaps().team_type().Allocate();
-  if (ptr) {
-    static_cast<TeamType*>(ptr)->is_active_ = true;
-  }
-  return ptr;
-}
-
-void TeamType::operator delete(void* ptr) {
-  if (ptr) {
-    static_cast<TeamType*>(ptr)->is_active_ = false;
-  }
-  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
-}
-
-TeamClass* TeamType::CreateTeam() {
-  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {
-    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
-  }
-  return nullptr;
-}
-
-void TeamType::DestroyTeams() const {
-  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-    const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
-
-    if (team->Class == this) {
-      // Deleting closes the gap in the heap's in-use list, so the next team
-      // is now at this position.
-      base::DeletePooled(team);
-      index--;
-    }
-  }
-}
-
-TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
-  // Only the first 20 candidates in heap order take part in the draw.
-  TeamType* choices[20];
-  int choice_count = 0;
-
-  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&
-                      choice_count < std::ssize(choices);
-       index++) {
-    TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
-
-    // A team type on the wrong side of the alert is treated as full.
-    const int limit =
-        alerted == candidate->is_autocreate() ? candidate->max_teams() : 0;
-    if (candidate->house() == house->Class->House &&
-        candidate->team_count() < limit) {
-      base::At(choices, choice_count++) = candidate;
-    }
-  }
-
-  if (choice_count > 0) {
-    return base::At(choices, RandomPick(0, choice_count - 1));
-  }
-  return nullptr;
-}
-
-TeamType* TeamType::FromName(const std::string_view name) {
-  if (!name.empty()) {
-    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      if (absl::EqualsIgnoreCase(
-              name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
-        return TheObjectHeaps().team_type().ActiveAt(index);
-      }
-    }
-  }
-  return nullptr;
-}
-
-NeedType TeamMissionNeeds(TeamMissionType mission) {
-  switch (mission) {
-    case TeamMissionType::kFormation:
-      return NEED_FORMATION;
-
-    case TeamMissionType::kAttack:
-      return NEED_QUARRY;
-
-    // A cell number, which the editor shows and reads in hex.
-    case TeamMissionType::kMoveCell:
-      return NEED_HEX_NUMBER;
-
-    case TeamMissionType::kSetGlobal:
-    case TeamMissionType::kGuard:
-    case TeamMissionType::kLoop:
-      return NEED_NUMBER;
-
-    case TeamMissionType::kPatrol:
-    case TeamMissionType::kMove:
-    case TeamMissionType::kAttackWaypoint:
-    case TeamMissionType::kSpy:
-      return NEED_WAYPOINT;
-
-    case TeamMissionType::kDo:
-      return NEED_MISSION;
-
-    case TeamMissionType::kNone:
-    case TeamMissionType::kAttackTarcom:
-    case TeamMissionType::kUnload:
-    case TeamMissionType::kDeploy:
-    case TeamMissionType::kHoundDog:
-    case TeamMissionType::kInvulnerable:
-    case TeamMissionType::kLoad:
-    default:
-      break;
-  }
-  return NEED_NONE;
-}
-
-void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
-                          int height, bool selected, FontType font,
-                          TextPrintType flags) const {
-  // Pixel columns of the mission's name and of a second field
-  // Description() never writes.
-  static constexpr int kTabStops[] = {13, 40};
-  DrawListEntry(view, Description(index), kTabStops, x, y, width, height,
-                selected, font, flags);
-}
-
-std::string TeamType::MemberDescription() const {
-  std::string text;
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    // "TYPE:count" for each kind of member, comma separated.
-    for (int index = 0; index < member_count_; index++) {
-      const TeamMember& member = base::At(members_, index);
-      absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
-                            member.type->IniName, member.quantity);
-    }
-
-    // The team list's last column has room for 25 characters.
-    constexpr std::string_view kEllipsis = "...";
-    constexpr std::size_t kMaxLength = 25;
-    if (text.size() > kMaxLength) {
-      text.resize(kMaxLength - kEllipsis.size());
-      text += kEllipsis;
-    }
-  }
-  return text;
-}
-
-std::string TeamType::Description() const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    const std::string origin_letters =
-        origin_ > -1 ? WaypointLetters(origin_) : "";
-
-    // A team read from a scenario that names no house for it has none.
-    const char* const house_suffix =
-        house_ == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(house_).Suffix;
-    return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
-                           is_autocreate_ ? '*' : ' ', origin_letters,
-                           mission_count_, MemberDescription());
-  }
-  return "";
-}
-
 std::string TeamMission::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     std::string text =
@@ -376,26 +194,67 @@ std::string TeamMission::Description(int index) const {
   return "";
 }
 
-void TeamType::set_origin(const WAYPOINT waypoint) {
-  origin_ =
-      waypoint >= 0 && waypoint < ScenarioClass::kWaypointCount ? waypoint : -1;
+void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
+                          int height, bool selected, FontType font,
+                          TextPrintType flags) const {
+  // Pixel columns of the mission's name and of a second field
+  // Description() never writes.
+  static constexpr int kTabStops[] = {13, 40};
+  DrawListEntry(view, Description(index), kTabStops, x, y, width, height,
+                selected, font, flags);
 }
 
-void TeamType::AddMission(const TeamMission& mission) {
-  CHECK(mission_count_ < kMaxMissions);
-  base::At(missions_, mission_count_++) = mission;
-}
+TeamType::TeamType()
+    : AbstractTypeClass(RTTI_TEAMTYPE,
+                        TheObjectHeaps().team_type().SlotIndexOf(this),
+                        TXT_NONE, "") {}
 
-void TeamType::AddMember(const TeamMember& member) {
-  CHECK(member_count_ < kMaxMemberTypes);
-  base::At(members_, member_count_++) = member;
-}
+TeamType::~TeamType() = default;
 
-void TeamType::Detach(Target target, bool /*unused*/) {
-  if (target.kind() == RTTI_TRIGGERTYPE && trigger_ != nullptr &&
-      trigger_ == target.AsTriggerType()) {
-    trigger_ = nullptr;
+void* TeamType::operator new(std::size_t /*unused*/) {
+  void* ptr = TheObjectHeaps().team_type().Allocate();
+  if (ptr) {
+    static_cast<TeamType*>(ptr)->is_active_ = true;
   }
+  return ptr;
+}
+
+void TeamType::operator delete(void* ptr) {
+  if (ptr) {
+    static_cast<TeamType*>(ptr)->is_active_ = false;
+  }
+  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
+}
+
+void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
+
+std::string TeamType::ToIniEntry() const {
+  uint32_t flags = 0;
+  flags |= is_roundabout_ ? 0x0001U : 0U;
+  flags |= is_suicide_ ? 0x0002U : 0U;
+  flags |= is_autocreate_ ? 0x0004U : 0U;
+  flags |= is_prebuilt_ ? 0x0008U : 0U;
+  flags |= is_reinforceable_ ? 0x0010U : 0U;
+
+  std::string entry =
+      absl::StrFormat("%d,%d,%d,%d,%d,%d,%d", house_, flags, recruit_priority_,
+                      initial_count_, max_teams_, origin_,
+                      TheObjectHeaps().trigger_type().PositionOf(trigger_));
+
+  // The members: a count, then Type:Quantity for each.
+  absl::StrAppendFormat(&entry, ",%d", member_count_);
+  for (int i = 0; i < member_count_; i++) {
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(members_, i).type->IniName,
+                          base::At(members_, i).quantity);
+  }
+
+  // The script: a count, then Mission:Argument for each, both as numbers.
+  absl::StrAppendFormat(&entry, ",%d", mission_count_);
+  for (int i = 0; i < mission_count_; i++) {
+    absl::StrAppendFormat(&entry, ",%d:%d", base::At(missions_, i).mission(),
+                          base::At(missions_, i).value());
+  }
+  return entry;
 }
 
 void TeamType::ReadIni(engine::file::IniFile& ini) {
@@ -511,33 +370,173 @@ void TeamType::WriteIni(engine::file::IniFile& ini) {
   }
 }
 
-std::string TeamType::ToIniEntry() const {
-  uint32_t flags = 0;
-  flags |= is_roundabout_ ? 0x0001U : 0U;
-  flags |= is_suicide_ ? 0x0002U : 0U;
-  flags |= is_autocreate_ ? 0x0004U : 0U;
-  flags |= is_prebuilt_ ? 0x0008U : 0U;
-  flags |= is_reinforceable_ ? 0x0010U : 0U;
-
-  std::string entry =
-      absl::StrFormat("%d,%d,%d,%d,%d,%d,%d", house_, flags, recruit_priority_,
-                      initial_count_, max_teams_, origin_,
-                      TheObjectHeaps().trigger_type().PositionOf(trigger_));
-
-  // The members: a count, then Type:Quantity for each.
-  absl::StrAppendFormat(&entry, ",%d", member_count_);
-  for (int i = 0; i < member_count_; i++) {
-    absl::StrAppendFormat(&entry, ",%s:%d", base::At(members_, i).type->IniName,
-                          base::At(members_, i).quantity);
+TeamClass* TeamType::CreateTeam() {
+  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {
+    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }
-
-  // The script: a count, then Mission:Argument for each, both as numbers.
-  absl::StrAppendFormat(&entry, ",%d", mission_count_);
-  for (int i = 0; i < mission_count_; i++) {
-    absl::StrAppendFormat(&entry, ",%d:%d", base::At(missions_, i).mission(),
-                          base::At(missions_, i).value());
-  }
-  return entry;
+  return nullptr;
 }
 
+void TeamType::DestroyTeams() const {
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
+
+    if (team->Class == this) {
+      // Deleting closes the gap in the heap's in-use list, so the next team
+      // is now at this position.
+      base::DeletePooled(team);
+      index--;
+    }
+  }
+}
+
+void TeamType::Detach(Target target, bool /*unused*/) {
+  if (target.kind() == RTTI_TRIGGERTYPE && trigger_ != nullptr &&
+      trigger_ == target.AsTriggerType()) {
+    trigger_ = nullptr;
+  }
+}
+
+void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
+                       int height, bool selected, FontType font,
+                       TextPrintType flags) const {
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    // Pixel columns of Description()'s fields after the name: house, origin,
+    // mission count, members.
+    static constexpr int kTabStops[] = {35, 60, 80, 100};
+    DrawListEntry(view, Description(), kTabStops, x, y, width, height, selected,
+                  font, flags);
+  }
+}
+
+const char* TeamType::MissionName(TeamMissionType order) {
+  return kMissionNames.at(order);
+}
+
+TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
+  // Only the first 20 candidates in heap order take part in the draw.
+  TeamType* choices[20];
+  int choice_count = 0;
+
+  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&
+                      choice_count < std::ssize(choices);
+       index++) {
+    TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
+
+    // A team type on the wrong side of the alert is treated as full.
+    const int limit =
+        alerted == candidate->is_autocreate() ? candidate->max_teams() : 0;
+    if (candidate->house() == house->Class->House &&
+        candidate->team_count() < limit) {
+      base::At(choices, choice_count++) = candidate;
+    }
+  }
+
+  if (choice_count > 0) {
+    return base::At(choices, RandomPick(0, choice_count - 1));
+  }
+  return nullptr;
+}
+
+TeamType* TeamType::FromName(const std::string_view name) {
+  if (!name.empty()) {
+    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+      if (absl::EqualsIgnoreCase(
+              name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
+        return TheObjectHeaps().team_type().ActiveAt(index);
+      }
+    }
+  }
+  return nullptr;
+}
+
+std::string TeamType::MemberDescription() const {
+  std::string text;
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    // "TYPE:count" for each kind of member, comma separated.
+    for (int index = 0; index < member_count_; index++) {
+      const TeamMember& member = base::At(members_, index);
+      absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
+                            member.type->IniName, member.quantity);
+    }
+
+    // The team list's last column has room for 25 characters.
+    constexpr std::string_view kEllipsis = "...";
+    constexpr std::size_t kMaxLength = 25;
+    if (text.size() > kMaxLength) {
+      text.resize(kMaxLength - kEllipsis.size());
+      text += kEllipsis;
+    }
+  }
+  return text;
+}
+
+std::string TeamType::Description() const {
+  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
+    const std::string origin_letters =
+        origin_ > -1 ? WaypointLetters(origin_) : "";
+
+    // A team read from a scenario that names no house for it has none.
+    const char* const house_suffix =
+        house_ == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(house_).Suffix;
+    return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
+                           is_autocreate_ ? '*' : ' ', origin_letters,
+                           mission_count_, MemberDescription());
+  }
+  return "";
+}
+
+void TeamType::set_origin(const WAYPOINT waypoint) {
+  origin_ =
+      waypoint >= 0 && waypoint < ScenarioClass::kWaypointCount ? waypoint : -1;
+}
+
+void TeamType::AddMission(const TeamMission& mission) {
+  CHECK(mission_count_ < kMaxMissions);
+  base::At(missions_, mission_count_++) = mission;
+}
+
+void TeamType::AddMember(const TeamMember& member) {
+  CHECK(member_count_ < kMaxMemberTypes);
+  base::At(members_, member_count_++) = member;
+}
+
+NeedType TeamMissionNeeds(TeamMissionType mission) {
+  switch (mission) {
+    case TeamMissionType::kFormation:
+      return NEED_FORMATION;
+
+    case TeamMissionType::kAttack:
+      return NEED_QUARRY;
+
+    // A cell number, which the editor shows and reads in hex.
+    case TeamMissionType::kMoveCell:
+      return NEED_HEX_NUMBER;
+
+    case TeamMissionType::kSetGlobal:
+    case TeamMissionType::kGuard:
+    case TeamMissionType::kLoop:
+      return NEED_NUMBER;
+
+    case TeamMissionType::kPatrol:
+    case TeamMissionType::kMove:
+    case TeamMissionType::kAttackWaypoint:
+    case TeamMissionType::kSpy:
+      return NEED_WAYPOINT;
+
+    case TeamMissionType::kDo:
+      return NEED_MISSION;
+
+    case TeamMissionType::kNone:
+    case TeamMissionType::kAttackTarcom:
+    case TeamMissionType::kUnload:
+    case TeamMissionType::kDeploy:
+    case TeamMissionType::kHoundDog:
+    case TeamMissionType::kInvulnerable:
+    case TeamMissionType::kLoad:
+    default:
+      break;
+  }
+  return NEED_NONE;
+}
 }  // namespace ra
