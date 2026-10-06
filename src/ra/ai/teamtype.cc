@@ -16,50 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/TEAMTYPE.CPP 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : TEAMTYPE.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/28/96 *
- *                                                                                             *
- *                  Last Update : July 30, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * TeamMissionClass::Description -- Compose a text description of
- *team mi                    * TeamMissionClass::Draw_It -- Draws a team mission
- *list box entry.                         * TeamMission_Needs -- Determines what
- *extra data is needed by team miss                    *
- *   TeamTypeClass::As_Pointer -- gets ptr for team type with given name *
- *   TeamTypeClass::Build_INI_Entry -- Builds the INI entry for this team type.
- ** TeamTypeClass::Create_One_Of -- Creates a team of this type. *
- *   TeamTypeClass::Description -- Builds a description of the team. *
- *   TeamTypeClass::Destroy_All_Of -- Destroy all teams of this type. *
- *   TeamTypeClass::Detach -- Detach the specified target from this team type. *
- *   TeamTypeClass::Draw_It -- Display the team type in a list box. *
- *   TeamTypeClass::Edit -- Edit the team type. * TeamTypeClass::Fill_In --
- *fills in trigger from the given INI entry                       *
- *   TeamTypeClass::From_Name -- Converts a name into a team type pointer. *
- *   TeamTypeClass::Init -- pre-scenario initialization *
- *   TeamTypeClass::Member_Description -- Builds a member description string *
- *   TeamTypeClass::Mission_From_Name -- returns mission for given name *
- *   TeamTypeClass::Name_From_Mission -- returns name for given mission *
- *   TeamTypeClass::Read_INI -- reads INI data *
- *   TeamTypeClass::Suggested_New_Team -- Suggests a new team to create. *
- *   TeamTypeClass::TeamTypeClass -- class constructor *
- *   TeamTypeClass::Write_INI -- Write out the team types to the INI database. *
- *   TeamTypeClass::operator delete -- 'delete' operator *
- *   TeamTypeClass::operator new -- 'new' operator *
- *   TeamTypeClass::~TeamTypeClass -- class destructor *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Team types: reading and writing them in a scenario INI, picking one for the
+// computer to build, and the scenario editor's dialog and list text for them.
 
 #include "ra/ai/teamtype.h"
 
@@ -129,28 +87,16 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
+// Parses a hex number for the editor's cell-number field.
 static int atoh(const char* str);
 
-/***********************************************************************************************
- * TeamTypeClass::Draw_It -- Display the team type in a list box. *
- *                                                                                             *
- *    This is a helper routine that is used when this team type is stored into a
- *list box      * and must be displayed. It will display the team type as a
- *single line of text.           *
- *                                                                                             *
- * INPUT:   see below... *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/30/1996 JLB : Created. *
- *=============================================================================================*/
 void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                             int width, int height, bool selected, FontType font,
                             TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
+    // Pixel columns of Description()'s fields after the name: house, origin,
+    // mission count, members.
     static const int _tabs[] = {35, 60, 80, 100};
     if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
@@ -174,9 +120,6 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   }
 }
 
-/*
-********************************** Globals **********************************
-*/
 base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
     TeamTypeClass::TMissions = {"Attack...",
                                 "Attack Waypoint...",
@@ -196,19 +139,6 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
                                 "Spy on bldg @ waypt...",
                                 "Patrol to waypoint..."};
 
-/***************************************************************************
- * TeamTypeClass::TeamTypeClass -- class constructor                       *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *   11/22/1995 JLB : Uses initializer constructor method.                 *
- *=========================================================================*/
 TeamTypeClass::TeamTypeClass()
     : AbstractTypeClass(RTTI_TEAMTYPE,
                         TheObjectHeaps().team_type().SlotIndexOf(this),
@@ -216,35 +146,8 @@ TeamTypeClass::TeamTypeClass()
 
 TeamTypeClass::~TeamTypeClass() = default;
 
-/***************************************************************************
- * TeamTypeClass::Init -- pre-scenario initialization                      *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
-/***************************************************************************
- * TeamTypeClass::As_Pointer -- gets ptr for team type with given name     *
- *                                                                         *
- * INPUT:                                                                  *
- *      name      name of teamtype                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      ptr to TeamType with that name                                     *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
 TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
@@ -257,21 +160,6 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const std::string_view name) {
   return nullptr;
 }
 
-/***************************************************************************
- * TeamTypeClass::Mission_From_Name -- returns team mission for given name *
- *                                                                         *
- * INPUT:                                                                  *
- *      name         name to compare                                       *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      mission for that name                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/13/1994 BR : Created.                                              *
- *=========================================================================*/
 TeamMissionType TeamTypeClass::Mission_From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (TeamMissionType order = TMISSION_ATTACK; order < TMISSION_COUNT;
@@ -285,42 +173,12 @@ TeamMissionType TeamTypeClass::Mission_From_Name(const std::string_view name) {
   return TMISSION_NONE;
 }
 
-/***************************************************************************
- * TeamTypeClass::Name_From_Mission -- returns name for given mission      *
- *                                                                         *
- * INPUT:                                                                  *
- *      order      mission to get name for                                 *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      name of mission                                                    *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/13/1994 BR : Created.                                              *
- *=========================================================================*/
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   DCHECK(static_cast<unsigned>(order) < static_cast<unsigned>(TMISSION_COUNT));
 
   return TMissions.at(order);
 }
 
-/***************************************************************************
- * TeamTypeClass::operator new -- 'new' operator                           *
- *                                                                         *
- * INPUT:                                                                  *
- *      none.                                                              *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      pointer to new TeamType                                            *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/28/1994 BR : Created.                                              *
- *=========================================================================*/
 void* TeamTypeClass::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
@@ -329,21 +187,6 @@ void* TeamTypeClass::operator new(std::size_t /*unused*/) {
   return ptr;
 }
 
-/***************************************************************************
- * TeamTypeClass::operator delete -- 'delete' operator                     *
- *                                                                         *
- * INPUT:                                                                  *
- *      ptr      pointer to delete                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/28/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = false;
@@ -351,20 +194,6 @@ void TeamTypeClass::operator delete(void* ptr) {
   TheObjectHeaps().team_type().Free(static_cast<TeamTypeClass*>(ptr));
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Create_One_Of -- Creates a team of this type. *
- *                                                                                             *
- *    Use this routine to create a team object from this team type. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the newly created team object. If one
- *could not be       * created, then nullptr is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/21/1995 JLB : Created. *
- *=============================================================================================*/
 TeamClass* TeamTypeClass::Create_One_Of() {
   if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
@@ -372,65 +201,23 @@ TeamClass* TeamTypeClass::Create_One_Of() {
   return nullptr;
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Destroy_All_Of -- Destroy all teams of this type. *
- *                                                                                             *
- *    This routine will destroy all teams of this type. Typical use of this is
- *from a trigger  * event. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/21/1995 JLB : Created. *
- *=============================================================================================*/
 void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
     if (team->Class == this) {
+      // Deleting closes the gap in the heap's in-use list, so the next team
+      // is now at this position.
       base::DeletePooled(team);
       index--;
     }
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Suggested_New_Team -- Suggests a new team to create. *
- *                                                                                             *
- *    This routine will scan through the team types available and create teams
- *of the          * type that can best utilize the existing unit mix. *
- *                                                                                             *
- * INPUT:   house    -- Pointer to the house that this team is to be created
- *for.              *
- *                                                                                             *
- *          atypes   -- A bit mask of the aircraft types available for this
- *house.             *
- *                                                                                             *
- *          utypes   -- A bit mask of the unit types available for this house. *
- *                                                                                             *
- *          itypes   -- A bit mask of the infantry types available for this
- *house.             *
- *                                                                                             *
- *          vtypes   -- A bit mask of the vessel types available for this house.
- **
- *                                                                                             *
- *          alerted  -- Is this house alerted? If true, then the Autocreate
- *teams will be      * considered in the selection process. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the team type that should be created. If
- *no team should  * be created, then it returns nullptr. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
- *even if no members in field.                        *
- *=============================================================================================*/
 TeamTypeClass* TeamTypeClass::Suggested_New_Team(
     HouseClass* house, uint64_t /*unused*/, uint64_t /*unused*/,
     uint64_t /*unused*/, uint64_t /*unused*/, bool alerted) {
+  // Only the first 20 candidates in heap order take part in the draw.
   TeamTypeClass* choices[20];
   int choicecount = 0;
 
@@ -439,6 +226,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
 
     DCHECK(ttype != nullptr);
 
+    // A team type on the wrong side of the alert is treated as full.
     int maxnum = ttype->MaxAllowed;
     if ((alerted && !ttype->IsAutocreate) ||
         (!alerted && ttype->IsAutocreate)) {
@@ -461,21 +249,6 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   return nullptr;
 }
 
-/***********************************************************************************************
- * TeamTypeClass::From_Name -- Converts a name into a team type pointer. *
- *                                                                                             *
- *    This routine is used to convert an ASCII name of a team type into the
- *corresponding      * team type pointer. *
- *                                                                                             *
- * INPUT:   name  -- Pointer to the ASCII name of the team type. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the team type that this ASCII name
- *represents. If there  * is no match, the nullptr is returned. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/26/1996 JLB : Created. *
- *=============================================================================================*/
 TeamTypeClass* TeamTypeClass::From_Name(const std::string_view name) {
   if (!name.empty()) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
@@ -488,37 +261,15 @@ TeamTypeClass* TeamTypeClass::From_Name(const std::string_view name) {
   return nullptr;
 }
 
-/***********************************************************************************************
- * TeamMission_Needs -- Determines what extra data is needed by team mission. *
- *                                                                                             *
- *    This routine will return the required extra data that the specified team
- *mission will    * need. *
- *                                                                                             *
- * INPUT:   tmtype   -- The team mission type to check. *
- *                                                                                             *
- * OUTPUT:  Returns with the data type needed for this team mission. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/26/1996 JLB : Created. *
- *=============================================================================================*/
 NeedType TeamMission_Needs(TeamMissionType tmtype) {
   switch (tmtype) {
-    /*
-    **	Requires a formation type.
-    */
     case TMISSION_FORMATION:
       return NEED_FORMATION;
 
-    /*
-    **	Team mission requires a target quarry value.
-    */
     case TMISSION_ATTACK:
       return NEED_QUARRY;
 
-    /*
-    **	Team mission requires a data value.
-    */
+    // A cell number, which the editor shows and reads in hex.
     case TMISSION_MOVECELL:
       return NEED_HEX_NUMBER;
 
@@ -527,18 +278,12 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
     case TMISSION_LOOP:
       return NEED_NUMBER;
 
-    /*
-    **	Team mission requires a waypoint.
-    */
     case TMISSION_PATROL:
     case TMISSION_MOVE:
     case TMISSION_ATT_WAYPT:
     case TMISSION_SPY:
       return NEED_WAYPOINT;
 
-    /*
-    **	Team mission requires a general mission type.
-    */
     case TMISSION_DO:
       return NEED_MISSION;
 
@@ -556,38 +301,12 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
   return NEED_NONE;
 }
 
-/***********************************************************************************************
- * TeamMissionClass::Draw_It -- Draws a team mission list box entry. *
- *                                                                                             *
- *    This routine will display a team mission list box entry. It converts the
- *index number    * into the appropriate text string and then displays the text
- *at the coordinates           * specified. *
- *                                                                                             *
- * INPUT:   index    -- The index number to use when rendering the team mission.
- **
- *                                                                                             *
- *          x,y      -- The X,Y coordinate to use when drawing the team mission
- *entry.         *
- *                                                                                             *
- *          width, height  -- The dimensions of the area that the description
- *can be           * rendered into. *
- *                                                                                             *
- *          selected -- Is this entry currently selected? If so, then it should
- *be rendered    * differently. *
- *                                                                                             *
- *          flags    -- Text print control flags used for when the text is
- *printed.            *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/05/1996 JLB : Created. *
- *=============================================================================================*/
 void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
                                int width, int height, bool selected,
                                FontType font, TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
+  // Pixel columns of the mission's name and of a second field
+  // Description() never writes.
   static const int _tabs[] = {13, 40};
   if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
@@ -610,24 +329,8 @@ void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Edit -- Edit the team type. *
- *                                                                                             *
- *    This routine handles the editing dialog box for the team type. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Was the team type edited? A FALSE indicates that the dialog was
- *canceled.          *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/05/1996 JLB : Created. *
- *=============================================================================================*/
 bool TeamTypeClass::Edit() {
-  /*
-  **	Dialog & button dimensions
-  */
+  // Dialog and button dimensions, in pixels of the editor's 640x400 screen.
   constexpr int kDDialogW = 400;
   constexpr int kDDialogH = 250;
   constexpr int kDDialogX = 0;
@@ -652,9 +355,7 @@ bool TeamTypeClass::Edit() {
   constexpr int kDOkX = kDDialogX + kDDialogW - ((kDOkW + 18) * 2);
   constexpr int kDOkY = kDCancelY;
 
-  /*
-  **	Button enumerations:
-  */
+  // Control IDs; Input() returns the one that was used.
   constexpr int kButtonName = 100;
   constexpr int kButtonRecruit = 101;
   constexpr int kButtonMaxnum = 102;
@@ -681,15 +382,11 @@ bool TeamTypeClass::Edit() {
   constexpr int kButtonCancel = 124;
   constexpr int kButtonQuarry = 125;
 
-  /*
-  **	Dialog variables:
-  */
+  // Head of the dialog's control list.
   game::ControlClass* commands = nullptr;
   RemapControlType* scheme = Get_Color_Scheme();
 
-  /*
-  **	Team name edit field.
-  */
+  // Team name edit field.
   char name_buf[10];
   EditClass name_edt(kButtonName, name_buf, sizeof(name_buf), FontType::kEditor,
                      TPF_NOSHADOW, kDNameX, kDNameY, kEdWidth, 9,
@@ -697,9 +394,7 @@ bool TeamTypeClass::Edit() {
   base::SafeCopy(name_buf, IniName);
   commands = &name_edt;
 
-  /*
-  **	House ownership of this team.
-  */
+  // House ownership of this team.
   char housetext[25] = "";
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
                          FontType::kEditor, TPF_NOSHADOW,
@@ -715,9 +410,7 @@ bool TeamTypeClass::Edit() {
   housebtn.Set_Selected_Index(static_cast<int>(House));
   housebtn.Add(*commands);
 
-  /*
-  **	Recruit priority for this team.
-  */
+  // Recruit priority for this team.
   char recr_buf[4];
   EditClass recr_edt(kButtonRecruit, recr_buf, sizeof(recr_buf),
                      FontType::kEditor, TPF_NOSHADOW,
@@ -726,9 +419,7 @@ bool TeamTypeClass::Edit() {
   absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", RecruitPriority);
   recr_edt.Add(*commands);
 
-  /*
-  **	Maximum allowed for this team type.
-  */
+  // Maximum allowed for this team type.
   char maxnum_buf[4];
   EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, sizeof(maxnum_buf),
                        FontType::kEditor, TPF_NOSHADOW,
@@ -737,9 +428,7 @@ bool TeamTypeClass::Edit() {
   absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", MaxAllowed);
   maxnum_edt.Add(*commands);
 
-  /*
-  **	Initial number for this team type.
-  */
+  // Initial number for this team type.
   char initnum_buf[4];
   EditClass initnum_edt(kButtonInitnum, initnum_buf, sizeof(initnum_buf),
                         FontType::kEditor, TPF_NOSHADOW,
@@ -748,9 +437,8 @@ bool TeamTypeClass::Edit() {
   absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", InitNum);
   initnum_edt.Add(*commands);
 
-  /*
-  **	Waypoint preference to create/reinforce this team.
-  */
+  // Waypoint to create or reinforce this team at, as the editor's letters;
+  // empty for none.
   char origin[4];
   EditClass originbtn(kButtonOrigin, origin, sizeof(origin), FontType::kEditor,
                       TPF_NOSHADOW,
@@ -767,16 +455,13 @@ bool TeamTypeClass::Edit() {
   }
   originbtn.Add(*commands);
 
-  /*
-  **	Members of this team control button.
-  */
+  // Button that opens the members dialog.
   TextButtonClass membersbtn(kButtonMembers, "Members", kEButtonFont,
                              kEButtonFlags, name_edt.X, name_edt.Y + 12, 50);
   membersbtn.Add(*commands);
 
-  /*
-  **	Trigger to assign to each member of this team (when object joins team).
-  */
+  // Trigger to assign to each member of this team (when object joins team).
+  // Entry 0 is "<NONE>", so a trigger type's entry is its heap position + 1.
   char trigtext[25] = "";
   DropListClass triggerbtn(kButtonTrigger, trigtext, sizeof(trigtext),
                            FontType::kEditor, TPF_NOSHADOW,
@@ -796,9 +481,7 @@ bool TeamTypeClass::Edit() {
   }
   triggerbtn.Add(*commands);
 
-  /*
-  **	Roundabout travel logic attribute for this team.
-  */
+  // Roundabout travel logic attribute for this team.
   CheckBoxClass roundbtn(kButtonRoundabout, kDCheckX, kDCheckY);
   if (IsRoundAbout) {
     roundbtn.Turn_On();
@@ -807,9 +490,7 @@ bool TeamTypeClass::Edit() {
   }
   roundbtn.Add(*commands);
 
-  /*
-  **	Suicide travel to target attribute.
-  */
+  // Suicide travel to target attribute.
   CheckBoxClass suicidebtn(kButtonSuicide, kDCheckX, roundbtn.Y + kCbSpacingY);
   if (IsSuicide) {
     suicidebtn.Turn_On();
@@ -818,9 +499,7 @@ bool TeamTypeClass::Edit() {
   }
   suicidebtn.Add(*commands);
 
-  /*
-  **	Autocreate attribute for this team.
-  */
+  // Autocreate attribute for this team.
   CheckBoxClass autocreatebtn(kButtonAuto, kDCheckX,
                               suicidebtn.Y + kCbSpacingY);
   if (IsAutocreate) {
@@ -830,9 +509,7 @@ bool TeamTypeClass::Edit() {
   }
   autocreatebtn.Add(*commands);
 
-  /*
-  **	Prebuild team members attribute for this team.
-  */
+  // Prebuild team members attribute for this team.
   CheckBoxClass prebuildbtn(kButtonPrebuilt, kDCheckX,
                             autocreatebtn.Y + kCbSpacingY);
   if (IsPrebuilt) {
@@ -842,9 +519,7 @@ bool TeamTypeClass::Edit() {
   }
   prebuildbtn.Add(*commands);
 
-  /*
-  **	Reinforce this team in progress attribute.
-  */
+  // Reinforce this team in progress attribute.
   CheckBoxClass reinforcebtn(kButtonReinforce, kDCheckX,
                              prebuildbtn.Y + kCbSpacingY);
   if (IsReinforcable) {
@@ -854,10 +529,9 @@ bool TeamTypeClass::Edit() {
   }
   reinforcebtn.Add(*commands);
 
-  /*
-  **	Create drop box of possible team missions. This is used when
-  *building/editing the *	team mission list.
-  */
+  // Drop list of the possible team missions, in TeamMissionType order so an
+  // entry's index is its mission. It and the argument control beside it hold
+  // the "work mission" that Append, Insert and Replace put into the script.
   char droptext[45];
   DropListClass missionlist1(kButtonMission1, droptext, sizeof(droptext),
                              FontType::kEditor, TPF_NOSHADOW, reinforcebtn.X,
@@ -870,9 +544,10 @@ bool TeamTypeClass::Edit() {
   missionlist1.Set_Selected_Index(0);
   missionlist1.Add_Tail(*commands);
 
-  /*
-  **	Optional mission argument entry field.
-  */
+  // The mission's argument. Four controls share the spot beside the mission
+  // list and the redraw links in the one the selected mission needs: a text
+  // field for a number or waypoint, or a list of quarries, formations or unit
+  // missions.
   char arg_buf[6] = {0};
   EditClass arg_edt(kButtonArg, arg_buf, sizeof(arg_buf), FontType::kEditor,
                     TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
@@ -927,13 +602,11 @@ bool TeamTypeClass::Edit() {
                                   base::At(MissionList, index)))
                               .get());
   }
-  static const int tabs[] = {13, 40};  // list box tab stops
+  static const int tabs[] = {13, 40};  // list box tab stops, in pixels
   missionlist2.Set_Tabs(tabs);
   missionlist2.Add_Tail(*commands);
 
-  /*
-  **	Mission editing command buttons.
-  */
+  // Mission editing command buttons.
   TextButtonClass addbtn(kButtonAdd, "Append", kEButtonFont, kEButtonFlags,
                          kDNameX, missionlist1.Y + missionlist1.Height + 1, 50);
   addbtn.Add(*commands);
@@ -956,20 +629,15 @@ bool TeamTypeClass::Edit() {
                             kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
                             kDCancelH);
 
-  /*
-  **	Initialize
-  */
   PixelView& view = TheScreen().visible_view();
 
-  /*
-  **	Create the list
-  */
   okbtn.Add(*commands);
   cancelbtn.Add_Tail(*commands);
 
-  /*
-  **	Main Processing Loop
-  */
+  // Main processing loop. The last* values are the script list's selection,
+  // its length and the control used on the previous event (-1 before any):
+  // clicking the same script line twice in a row loads it into the work
+  // mission.
   int lastindex = -1;
   int lastcount = -1;
   int lastbutton = -1;
@@ -977,18 +645,12 @@ bool TeamTypeClass::Edit() {
   bool display = true;
   bool process = true;
   while (process) {
-    /*
-    **	Invoke game callback
-    */
+    // Keep the sound, timers and network serviced while the dialog is up.
     ServiceRealTime();
 
-    /*
-    **	Refresh display if needed
-    */
+    // Refresh display if needed
     if (display) {
-      /*
-      **	Add the optional data entry field as necessary.
-      */
+      // Link in only the argument control the work mission needs.
       arg_edt.Remove();
       qlist.Remove();
       flist.Remove();
@@ -1032,17 +694,13 @@ bool TeamTypeClass::Edit() {
           break;
       }
 
-      /*
-      **	Display the dialog box
-      */
+      // Display the dialog box
       game::TheMouse().Hide();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
 
       Draw_Caption(view, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
 
-      /*
-      **	Draw the captions
-      */
+      // Draw the captions
       Fancy_Text_Print(view, "Name:", name_edt.X, name_edt.Y - 7, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "House:", housebtn.X, housebtn.Y - 7, scheme,
@@ -1082,29 +740,21 @@ bool TeamTypeClass::Edit() {
                        reinforcebtn.X + kCbSpacingX, reinforcebtn.Y, scheme,
                        kTBlack, FontType::kEditor, TPF_NOSHADOW);
 
-      /*
-      **	Redraw the buttons
-      */
+      // Redraw the buttons
       commands->Draw_All(view);
       game::TheMouse().Show();
 
       display = false;
     }
 
-    /*
-    **	Get user input
-    */
+    // Get user input
     const engine::window::KeyNumber input = commands->Input(view).key;
 
-    /*
-    **	Process input
-    */
+    // Process input
     switch (static_cast<int>(input)) {
-      /*
-      **	Select a Mission on the right-hand mission list; update the
-      *Argument *	field to reflect the current value. This only serves as
-      *an aide to editing *	the team mission list.
-      */
+      // A click on the script. The second click on the same line, with no
+      // other control used in between, copies that line into the work mission
+      // and its argument control as an aid to editing.
       case engine::window::ButtonKey(kButtonMission2):
         if (missionlist2.Count() && lastcount == missionlist2.Count() &&
             lastbutton == kButtonMission2 &&
@@ -1175,10 +825,8 @@ bool TeamTypeClass::Edit() {
         display = true;
         break;
 
-      /*
-      **	Add current mission data to current position of team mission
-      *list. Any *	subsequent missions get moved downward.
-      */
+      // Insert the work mission at the selected line of the script; the
+      // lines from there on move down.
       case engine::window::ButtonKey(kButtonInsert):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm =
@@ -1243,9 +891,7 @@ bool TeamTypeClass::Edit() {
         display = true;
         break;
 
-      /*
-      **	Add mission data to the end of the mission list.
-      */
+      // Append the work mission to the script.
       case engine::window::ButtonKey(kButtonAdd):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm =
@@ -1310,10 +956,7 @@ bool TeamTypeClass::Edit() {
         }
         break;
 
-      /*
-      **	Replace the currently selected mission with the work mission
-      *data.
-      */
+      // Overwrite the selected line of the script with the work mission.
       case engine::window::ButtonKey(kButtonReplace):
         if (missionlist2.Count()) {
           TeamMissionClass* tm = missionlist2.Current_Item();
@@ -1377,9 +1020,7 @@ bool TeamTypeClass::Edit() {
         display = true;
         break;
 
-      /*
-      **	Delete the currently selected mission.
-      */
+      // Delete the currently selected mission.
       case engine::window::ButtonKey(kButtonDelete):
         if (missionlist2.Count()) {
           const TeamMissionClass* tm = missionlist2.Current_Item();
@@ -1390,31 +1031,20 @@ bool TeamTypeClass::Edit() {
         display = true;
         break;
 
-      /*
-      **	Invoke the members dialog
-      */
+      // Invoke the members dialog
       case engine::window::ButtonKey(kButtonMembers):
 
-        /*
-        **	Take editor focus away
-        */
+        // The button stays pressed otherwise: the other dialog takes the
+        // release.
         membersbtn.Turn_Off();
 
-        /*
-        **	Invoke the dialog
-        */
         TheMap().Team_Members(HousesType(housebtn.Current_Index()));
 
-        /*
-        **	Redraw
-        */
         display = true;
         break;
 
-      /*
-      **	When the OK button is selected, lift the values from the dialog
-      *box *	and place them into the team type object.
-      */
+      // OK: copy the dialog's values into the team type. A blank name becomes
+      // "----" so the team type can still be listed and written to the INI.
       case engine::window::ButtonKey(kButtonOk):
         strtrim(name_edt.Get_Text_Buffer());
         if (!std::string_view(name_edt.Get_Text()).empty()) {
@@ -1443,7 +1073,7 @@ bool TeamTypeClass::Edit() {
 
         MissionCount = missionlist2.Count();
         for (int index = 0; index < MissionCount; index++) {
-          base::At(MissionList, index).Data.Value = 0;  // Clears extra bits.
+          base::At(MissionList, index).Data.Value = 0;
           base::At(MissionList, index) = *missionlist2.at(index);
         }
 
@@ -1462,19 +1092,15 @@ bool TeamTypeClass::Edit() {
         process = false;
         break;
 
-      /*
-      **	Cancel: return
-      */
+      // Cancel: leave the team type as it was.
       case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
 
-      /*
-      **	Unrecognized events are ignored. If any button related event is
-      **	detected, then collapse any drop down list boxes. This keeps the
-      **	dialog box clean.
-      */
+      // Unrecognized events are ignored. If any button related event is
+      // detected, then collapse any drop down list boxes. This keeps the
+      // dialog box clean.
       default:
         if (input & KN_BUTTON) {
           housebtn.Collapse();
@@ -1485,10 +1111,8 @@ bool TeamTypeClass::Edit() {
         break;
     }
 
-    /*
-    **	Record the last dialog control touched so that a double click
-    **	can be detected.
-    */
+    // Record the last dialog control touched so that a double click
+    // can be detected.
     if (input & KN_BUTTON) {
       lastbutton = ButtonId(input);
     }
@@ -1497,6 +1121,8 @@ bool TeamTypeClass::Edit() {
   return (!cancel);
 }
 
+// Returns the value of the hex digits in `str`. A character that is not a
+// hex digit counts as 0.
 int atoh(const char* str) {
   int retval = 0;
   for (const char chr : std::string_view(str)) {
@@ -1516,32 +1142,13 @@ int atoh(const char* str) {
   return retval;
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Member_Description -- Builds a member description string. *
- *                                                                                             *
- *    This routine will build a team member description string. The string will
- *be composed    * of the team member type and quantity. As many team member
- *types will be listed that      * can fit within a reasonable size. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the text string that contains a
- *description of the team  * type members. *
- *                                                                                             *
- * WARNINGS:   The return string may be truncated if necessary to fit within
- *reasonable size   * limits. *
- *                                                                                             *
- * HISTORY: * 01/05/1996 JLB : Created. *
- *=============================================================================================*/
 const char* TeamTypeClass::Member_Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char buffer[128];
 
     buffer[0] = '\0';
 
-    /*
-    **	Fill in class & count for all classes
-    */
+    // "TYPE:count" for each kind of member, comma separated.
     for (int index = 0; index < ClassCount; index++) {
       char txt[10];
 
@@ -1556,6 +1163,7 @@ const char* TeamTypeClass::Member_Description() const {
       }
     }
 
+    // The team list's last column has room for 25 characters.
     if (std::string_view(buffer).size() > 25) {
       base::SafeCopy(std::span(buffer).subspan(25 - 3, 4), "...");
     }
@@ -1565,27 +1173,13 @@ const char* TeamTypeClass::Member_Description() const {
   return "";
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Description -- Builds a description of the team. *
- *                                                                                             *
- *    This routine will build a brief description of the team type. This
- *description is used   * in the team type list. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the composed text string that represents the team type.
- **
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/05/1996 JLB : Created. *
- *=============================================================================================*/
 const char* TeamTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char _buffer[128];
     char extra = ' ';
     char loc[3];
 
+    // The origin waypoint in the editor's letters: "A" to "Z", then "AA" on.
     loc[0] = loc[1] = loc[2] = 0;
     if (IsAutocreate) {
       extra = '*';
@@ -1610,24 +1204,6 @@ const char* TeamTypeClass::Description() const {
   return "";
 }
 
-/***********************************************************************************************
- * TeamMissionClass::Description -- Compose a text description of team mission.
- **
- *                                                                                             *
- *    This routine will create a text representation of a team mission. This
- *description will  * be used in the list of team missions for display purposes.
- **
- *                                                                                             *
- * INPUT:   index -- The index to assign to this team. The index is used since
- *some team       * missions refer to the another team mission by index number.
- **
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the team mission text. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/05/1996 JLB : Created. *
- *=============================================================================================*/
 const char* TeamMissionClass::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     static char buffer[64];
@@ -1698,22 +1274,6 @@ const char* TeamMissionClass::Description(int index) const {
   return "";
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Detach -- Detach the specified target from this team type. *
- *                                                                                             *
- *    This routine is called when some object is about to be removed from the
- *game system and  * all references to it must be severed. This will check to
- *see if the specified object     * is a trigger that this team refers to. If
- *so, then the reference will be cleared.        *
- *                                                                                             *
- * INPUT:   target   -- The target object to remove references to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/30/1996 JLB : Created. *
- *=============================================================================================*/
 void TeamTypeClass::Detach(Target target, bool /*unused*/) {
   if (target.kind() == RTTI_TRIGGERTYPE && Trigger != nullptr &&
       Trigger == target.AsTriggerType()) {
@@ -1721,76 +1281,29 @@ void TeamTypeClass::Detach(Target target, bool /*unused*/) {
   }
 }
 
-/***************************************************************************
- * TeamTypeClass::Read_INI -- reads INI data                               *
- *                                                                         *
- * INI entry format:                                                       *
- *      TeamName = Housename,Roundabout,Learning,Suicide,Spy,Mercenary,    *
- *       RecruitPriority,MaxAllowed,InitNum,Fear,                          *
- *       ClassCount,Class:Num,Class:Num,...,                               *
- *       MissionCount,Mission:Arg,Mission:Arg,Mission:Arg,...              *
- *                                                                         *
- * INPUT:                                                                  *
- *      buffer      buffer to hold the INI data                            *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
- *=========================================================================*/
 void TeamTypeClass::Read_INI(engine::file::IniFile& ini) {
-  /*
-  **	Loop for all team entries, create and fill in.
-  */
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
-    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();
     if (team != nullptr) {
       team->Fill_In(entry, value);
     }
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Fill_In -- fills in trigger from the given INI entry *
- *                                                                                             *
- * This routine fills in the given teamtype with the given name, and values from
- ** the given INI entry. *
- *                                                                                             *
- * (This routine is used by the scenario editor, to import teams from the
- *MASTER.INI file.)    *
- *                                                                                             *
- *    INI entry format: * TeamName =
- *Housename,Roundabout,Learning,Suicide,Spy,Mercenary,                        *
- *       RecruitPriority,MaxAllowed,InitNum,Fear, *
- *       ClassCount,Class:Num,Class:Num,..., *
- *       MissionCount,Mission:Arg,Mission:Arg,Mission:Arg,... *
- *                                                                                             *
- * INPUT: * name      mnemonic for the desired trigger * entry      INI entry to
- *parse                                                          *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 11/28/1994 BR : Created. * 11/29/1995 JLB : Revamped to use new
- *team class.                                          *
- *=============================================================================================*/
 void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
-  /*
-  **	Set its name
-  */
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
+  // TODO: the house, the origin waypoint and the mission numbers below are
+  // taken from the file unchecked; an out-of-range one CHECK-fails later, where
+  // the team type is used.
   House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
+  // The scenario's NewINIFormat: 2 and up pack the options into one bit
+  // field and put the trigger after the origin; 0 and 1 list each option and
+  // end the entry with the trigger.
   uint32_t code = 0;
   switch (TheWorld().new_ini_format()) {
     default:
@@ -1821,6 +1334,8 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
 
   switch (TheWorld().new_ini_format()) {
     default:
+      // The trigger types are read after the team types; the slot is where
+      // that trigger type will be. -1 gives nullptr.
       Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
@@ -1831,9 +1346,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
       break;
   }
 
-  /*
-  **	Fetch the team member types and quantity values.
-  */
+  // The members: a count, then that many Type:Quantity pairs.
   ClassCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (ClassCount < 0 || ClassCount > kMaxTeamClasscount) {
     ClassCount = 0;
@@ -1850,30 +1363,19 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     }
     const TechnoTypeClass* otype = nullptr;
 
-    /*
-    **	See if this is an infantry name
-    */
+    // The name may be of an infantry, unit, aircraft or vessel type.
     const InfantryType i_id = InfantryTypeClass::From_Name(p1);
     if (i_id != INFANTRY_NONE) {
       otype = &InfantryTypeClass::As_Reference(i_id);
     } else {
-      /*
-      **	See if this is a unit name
-      */
       const UnitType u_id = UnitTypeClass::From_Name(p1);
       if (u_id != UNIT_NONE) {
         otype = &UnitTypeClass::As_Reference(u_id);
       } else {
-        /*
-        **	See if this is an aircraft name
-        */
         const AircraftType a_id = AircraftTypeClass::From_Name(p1);
         if (a_id != AIRCRAFT_NONE) {
           otype = &AircraftTypeClass::As_Reference(a_id);
         } else {
-          /*
-          **	See if this is a vessel name.
-          */
           const VesselType v_id = VesselTypeClass::From_Name(p1);
           if (v_id != VESSEL_NONE) {
             otype = &VesselTypeClass::As_Reference(v_id);
@@ -1882,9 +1384,8 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
       }
     }
 
-    /*
-    **	If the name was resolved, add this class
-    */
+    // An unknown type (a unit this build does not have) is dropped and the
+    // next member takes its place in Members.
     if (otype) {
       base::At(Members, index).Class = otype;
       base::At(Members, index).Quantity = base::ParseIntegerOr<int>(p2, 0);
@@ -1897,9 +1398,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     }
   }
 
-  /*
-  **	Fetch the missions assigned to this team type.
-  */
+  // The script: a count, then that many Mission:Argument pairs.
   MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
     ClassCount = 0;
@@ -1914,37 +1413,17 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   }
 
   if (TheWorld().new_ini_format() < 2) {
-    /*
-    **	Fetch the trigger ID.
-    */
+    // The older formats put the trigger last.
     Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Write_INI -- Write out the team types to the INI database. *
- *                                                                                             *
- *    This routine will take all team types and write them out to the INI
- *database specified.  *
- *                                                                                             *
- * INPUT:   ini   -- Reference to the INI database that will hold al the teams.
- **
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   All preexisting team data in the database will be erased by this
- *routine.       *
- *                                                                                             *
- * HISTORY: * 07/30/1996 JLB : Created. *
- *=============================================================================================*/
 void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
+  // TODO: the same section is cleared twice.
   ini.Clear("TeamTypes");
   ini.Clear(INI_Name());
 
-  /*
-  **	Now write all the team data out
-  */
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
     std::string buf;
@@ -1953,22 +1432,6 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Build_INI_Entry -- Builds the INI entry for this team type. *
- *                                                                                             *
- *    This routine is used to build the text string that will go into the INI
- *database for     * a team of this type. This text string will be parsed back
- *into a team object when the    * scenario INI is read in. *
- *                                                                                             *
- * INPUT:   buf   -- Pointer to a buffer that will hold the team text entry. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Be sure that the buffer can hold the string build. A size of 80
- *or so is        * usually sufficient. *
- *                                                                                             *
- * HISTORY: * 07/30/1996 JLB : Created. *
- *=============================================================================================*/
 // LLVM 23 treats clear as invalidating the string reference itself. No pointer,
 // reference or iterator into its old character storage is retained.
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
@@ -1981,25 +1444,18 @@ void TeamTypeClass::Build_INI_Entry(std::string& buf) {
   code |= IsPrebuilt ? 0x0008U : 0U;
   code |= IsReinforcable ? 0x0010U : 0U;
 
-  /*
-  **	Output the general data for this team type.
-  */
   absl::StrAppendFormat(&buf, "%d,%d,%d,%d,%d,%d,%d", House, code,
                         RecruitPriority, InitNum, MaxAllowed, Origin,
                         TheObjectHeaps().trigger_type().PositionOf(Trigger));
 
-  /*
-  **	For every class in the team, record the class's name & desired count
-  */
+  // The members: a count, then Type:Quantity for each.
   absl::StrAppendFormat(&buf, ",%d", ClassCount);
   for (int i = 0; i < ClassCount; i++) {
     absl::StrAppendFormat(&buf, ",%s:%d", base::At(Members, i).Class->IniName,
                           base::At(Members, i).Quantity);
   }
 
-  /*
-  **	Record the # of missions, and each mission name & argument value.
-  */
+  // The script: a count, then Mission:Argument for each, both as numbers.
   absl::StrAppendFormat(&buf, ",%d", MissionCount);
   for (int i = 0; i < MissionCount; i++) {
     absl::StrAppendFormat(&buf, ",%d:%d", base::At(MissionList, i).Mission,
