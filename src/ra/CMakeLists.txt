@@ -150,6 +150,16 @@ target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_carryover_test)
 apply_language_setting(ra_carryover_test)
 
+# Reads warhead sections into the type heap of a real Game.
+add_gtest(
+    NAME ra_warhead_test
+    SOURCES objects/warhead_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_warhead_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_warhead_test)
+apply_language_setting(ra_warhead_test)
+
 # Records a kill between two vehicles in a real Game.
 add_gtest(
     NAME ra_techno_test

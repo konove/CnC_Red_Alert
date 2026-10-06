@@ -47,6 +47,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
@@ -174,14 +175,18 @@ bool WarheadTypeClass::Read_INI(engine::file::IniFile& ini) {
     ExplosionSet = ini.GetInt(Name(), "Explosion", ExplosionSet);
     InfantryDeath = ini.GetInt(Name(), "InfDeath", InfantryDeath);
 
-    const std::string verses =
-        ini.GetString(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%");
-    if (!verses.empty()) {
-      base::Tokenizer tokens(verses);
-      for (const game::ArmorType armor :
-           magic_enum::enum_values<game::ArmorType>()) {
-        Modifier.at(armor) = Fixed::FromString(tokens.Next());
+    // An armor the line has no entry for keeps its modifier, and so does
+    // every armor when there is no line: a rules file read on top of another
+    // overrides only what it names.
+    const std::string verses = ini.GetString(Name(), "Verses");
+    base::Tokenizer tokens(verses);
+    for (const game::ArmorType armor :
+         magic_enum::enum_values<game::ArmorType>()) {
+      const std::string_view token = tokens.Next();
+      if (token.empty()) {
+        break;
       }
+      Modifier.at(armor) = Fixed::FromString(token);
     }
 
     IsOrganic = Modifier.at(game::ARMOR_STEEL) == 0;

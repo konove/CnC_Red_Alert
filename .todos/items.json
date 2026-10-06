@@ -567,10 +567,10 @@
         "bugs",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T07:06:41Z",
+      "updated": "2026-10-06T07:46:19Z",
       "anchor": {
         "path": "src/engine/gfx/shape_blitter.cc",
         "startLine": 159,
@@ -592,31 +592,30 @@
     {
       "id": "T-24",
       "title": "Decide what a warhead with fewer than five Verses entries should get",
-      "details": "- `ra/objects/warhead.cc` reads each missing entry as `Fixed::FromString()` of an empty token, i.e. 0%, so that armor takes no damage from the warhead; keeping the previous modifier instead would change how such a modded rules file plays.\n- The default `\"100%%,...\"` there is a leftover printf escape; it reads as 100% only because the percentage parse stops at the first `%`.",
+      "details": "Decided 2026-10-06: an armor the Verses line has no entry for keeps its previous modifier (100% from the constructor, or an earlier rules file's value) instead of reading as 0%, and the \"100%%,...\" default is dropped, so a section with no Verses key keeps all five modifiers.\n\n- `WarheadTypeClass::Read_INI()` stops at the first missing token.\n- New `ra/objects/warhead_test.cc` (`ra_warhead_test`) covers full, short and absent Verses lines and the IsOrganic flag.\n- Not committed.",
       "priority": "p2",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:43:35Z",
+      "updated": "2026-10-06T07:52:14Z",
       "anchor": {
         "path": "src/ra/objects/warhead.cc",
-        "startLine": 178,
-        "endLine": 178,
-        "text": "        ini.GetString(Name(), \"Verses\", \"100%%,100%%,100%%,100%%,100%%\");",
+        "startLine": 181,
+        "endLine": 192,
+        "text": "    const std::string verses = ini.GetString(Name(), \"Verses\");\n    base::Tokenizer tokens(verses);\n    for (const game::ArmorType armor :\n         magic_enum::enum_values<game::ArmorType>()) {\n      const std::string_view token = tokens.Next();\n      if (token.empty()) {\n        break;\n      }\n      Modifier.at(armor) = Fixed::FromString(token);\n    }\n\n    IsOrganic = Modifier.at(game::ARMOR_STEEL) == 0;",
         "before": [
-          "    InfantryDeath = ini.GetInt(Name(), \"InfDeath\", InfantryDeath);",
-          "",
-          "    const std::string verses ="
+          "    // An armor the line has no entry for keeps its modifier, and so does",
+          "    // every armor when there is no line: a rules file read on top of another",
+          "    // overrides only what it names."
         ],
         "after": [
-          "    if (!verses.empty()) {",
-          "      base::Tokenizer tokens(verses);",
-          "      for (const game::ArmorType armor :"
+          "    return true;",
+          "  }",
+          "  return false;"
         ],
         "lost": false
       }
