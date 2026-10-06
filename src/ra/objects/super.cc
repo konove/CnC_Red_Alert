@@ -53,10 +53,10 @@
 #include <algorithm>
 
 #include "base/fixed.h"
-#include "ra/ai/special_options.h"
 #include "ra/assets/audio.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 
 namespace ra {
 
@@ -207,7 +207,7 @@ bool SuperClass::Recharge(bool player) {
     Control.Set(RechargeTime);
 
     if constexpr (config::kCheatKeysEnabled) {
-      if (TheSpecialOptions().speed_build) {
+      if (TheSpecialFlags().speed_build) {
         Control.Set(1);
       }
     }

@@ -56,8 +56,8 @@
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "game/core/owned_vector.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/net/event.h"
 #include "ra/objects/object.h"
@@ -336,7 +336,7 @@ struct SerialPacketType {
       unsigned char UnitCount;            // max # units
       unsigned char AIPlayers;            // # of AI players allowed
       int Seed;                           // random number seed
-      SpecialOptions Special;             // command-line options
+      SpecialFlags Special;               // command-line options
       unsigned int GameSpeed;             // Game Speed
       int32_t ResponseTime;               // packet response time
       unsigned int FileLength;  // Length of scenario file to expect from host.
@@ -409,7 +409,7 @@ struct GlobalPacketType {
       unsigned char UnitCount;   // max # units
       unsigned char AIPlayers;   // # of AI players allowed
       int Seed;                  // random number seed
-      SpecialOptions Special;    // command-line options
+      SpecialFlags Special;      // command-line options
       unsigned int GameSpeed;    // Game Speed
       uint32_t Version;          // version # common to all players
       unsigned int FileLength;   // Length of scenario file to expect from host.

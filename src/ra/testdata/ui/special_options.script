@@ -6,7 +6,7 @@ at 341 key RETURN
 at 401 click 260 228
 at 500 key SLASH
 at 520 shot dialog
-at 521 click 121 101
+at 521 click 121 81
 at 540 shot speed_build_ticked
 at 541 click 441 337
 at 560 shot closed

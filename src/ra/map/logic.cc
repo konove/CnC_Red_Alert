@@ -51,7 +51,6 @@
 #include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
@@ -59,6 +58,7 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
@@ -160,7 +160,7 @@ void LogicClass::AI() {
   /*
   **	Shadow creeping back over time is handled here.
   */
-  if (TheSpecialOptions().shroud_regrows && TheRules().ShroudRate != 0 &&
+  if (TheSpecialFlags().shadow_grows && TheRules().ShroudRate != 0 &&
       TheScenario().ShroudTimer.IsFinished()) {
     TheScenario().ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
     TheMap().Encroach_Shadow();

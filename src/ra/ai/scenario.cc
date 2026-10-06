@@ -109,7 +109,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/carryover.h"
 #include "ra/ai/prebuilt_base.h"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
@@ -129,6 +128,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/random_pick.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/ini_types.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -2019,7 +2019,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   TheWorld().name_override() = {};
   TheWorld().name_override_id() = {};
   if (TheSession().Type == GAME_NORMAL) {
-    TheSpecialOptions().shroud_regrows = false;
+    TheSpecialFlags().shadow_grows = false;
   }
 
   TheSession().Messages.Reset();
@@ -2879,7 +2879,7 @@ static void Create_Units(bool official) {
       if (obj != nullptr) {
         hptr->FlagHome = Cell{};
         hptr->FlagLocation = Target{};
-        if (TheSpecialOptions().capture_the_flag) {
+        if (TheSpecialFlags().capture_the_flag) {
           hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
         }
       }

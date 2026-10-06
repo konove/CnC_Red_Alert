@@ -17,8 +17,8 @@
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
 #include "gtest/gtest.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
 
@@ -36,7 +36,7 @@ namespace {
 // An elapsed time that needs more than 32 bits: 2^40 ticks.
 constexpr int64_t kLargeElapsedTime = 1'099'511'627'776;
 
-static_assert(std::is_trivially_default_constructible_v<SpecialOptions>);
+static_assert(std::is_trivially_default_constructible_v<SpecialFlags>);
 
 class GlobalsSink : public ByteSink {
  public:
@@ -63,7 +63,7 @@ bool ReadValue(T& value, const std::vector<uint8_t>& bytes) {
 TEST(SaveGlobalsTest, SpecialFlagsUseExactlyOneByteForEveryCombination) {
   for (int flags = 0; flags < 256; ++flags) {
     const std::vector<uint8_t> bytes{static_cast<uint8_t>(flags)};
-    SpecialOptions special{};
+    SpecialFlags special{};
     ASSERT_TRUE(ReadValue(special, bytes));
     GlobalsSink pipe;
     ArchiveWriter writer(pipe);

@@ -92,7 +92,6 @@
 #include "ra/ai/carryover.h"
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
@@ -104,6 +103,7 @@
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -1220,7 +1220,7 @@ static void SerializeMultiplayer(Archive& ar) {
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
   ar(TheSession(), TheWorld().build_level(), unshroud, TheWorld().seed(),
-     TheWorld().whom(), TheSpecialOptions(), TheOptions());
+     TheWorld().whom(), TheSpecialFlags(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
   }

@@ -206,13 +206,23 @@ apply_language_setting(ra_options_test)
 
 add_gtest(
     NAME ra_special_options_test
-    SOURCES ai/special_options_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
-            startup/startup.cc
+    SOURCES core/special_flags_test.cc screens/special_options_test.cc
+            ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL} startup/startup.cc
     LIBS ra_engine base
 )
 target_compile_definitions(ra_special_options_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_special_options_test)
 apply_language_setting(ra_special_options_test)
+
+add_gtest(
+    NAME ra_difficulty_test
+    SOURCES screens/difficulty_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine base
+)
+target_compile_definitions(ra_difficulty_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_difficulty_test)
+apply_language_setting(ra_difficulty_test)
 
 add_gtest(
     NAME ra_text_style_test

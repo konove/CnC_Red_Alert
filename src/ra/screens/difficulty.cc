@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ra/ai/special_options.h"
+#include "ra/screens/difficulty.h"
 
 #include <array>
 #include <cstddef>
@@ -33,14 +33,7 @@
 #include "ra/data/rules.h"
 #include "ra/data/text.h"
 #include "ra/data/text_ids.h"
-#include "ra/debug/debug.h"
-#include "ra/editor/mapedit.h"
-#include "ra/map/world.h"
-#include "ra/net/event.h"
-#include "ra/net/network.h"
-#include "ra/net/session.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/checkbox.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/slider.h"
@@ -57,131 +50,6 @@ constexpr int kCoarseDifficultyStops = 3;
 constexpr int kCoarseLevelStep =
     (kDifficultyLevels - 1) / (kCoarseDifficultyStops - 1);
 
-void SpecialOptions::Reset() {
-  shroud_regrows = false;
-  speed_build = false;
-  from_install = false;
-  capture_the_flag = false;
-  inert_weapons = false;
-  three_point_turns = false;
-  ore_grows = true;
-  ore_spreads = true;
-}
-
-void RunSpecialOptionsDialog() {
-  // The dialog, centred on the screen.
-  constexpr int kDialogWidth = 472;
-  constexpr int kDialogHeight = 324;
-  constexpr int kDialogX = (Screen::kWidth - kDialogWidth) / 2;
-  constexpr int kDialogY = (Screen::kHeight - kDialogHeight) / 2;
-
-  // OK sits in the bottom left corner and Cancel in the bottom right.
-  constexpr int kOkButtonX = kDialogX + 30;
-  constexpr int kCancelButtonX = kDialogX + kDialogWidth - 120;
-  constexpr int kButtonY = kDialogY + kDialogHeight - 30;
-
-  // The check boxes form a column, each with its label to the right.
-  constexpr int kCheckBoxX = kDialogX + 34;
-  constexpr int kFirstCheckBoxY = kDialogY + 40;
-  constexpr int kCheckBoxSpacing = 20;
-  constexpr int kLabelOffsetX = 20;  // From the box's left edge.
-
-  // Gadget ids; Input() reports a clicked button as ButtonKey(id).
-  constexpr int kThreePointBoxId = 100;
-  constexpr int kSpeedBuildBoxId = 101;
-  constexpr int kOkButtonId = 200;
-  constexpr int kCancelButtonId = 201;
-
-  // A copy the dialog edits. The installed flags change only when the event OK
-  // queues is executed.
-  SpecialOptions edited_options = TheSpecialOptions();
-
-  TextButtonClass ok_button(kOkButtonId, TXT_OK, kButtonFont, kButtonFlags,
-                            kOkButtonX, kButtonY);
-  TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL, kButtonFont,
-                                kButtonFlags, kCancelButtonX, kButtonY);
-  cancel_button.Add(ok_button);
-
-  // One check box per flag the dialog offers. A box toggles itself when
-  // clicked, so the flags are only read back from the boxes on OK.
-  CheckBoxClass three_point_box(kThreePointBoxId, kCheckBoxX, kFirstCheckBoxY);
-  CheckBoxClass speed_build_box(kSpeedBuildBoxId, kCheckBoxX,
-                                kFirstCheckBoxY + kCheckBoxSpacing);
-  three_point_box.Add(ok_button);
-  speed_build_box.Add(ok_button);
-  if (edited_options.three_point_turns) {
-    three_point_box.Turn_On();
-  }
-  if (edited_options.speed_build) {
-    speed_build_box.Turn_On();
-  }
-  const struct {
-    int label;  // String-table number of the text beside the box.
-    const CheckBoxClass& check_box;
-  } labels[] = {
-      {TXT_THREE_POINT, three_point_box},
-      {TXT_SPEED_BUILD, speed_build_box},
-  };
-
-  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  PixelView& view = TheScreen().visible_view();
-  bool redraw = true;
-  bool process = true;
-  while (process) {
-    // A multiplayer game cannot pause for a dialog: the other players' frames
-    // keep coming, so the game runs on behind it. RunFrame() returns true when
-    // that game is over, which closes the dialog without applying anything.
-    if (TheSession().Type == GAME_NORMAL) {
-      ServiceRealTime();
-    } else {
-      if (RunFrame()) {
-        process = false;
-      }
-    }
-
-    if (redraw) {
-      redraw = false;
-
-      game::TheMouse().Hide();
-      Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
-      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kDialogX, kDialogY, kDialogWidth);
-
-      for (const auto& [label, check_box] : labels) {
-        Fancy_Text_Print(view, label, check_box.X + kLabelOffsetX, check_box.Y,
-                         Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-      }
-      ok_button.Draw_All(view);
-      game::TheMouse().Show();
-    }
-
-    switch (static_cast<int>(ok_button.Input(view).key)) {
-      case engine::window::ButtonKey(kOkButtonId):
-        process = false;
-        edited_options.three_point_turns = three_point_box.IsOn;
-        edited_options.speed_build = speed_build_box.IsOn;
-        // Queued as an event rather than assigned, so that every machine
-        // changes its flags on the same frame.
-        TheNetwork().out_list().Add(EventClass(edited_options));
-        break;
-
-      case KN_ESC:
-      case engine::window::ButtonKey(kCancelButtonId):
-        process = false;
-        break;
-
-      // No input, a check box (which has already toggled itself) or a key.
-      default:
-        break;
-    }
-  }
-
-  TheMap().Revert_Mouse_Shape();
-  TheScreen().hidden_view().Clear();
-  TheMap().Flag_To_Redraw(true);
-  TheMap().Render();
-}
-
 DifficultyChoice DifficultyForLevel(const int level) {
   // The player's side gets easier as the computer's gets harder; only the
   // middle level has both on normal.
@@ -196,7 +64,7 @@ DifficultyChoice DifficultyForLevel(const int level) {
   return kChoices.at(base::ToSize(level));
 }
 
-DifficultyChoice PromptForDifficulty(const bool is_expansion_mission) {
+DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
   // The dialog, centred on the screen.
   constexpr int kDialogWidth = 500;
   constexpr int kDialogHeight = 160;

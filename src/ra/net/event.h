@@ -49,9 +49,9 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 
 namespace ra {
@@ -145,7 +145,7 @@ class EventClass {
   */
   union {
     struct {
-      SpecialOptions Data;  // The special option flags.
+      SpecialFlags Data;  // The special option flags.
     } Options;
     struct {
       ra::Cell Cell;  // The cell to sell wall at.
@@ -256,7 +256,7 @@ class EventClass {
   // Member initializers cannot reach padding. Every other defined constructor
   // delegates here to clear IsExecuted and all unused payload bytes.
   EventClass() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass)); }
-  explicit EventClass(SpecialOptions data);
+  explicit EventClass(SpecialFlags data);
   EventClass(EventType type, ra::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);

@@ -7,7 +7,7 @@
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/options.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
@@ -76,9 +76,9 @@ template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void SpecialOptions::Serialize(Archive& ar) {
+void SpecialFlags::Serialize(Archive& ar) {
   uint8_t flags = 0;
-  flags |= static_cast<uint8_t>(shroud_regrows << 0);
+  flags |= static_cast<uint8_t>(shadow_grows << 0);
   flags |= static_cast<uint8_t>(speed_build << 1);
   flags |= static_cast<uint8_t>(from_install << 2);
   flags |= static_cast<uint8_t>(capture_the_flag << 3);
@@ -88,7 +88,7 @@ void SpecialOptions::Serialize(Archive& ar) {
   flags |= static_cast<uint8_t>(ore_spreads << 7);
   ar(flags);
   if constexpr (Archive::kIsReading) {
-    shroud_regrows = (flags & (1U << 0)) != 0;
+    shadow_grows = (flags & (1U << 0)) != 0;
     speed_build = (flags & (1U << 1)) != 0;
     from_install = (flags & (1U << 2)) != 0;
     capture_the_flag = (flags & (1U << 3)) != 0;
@@ -98,8 +98,8 @@ void SpecialOptions::Serialize(Archive& ar) {
     ore_spreads = (flags & (1U << 7)) != 0;
   }
 }
-template void SpecialOptions::Serialize(ArchiveWriter&);
-template void SpecialOptions::Serialize(ArchiveReader&);
+template void SpecialFlags::Serialize(ArchiveWriter&);
+template void SpecialFlags::Serialize(ArchiveReader&);
 
 template <class Archive>
 void OptionsClass::Serialize(Archive& ar) {

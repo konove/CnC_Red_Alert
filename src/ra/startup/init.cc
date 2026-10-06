@@ -119,7 +119,6 @@
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/graphics_loader.h"
@@ -132,6 +131,7 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/language.h"
 #include "ra/data/mission_id.h"
@@ -153,6 +153,7 @@
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/saveload/saveload.h"
+#include "ra/screens/difficulty.h"
 #include "ra/screens/expand.h"
 #include "ra/screens/goptions.h"
 #include "ra/screens/intro.h"
@@ -265,7 +266,7 @@ bool Init_Game() {
   */
   Init_CDROM_Access();
 
-  if (TheSpecialOptions().from_install) {
+  if (TheSpecialFlags().from_install) {
     Load_Prolog_Page();
   }
 
@@ -334,7 +335,7 @@ bool Init_Game() {
   /*
   **	Play the startup animation.
   */
-  if (!TheSpecialOptions().from_install) {
+  if (!TheSpecialFlags().from_install) {
     TheScreen().visible_page().view().Clear();
     if (!LogoAlreadyPlayed()) {
       Play_Intro();
@@ -365,7 +366,7 @@ bool Init_Game() {
   **	If not automatically launching into the intro, then display the title
   **	page while the bulk data is cached.
   */
-  if (!TheSpecialOptions().from_install) {
+  if (!TheSpecialFlags().from_install) {
     Load_Title_Page(true);
 
     game::TheMouse().Hide();
@@ -579,7 +580,7 @@ bool Select_Game(bool /*fade*/) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (TheSpecialOptions().from_install) {
+      if (TheSpecialFlags().from_install) {
         selection = kSelStartNewGame;
       }
 
@@ -672,8 +673,7 @@ bool Select_Game(bool /*fade*/) {
           }
 
           {
-            const DifficultyChoice difficulty =
-                PromptForDifficulty(cdcheck >= 3);
+            const DifficultyChoice difficulty = AskDifficulty(cdcheck >= 3);
             TheScenario().CDifficulty = difficulty.computer;
             TheScenario().Difficulty = difficulty.player;
           }
@@ -692,11 +692,11 @@ bool Select_Game(bool /*fade*/) {
         **	SEL_START_NEW_GAME: Play the game
         */
         case kSelStartNewGame:
-          if (TheSpecialOptions().from_install) {
+          if (TheSpecialFlags().from_install) {
             TheScenario().CDifficulty = DifficultyLevel::kNormal;
             TheScenario().Difficulty = DifficultyLevel::kNormal;
           } else {
-            const DifficultyChoice difficulty = PromptForDifficulty();
+            const DifficultyChoice difficulty = AskDifficulty();
             TheScenario().CDifficulty = difficulty.computer;
             TheScenario().Difficulty = difficulty.player;
           }
@@ -706,7 +706,7 @@ bool Select_Game(bool /*fade*/) {
           TheWorld().save_tanya() = false;
           TheWorld().whom() = HOUSE_GOOD;
 
-          if (!TheSpecialOptions().from_install) {
+          if (!TheSpecialFlags().from_install) {
             if (TheWorld().ants_enabled()) {
               TheScenario().Set_Scenario_Name("SCA01EA.INI");
             } else {
@@ -1097,10 +1097,10 @@ bool Select_Game(bool /*fade*/) {
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
-    if (TheSpecialOptions().from_install) {
+    if (TheSpecialFlags().from_install) {
       game::TheMouse().Show();
     }
-    TheSpecialOptions().from_install = false;
+    TheSpecialFlags().from_install = false;
   }
 
   /*
@@ -2465,7 +2465,7 @@ static void SerializeRecording(Archive& ar) {
   bool unshroud = TheDebugState().unshroud();
   ar(TheWorld().build_level(), unshroud, TheWorld().seed(),
      TheScenario().Scenario, TheScenario().ScenarioName, TheWorld().whom(),
-     TheSpecialOptions(), TheOptions());
+     TheSpecialFlags(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
     TheScenario().ScenarioName[sizeof(TheScenario().ScenarioName) - 1] = '\0';

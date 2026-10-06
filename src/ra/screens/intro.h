@@ -26,7 +26,7 @@
 namespace ra {
 
 // Plays the introduction movie. Select_Game() calls this when it starts the
-// campaign on the first launch after installing (SpecialOptions::from_install).
+// campaign on the first launch after installing (SpecialFlags::from_install).
 //
 // When playing from the DVD, first asks the player to choose Allies or Soviets
 // and stores the answer in CurrentCD (0 Allied, 1 Soviet), which the caller

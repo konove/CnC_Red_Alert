@@ -93,10 +93,10 @@
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/random_pick.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
@@ -1975,7 +1975,7 @@ bool MapClass::Base_Region(Cell cell, HousesType& house, ZoneType& zone) const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Destroy_Bridge_At(Cell cell) {
-  if (In_Radar(cell) && !TheSpecialOptions().capture_the_flag) {
+  if (In_Radar(cell) && !TheSpecialFlags().capture_the_flag) {
     const CellClass* cellptr = &(*this).at(cell);
     TemplateType ttype = cellptr->TType;
 

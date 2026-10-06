@@ -11,13 +11,13 @@ changes.
 
 ## The blocked items
 
-| Group                           | TODO examples                                                                                                | What blocks it                                                 |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| A. Modal loops                  | `ra/ai/special_options.cc` dialogs, `ra/editor/trigger_type_dialog.cc`, `ra/screens/credits_roll.cc`         | Screen, input queue and real time inside a `while` loop        |
-| B. "Check on a real display"    | TextPrintType split, keyboard and mouse refactors, fading tables, tactical redraw, page owners, VQA          | Nobody can press keys or look at pixels headlessly             |
-| C. Missing game data in fixture | `Text_String()`, fonts, `TUTORIAL.INI`, a nimation types, TD's INI writers                                   | `GameFixture` builds only the house and unit type heaps        |
-| D. Two-instance network         | Coordinate-type packets, the `rules.ini` ID in a lobby                                                       | Nothing exchanges packets                                      |
-| E. Headless hang                | SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM maps never reach frame 1 under the `dummy` driver | A bug, not a harness gap, but it limits any whole-game harness |
+| Group                           | TODO examples                                                                                                                 | What blocks it                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| A. Modal loops                  | `ra/screens/special_options.cc` and `difficulty.cc` dialogs, `ra/editor/trigger_type_dialog.cc`, `ra/screens/credits_roll.cc` | Screen, input queue and real time inside a `while` loop        |
+| B. "Check on a real display"    | TextPrintType split, keyboard and mouse refactors, fading tables, tactical redraw, page owners, VQA                           | Nobody can press keys or look at pixels headlessly             |
+| C. Missing game data in fixture | `Text_String()`, fonts, `TUTORIAL.INI`, a nimation types, TD's INI writers                                                    | `GameFixture` builds only the house and unit type heaps        |
+| D. Two-instance network         | Coordinate-type packets, the `rules.ini` ID in a lobby                                                                        | Nothing exchanges packets                                      |
+| E. Headless hang                | SCG03EA, SCG03EB, SCG07EA, SCG10EB, SCG13EA and all 24 SCM maps never reach frame 1 under the `dummy` driver                  | A bug, not a harness gap, but it limits any whole-game harness |
 
 ## What exists today
 
@@ -77,9 +77,9 @@ changes.
 
 ```cpp
 TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
-  player().At(2).Click(three_point_box).At(4).Key(KN_ESC);
+  player().At(2).Click(speed_build_box).At(4).Key(KN_ESC);
   RunSpecialOptionsDialog();
-  EXPECT_FALSE(TheSpecialOptions().three_point_turns);
+  EXPECT_FALSE(TheSpecialFlags().speed_build);
 }
 ```
 
@@ -116,8 +116,8 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
 - **Phase 1: done 2026-10-05.** `engine::platform::ManualClock` (`engine/platform/manual_clock.h`),
   `Display::SetHeadlessVideoMode()` and `DisplayObserver` (`engine/window/display_observer.h`),
   `ScriptedPlayer`, `Screen::InitHeadless()` and `ra::UiFixture` (`ra/startup/ui_test_util.h`).
-  `RunSpecialOptionsDialog()` is covered by seven scripted tests in `ra/ai/special_options_test.cc`.
-  What differs from the design above:
+  `RunSpecialOptionsDialog()` is covered by seven scripted tests in
+  `ra/screens/special_options_test.cc`. What differs from the design above:
   - `ScriptedPlayer` needs nothing above the engine, so it lives in `engine/window/`, not in a new
     `src/game/testing/`.
   - The frame hook is an observer on `Display` with two calls, `OnFrameEnd()` and `OnPump()`. The
@@ -128,14 +128,14 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
   - The synthetic font moved up from phase 2: without a font a text button is 8x2 pixels and cannot
     be clicked. `MakeBlockFont()` (`engine/gfx/font_test_util.h`) makes one, and `UiFixture`
     installs it for every `FontType`.
-  - `PromptForDifficulty()` is not covered yet: it copies `TextString(TXT_DIFFICULTY)`, which is
-    null without a string table. Phase 2's text table opens it.
+  - `AskDifficulty()` is not covered yet: it copies `TextString(TXT_DIFFICULTY)`, which is null
+    without a string table. Phase 2's text table opens it.
 
 - **Phase 2: done 2026-10-05.** `MakeStringTable()` (`engine/file/string_table_test_util.h`),
   `Assets::set_system_strings()` and `set_tutorial_text()`, and `GameFixture::SetText()`, which
   installs a text table on first use. `UiFixture` installs it up front, so every string is empty
-  rather than null. Newly covered: `PromptForDifficulty()` (seven tests, including the slider's
-  ends), the object names in `TriggerType::Description()` and `TextAction` with a tutorial message.
+  rather than null. Newly covered: `AskDifficulty()` (seven tests, including the slider's ends), the
+  object names in `TriggerType::Description()` and `TextAction` with a tutorial message.
   `special_options.cc` went from 20 to 137 of 141 lines.
   - Palettes and colour remaps were not needed by anything tested so far; they are added with the
     first screen that reads them.

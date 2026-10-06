@@ -53,10 +53,10 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/special_options.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/random_pick.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -105,7 +105,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (TheSpecialOptions().inert_weapons || !damage || warhead == WARHEAD_NONE) {
+  if (TheSpecialFlags().inert_weapons || !damage || warhead == WARHEAD_NONE) {
     return 0;
   }
 
@@ -193,8 +193,7 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
   int distance = 0;          // Distance to unit.
 
-  if (!strength || TheSpecialOptions().inert_weapons ||
-      warhead == WARHEAD_NONE) {
+  if (!strength || TheSpecialFlags().inert_weapons || warhead == WARHEAD_NONE) {
     return;
   }
 

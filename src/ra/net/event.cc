@@ -72,13 +72,13 @@
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/data/text.h"
@@ -181,7 +181,7 @@ base::EnumArray<EventClass::EventType, const char*,
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(SpecialOptions data) : EventClass() {
+EventClass::EventClass(SpecialFlags data) : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -593,7 +593,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      TheSpecialOptions() = Data.Options.Data;
+      TheSpecialFlags() = Data.Options.Data;
       const HouseClass* house = TheObjectHeaps().house().Slot(ID);
 
       // The format string comes from the localized string table, so verify the

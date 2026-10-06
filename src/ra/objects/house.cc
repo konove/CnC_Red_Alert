@@ -173,7 +173,6 @@
 #include "ra/ai/prebuilt_base.h"
 #include "ra/ai/reinforcements.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
@@ -187,6 +186,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/random_pick.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ini_types.h"
@@ -3394,7 +3394,7 @@ void HouseClass::MPlayer_Defeated() {
   /*
   **	Remove this house's flag & flag home cell
   */
-  if (TheSpecialOptions().capture_the_flag) {
+  if (TheSpecialFlags().capture_the_flag) {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {

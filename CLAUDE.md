@@ -357,7 +357,7 @@ Code that blocks in its own loop until the player answers (a dialog, a menu, a t
 tested with `UiFixture` (`ra/startup/ui_test_util.h`, `td/startup/ui_test_util.h`): a real `Game` on
 a headless screen, a clock that moves a tick a frame and a `ScriptedPlayer` whose clicks and keys
 the loop reads. Queue the script, call the dialog, check what it did; see
-`ra/ai/special_options_test.cc`. A loop the script cannot end throws `ScriptOverrun` instead of
+`ra/screens/special_options_test.cc`. A loop the script cannot end throws `ScriptOverrun` instead of
 hanging.
 
 `tools/ui_check.py` plays the scripts in `src/<game>/testdata/ui/` into the whole game

@@ -8,11 +8,11 @@
 #include "base/installed.h"
 #include "engine/audio/audio_mixer.h"
 #include "gtest/gtest.h"
-#include "ra/ai/special_options.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/rules.h"
 #include "ra/net/network.h"
 #include "ra/net/session.h"
@@ -39,7 +39,7 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
            base::Installed<Assets>::IsInstalled() &&
            base::Installed<RulesClass>::IsInstalled() &&
            base::Installed<GameOptionsClass>::IsInstalled() &&
-           base::Installed<SpecialOptions>::IsInstalled() &&
+           base::Installed<SpecialFlags>::IsInstalled() &&
            base::Installed<engine::audio::AudioMixer>::IsInstalled() &&
            base::Installed<ThemeClass>::IsInstalled() &&
            base::Installed<SessionClass>::IsInstalled() &&
@@ -51,6 +51,20 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
     EXPECT_TRUE(installed());
   }
   EXPECT_FALSE(installed());
+}
+
+TEST(GameTest, StartsWithOnlyTheOreFlagsOn) {
+  const Game game{};
+
+  const SpecialFlags& flags = TheSpecialFlags();
+  EXPECT_FALSE(flags.shadow_grows);
+  EXPECT_FALSE(flags.speed_build);
+  EXPECT_FALSE(flags.from_install);
+  EXPECT_FALSE(flags.capture_the_flag);
+  EXPECT_FALSE(flags.inert_weapons);
+  EXPECT_FALSE(flags.three_point_turns);
+  EXPECT_TRUE(flags.ore_grows);
+  EXPECT_TRUE(flags.ore_spreads);
 }
 
 // The IPX manager stops listening when Game is destroyed, so the network has

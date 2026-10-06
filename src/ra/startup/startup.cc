@@ -74,10 +74,10 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/scripted_player.h"
-#include "ra/ai/special_options.h"
 #include "ra/assets/installation.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/language.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/world.h"
@@ -160,9 +160,9 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_check_map(options.check_map);
   debug_state.set_check_heaps(options.check_heaps);
 
-  TheSpecialOptions().from_install = options.from_install;
-  TheSpecialOptions().inert_weapons = options.inert_weapons;
-  TheSpecialOptions().speed_build = options.speed_build;
+  TheSpecialFlags().from_install = options.from_install;
+  TheSpecialFlags().inert_weapons = options.inert_weapons;
+  TheSpecialFlags().speed_build = options.speed_build;
 
   TheSession().NetStealth = options.net_stealth;
   TheSession().NetProtect = !options.outside_messages;
@@ -317,7 +317,6 @@ static int Run(const int argc, char* argv[])
   // The parser writes no game state, so these defaults come first and
   // ApplyStartupOptions() lays the command line over them.
   TheWorld().whom() = HOUSE_GOOD;
-  TheSpecialOptions().Reset();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (!options.has_value()) {
@@ -402,8 +401,8 @@ static int Run(const int argc, char* argv[])
   // from_install means "first launch after installing": play the intro
   // movie. The installer used to write PlayIntro=yes; with no entry it
   // still defaults to yes, so a fresh install sees the movie once.
-  if (!TheSpecialOptions().from_install) {
-    TheSpecialOptions().from_install = ini.GetBool("Intro", "PlayIntro", true);
+  if (!TheSpecialFlags().from_install) {
+    TheSpecialFlags().from_install = ini.GetBool("Intro", "PlayIntro", true);
   }
   ThePalettes().set_slow_palette(ini.GetBool("Options", "SlowPalette", false));
 
@@ -411,7 +410,7 @@ static int Run(const int argc, char* argv[])
   // PlayIntro=no so later launches go straight to the menu. Tiberian
   // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
   // shipped allowing it.
-  if (TheSpecialOptions().from_install) {
+  if (TheSpecialFlags().from_install) {
     TheGameState().breakout_allowed() = true;
     ini.PutBool("Intro", "PlayIntro", false);
     if (const auto config_file =

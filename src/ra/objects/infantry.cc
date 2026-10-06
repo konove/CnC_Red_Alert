@@ -123,7 +123,6 @@
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/ai/special_options.h"
 #include "ra/ai/team.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
@@ -135,6 +134,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/random_pick.h"
+#include "ra/core/special_flags.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
@@ -3234,7 +3234,7 @@ ActionType InfantryClass::What_Action(Cell cell) const {
   **	Demolitioners may destroy a bridge
   */
   if (Class->IsBomber && action == ACTION_MOVE &&
-      !TheSpecialOptions().capture_the_flag) {
+      !TheSpecialFlags().capture_the_flag) {
     const TemplateType bridge_type = TheMap().at(cell).TType;
     if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
         bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||

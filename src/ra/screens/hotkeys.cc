@@ -33,7 +33,6 @@
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
@@ -55,6 +54,7 @@
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 #include "ra/screens/goptions.h"
+#include "ra/screens/special_options.h"
 #include "ra/startup/game_state.h"
 
 namespace ra {

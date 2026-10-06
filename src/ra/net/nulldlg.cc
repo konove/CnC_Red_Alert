@@ -96,7 +96,6 @@
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
@@ -106,6 +105,7 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
+#include "ra/core/special_flags.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text.h"
@@ -2909,7 +2909,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init scenario values, only the first time through
   ........................................................................*/
-  TheSpecialOptions().capture_the_flag = TheRules().IsMPCaptureTheFlag;
+  TheSpecialFlags().capture_the_flag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
     TheSession().Options.Credits =
         TheRules().MPDefaultMoney;  // init credits & credit buffer
@@ -2918,7 +2918,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     TheSession().Options.Tiberium = TheRules().IsMPTiberiumGrow;
     TheSession().Options.Goodies = TheRules().IsMPCrates;
     TheSession().Options.AIPlayers = 0;
-    TheSpecialOptions().shroud_regrows = TheRules().IsMPShadowGrow;
+    TheSpecialFlags().shadow_grows = TheRules().IsMPShadowGrow;
     TheSession().Options.UnitCount =
         (base::At(SessionClass::CountMax, TheSession().Options.Bases) +
          base::At(SessionClass::CountMin, TheSession().Options.Bases)) /
@@ -2946,9 +2946,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
   optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-  optionlist.Check_Item(3, TheSpecialOptions().shroud_regrows);
+  optionlist.Check_Item(3, TheSpecialFlags().shadow_grows);
   if (!skirmish) {
-    optionlist.Check_Item(4, TheSpecialOptions().capture_the_flag);
+    optionlist.Check_Item(4, TheSpecialFlags().capture_the_flag);
   }
 
   countgauge.Set_Maximum(
@@ -2983,7 +2983,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   TheRules().IsTGrowth = TheRules().IsTSpread =
       TheSession().Options.Tiberium != 0;
-  TheSpecialOptions().ore_grows = TheSpecialOptions().ore_spreads =
+  TheSpecialFlags().ore_grows = TheSpecialFlags().ore_spreads =
       TheRules().IsTGrowth ? 1 : 0;
   transmit = true;
 
@@ -3480,13 +3480,13 @@ int Com_Scenario_Dialog(bool skirmish) {
         // If 'Bases' gets toggled, we have to change the range of the
         // UnitCount slider.
         // Also, if Tiberium gets toggled, we have to set the flags
-        // in SpecialOptions.
+        // in SpecialFlags.
         //------------------------------------------------------------------
         case engine::window::ButtonKey(kButtonOptions):
           if (!skirmish &&
-              (TheSpecialOptions().capture_the_flag != 0) !=
+              (TheSpecialFlags().capture_the_flag != 0) !=
                   optionlist.Is_Checked(4) &&
-              !TheSpecialOptions().capture_the_flag) {
+              !TheSpecialFlags().capture_the_flag) {
             optionlist.Check_Item(0, true);
           }
           if ((TheSession().Options.Bases != 0) != optionlist.Is_Checked(0)) {
@@ -3519,17 +3519,17 @@ int Com_Scenario_Dialog(bool skirmish) {
                 base::At(SessionClass::CountMin, TheSession().Options.Bases));
           }
           TheSession().Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
-          TheSpecialOptions().ore_grows =
+          TheSpecialFlags().ore_grows =
               static_cast<unsigned>(TheSession().Options.Tiberium);
           TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-          TheSpecialOptions().ore_spreads =
+          TheSpecialFlags().ore_spreads =
               static_cast<unsigned>(TheSession().Options.Tiberium);
           TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
           TheSession().Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
-          TheSpecialOptions().shroud_regrows = optionlist.Is_Checked(3);
+          TheSpecialFlags().shadow_grows = optionlist.Is_Checked(3);
           if (!skirmish) {
-            TheSpecialOptions().capture_the_flag = optionlist.Is_Checked(4);
+            TheSpecialFlags().capture_the_flag = optionlist.Is_Checked(4);
           }
 
           transmit = true;
@@ -3698,7 +3698,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.ScenarioInfo.UnitCount =
             static_cast<unsigned char>(TheSession().Options.UnitCount);
         SendPacket.ScenarioInfo.Seed = TheWorld().seed();
-        SendPacket.ScenarioInfo.Special = TheSpecialOptions();
+        SendPacket.ScenarioInfo.Special = TheSpecialFlags();
         SendPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
         SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
@@ -4769,8 +4769,8 @@ int Com_Show_Scenario_Dialog() {
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
   optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-  optionlist.Check_Item(3, TheSpecialOptions().capture_the_flag);
-  optionlist.Check_Item(4, TheSpecialOptions().shroud_regrows);
+  optionlist.Check_Item(3, TheSpecialFlags().capture_the_flag);
+  optionlist.Check_Item(4, TheSpecialFlags().shadow_grows);
 
   //........................................................................
   // House buttons
@@ -5456,18 +5456,18 @@ int Com_Show_Scenario_Dialog() {
             TheSession().Options.UnitCount =
                 ReceivePacket.ScenarioInfo.UnitCount;
             TheWorld().seed() = ReceivePacket.ScenarioInfo.Seed;
-            TheSpecialOptions() = ReceivePacket.ScenarioInfo.Special;
+            TheSpecialFlags() = ReceivePacket.ScenarioInfo.Special;
             TheOptions().GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
 
             if (TheSession().Options.Tiberium) {
-              TheSpecialOptions().ore_grows = true;
+              TheSpecialFlags().ore_grows = true;
               TheRules().IsTGrowth = true;
-              TheSpecialOptions().ore_spreads = true;
+              TheSpecialFlags().ore_spreads = true;
               TheRules().IsTSpread = true;
             } else {
-              TheSpecialOptions().ore_grows = false;
+              TheSpecialFlags().ore_grows = false;
               TheRules().IsTGrowth = false;
-              TheSpecialOptions().ore_spreads = false;
+              TheSpecialFlags().ore_spreads = false;
               TheRules().IsTSpread = false;
             }
 
@@ -5490,8 +5490,8 @@ int Com_Show_Scenario_Dialog() {
             optionlist.Check_Item(0, TheSession().Options.Bases != 0);
             optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
             optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-            optionlist.Check_Item(3, TheSpecialOptions().capture_the_flag);
-            optionlist.Check_Item(4, TheSpecialOptions().shroud_regrows);
+            optionlist.Check_Item(3, TheSpecialFlags().capture_the_flag);
+            optionlist.Check_Item(4, TheSpecialFlags().shadow_grows);
             optionlist.Flag_To_Redraw();
 
             /*

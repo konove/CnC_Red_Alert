@@ -62,9 +62,9 @@
 #include "game/core/object_heap.h"
 #include "game/sim/utracker.h"
 #include "ra/ai/scenario.h"
-#include "ra/ai/special_options.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/special_flags.h"
 #include "ra/map/world.h"
 #include "ra/net/network.h"
 #include "ra/net/session.h"
@@ -336,13 +336,13 @@ void Send_Statistics_Packet() {
     ** Shadow regrowth enabled
     */
     stats.Add_Field(FIELD_SHADOW_REGROWS,
-                    TheSpecialOptions().shroud_regrows ? "ON" : "OFF");
+                    TheSpecialFlags().shadow_grows ? "ON" : "OFF");
 
     /*
     ** Capture the flag mode (On/Off)
     */
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
-                    TheSpecialOptions().capture_the_flag ? "ON" : "OFF");
+                    TheSpecialFlags().capture_the_flag ? "ON" : "OFF");
 
     /*
     ** Start unit count
