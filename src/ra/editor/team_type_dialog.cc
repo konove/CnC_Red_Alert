@@ -381,20 +381,23 @@ bool TeamType::Edit() {
   // argument its control holds.
   const auto work_mission = [&] {
     TeamMission mission{};
-    mission.set_mission(TeamMissionType(mission_drop.Current_Index()));
+    mission.set_mission(
+        static_cast<TeamMissionType>(mission_drop.Current_Index()));
     mission.set_value(0);
     switch (TeamMissionNeeds(mission.mission())) {
       case NEED_MISSION:
         mission.set_unit_mission(
-            MissionType(unit_mission_drop.Current_Index()));
+            static_cast<MissionType>(unit_mission_drop.Current_Index()));
         break;
 
       case NEED_FORMATION:
-        mission.set_formation(FormationType(formation_drop.Current_Index()));
+        mission.set_formation(
+            static_cast<FormationType>(formation_drop.Current_Index()));
         break;
 
       case NEED_QUARRY:
-        mission.set_quarry(QuarryType(quarry_drop.Current_Index()));
+        mission.set_quarry(
+            static_cast<QuarryType>(quarry_drop.Current_Index()));
         break;
 
       case NEED_NUMBER:
@@ -465,7 +468,8 @@ bool TeamType::Edit() {
       quarry_drop.Remove();
       formation_drop.Remove();
       unit_mission_drop.Remove();
-      switch (TeamMissionNeeds(TeamMissionType(mission_drop.Current_Index()))) {
+      switch (TeamMissionNeeds(
+          static_cast<TeamMissionType>(mission_drop.Current_Index()))) {
         case NeedType::NEED_NONE:
         case NeedType::NEED_THEME:
         case NeedType::NEED_MOVIE:
@@ -660,7 +664,8 @@ bool TeamType::Edit() {
         // release.
         members_button.Turn_Off();
 
-        TheMap().Team_Members(HousesType(house_drop.Current_Index()));
+        TheMap().Team_Members(
+            static_cast<HousesType>(house_drop.Current_Index()));
 
         redraw = true;
         break;
@@ -686,7 +691,7 @@ bool TeamType::Edit() {
             base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0), 0, 255));
         max_teams_ = static_cast<unsigned char>(std::clamp(
             base::ParseIntegerOr<int>(max_edit.Get_Text(), 0), 0, 255));
-        house_ = HousesType(house_drop.Current_Index());
+        house_ = static_cast<HousesType>(house_drop.Current_Index());
         trigger_ = nullptr;
         if (trigger_drop.Current_Index() > 0) {
           trigger_ = TheObjectHeaps().trigger_type().ActiveAt(

@@ -185,7 +185,7 @@ class TeamType : public AbstractTypeClass {
   [[nodiscard]] std::string ToIniEntry() const;
   // Creates a team type for every entry of the [TeamTypes] section of `ini`.
   // Entries past the heap's capacity are dropped.
-  static void ReadIni(engine::file::IniFile& ini);
+  static void ReadIni(const engine::file::IniFile& ini);
   // Names this team type `name` and sets it from `entry`, a [TeamTypes] value
   // as ToIniEntry() writes it. The older scenario formats (NewINIFormat
   // 0 and 1) list the five options as separate 0/1 fields and put the trigger
@@ -221,12 +221,12 @@ class TeamType : public AbstractTypeClass {
                bool selected, FontType font, TextPrintType flags) const;
   // Returns the editor's name for a team mission, which must not be
   // TeamMissionType::kNone.
-  static const char* MissionName(TeamMissionType order);
+  static const char* MissionName(TeamMissionType mission);
   // Picks, at random, a team type the computer could create for `house` now:
   // one of the house's own with fewer than MaxAllowed teams in the field.
   // An alerted house picks only among its autocreate team types, any other
   // house only among the rest. Returns nullptr when there is no candidate.
-  static TeamType* SuggestNewTeam(HouseClass* house, bool alerted);
+  static TeamType* SuggestNewTeam(const HouseClass* house, bool alerted);
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty.
   static TeamType* FromName(std::string_view name);

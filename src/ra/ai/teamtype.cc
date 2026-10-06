@@ -72,7 +72,7 @@ using enum engine::window::KeyNumber;
 namespace {
 
 // The scenario INI section that lists the team types.
-constexpr const char* kIniSection = "TeamTypes";
+constexpr const auto* kIniSection = "TeamTypes";
 
 // The scenario editor's name for each team mission.
 constexpr base::EnumArray<TeamMissionType, const char*> kMissionNames = {
@@ -140,7 +140,7 @@ void DrawListEntry(PixelView& view, const std::string& text,
 
 }  // namespace
 
-std::string TeamMission::Description(int index) const {
+std::string TeamMission::Description(const int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     std::string text =
         absl::StrFormat("%d\t%s", index, TeamType::MissionName(mission_));
@@ -194,9 +194,10 @@ std::string TeamMission::Description(int index) const {
   return "";
 }
 
-void TeamMission::Draw_It(PixelView& view, int index, int x, int y, int width,
-                          int height, bool selected, FontType font,
-                          TextPrintType flags) const {
+void TeamMission::Draw_It(PixelView& view, const int index, const int x,
+                          const int y, const int width, const int height,
+                          const bool selected, const FontType font,
+                          const TextPrintType flags) const {
   // Pixel columns of the mission's name and of a second field
   // Description() never writes.
   static constexpr int kTabStops[] = {13, 40};
@@ -257,7 +258,7 @@ std::string TeamType::ToIniEntry() const {
   return entry;
 }
 
-void TeamType::ReadIni(engine::file::IniFile& ini) {
+void TeamType::ReadIni(const engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(kIniSection)) {
     auto* team_type = base::NewPooled<TeamType>();
     if (team_type != nullptr) {
@@ -266,7 +267,8 @@ void TeamType::ReadIni(engine::file::IniFile& ini) {
   }
 }
 
-void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
+void TeamType::ReadIniEntry(const std::string_view name,
+                            const std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   Set_Name(name);
@@ -390,16 +392,17 @@ void TeamType::DestroyTeams() const {
   }
 }
 
-void TeamType::Detach(Target target, bool /*unused*/) {
+void TeamType::Detach(const Target target, bool /*unused*/) {
   if (target.kind() == RTTI_TRIGGERTYPE && trigger_ != nullptr &&
       trigger_ == target.AsTriggerType()) {
     trigger_ = nullptr;
   }
 }
 
-void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
-                       int height, bool selected, FontType font,
-                       TextPrintType flags) const {
+void TeamType::Draw_It(PixelView& view, int /*unused*/, const int x,
+                       const int y, const int width, const int height,
+                       const bool selected, const FontType font,
+                       const TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // Pixel columns of Description()'s fields after the name: house, origin,
     // mission count, members.
@@ -409,11 +412,12 @@ void TeamType::Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
   }
 }
 
-const char* TeamType::MissionName(TeamMissionType order) {
-  return kMissionNames.at(order);
+const char* TeamType::MissionName(const TeamMissionType mission) {
+  return kMissionNames.at(mission);
 }
 
-TeamType* TeamType::SuggestNewTeam(HouseClass* house, bool alerted) {
+TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,
+                                   const bool alerted) {
   // Only the first 20 candidates in heap order take part in the draw.
   TeamType* choices[20];
   int choice_count = 0;
@@ -501,7 +505,7 @@ void TeamType::AddMember(const TeamMember& member) {
   base::At(members_, member_count_++) = member;
 }
 
-NeedType TeamMissionNeeds(TeamMissionType mission) {
+NeedType TeamMissionNeeds(const TeamMissionType mission) {
   switch (mission) {
     case TeamMissionType::kFormation:
       return NEED_FORMATION;
