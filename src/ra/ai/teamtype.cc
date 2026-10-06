@@ -88,7 +88,7 @@ namespace ra {
 using enum engine::window::KeyNumber;
 
 // Parses a hex number for the editor's cell-number field.
-static int atoh(const char* str);
+static int atoh(std::string_view str);
 
 void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                             int width, int height, bool selected, FontType font,
@@ -108,11 +108,11 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                              flags, width, _tabs);
+      Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
+                              kTBlack, font, flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          view, Description(), x, y,
+          view, Description().c_str(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, font, flags, width, _tabs);
@@ -318,11 +318,11 @@ void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Description(index), x, y, scheme, kTBlack,
-                            font, flags, width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(index).c_str(), x, y, scheme,
+                            kTBlack, font, flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
-        view, Description(index), x, y,
+        view, Description(index).c_str(), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
         kTBlack, font, flags, width, _tabs);
@@ -720,7 +720,7 @@ bool TeamTypeClass::Edit() {
                        scheme, kTBlack, FontType::kEditor,
                        TPF_RIGHT | TPF_NOSHADOW);
 
-      Fancy_Text_Print(view, Member_Description(),
+      Fancy_Text_Print(view, Member_Description().c_str(),
                        membersbtn.X + membersbtn.Width + 3, membersbtn.Y + 1,
                        scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
 
@@ -1126,9 +1126,9 @@ bool TeamTypeClass::Edit() {
 
 // Returns the value of the hex digits in `str`. A character that is not a
 // hex digit counts as 0.
-int atoh(const char* str) {
+int atoh(const std::string_view str) {
   int retval = 0;
-  for (const char chr : std::string_view(str)) {
+  for (const char chr : str) {
     retval *= 16;
     if (chr >= '0' && chr <= '9') {
       retval += chr - '0';
@@ -1145,48 +1145,31 @@ int atoh(const char* str) {
   return retval;
 }
 
-const char* TeamTypeClass::Member_Description() const {
+std::string TeamTypeClass::Member_Description() const {
+  std::string text;
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    static char buffer[128];
-
-    buffer[0] = '\0';
-
     // "TYPE:count" for each kind of member, comma separated.
     for (int index = 0; index < ClassCount; index++) {
-      char txt[10];
-
-      base::SafeAppend(buffer, base::At(Members, index).Class->IniName);
-      base::SafeAppend(buffer, ":");
-
-      absl::SNPrintF(txt, sizeof(txt), "%d", base::At(Members, index).Quantity);
-      base::SafeAppend(buffer, txt);
-
-      if (index < ClassCount - 1) {
-        base::SafeAppend(buffer, ",");
-      }
+      const TeamMemberClass& member = base::At(Members, index);
+      absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
+                            member.Class->IniName, member.Quantity);
     }
 
     // The team list's last column has room for 25 characters.
-    if (std::string_view(buffer).size() > 25) {
-      base::SafeCopy(std::span(buffer).subspan(25 - 3, 4), "...");
+    constexpr std::string_view kEllipsis = "...";
+    constexpr std::size_t kMaxLength = 25;
+    if (text.size() > kMaxLength) {
+      text.resize(kMaxLength - kEllipsis.size());
+      text += kEllipsis;
     }
-
-    return buffer;
   }
-  return "";
+  return text;
 }
 
-const char* TeamTypeClass::Description() const {
+std::string TeamTypeClass::Description() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    static char _buffer[128];
-    char extra = ' ';
-    char loc[3];
-
     // The origin waypoint in the editor's letters: "A" to "Z", then "AA" on.
-    loc[0] = loc[1] = loc[2] = 0;
-    if (IsAutocreate) {
-      extra = '*';
-    }
+    char loc[3] = {};
     if (Origin > -1) {
       if (Origin < 26) {
         loc[0] = static_cast<char>('A' + Origin);
@@ -1199,58 +1182,46 @@ const char* TeamTypeClass::Description() const {
     // A team read from a scenario that names no house for it has none.
     const char* const house_suffix =
         House == HOUSE_NONE ? "" : HouseTypeClass::As_Reference(House).Suffix;
-    absl::SNPrintF(_buffer, sizeof(_buffer), "%s\t%s\t%c%s\t%d\t%s", IniName,
-                   house_suffix, extra, loc, MissionCount,
-                   Member_Description());
-    return _buffer;
+    return absl::StrFormat("%s\t%s\t%c%s\t%d\t%s", IniName, house_suffix,
+                           IsAutocreate ? '*' : ' ', loc, MissionCount,
+                           Member_Description());
   }
   return "";
 }
 
-const char* TeamMissionClass::Description(int index) const {
+std::string TeamMissionClass::Description(int index) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    static char buffer[64];
-
-    absl::SNPrintF(buffer, sizeof(buffer), "%d\t%s", index,
-                   TeamTypeClass::Name_From_Mission(Mission));
+    std::string text = absl::StrFormat(
+        "%d\t%s", index, TeamTypeClass::Name_From_Mission(Mission));
 
     switch (TeamMission_Needs(Mission)) {
       case NEED_MISSION:
-        base::SafeAppend(buffer, MissionClass::Mission_Name(Data.Mission));
+        text += MissionClass::Mission_Name(Data.Mission);
         break;
 
       case NEED_FORMATION:
-        base::SafeAppend(buffer, FormationName.at(Data.Formation));
+        text += FormationName.at(Data.Formation);
         break;
 
       case NEED_NUMBER:
-        absl::SNPrintF(
-            std::span(buffer).subspan(std::string_view(buffer).size()).data(),
-            sizeof(buffer) - std::string_view(buffer).size(), "%d", Data.Value);
+        absl::StrAppendFormat(&text, "%d", Data.Value);
         break;
 
       case NEED_HEX_NUMBER:
-        absl::SNPrintF(
-            std::span(buffer).subspan(std::string_view(buffer).size()).data(),
-            sizeof(buffer) - std::string_view(buffer).size(), "%x",
-            static_cast<unsigned int>(Data.Value));
+        absl::StrAppendFormat(&text, "%x",
+                              static_cast<unsigned int>(Data.Value));
         break;
 
       case NEED_QUARRY:
-        base::SafeAppend(buffer, QuarryName.at(Data.Quarry));
+        text += QuarryName.at(Data.Quarry);
         break;
 
       case NEED_WAYPOINT:
         if (Data.Value < 26) {
-          absl::SNPrintF(
-              std::span(buffer).subspan(std::string_view(buffer).size()).data(),
-              sizeof(buffer) - std::string_view(buffer).size(), "%c",
-              Data.Value + 'A');
+          absl::StrAppendFormat(&text, "%c", Data.Value + 'A');
         } else {
-          absl::SNPrintF(
-              std::span(buffer).subspan(std::string_view(buffer).size()).data(),
-              sizeof(buffer) - std::string_view(buffer).size(), "%c%c",
-              (Data.Value / 26) + 'A' - 1, (Data.Value % 26) + 'A');
+          absl::StrAppendFormat(&text, "%c%c", (Data.Value / 26) + 'A' - 1,
+                                (Data.Value % 26) + 'A');
         }
         break;
       case NeedType::NEED_NONE:
@@ -1272,7 +1243,7 @@ const char* TeamMissionClass::Description(int index) const {
         break;
     }
 
-    return buffer;
+    return text;
   }
   return "";
 }
@@ -1429,17 +1400,11 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini) {
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
-    std::string buf;
-    team->Build_INI_Entry(buf);
-    ini.PutString(INI_Name(), team->IniName, buf);
+    ini.PutString(INI_Name(), team->IniName, team->Build_INI_Entry());
   }
 }
 
-// LLVM 23 treats clear as invalidating the string reference itself. No pointer,
-// reference or iterator into its old character storage is retained.
-// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
-void TeamTypeClass::Build_INI_Entry(std::string& buf) {
-  buf.clear();
+std::string TeamTypeClass::Build_INI_Entry() const {
   uint32_t code = 0;
   code |= IsRoundAbout ? 0x0001U : 0U;
   code |= IsSuicide ? 0x0002U : 0U;
@@ -1447,9 +1412,9 @@ void TeamTypeClass::Build_INI_Entry(std::string& buf) {
   code |= IsPrebuilt ? 0x0008U : 0U;
   code |= IsReinforcable ? 0x0010U : 0U;
 
-  absl::StrAppendFormat(&buf, "%d,%d,%d,%d,%d,%d,%d", House, code,
-                        RecruitPriority, InitNum, MaxAllowed, Origin,
-                        TheObjectHeaps().trigger_type().PositionOf(Trigger));
+  std::string buf = absl::StrFormat(
+      "%d,%d,%d,%d,%d,%d,%d", House, code, RecruitPriority, InitNum, MaxAllowed,
+      Origin, TheObjectHeaps().trigger_type().PositionOf(Trigger));
 
   // The members: a count, then Type:Quantity for each.
   absl::StrAppendFormat(&buf, ",%d", ClassCount);
@@ -1464,6 +1429,7 @@ void TeamTypeClass::Build_INI_Entry(std::string& buf) {
     absl::StrAppendFormat(&buf, ",%d:%d", base::At(MissionList, i).Mission,
                           base::At(MissionList, i).Data.Value);
   }
+  return buf;
 }
 
 }  // namespace ra

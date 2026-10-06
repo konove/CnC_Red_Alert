@@ -84,12 +84,8 @@ class TeamMissionClass {
   // Returns the line the team editor shows for this mission: `index`, a tab,
   // the mission's name and its argument. `index` is the line's number in the
   // script, shown because TMISSION_LOOP refers to lines by number. The text is
-  // in a static buffer the next call overwrites, and is empty in a build
-  // without the scenario editor or the cheat keys.
-  [[nodiscard]] const char* Description(int index) const;
-  // The list widgets take an item where its text is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() const { return Description(0); }
+  // empty in a build without the scenario editor or the cheat keys.
+  [[nodiscard]] std::string Description(int index) const;
   // Draws Description(index) as a list box entry in the given rectangle,
   // highlighted when `selected`.
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
@@ -156,14 +152,13 @@ class TeamTypeClass : public AbstractTypeClass {
   // Frees every team type, in preparation for a new scenario.
   static void Init();
 
-  // Replaces `buf` with this team type's [TeamTypes] value, in the current
-  // format:
+  // Returns this team type's [TeamTypes] value, in the current format:
   //   House,Flags,RecruitPriority,InitNum,MaxAllowed,Origin,Trigger,
   //   MemberCount,Type:Quantity,...,MissionCount,Mission:Argument,...
   // Flags packs the five options as bits (roundabout 1, suicide 2, autocreate
   // 4, prebuilt 8, reinforcable 16); Trigger is the trigger type's position in
   // its heap, -1 for none.
-  void Build_INI_Entry(std::string& buf);
+  [[nodiscard]] std::string Build_INI_Entry() const;
   // Creates a team type for every entry of the [TeamTypes] section of `ini`.
   // Entries past the heap's capacity are dropped.
   static void Read_INI(engine::file::IniFile& ini);
@@ -232,18 +227,14 @@ class TeamTypeClass : public AbstractTypeClass {
   // only opens.
   bool Edit();
   // Returns the members as "TYPE:count,TYPE:count", cut to 25 characters with
-  // a trailing "..." when longer. The text is in a static buffer the next
-  // call overwrites, and is empty in a build without the scenario editor or
-  // the cheat keys.
-  [[nodiscard]] const char* Member_Description() const;
+  // a trailing "..." when longer. The text is empty in a build without the
+  // scenario editor or the cheat keys.
+  [[nodiscard]] std::string Member_Description() const;
   // Returns the line the team type list shows: the name, the house's suffix,
   // a '*' for an autocreate team followed by the origin waypoint's letters,
-  // the number of missions and Member_Description(), separated by tabs. The
-  // same buffer and build rules as Member_Description() apply.
-  [[nodiscard]] const char* Description() const;
-  // The list widgets take an item where its text is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const char*() const { return Description(); }
+  // the number of missions and Member_Description(), separated by tabs. Empty
+  // in a build without the scenario editor or the cheat keys.
+  [[nodiscard]] std::string Description() const;
 
   // True while the object occupies its heap slot. operator new sets it
   // before the constructor runs, so the initializer must agree with it;
