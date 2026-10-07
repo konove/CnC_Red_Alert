@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 161,
+  "nextId": 163,
   "items": [
     {
       "id": "T-2",
@@ -3819,6 +3819,78 @@
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
       "updated": "2026-10-06T09:18:45Z"
+    },
+    {
+      "id": "T-161",
+      "title": "Silence the nullability-extension warnings the strict build prints for Abseil's CHECK macros",
+      "details": "The strict (clang, `-Weverything`) compile prints `warning: type nullability specifier '_Nullable' / '_Nonnull' is a Clang extension [-Wnullability-extension]` for every `CHECK_EQ` / `CHECK_GE` / `CHECK_LT`-style macro in project code; the note points at `absl_nullable` in `absl/base/nullability.h`. They are warnings, not errors, so the build passes, but each recompiled unit adds dozens of lines that bury real output. Seen on recompiling `engine/crypto/pk.cc`: 36 from `engine/crypto/digit_cursor.h`, 16 from `engine/stream/byte_stream.h`, 8 from `engine/crypto/int.h`, 6 from `game/core/object_heap.h`. 28 files under `src/` use these macros.\n\n`.clang-tidy` already turns the same diagnostic off for the clang-tidy pass (`-clang-diagnostic-nullability-extension`, line 64); the compiler flags do not. Add `-Wno-nullability-extension` to the Clang `add_compile_options` list at the anchor, with a comment naming Abseil's macros. One line; it changes every strict compile command, so the next strict build recompiles the tree (ccache misses) and clang-tidy re-runs only where its own command changes.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "build",
+        "cmake",
+        "strict-build"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:02:47Z",
+      "updated": "2026-10-07T07:02:47Z",
+      "source": "ff429d5f",
+      "anchors": [
+        {
+          "path": "CMakeLists.txt",
+          "startLine": 221,
+          "endLine": 221,
+          "text": "                    -Weverything",
+          "before": [
+            "            )",
+            "        elseif (CMAKE_CXX_COMPILER_ID MATCHES \"Clang\")",
+            "            add_compile_options("
+          ],
+          "after": [
+            "                    -Wno-c++98-compat",
+            "                    -Wno-c++98-compat-pedantic",
+            "                    -Wno-padded"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-162",
+      "title": "Convert Red Alert's NeedType to qualified kPascalCase enumerators",
+      "details": "`NeedType` (`ra/core/defines.h`, the anchor) is still a legacy enum: `NEED_*` enumerators hoisted by `using enum NeedType;` (line 1778), and its comment block is mangled (`*enumeration is *\tused to ...`). Call sites are mixed: about 400 mentions of `NEED_*` over 12 files, 123 of them already written `NeedType::NEED_...`; `ff429d5f` removed 45 qualifiers in `ra/editor/team_type_dialog.cc` to match their neighbours.\n\nRun the Enums part of `/rename-google-style` on it: `NeedType::kNone`, `kTheme`, ..., `kHexNumber`, drop the `using enum`, and fix the comment. The files: `ra/editor/trigger_type_dialog.cc` (198 mentions), `ra/editor/team_type_dialog.cc` (63), `ra/ai/team_type.cc` (28), `ra/ai/trigger_type.cc` (21), `ra/ai/trigger_action.cc` (14), `ra/ai/tevent.cc` (10), their tests and headers. Behaviour-preserving; Tiberian Dawn has no `NeedType`. It is one of 52 `using enum` lines left in `ra/core/defines.h` (48 in `td/core/defines.h`), so this item is only the one enum the team and trigger editors use.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:02:47Z",
+      "updated": "2026-10-07T07:02:47Z",
+      "source": "ff429d5f",
+      "anchors": [
+        {
+          "path": "src/ra/core/defines.h",
+          "startLine": 1755,
+          "endLine": 1755,
+          "text": "enum class NeedType {",
+          "before": [
+            "*required. This is also used *\tfor team mission types that might need",
+            "*additional data.",
+            "*/"
+          ],
+          "after": [
+            "  NEED_NONE,       // No additional data is required.",
+            "  NEED_THEME,      // Need a musical theme.",
+            "  NEED_MOVIE,      // Need a movie to play."
+          ],
+          "lost": false
+        }
+      ]
     }
   ]
 }
