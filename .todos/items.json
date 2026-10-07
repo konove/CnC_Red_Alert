@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 163,
+  "nextId": 178,
   "items": [
     {
       "id": "T-2",
@@ -3888,6 +3888,579 @@
             "  NEED_THEME,      // Need a musical theme.",
             "  NEED_MOVIE,      // Need a movie to play."
           ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-163",
+      "title": "These two directions shouldn't be here",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-07T07:31:53Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-07T07:43:36Z",
+          "text": "Found during the direction modernization (2b13f371..929cac0e): the two are now `DirType::kSouthWestX1` (152) and `DirType::kSouthWestX2` (144), 54 uses in 4 files: `Track11`/`Track12` and one turn-table entry in `src/ra/objects/drive.cc` and `src/td/objects/drive.cc`, and the refinery exit in each game's `objects/building.cc`. Every byte is a valid `DirType`, so they can become `constexpr game::DirType` constants built with `game::DirType::kSouthWest - 8` and `- 16` next to the track tables in each game's `drive.h`. That moves them from `game/sim` into `ra/` and `td/`, which the run does not do unasked. A part of T-165 asks what to call them."
+        }
+      ],
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 81,
+          "endLine": 84,
+          "text": "  // Two directions a little south of south-west that a harvester turns\n  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.\n  kSouthWestX1 = (5 << 5) - 8,\n  kSouthWestX2 = (5 << 5) - 16,",
+          "before": [
+            "  kSouthEast = 3 << 5,",
+            "  kSouth = 4 << 5,",
+            "  kSouthWest = 5 << 5,"
+          ],
+          "after": [
+            "  kWest = 6 << 5,",
+            "  kNorthWest = 7 << 5",
+            "};"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-164",
+      "title": "DirType is the same as FacingType",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-07T07:32:22Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-07T07:43:36Z",
+          "text": "Found during the direction modernization (2b13f371..929cac0e): the two are not the same value set, `FacingType` is 0..7 plus `kNone` (-1) and `DirType` is all 256 byte values, but every named `DirType` compass point is `DirectionOf(facing)`, that is the facing times 32. One way to stop repeating the names is to make `DirType` a small class over a `uint8_t` with no enumerators and spell the compass points `DirectionOf(FacingType::kNorth)`; that also removes the `clang-analyzer-optin.core.EnumCastOutOfRange` suppression in `AsDirection()`, at the cost of 759 enumerator uses in 66 files and a check that saves and packets still write one byte. A part of T-165 holds the naming question for both types."
+        }
+      ],
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 74,
+          "endLine": 74,
+          "text": "enum class DirType : uint8_t {",
+          "before": [
+            "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
+            "// west. Every byte value is a valid direction; only the compass points and",
+            "// the two harvester poses are named."
+          ],
+          "after": [
+            "  kNorth = 0,",
+            "  kNorthEast = 1 << 5,",
+            "  kEast = 2 << 5,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-165",
+      "title": "Leftovers from the direction modernization",
+      "details": "What the `/modernize-file` run on `src/game/sim/direction.h`, `direction.cc` and `direction_test.cc` found and did not do. Each part is its own item below.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "game",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:42:46Z",
+      "updated": "2026-10-07T07:42:46Z",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-166",
+      "title": "Decide whether Direction256Toward should stop landing one step short",
+      "details": "`Direction256Toward()` (was `Desired_Facing256()`) returns `DirType::kEast - 1` for a target due east, `kSouth - 1` due south, `kSouthEast - 1` on the exact south-east diagonal and `kNorthWest - 1` on the exact north-west one; north, west, north-east and south-west are exact. The cause is the `- 1` in `fraction = 0x40 - fraction - 1` in `src/game/sim/direction.cc`, which is right for every non-exact angle (it makes that half of the quadrant round the same way as the other) and wrong only when `smaller * 32 / bigger` divides exactly. `direction_test.cc` pins the current results (`EastAndSouthLandOneStepShort`, `TwoDiagonalsLandOneStepShort`), and `src/ra/core/coord_test.cc` notes it too.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "This is the shipped behaviour of both games and runs inside the simulation (aiming, turret and aircraft facing, scrolling).\n\n- **Leave it**: nothing changes; the tests already document it.\n- **Fix it** (subtract the 1 only when the division leaves a remainder): units aim one step (1.4 degrees) differently on the four exact angles, a fixed build desyncs against an unfixed peer, and recordings and the save/load smoke tests can diverge.",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.cc",
+          "startLine": 133,
+          "endLine": 133,
+          "text": "    fraction = 0x40 - fraction - 1;",
+          "before": [
+            "  // exactly on the end axis, or on the diagonal of a quadrant that starts on",
+            "  // the X axis, one step short.",
+            "  if (closer_to_end_axis) {"
+          ],
+          "after": [
+            "  }",
+            "  return AsDirection(quadrant + fraction);",
+            "}"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-167",
+      "title": "Decide whether FacingSector was meant to round like NearestFacing",
+      "details": "`FacingSector()` (was `Dir_To_8()`) in `src/game/sim/direction.h` truncates a direction to the facing below it. The original read `(dir | 0x10) / 32`; the OR set a bit the division dropped, so it did nothing and this run removed it. The original author probably meant the `+ 0x10` that `NearestFacing()` has. Its only caller is `src/ra/objects/aircraft.cc:447`, which picks the body shape of an 8-facing aircraft from `SecondaryFacing`.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "- **Keep truncating**: nothing changes. The function could then move into `aircraft.cc` as a file-local helper, since nothing else uses it.\n- **Round to the nearest facing**: the caller uses `NearestFacing()` and `FacingSector()` is deleted. Display only (which of 8 body frames an aircraft shows changes for half of each sector), so no desync, but `tools/ui_check.py` screenshots with such an aircraft would change.",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 142,
+          "endLine": 142,
+          "text": "constexpr FacingType FacingSector(const DirType dir) {",
+          "before": [
+            "// Returns the facing whose 32-step sector starting at it holds `dir`: unlike",
+            "// NearestFacing(), this truncates, so DirType::kNorthEast - 1 gives",
+            "// FacingType::kNorth."
+          ],
+          "after": [
+            "  return static_cast<FacingType>(static_cast<int>(dir) / 32);",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-168",
+      "title": "Decide whether the transport loading cost should use the shortest turn",
+      "details": "`SignedDirectionDifference()` (was `Dir_Diff()`) subtracts the two directions as signed bytes, so its result spans -255..255 and is not the shortest turn: from 127 to 128 it gives -255, not 1. Its one caller, `src/td/objects/unit.cc:3825`, takes `std::abs()` of it as the rotation cost of a cell when a transport picks where a passenger boards, so cells whose facing lies across south from `faceto` are penalised as if they were a full turn away. The function is only used by Tiberian Dawn and could live in `unit.cc`; its legacy-comparison test is `src/td/core/coord_inline_test.cc`.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "- **Leave it**: shipped Tiberian Dawn behaviour. Then consider moving the function into `td/objects/unit.cc` with its test, out of the shared header.\n- **Use the shortest turn** (wrap the difference to -128..127): passengers choose a different boarding cell in some layouts; this is simulation, so it desyncs against an unfixed peer.",
+      "anchors": [
+        {
+          "path": "src/td/objects/unit.cc",
+          "startLine": 3825,
+          "endLine": 3825,
+          "text": "        game::SignedDirectionDifference(game::DirectionOf(face), faceto));",
+          "before": [
+            "    *transport or the *\tleast roundabout movement for the potential passenger.",
+            "    */",
+            "    value -= std::abs("
+          ],
+          "after": [
+            "    if (face == game::FacingType::kSouth) {",
+            "      value -= 100;",
+            "    }"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 161,
+          "endLine": 161,
+          "text": "constexpr int SignedDirectionDifference(const DirType from, const DirType to) {",
+          "before": [
+            "// and above are negative), so the result spans -255..255. This is not the",
+            "// shortest turn between the two: across south it is nearly a full circle (127",
+            "// to 128 gives -255, not 1)."
+          ],
+          "after": [
+            "  return static_cast<int8_t>(to) - static_cast<int8_t>(from);",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-169",
+      "title": "Decide the names of DirType and FacingType",
+      "details": "The run renamed the enumerators (`DirType::kNorth`, `FacingType::kNone`) and the functions but kept both type names. `Direction` is taken: `ra::Direction()`, `td::Direction()` and `TechnoClass::Direction()` are functions used about 130 times, and `Dial8Class` has a `Direction` member. `Facing` is a member name in `drive.h` and `dial8.h` and is what `FacingClass` (`src/game/sim/facing.h`) would be called once its `Class` suffix goes. `DirType` has 1,101 uses in 101 files and `FacingType` 398 in 78. See also T-164, which questions whether the two types should be separate at all.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "- **Keep `DirType` and `FacingType`** (the game's own vocabulary; nothing to do).\n- **Rename**: candidates are `Dir256` or `Heading` for `DirType` and `CompassFacing` or `Facing8` for `FacingType`. A scripted tree-wide rename, one commit per type.\n- **Free the good names first**: rename the `Direction()` functions (for example `DirectionTo()`), then `DirType` becomes `Direction`.",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 37,
+          "endLine": 37,
+          "text": "enum class FacingType : int8_t {",
+          "before": [
+            "",
+            "// The eight cells around a cell, clockwise from north. Used when moving",
+            "// between cells and by the path finder."
+          ],
+          "after": [
+            "  kNone = -1,  // No facing: a failed search, or the end of a path.",
+            "  kNorth,",
+            "  kNorthEast,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 74,
+          "endLine": 74,
+          "text": "enum class DirType : uint8_t {",
+          "before": [
+            "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
+            "// west. Every byte value is a valid direction; only the compass points and",
+            "// the two harvester poses are named."
+          ],
+          "after": [
+            "  kNorth = 0,",
+            "  kNorthEast = 1 << 5,",
+            "  kEast = 2 << 5,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-170",
+      "title": "Decide the names of the two harvester directions",
+      "details": "`DIR_SW_X1` and `DIR_SW_X2` became `DirType::kSouthWestX1` (152) and `DirType::kSouthWestX2` (144), which keeps the original's words but still does not say what they are: the directions a harvester turns through as it backs onto the refinery pad (`Track11`/`Track12` in each game's `objects/drive.cc`) and, for X2, the direction it is unlimboed at when it leaves (`objects/building.cc`). 54 uses in 4 files. T-163 says they should not be in the shared enum at all; if they move into the games as constants this is the moment to name them.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "Keep `kSouthWestX1`/`kSouthWestX2`, or name them for their use, for example `kRefineryApproach` (152) and `kRefineryDock` (144).",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 81,
+          "endLine": 84,
+          "text": "  // Two directions a little south of south-west that a harvester turns\n  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.\n  kSouthWestX1 = (5 << 5) - 8,\n  kSouthWestX2 = (5 << 5) - 16,",
+          "before": [
+            "  kSouthEast = 3 << 5,",
+            "  kSouth = 4 << 5,",
+            "  kSouthWest = 5 << 5,"
+          ],
+          "after": [
+            "  kWest = 6 << 5,",
+            "  kNorthWest = 7 << 5",
+            "};"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-171",
+      "title": "Route computed directions through AsDirection",
+      "details": "`AsDirection()` in `src/game/sim/direction.h` is meant to be the one place a computed integer becomes a `DirType` (it wraps to the circle and carries the analyzer suppression). 24 call sites outside the track tables still write `static_cast<game::DirType>(...)` on a computed value: `git grep -n 'static_cast<game::DirType>' -- src ':!src/*/objects/drive.cc'` lists them (building, vessel, aircraft, infantry, unit, bdata, mapedit, house, turret). Replace each with `game::AsDirection(...)`, or with `DirType` arithmetic where the operand already is a direction. The 779 literal entries of the track tables in `src/ra/objects/drive.cc` and `src/td/objects/drive.cc` are constants and can stay, or get a `constexpr` literal helper in a separate scripted commit. Results must not change: `AsDirection` masks to 0..255, which is what the cast to the `uint8_t` enum did.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 93,
+          "endLine": 93,
+          "text": "constexpr DirType AsDirection(const int angle) {",
+          "before": [
+            "// it for every computed direction: it is where the analyzer's named-enumerator",
+            "// model of the enum is set aside, so a direct cast of a computed value is",
+            "// reported as out of range."
+          ],
+          "after": [
+            "  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)",
+            "  return static_cast<DirType>(static_cast<uint32_t>(angle) & 0xFFU);",
+            "}"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-172",
+      "title": "Use the DirType operators where callers unwrap to int",
+      "details": "About 29 call sites convert a `DirType` to `int`, add or subtract, and convert back, which `operator+`/`operator-` on `DirType` already do with the same wrap-around: the 23 `Track13` entries in `src/td/objects/drive.cc` (`static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) - N)` is `game::DirType::kSouthWest - N`), `src/td/objects/drive.cc:439` and `:450`, `src/ra/objects/bullet.cc:744`, `src/td/objects/bullet.cc:689`, and `src/td/objects/turret.cc:453` and `:456`. Rewrite them to use the operators; no result changes.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "ra",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/td/objects/drive.cc",
+          "startLine": 2110,
+          "endLine": 2176,
+          "text": "     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -21),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -20),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -20),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -18),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -18),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -17),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(8, -16),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(8, -15),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(7, -14),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(7, -13),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(6, -12),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(6, -11),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(5, -10),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(5, -9),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(4, -8),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(4, -7),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(3, -6),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(3, -5),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                9)},\n    {Pixel_Offset_Coord(2, -4),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                7)},\n    {Pixel_Offset_Coord(2, -3),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                5)},\n    {Pixel_Offset_Coord(1, -2),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                3)},\n    {Pixel_Offset_Coord(1, -1),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -",
+          "before": [
+            "*/",
+            "const DriveClass::TrackType DriveClass::Track13[] = {",
+            "    {Pixel_Offset_Coord(10, -21),"
+          ],
+          "after": [
+            "                                1)},",
+            "",
+            "    {Coordinate{}, game::DirType::kSouthWest}};"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-173",
+      "title": "Make BodyFrame32 an inline constexpr lookup",
+      "details": "`BodyFrame32()` is the only function of `src/game/sim/direction.h` that is an out-of-line call: its 256-entry table `kBodyFrame32` sits in `direction.cc`, and the build has no LTO. It is called per drawn vehicle (21 uses in 13 files). Moving the table into the header as `inline constexpr` and the function with it would let it inline and be used in constant expressions like `BodyFrame16()`; `direction.cc` then holds only the two point functions. Check the compile-time cost on the header's 108 includers before deciding it is worth it.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 155,
+          "endLine": 155,
+          "text": "int BodyFrame32(DirType dir);",
+          "before": [
+            "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
+            "// steps are uneven to undo the distortion 3D Studio rendered into the",
+            "// vehicle shapes."
+          ],
+          "after": [
+            "",
+            "// Returns `to` minus `from` with both read as signed bytes (DirType::kSouth",
+            "// and above are negative), so the result spans -255..255. This is not the"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-174",
+      "title": "Consider a point type for the direction functions",
+      "details": "`Direction8Toward()` and `Direction256Toward()` take four ints `(from_x, from_y, to_x, to_y)`. Every caller but two (`scroll.cc`, the direction dials) unpacks two `Coordinate` or `Cell` objects to call them, through the wrappers in `src/ra/core/coord.h` and `src/td/core/inline.h`. `game_sim` has no point type to take instead; `base/trig.h` has `MovePoint` only.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "toDecide": "Leave the four ints (simple, and the wrappers hide them), or add a small `{x, y}` struct to `game/sim` or `base` and take two of them. The second touches about 18 call sites in both games.",
+      "anchors": [
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 117,
+          "endLine": 117,
+          "text": "DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);",
+          "before": [
+            "// The diagonals take more than their share of the circle: a slope steeper than",
+            "// 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even",
+            "// split would be 22.5). Equal points give DirType::kNorthEast."
+          ],
+          "after": [
+            "",
+            "// Returns the direction from (from_x, from_y) to (to_x, to_y) to full 256-step",
+            "// accuracy, with the same axes as Direction8Toward(). The angle is interpolated"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/sim/direction.h",
+          "startLine": 126,
+          "endLine": 126,
+          "text": "DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
+          "before": [
+            "// them. Due east, due south, exact south-east and exact north-west come out",
+            "// one step short (DirType::kEast - 1, ...), as they did in the original. Equal",
+            "// points give 255, just shy of north."
+          ],
+          "after": [
+            "",
+            "// Returns the facing nearest to `dir`; the last sixteenth of the circle",
+            "// rounds up to FacingType::kNorth."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-175",
+      "title": "Remove the commented-out Desired_Facing256 call in the Tiberian Dawn startup",
+      "details": "`src/td/startup/startup.cc:246` is a commented-out debugging line, `// int temp = Desired_Facing256 (1070, 5419, 1408, 5504);`, naming a function that is now `game::Direction256Toward()`. Delete it with `/remove-dead-code src/td/startup/startup.cc`. `src/td/ui/dial8.cc:51` also names `Desired_Facing8()` in its legacy banner, which goes when that file gets its comment pass.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/td/startup/startup.cc",
+          "startLine": 246,
+          "endLine": 246,
+          "text": "  //\tint temp = Direction256Toward (1070, 5419, 1408, 5504);",
+          "before": [
+            "  /*",
+            "  ** These values return 0x47 if code is working correctly",
+            "  */"
+          ],
+          "after": [
+            "",
+            "#ifdef _WIN32",
+            "  ProgramInstance = instance;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-176",
+      "title": "Modernize FacingClass in game/sim/facing.h",
+      "details": "`src/game/sim/facing.h`, `facing.cc` and `facing_test.cc` sit beside the direction files and are still legacy: the Westwood banner, `FacingClass` with its `Class` suffix, `PascalCase` members `CurrentFacing`/`DesiredFacing`, `Set_Desired()`/`Set_Current()`/`Rotation_Adjust()`. Run `/modernize-file` on the three files. The type name interacts with the DirType/FacingType naming decision in this run's leftovers.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "src/game/sim/facing.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-177",
+      "title": "Find why the coverage build's test discovery hit a bus error",
+      "details": "The first `tools/coverage.py --tests game_sim src/game/sim/direction.h src/game/sim/direction.cc` of this run failed while linking: `gtest_discover_tests` ran `build-coverage/src/engine/window/engine_window_test` and got `Result: Bus error`, which stopped the build. Running the same executable by hand a moment later worked, and the second `tools/coverage.py` run passed. The coverage build links with `-fprofile-continuous`, which maps the profile file into memory, so a likely cause is two executables (or discovery and another job) sharing one profile path under the parallel build. Check what `LLVM_PROFILE_FILE` is during discovery and give each executable its own pattern (`%p` or `%m`), or have `tools/coverage.py` retry.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "build",
+        "tools",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:43:36Z",
+      "parent": "T-165",
+      "source": "2b13f371..929cac0e",
+      "anchors": [
+        {
+          "path": "tools/coverage.py",
           "lost": false
         }
       ]
