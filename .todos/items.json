@@ -4101,13 +4101,14 @@
         "td",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T08:14:50Z",
+      "updated": "2026-10-07T08:25:00Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
-      "resolution": "Replaced `SignedDirectionDifference()` with `game::ShortestTurn()` (-128..127, wrapping) in `game/sim/direction.h`, so `UnitClass::Desired_Load_Dir` costs each boarding cell by the real shortest rotation. Deleted the legacy-comparison test `td/core/coord_inline_test.cc` and added `ShortestTurnTest` cases to `game/sim/direction_test.cc`. Not committed.",
+      "fixedIn": "42bbd735",
+      "resolution": "Replaced `SignedDirectionDifference()` with `game::ShortestTurn()` (-128..127, wrapping) in `game/sim/direction.h`, so `UnitClass::Desired_Load_Dir` costs each boarding cell by the real shortest rotation. Deleted the legacy-comparison test `td/core/coord_inline_test.cc` and added `ShortestTurnTest` cases to `game/sim/direction_test.cc`.",
       "toDecide": "- **Leave it**: shipped Tiberian Dawn behaviour. Then consider moving the function into `td/objects/unit.cc` with its test, out of the shared header.\n- **Use the shortest turn** (wrap the difference to -128..127): passengers choose a different boarding cell in some layouts; this is simulation, so it desyncs against an unfixed peer.",
       "decisions": [
         {
