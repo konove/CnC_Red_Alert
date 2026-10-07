@@ -2580,7 +2580,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     AdjacentCell(cell, game::DirType::kSouth).Center(),
-                    game::DirType::kSouthWestX2)) {
+                    DriveClass::kRefineryDock)) {
               unit->PrimaryFacing = game::DirType::kSouth;
               unit->Assign_Mission(MISSION_HARVEST);
             }

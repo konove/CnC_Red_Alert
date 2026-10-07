@@ -145,6 +145,14 @@ class DriveClass : public FootClass {
   **	These enumerations are used as working constants that exist only
   **	in the DriveClass namespace.
   */
+  // The two headings, a little south of south-west, that a harvester takes on
+  // the refinery tracks: kRefineryApproach while it backs towards the pad and
+  // kRefineryDock on the pad, where it unloads and from where it drives out.
+  // The original's DIR_SW_X1 and DIR_SW_X2.
+  static constexpr game::DirType kRefineryApproach =
+      game::DirType::kSouthWest - 8;
+  static constexpr game::DirType kRefineryDock = game::DirType::kSouthWest - 16;
+
   static constexpr int kBackupIntoRefinery =
       64;  // Track to backup into refinery.
   static constexpr int kOutOfRefinery =
