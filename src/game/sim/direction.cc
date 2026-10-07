@@ -92,36 +92,36 @@ QuadrantOffset QuadrantOffsetToward(const int from_x, const int from_y,
 
 DirType Direction8Toward(const int from_x, const int from_y, const int to_x,
                          const int to_y) {
-  const QuadrantOffset offset =
+  const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from_x, from_y, to_x, to_y);
 
   // If the smaller offset is at least half the bigger one, call it the
   // diagonal, which lies 0x20 into every quadrant, and bail. Equal points
   // land here too, in the north-east quadrant.
-  if ((offset.bigger + 1) / 2 <= offset.smaller) {
-    return AsDirection(offset.quadrant + 0x20);
+  if ((bigger + 1) / 2 <= smaller) {
+    return AsDirection(quadrant + 0x20);
   }
 
   // Otherwise it is one of the quadrant's two axes. From the north-west
   // quadrant the end axis wraps to north.
-  return AsDirection(offset.quadrant + (offset.closer_to_end_axis ? 0x40 : 0));
+  return AsDirection(quadrant + (closer_to_end_axis ? 0x40 : 0));
 }
 
 DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
                            const int to_y) {
-  const QuadrantOffset offset =
+  const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from_x, from_y, to_x, to_y);
 
   // Bail early if the coordinates are the same. This also keeps the division
   // below away from zero.
-  if (offset.bigger == 0) {
+  if (bigger == 0) {
     return AsDirection(0xFF);
   }
 
   // How far from the closer axis the direction lies, as a ratio from 0 (on
   // the axis) to 32 (on the diagonal). This is the linear stand-in for the
   // arctangent.
-  int fraction = offset.smaller * 32 / offset.bigger;
+  int fraction = smaller * 32 / bigger;
 
   // `fraction` counts from the closer axis. When that is the axis the
   // quadrant ends on, count back from it instead. The extra -1 makes that
@@ -129,10 +129,10 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // keeps the result inside the quadrant, but it also puts a direction
   // exactly on the end axis, or on the diagonal of a quadrant that starts on
   // the X axis, one step short.
-  if (offset.closer_to_end_axis) {
+  if (closer_to_end_axis) {
     fraction = 0x40 - fraction - 1;
   }
-  return AsDirection(offset.quadrant + fraction);
+  return AsDirection(quadrant + fraction);
 }
 
 int BodyFrame32(const DirType dir) {
