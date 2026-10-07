@@ -2527,8 +2527,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
-                    game::DirType::kSouthWestX2)) {
-              unit->PrimaryFacing = game::DirType::kSouthWestX2;
+                    DriveClass::kRefineryDock)) {
+              unit->PrimaryFacing = DriveClass::kRefineryDock;
               Transmit_Message(RADIO_HELLO, unit);
               Transmit_Message(RADIO_TETHER);
               unit->Assign_Mission(MISSION_HARVEST);

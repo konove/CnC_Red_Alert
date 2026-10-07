@@ -69,8 +69,8 @@ constexpr FacingType operator-(const FacingType facing, const int steps) {
 }
 
 // A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192
-// west. Every byte value is a valid direction; only the compass points and
-// the two harvester poses are named.
+// west. Every byte value is a valid direction; only the compass points are
+// named.
 enum class DirType : uint8_t {
   kNorth = 0,
   kNorthEast = 1 << 5,
@@ -78,10 +78,6 @@ enum class DirType : uint8_t {
   kSouthEast = 3 << 5,
   kSouth = 4 << 5,
   kSouthWest = 5 << 5,
-  // Two directions a little south of south-west that a harvester turns
-  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.
-  kSouthWestX1 = (5 << 5) - 8,
-  kSouthWestX2 = (5 << 5) - 16,
   kWest = 6 << 5,
   kNorthWest = 7 << 5
 };

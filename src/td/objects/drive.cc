@@ -2072,32 +2072,32 @@ const DriveClass::TrackType DriveClass::Track10[] = {
 const DriveClass::TrackType DriveClass::Track11[] = {
     {Coordinate::FromLeptons(0x0000, 0x0100), game::DirType::kSouthWest},
     {Coordinate::FromLeptons(0x0008, 0x00F3), game::DirType::kSouthWest},
-    {Coordinate::FromLeptons(0x0010, 0x00E5), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0018, 0x00D6), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0020, 0x00C8), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0028, 0x00B9), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0030, 0x00AB), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0038, 0x009C), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0040, 0x008D), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0048, 0x007F), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0050, 0x0071), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0058, 0x0064), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0060, 0x0055), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0010, 0x00E5), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0018, 0x00D6), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0020, 0x00C8), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0028, 0x00B9), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0030, 0x00AB), kRefineryDock},
+    {Coordinate::FromLeptons(0x0038, 0x009C), kRefineryDock},
+    {Coordinate::FromLeptons(0x0040, 0x008D), kRefineryDock},
+    {Coordinate::FromLeptons(0x0048, 0x007F), kRefineryDock},
+    {Coordinate::FromLeptons(0x0050, 0x0071), kRefineryDock},
+    {Coordinate::FromLeptons(0x0058, 0x0064), kRefineryDock},
+    {Coordinate::FromLeptons(0x0060, 0x0055), kRefineryDock},
 
-    {Coordinate{}, game::DirType::kSouthWestX2}};
+    {Coordinate{}, kRefineryDock}};
 
 const DriveClass::TrackType DriveClass::Track12[] = {
-    {Coordinate::FromLeptons(0x0060, 0xFF55), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0058, 0xFF64), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0050, 0xFF71), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0048, 0xFF7F), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0040, 0xFF8D), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0038, 0xFF9C), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0030, 0xFFAB), game::DirType::kSouthWestX2},
-    {Coordinate::FromLeptons(0x0028, 0xFFB9), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0020, 0xFFC8), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0018, 0xFFD6), game::DirType::kSouthWestX1},
-    {Coordinate::FromLeptons(0x0010, 0xFFE5), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0060, 0xFF55), kRefineryDock},
+    {Coordinate::FromLeptons(0x0058, 0xFF64), kRefineryDock},
+    {Coordinate::FromLeptons(0x0050, 0xFF71), kRefineryDock},
+    {Coordinate::FromLeptons(0x0048, 0xFF7F), kRefineryDock},
+    {Coordinate::FromLeptons(0x0040, 0xFF8D), kRefineryDock},
+    {Coordinate::FromLeptons(0x0038, 0xFF9C), kRefineryDock},
+    {Coordinate::FromLeptons(0x0030, 0xFFAB), kRefineryDock},
+    {Coordinate::FromLeptons(0x0028, 0xFFB9), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0020, 0xFFC8), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0018, 0xFFD6), kRefineryApproach},
+    {Coordinate::FromLeptons(0x0010, 0xFFE5), kRefineryApproach},
     {Coordinate::FromLeptons(0x0008, 0xFFF3), game::DirType::kSouthWest},
 
     {Coordinate{}, game::DirType::kSouthWest}};
@@ -2262,8 +2262,8 @@ const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
     {2, 0, game::DirType::kNorthWest, F_X},                       //	7-7
 
     {11, 11, game::DirType::kSouthWest, F_},  // Backup harvester into refinery.
-    {12, 12, game::DirType::kSouthWestX2, F_},  // Drive back into refinery.
-    {13, 13, game::DirType::kSouthWest, F_}     // Drive out of weapons factory.
+    {12, 12, kRefineryDock, F_},              // Drive back into refinery.
+    {13, 13, game::DirType::kSouthWest, F_}   // Drive out of weapons factory.
 };
 
 }  // namespace td
