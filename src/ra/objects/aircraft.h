@@ -123,7 +123,8 @@ class AircraftClass : public FootClass, public FlyClass {
   }
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell,
+      game::FacingType facing = game::FacingType::kNone) const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }

@@ -2498,7 +2498,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell) {
         */
         for (;;) {
           Cell newcell =
-              Adjacent_Cell(cell, Random_Pick(game::FACING_N, game::FACING_NW));
+              Adjacent_Cell(cell, Random_Pick(game::FacingType::kNorth,
+                                              game::FacingType::kNorthWest));
           if (TheMap().In_Radar(newcell)) {
             cell = newcell;
             break;
@@ -3630,7 +3631,7 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
   Validate();
-  game::FacingType rot = game::FACING_NONE;
+  game::FacingType rot = game::FacingType::kNone;
 
   /*
   **	Randomly decide if we're going to search cells clockwise or counter-
@@ -3666,9 +3667,10 @@ bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
         **	Clockwise search.
         */
         if (clockwise) {
-          rot = Random_Pick(game::FACING_N, game::FACING_NW);
-          for (game::FacingType fcounter = game::FACING_N;
-               fcounter <= game::FACING_NW; fcounter++) {
+          rot = Random_Pick(game::FacingType::kNorth,
+                            game::FacingType::kNorthWest);
+          for (game::FacingType fcounter = game::FacingType::kNorth;
+               fcounter <= game::FacingType::kNorthWest; fcounter++) {
             newcell = Cell::Containing(
                 Coord_Move(cell.Center(), game::Facing_Dir(rot),
                            static_cast<uint16_t>(dist * 256)));
@@ -3679,17 +3681,18 @@ bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
               break;
             }
             rot++;
-            if (rot > game::FACING_NW) {
-              rot = game::FACING_N;
+            if (rot > game::FacingType::kNorthWest) {
+              rot = game::FacingType::kNorth;
             }
           }
         } else {
           /*
           **	Counter-clockwise search
           */
-          rot = Random_Pick(game::FACING_N, game::FACING_NW);
-          for (game::FacingType fcounter = game::FACING_NW;
-               fcounter >= game::FACING_N; fcounter--) {
+          rot = Random_Pick(game::FacingType::kNorth,
+                            game::FacingType::kNorthWest);
+          for (game::FacingType fcounter = game::FacingType::kNorthWest;
+               fcounter >= game::FacingType::kNorth; fcounter--) {
             newcell = Cell::Containing(
                 Coord_Move(cell.Center(), game::Facing_Dir(rot),
                            static_cast<uint16_t>(dist * 256)));
@@ -3700,8 +3703,8 @@ bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
               break;
             }
             rot--;
-            if (rot < game::FACING_N) {
-              rot = game::FACING_NW;
+            if (rot < game::FacingType::kNorth) {
+              rot = game::FacingType::kNorthWest;
             }
           }
         }

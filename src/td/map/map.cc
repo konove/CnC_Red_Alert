@@ -1144,8 +1144,8 @@ void MapClass::Logic() {
         *tiberium.
         */
         if (TheMap().In_Radar(cell)) {
-          const game::FacingType offset =
-              Random_Pick(game::FACING_N, game::FACING_NW);
+          const game::FacingType offset = Random_Pick(
+              game::FacingType::kNorth, game::FacingType::kNorthWest);
           for (const game::FacingType j :
                magic_enum::enum_values<game::FacingType>()) {
             CellClass* newcell = &(*this).at(cell).Adjacent_Cell(j + offset);

@@ -1575,7 +1575,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  game::FacingType bestdir = game::FACING_N;
+  game::FacingType bestdir = game::FacingType::kNorth;
   int bestval = -1;
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {

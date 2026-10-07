@@ -1277,9 +1277,10 @@ void CellClass::Concrete_Calc() {}
 void CellClass::Wall_Update() {
   DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
-  static const game::FacingType _offsets[5] = {game::FACING_N, game::FACING_E,
-                                               game::FACING_S, game::FACING_W,
-                                               game::FACING_NONE};
+  static const game::FacingType _offsets[5] = {
+      game::FacingType::kNorth, game::FacingType::kEast,
+      game::FacingType::kSouth, game::FacingType::kWest,
+      game::FacingType::kNone};
 
   for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
@@ -1446,10 +1447,10 @@ bool CellClass::Reduce_Wall(int damage) {
           OverlayData = 0;
           Recalc_Attributes();
           Redraw_Objects();
-          Adjacent_Cell(game::FACING_N).Wall_Update();
-          Adjacent_Cell(game::FACING_W).Wall_Update();
-          Adjacent_Cell(game::FACING_S).Wall_Update();
-          Adjacent_Cell(game::FACING_E).Wall_Update();
+          Adjacent_Cell(game::FacingType::kNorth).Wall_Update();
+          Adjacent_Cell(game::FacingType::kWest).Wall_Update();
+          Adjacent_Cell(game::FacingType::kSouth).Wall_Update();
+          Adjacent_Cell(game::FacingType::kEast).Wall_Update();
           Detach_This_From_All(As_Target());
 
           /*
@@ -2823,7 +2824,8 @@ bool CellClass::Spread_Tiberium(bool forced) {
     return false;
   }
 
-  const game::FacingType offset = RandomPick(game::FACING_N, game::FACING_NW);
+  const game::FacingType offset =
+      RandomPick(game::FacingType::kNorth, game::FacingType::kNorthWest);
   // Placing the overlay is the point of the search, so not any_of.
   // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const game::FacingType index :

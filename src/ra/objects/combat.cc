@@ -216,15 +216,15 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   **	the cell data directly.
   */
   int count = 0;  // Number of vehicle IDs in list.
-  // The centre cell (FACING_NONE) and its eight neighbours.
-  for (game::FacingType i = game::FACING_NONE;
+  // The centre cell (FacingType::kNone) and its eight neighbours.
+  for (game::FacingType i = game::FacingType::kNone;
        i <= magic_enum::enum_values<game::FacingType>().back(); i++) {
     /*
     **	Fetch a pointer to the cell to examine. This is either
     **	an adjacent cell or the center cell. Damage never spills
     **	further than one cell away.
     */
-    if (i != game::FACING_NONE) {
+    if (i != game::FacingType::kNone) {
       cellptr = &TheMap().at(cell).Adjacent_Cell(i);
     }
 

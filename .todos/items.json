@@ -922,8 +922,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/building.cc",
-          "startLine": 5163,
-          "endLine": 5163,
+          "startLine": 5167,
+          "endLine": 5167,
           "text": "game::DirType BuildingClass::Fire_Direction() const {",
           "before": [
             " *                                                                                             *",
@@ -1300,8 +1300,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/cell.cc",
-          "startLine": 1710,
-          "endLine": 1710,
+          "startLine": 1711,
+          "endLine": 1711,
           "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
           "before": [
             " *=========================================================================*/",
@@ -2026,8 +2026,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/foot.cc",
-          "startLine": 622,
-          "endLine": 622,
+          "startLine": 623,
+          "endLine": 623,
           "text": "  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())",
           "before": [
             "    }",

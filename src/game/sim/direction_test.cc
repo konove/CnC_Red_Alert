@@ -6,13 +6,13 @@ namespace game {
 namespace {
 
 TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
-  EXPECT_EQ(AsFacing(8), FACING_N);
-  EXPECT_EQ(AsFacing(-1), FACING_NW);
-  EXPECT_EQ(FACING_NW + 1, FACING_N);
-  EXPECT_EQ(FACING_N - FACING_E, FACING_W);
-  FacingType facing = FACING_SW;
-  facing += FACING_S;
-  EXPECT_EQ(facing, FACING_NE);
+  EXPECT_EQ(AsFacing(8), FacingType::kNorth);
+  EXPECT_EQ(AsFacing(-1), FacingType::kNorthWest);
+  EXPECT_EQ(FacingType::kNorthWest + 1, FacingType::kNorth);
+  EXPECT_EQ(FacingType::kNorth - FacingType::kEast, FacingType::kWest);
+  FacingType facing = FacingType::kSouthWest;
+  facing += FacingType::kSouth;
+  EXPECT_EQ(facing, FacingType::kNorthEast);
 }
 
 TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
@@ -23,22 +23,22 @@ TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
 }
 
 TEST(DirFacingTest, RoundsToTheNearestFacing) {
-  EXPECT_EQ(Dir_Facing(AsDirection(15)), FACING_N);
-  EXPECT_EQ(Dir_Facing(AsDirection(16)), FACING_NE);
-  EXPECT_EQ(Dir_Facing(AsDirection(239)), FACING_NW);
-  EXPECT_EQ(Dir_Facing(AsDirection(240)), FACING_N);
+  EXPECT_EQ(Dir_Facing(AsDirection(15)), FacingType::kNorth);
+  EXPECT_EQ(Dir_Facing(AsDirection(16)), FacingType::kNorthEast);
+  EXPECT_EQ(Dir_Facing(AsDirection(239)), FacingType::kNorthWest);
+  EXPECT_EQ(Dir_Facing(AsDirection(240)), FacingType::kNorth);
 }
 
 TEST(DirTo8Test, TruncatesToTheFacingBelow) {
-  EXPECT_EQ(Dir_To_8(AsDirection(31)), FACING_N);
-  EXPECT_EQ(Dir_To_8(DIR_NE), FACING_NE);
-  EXPECT_EQ(Dir_To_8(AsDirection(255)), FACING_NW);
+  EXPECT_EQ(Dir_To_8(AsDirection(31)), FacingType::kNorth);
+  EXPECT_EQ(Dir_To_8(DIR_NE), FacingType::kNorthEast);
+  EXPECT_EQ(Dir_To_8(AsDirection(255)), FacingType::kNorthWest);
 }
 
 TEST(FacingDirTest, PointsExactlyAtTheFacing) {
-  EXPECT_EQ(Facing_Dir(FACING_N), DIR_N);
-  EXPECT_EQ(Facing_Dir(FACING_SE), DIR_SE);
-  EXPECT_EQ(Facing_Dir(FACING_NW), DIR_NW);
+  EXPECT_EQ(Facing_Dir(FacingType::kNorth), DIR_N);
+  EXPECT_EQ(Facing_Dir(FacingType::kSouthEast), DIR_SE);
+  EXPECT_EQ(Facing_Dir(FacingType::kNorthWest), DIR_NW);
 }
 
 TEST(DirToFramesTest, CompassPointsLandOnEvenFrames) {

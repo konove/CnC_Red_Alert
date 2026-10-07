@@ -55,8 +55,8 @@ inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
   return Adjacent_Cell(coord, game::Dir_Facing(dir));
 }
 inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
-  // Masked like the Coordinate overload above, so that FACING_NONE (-1) does
-  // not index before the start of the table.
+  // Masked like the Coordinate overload above, so that FacingType::kNone (-1)
+  // does not index before the start of the table.
   return cell.Offset(AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }
 inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {

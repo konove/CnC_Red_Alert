@@ -581,7 +581,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       } else {
         if (!IsDriving) {
           Force_Track(kBackupIntoRefinery,
-                      Adjacent_Cell(Center_Coord(), game::FACING_N));
+                      Adjacent_Cell(Center_Coord(), game::FacingType::kNorth));
           Set_Speed(128);
         }
       }
@@ -1357,7 +1357,8 @@ bool UnitClass::Unload_Hovercraft_Process() {
 
       Mark(MARK_UP);
       if (TheMap().In_Radar(cell) && !TheMap().at(cell).Cell_Unit()) {
-        if (unit->Can_Enter_Cell(cell, game::FACING_NONE) == game::MOVE_OK) {
+        if (unit->Can_Enter_Cell(cell, game::FacingType::kNone) ==
+            game::MOVE_OK) {
           /*
           **	Place all the transported units onto the map.
           */
@@ -1383,7 +1384,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
               u->NavCom = Target::FromCellIndex(cell);
               base::At(u->Path, 0) =
                   game::Dir_Facing(u->PrimaryFacing.Current());
-              base::At(u->Path, 1) = game::FACING_NONE;
+              base::At(u->Path, 1) = game::FacingType::kNone;
               u->Set_Speed(0x80);
               u->IsUnloading = true;
 
@@ -1520,8 +1521,8 @@ bool UnitClass::Try_To_Deploy() {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Cell::Containing(
-                   Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
+               .Legal_Placement(Cell::Containing(Adjacent_Cell(
+                   Center_Coord(), game::FacingType::kNorthWest)))) {
         if (ThePlayer() == House) {
           Speak(VOX_DEPLOY);
         }
@@ -1553,7 +1554,8 @@ bool UnitClass::Try_To_Deploy() {
       auto* building =
           base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building) {
-        if (building->Unlimbo(Adjacent_Cell(Coord, game::FACING_NW))) {
+        if (building->Unlimbo(
+                Adjacent_Cell(Coord, game::FacingType::kNorthWest))) {
           /*
           **	Always reveal the construction yard to the player that owned the
           **	mobile construction vehicle.
@@ -1838,7 +1840,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   **	Certain units require some setup time after they come to a halt.
   */
   if (TheSpecialFlags().defender_advantage && /*center &&*/ !NavCom &&
-      base::At(Path, 0) == game::FACING_NONE) {
+      base::At(Path, 0) == game::FacingType::kNone) {
     if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
       Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);
     }
@@ -1944,20 +1946,20 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
         int xx = x;
         const int yy = y;
         switch (game::Dir_Facing(PrimaryFacing.Current())) {
-          case game::FACING_NE:
-          case game::FACING_E:
-          case game::FACING_SE:
+          case game::FacingType::kNorthEast:
+          case game::FacingType::kEast:
+          case game::FacingType::kSouthEast:
             shapenum = base::At(BodyShape, tfacing) + 96;
             shapestart = 0;
             // xx -= 4;
             break;
 
-          case game::FACING_W:
-          case game::FacingType::FACING_NONE:
-          case game::FacingType::FACING_N:
-          case game::FacingType::FACING_S:
-          case game::FacingType::FACING_SW:
-          case game::FacingType::FACING_NW:
+          case game::FacingType::kWest:
+          case game::FacingType::kNone:
+          case game::FacingType::kNorth:
+          case game::FacingType::kSouth:
+          case game::FacingType::kSouthWest:
+          case game::FacingType::kNorthWest:
           default:
             shapenum = base::At(BodyShape, tfacing);
             shapestart = 6;
@@ -2404,7 +2406,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MCV:
       switch (Status) {
         case 0:
-          base::At(Path, 0) = game::FACING_NONE;
+          base::At(Path, 0) = game::FacingType::kNone;
           Status = 1;
           break;
 
@@ -3156,7 +3158,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced) {
   Validate();
   if (*this != UNIT_GUNBOAT && *this != UNIT_HOVER) {
     if ((!TarCom && !NavCom) || forced || Random_Pick(1, 4) == 1) {
-      game::FacingType toface = game::FACING_NONE;
+      game::FacingType toface = game::FacingType::kNone;
 
       if (threat) {
         toface = game::Dir_Facing(Direction8(threat, Coord));
@@ -3429,8 +3431,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
     } else {
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Cell::Containing(
-                   Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
+               .Legal_Placement(Cell::Containing(Adjacent_Cell(
+                   Center_Coord(), game::FacingType::kNorthWest)))) {
         action = ACTION_NONE;
       }
       Mark(MARK_DOWN);
@@ -3777,7 +3779,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  game::FacingType bestdir = game::FACING_N;
+  game::FacingType bestdir = game::FacingType::kNorth;
   int bestval = -1;
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
@@ -3816,10 +3818,11 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     *transport or the *	least roundabout movement for the potential passenger.
     */
     value -= std::abs(game::Dir_Diff(game::Facing_Dir(face), faceto));
-    if (face == game::FACING_S) {
+    if (face == game::FacingType::kSouth) {
       value -= 100;
     }
-    if (face == game::FACING_SW || face == game::FACING_SE) {
+    if (face == game::FacingType::kSouthWest ||
+        face == game::FacingType::kSouthEast) {
       value += 64;
     }
 

@@ -1468,14 +1468,16 @@ int AircraftClass::Mission_Retreat() {
 int AircraftClass::Exit_Object(TechnoClass* unit) {
   Validate();
   static const base::EnumArray<game::FacingType, game::FacingType> _toface = {
-      game::FACING_S,  game::FACING_SW, game::FACING_SE, game::FACING_NW,
-      game::FACING_NE, game::FACING_N,  game::FACING_W,  game::FACING_E};
+      game::FacingType::kSouth,     game::FacingType::kSouthWest,
+      game::FacingType::kSouthEast, game::FacingType::kNorthWest,
+      game::FacingType::kNorthEast, game::FacingType::kNorth,
+      game::FacingType::kWest,      game::FacingType::kEast};
   Cell cell{};
 
   /*
   **	Find a free cell to drop the unit off at.
   */
-  game::FacingType face = game::FACING_N;
+  game::FacingType face = game::FacingType::kNorth;
   for (const game::FacingType candidate :
        magic_enum::enum_values<game::FacingType>()) {
     face = candidate;
@@ -2397,7 +2399,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     */
     for (int radius = 0; radius < 16; radius++) {
       const game::FacingType modifier =
-          Random_Pick(game::FACING_N, game::FACING_NW);
+          Random_Pick(game::FacingType::kNorth, game::FacingType::kNorthWest);
       Cell lastcell = Cell::None();
 
       /*
@@ -2673,16 +2675,16 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
                                               Cell& moveto) const {
   Validate();
   const Cell center = Cell::Containing(Center_Coord());
-  for (int sweep = static_cast<int>(game::FACING_N);
-       sweep < static_cast<int>(game::FACING_S); sweep++) {
-    moveto = Adjacent_Cell(center, game::FACING_S + sweep);
+  for (int sweep = static_cast<int>(game::FacingType::kNorth);
+       sweep < static_cast<int>(game::FacingType::kSouth); sweep++) {
+    moveto = Adjacent_Cell(center, game::FacingType::kSouth + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
       return game::DIR_N;
     }
 
-    moveto = Adjacent_Cell(center, game::FACING_S - sweep);
+    moveto = Adjacent_Cell(center, game::FacingType::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {

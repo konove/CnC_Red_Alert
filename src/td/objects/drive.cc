@@ -149,7 +149,7 @@ void DriveClass::Do_Turn(game::DirType dir) {
                 (static_cast<int>(face) + facediff),
             Coord);
 
-        base::At(Path, 0) = game::FACING_NONE;
+        base::At(Path, 0) = game::FacingType::kNone;
         Set_Speed(0xFF);  // Full speed.
       }
     } else {
@@ -552,7 +552,7 @@ void DriveClass::Assign_Destination(Target target) {
         if (Ground.at(TheMap().at(cell).Land_Type()).Cost.at(Class->Speed)) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
-            base::At(Path, 0) = game::FACING_NONE;
+            base::At(Path, 0) = game::FacingType::kNone;
             return;
           }
 
@@ -570,7 +570,7 @@ void DriveClass::Assign_Destination(Target target) {
   **	Set the unit's navigation computer.
   */
   FootClass::Assign_Destination(target);
-  base::At(Path, 0) = game::FACING_NONE;  // Force recalculation of path.
+  base::At(Path, 0) = game::FacingType::kNone;  // Force recalculation of path.
   if (!IsDriving) {
     Start_Of_Move();
   }
@@ -638,7 +638,7 @@ bool DriveClass::While_Moving() {
     **	a turn, then track jumping might occur.
     */
     bool adj = false;  // Is a turn coming up?
-    if (nextface != game::FACING_NONE &&
+    if (nextface != game::FacingType::kNone &&
         game::Dir_Facing(track->Facing) != nextface) {
       adj = true;
     }
@@ -674,8 +674,8 @@ bool DriveClass::While_Moving() {
         **	The unit could "jump tracks". Check to see if the unit should
         **	do so.
         */
-        if (*this != UNIT_GUNBOAT && nextface != game::FACING_NONE && adj &&
-            base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
+        if (*this != UNIT_GUNBOAT && nextface != game::FacingType::kNone &&
+            adj && base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
               (static_cast<int>(game::Dir_Facing(track->Facing)) *
@@ -710,9 +710,9 @@ bool DriveClass::While_Moving() {
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                                   std::as_bytes(base::Suffix(Path, 1)),
                                   kConquerPathMax - 1);
-                  base::At(Path, kConquerPathMax - 1) = game::FACING_NONE;
+                  base::At(Path, kConquerPathMax - 1) = game::FacingType::kNone;
                 } else {
-                  base::At(Path, 0) = game::FACING_NONE;
+                  base::At(Path, 0) = game::FacingType::kNone;
                   TrackNumber = -1;
                   actual = 0;
                 }
@@ -800,7 +800,7 @@ void DriveClass::Per_Cell_Process(bool center) {
   if (center && NavCom.AsCell() == cell) {
     IsTurretLockedDown = false;
     NavCom = Target{};
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
   }
 
 #ifdef NEVER
@@ -849,7 +849,7 @@ bool DriveClass::Start_Of_Move() {
   game::FacingType facing =
       base::At(Path, 0);  // Direction movement will commence.
 
-  if (!NavCom && facing == game::FACING_NONE) {
+  if (!NavCom && facing == game::FacingType::kNone) {
     IsTurretLockedDown = false;
     Stop_Driver();
     if (Mission == MISSION_MOVE) {
@@ -876,7 +876,7 @@ bool DriveClass::Start_Of_Move() {
   **	Reduce the path length if the target is a unit and the
   **	range to the unit is less than the precalculated path steps.
   */
-  if (facing != game::FACING_NONE &&
+  if (facing != game::FacingType::kNone &&
       (NavCom.kind() == KIND_UNIT || NavCom.kind() == KIND_INFANTRY)) {
     const int dist = Lepton_To_Cell(Distance(NavCom));
 
@@ -885,7 +885,7 @@ bool DriveClass::Start_Of_Move() {
     //|| 				!Class->IsCrusher) {
 
     if (dist < kConquerPathMax) {
-      base::At(Path, dist) = game::FACING_NONE;
+      base::At(Path, dist) = game::FacingType::kNone;
       facing = base::At(Path, 0);  // Maybe needed.
     }
     //			}
@@ -895,7 +895,7 @@ bool DriveClass::Start_Of_Move() {
   **	If the path is invalid at this point, then generate one. If
   **	generating a new path fails, then abort NavCom.
   */
-  if (facing == game::FACING_NONE) {
+  if (facing == game::FacingType::kNone) {
     /*
     **	If after a path search, there is still no valid path, then set the
     **	NavCom to null and let the script take care of assigning a new
@@ -1037,7 +1037,7 @@ bool DriveClass::Start_Of_Move() {
 
     Stop_Driver();
     if (cando != game::MOVE_MOVING_BLOCK) {
-      base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
+      base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
     }
 
     /*
@@ -1105,7 +1105,7 @@ bool DriveClass::Start_Of_Move() {
   **	occupied AS this unit is moving into it.
   */
   if (cando != game::MOVE_OK) {
-    base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
+    base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
     TrackNumber = -1;
     dest = {};
   } else {
@@ -1115,7 +1115,7 @@ bool DriveClass::Start_Of_Move() {
     **	Determine which track to use (based on recorded path).
     */
     game::FacingType nextface = base::At(Path, 1);
-    if (nextface == game::FACING_NONE) {
+    if (nextface == game::FacingType::kNone) {
       nextface = facing;
     }
 
@@ -1125,7 +1125,7 @@ bool DriveClass::Start_Of_Move() {
          static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
         static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
-      base::At(Path, 0) = game::FACING_NONE;
+      base::At(Path, 0) = game::FacingType::kNone;
       TrackNumber = -1;
       return true;
     }
@@ -1161,7 +1161,7 @@ bool DriveClass::Start_Of_Move() {
           TheMap().at(destcell).Shimmer();
         }
 
-        base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
+        base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
         TrackNumber = -1;
         dest = {};
         if (cando == game::MOVE_DESTROYABLE) {
@@ -1187,7 +1187,7 @@ bool DriveClass::Start_Of_Move() {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 2)),
                         kConquerPathMax - 2);
-        base::At(Path, kConquerPathMax - 2) = game::FACING_NONE;
+        base::At(Path, kConquerPathMax - 2) = game::FacingType::kNone;
         IsPlanningToLook = true;
       }
     } else {
@@ -1195,14 +1195,14 @@ bool DriveClass::Start_Of_Move() {
                       std::as_bytes(base::Suffix(Path, 1)),
                       kConquerPathMax - 1);
     }
-    base::At(Path, kConquerPathMax - 1) = game::FACING_NONE;
+    base::At(Path, kConquerPathMax - 1) = game::FacingType::kNone;
   }
 
   IsNewNavCom = false;
   TrackIndex = 0;
   if (!Start_Driver(dest)) {
     TrackNumber = -1;
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
     Set_Speed(0);
   }
   return false;
@@ -1247,7 +1247,7 @@ void DriveClass::AI() {
       return;
     }
     if (TrackNumber == -1 &&
-        (NavCom || base::At(Path, 0) != game::FACING_NONE)) {
+        (NavCom || base::At(Path, 0) != game::FacingType::kNone)) {
       Start_Of_Move();
       While_Moving();
       if (!IsActive) {
@@ -1281,7 +1281,7 @@ void DriveClass::AI() {
       **	then start on a new track.
       */
       if (Mission != MISSION_GUARD || NavCom != Target{}) {
-        if (NavCom || base::At(Path, 0) != game::FACING_NONE) {
+        if (NavCom || base::At(Path, 0) != game::FacingType::kNone) {
           Start_Of_Move();
           While_Moving();
           if (!IsActive) {
@@ -1318,8 +1318,12 @@ void DriveClass::AI() {
  *=============================================================================================*/
 void DriveClass::Fixup_Path(PathType* path) {
   game::FacingType stage[6] = {
-      game::FACING_N, game::FACING_N, game::FACING_N,
-      game::FACING_N, game::FACING_N, game::FACING_N};  // Prefix path elements.
+      game::FacingType::kNorth,
+      game::FacingType::kNorth,
+      game::FacingType::kNorth,
+      game::FacingType::kNorth,
+      game::FacingType::kNorth,
+      game::FacingType::kNorth};  // Prefix path elements.
   static game::FacingType _path[4][6] = {
       {static_cast<game::FacingType>(2), static_cast<game::FacingType>(0),
        static_cast<game::FacingType>(2), static_cast<game::FacingType>(0),
@@ -1353,7 +1357,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   /*
   **	Verify that the unit is valid and there is a path problem to resolve.
   */
-  if (!path || base::At(path->Command, 0) == game::FACING_NONE) {
+  if (!path || base::At(path->Command, 0) == game::FacingType::kNone) {
     return;
   }
 
@@ -1496,7 +1500,8 @@ void DriveClass::Fixup_Path(PathType* path) {
         path->Length += counter;
       }
     }
-    base::At(path->Command, base::ToSize(path->Length)) = game::FACING_NONE;
+    base::At(path->Command, base::ToSize(path->Length)) =
+        game::FacingType::kNone;
   }
 }
 

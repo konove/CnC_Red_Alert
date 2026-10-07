@@ -35,26 +35,25 @@ namespace game {
 // The eight cells around a cell, clockwise from north. Used when moving
 // between cells and by the path finder.
 enum class FacingType : int8_t {
-  FACING_NONE = -1,  // No facing: a failed search, or the end of a path.
-  FACING_N,          // North
-  FACING_NE,         // North-East
-  FACING_E,          // East
-  FACING_SE,         // South-East
-  FACING_S,          // South
-  FACING_SW,         // South-West
-  FACING_W,          // West
-  FACING_NW          // North-West
+  kNone = -1,  // No facing: a failed search, or the end of a path.
+  kNorth,
+  kNorthEast,
+  kEast,
+  kSouthEast,
+  kSouth,
+  kSouthWest,
+  kWest,
+  kNorthWest
 };
-using enum FacingType;
 
 // Wraps a facing sum or difference onto the eight compass facings. Negative
-// values wrap the way the old low-three-bits mask did (-1 is FACING_NW), so
-// the result is never FACING_NONE.
+// values wrap the way the old low-three-bits mask did (-1 is
+// FacingType::kNorthWest), so the result is never FacingType::kNone.
 constexpr FacingType AsFacing(const int facing) {
   return static_cast<FacingType>(static_cast<uint32_t>(facing) & 0x07U);
 }
 
-// Facing arithmetic wraps around the eight facings. FACING_NONE is not a
+// Facing arithmetic wraps around the eight facings. FacingType::kNone is not a
 // number to add to: as -1 it would step one facing anticlockwise.
 constexpr FacingType operator+(const FacingType f1, const FacingType f2) {
   return AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
@@ -135,7 +134,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2);
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
-// rounds up to FACING_N.
+// rounds up to FacingType::kNorth.
 constexpr FacingType Dir_Facing(const DirType dir) {
   return static_cast<FacingType>(static_cast<int>(dir + 0x10) / 32);
 }
@@ -146,7 +145,7 @@ constexpr DirType Facing_Dir(const FacingType facing) {
 }
 
 // Returns the facing whose 32-step sector starting at it holds `dir`: unlike
-// Dir_Facing(), this truncates, so DIR_NE - 1 gives FACING_N.
+// Dir_Facing(), this truncates, so DIR_NE - 1 gives FacingType::kNorth.
 // TODO: the `| 0x10` changes nothing, since it sets a bit the division by 32
 // drops. The original probably meant the `+ 0x10` of Dir_Facing().
 constexpr FacingType Dir_To_8(const DirType dir) {

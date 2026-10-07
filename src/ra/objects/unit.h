@@ -274,7 +274,8 @@ class UnitClass final : public DriveClass {
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell,
+      game::FacingType facing = game::FacingType::kNone) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();

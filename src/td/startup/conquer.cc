@@ -822,10 +822,10 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   /*
   **	Scroll the map according to the cursor key pressed.
   */
-  if (facing != game::FACING_NONE) {
+  if (facing != game::FacingType::kNone) {
     TheMap().Scroll_Map(facing);
     input = 0;
-    facing = game::FACING_NONE;
+    facing = game::FacingType::kNone;
   }
 #endif
 
@@ -1532,7 +1532,7 @@ TheaterType Theater_From_Name(const char* name) {
  * INPUT:   input -- The KN number to convert. *
  *                                                                                             *
  * OUTPUT:  Returns with the facing type that the keyboard number represents. If
- *it could      * not be translated, then FACING_NONE is returned. *
+ *it could      * not be translated, then FacingType::kNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -1541,32 +1541,32 @@ TheaterType Theater_From_Name(const char* name) {
 game::FacingType KN_To_Facing(const engine::window::KeyNumber input) {
   switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
-      return game::FACING_W;
+      return game::FacingType::kWest;
 
     case KN_RIGHT:
-      return game::FACING_E;
+      return game::FacingType::kEast;
 
     case KN_UP:
-      return game::FACING_N;
+      return game::FacingType::kNorth;
 
     case KN_DOWN:
-      return game::FACING_S;
+      return game::FacingType::kSouth;
 
     case KN_UPLEFT:
-      return game::FACING_NW;
+      return game::FacingType::kNorthWest;
 
     case KN_UPRIGHT:
-      return game::FACING_NE;
+      return game::FacingType::kNorthEast;
 
     case KN_DOWNLEFT:
-      return game::FACING_SW;
+      return game::FacingType::kSouthWest;
 
     case KN_DOWNRIGHT:
-      return game::FACING_SE;
+      return game::FacingType::kSouthEast;
     default:
       break;
   }
-  return game::FACING_NONE;
+  return game::FacingType::kNone;
 }
 
 /***********************************************************************************************

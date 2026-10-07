@@ -174,7 +174,7 @@ FootClass::FootClass()
       TryTryAgain(kPathRetry),
       HeadToCoord() {
   for (auto& facing : Path) {
-    facing = game::FACING_NONE;
+    facing = game::FacingType::kNone;
   }
 
   PathDelay.Set(0);
@@ -239,7 +239,7 @@ FootClass::FootClass(HousesType house)
       TryTryAgain(kPathRetry),
       HeadToCoord() {
   for (auto& facing : Path) {
-    facing = game::FACING_NONE;
+    facing = game::FacingType::kNone;
   }
 
   PathDelay.Set(0);
@@ -344,7 +344,7 @@ bool FootClass::Basic_Path() {
   Cell cell{};
   const bool skip_path = false;
 
-  base::At(Path, 0) = game::FACING_NONE;
+  base::At(Path, 0) = game::FacingType::kNone;
 
   if (NavCom) {
     cell = NavCom.AsCell();
@@ -364,7 +364,8 @@ bool FootClass::Basic_Path() {
       for (const int index : _faceadjust) {
         const Cell cell2 =
             Adjacent_Cell(cell, game::AsFacing(static_cast<int>(f2) + index));
-        if (Can_Enter_Cell(cell2, game::FACING_NONE) <= game::MOVE_CLOAK) {
+        if (Can_Enter_Cell(cell2, game::FacingType::kNone) <=
+            game::MOVE_CLOAK) {
           cell = cell2;
           break;
         }
@@ -380,7 +381,8 @@ bool FootClass::Basic_Path() {
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
-          if (inf->NavCom == NavCom && inf->Path[0] != game::FACING_NONE) {
+          if (inf->NavCom == NavCom &&
+              inf->Path[0] != game::FacingType::kNone) {
             if (Cell::Containing(inf->Head_To_Coord()) ==
                 Cell::Containing(inf->Coord)) {
               base::CopyBytes(std::as_writable_bytes(std::span(Path)),
@@ -391,7 +393,7 @@ bool FootClass::Basic_Path() {
                               std::as_bytes(std::span(inf->Path)),
                               sizeof(Path));
             }
-            if (Path[0] != game::FACING_NONE) {
+            if (Path[0] != game::FacingType::kNone) {
               skip_path = true;
             }
             break;
@@ -405,7 +407,8 @@ bool FootClass::Basic_Path() {
 
     if (!skip_path) {
       Mark(MARK_UP);
-      base::At(Path, 0) = game::FACING_NONE;  // Probably not necessary, but...
+      base::At(Path, 0) =
+          game::FacingType::kNone;  // Probably not necessary, but...
 
       /*
       **	Try to find a path to the destination. If a failure occurs, then
@@ -519,13 +522,13 @@ bool FootClass::Basic_Path() {
     ** retry logic.
     */
     Cell cell = Adjacent_Cell(Cell::Containing(Coord), Path[0]);
-    if (Can_Enter_Cell(cell, game::FACING_NONE) == MOVEF_TEMP) {
-      Path[0] = game::FACING_NONE;
+    if (Can_Enter_Cell(cell, game::FacingType::kNone) == MOVEF_TEMP) {
+      Path[0] = game::FacingType::kNone;
     }
 #endif
 
     PathDelay.Set(kPathDelay);
-    if (base::At(Path, 0) != game::FACING_NONE) {
+    if (base::At(Path, 0) != game::FacingType::kNone) {
       return true;
     }
 
@@ -841,7 +844,7 @@ Coordinate FootClass::Sort_Y() const {
  *=============================================================================================*/
 void FootClass::Stun() {
   Assign_Destination(Target{});
-  base::At(Path, 0) = game::FACING_NONE;
+  base::At(Path, 0) = game::FacingType::kNone;
   Stop_Driver();
   TechnoClass::Stun();
 }
@@ -1041,7 +1044,7 @@ bool FootClass::Unlimbo(Coordinate coord, game::DirType dir) {
     /*
     **	Start in a still (non-moving) state.
     */
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
     return true;
   }
   return false;
@@ -1065,7 +1068,7 @@ bool FootClass::Unlimbo(Coordinate coord, game::DirType dir) {
 void FootClass::Assign_Mission(MissionType order) {
   if (What_Am_I() != RTTI_UNIT ||
       *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
   }
   TechnoClass::Assign_Mission(order);
 }
@@ -1422,7 +1425,7 @@ void FootClass::Per_Cell_Process(bool center) {
          Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
         inrange) {
       Assign_Destination(Target{});
-      base::At(Path, 0) = game::FACING_NONE;
+      base::At(Path, 0) = game::FacingType::kNone;
     }
   }
 
@@ -1928,7 +1931,7 @@ void FootClass::Detach(Target target, bool all) {
   */
   if (NavCom == target) {
     NavCom = Target{};
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
     Restore_Mission();
   }
 
@@ -1937,7 +1940,7 @@ void FootClass::Detach(Target target, bool all) {
   **	toward the target to get within range, then abort the path.
   */
   if (TarCom == target && House->IsHuman) {
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
   }
 }
 

@@ -1424,9 +1424,10 @@ bool UnitClass::Goto_Clear_Spot() {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
-  if (!NavCom && BuildingTypeClass::As_Reference(STRUCT_CONST)
-                     .Legal_Placement(AdjacentCell(
-                         Cell::Containing(Center_Coord()), game::FACING_NW))) {
+  if (!NavCom &&
+      BuildingTypeClass::As_Reference(STRUCT_CONST)
+          .Legal_Placement(AdjacentCell(Cell::Containing(Center_Coord()),
+                                        game::FacingType::kNorthWest))) {
     Mark(MARK_DOWN);
     return true;
   }
@@ -1457,7 +1458,7 @@ bool UnitClass::Goto_Clear_Spot() {
     std::span<const int> ptr(_offsets);
     while (ptr.front()) {
       const Cell cell = Cell::Containing(Coord).Offset(base::ConsumeFront(ptr));
-      const Cell check_cell = AdjacentCell(cell, game::FACING_NW);
+      const Cell check_cell = AdjacentCell(cell, game::FacingType::kNorthWest);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
         Assign_Destination(Target::FromCell(cell));
@@ -1509,8 +1510,8 @@ bool UnitClass::Try_To_Deploy() {
       *tell the *	player.
       */
       Mark(MARK_UP);
-      const Cell cell =
-          Cell::Containing(AdjacentCell(Center_Coord(), game::FACING_NW));
+      const Cell cell = Cell::Containing(
+          AdjacentCell(Center_Coord(), game::FacingType::kNorthWest));
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(cell)) {
         if (ThePlayer() == House) {
@@ -1548,7 +1549,8 @@ bool UnitClass::Try_To_Deploy() {
       auto* building =
           base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building != nullptr) {
-        if (building->Unlimbo(AdjacentCell(Coord, game::FACING_NW))) {
+        if (building->Unlimbo(
+                AdjacentCell(Coord, game::FacingType::kNorthWest))) {
           /*
           **	Play the buildup sound for the player if this is the players
           **	MCV.
@@ -1811,7 +1813,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     /*
     **	Certain units require some setup time after they come to a halt.
     */
-    if ((!NavCom && Path[0] == game::FACING_NONE) &&
+    if ((!NavCom && Path[0] == game::FacingType::kNone) &&
         Class->IsNoFireWhileMoving) {
       Arm.Set(Rearm_Delay(true) / 4);
     }
@@ -2627,7 +2629,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MCV:
       switch (Status) {
         case 0:
-          Path[0] = game::FACING_NONE;
+          Path[0] = game::FacingType::kNone;
           Status = 1;
           break;
 
@@ -3510,8 +3512,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Cell::Containing(
-                   AdjacentCell(Center_Coord(), game::FACING_NW)))) {
+               .Legal_Placement(Cell::Containing(AdjacentCell(
+                   Center_Coord(), game::FacingType::kNorthWest)))) {
         action = ACTION_NO_DEPLOY;
       }
       Mark(MARK_DOWN);
@@ -3835,7 +3837,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  game::FacingType bestdir = game::FACING_N;
+  game::FacingType bestdir = game::FacingType::kNorth;
   int bestval = -1;
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
@@ -3876,10 +3878,11 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     value -= std::abs(
         static_cast<int>(static_cast<signed char>(game::Facing_Dir(face))) -
         static_cast<int>(static_cast<signed char>(faceto)));
-    if (face == game::FACING_S) {
+    if (face == game::FacingType::kSouth) {
       value -= 100;
     }
-    if (face == game::FACING_SW || face == game::FACING_SE) {
+    if (face == game::FacingType::kSouthWest ||
+        face == game::FacingType::kSouthEast) {
       value += 64;
     }
 
@@ -4600,10 +4603,10 @@ void UnitClass::Assign_Destination(Target target) {
         }
       }
     } else {
-      Path[0] = game::FACING_NONE;
+      Path[0] = game::FacingType::kNone;
     }
   } else {
-    Path[0] = game::FACING_NONE;
+    Path[0] = game::FacingType::kNone;
   }
 
   /*
@@ -4641,7 +4644,7 @@ void UnitClass::Assign_Destination(Target target) {
             // reset is done by hand on the next line.
             // NOLINTNEXTLINE(bugprone-parent-virtual-call)
             FootClass::Assign_Destination(target);
-            Path[0] = game::FACING_NONE;
+            Path[0] = game::FacingType::kNone;
             return;
           }
 

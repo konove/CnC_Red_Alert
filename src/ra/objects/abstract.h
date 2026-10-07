@@ -117,7 +117,8 @@ class AbstractClass {
   }
 
   [[nodiscard]] virtual game::MoveType Can_Enter_Cell(
-      Cell /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
+      Cell /*unused*/,
+      game::FacingType /*unused*/ = game::FacingType::kNone) const {
     return game::MOVE_OK;
   }
 

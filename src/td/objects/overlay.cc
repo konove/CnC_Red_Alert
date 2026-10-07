@@ -295,9 +295,11 @@ bool OverlayClass::Mark(MarkType mark) {
               *whether this *	concrete is in an odd or even row.
               */
               if (cell.x() % 2 != 0) {
-                newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_W);
+                newcell = Adjacent_Cell(cellptr->Cell_Number(),
+                                        game::FacingType::kWest);
               } else {
-                newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_E);
+                newcell = Adjacent_Cell(cellptr->Cell_Number(),
+                                        game::FacingType::kEast);
               }
               if (TheMap().at(newcell).Overlay != OVERLAY_CONCRETE) {
                 Class->Create_And_Place(newcell);
@@ -309,8 +311,8 @@ bool OverlayClass::Mark(MarkType mark) {
               *presence of *	concrete at this location.
               */
               static const game::FacingType _face[4] = {
-                  game::FACING_N, game::FACING_E, game::FACING_S,
-                  game::FACING_W};
+                  game::FacingType::kNorth, game::FacingType::kEast,
+                  game::FacingType::kSouth, game::FacingType::kWest};
 
               for (const auto& index : _face) {
                 cellptr->Adjacent_Cell(index).Concrete_Calc();

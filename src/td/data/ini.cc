@@ -1342,7 +1342,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
     Pick a random starting direction
     .....................................................................*/
     auto rot =
-        Random_Pick(game::FACING_N, game::FACING_NW);  // for object placement
+        Random_Pick(game::FacingType::kNorth,
+                    game::FacingType::kNorthWest);  // for object placement
     /*.....................................................................
     Try all directions twice
     .....................................................................*/
@@ -1350,8 +1351,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
       /*..................................................................
       Loop through all directions, at this distance.
       ..................................................................*/
-      for (game::FacingType fcounter = game::FACING_N;
-           fcounter <= game::FACING_NW; fcounter++) {
+      for (game::FacingType fcounter = game::FacingType::kNorth;
+           fcounter <= game::FacingType::kNorthWest; fcounter++) {
         bool skipit = false;
 
         /*...............................................................
@@ -1390,8 +1391,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
         }
 
         rot++;
-        if (rot > game::FACING_NW) {
-          rot = game::FACING_N;
+        if (rot > game::FacingType::kNorthWest) {
+          rot = game::FacingType::kNorth;
         }
       }
     }
@@ -1588,42 +1589,42 @@ static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
   Adjust the x-coordinate
   ------------------------------------------------------------------------*/
   switch (facing) {
-    case game::FACING_N:
+    case game::FacingType::kNorth:
       y -= dist;
       break;
 
-    case game::FACING_NE:
+    case game::FacingType::kNorthEast:
       x += dist;
       y -= dist;
       break;
 
-    case game::FACING_E:
+    case game::FacingType::kEast:
       x += dist;
       break;
 
-    case game::FACING_SE:
+    case game::FacingType::kSouthEast:
       x += dist;
       y += dist;
       break;
 
-    case game::FACING_S:
+    case game::FacingType::kSouth:
       y += dist;
       break;
 
-    case game::FACING_SW:
+    case game::FacingType::kSouthWest:
       x -= dist;
       y += dist;
       break;
 
-    case game::FACING_W:
+    case game::FacingType::kWest:
       x -= dist;
       break;
 
-    case game::FACING_NW:
+    case game::FacingType::kNorthWest:
       x -= dist;
       y -= dist;
       break;
-    case game::FacingType::FACING_NONE:
+    case game::FacingType::kNone:
     default:
       break;
   }

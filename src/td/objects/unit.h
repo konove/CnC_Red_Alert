@@ -197,7 +197,8 @@ class UnitClass final : public TarComClass {
   */
   void Enter_Idle_Mode(bool initial = false) override;
   game::MoveType Can_Enter_Cell(
-      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell,
+      game::FacingType facing = game::FacingType::kNone) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(Coordinate threat, bool forced = false) override;
   void Exit_Repair();

@@ -1307,7 +1307,7 @@ bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+       Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
            game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;

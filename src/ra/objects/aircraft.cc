@@ -1483,8 +1483,10 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   // Priority order for trying adjacent cells when unloading passengers.
   static constexpr game::FacingType
       kUnloadPriority[magic_enum::enum_count<game::FacingType>()] = {
-          game::FACING_S,  game::FACING_SW, game::FACING_SE, game::FACING_NW,
-          game::FACING_NE, game::FACING_N,  game::FACING_W,  game::FACING_E};
+          game::FacingType::kSouth,     game::FacingType::kSouthWest,
+          game::FacingType::kSouthEast, game::FacingType::kNorthWest,
+          game::FacingType::kNorthEast, game::FacingType::kNorth,
+          game::FacingType::kWest,      game::FacingType::kEast};
 
   /*
   **	Find a free cell to drop the unit off at.
@@ -2714,7 +2716,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     for (int radius = 0;
          radius < TheRules().LZScanRadius / game::kCellWidthLeptons; radius++) {
       const game::FacingType modifier =
-          RandomPick(game::FACING_N, game::FACING_NW);
+          RandomPick(game::FacingType::kNorth, game::FacingType::kNorthWest);
       Cell lastcell = Cell::None();
 
       /*
@@ -2977,16 +2979,16 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
   DCHECK(IsActive);
 
   const Cell center = Cell::Containing(Center_Coord());
-  for (int sweep = static_cast<int>(game::FACING_N);
-       sweep < static_cast<int>(game::FACING_S); sweep++) {
-    moveto = AdjacentCell(center, game::FACING_S + sweep);
+  for (int sweep = static_cast<int>(game::FacingType::kNorth);
+       sweep < static_cast<int>(game::FacingType::kSouth); sweep++) {
+    moveto = AdjacentCell(center, game::FacingType::kSouth + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
       return game::DIR_N;
     }
 
-    moveto = AdjacentCell(center, game::FACING_S - sweep);
+    moveto = AdjacentCell(center, game::FacingType::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {

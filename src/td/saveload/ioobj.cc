@@ -599,8 +599,8 @@ void FootClass::Serialize(Archive& ar) {
   ar(initiated, new_nav, look, deploying, firing, rotating, driving, unloading,
      Speed, ArchiveTarget, NavCom, SuspendedNavCom, team_index, Group,
      ObjectPtr(Member));
-  // Movement shifts this buffer even past the first FACING_NONE, so the tail
-  // affects later path state and must also survive the round trip.
+  // Movement shifts this buffer even past the first FacingType::kNone, so the
+  // tail affects later path state and must also survive the round trip.
   int32_t path_length = kConquerPathMax;
   ar(path_length);
   if constexpr (Archive::kIsReading) {
@@ -612,7 +612,7 @@ void FootClass::Serialize(Archive& ar) {
   for (int32_t i = 0; i < path_length; ++i) {
     ar(base::At(Path, i));
     if constexpr (Archive::kIsReading) {
-      if (base::At(Path, i) < game::FACING_NONE ||
+      if (base::At(Path, i) < game::FacingType::kNone ||
           base::At(Path, i) >
               magic_enum::enum_values<game::FacingType>().back()) {
         ar.Fail("invalid saved path facing");

@@ -1230,12 +1230,14 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
  *=============================================================================================*/
 void CellClass::Concrete_Calc() {
   Validate();
-  static const game::FacingType _even[5] = {game::FACING_N, game::FACING_S,
-                                            game::FACING_SW, game::FACING_W,
-                                            game::FACING_NW};
-  static const game::FacingType _odd[5] = {game::FACING_N, game::FACING_NE,
-                                           game::FACING_E, game::FACING_SE,
-                                           game::FACING_S};
+  static const game::FacingType _even[5] = {
+      game::FacingType::kNorth, game::FacingType::kSouth,
+      game::FacingType::kSouthWest, game::FacingType::kWest,
+      game::FacingType::kNorthWest};
+  static const game::FacingType _odd[5] = {
+      game::FacingType::kNorth, game::FacingType::kNorthEast,
+      game::FacingType::kEast, game::FacingType::kSouthEast,
+      game::FacingType::kSouth};
   std::span<const game::FacingType>
       ptr;                    // Working pointer into adjacent cell list.
   uint32_t index = 0;         // Constructed bit index.
@@ -1455,9 +1457,10 @@ void CellClass::Concrete_Calc() {
  *=============================================================================================*/
 void CellClass::Wall_Update() {
   Validate();
-  static const game::FacingType _offsets[5] = {game::FACING_N, game::FACING_E,
-                                               game::FACING_S, game::FACING_W,
-                                               game::FACING_NONE};
+  static const game::FacingType _offsets[5] = {
+      game::FacingType::kNorth, game::FacingType::kEast,
+      game::FacingType::kSouth, game::FacingType::kWest,
+      game::FacingType::kNone};
 
   for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
@@ -1614,10 +1617,10 @@ bool CellClass::Reduce_Wall(int damage) {
           OverlayData = 0;
           Recalc_Attributes();
           Redraw_Objects();
-          Adjacent_Cell(game::FACING_N).Wall_Update();
-          Adjacent_Cell(game::FACING_W).Wall_Update();
-          Adjacent_Cell(game::FACING_S).Wall_Update();
-          Adjacent_Cell(game::FACING_E).Wall_Update();
+          Adjacent_Cell(game::FacingType::kNorth).Wall_Update();
+          Adjacent_Cell(game::FacingType::kWest).Wall_Update();
+          Adjacent_Cell(game::FacingType::kSouth).Wall_Update();
+          Adjacent_Cell(game::FacingType::kEast).Wall_Update();
           return true;
         }
       }

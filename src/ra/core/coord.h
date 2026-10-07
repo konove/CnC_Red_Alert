@@ -48,8 +48,8 @@ inline game::DirType Direction8(const Coordinate from, const Coordinate to) {
 }
 
 // Returns the center of the cell next to the one `coord` lies in, in direction
-// `dir`. A `dir` outside the eight facings, FACING_NONE included, wraps into
-// them. No map edge check: the result may lie off the map.
+// `dir`. A `dir` outside the eight facings, FacingType::kNone included, wraps
+// into them. No map edge check: the result may lie off the map.
 inline Coordinate AdjacentCell(const Coordinate coord,
                                const game::FacingType dir) {
   return (kAdjacentCoordOffsets.at(game::AsFacing(static_cast<int>(dir))) +
@@ -64,11 +64,12 @@ inline Coordinate AdjacentCell(const Coordinate coord,
 }
 
 // Returns the cell next to `cell` in direction `dir`. A `dir` outside the eight
-// facings, FACING_NONE included, wraps into them. No map edge check: stepping
-// off the east or west edge lands on the opposite edge of a neighbouring row.
+// facings, FacingType::kNone included, wraps into them. No map edge check:
+// stepping off the east or west edge lands on the opposite edge of a
+// neighbouring row.
 inline Cell AdjacentCell(const Cell cell, const game::FacingType dir) {
-  // Wrapped so that FACING_NONE (-1) does not index before the start of the
-  // table.
+  // Wrapped so that FacingType::kNone (-1) does not index before the start of
+  // the table.
   return cell.Offset(
       kAdjacentCellOffsets.at(game::AsFacing(static_cast<int>(dir))));
 }

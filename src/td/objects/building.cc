@@ -1546,7 +1546,7 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::DirType dir) {
   Validate();
 #ifdef OBSOLETE
   if (*this == STRUCT_ROAD) {
-    if (Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+    if (Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
         game::MOVE_OK) {
       ObjectClass* o =
           OverlayTypeClass::As_Reference(OVERLAY_ROAD).Create_One_Of(House);
@@ -1565,7 +1565,7 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::DirType dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+    if (Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
         game::MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
@@ -2521,7 +2521,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             Cell cell = Cell::Containing(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
-            cell = Adjacent_Cell(cell, game::FACING_SW);
+            cell = Adjacent_Cell(cell, game::FacingType::kSouthWest);
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
@@ -5192,8 +5192,9 @@ int BuildingClass::Mission_Unload() {
           unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
-            unit->Force_Track(DriveClass::kOutOfWeaponFactory,
-                              Adjacent_Cell(Center_Coord(), game::FACING_SW));
+            unit->Force_Track(
+                DriveClass::kOutOfWeaponFactory,
+                Adjacent_Cell(Center_Coord(), game::FacingType::kSouthWest));
             unit->Set_Speed(128);
             Status = kLeave;
           } else {

@@ -298,7 +298,7 @@ class FootClass : public TechnoClass {
   virtual void Set_Speed(int speed);
   game::MoveType Can_Enter_Cell(
       Cell /*unused*/,
-      game::FacingType /*unused*/ = game::FACING_NONE) const override;
+      game::FacingType /*unused*/ = game::FacingType::kNone) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, Target tarcom,
                         Target navcom) override;

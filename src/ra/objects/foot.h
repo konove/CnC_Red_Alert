@@ -323,7 +323,7 @@ class FootClass : public TechnoClass {
         FormationSpeed(SPEED_FOOT),
         FormationMaxSpeed(game::MPH_IMMOBILE),
         HeadToCoord() {
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
   }
 
  public:
@@ -412,7 +412,8 @@ class FootClass : public TechnoClass {
   virtual void Approach_Target();
   virtual void Set_Speed(int speed);
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell, game::FacingType from = game::FACING_NONE) const override;
+      Cell cell,
+      game::FacingType from = game::FacingType::kNone) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, Target tarcom,
                         Target navcom) override;

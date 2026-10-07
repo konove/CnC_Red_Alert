@@ -1005,10 +1005,10 @@ void InfantryClass::Assign_Destination(Target target) {
         }
       }
     } else {
-      base::At(Path, 0) = game::FACING_NONE;
+      base::At(Path, 0) = game::FacingType::kNone;
     }
   } else {
-    base::At(Path, 0) = game::FACING_NONE;
+    base::At(Path, 0) = game::FacingType::kNone;
   }
   FootClass::Assign_Destination(target);
 }
@@ -1034,7 +1034,7 @@ void InfantryClass::Assign_Target(Target target) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
-  base::At(Path, 0) = game::FACING_NONE;
+  base::At(Path, 0) = game::FacingType::kNone;
   if (Class->IsDog &&
       (target.AsObject() && target.AsObject()->What_Am_I() != RTTI_INFANTRY)) {
     target = Target{};
@@ -1715,16 +1715,16 @@ bool InfantryClass::Random_Animate() {
 
       case 6:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(
-            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
+        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+            game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
       case 7:
         Do_Action(DO_IDLE2);
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(
-            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
+        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+            game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
             LocalRandomPick(0, 2) == 0) {
@@ -1737,8 +1737,8 @@ bool InfantryClass::Random_Animate() {
       */
       case 8:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(
-            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
+        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+            game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
           Scatter(Coordinate{}, true);
@@ -1748,8 +1748,8 @@ bool InfantryClass::Random_Animate() {
       case 9:
       case 10:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(
-            game::Facing_Dir(RandomPick(game::FACING_N, game::FACING_NW)));
+        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+            game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
@@ -1830,7 +1830,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   }
 
   if (forced || Class->IsFraidyCat /*|| !(RandomPick(1, 4) == 1)*/) {
-    game::FacingType toface = game::FACING_NONE;
+    game::FacingType toface = game::FacingType::kNone;
 
     if (threat) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
@@ -3589,7 +3589,7 @@ void InfantryClass::Firing_AI() {
           */
           if (TarCom == NavCom) {
             NavCom = Target{};
-            base::At(Path, 0) = game::FACING_NONE;
+            base::At(Path, 0) = game::FacingType::kNone;
           }
           break;
         case game::FireErrorType::FIRE_AMMO:
@@ -3815,10 +3815,10 @@ void InfantryClass::Movement_AI() {
         **	to be entered. If not, then abort the path and try
         **	again.
         */
-        if (base::At(Path, 0) != game::FACING_NONE &&
+        if (base::At(Path, 0) != game::FacingType::kNone &&
             Can_Enter_Cell(AdjacentCell(Cell::Containing(Center_Coord()),
                                         base::At(Path, 0))) != game::MOVE_OK) {
-          base::At(Path, 0) = game::FACING_NONE;
+          base::At(Path, 0) = game::FacingType::kNone;
         }
 
         /*
@@ -3829,13 +3829,13 @@ void InfantryClass::Movement_AI() {
         */
         const int d = Lepton_To_Cell(Distance(NavCom));
         if (d < kConquerPathMax) {
-          base::At(Path, d) = game::FACING_NONE;
+          base::At(Path, d) = game::FacingType::kNone;
         }
 
         /*
         **	Find a path to follow if one isn't already calculated.
         */
-        if (base::At(Path, 0) == game::FACING_NONE) {
+        if (base::At(Path, 0) == game::FacingType::kNone) {
           /*
           **	Calculate the path from the current location to the
           **	destination indicated by the navigation computer. If there
@@ -3940,7 +3940,7 @@ void InfantryClass::Movement_AI() {
             }
           }
 
-          base::At(Path, 0) = game::FACING_NONE;
+          base::At(Path, 0) = game::FacingType::kNone;
           Stop_Driver();
           if (IsNewNavCom) {
             PlaySoundEffect(VOC_SCOLD);
@@ -3997,7 +3997,7 @@ void InfantryClass::Movement_AI() {
                         std::as_bytes(base::Suffix(Path, 1)),
                         sizeof(Path) - sizeof(base::At(Path, 0)));
         base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
-            game::FACING_NONE;
+            game::FacingType::kNone;
         Coord = Head_To_Coord();
         if (Per_Cell_Process(PCP_END)) {
           return;
@@ -4017,7 +4017,7 @@ void InfantryClass::Movement_AI() {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
-          base::At(Path, 0) = game::FACING_NONE;
+          base::At(Path, 0) = game::FacingType::kNone;
         }
       } else {
         int movespeed = Speed;

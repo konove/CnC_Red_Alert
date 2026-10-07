@@ -856,12 +856,13 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
           int oldy = 0;
 
           if (foot->Head_To_Coord() &&
-              base::At(foot->Path, 0) != game::FACING_NONE) {
-            Cell cell = Adjacent_Cell(Cell::Containing(foot->Head_To_Coord()),
-                                      base::At(foot->Path, 0) + game::FACING_S);
+              base::At(foot->Path, 0) != game::FacingType::kNone) {
+            Cell cell = Adjacent_Cell(
+                Cell::Containing(foot->Head_To_Coord()),
+                base::At(foot->Path, 0) + game::FacingType::kSouth);
             TheMap().Coord_To_Pixel(cell.Center(), oldx, oldy);
             for (const auto& index : foot->Path) {
-              if (index == game::FACING_NONE) {
+              if (index == game::FacingType::kNone) {
                 break;
               }
               cell = Adjacent_Cell(cell, index);
@@ -1072,7 +1073,7 @@ bool ObjectClass::Limbo() {
 bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+       Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
            game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;

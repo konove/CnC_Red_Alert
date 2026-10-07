@@ -175,7 +175,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       FormationSpeed(SPEED_FOOT),
       FormationMaxSpeed(game::MPH_IMMOBILE),
       HeadToCoord() {
-  Path[0] = game::FACING_NONE;
+  Path[0] = game::FacingType::kNone;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
     base::At(NavQueue, index) = Target{};
   }
@@ -294,7 +294,7 @@ bool FootClass::Basic_Path() {
   PathType* path = nullptr;  // Pointer to path control structure.
   bool skip_path = false;
 
-  Path[0] = game::FACING_NONE;
+  Path[0] = game::FacingType::kNone;
 
   if (NavCom) {
     Cell cell = NavCom.AsCell();
@@ -324,7 +324,8 @@ bool FootClass::Basic_Path() {
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
-          if (inf->NavCom == NavCom && inf->Path[0] != game::FACING_NONE) {
+          if (inf->NavCom == NavCom &&
+              inf->Path[0] != game::FacingType::kNone) {
             if (Cell::Containing(inf->Head_To_Coord()) ==
                 Cell::Containing(inf->Coord)) {
               base::CopyBytes(std::as_writable_bytes(std::span(Path)),
@@ -335,7 +336,7 @@ bool FootClass::Basic_Path() {
                               std::as_bytes(std::span(inf->Path)),
                               sizeof(Path));
             }
-            if (Path[0] != game::FACING_NONE) {
+            if (Path[0] != game::FacingType::kNone) {
               skip_path = true;
             }
             break;
@@ -347,7 +348,7 @@ bool FootClass::Basic_Path() {
 
     if (!skip_path) {
       Mark(MARK_UP);
-      Path[0] = game::FACING_NONE;  // Probably not necessary, but...
+      Path[0] = game::FacingType::kNone;  // Probably not necessary, but...
 
       /*
       **	Try to find a path to the destination. If a failure occurs, then
@@ -415,7 +416,7 @@ bool FootClass::Basic_Path() {
     }
 
     PathDelay.Set(TheRules().PathDelay * kTicksPerMinute);
-    if (Path[0] != game::FACING_NONE) {
+    if (Path[0] != game::FacingType::kNone) {
       return true;
     }
 
@@ -785,7 +786,7 @@ void FootClass::Stun() {
   DCHECK(IsActive);
 
   Assign_Destination(Target{});
-  Path[0] = game::FACING_NONE;
+  Path[0] = game::FacingType::kNone;
   Stop_Driver();
   TechnoClass::Stun();
 }
@@ -1016,7 +1017,7 @@ bool FootClass::Unlimbo(Coordinate coord, game::DirType dir) {
     /*
     **	Start in a still (non-moving) state.
     */
-    Path[0] = game::FACING_NONE;
+    Path[0] = game::FacingType::kNone;
     return true;
   }
   return false;
@@ -1421,7 +1422,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
            Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
           inrange) {
         Assign_Destination(Target{});
-        Path[0] = game::FACING_NONE;
+        Path[0] = game::FacingType::kNone;
       }
     }
 
@@ -2031,7 +2032,7 @@ void FootClass::Detach(Target target, bool all) {
   */
   if (NavCom == target) {
     NavCom = Target{};
-    Path[0] = game::FACING_NONE;
+    Path[0] = game::FacingType::kNone;
     Restore_Mission();
   }
 
@@ -2056,7 +2057,7 @@ void FootClass::Detach(Target target, bool all) {
   **	toward the target to get within range, then abort the path.
   */
   if (TarCom == target && House->IsHuman) {
-    Path[0] = game::FACING_NONE;
+    Path[0] = game::FacingType::kNone;
   }
 }
 
