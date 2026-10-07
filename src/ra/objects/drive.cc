@@ -476,7 +476,7 @@ Coordinate DriveClass::Smooth_Turn(Coordinate adj, game::Direction& dir) {
 
   if (base::Any(flags & F_X)) {
     x = -x;
-    workdir = game::Direction(-workdir.value());
+    workdir = game::Direction::kNorth - workdir;
   }
 
   if (base::Any(flags & F_Y)) {
