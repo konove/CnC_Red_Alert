@@ -107,8 +107,6 @@ bool TeamType::Edit() {
   constexpr int kCheckY = kNameY + 25;
   constexpr int kCheckSpacingY =
       9;  // Vertical spacing between check box lines.
-  constexpr int kCheckTextOffsetX =
-      8;  // Horizontal spacing for check box description text.
   constexpr int kFieldSpacingX =
       9;  // Horizontal spacing between data entry fields.
   constexpr int kCancelW = 50;
@@ -528,6 +526,8 @@ bool TeamType::Edit() {
               members_button.X + members_button.Width + 3,
               members_button.Y + 1);
 
+      // Horizontal spacing for check box description text.
+      constexpr int kCheckTextOffsetX = 8;
       caption("Use safest, possibly longer, route to target?",
               roundabout_check.X + kCheckTextOffsetX, roundabout_check.Y);
       caption("Charge toward target ignoring distractions?",

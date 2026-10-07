@@ -336,9 +336,9 @@ bool TeamType::ReadIniEntry(const std::string_view name,
     // next member takes its place in Members.
     const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
     if (member_type != nullptr) {
-      TeamMember& member = base::At(members_, member_count_++);
-      member.type = member_type;
-      member.quantity = base::ParseIntegerOr<int>(quantity_text, 0);
+      base::At(members_, member_count_++) = {
+          .quantity = base::ParseIntegerOr<int>(quantity_text, 0),
+          .type = member_type};
     }
   }
 
@@ -464,9 +464,9 @@ std::string TeamType::MemberDescription() const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     // "TYPE:count" for each kind of member, comma separated.
     for (int index = 0; index < member_count_; index++) {
-      const TeamMember& member = base::At(members_, index);
+      const auto& [quantity, type] = base::At(members_, index);
       absl::StrAppendFormat(&text, "%s%s:%d", index > 0 ? "," : "",
-                            member.type->IniName, member.quantity);
+                            type->IniName, quantity);
     }
 
     // The team list's last column has room for 25 characters.
