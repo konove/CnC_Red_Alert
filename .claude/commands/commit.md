@@ -21,8 +21,9 @@ Run `git status --short` and read `git diff` (and the untracked files) before st
   the most common failure here.
 - Include the documents that track the work in the same commit when the change makes them stale: the
   status row in `docs/CLANG_TIDY_PRIORITIES.md`, the matching `docs/*_PLAN.md`, the TODO items the
-  change finishes or outdates (`.todos/items.json`, changed through `mcp__clion__todo_update`), and
-  `CLAUDE.md` when a statement in it stops being true.
+  change finishes or outdates (`.todos/items.json`, changed through `mcp__clion__todo_update` or,
+  for several, one `mcp__clion__todo_batch`: `status: fixed` with `resolution`, never by editing the
+  file), and `CLAUDE.md` when a statement in it stops being true.
 - If the user named a scope ("commit the mapsel.cc change", "commit stage 1"), commit only that and
   leave the rest in the tree.
 - Changes you cannot account for and that are clearly unrelated stay uncommitted; say so in the

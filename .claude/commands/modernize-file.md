@@ -165,21 +165,26 @@ engine libraries, or a split - goes to **for the user** with what stands in the 
 stage 11. If the name and the folder already fit, record why and make no commit.
 
 **11. Leftovers to the TODO list** - every open item from the ledger, however small, as a Not My
-TODO item (`mcp__clion__todo_create`), following `/add-todo` for the title, details, tags, priority
-and anchor: bugs not fixed (behaviour-changing, out of scope, twin not done), **noticed** items not
-acted on, **misplaced** items not moved, **for the user** decisions, design ideas `/simplify` raised
-but did not apply, lines stage 8 left uncovered and what would make them testable, stages skipped (a
-CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things spotted outside the files' scope.
-One ledger entry is one item, anchored to the lines it means when it is about one place; a **for the
-user** decision is its own item with the `needs-decision` tag, not a bullet inside an item an agent
-could otherwise fix. Give each item what it takes to act without re-reading the run: the files, what
-is wrong or possible, the options with their size, and the run's commit range. Before adding, look
-through `mcp__clion__todo_list` (or grep `.todos/items.json`) for an item that already covers it (an
-existing item may only need the new file name or an extra detail: `mcp__clion__todo_update`); set
-items this run finished to `status: fixed` (a "move X into its namespace" item the namespace stage
-closed) and check that the anchors of the items in the files the run renamed or moved are not
-`lost`. Commit `.todos/items.json` alone: "Add the <file> modernization's leftovers to the TODO
-list". A run whose ledger ends empty says so in the report and makes no commit.
+TODO item, following `/add-todo` for the title, details, tags, priority, effort and anchor, and all
+of them in one `mcp__clion__todo_batch` call under one parent item for the run ("Leftovers from the
+<file> modernization", made first with `mcp__clion__todo_create`; the run's commit range is each
+item's `source`): bugs not fixed (behaviour-changing, out of scope, twin not done), **noticed**
+items not acted on, **misplaced** items not moved, **for the user** decisions, design ideas
+`/simplify` raised but did not apply, lines stage 8 left uncovered and what would make them
+testable, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and things
+spotted outside the files' scope. One ledger entry is one item, anchored to the lines it means when
+it is about one place; a **for the user** decision is its own item with `toDecide` saying what is to
+be decided (that tags it `needs-decision`), not a bullet inside an item an agent could otherwise
+fix. Give each item what it takes to act without re-reading the run: the files, what is wrong or
+possible, the options with their size. Before adding, look through `mcp__clion__todo_list`
+(`compact: true`, with `path` set to the files' folder or `text` to their names) for an item that
+already covers it (an existing item may only need the new file name or an extra detail: an entry
+with its `id` and a `comment` in the same batch); set items this run finished to `status: fixed`
+with `resolution` and `fixedIn` (a "move X into its namespace" item the namespace stage closed),
+also in that batch, and re-attach whatever `mcp__clion__todo_list` with `lost: true` returns for the
+files the run renamed or moved (`mcp__clion__todo_update`). Commit `.todos/items.json` alone: "Add
+the <file> modernization's leftovers to the TODO list". A run whose ledger ends empty says so in the
+report and makes no commit.
 
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
