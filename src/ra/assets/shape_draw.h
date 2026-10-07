@@ -46,7 +46,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    engine::gfx::ShapeFlags flags,
                    std::span<const uint8_t> fading_data = {},
                    std::span<const uint8_t> ghostdata = {},
-                   game::DirType rotation = game::DIR_N,
+                   game::DirType rotation = game::DirType::kNorth,
                    int32_t scale = 0x0100);
 
 // Returns the width x height shape `pixels` scaled by `scale` (24.8 fixed

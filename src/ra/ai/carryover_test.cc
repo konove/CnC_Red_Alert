@@ -253,7 +253,8 @@ TEST_F(CarryoverTest, RecreatesNoVehicleOnACellInfantryHold) {
   const Carryover record(MakeUnit());
   base::DeletePooled(TheObjectHeaps().unit().ActiveAt(0));
   TheWorld().scenario_init() = 0;
-  ASSERT_TRUE(MakeInfantry(kCell).Unlimbo(kCell.Center(), game::DIR_N));
+  ASSERT_TRUE(
+      MakeInfantry(kCell).Unlimbo(kCell.Center(), game::DirType::kNorth));
   TheWorld().scenario_init() = 1;
 
   record.Recreate();

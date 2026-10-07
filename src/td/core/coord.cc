@@ -259,7 +259,7 @@ Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance) {
  *=============================================================================================*/
 Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock) {
   Coordinate newcoord =
-      Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
+      Coord_Move(coord, Random_Pick(game::DirType::kNorth, kMaxRandomDirection),
                  static_cast<uint16_t>(distance));
 
   if ((newcoord.packed() & kHighCoordMask) != 0) {

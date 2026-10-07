@@ -161,7 +161,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       // Rotation and scale handler.
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
-      if (rotation != game::DIR_N || scale != 0x0100) {
+      if (rotation != game::DirType::kNorth || scale != 0x0100) {
         frame_pixels =
             ScaleRotateShape(frame_pixels, width, height, rotation, scale);
         width *= 2;

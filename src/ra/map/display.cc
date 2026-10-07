@@ -1235,39 +1235,39 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
   if (TacticalCoord.x() == Cell_To_Lepton(MapCellX) &&
       crude != game::FacingType::kWest) {
     if (crude == game::FacingType::kSouthWest) {
-      facing = game::DIR_S;
+      facing = game::DirType::kSouth;
     }
     if (crude == game::FacingType::kNorthWest) {
-      facing = game::DIR_N;
+      facing = game::DirType::kNorth;
     }
   }
   if (TacticalCoord.y() == Cell_To_Lepton(MapCellY) &&
       crude != game::FacingType::kNorth) {
     if (crude == game::FacingType::kNorthWest) {
-      facing = game::DIR_W;
+      facing = game::DirType::kWest;
     }
     if (crude == game::FacingType::kNorthEast) {
-      facing = game::DIR_E;
+      facing = game::DirType::kEast;
     }
   }
   if (TacticalCoord.x() + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
       crude != game::FacingType::kEast) {
     if (crude == game::FacingType::kNorthEast) {
-      facing = game::DIR_N;
+      facing = game::DirType::kNorth;
     }
     if (crude == game::FacingType::kSouthEast) {
-      facing = game::DIR_S;
+      facing = game::DirType::kSouth;
     }
   }
   if (TacticalCoord.y() + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
       crude != game::FacingType::kSouth) {
     if (crude == game::FacingType::kSouthEast) {
-      facing = game::DIR_E;
+      facing = game::DirType::kEast;
     }
     if (crude == game::FacingType::kSouthWest) {
-      facing = game::DIR_W;
+      facing = game::DirType::kWest;
     }
   }
 

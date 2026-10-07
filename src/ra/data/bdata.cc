@@ -212,25 +212,25 @@ static const BuildingTypeClass ClassBarrel(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBarrel3(
@@ -242,25 +242,25 @@ static const BuildingTypeClass ClassBarrel3(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAVMine(
@@ -272,25 +272,25 @@ static const BuildingTypeClass ClassAVMine(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    false,           // Can the player select this?
-    false,           // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    false,      // Can the player select this?
+    false,      // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAPMine(
@@ -302,25 +302,25 @@ static const BuildingTypeClass ClassAPMine(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    false,           // Can the player select this?
-    false,           // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    false,      // Can the player select this?
+    false,      // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassIronCurtain(
@@ -332,25 +332,25 @@ static const BuildingTypeClass ClassIronCurtain(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List22_0011,     // OCCUPYLIST:	List of active foundation squares.
-    List22_1100      // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List22_0011,            // OCCUPYLIST:	List of active foundation squares.
+    List22_1100             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassForwardCom(
@@ -362,25 +362,25 @@ static const BuildingTypeClass ClassForwardCom(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List22_0011,     // OCCUPYLIST:	List of active foundation squares.
-    List22_1100      // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List22_0011,            // OCCUPYLIST:	List of active foundation squares.
+    List22_1100             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAdvancedTech(
@@ -393,25 +393,25 @@ static const BuildingTypeClass ClassAdvancedTech(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List22,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List22,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassChronosphere(
@@ -423,25 +423,25 @@ static const BuildingTypeClass ClassChronosphere(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List22,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List22,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassWeapon(
@@ -455,26 +455,26 @@ static const BuildingTypeClass ClassWeapon(
         game::kCellHeightLeptons),  // Exit point for produced units.
     REMAP_ALTERNATE,                // Sidebar remap logic.
     0x0000,                         //	Vertical offset.
-    0x0000,          // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_UNITTYPE,   // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_32,  // SIZE:			Building size.
-    ExitWeap,        // Preferred exit cell list.
-    ListWeap,        // OCCUPYLIST:	List of active foundation squares.
-    OListWeap        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,         // Primary weapon offset along turret centerline.
+    0x0000,         // Primary weapon lateral offset along turret centerline.
+    false,          // Is this building a fake (decoy?)
+    false,          // Animation rate is regulated for constant speed?
+    false,          // Always use the given name for the building?
+    false,          // Is this a wall type structure?
+    false,          // Simple (one frame) damage imagery?
+    false,          // Is it invisible to radar?
+    true,           // Can the player select this?
+    true,           // Is this a legal target for attack or move?
+    false,          // Is this an insignificant building?
+    false,          // Theater specific graphic image?
+    false,          // Does it have a rotating turret?
+    true,           // Can the building be color remapped to indicate owner?
+    RTTI_UNITTYPE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,         // SIZE:			Building size.
+    ExitWeap,               // Preferred exit cell list.
+    ListWeap,               // OCCUPYLIST:	List of active foundation squares.
+    OListWeap               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassShipYard(
@@ -503,11 +503,11 @@ static const BuildingTypeClass ClassShipYard(
     false,            // Does it have a rotating turret?
     true,             // Can the building be color remapped to indicate owner?
     RTTI_VESSELTYPE,  // The object type produced at this factory.
-    game::DIR_N,      // Starting idle frame to match construction.
-    game::BSIZE_33,   // SIZE:			Building size.
-    {},               // Preferred exit cell list.
-    ListSPen,         // OCCUPYLIST:	List of active foundation squares.
-    OListSPen         // OVERLAPLIST:List of overlap cell offset.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
+    OListSPen               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSubPen(
@@ -536,11 +536,11 @@ static const BuildingTypeClass ClassSubPen(
     false,            // Does it have a rotating turret?
     true,             // Can the building be color remapped to indicate owner?
     RTTI_VESSELTYPE,  // The object type produced at this factory.
-    game::DIR_N,      // Starting idle frame to match construction.
-    game::BSIZE_33,   // SIZE:			Building size.
-    ExitSub,          // Preferred exit cell list.
-    ListSPen,         // OCCUPYLIST:	List of active foundation squares.
-    OListSPen         // OVERLAPLIST:List of overlap cell offset.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    ExitSub,                // Preferred exit cell list.
+    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
+    OListSPen               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassPillbox(
@@ -552,25 +552,25 @@ static const BuildingTypeClass ClassPillbox(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0010,                   //	Vertical offset.
     0x0040,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassCamoPillbox(
@@ -582,25 +582,25 @@ static const BuildingTypeClass ClassCamoPillbox(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0010,                   //	Vertical offset.
     0x0040,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTesla(
@@ -612,25 +612,25 @@ static const BuildingTypeClass ClassTesla(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x00C8,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_12,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List12,          // OCCUPYLIST:	List of active foundation squares.
-    OList12          // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_12,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List12,                 // OCCUPYLIST:	List of active foundation squares.
+    OList12                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTurret(
@@ -673,25 +673,25 @@ static const BuildingTypeClass ClassAAGun(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    true,            // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_NE,    // Starting idle frame to match construction.
-    game::BSIZE_12,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List12,          // OCCUPYLIST:	List of active foundation squares.
-    OList12          // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    true,       // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorthEast,  // Starting idle frame to match construction.
+    game::BSIZE_12,             // SIZE:			Building size.
+    {},                         // Preferred exit cell list.
+    List12,  // OCCUPYLIST:	List of active foundation squares.
+    OList12  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFlameTurret(
@@ -703,25 +703,25 @@ static const BuildingTypeClass ClassFlameTurret(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassConst(
@@ -746,12 +746,12 @@ static const BuildingTypeClass ClassConst(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_BUILDINGTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_33,     // SIZE:			Building size.
-    {},                 // Preferred exit cell list.
-    ListFactory,        // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_BUILDINGTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ListFactory,            // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeConst(
@@ -763,25 +763,25 @@ static const BuildingTypeClass ClassFakeConst(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    true,            // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ListFactory,     // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    true,       // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ListFactory,            // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeWeapon(
@@ -796,25 +796,25 @@ static const BuildingTypeClass ClassFakeWeapon(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    true,            // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_32,  // SIZE:			Building size.
-    ExitWeap,        // Preferred exit cell list.
-    ListWeap,        // OCCUPYLIST:	List of active foundation squares.
-    OListWeap        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    true,       // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,         // SIZE:			Building size.
+    ExitWeap,               // Preferred exit cell list.
+    ListWeap,               // OCCUPYLIST:	List of active foundation squares.
+    OListWeap               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRefinery(
@@ -826,25 +826,25 @@ static const BuildingTypeClass ClassRefinery(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List010111100,   // OCCUPYLIST:	List of active foundation squares.
-    List101000011    // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List010111100,          // OCCUPYLIST:	List of active foundation squares.
+    List101000011           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassStorage(
@@ -856,25 +856,25 @@ static const BuildingTypeClass ClassStorage(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    StoreList,       // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    StoreList,              // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHelipad(
@@ -899,12 +899,12 @@ static const BuildingTypeClass ClassHelipad(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_AIRCRAFTTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_22,     // SIZE:			Building size.
-    {},                 // Preferred exit cell list.
-    List2,              // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_AIRCRAFTTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List2,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassCommand(
@@ -916,25 +916,25 @@ static const BuildingTypeClass ClassCommand(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ComList,         // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ComList,                // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassGapGenerator(
@@ -947,25 +947,25 @@ static const BuildingTypeClass ClassGapGenerator(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_12,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0010,        // OCCUPYLIST:	List of active foundation squares.
-    List1            // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_12,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0010,               // OCCUPYLIST:	List of active foundation squares.
+    List1                   // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSAM(
@@ -977,25 +977,25 @@ static const BuildingTypeClass ClassSAM(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0030,                   //	Vertical offset.
     0x0080,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    true,            // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List21,          // OCCUPYLIST:	List of active foundation squares.
-    OListSAM         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    true,       // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List21,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSAM                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassMissileSilo(
@@ -1007,25 +1007,25 @@ static const BuildingTypeClass ClassMissileSilo(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List21,          // OCCUPYLIST:	List of active foundation squares.
-    OListSAM         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List21,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSAM                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAirStrip(
@@ -1050,12 +1050,12 @@ static const BuildingTypeClass ClassAirStrip(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_AIRCRAFTTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_32,     // SIZE:			Building size.
-    {},                 // Preferred exit cell list.
-    List32,             // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_AIRCRAFTTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List32,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassPower(
@@ -1067,25 +1067,25 @@ static const BuildingTypeClass ClassPower(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List22,          // OCCUPYLIST:	List of active foundation squares.
-    List22_1100      // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List22,                 // OCCUPYLIST:	List of active foundation squares.
+    List22_1100             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAdvancedPower(
@@ -1098,25 +1098,25 @@ static const BuildingTypeClass ClassAdvancedPower(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List000111111,   // OCCUPYLIST:	List of active foundation squares.
-    OListTmpl        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List000111111,          // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSovietTech(
@@ -1128,25 +1128,25 @@ static const BuildingTypeClass ClassSovietTech(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List000111111,   // OCCUPYLIST:	List of active foundation squares.
-    OListTmpl        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List000111111,          // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHospital(
@@ -1158,25 +1158,25 @@ static const BuildingTypeClass ClassHospital(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List2,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List2,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBioLab(
@@ -1188,25 +1188,25 @@ static const BuildingTypeClass ClassBioLab(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List2,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List2,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBarracks(
@@ -1233,12 +1233,12 @@ static const BuildingTypeClass ClassBarracks(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_22,     // SIZE:			Building size.
-    ExitPyle,           // Preferred exit cell list.
-    List22,             // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    ExitPyle,               // Preferred exit cell list.
+    List22,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTent(
@@ -1263,12 +1263,12 @@ static const BuildingTypeClass ClassTent(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_22,     // SIZE:			Building size.
-    ExitPyle,           // Preferred exit cell list.
-    List22,             // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    ExitPyle,               // Preferred exit cell list.
+    List22,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassKennel(
@@ -1293,14 +1293,14 @@ static const BuildingTypeClass ClassKennel(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,  // The object type produced at this factory.
-    game::DIR_N,        // Starting idle frame to match construction.
-    game::BSIZE_11,     // SIZE:			Building size.
-    {},                 // Preferred exit cell list.
-                        //	(short const *)ExitPyle,	// Preferred exit cell
-                        // list.
-    List1,              // OCCUPYLIST:	List of active foundation squares.
-    {}                  // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+                            //	(short const *)ExitPyle,	// Preferred exit cell
+                            // list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeShipYard(
@@ -1315,25 +1315,25 @@ static const BuildingTypeClass ClassFakeShipYard(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    true,            // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    ExitWeap,        // Preferred exit cell list.
-    ListSPen,        // OCCUPYLIST:	List of active foundation squares.
-    OListSPen        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    true,       // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    ExitWeap,               // Preferred exit cell list.
+    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
+    OListSPen               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeSubPen(
@@ -1348,25 +1348,25 @@ static const BuildingTypeClass ClassFakeSubPen(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    true,            // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    ExitSub,         // Preferred exit cell list.
-    ListSPen,        // OCCUPYLIST:	List of active foundation squares.
-    OListSPen        // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    true,       // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    ExitSub,                // Preferred exit cell list.
+    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
+    OListSPen               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeCommand(
@@ -1378,25 +1378,25 @@ static const BuildingTypeClass ClassFakeCommand(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    true,            // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ComList,         // OCCUPYLIST:	List of active foundation squares.
-    OComList         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    true,       // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ComList,                // OCCUPYLIST:	List of active foundation squares.
+    OComList                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRepair(
@@ -1408,25 +1408,25 @@ static const BuildingTypeClass ClassRepair(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    false,           // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_33,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ListFix,         // OCCUPYLIST:	List of active foundation squares.
-    OListFix         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    false,      // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ListFix,                // OCCUPYLIST:	List of active foundation squares.
+    OListFix                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV01(
@@ -1438,25 +1438,25 @@ static const BuildingTypeClass ClassV01(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE: Building size.
-    {},              // Preferred exit cell list.
-    List0011,        // OCCUPYLIST:	List of active foundation squares.
-    List1100         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE: Building size.
+    {},                     // Preferred exit cell list.
+    List0011,               // OCCUPYLIST:	List of active foundation squares.
+    List1100                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV02(
@@ -1468,25 +1468,25 @@ static const BuildingTypeClass ClassV02(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0011,        // OCCUPYLIST:	List of active foundation squares.
-    List1100         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0011,               // OCCUPYLIST:	List of active foundation squares.
+    List1100                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV03(
@@ -1498,25 +1498,25 @@ static const BuildingTypeClass ClassV03(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0111,        // OCCUPYLIST:	List of active foundation squares.
-    List1000         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0111,               // OCCUPYLIST:	List of active foundation squares.
+    List1000                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV04(
@@ -1528,25 +1528,25 @@ static const BuildingTypeClass ClassV04(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0011,        // OCCUPYLIST:	List of active foundation squares.
-    List1100         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0011,               // OCCUPYLIST:	List of active foundation squares.
+    List1100                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV05(
@@ -1558,25 +1558,25 @@ static const BuildingTypeClass ClassV05(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV06(
@@ -1588,25 +1588,25 @@ static const BuildingTypeClass ClassV06(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV07(
@@ -1618,25 +1618,25 @@ static const BuildingTypeClass ClassV07(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV08(
@@ -1648,25 +1648,25 @@ static const BuildingTypeClass ClassV08(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV09(
@@ -1678,25 +1678,25 @@ static const BuildingTypeClass ClassV09(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV10(
@@ -1708,25 +1708,25 @@ static const BuildingTypeClass ClassV10(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV11(
@@ -1738,25 +1738,25 @@ static const BuildingTypeClass ClassV11(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV12(
@@ -1768,25 +1768,25 @@ static const BuildingTypeClass ClassV12(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV13(
@@ -1798,25 +1798,25 @@ static const BuildingTypeClass ClassV13(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV14(
@@ -1828,25 +1828,25 @@ static const BuildingTypeClass ClassV14(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV15(
@@ -1858,25 +1858,25 @@ static const BuildingTypeClass ClassV15(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV16(
@@ -1888,25 +1888,25 @@ static const BuildingTypeClass ClassV16(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV17(
@@ -1918,25 +1918,25 @@ static const BuildingTypeClass ClassV17(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV18(
@@ -1948,25 +1948,25 @@ static const BuildingTypeClass ClassV18(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV19(
@@ -1978,25 +1978,25 @@ static const BuildingTypeClass ClassV19(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV20(
@@ -2008,25 +2008,25 @@ static const BuildingTypeClass ClassV20(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0011,        // OCCUPYLIST:	List of active foundation squares.
-    List1100         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0011,               // OCCUPYLIST:	List of active foundation squares.
+    List1100                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV21(
@@ -2038,25 +2038,25 @@ static const BuildingTypeClass ClassV21(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1101,        // OCCUPYLIST:	List of active foundation squares.
-    List0010         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1101,               // OCCUPYLIST:	List of active foundation squares.
+    List0010                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV22(
@@ -2068,25 +2068,25 @@ static const BuildingTypeClass ClassV22(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV23(
@@ -2098,25 +2098,25 @@ static const BuildingTypeClass ClassV23(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV24(
@@ -2128,25 +2128,25 @@ static const BuildingTypeClass ClassV24(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0011,        // OCCUPYLIST:	List of active foundation squares.
-    List1100         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0011,               // OCCUPYLIST:	List of active foundation squares.
+    List1100                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV25(
@@ -2158,25 +2158,25 @@ static const BuildingTypeClass ClassV25(
     REMAP_ALTERNATE,           // Sidebar remap logic.
     0x0000,                    //	Vertical offset.
     0x0000,                    // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_22,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List0111,        // OCCUPYLIST:	List of active foundation squares.
-    List1000         // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List0111,               // OCCUPYLIST:	List of active foundation squares.
+    List1000                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV26(
@@ -2188,25 +2188,25 @@ static const BuildingTypeClass ClassV26(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV27(
@@ -2218,25 +2218,25 @@ static const BuildingTypeClass ClassV27(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV28(
@@ -2248,25 +2248,25 @@ static const BuildingTypeClass ClassV28(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV29(
@@ -2278,25 +2278,25 @@ static const BuildingTypeClass ClassV29(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV30(
@@ -2308,25 +2308,25 @@ static const BuildingTypeClass ClassV30(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV31(
@@ -2338,25 +2338,25 @@ static const BuildingTypeClass ClassV31(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV32(
@@ -2368,25 +2368,25 @@ static const BuildingTypeClass ClassV32(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV33(
@@ -2398,25 +2398,25 @@ static const BuildingTypeClass ClassV33(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV34(
@@ -2428,25 +2428,25 @@ static const BuildingTypeClass ClassV34(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV35(
@@ -2458,25 +2458,25 @@ static const BuildingTypeClass ClassV35(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV36(
@@ -2488,25 +2488,25 @@ static const BuildingTypeClass ClassV36(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassV37(
     STRUCT_V37,
@@ -2517,25 +2517,25 @@ static const BuildingTypeClass ClassV37(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    true,            // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_42,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ListWestwood,    // OCCUPYLIST:	List of active foundation squares.
-    OListWestwood    // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    true,       // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_42,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    ListWestwood,           // OCCUPYLIST:	List of active foundation squares.
+    OListWestwood           // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassMission(
     STRUCT_MISSION,
@@ -2546,25 +2546,25 @@ static const BuildingTypeClass ClassMission(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_32,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List32,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List32,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 // Sandbag wall
@@ -2577,25 +2577,25 @@ static const BuildingTypeClass Sandbag(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 // Cyclone fence
 static const BuildingTypeClass Cyclone(
@@ -2607,25 +2607,25 @@ static const BuildingTypeClass Cyclone(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 // Brick wall
 static const BuildingTypeClass Brick(
@@ -2637,25 +2637,25 @@ static const BuildingTypeClass Brick(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
 static const BuildingTypeClass Barbwire(
@@ -2668,25 +2668,25 @@ static const BuildingTypeClass Barbwire(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
 static const BuildingTypeClass Wood(
@@ -2698,25 +2698,25 @@ static const BuildingTypeClass Wood(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass Fence(
     STRUCT_FENCE,
@@ -2727,25 +2727,25 @@ static const BuildingTypeClass Fence(
     REMAP_NONE,               // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    true,            // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    false,           // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    true,       // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    false,      // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassQueen(
@@ -2757,25 +2757,25 @@ static const BuildingTypeClass ClassQueen(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    true,            // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    false,           // Simple (one frame) damage imagery?
-    false,           // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    false,           // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    true,            // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_21,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List11,          // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    true,       // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    false,      // Simple (one frame) damage imagery?
+    false,      // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    false,      // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    true,       // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List11,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassLarva1(
     STRUCT_LARVA1,
@@ -2786,25 +2786,25 @@ static const BuildingTypeClass ClassLarva1(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassLarva2(
     STRUCT_LARVA2,
@@ -2815,25 +2815,25 @@ static const BuildingTypeClass ClassLarva2(
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
     0x0000,                   // Primary weapon offset along turret centerline.
-    0x0000,          // Primary weapon lateral offset along turret centerline.
-    false,           // Is this building a fake (decoy?)
-    false,           // Animation rate is regulated for constant speed?
-    true,            // Always use the given name for the building?
-    false,           // Is this a wall type structure?
-    true,            // Simple (one frame) damage imagery?
-    true,            // Is it invisible to radar?
-    true,            // Can the player select this?
-    true,            // Is this a legal target for attack or move?
-    true,            // Is this an insignificant building?
-    false,           // Theater specific graphic image?
-    false,           // Does it have a rotating turret?
-    false,           // Can the building be color remapped to indicate owner?
-    RTTI_NONE,       // The object type produced at this factory.
-    game::DIR_N,     // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    0x0000,     // Primary weapon lateral offset along turret centerline.
+    false,      // Is this building a fake (decoy?)
+    false,      // Animation rate is regulated for constant speed?
+    true,       // Always use the given name for the building?
+    false,      // Is this a wall type structure?
+    true,       // Simple (one frame) damage imagery?
+    true,       // Is it invisible to radar?
+    true,       // Can the player select this?
+    true,       // Is this a legal target for attack or move?
+    true,       // Is this an insignificant building?
+    false,      // Theater specific graphic image?
+    false,      // Does it have a rotating turret?
+    false,      // Can the building be color remapped to indicate owner?
+    RTTI_NONE,  // The object type produced at this factory.
+    game::DirType::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,         // SIZE:			Building size.
+    {},                     // Preferred exit cell list.
+    List1,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                      // OVERLAPLIST:List of overlap cell offset.
 );
 std::span<const std::byte> BuildingTypeClass::WarFactoryOverlay;
 
@@ -3289,7 +3289,7 @@ void BuildingTypeClass::Prep_For_Add() {
 bool BuildingTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr != nullptr) {
-    return ptr->Unlimbo(cell.Center(), game::DIR_N);
+    return ptr->Unlimbo(cell.Center(), game::DirType::kNorth);
   }
   return false;
 }

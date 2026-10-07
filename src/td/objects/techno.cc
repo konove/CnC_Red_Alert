@@ -485,7 +485,7 @@ TechnoClass::TechnoClass()
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::DIR_N);
+  PrimaryFacing.Set(game::DirType::kNorth);
 }
 
 /***********************************************************************************************
@@ -815,7 +815,7 @@ TechnoClass::TechnoClass(HousesType house)
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::DIR_N);
+  PrimaryFacing.Set(game::DirType::kNorth);
 
   /*
   **	There is a chance that a vehicle will be a "lemon".
@@ -2098,7 +2098,8 @@ int TechnoClass::Rearm_Delay(bool second) const {
  *inaccurate projectiles.                            *
  *=============================================================================================*/
 BulletClass* TechnoClass::Fire_At(Target target, int which) {
-  game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
+  game::DirType dir =
+      game::DirType::kNorth;        // The facing to impart upon the projectile.
   Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -3822,7 +3823,7 @@ int TechnoClass::Tiberium_Load() const { return 0x0000; }
 game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
                                             Cell& moveto) const {
   moveto = Cell{};
-  return game::DIR_N;
+  return game::DirType::kNorth;
 }
 
 /***********************************************************************************************

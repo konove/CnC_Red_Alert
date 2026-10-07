@@ -8,55 +8,55 @@ namespace {
 
 TEST(FacingClassTest, StartsAtNorthAndStill) {
   const FacingClass facing;
-  EXPECT_EQ(facing.Current(), DIR_N);
-  EXPECT_EQ(facing.Desired(), DIR_N);
+  EXPECT_EQ(facing.Current(), DirType::kNorth);
+  EXPECT_EQ(facing.Desired(), DirType::kNorth);
   EXPECT_FALSE(facing.Is_Rotating());
 }
 
 TEST(FacingClassTest, SettersReportWhetherTheValueChanged) {
-  FacingClass facing(DIR_E);
-  EXPECT_FALSE(facing.Set_Desired(DIR_E));
-  EXPECT_TRUE(facing.Set_Desired(DIR_S));
-  EXPECT_FALSE(facing.Set_Current(DIR_E));
-  EXPECT_TRUE(facing.Set_Current(DIR_W));
+  FacingClass facing(DirType::kEast);
+  EXPECT_FALSE(facing.Set_Desired(DirType::kEast));
+  EXPECT_TRUE(facing.Set_Desired(DirType::kSouth));
+  EXPECT_FALSE(facing.Set_Current(DirType::kEast));
+  EXPECT_TRUE(facing.Set_Current(DirType::kWest));
 }
 
 TEST(FacingClassTest, DifferenceTakesTheShortWayRound) {
-  FacingClass facing(DIR_N);
-  facing.Set_Desired(DIR_E);
+  FacingClass facing(DirType::kNorth);
+  facing.Set_Desired(DirType::kEast);
   EXPECT_EQ(facing.Difference(), 64);
-  facing.Set_Desired(DIR_W);
+  facing.Set_Desired(DirType::kWest);
   EXPECT_EQ(facing.Difference(), -64);
   EXPECT_EQ(facing.Difference(AsDirection(200)), -56);
 }
 
 TEST(FacingClassTest, RotatesClockwiseByTheRate) {
-  FacingClass facing(DIR_N);
-  facing.Set_Desired(DIR_E);
+  FacingClass facing(DirType::kNorth);
+  facing.Set_Desired(DirType::kEast);
   EXPECT_TRUE(facing.Rotation_Adjust(16));
   EXPECT_EQ(facing.Current(), AsDirection(16));
   EXPECT_TRUE(facing.Is_Rotating());
 }
 
 TEST(FacingClassTest, RotatesCounterclockwiseTowardACloserTarget) {
-  FacingClass facing(DIR_N);
-  facing.Set_Desired(DIR_W);
+  FacingClass facing(DirType::kNorth);
+  facing.Set_Desired(DirType::kWest);
   facing.Rotation_Adjust(16);
   EXPECT_EQ(facing.Current(), AsDirection(240));
 }
 
 TEST(FacingClassTest, SnapsWhenTheRateCoversTheGap) {
-  FacingClass facing(DIR_N);
-  facing.Set_Desired(DIR_E);
+  FacingClass facing(DirType::kNorth);
+  facing.Set_Desired(DirType::kEast);
   facing.Rotation_Adjust(100);
-  EXPECT_EQ(facing.Current(), DIR_E);
+  EXPECT_EQ(facing.Current(), DirType::kEast);
   EXPECT_FALSE(facing.Is_Rotating());
   EXPECT_FALSE(facing.Rotation_Adjust(100));
 }
 
 TEST(FacingClassTest, ReportsNoRedrawInsideOneFrame) {
-  FacingClass facing(DIR_N);
-  facing.Set_Desired(DIR_E);
+  FacingClass facing(DirType::kNorth);
+  facing.Set_Desired(DirType::kEast);
   // Directions 0..4 all show body frame 0 of 32.
   EXPECT_FALSE(facing.Rotation_Adjust(2));
   EXPECT_EQ(facing.Current(), AsDirection(2));

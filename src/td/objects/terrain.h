@@ -123,7 +123,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(Coordinate coord, game::DirType dir = game::DIR_N) override;
+  bool Unlimbo(Coordinate coord,
+               game::DirType dir = game::DirType::kNorth) override;
   bool Limbo() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell cell,

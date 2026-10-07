@@ -1754,16 +1754,16 @@ bool ObjectClass::Paradrop(Coordinate coord) {
 
   Height = kFlightLevel;
   IsFalling = true;
-  if (Unlimbo(coord, game::DIR_S)) {
+  if (Unlimbo(coord, game::DirType::kSouth)) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), game::DIR_N,
+          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), game::DirType::kNorth,
                                      static_cast<uint16_t>(0x0030 + Height)));
     } else {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARACHUTE, Coord_Move(Center_Coord(), game::DIR_N,
+          ANIM_PARACHUTE, Coord_Move(Center_Coord(), game::DirType::kNorth,
                                      static_cast<uint16_t>(0x0030 + Height)));
     }
 

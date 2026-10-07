@@ -309,7 +309,7 @@ class BuildingClass : public TechnoClass {
       Cell cell,
       game::FacingType /*unused*/ = game::FacingType::kNone) const override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DIR_N) override;
+               game::DirType dir = game::DirType::kNorth) override;
   bool Limbo() override;
 
   /*

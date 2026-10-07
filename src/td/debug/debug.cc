@@ -165,7 +165,7 @@ void Debug_Key(unsigned input) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
                                                game::TheMouse().y()),
-                       game::DIR_N);
+                       game::DirType::kNorth);
         }
       } break;
 
@@ -179,7 +179,7 @@ void Debug_Key(unsigned input) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
                                                game::TheMouse().y()),
-                       game::DIR_N);
+                       game::DirType::kNorth);
         }
       } break;
 
@@ -190,7 +190,7 @@ void Debug_Key(unsigned input) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
                                                game::TheMouse().y()),
-                       game::DIR_N);
+                       game::DirType::kNorth);
         }
       } break;
 

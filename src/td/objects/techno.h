@@ -340,7 +340,7 @@ class TechnoClass : public RadioClass,
   **	Map entry and exit logic.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DIR_N) override;
+               game::DirType dir = game::DirType::kNorth) override;
   void Detach(Target target, bool all) override;
 
   /*

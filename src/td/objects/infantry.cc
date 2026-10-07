@@ -2329,14 +2329,15 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   */
   headto = TheMap()
                .at(Cell::Containing(headto))
-               .Closest_Free_Spot(
-                   Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
+               .Closest_Free_Spot(Coord_Move(
+                   headto, Direction(headto) + game::DirType::kSouth, 0x007C));
   if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
-    headto =
-        TheMap()
-            .at(Cell::Containing(old))
-            .Closest_Free_Spot(
-                Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
+    headto = TheMap()
+                 .at(Cell::Containing(old))
+                 .Closest_Free_Spot(
+                     Coord_Move(old, Direction(headto) + game::DirType::kSouth,
+                                0x0080),
+                     true);
   }
 
   /*

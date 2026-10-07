@@ -2057,10 +2057,11 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   **	Convert the head to coordinate to a legal sub-position location.
   */
   headto = TheMap().at(headto).Closest_Free_Spot(
-      Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
+      Coord_Move(headto, Direction(headto) + game::DirType::kSouth, 0x007C));
   if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
-        Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
+        Coord_Move(old, Direction(headto) + game::DirType::kSouth, 0x0080),
+        true);
   }
 
   /*
@@ -3291,7 +3292,7 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(engine::file::IniFile& ini) {
-  game::DirType dir = game::DIR_N;
+  game::DirType dir = game::DirType::kNorth;
   TriggerType* tp = nullptr;
 
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {

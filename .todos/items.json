@@ -505,8 +505,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/techno.cc",
-          "startLine": 4169,
-          "endLine": 4169,
+          "startLine": 4170,
+          "endLine": 4170,
           "text": "game::ResultType TechnoClass::Take_Damage(int& damage, int distance,",
           "before": [
             " *                                                                                             *",
@@ -922,8 +922,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/building.cc",
-          "startLine": 5167,
-          "endLine": 5167,
+          "startLine": 5172,
+          "endLine": 5172,
           "text": "game::DirType BuildingClass::Fire_Direction() const {",
           "before": [
             " *                                                                                             *",
@@ -1089,8 +1089,8 @@
       "anchors": [
         {
           "path": "src/td/objects/techno.cc",
-          "startLine": 3070,
-          "endLine": 3070,
+          "startLine": 3071,
+          "endLine": 3071,
           "text": "Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {",
           "before": [
             " *                                                                                             *",

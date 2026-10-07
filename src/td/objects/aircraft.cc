@@ -476,9 +476,10 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
-      base::MovePoint(
-          xx, yy, static_cast<uint8_t>(SecondaryFacing.Current() + game::DIR_S),
-          static_cast<int16_t>(_stretch.at(face) * 2));
+      base::MovePoint(xx, yy,
+                      static_cast<uint8_t>(SecondaryFacing.Current() +
+                                           game::DirType::kSouth),
+                      static_cast<int16_t>(_stretch.at(face) * 2));
       CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
@@ -1065,7 +1066,7 @@ int AircraftClass::Mission_Unload() {
             **	Pick a new direction and fly off.
             */
             PrimaryFacing.Set_Desired(
-                Random_Pick(game::DIR_N, kMaxRandomDirection));
+                Random_Pick(game::DirType::kNorth, kMaxRandomDirection));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
             return kTicksPerSecond * 3;
           }
@@ -2137,9 +2138,9 @@ ActionType AircraftClass::What_Action(Cell cell) const {
 game::DirType AircraftClass::Pose_Dir() const {
   Validate();
   if (*this == AIRCRAFT_TRANSPORT) {
-    return game::DIR_N;
+    return game::DirType::kNorth;
   }
-  return game::DIR_NE;
+  return game::DirType::kNorthEast;
 }
 
 /***********************************************************************************************
@@ -2681,17 +2682,17 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return game::DIR_N;
+      return game::DirType::kNorth;
     }
 
     moveto = Adjacent_Cell(center, game::FacingType::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return game::DIR_N;
+      return game::DirType::kNorth;
     }
   }
-  return game::DIR_N;
+  return game::DirType::kNorth;
 }
 
 /***********************************************************************************************

@@ -96,7 +96,7 @@ class ReinforcementTest : public GameFixture {
   static void Place(TechnoClass* object, const Cell cell) {
     ASSERT_NE(object, nullptr);
     TheWorld().scenario_init()++;
-    ASSERT_TRUE(object->Unlimbo(cell.Center(), game::DIR_N));
+    ASSERT_TRUE(object->Unlimbo(cell.Center(), game::DirType::kNorth));
     TheWorld().scenario_init()--;
   }
 
@@ -198,7 +198,8 @@ TEST_F(ReinforcementTest, GivesUpOnATeamThatNoEdgeCellTakes) {
   auto* blocker = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
   ASSERT_NE(blocker, nullptr);
   TheWorld().scenario_init()++;
-  ASSERT_TRUE(blocker->Unlimbo(Cell::FromXY(0, 19).Center(), game::DIR_N));
+  ASSERT_TRUE(
+      blocker->Unlimbo(Cell::FromXY(0, 19).Center(), game::DirType::kNorth));
   TheWorld().scenario_init()--;
   // Nothing leaves limbo while the game is not active, so every cell fails.
   TheGameState().active() = false;
@@ -246,7 +247,7 @@ TEST_F(ReinforcementTest, AHouseWithoutAnEdgeEntersFromTheNorth) {
   // One cell north of the visible map, which starts at row 1.
   EXPECT_EQ(Cell::Containing(jeep->Coord).y(), 0);
   // Facing the edge it came from, as from any other edge.
-  EXPECT_EQ(jeep->PrimaryFacing.Current(), game::DIR_N);
+  EXPECT_EQ(jeep->PrimaryFacing.Current(), game::DirType::kNorth);
 }
 
 TEST_F(ReinforcementTest, OnlyAsManyMembersArriveAsThePoolHolds) {
@@ -379,7 +380,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamLeavesTheBuildingAtItsOrigin) {
   auto* barracks = base::NewPooled<BuildingClass>(STRUCT_BARRACKS, HOUSE_USSR);
   ASSERT_NE(barracks, nullptr);
   TheWorld().scenario_init()++;
-  ASSERT_TRUE(barracks->Unlimbo(kOrigin.Center(), game::DIR_N));
+  ASSERT_TRUE(barracks->Unlimbo(kOrigin.Center(), game::DirType::kNorth));
   TheWorld().scenario_init()--;
   TeamType& team_type =
       MakeTeamType(InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
@@ -572,7 +573,7 @@ TEST_F(ReinforcementTest, AnAircraftArrivesFacingInwardFromItsEdge) {
   for (int index = 0; index < 4; index++) {
     const AircraftClass* yak = TheObjectHeaps().aircraft().ActiveAt(index);
     EXPECT_EQ(yak->PrimaryFacing.Current(),
-              index < 2 ? game::DIR_W : game::DIR_S);
+              index < 2 ? game::DirType::kWest : game::DirType::kSouth);
   }
 }
 
@@ -590,7 +591,7 @@ TEST_F(ReinforcementTest, AnAircraftWithAnOriginArrivesFacingIt) {
 
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->PrimaryFacing.Current(),
-            game::DIR_S);
+            game::DirType::kSouth);
 }
 
 TEST_F(ReinforcementTest, AParatrooperIsDrawnBelowThePlaneItJumpedFrom) {

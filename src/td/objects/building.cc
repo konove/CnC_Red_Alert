@@ -530,8 +530,9 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             param = Target::FromCellIndex(Cell::Containing(Center_Coord()))
                         .packed();
           } else {
-            param = Target::FromCellIndex(Cell::Containing(Adjacent_Cell(
-                                              Center_Coord(), game::DIR_SW)))
+            param = Target::FromCellIndex(
+                        Cell::Containing(Adjacent_Cell(
+                            Center_Coord(), game::DirType::kSouthWest)))
                         .packed();
           }
         }
@@ -1987,7 +1988,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           */
           if (!PrimaryFacing.Is_Rotating()) {
             PrimaryFacing.Set_Desired(
-                Random_Pick(game::DIR_N, kMaxRandomDirection));
+                Random_Pick(game::DirType::kNorth, kMaxRandomDirection));
           }
         }
       }
@@ -2177,7 +2178,7 @@ void BuildingClass::Drop_Debris(Target source) {
         base::NewPooled<InfantryClass>(INFANTRY_CHAN, House->Class->House);
 
     TheWorld().scenario_init()++;
-    if (i->Unlimbo(Center_Coord(), game::DIR_N)) {
+    if (i->Unlimbo(Center_Coord(), game::DirType::kNorth)) {
       i->Trigger = TriggerClass::As_Pointer("CHAN");
       i->Strength = static_cast<int16_t>(
           Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
@@ -2219,7 +2220,7 @@ void BuildingClass::Drop_Debris(Target source) {
             i->IsTechnician = true;
           }
           TheWorld().scenario_init()++;
-          if (i->Unlimbo(newcell.Center(), game::DIR_N)) {
+          if (i->Unlimbo(newcell.Center(), game::DirType::kNorth)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(Coordinate{}, true);
@@ -2438,7 +2439,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         }
         TheWorld().scenario_init()++;
-        if (air->Unlimbo(cell.Center(), game::DIR_N)) {
+        if (air->Unlimbo(cell.Center(), game::DirType::kNorth)) {
           air->Assign_Destination(Target::FromCellIndex(Nearby_Location(air)));
           air->Assign_Mission(MISSION_MOVE);
           TheWorld().scenario_init()--;
@@ -2525,8 +2526,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
-                    game::DIR_SW_X2)) {
-              unit->PrimaryFacing = game::DIR_SW_X2;
+                    game::DirType::kSouthWestX2)) {
+              unit->PrimaryFacing = game::DirType::kSouthWestX2;
               Transmit_Message(RADIO_HELLO, unit);
               Transmit_Message(RADIO_TETHER);
               unit->Assign_Mission(MISSION_HARVEST);
@@ -2552,7 +2553,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
         case STRUCT_WEAP:
           TheWorld().scenario_init()++;
-          if (base->Unlimbo(Coord + Class->ExitPoint, game::DIR_SW)) {
+          if (base->Unlimbo(Coord + Class->ExitPoint,
+                            game::DirType::kSouthWest)) {
             //						base->Assign_Mission(MISSION_MOVE);
             //						base->Assign_Destination(Target::FromCellIndex(Cell::Containing(Coord).Offset(MAP_CELL_W*2)));
             base->Mark(MARK_UP);
@@ -3037,21 +3039,22 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
     default:
     case STRUCT_GTOWER:
     case STRUCT_ATOWER:
-      coord = Coord_Move(coord, game::DIR_N, 0x0030);
+      coord = Coord_Move(coord, game::DirType::kNorth, 0x0030);
       if (TarCom) {
         coord = Coord_Move(coord, td::Direction(coord, TarCom.AsCoordinate()),
                            0x0040);
       }
       break;
     case STRUCT_OBELISK:
-      coord = Coord_Move(coord, game::DIR_N, 0x00A8);
-      //			coord = Coord_Move(coord, DIR_N, 0x0058);
-      coord = Coord_Move(coord, game::DIR_W, 0x0018);
+      coord = Coord_Move(coord, game::DirType::kNorth, 0x00A8);
+      //			coord = Coord_Move(coord, DirType::kNorth,
+      //0x0058);
+      coord = Coord_Move(coord, game::DirType::kWest, 0x0018);
       break;
 
     case STRUCT_SAM:
     case STRUCT_TURRET:
-      coord = Coord_Move(coord, game::DIR_N, 0x0030);
+      coord = Coord_Move(coord, game::DirType::kNorth, 0x0030);
       coord = Coord_Move(coord, PrimaryFacing.Current(), 0x0080);
       break;
   }
@@ -3132,7 +3135,8 @@ void BuildingClass::Grand_Opening(bool captured) {
       !TheDebugState().map_editor_active() &&
       (!House->IsHuman || PurchasePrice == 0 ||
        PurchasePrice > Class->Raw_Cost())) {
-    Cell cell = Cell::Containing(Adjacent_Cell(Center_Coord(), game::DIR_SW));
+    Cell cell = Cell::Containing(
+        Adjacent_Cell(Center_Coord(), game::DirType::kSouthWest));
     //		if (!Map[cell].Cell_Unit()) {
     auto* unit =
         base::NewPooled<UnitClass>(UNIT_HARVESTER, House->Class->House);
@@ -3141,14 +3145,14 @@ void BuildingClass::Grand_Opening(bool captured) {
       **	Try to place down the harvesters. If it could not be placed,
       *then try *	to place it in a nearby location.
       */
-      if (!unit->Unlimbo(cell.Center(), game::DIR_SW)) {
+      if (!unit->Unlimbo(cell.Center(), game::DirType::kSouthWest)) {
         cell = Nearby_Location(unit);
 
         /*
         **	If the harvester could still not be placed, then refund the
         *money *	to the owner and then bail.
         */
-        if (!unit->Unlimbo(cell.Center(), game::DIR_SW)) {
+        if (!unit->Unlimbo(cell.Center(), game::DirType::kSouthWest)) {
           House->Refund_Money(unit->Class->Cost_Of());
           base::DeletePooled(unit);
         }
@@ -4277,7 +4281,7 @@ int BuildingClass::Mission_Deconstruction() {
                           .at(Cell::Containing(coord))
                           .Closest_Free_Spot(coord, false);
 
-              if (infantry->Unlimbo(coord, game::DIR_N)) {
+              if (infantry->Unlimbo(coord, game::DirType::kNorth)) {
                 if (infantry->Class->IsNominal) {
                   infantry->IsTechnician = true;
                 }
@@ -4329,8 +4333,9 @@ int BuildingClass::Mission_Deconstruction() {
 
             delete this;
 
-            if (unit->Unlimbo(Adjacent_Cell(Coord, game::DIR_SE).Snapped(),
-                              game::DIR_SW)) {
+            if (unit->Unlimbo(
+                    Adjacent_Cell(Coord, game::DirType::kSouthEast).Snapped(),
+                    game::DirType::kSouthWest)) {
               unit->Strength = static_cast<int16_t>(
                   base::FixedToCardinal(unit->Class_Of().MaxStrength, ratio));
             } else {
@@ -4414,7 +4419,7 @@ int BuildingClass::Mission_Attack() {
       case kSamRising:
         if (Fetch_Stage() == 15) {
           Set_Rate(0);
-          PrimaryFacing = game::DIR_N;
+          PrimaryFacing = game::DirType::kNorth;
           if (!TarCom) {
             Status = kSamLowering;
           } else {
@@ -4519,12 +4524,12 @@ int BuildingClass::Mission_Attack() {
       */
       case kSamLocking:
         if (!PrimaryFacing.Is_Rotating()) {
-          if (PrimaryFacing == game::DIR_N) {
+          if (PrimaryFacing == game::DirType::kNorth) {
             Set_Rate(2);
             Set_Stage(48);
             Status = kSamLowering;
           } else {
-            PrimaryFacing.Set_Desired(game::DIR_N);
+            PrimaryFacing.Set_Desired(game::DirType::kNorth);
           }
         }
         return 1;
@@ -4628,7 +4633,8 @@ int BuildingClass::Mission_Harvest() {
         const bool old = TheSpecialFlags().scatter;
         TheSpecialFlags().scatter = true;
         TheMap()
-            .at(Adjacent_Cell(Cell::Containing(Center_Coord()), game::DIR_SW))
+            .at(Adjacent_Cell(Cell::Containing(Center_Coord()),
+                              game::DirType::kSouthWest))
             .Incoming(Coordinate{}, true);
         TheSpecialFlags().scatter = old;
 
@@ -4890,11 +4896,11 @@ int BuildingClass::Mission_Missile() {
           bullet->Assign_Target(Target{});
           bullet->Payback = nullptr;
           bullet->Strength = 1;
-          if (!bullet->Unlimbo(launch, game::DIR_N)) {
+          if (!bullet->Unlimbo(launch, game::DirType::kNorth)) {
             base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
-            bullet->PrimaryFacing.Set_Current(game::DIR_N);
+            bullet->PrimaryFacing.Set_Current(game::DirType::kNorth);
             Sound_Effect(VOC_NUKE_FIRE, launch);
             if (House == ThePlayer()) {
               Speak(VOX_NUKE_LAUNCHED);
@@ -4923,14 +4929,14 @@ int BuildingClass::Mission_Missile() {
           bullet->Assign_Target(Target::FromCellIndex(House->NukeDest));
           bullet->Payback = nullptr;
           bullet->Strength = 1;
-          if (!bullet->Unlimbo(start, game::DIR_S)) {
+          if (!bullet->Unlimbo(start, game::DirType::kSouth)) {
             // The missile never reached the map. Clear the pointer so the
             // launch-complete test below sees the failure instead of reading
             // the recycled heap block.
             base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
-            bullet->PrimaryFacing.Set_Current(game::DIR_S);
+            bullet->PrimaryFacing.Set_Current(game::DirType::kSouth);
           }
           Speak(VOX_INCOMING_NUKE);
           Sound_Effect(VOC_NUKE_FIRE, start);

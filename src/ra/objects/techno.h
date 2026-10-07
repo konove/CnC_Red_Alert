@@ -295,7 +295,7 @@ class TechnoClass : public RadioClass,
         CloakDelay(0),
         TarCom(Target{}),
         SuspendedTarCom(Target{}),
-        PrimaryFacing(game::DIR_N),
+        PrimaryFacing(game::DirType::kNorth),
         Arm(0),
         Ammo(-1),
         PurchasePrice(0) {}
@@ -439,7 +439,7 @@ class TechnoClass : public RadioClass,
   // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
   void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
                           int shapenum, int x, int y, WindowNumberType window,
-                          game::DirType rotation = game::DIR_N,
+                          game::DirType rotation = game::DirType::kNorth,
                           int scale = 0x0100) const;
 
   void Draw_It(PixelView& view, int x, int y,
@@ -467,7 +467,7 @@ class TechnoClass : public RadioClass,
   **	Map entry and exit logic.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DIR_N) override;
+               game::DirType dir = game::DirType::kNorth) override;
   void Detach(Target target, bool all) override;
 
   /*

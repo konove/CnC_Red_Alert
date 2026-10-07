@@ -645,14 +645,14 @@ Coordinate TechnoClass::Fire_Coord(int which) const {
   }
 
   Coordinate coord =
-      Coord_Move(Center_Coord(), game::DIR_N,
+      Coord_Move(Center_Coord(), game::DirType::kNorth,
                  static_cast<uint16_t>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
-    coord =
-        Coord_Move(coord, dir + game::DIR_E, static_cast<uint16_t>(lateral));
+    coord = Coord_Move(coord, dir + game::DirType::kEast,
+                       static_cast<uint16_t>(lateral));
   } else {
-    coord =
-        Coord_Move(coord, dir + game::DIR_W, static_cast<uint16_t>(lateral));
+    coord = Coord_Move(coord, dir + game::DirType::kWest,
+                       static_cast<uint16_t>(lateral));
   }
   coord = Coord_Move(coord, dir, static_cast<uint16_t>(dist));
 
@@ -698,7 +698,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       Cloak(game::UNCLOAKED),
       TarCom(Target{}),
       SuspendedTarCom(Target{}),
-      PrimaryFacing(game::DIR_N),
+      PrimaryFacing(game::DirType::kNorth),
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
@@ -3267,7 +3267,8 @@ bool TechnoClass::Electric_Zap(Target target, int which,
 BulletClass* TechnoClass::Fire_At(Target target, int which) {
   DCHECK(IsActive);
 
-  game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
+  game::DirType dir =
+      game::DirType::kNorth;        // The facing to impart upon the projectile.
   Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -5520,7 +5521,7 @@ game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
   DCHECK(IsActive);
 
   moveto = Cell{};
-  return game::DIR_N;
+  return game::DirType::kNorth;
 }
 
 /***********************************************************************************************

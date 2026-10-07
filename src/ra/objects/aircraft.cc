@@ -501,10 +501,10 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
 
   /*
   **	Certain aircraft use algorithmic rotation for some stages. Set the
-  **	rotation value accordingly. A rotation of DIR_N means no rotation at
-  *all.
+  **	rotation value accordingly. A rotation of DirType::kNorth means no
+  * rotation at all.
   */
-  game::DirType rotation = game::DIR_N;
+  game::DirType rotation = game::DirType::kNorth;
   if (Class->Rotation == 16) {
     rotation = game::AsDirection(
         base::At(Rotation16, static_cast<int>(SecondaryFacing.Current())));
@@ -596,7 +596,8 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
                   window, flags, {}, DisplayClass::UnitShadow);
 
     base::MovePoint(
-        xx, yy, static_cast<uint8_t>(SecondaryFacing.Current() + game::DIR_S),
+        xx, yy,
+        static_cast<uint8_t>(SecondaryFacing.Current() + game::DirType::kSouth),
         static_cast<int16_t>(_stretch.at(face) * 2));
     CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                   window, flags, {}, DisplayClass::UnitShadow);
@@ -641,7 +642,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
         if (air) {
           Coordinate coord{};
           int strength = 0;
-          game::DirType dir = game::DIR_N;
+          game::DirType dir = game::DirType::kNorth;
 
           /*
           **	Read the raw data.
@@ -666,7 +667,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
             dir =
                 static_cast<game::DirType>(base::ParseIntegerOr<int>(token, 0));
           } else {
-            dir = game::DIR_N;
+            dir = game::DirType::kNorth;
           }
 
           if (!TheMap().In_Radar(Cell::Containing(coord))) {
@@ -2428,12 +2429,12 @@ game::DirType AircraftClass::Pose_Dir() const {
   DCHECK(IsActive);
 
   if (*this == AIRCRAFT_TRANSPORT) {
-    return game::DIR_N;
+    return game::DirType::kNorth;
   }
   if (Class->IsFixedWing) {
-    return game::DIR_E;
+    return game::DirType::kEast;
   }
-  return game::DIR_NE;
+  return game::DirType::kNorthEast;
 }
 
 /***********************************************************************************************
@@ -2985,17 +2986,17 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
-      return game::DIR_N;
+      return game::DirType::kNorth;
     }
 
     moveto = AdjacentCell(center, game::FacingType::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
-      return game::DIR_N;
+      return game::DirType::kNorth;
     }
   }
-  return game::DIR_N;
+  return game::DirType::kNorth;
 }
 
 /***********************************************************************************************

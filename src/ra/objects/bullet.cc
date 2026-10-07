@@ -130,7 +130,7 @@ BulletClass::BulletClass(BulletType id, Target target, TechnoClass* payback,
     : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this)),
       Class(TheTypeHeaps().bullet().ActiveAt(static_cast<int>(id))),
       Payback(payback),
-      PrimaryFacing(game::DIR_N),
+      PrimaryFacing(game::DirType::kNorth),
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
@@ -329,7 +329,7 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     }
 
     const Coordinate coord =
-        Coord_Move(Coord, game::DIR_N, static_cast<uint16_t>(Height));
+        Coord_Move(Coord, game::DirType::kNorth, static_cast<uint16_t>(Height));
     const Cell cell2 = Cell::Containing(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (ptr.front() != kRefreshEol) {
@@ -879,7 +879,7 @@ Coordinate BulletClass::Target_Coord() const {
 Coordinate BulletClass::Sort_Y() const {
   DCHECK(IsActive);
 
-  return Coord_Move(Coord, game::DIR_S, game::kCellHeightLeptons / 2);
+  return Coord_Move(Coord, game::DirType::kSouth, game::kCellHeightLeptons / 2);
 }
 
 /***********************************************************************************************

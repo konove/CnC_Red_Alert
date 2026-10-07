@@ -315,7 +315,7 @@ bool DeliverReinforcements(TeamType* team_type) {
   // Aircraft face the other way, onto the map: a fixed-wing one flies where its
   // nose points and turns slowly, so any other heading sends it on a detour
   // along or off the edge before it comes about.
-  const game::DirType inward_dir = entry_dir + game::DIR_S;
+  const game::DirType inward_dir = entry_dir + game::DirType::kSouth;
   // With an origin waypoint they face that instead: Calculated_Cell() then
   // picks the edge nearest the waypoint, which need not be the house's.
   const Cell origin_cell =
@@ -434,7 +434,8 @@ int LaunchAirStrike(HouseClass* house, const AircraftType aircraft_type,
     // scenario_init places the aircraft on the edge cell without asking whether
     // it can enter it.
     TheWorld().scenario_init()++;
-    const bool placed = aircraft->Unlimbo(entry_cell.Center(), game::DIR_N);
+    const bool placed =
+        aircraft->Unlimbo(entry_cell.Center(), game::DirType::kNorth);
     TheWorld().scenario_init()--;
     if (!placed) {
       base::DeletePooled(aircraft);

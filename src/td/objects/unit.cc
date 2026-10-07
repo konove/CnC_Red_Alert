@@ -576,8 +576,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_BACKUP_NOW:
       TarComClass::Receive_Message(from, message, param);
-      if (!IsRotating && PrimaryFacing != game::DIR_SW) {
-        Do_Turn(game::DIR_SW);
+      if (!IsRotating && PrimaryFacing != game::DirType::kSouthWest) {
+        Do_Turn(game::DirType::kSouthWest);
       } else {
         if (!IsDriving) {
           Force_Track(kBackupIntoRefinery,
@@ -887,7 +887,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
           i = base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
         }
         if (i) {
-          if (i->Unlimbo(Coord, game::DIR_N)) {
+          if (i->Unlimbo(Coord, game::DirType::kNorth)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(Coordinate{}, true);
@@ -917,7 +917,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
           **	Only infantry can run from a destroyed vehicle. Even then, it is
           *not a sure *	thing.
           */
-          if (object->Is_Infantry() && object->Unlimbo(Coord, game::DIR_N)) {
+          if (object->Is_Infantry() &&
+              object->Unlimbo(Coord, game::DirType::kNorth)) {
             //					object->Strength =
             // Random_Pick(5,
             //(int)((InfantryClass*)object)->Class->MaxStrength/2);
@@ -1379,7 +1380,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
             */
             TheWorld().scenario_init()++;
             if (u->Unlimbo(Coord.Whole() + base::At(StoppingCoordAbs, count),
-                           game::DIR_N)) {
+                           game::DirType::kNorth)) {
               u->Assign_Mission(MISSION_MOVE);
               u->NavCom = Target::FromCellIndex(cell);
               base::At(u->Path, 0) =
@@ -1538,9 +1539,9 @@ bool UnitClass::Try_To_Deploy() {
       *deployed. This is *	because it will deploy as soon as it reaches the
       *correct facing.
       */
-      if (PrimaryFacing.Current() != game::DIR_SW) {
-        Do_Turn(game::DIR_SW);
-        //				PrimaryFacing.Set_Desired(DIR_SW);
+      if (PrimaryFacing.Current() != game::DirType::kSouthWest) {
+        Do_Turn(game::DirType::kSouthWest);
+        //				PrimaryFacing.Set_Desired(DirType::kSouthWest);
         IsDeploying = true;
         return true;
       }
@@ -1772,13 +1773,13 @@ void UnitClass::Per_Cell_Process(bool center) {
           Assign_Destination(Target::FromCellIndex(Cell::FromXY(
               TheMap().MapCellX + TheMap().MapCellWidth, current_cell.y())));
           Set_Speed(255);
-          PrimaryFacing = game::DIR_E;
+          PrimaryFacing = game::DirType::kEast;
         } else {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(Target::FromCellIndex(
               Cell::FromXY(TheMap().MapCellX - 1, current_cell.y())));
           Set_Speed(255);
-          PrimaryFacing = game::DIR_W;
+          PrimaryFacing = game::DirType::kWest;
         }
         Mark(MARK_DOWN);
       } else {
@@ -2020,12 +2021,13 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
           *There are only *	certain directions where this door animation
           *will work.
           */
-          if (!Is_Door_Closed() && (PrimaryFacing == game::DIR_NW ||
-                                    PrimaryFacing == game::DIR_NE)) {
-            if (PrimaryFacing == game::DIR_NE) {
+          if (!Is_Door_Closed() &&
+              (PrimaryFacing == game::DirType::kNorthWest ||
+               PrimaryFacing == game::DirType::kNorthEast)) {
+            if (PrimaryFacing == game::DirType::kNorthEast) {
               shapenum = 32;
             } else {
-              if (PrimaryFacing == game::DIR_NW) {
+              if (PrimaryFacing == game::DirType::kNorthWest) {
                 shapenum = 35;
               }
             }
@@ -2311,7 +2313,7 @@ int UnitClass::Mission_Unload() {
   constexpr int kOpeningDoor = 2;
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
-  game::DirType dir = game::DIR_N;
+  game::DirType dir = game::DirType::kNorth;
   Cell cell{};
 
   switch (Class->Type) {
@@ -2352,7 +2354,8 @@ int UnitClass::Mission_Unload() {
             FootClass* passenger = Detach_Object();
 
             if (passenger) {
-              const game::DirType toface = game::DIR_S + PrimaryFacing;
+              const game::DirType toface =
+                  game::DirType::kSouth + PrimaryFacing;
               bool placed = false;
 
               for (const game::FacingType face :
@@ -2649,7 +2652,7 @@ int UnitClass::Mission_Hunt() {
   } else {
     if (*this == UNIT_GUNBOAT) {
       if (!NavCom) {
-        if (PrimaryFacing == game::DIR_W) {
+        if (PrimaryFacing == game::DirType::kWest) {
           Assign_Destination(Target::FromCellIndex(Cell::FromXY(
               TheMap().MapCellX - 1, Cell::Containing(Coord).y())));
         } else {
@@ -3560,8 +3563,8 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
             *the destination *	of the drive.
             */
             if (*unit == UNIT_GUNBOAT) {
-              unit->PrimaryFacing.Set_Desired(game::DIR_W);
-              unit->PrimaryFacing.Set_Current(game::DIR_W);
+              unit->PrimaryFacing.Set_Desired(game::DirType::kWest);
+              unit->PrimaryFacing.Set_Current(game::DirType::kWest);
               unit->Assign_Mission(MISSION_HUNT);
               unit->Commence();
               unit->Assign_Destination(Target::FromCellIndex(Cell::FromXY(
@@ -3774,7 +3777,8 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *transport facing if it is going to unload.
   */
   const game::DirType faceto =
-      passenger ? Direction(passenger) : PrimaryFacing.Current() + game::DIR_S;
+      passenger ? Direction(passenger)
+                : PrimaryFacing.Current() + game::DirType::kSouth;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
@@ -3842,14 +3846,16 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   moveto = Cell{};
   if (bestval > 0) {
     static const base::EnumArray<game::FacingType, game::DirType>
-        _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
-                              game::DIR_NW, game::DIR_NE, game::DIR_NE,
-                              game::DIR_NE, game::DIR_SE};
+        _desired_to_actual = {
+            game::DirType::kSouth,     game::DirType::kSouthWest,
+            game::DirType::kNorthWest, game::DirType::kNorthWest,
+            game::DirType::kNorthEast, game::DirType::kNorthEast,
+            game::DirType::kNorthEast, game::DirType::kSouthEast};
 
     moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
-  return game::DIR_S;
+  return game::DirType::kSouth;
 }
 
 /***********************************************************************************************
@@ -4008,7 +4014,8 @@ void UnitClass::APC_Close_Door() {
 void UnitClass::APC_Open_Door() {
   Validate();
   if (!IsDriving && !IsRotating) {
-    if (PrimaryFacing == game::DIR_NW || PrimaryFacing == game::DIR_NE) {
+    if (PrimaryFacing == game::DirType::kNorthWest ||
+        PrimaryFacing == game::DirType::kNorthEast) {
       Open_Door(10, 2);
     } else {
       Open_Door(1, 2);

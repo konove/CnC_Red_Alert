@@ -72,7 +72,7 @@ class TurretClass : public DriveClass {
   game::FacingClass SecondaryFacing;
 
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DIR_N) override;
+               game::DirType dir = game::DirType::kNorth) override;
 
   /*
   **	File I/O.

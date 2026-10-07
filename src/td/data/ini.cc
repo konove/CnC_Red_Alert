@@ -1151,7 +1151,7 @@ static void Create_Units() {
       if (hptr->IsHuman) {
         scaleval = 1;
         obj = base::NewPooled<UnitClass>(UNIT_MCV, h);
-        if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
+        if ((!obj->Unlimbo(centroid.Center(), game::DirType::kNorth)) &&
             (!Scan_Place_Object(obj, centroid))) {
           base::DeletePooled(obj);
           obj = nullptr;
@@ -1178,7 +1178,7 @@ static void Create_Units() {
 
         if (TheSpecialFlags().capture_the_flag) {
           obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
-          if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
+          if ((!obj->Unlimbo(centroid.Center(), game::DirType::kNorth)) &&
               (!Scan_Place_Object(obj, centroid))) {
             base::DeletePooled(obj);
             obj = nullptr;
@@ -1196,7 +1196,7 @@ static void Create_Units() {
       scaleval = 1;
       if (TheSpecialFlags().capture_the_flag) {
         obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
-        obj->Unlimbo(centroid.Center(), game::DIR_N);
+        obj->Unlimbo(centroid.Center(), game::DirType::kNorth);
         hptr->FlagHome = Cell{};  // turn house's flag off
         hptr->FlagLocation = Target{};
       }
@@ -1325,7 +1325,7 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
     techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
-        obj->Unlimbo(cell.Center(), game::DIR_N)) {
+        obj->Unlimbo(cell.Center(), game::DirType::kNorth)) {
       return true;
     }
   }
@@ -1385,7 +1385,7 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
           techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
-              obj->Unlimbo(newcell.Center(), game::DIR_N)) {
+              obj->Unlimbo(newcell.Center(), game::DirType::kNorth)) {
             return true;
           }
         }

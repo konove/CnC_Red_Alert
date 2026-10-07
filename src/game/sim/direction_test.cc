@@ -16,10 +16,10 @@ TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
 }
 
 TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
-  EXPECT_EQ(AsDirection(256), DIR_N);
+  EXPECT_EQ(AsDirection(256), DirType::kNorth);
   EXPECT_EQ(AsDirection(-1), AsDirection(255));
-  EXPECT_EQ(DIR_NW + DIR_E, DIR_NE);
-  EXPECT_EQ(DIR_N - 32, DIR_NW);
+  EXPECT_EQ(DirType::kNorthWest + DirType::kEast, DirType::kNorthEast);
+  EXPECT_EQ(DirType::kNorth - 32, DirType::kNorthWest);
 }
 
 TEST(DirFacingTest, RoundsToTheNearestFacing) {
@@ -31,65 +31,65 @@ TEST(DirFacingTest, RoundsToTheNearestFacing) {
 
 TEST(DirTo8Test, TruncatesToTheFacingBelow) {
   EXPECT_EQ(Dir_To_8(AsDirection(31)), FacingType::kNorth);
-  EXPECT_EQ(Dir_To_8(DIR_NE), FacingType::kNorthEast);
+  EXPECT_EQ(Dir_To_8(DirType::kNorthEast), FacingType::kNorthEast);
   EXPECT_EQ(Dir_To_8(AsDirection(255)), FacingType::kNorthWest);
 }
 
 TEST(FacingDirTest, PointsExactlyAtTheFacing) {
-  EXPECT_EQ(Facing_Dir(FacingType::kNorth), DIR_N);
-  EXPECT_EQ(Facing_Dir(FacingType::kSouthEast), DIR_SE);
-  EXPECT_EQ(Facing_Dir(FacingType::kNorthWest), DIR_NW);
+  EXPECT_EQ(Facing_Dir(FacingType::kNorth), DirType::kNorth);
+  EXPECT_EQ(Facing_Dir(FacingType::kSouthEast), DirType::kSouthEast);
+  EXPECT_EQ(Facing_Dir(FacingType::kNorthWest), DirType::kNorthWest);
 }
 
 TEST(DirToFramesTest, CompassPointsLandOnEvenFrames) {
-  EXPECT_EQ(Dir_To_16(DIR_N), 0);
-  EXPECT_EQ(Dir_To_16(DIR_E), 4);
-  EXPECT_EQ(Dir_To_16(DIR_S), 8);
+  EXPECT_EQ(Dir_To_16(DirType::kNorth), 0);
+  EXPECT_EQ(Dir_To_16(DirType::kEast), 4);
+  EXPECT_EQ(Dir_To_16(DirType::kSouth), 8);
   EXPECT_EQ(Dir_To_16(AsDirection(255)), 0);
-  EXPECT_EQ(Dir_To_32(DIR_N), 0);
-  EXPECT_EQ(Dir_To_32(DIR_E), 8);
-  EXPECT_EQ(Dir_To_32(DIR_S), 16);
-  EXPECT_EQ(Dir_To_32(DIR_W), 24);
+  EXPECT_EQ(Dir_To_32(DirType::kNorth), 0);
+  EXPECT_EQ(Dir_To_32(DirType::kEast), 8);
+  EXPECT_EQ(Dir_To_32(DirType::kSouth), 16);
+  EXPECT_EQ(Dir_To_32(DirType::kWest), 24);
   EXPECT_EQ(Dir_To_32(AsDirection(255)), 0);
 }
 
 TEST(DirToFramesTest, ThirtyTwoStepsAreSkewedTowardTheDiagonals) {
-  // An even split would put DIR_NE at frame 4; the 3D Studio correction
-  // puts it at 3.
-  EXPECT_EQ(Dir_To_32(DIR_NE), 3);
-  EXPECT_EQ(Dir_To_32(DIR_SE), 13);
+  // An even split would put DirType::kNorthEast at frame 4; the 3D Studio
+  // correction puts it at 3.
+  EXPECT_EQ(Dir_To_32(DirType::kNorthEast), 3);
+  EXPECT_EQ(Dir_To_32(DirType::kSouthEast), 13);
 }
 
 TEST(DirDiffTest, SubtractsSignedBytes) {
-  EXPECT_EQ(Dir_Diff(DIR_N, DIR_E), 64);
-  EXPECT_EQ(Dir_Diff(DIR_E, DIR_N), -64);
+  EXPECT_EQ(Dir_Diff(DirType::kNorth, DirType::kEast), 64);
+  EXPECT_EQ(Dir_Diff(DirType::kEast, DirType::kNorth), -64);
   EXPECT_EQ(Dir_Diff(AsDirection(127), AsDirection(128)), -255);
 }
 
 TEST(DesiredFacing8Test, ReturnsTheCompassPoint) {
-  EXPECT_EQ(Desired_Facing8(0, 0, 0, -5), DIR_N);
-  EXPECT_EQ(Desired_Facing8(0, 0, 5, 0), DIR_E);
-  EXPECT_EQ(Desired_Facing8(0, 0, 5, 5), DIR_SE);
-  EXPECT_EQ(Desired_Facing8(0, 0, 0, 5), DIR_S);
-  EXPECT_EQ(Desired_Facing8(0, 0, -5, 0), DIR_W);
-  EXPECT_EQ(Desired_Facing8(0, 0, -5, -4), DIR_NW);
+  EXPECT_EQ(Desired_Facing8(0, 0, 0, -5), DirType::kNorth);
+  EXPECT_EQ(Desired_Facing8(0, 0, 5, 0), DirType::kEast);
+  EXPECT_EQ(Desired_Facing8(0, 0, 5, 5), DirType::kSouthEast);
+  EXPECT_EQ(Desired_Facing8(0, 0, 0, 5), DirType::kSouth);
+  EXPECT_EQ(Desired_Facing8(0, 0, -5, 0), DirType::kWest);
+  EXPECT_EQ(Desired_Facing8(0, 0, -5, -4), DirType::kNorthWest);
 }
 
 TEST(DesiredFacing8Test, SamePointGivesNorthEast) {
-  EXPECT_EQ(Desired_Facing8(3, 3, 3, 3), DIR_NE);
+  EXPECT_EQ(Desired_Facing8(3, 3, 3, 3), DirType::kNorthEast);
 }
 
 TEST(DesiredFacing256Test, ReturnsTheExactAngle) {
-  EXPECT_EQ(Desired_Facing256(0, 0, 0, -100), DIR_N);
-  EXPECT_EQ(Desired_Facing256(0, 0, -100, 0), DIR_W);
-  EXPECT_EQ(Desired_Facing256(0, 0, 100, -100), DIR_NE);
+  EXPECT_EQ(Desired_Facing256(0, 0, 0, -100), DirType::kNorth);
+  EXPECT_EQ(Desired_Facing256(0, 0, -100, 0), DirType::kWest);
+  EXPECT_EQ(Desired_Facing256(0, 0, 100, -100), DirType::kNorthEast);
 }
 
 TEST(DesiredFacing256Test, EastAndSouthLandOneStepShort) {
   // The quadrants that count down from the next axis subtract one too many,
   // as the original did.
-  EXPECT_EQ(Desired_Facing256(0, 0, 100, 0), DIR_E - 1);
-  EXPECT_EQ(Desired_Facing256(0, 0, 0, 100), DIR_S - 1);
+  EXPECT_EQ(Desired_Facing256(0, 0, 100, 0), DirType::kEast - 1);
+  EXPECT_EQ(Desired_Facing256(0, 0, 0, 100), DirType::kSouth - 1);
 }
 
 TEST(DesiredFacing256Test, SamePointGivesJustShyOfNorth) {

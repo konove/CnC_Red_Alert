@@ -177,7 +177,7 @@ static bool FlyIn(FootClass* group, const SourceType edge,
     // scenario_init places the aircraft on the edge cell without asking
     // whether it can enter it.
     TheWorld().scenario_init()++;
-    placed = aircraft->Unlimbo(entry_cell.Center(), game::DIR_W);
+    placed = aircraft->Unlimbo(entry_cell.Center(), game::DirType::kWest);
     TheWorld().scenario_init()--;
     if (!placed) {
       base::DeletePooled(aircraft);
@@ -350,7 +350,7 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
       const Cell lane_cell =
           TheMap().Calculated_Cell(SOURCE_SHIPPING, team_type->House);
       gunboat->IsALoaner = true;
-      if (!gunboat->Unlimbo(lane_cell.Center(), game::DIR_W)) {
+      if (!gunboat->Unlimbo(lane_cell.Center(), game::DirType::kWest)) {
         base::DeletePooled(team);
         base::DeletePooled(gunboat);
         return false;
@@ -404,7 +404,7 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
       }
       const Cell start_cell = Cell::FromXY(
           beach_cell.x(), TheMap().MapCellY + TheMap().MapCellHeight);
-      if (!lander->Unlimbo(start_cell.Center(), game::DIR_N)) {
+      if (!lander->Unlimbo(start_cell.Center(), game::DirType::kNorth)) {
         base::DeletePooled(team);
         base::DeletePooled(lander);
         return false;
@@ -574,7 +574,8 @@ int LaunchAirStrike(HouseClass* house, const AircraftType aircraft_type,
     // scenario_init places the aircraft on the edge cell without asking
     // whether it can enter it.
     TheWorld().scenario_init()++;
-    const bool placed = aircraft->Unlimbo(entry_cell.Center(), game::DIR_N);
+    const bool placed =
+        aircraft->Unlimbo(entry_cell.Center(), game::DirType::kNorth);
     TheWorld().scenario_init()--;
     if (!placed) {
       base::DeletePooled(aircraft);

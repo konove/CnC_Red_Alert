@@ -1135,8 +1135,8 @@ void UnitTypeClass::One_Time() {
 bool UnitTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(cell.Center(),
-                         RandomPick(game::DIR_N, kMaxRandomDirection));
+    return unit->Unlimbo(
+        cell.Center(), RandomPick(game::DirType::kNorth, kMaxRandomDirection));
   }
   return false;
 }

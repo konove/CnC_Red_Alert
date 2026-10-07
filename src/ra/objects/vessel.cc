@@ -447,7 +447,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
   **	with the render process.
   */
   if (Visual_Character() != game::VISUAL_HIDDEN) {
-    const game::DirType rotation = game::DIR_N;
+    const game::DirType rotation = game::DirType::kNorth;
     const int scale = 0x0100;
 
     /*
@@ -482,7 +482,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
           xx = x;
           yy = y;
           turdir = static_cast<game::DirType>(
-              game::Dir_To_16(PrimaryFacing + game::DIR_S) * 16);
+              game::Dir_To_16(PrimaryFacing + game::DirType::kSouth) * 16);
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
@@ -1156,15 +1156,15 @@ Coordinate VesselClass::Fire_Coord(int which) const {
 
   if (*this == VESSEL_CA) {
     if (IsSecondShot) {
-      coord = Coord_Move(coord, PrimaryFacing + game::DIR_S, 0x0100);
+      coord = Coord_Move(coord, PrimaryFacing + game::DirType::kSouth, 0x0100);
     } else {
       coord = Coord_Move(coord, PrimaryFacing, 0x0100);
     }
-    coord = Coord_Move(coord, game::DIR_N, 0x0030);
+    coord = Coord_Move(coord, game::DirType::kNorth, 0x0030);
     coord = Coord_Move(coord, Turret_Facing(), 0x0040);
   } else if (*this == VESSEL_PT) {
     coord = Coord_Move(coord, PrimaryFacing, 0x0080);
-    coord = Coord_Move(coord, game::DIR_N, 0x0020);
+    coord = Coord_Move(coord, game::DirType::kNorth, 0x0020);
     coord = Coord_Move(coord, Turret_Facing(), 0x0010);
   } else {
     coord = DriveClass::Fire_Coord(which);
@@ -1629,14 +1629,16 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   moveto = Cell{};
   if (bestval > 0) {
     static constexpr base::EnumArray<game::FacingType, game::DirType>
-        _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
-                              game::DIR_NW, game::DIR_NE, game::DIR_NE,
-                              game::DIR_NE, game::DIR_SE};
+        _desired_to_actual = {
+            game::DirType::kSouth,     game::DirType::kSouthWest,
+            game::DirType::kNorthWest, game::DirType::kNorthWest,
+            game::DirType::kNorthEast, game::DirType::kNorthEast,
+            game::DirType::kNorthEast, game::DirType::kSouthEast};
 
     moveto = AdjacentCell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
-  return game::DIR_N;
+  return game::DirType::kNorth;
 }
 
 /***********************************************************************************************
@@ -1704,7 +1706,7 @@ int VesselClass::Mission_Unload() {
   constexpr int kOpeningDoor = 2;
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
-  game::DirType dir = game::DIR_N;
+  game::DirType dir = game::DirType::kNorth;
   Cell cell{};
 
   if (Class->Type == VESSEL_TRANSPORT) {
@@ -1753,7 +1755,7 @@ int VesselClass::Mission_Unload() {
           FootClass* passenger = Detach_Object();
 
           if (passenger != nullptr) {
-            const game::DirType toface = game::DIR_S + PrimaryFacing;
+            const game::DirType toface = game::DirType::kSouth + PrimaryFacing;
             bool placed = false;
 
             for (const game::FacingType face :

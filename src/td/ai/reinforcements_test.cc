@@ -101,7 +101,7 @@ class ReinforcementTest : public ::testing::Test {
         base::NewPooled<BuildingClass>(STRUCT_AIRSTRIP, HOUSE_GOOD);
     EXPECT_NE(airstrip, nullptr);
     TheWorld().scenario_init()++;
-    EXPECT_TRUE(airstrip->Unlimbo(cell.Center(), game::DIR_N));
+    EXPECT_TRUE(airstrip->Unlimbo(cell.Center(), game::DirType::kNorth));
     TheWorld().scenario_init()--;
     return *airstrip;
   }

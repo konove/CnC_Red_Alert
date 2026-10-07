@@ -228,7 +228,7 @@ class ObjectClass : public AbstractClass {
   */
   virtual bool Limbo();
   virtual bool Unlimbo(Coordinate /*coord*/,
-                       game::DirType facing = game::DIR_N);
+                       game::DirType facing = game::DirType::kNorth);
   virtual void Detach(Target target, bool all = true);
   virtual void Detach_All(bool all = true);
   virtual void Record_The_Kill(TechnoClass* /*unused*/);

@@ -436,7 +436,7 @@ Coordinate DriveClass::Smooth_Turn(Coordinate adj, game::DirType* dir) {
     const int temp = x;
     x = y;
     y = temp;
-    workdir = game::AsDirection(static_cast<int>(game::DIR_W) -
+    workdir = game::AsDirection(static_cast<int>(game::DirType::kWest) -
                                 static_cast<int>(workdir));
   }
 
@@ -447,7 +447,7 @@ Coordinate DriveClass::Smooth_Turn(Coordinate adj, game::DirType* dir) {
 
   if (base::Any(flags & F_Y)) {
     y = -y;
-    workdir = game::AsDirection(static_cast<int>(game::DIR_S) -
+    workdir = game::AsDirection(static_cast<int>(game::DirType::kSouth) -
                                 static_cast<int>(workdir));
   }
 
@@ -2070,90 +2070,113 @@ const DriveClass::TrackType DriveClass::Track10[] = {
     {Coordinate{}, static_cast<game::DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track11[] = {
-    {Coordinate::FromLeptons(0x0000, 0x0100), game::DIR_SW},
-    {Coordinate::FromLeptons(0x0008, 0x00F3), game::DIR_SW},
-    {Coordinate::FromLeptons(0x0010, 0x00E5), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0018, 0x00D6), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0020, 0x00C8), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0028, 0x00B9), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0030, 0x00AB), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0038, 0x009C), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0040, 0x008D), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0048, 0x007F), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0050, 0x0071), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0058, 0x0064), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0060, 0x0055), game::DIR_SW_X2},
+    {Coordinate::FromLeptons(0x0000, 0x0100), game::DirType::kSouthWest},
+    {Coordinate::FromLeptons(0x0008, 0x00F3), game::DirType::kSouthWest},
+    {Coordinate::FromLeptons(0x0010, 0x00E5), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0018, 0x00D6), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0020, 0x00C8), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0028, 0x00B9), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0030, 0x00AB), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0038, 0x009C), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0040, 0x008D), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0048, 0x007F), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0050, 0x0071), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0058, 0x0064), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0060, 0x0055), game::DirType::kSouthWestX2},
 
-    {Coordinate{}, game::DIR_SW_X2}};
+    {Coordinate{}, game::DirType::kSouthWestX2}};
 
 const DriveClass::TrackType DriveClass::Track12[] = {
-    {Coordinate::FromLeptons(0x0060, 0xFF55), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0058, 0xFF64), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0050, 0xFF71), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0048, 0xFF7F), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0040, 0xFF8D), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0038, 0xFF9C), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0030, 0xFFAB), game::DIR_SW_X2},
-    {Coordinate::FromLeptons(0x0028, 0xFFB9), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0020, 0xFFC8), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0018, 0xFFD6), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0010, 0xFFE5), game::DIR_SW_X1},
-    {Coordinate::FromLeptons(0x0008, 0xFFF3), game::DIR_SW},
+    {Coordinate::FromLeptons(0x0060, 0xFF55), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0058, 0xFF64), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0050, 0xFF71), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0048, 0xFF7F), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0040, 0xFF8D), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0038, 0xFF9C), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0030, 0xFFAB), game::DirType::kSouthWestX2},
+    {Coordinate::FromLeptons(0x0028, 0xFFB9), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0020, 0xFFC8), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0018, 0xFFD6), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0010, 0xFFE5), game::DirType::kSouthWestX1},
+    {Coordinate::FromLeptons(0x0008, 0xFFF3), game::DirType::kSouthWest},
 
-    {Coordinate{}, game::DIR_SW}};
+    {Coordinate{}, game::DirType::kSouthWest}};
 
 /*
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
     {Pixel_Offset_Coord(10, -21),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(10, -21),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(10, -20),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(10, -20),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(9, -18),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(9, -18),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(9, -17),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(8, -16),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(8, -15),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(7, -14),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(7, -13),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(6, -12),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(6, -11),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(5, -10),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(5, -9),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(4, -8),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(4, -7),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(3, -6),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                10)},
     {Pixel_Offset_Coord(3, -5),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 9)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                9)},
     {Pixel_Offset_Coord(2, -4),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 7)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                7)},
     {Pixel_Offset_Coord(2, -3),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 5)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                5)},
     {Pixel_Offset_Coord(1, -2),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 3)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                3)},
     {Pixel_Offset_Coord(1, -1),
-     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 1)},
+     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -
+                                1)},
 
-    {Coordinate{}, game::DIR_SW}};
+    {Coordinate{}, game::DirType::kSouthWest}};
 
 /*
 **	There are a limited basic number of tracks that a vehicle can follow.
@@ -2173,74 +2196,74 @@ const DriveClass::RawTrackType DriveClass::RawTracks[13] = {
 **	be performed on the track data.
 */
 const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
-    {1, 0, game::DIR_N, F_},                         //	0-0
-    {3, 7, game::DIR_NE, F_D},                       //	0-1 (raw chart)
-    {4, 9, game::DIR_E, F_D},                        //	0-2 (raw chart)
-    {0, 0, game::DIR_SE, F_},                        //	0-3 !
-    {0, 0, game::DIR_S, F_},                         //	0-4 !
-    {0, 0, game::DIR_SW, F_},                        //	0-5 !
-    {4, 9, game::DIR_W, (F_X | F_D)},                //	0-6
-    {3, 7, game::DIR_NW, (F_X | F_D)},               //	0-7
-    {6, 8, game::DIR_N, (F_T | F_X | F_Y | F_D)},    //	1-0
-    {2, 0, game::DIR_NE, F_},                        //	1-1 (raw chart)
-    {6, 8, game::DIR_E, F_D},                        //	1-2 (raw chart)
-    {5, 10, game::DIR_SE, F_D},                      //	1-3 (raw chart)
-    {0, 0, game::DIR_S, F_},                         //	1-4 !
-    {0, 0, game::DIR_SW, F_},                        //	1-5 !
-    {0, 0, game::DIR_W, F_},                         //	1-6 !
-    {5, 10, game::DIR_NW, (F_T | F_X | F_Y | F_D)},  //	1-7
-    {4, 9, game::DIR_N, (F_T | F_X | F_Y | F_D)},    //	2-0
-    {3, 7, game::DIR_NE, (F_T | F_X | F_Y | F_D)},   //	2-1
-    {1, 0, game::DIR_E, (F_T | F_X)},                //	2-2
-    {3, 7, game::DIR_SE, (F_T | F_X | F_D)},         //	2-3
-    {4, 9, game::DIR_S, (F_T | F_X | F_D)},          //	2-4
-    {0, 0, game::DIR_SW, F_},                        //	2-5 !
-    {0, 0, game::DIR_W, F_},                         //	2-6 !
-    {0, 0, game::DIR_NW, F_},                        //	2-7 !
-    {0, 0, game::DIR_N, F_},                         //	3-0 !
-    {5, 10, game::DIR_NE, (F_Y | F_D)},              //	3-1
-    {6, 8, game::DIR_E, (F_Y | F_D)},                //	3-2
-    {2, 0, game::DIR_SE, F_Y},                       //	3-3
-    {6, 8, game::DIR_S, (F_T | F_X | F_D)},          //	3-4
-    {5, 10, game::DIR_SW, (F_T | F_X | F_D)},        //	3-5
-    {0, 0, game::DIR_W, F_},                         //	3-6 !
-    {0, 0, game::DIR_NW, F_},                        //	3-7 !
-    {0, 0, game::DIR_N, F_},                         //	4-0 !
-    {0, 0, game::DIR_NE, F_},                        //	4-1 !
-    {4, 9, game::DIR_E, (F_Y | F_D)},                //	4-2
-    {3, 7, game::DIR_SE, (F_Y | F_D)},               //	4-3
-    {1, 0, game::DIR_S, F_Y},                        //	4-4
-    {3, 7, game::DIR_SW, (F_X | F_Y | F_D)},         //	4-5
-    {4, 9, game::DIR_W, (F_X | F_Y | F_D)},          //	4-6
-    {0, 0, game::DIR_NW, F_},                        //	4-7 !
-    {0, 0, game::DIR_N, F_},                         //	5-0 !
-    {0, 0, game::DIR_NE, F_},                        //	5-1 !
-    {0, 0, game::DIR_E, F_},                         //	5-2 !
-    {5, 10, game::DIR_SE, (F_T | F_D)},              //	5-3
-    {6, 8, game::DIR_S, (F_T | F_D)},                //	5-4
-    {2, 0, game::DIR_SW, F_T},                       //	5-5
-    {6, 8, game::DIR_W, (F_X | F_Y | F_D)},          //	5-6
-    {5, 10, game::DIR_NW, (F_X | F_Y | F_D)},        //	5-7
-    {4, 9, game::DIR_N, (F_T | F_Y | F_D)},          //	6-0
-    {0, 0, game::DIR_NE, F_},                        //	6-1 !
-    {0, 0, game::DIR_E, F_},                         //	6-2 !
-    {0, 0, game::DIR_SE, F_},                        //	6-3 !
-    {4, 9, game::DIR_S, (F_T | F_D)},                //	6-4
-    {3, 7, game::DIR_SW, (F_T | F_D)},               //	6-5
-    {1, 0, game::DIR_W, F_T},                        //	6-6
-    {3, 7, game::DIR_NW, (F_T | F_Y | F_D)},         //	6-7
-    {6, 8, game::DIR_N, (F_T | F_Y | F_D)},          //	7-0
-    {5, 10, game::DIR_NE, (F_T | F_Y | F_D)},        //	7-1
-    {0, 0, game::DIR_E, F_},                         //	7-2 !
-    {0, 0, game::DIR_SE, F_},                        //	7-3 !
-    {0, 0, game::DIR_S, F_},                         //	7-4 !
-    {5, 10, game::DIR_SW, (F_X | F_D)},              //	7-5
-    {6, 8, game::DIR_W, (F_X | F_D)},                //	7-6
-    {2, 0, game::DIR_NW, F_X},                       //	7-7
+    {1, 0, game::DirType::kNorth, F_},                       //	0-0
+    {3, 7, game::DirType::kNorthEast, F_D},                  //	0-1 (raw chart)
+    {4, 9, game::DirType::kEast, F_D},                       //	0-2 (raw chart)
+    {0, 0, game::DirType::kSouthEast, F_},                   //	0-3 !
+    {0, 0, game::DirType::kSouth, F_},                       //	0-4 !
+    {0, 0, game::DirType::kSouthWest, F_},                   //	0-5 !
+    {4, 9, game::DirType::kWest, (F_X | F_D)},               //	0-6
+    {3, 7, game::DirType::kNorthWest, (F_X | F_D)},          //	0-7
+    {6, 8, game::DirType::kNorth, (F_T | F_X | F_Y | F_D)},  //	1-0
+    {2, 0, game::DirType::kNorthEast, F_},                   //	1-1 (raw chart)
+    {6, 8, game::DirType::kEast, F_D},                       //	1-2 (raw chart)
+    {5, 10, game::DirType::kSouthEast, F_D},                 //	1-3 (raw chart)
+    {0, 0, game::DirType::kSouth, F_},                       //	1-4 !
+    {0, 0, game::DirType::kSouthWest, F_},                   //	1-5 !
+    {0, 0, game::DirType::kWest, F_},                        //	1-6 !
+    {5, 10, game::DirType::kNorthWest, (F_T | F_X | F_Y | F_D)},  //	1-7
+    {4, 9, game::DirType::kNorth, (F_T | F_X | F_Y | F_D)},       //	2-0
+    {3, 7, game::DirType::kNorthEast, (F_T | F_X | F_Y | F_D)},   //	2-1
+    {1, 0, game::DirType::kEast, (F_T | F_X)},                    //	2-2
+    {3, 7, game::DirType::kSouthEast, (F_T | F_X | F_D)},         //	2-3
+    {4, 9, game::DirType::kSouth, (F_T | F_X | F_D)},             //	2-4
+    {0, 0, game::DirType::kSouthWest, F_},                        //	2-5 !
+    {0, 0, game::DirType::kWest, F_},                             //	2-6 !
+    {0, 0, game::DirType::kNorthWest, F_},                        //	2-7 !
+    {0, 0, game::DirType::kNorth, F_},                            //	3-0 !
+    {5, 10, game::DirType::kNorthEast, (F_Y | F_D)},              //	3-1
+    {6, 8, game::DirType::kEast, (F_Y | F_D)},                    //	3-2
+    {2, 0, game::DirType::kSouthEast, F_Y},                       //	3-3
+    {6, 8, game::DirType::kSouth, (F_T | F_X | F_D)},             //	3-4
+    {5, 10, game::DirType::kSouthWest, (F_T | F_X | F_D)},        //	3-5
+    {0, 0, game::DirType::kWest, F_},                             //	3-6 !
+    {0, 0, game::DirType::kNorthWest, F_},                        //	3-7 !
+    {0, 0, game::DirType::kNorth, F_},                            //	4-0 !
+    {0, 0, game::DirType::kNorthEast, F_},                        //	4-1 !
+    {4, 9, game::DirType::kEast, (F_Y | F_D)},                    //	4-2
+    {3, 7, game::DirType::kSouthEast, (F_Y | F_D)},               //	4-3
+    {1, 0, game::DirType::kSouth, F_Y},                           //	4-4
+    {3, 7, game::DirType::kSouthWest, (F_X | F_Y | F_D)},         //	4-5
+    {4, 9, game::DirType::kWest, (F_X | F_Y | F_D)},              //	4-6
+    {0, 0, game::DirType::kNorthWest, F_},                        //	4-7 !
+    {0, 0, game::DirType::kNorth, F_},                            //	5-0 !
+    {0, 0, game::DirType::kNorthEast, F_},                        //	5-1 !
+    {0, 0, game::DirType::kEast, F_},                             //	5-2 !
+    {5, 10, game::DirType::kSouthEast, (F_T | F_D)},              //	5-3
+    {6, 8, game::DirType::kSouth, (F_T | F_D)},                   //	5-4
+    {2, 0, game::DirType::kSouthWest, F_T},                       //	5-5
+    {6, 8, game::DirType::kWest, (F_X | F_Y | F_D)},              //	5-6
+    {5, 10, game::DirType::kNorthWest, (F_X | F_Y | F_D)},        //	5-7
+    {4, 9, game::DirType::kNorth, (F_T | F_Y | F_D)},             //	6-0
+    {0, 0, game::DirType::kNorthEast, F_},                        //	6-1 !
+    {0, 0, game::DirType::kEast, F_},                             //	6-2 !
+    {0, 0, game::DirType::kSouthEast, F_},                        //	6-3 !
+    {4, 9, game::DirType::kSouth, (F_T | F_D)},                   //	6-4
+    {3, 7, game::DirType::kSouthWest, (F_T | F_D)},               //	6-5
+    {1, 0, game::DirType::kWest, F_T},                            //	6-6
+    {3, 7, game::DirType::kNorthWest, (F_T | F_Y | F_D)},         //	6-7
+    {6, 8, game::DirType::kNorth, (F_T | F_Y | F_D)},             //	7-0
+    {5, 10, game::DirType::kNorthEast, (F_T | F_Y | F_D)},        //	7-1
+    {0, 0, game::DirType::kEast, F_},                             //	7-2 !
+    {0, 0, game::DirType::kSouthEast, F_},                        //	7-3 !
+    {0, 0, game::DirType::kSouth, F_},                            //	7-4 !
+    {5, 10, game::DirType::kSouthWest, (F_X | F_D)},              //	7-5
+    {6, 8, game::DirType::kWest, (F_X | F_D)},                    //	7-6
+    {2, 0, game::DirType::kNorthWest, F_X},                       //	7-7
 
-    {11, 11, game::DIR_SW, F_},     // Backup harvester into refinery.
-    {12, 12, game::DIR_SW_X2, F_},  // Drive back into refinery.
-    {13, 13, game::DIR_SW, F_}      // Drive out of weapons factory.
+    {11, 11, game::DirType::kSouthWest, F_},  // Backup harvester into refinery.
+    {12, 12, game::DirType::kSouthWestX2, F_},  // Drive back into refinery.
+    {13, 13, game::DirType::kSouthWest, F_}     // Drive out of weapons factory.
 };
 
 }  // namespace td

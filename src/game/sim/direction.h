@@ -80,20 +80,19 @@ constexpr FacingType operator+=(FacingType& f1, const int f2) {
 // west. Every byte value is a valid direction; only the compass points and
 // the two harvester poses are named.
 enum class DirType : uint8_t {
-  DIR_N = 0,
-  DIR_NE = 1 << 5,
-  DIR_E = 2 << 5,
-  DIR_SE = 3 << 5,
-  DIR_S = 4 << 5,
-  DIR_SW = 5 << 5,
+  kNorth = 0,
+  kNorthEast = 1 << 5,
+  kEast = 2 << 5,
+  kSouthEast = 3 << 5,
+  kSouth = 4 << 5,
+  kSouthWest = 5 << 5,
   // Two directions a little south of south-west that a harvester turns
-  // through as it backs onto the refinery pad; it unloads at DIR_SW_X2.
-  DIR_SW_X1 = (5 << 5) - 8,
-  DIR_SW_X2 = (5 << 5) - 16,
-  DIR_W = 6 << 5,
-  DIR_NW = 7 << 5
+  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.
+  kSouthWestX1 = (5 << 5) - 8,
+  kSouthWestX2 = (5 << 5) - 16,
+  kWest = 6 << 5,
+  kNorthWest = 7 << 5
 };
-using enum DirType;
 
 // Builds a direction from any angle, wrapping it to the 256-step circle.
 // This is the one place that turns a computed integer into the type, and the
@@ -121,7 +120,7 @@ constexpr DirType operator-(const DirType f1, const int f2) {
 // points; (0, 0) is the north-west corner, so y grows southward. The diagonals
 // take more than their share of the circle: a slope steeper than 1 in 2 off an
 // axis already counts as diagonal (26.6 degrees, where an even split would be
-// 22.5). Equal points give DIR_NE.
+// 22.5). Equal points give DirType::kNorthEast.
 DirType Desired_Facing8(int x1, int y1, int x2, int y2);
 
 // Returns the direction from (srcx, srcy) to (dstx, dsty) to full 256-step
@@ -129,8 +128,8 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2);
 // linearly along the shorter offset rather than taken from an arctangent, so
 // it is exact only on the axes and diagonals and up to four steps off between
 // them. Due east, due south, exact south-east and exact north-west come out
-// one step short (DIR_E - 1, ...), as they did in the original. Equal points
-// give 255, just shy of north.
+// one step short (DirType::kEast - 1, ...), as they did in the original. Equal
+// points give 255, just shy of north.
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
@@ -145,7 +144,8 @@ constexpr DirType Facing_Dir(const FacingType facing) {
 }
 
 // Returns the facing whose 32-step sector starting at it holds `dir`: unlike
-// Dir_Facing(), this truncates, so DIR_NE - 1 gives FacingType::kNorth.
+// Dir_Facing(), this truncates, so DirType::kNorthEast - 1 gives
+// FacingType::kNorth.
 // TODO: the `| 0x10` changes nothing, since it sets a bit the division by 32
 // drops. The original probably meant the `+ 0x10` of Dir_Facing().
 constexpr FacingType Dir_To_8(const DirType dir) {
@@ -160,10 +160,10 @@ int Dir_To_16(DirType dir);
 // vehicle shapes.
 int Dir_To_32(DirType dir);
 
-// Returns `dir2` minus `dir1` with both read as signed bytes (DIR_S and above
-// are negative), so the result spans -255..255. This is not the shortest turn
-// between the two: across south it is nearly a full circle (127 to 128 gives
-// -255, not 1).
+// Returns `dir2` minus `dir1` with both read as signed bytes (DirType::kSouth
+// and above are negative), so the result spans -255..255. This is not the
+// shortest turn between the two: across south it is nearly a full circle (127
+// to 128 gives -255, not 1).
 constexpr int Dir_Diff(const DirType dir1, const DirType dir2) {
   return static_cast<int8_t>(dir2) - static_cast<int8_t>(dir1);
 }

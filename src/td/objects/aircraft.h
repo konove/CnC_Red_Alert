@@ -118,7 +118,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
   // Object entry and exit from the game system.
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DIR_N) override;
+               game::DirType dir = game::DirType::kNorth) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
