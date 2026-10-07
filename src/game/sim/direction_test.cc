@@ -84,11 +84,22 @@ TEST(BodyFrameTest, ThirtyTwoStepsAreSkewedTowardTheDiagonals) {
   EXPECT_EQ(BodyFrame32(DirType::kSouthEast), 13);
 }
 
-TEST(SignedDirectionDifferenceTest, SubtractsSignedBytes) {
-  EXPECT_EQ(SignedDirectionDifference(DirType::kNorth, DirType::kEast), 64);
-  EXPECT_EQ(SignedDirectionDifference(DirType::kEast, DirType::kNorth), -64);
-  EXPECT_EQ(SignedDirectionDifference(AsDirection(127), AsDirection(128)),
-            -255);
+TEST(ShortestTurnTest, IsSignedAndClockwisePositive) {
+  EXPECT_EQ(ShortestTurn(DirType::kNorth, DirType::kEast), 64);
+  EXPECT_EQ(ShortestTurn(DirType::kEast, DirType::kNorth), -64);
+  EXPECT_EQ(ShortestTurn(DirType::kWest, DirType::kWest), 0);
+}
+
+TEST(ShortestTurnTest, WrapsAcrossNorthAndSouth) {
+  EXPECT_EQ(ShortestTurn(AsDirection(127), AsDirection(128)), 1);
+  EXPECT_EQ(ShortestTurn(AsDirection(128), AsDirection(127)), -1);
+  EXPECT_EQ(ShortestTurn(AsDirection(255), DirType::kNorth), 1);
+  EXPECT_EQ(ShortestTurn(DirType::kSouthWest, AsDirection(96)), -64);
+}
+
+TEST(ShortestTurnTest, OppositeDirectionsAreHalfACircleApart) {
+  EXPECT_EQ(ShortestTurn(DirType::kNorth, DirType::kSouth), -128);
+  EXPECT_EQ(ShortestTurn(DirType::kEast, DirType::kWest), -128);
 }
 
 TEST(Direction8TowardTest, ReturnsTheCompassPoint) {

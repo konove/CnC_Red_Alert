@@ -4049,13 +4049,14 @@
         "ra",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T08:04:34Z",
+      "updated": "2026-10-07T08:10:37Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
-      "resolution": "The question was moot: no aircraft has 8 rotation stages (all seven in `aadata.cc` are 16 or 32, and `Rotation` is never read from an INI), so the `case 8` branch of `AircraftClass::Shape_Number()` never ran. Deleted that branch, `FacingSector()` and its test; nothing on screen changes. Not committed yet.",
+      "fixedIn": "fa3bac41",
+      "resolution": "The question was moot: no aircraft has 8 rotation stages (all seven in `aadata.cc` are 16 or 32, and `Rotation` is never read from an INI), so the `case 8` branch of `AircraftClass::Shape_Number()` never ran. Deleted that branch, `FacingSector()` and its test; nothing on screen changes.",
       "toDecide": "- **Keep truncating**: nothing changes. The function could then move into `aircraft.cc` as a file-local helper, since nothing else uses it.\n- **Round to the nearest facing**: the caller uses `NearestFacing()` and `FacingSector()` is deleted. Display only (which of 8 body frames an aircraft shows changes for half of each sector), so no desync, but `tools/ui_check.py` screenshots with such an aircraft would change.",
       "decisions": [
         {
@@ -4098,26 +4099,38 @@
       "tags": [
         "bugs",
         "td",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T08:14:50Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "resolution": "Replaced `SignedDirectionDifference()` with `game::ShortestTurn()` (-128..127, wrapping) in `game/sim/direction.h`, so `UnitClass::Desired_Load_Dir` costs each boarding cell by the real shortest rotation. Deleted the legacy-comparison test `td/core/coord_inline_test.cc` and added `ShortestTurnTest` cases to `game/sim/direction_test.cc`. Not committed.",
       "toDecide": "- **Leave it**: shipped Tiberian Dawn behaviour. Then consider moving the function into `td/objects/unit.cc` with its test, out of the shared header.\n- **Use the shortest turn** (wrap the difference to -128..127): passengers choose a different boarding cell in some layouts; this is simulation, so it desyncs against an unfixed peer.",
+      "decisions": [
+        {
+          "question": "How should the transport boarding-cell rotation cost (T-168) be computed?",
+          "options": [
+            "Shortest turn (Recommended)",
+            "Leave it, move function",
+            "Leave everything"
+          ],
+          "answer": "Shortest turn (Recommended)",
+          "time": "2026-10-07T08:12:15Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/td/objects/unit.cc",
-          "startLine": 3825,
-          "endLine": 3825,
-          "text": "        game::SignedDirectionDifference(game::DirectionOf(face), faceto));",
+          "startLine": 3824,
+          "endLine": 3824,
+          "text": "    value -= std::abs(game::ShortestTurn(game::DirectionOf(face), faceto));",
           "before": [
+            "    **\tGive more weight to the cells that require the least rotation of the",
             "    *transport or the *\tleast roundabout movement for the potential passenger.",
-            "    */",
-            "    value -= std::abs("
+            "    */"
           ],
           "after": [
             "    if (face == game::FacingType::kSouth) {",
@@ -4128,16 +4141,16 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 153,
-          "endLine": 153,
-          "text": "constexpr int SignedDirectionDifference(const DirType from, const DirType to) {",
+          "startLine": 151,
+          "endLine": 151,
+          "text": "constexpr int ShortestTurn(const DirType from, const DirType to) {",
           "before": [
-            "// and above are negative), so the result spans -255..255. This is not the",
-            "// shortest turn between the two: across south it is nearly a full circle (127",
-            "// to 128 gives -255, not 1)."
+            "",
+            "// Returns the shortest turn from `from` to `to`, -128..127: positive is",
+            "// clockwise, and the two opposite directions are -128 apart."
           ],
           "after": [
-            "  return static_cast<int8_t>(to) - static_cast<int8_t>(from);",
+            "  return static_cast<int8_t>(to - from);",
             "}",
             ""
           ],
@@ -4343,8 +4356,8 @@
           ],
           "after": [
             "",
-            "// Returns `to` minus `from` with both read as signed bytes (DirType::kSouth",
-            "// and above are negative), so the result spans -255..255. This is not the"
+            "// Returns the shortest turn from `from` to `to`, -128..127: positive is",
+            "// clockwise, and the two opposite directions are -128 apart."
           ],
           "lost": false
         }

@@ -180,7 +180,7 @@ add_gtest(
 
 add_gtest(
     NAME td_coord_inline_test
-    SOURCES core/coord_inline_test.cc core/coordinate_test.cc core/cell_test.cc
+    SOURCES core/coordinate_test.cc core/cell_test.cc
     LIBS base engine_stream absl::check absl::log
 )
 

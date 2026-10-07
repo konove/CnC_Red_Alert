@@ -3821,8 +3821,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= std::abs(
-        game::SignedDirectionDifference(game::DirectionOf(face), faceto));
+    value -= std::abs(game::ShortestTurn(game::DirectionOf(face), faceto));
     if (face == game::FacingType::kSouth) {
       value -= 100;
     }

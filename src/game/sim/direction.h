@@ -146,12 +146,10 @@ constexpr int BodyFrame16(const DirType dir) {
 // vehicle shapes.
 int BodyFrame32(DirType dir);
 
-// Returns `to` minus `from` with both read as signed bytes (DirType::kSouth
-// and above are negative), so the result spans -255..255. This is not the
-// shortest turn between the two: across south it is nearly a full circle (127
-// to 128 gives -255, not 1).
-constexpr int SignedDirectionDifference(const DirType from, const DirType to) {
-  return static_cast<int8_t>(to) - static_cast<int8_t>(from);
+// Returns the shortest turn from `from` to `to`, -128..127: positive is
+// clockwise, and the two opposite directions are -128 apart.
+constexpr int ShortestTurn(const DirType from, const DirType to) {
+  return static_cast<int8_t>(to - from);
 }
 
 }  // namespace game
