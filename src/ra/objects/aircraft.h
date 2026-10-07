@@ -118,7 +118,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Query functions.
   */
   [[nodiscard]] LayerType In_Which_Layer() const override;
-  [[nodiscard]] game::DirType Turret_Facing() const override {
+  [[nodiscard]] game::Direction Turret_Facing() const override {
     return SecondaryFacing.Current();
   }
   [[nodiscard]] int Shape_Number() const;
@@ -130,14 +130,14 @@ class AircraftClass : public FootClass, public FlyClass {
   }
   ActionType What_Action(ObjectClass* target) override;
   [[nodiscard]] ActionType What_Action(Cell cell) const override;
-  game::DirType Desired_Load_Dir(ObjectClass* object,
-                                 Cell& moveto) const override;
+  game::Direction Desired_Load_Dir(ObjectClass* object,
+                                   Cell& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] Target Good_Fire_Location(Target target) const;
   [[nodiscard]] bool Cell_Seems_Ok(Cell cell, bool strict = false) const;
-  [[nodiscard]] game::DirType Pose_Dir() const;
+  [[nodiscard]] game::Direction Pose_Dir() const;
   [[nodiscard]] Target Good_LZ() const;
-  [[nodiscard]] game::DirType Fire_Direction() const override;
+  [[nodiscard]] game::Direction Fire_Direction() const override;
   [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
 
@@ -158,7 +158,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Object entry and exit from the game system.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

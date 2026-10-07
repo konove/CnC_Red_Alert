@@ -46,7 +46,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    engine::gfx::ShapeFlags flags,
                    std::span<const uint8_t> fading_data = {},
                    std::span<const uint8_t> ghostdata = {},
-                   game::DirType rotation = game::DirType::kNorth,
+                   game::Direction rotation = game::Direction::kNorth,
                    int32_t scale = 0x0100);
 
 // Returns the width x height shape `pixels` scaled by `scale` (24.8 fixed
@@ -56,7 +56,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
 // whatever falls outside the doubled frame is cropped.
 std::vector<uint8_t> ScaleRotateShape(std::span<const uint8_t> pixels,
                                       int width, int height,
-                                      game::DirType rotation, int32_t scale);
+                                      game::Direction rotation, int32_t scale);
 
 // Returns the offset the predator (cloak) effect samples the page at for a
 // shape drawn at x in a window window_width pixels wide on game frame `frame`:

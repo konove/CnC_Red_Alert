@@ -75,7 +75,7 @@
 
 namespace td {
 
-Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::DirType dir)
+Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::Direction dir)
     : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
                          kLeftPress | kLeftHeld | kLeftRelease, true),
       FaceX(X + (Width / 2)),
@@ -291,7 +291,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
  *      none.                                                              *
  *                                                                         *
  * OUTPUT:                                                                 *
- *      DirType dial is pointing to                                        *
+ *      Direction dial is pointing to                                        *
  *                                                                         *
  * WARNINGS:                                                               *
  *      none.                                                              *
@@ -299,13 +299,13 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-game::DirType Dial8Class::Get_Direction() const { return Direction; }
+game::Direction Dial8Class::Get_Direction() const { return Direction; }
 
 /***************************************************************************
  * Dial8Class::Set_Direction -- sets current direction (0-255) of dial     *
  *                                                                         *
  * INPUT:                                                                  *
- *      DirType to set dial to                                             *
+ *      Direction to set dial to                                             *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -316,7 +316,7 @@ game::DirType Dial8Class::Get_Direction() const { return Direction; }
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-void Dial8Class::Set_Direction(game::DirType dir) {
+void Dial8Class::Set_Direction(game::Direction dir) {
   Direction = dir;
   Facing = game::NearestFacing(Direction);
   OldFacing = Facing;

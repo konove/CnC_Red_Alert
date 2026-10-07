@@ -77,7 +77,7 @@ class FlyClass {
   **	Member function prototypes.
   */
   void Fly_Speed(int speed, game::MPHType maximum);
-  ImpactType Physics(Coordinate& coord, game::DirType facing);
+  ImpactType Physics(Coordinate& coord, game::Direction facing);
   [[nodiscard]] game::MPHType Get_Speed() const { return SpeedAdd; }
 
  private:

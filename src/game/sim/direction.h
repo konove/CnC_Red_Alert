@@ -17,7 +17,7 @@
 */
 
 // The two direction types both games share. FacingType is one of the eight
-// neighbouring cells; DirType is a 256-step compass where 0 is north and
+// neighbouring cells; Direction is a 256-step compass where 0 is north and
 // values rise clockwise, so one facing is 32 direction steps. Conversions
 // between them and the direction from one point to another live here too.
 //
@@ -73,47 +73,47 @@ constexpr FacingType operator-(const FacingType facing, const int steps) {
 // points are named. Arithmetic wraps around the circle.
 //
 // Example:
-//   const DirType behind = facing + DirType::kSouth;
-//   const DirType a_little_right = facing + 8;
-class DirType {
+//   const Direction behind = facing + Direction::kSouth;
+//   const Direction a_little_right = facing + 8;
+class Direction {
  public:
-  static const DirType kNorth;
-  static const DirType kNorthEast;
-  static const DirType kEast;
-  static const DirType kSouthEast;
-  static const DirType kSouth;
-  static const DirType kSouthWest;
-  static const DirType kWest;
-  static const DirType kNorthWest;
+  static const Direction kNorth;
+  static const Direction kNorthEast;
+  static const Direction kEast;
+  static const Direction kSouthEast;
+  static const Direction kSouth;
+  static const Direction kSouthWest;
+  static const Direction kWest;
+  static const Direction kNorthWest;
 
   // North.
-  constexpr DirType() = default;
+  constexpr Direction() = default;
 
   // Builds a direction from any angle, wrapping it to the 256-step circle.
-  constexpr explicit DirType(const int angle) noexcept
+  constexpr explicit Direction(const int angle) noexcept
       : value_(static_cast<uint8_t>(static_cast<uint32_t>(angle) & 0xFFU)) {}
 
   // The angle, 0..255.
   [[nodiscard]] constexpr int value() const noexcept { return value_; }
 
-  friend constexpr bool operator==(DirType, DirType) noexcept = default;
-  friend constexpr auto operator<=>(DirType, DirType) noexcept = default;
+  friend constexpr bool operator==(Direction, Direction) noexcept = default;
+  friend constexpr auto operator<=>(Direction, Direction) noexcept = default;
 
-  friend constexpr DirType operator+(const DirType lhs,
-                                     const DirType rhs) noexcept {
-    return DirType(lhs.value() + rhs.value());
+  friend constexpr Direction operator+(const Direction lhs,
+                                       const Direction rhs) noexcept {
+    return Direction(lhs.value() + rhs.value());
   }
-  friend constexpr DirType operator+(const DirType dir,
-                                     const int steps) noexcept {
-    return DirType(dir.value() + steps);
+  friend constexpr Direction operator+(const Direction dir,
+                                       const int steps) noexcept {
+    return Direction(dir.value() + steps);
   }
-  friend constexpr DirType operator-(const DirType lhs,
-                                     const DirType rhs) noexcept {
-    return DirType(lhs.value() - rhs.value());
+  friend constexpr Direction operator-(const Direction lhs,
+                                       const Direction rhs) noexcept {
+    return Direction(lhs.value() - rhs.value());
   }
-  friend constexpr DirType operator-(const DirType dir,
-                                     const int steps) noexcept {
-    return DirType(dir.value() - steps);
+  friend constexpr Direction operator-(const Direction dir,
+                                       const int steps) noexcept {
+    return Direction(dir.value() - steps);
   }
 
   // Saved-game support. A direction is saved in the four bytes it took when
@@ -129,24 +129,24 @@ class DirType {
   uint8_t value_ = 0;
 };
 
-inline constexpr DirType DirType::kNorth{0};
-inline constexpr DirType DirType::kNorthEast{1 << 5};
-inline constexpr DirType DirType::kEast{2 << 5};
-inline constexpr DirType DirType::kSouthEast{3 << 5};
-inline constexpr DirType DirType::kSouth{4 << 5};
-inline constexpr DirType DirType::kSouthWest{5 << 5};
-inline constexpr DirType DirType::kWest{6 << 5};
-inline constexpr DirType DirType::kNorthWest{7 << 5};
+inline constexpr Direction Direction::kNorth{0};
+inline constexpr Direction Direction::kNorthEast{1 << 5};
+inline constexpr Direction Direction::kEast{2 << 5};
+inline constexpr Direction Direction::kSouthEast{3 << 5};
+inline constexpr Direction Direction::kSouth{4 << 5};
+inline constexpr Direction Direction::kSouthWest{5 << 5};
+inline constexpr Direction Direction::kWest{6 << 5};
+inline constexpr Direction Direction::kNorthWest{7 << 5};
 
 // Objects, tracks and packets hold a direction in one byte.
-static_assert(sizeof(DirType) == 1);
+static_assert(sizeof(Direction) == 1);
 
 // Returns the direction from (from_x, from_y) to (to_x, to_y) as one of the
 // eight compass points; (0, 0) is the north-west corner, so y grows southward.
 // The diagonals take more than their share of the circle: a slope steeper than
 // 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even
-// split would be 22.5). Equal points give DirType::kNorthEast.
-DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);
+// split would be 22.5). Equal points give Direction::kNorthEast.
+Direction Direction8Toward(int from_x, int from_y, int to_x, int to_y);
 
 // Returns the direction from (from_x, from_y) to (to_x, to_y) to full 256-step
 // accuracy, with the same axes as Direction8Toward(). The angle is interpolated
@@ -154,31 +154,33 @@ DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);
 // it is exact only on the axes and diagonals and up to four steps off between
 // them. An angle between two steps rounds toward the axis its quadrant starts
 // on, going clockwise. Equal points give 255, just shy of north.
-DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);
+Direction Direction256Toward(int from_x, int from_y, int to_x, int to_y);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
 // rounds up to FacingType::kNorth.
-constexpr FacingType NearestFacing(const DirType dir) {
+constexpr FacingType NearestFacing(const Direction dir) {
   return static_cast<FacingType>((dir + 0x10).value() / 32);
 }
 
 // Returns the direction that points exactly at `facing`.
-constexpr DirType DirectionOf(const FacingType facing) {
-  return DirType(static_cast<int>(facing) * 32);
+constexpr Direction DirectionOf(const FacingType facing) {
+  return Direction(static_cast<int>(facing) * 32);
 }
 
 // Returns `dir` as the nearest of 16 evenly spaced body frames, 0 north and
 // rising clockwise.
-constexpr int BodyFrame16(const DirType dir) { return (dir + 8).value() / 16; }
+constexpr int BodyFrame16(const Direction dir) {
+  return (dir + 8).value() / 16;
+}
 
 // Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The
 // steps are uneven to undo the distortion 3D Studio rendered into the
 // vehicle shapes.
-int BodyFrame32(DirType dir);
+int BodyFrame32(Direction dir);
 
 // Returns the shortest turn from `from` to `to`, -128..127: positive is
 // clockwise, and the two opposite directions are -128 apart.
-constexpr int ShortestTurn(const DirType from, const DirType to) {
+constexpr int ShortestTurn(const Direction from, const Direction to) {
   return static_cast<int8_t>((to - from).value());
 }
 

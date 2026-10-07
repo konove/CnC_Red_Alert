@@ -98,14 +98,14 @@ class AircraftClass : public FootClass, public FlyClass {
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(Cell cell) const override;
-  game::DirType Desired_Load_Dir(ObjectClass* object,
-                                 Cell& moveto) const override;
+  game::Direction Desired_Load_Dir(ObjectClass* object,
+                                   Cell& moveto) const override;
   int Pip_Count() const override;
   Target Good_Fire_Location(Target target) const;
   bool Cell_Seems_Ok(Cell cell, bool strict = false) const;
-  game::DirType Pose_Dir() const;
+  game::Direction Pose_Dir() const;
   Target Good_LZ() const;
-  game::DirType Fire_Direction() const override;
+  game::Direction Fire_Direction() const override;
 
   // Landing zone support functionality.
   bool Is_LZ_Clear(Target target) const;
@@ -118,7 +118,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
   // Object entry and exit from the game system.
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

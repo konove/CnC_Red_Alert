@@ -56,14 +56,14 @@ class FacingClass {
   FacingClass();
   // a facing reads and assigns as its direction.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  FacingClass(DirType dir) : CurrentFacing(dir), DesiredFacing(dir) {}
+  FacingClass(Direction dir) : CurrentFacing(dir), DesiredFacing(dir) {}
 
   // objects compare directly against their type ID.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator DirType() const { return CurrentFacing; }
+  operator Direction() const { return CurrentFacing; }
 
-  [[nodiscard]] DirType Current() const { return CurrentFacing; }
-  [[nodiscard]] DirType Desired() const { return DesiredFacing; }
+  [[nodiscard]] Direction Current() const { return CurrentFacing; }
+  [[nodiscard]] Direction Desired() const { return DesiredFacing; }
 
   // Saved-game support.
   template <class Archive>
@@ -71,15 +71,15 @@ class FacingClass {
     ar(CurrentFacing, DesiredFacing);
   }
 
-  bool Set_Desired(DirType facing);
-  bool Set_Current(DirType facing);
+  bool Set_Desired(Direction facing);
+  bool Set_Current(Direction facing);
 
-  void Set(DirType facing) {
+  void Set(Direction facing) {
     Set_Current(facing);
     Set_Desired(facing);
   }
 
-  [[nodiscard]] DirType Get() const { return CurrentFacing; }
+  [[nodiscard]] Direction Get() const { return CurrentFacing; }
 
   [[nodiscard]] bool Is_Rotating() const {
     return DesiredFacing != CurrentFacing;
@@ -87,14 +87,14 @@ class FacingClass {
   [[nodiscard]] int Difference() const {
     return ShortestTurn(CurrentFacing, DesiredFacing);
   }
-  [[nodiscard]] int Difference(DirType facing) const {
+  [[nodiscard]] int Difference(Direction facing) const {
     return ShortestTurn(CurrentFacing, facing);
   }
   bool Rotation_Adjust(int rate);
 
  private:
-  DirType CurrentFacing;
-  DirType DesiredFacing;
+  Direction CurrentFacing;
+  Direction DesiredFacing;
 };
 
 }  // namespace game

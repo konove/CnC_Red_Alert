@@ -2056,11 +2056,11 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   /*
   **	Convert the head to coordinate to a legal sub-position location.
   */
-  headto = TheMap().at(headto).Closest_Free_Spot(
-      Coord_Move(headto, DirectionTo(headto) + game::DirType::kSouth, 0x007C));
+  headto = TheMap().at(headto).Closest_Free_Spot(Coord_Move(
+      headto, DirectionTo(headto) + game::Direction::kSouth, 0x007C));
   if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
-        Coord_Move(old, DirectionTo(headto) + game::DirType::kSouth, 0x0080),
+        Coord_Move(old, DirectionTo(headto) + game::Direction::kSouth, 0x0080),
         true);
   }
 
@@ -2176,7 +2176,7 @@ BulletClass* InfantryClass::Fire_At(Target target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(Coordinate coord, game::DirType facing) {
+bool InfantryClass::Unlimbo(Coordinate coord, game::Direction facing) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -3292,7 +3292,7 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Read_INI(engine::file::IniFile& ini) {
-  game::DirType dir = game::DirType::kNorth;
+  game::Direction dir = game::Direction::kNorth;
   TriggerType* tp = nullptr;
 
   for (const auto& [entry, value] : ini.Entries(INI_Name())) {
@@ -3339,10 +3339,10 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
               Mission_From_Name(tokens.Next());
           const std::string_view validation = tokens.Next();
           if (!validation.empty()) {
-            dir = game::DirType(base::ParseIntegerOr<int>(validation, 0));
+            dir = game::Direction(base::ParseIntegerOr<int>(validation, 0));
             tp = TriggerType::FromName(tokens.Next());
           } else {
-            dir = game::DirType(0);
+            dir = game::Direction(0);
             tp = nullptr;
           }
 

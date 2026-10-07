@@ -814,7 +814,7 @@ void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
 bool Main_Loop();
 TheaterType Theater_From_Name(const char* name);
-// DirType Rotation_Calc(DirType current, DirType desired, int rate);
+// Direction Rotation_Calc(Direction current, Direction desired, int rate);
 void Main_Game();
 void Call_Back();
 const char* Language_Name(const char* basename);

@@ -1787,7 +1787,7 @@ enum class WindowNumberType {
 using enum WindowNumberType;
 
 // The highest direction a random facing may take (Red Alert's reaches 255).
-inline constexpr game::DirType kMaxRandomDirection = game::DirType(254);
+inline constexpr game::Direction kMaxRandomDirection = game::Direction(254);
 
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.

@@ -96,7 +96,7 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
   return offsets;
 }
 
-Coordinate Coord_Move(const Coordinate start, const game::DirType facing,
+Coordinate Coord_Move(const Coordinate start, const game::Direction facing,
                       const uint16_t distance) {
   auto x = static_cast<int16_t>(start.x());
   auto y = static_cast<int16_t>(start.y());
@@ -107,9 +107,9 @@ Coordinate Coord_Move(const Coordinate start, const game::DirType facing,
 
 Coordinate Coord_Scatter(const Coordinate coord, const int distance,
                          const bool lock) {
-  Coordinate result =
-      Coord_Move(coord, RandomPick(game::DirType::kNorth, kMaxRandomDirection),
-                 static_cast<uint16_t>(distance));
+  Coordinate result = Coord_Move(
+      coord, RandomPick(game::Direction::kNorth, kMaxRandomDirection),
+      static_cast<uint16_t>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.
   if (result.packed() & kHighCoordMask) {

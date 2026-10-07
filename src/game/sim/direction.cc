@@ -92,8 +92,8 @@ QuadrantOffset QuadrantOffsetToward(const int from_x, const int from_y,
 
 }  // namespace
 
-DirType Direction8Toward(const int from_x, const int from_y, const int to_x,
-                         const int to_y) {
+Direction Direction8Toward(const int from_x, const int from_y, const int to_x,
+                           const int to_y) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from_x, from_y, to_x, to_y);
 
@@ -101,23 +101,23 @@ DirType Direction8Toward(const int from_x, const int from_y, const int to_x,
   // diagonal, which lies 0x20 into every quadrant, and bail. Equal points
   // land here too, in the north-east quadrant.
   if ((bigger + 1) / 2 <= smaller) {
-    return DirType(quadrant + 0x20);
+    return Direction(quadrant + 0x20);
   }
 
   // Otherwise it is one of the quadrant's two axes. From the north-west
   // quadrant the end axis wraps to north.
-  return DirType(quadrant + (closer_to_end_axis ? 0x40 : 0));
+  return Direction(quadrant + (closer_to_end_axis ? 0x40 : 0));
 }
 
-DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
-                           const int to_y) {
+Direction Direction256Toward(const int from_x, const int from_y, const int to_x,
+                             const int to_y) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from_x, from_y, to_x, to_y);
 
   // Bail early if the coordinates are the same. This also keeps the division
   // below away from zero.
   if (bigger == 0) {
-    return DirType(0xFF);
+    return Direction(0xFF);
   }
 
   // How far from the closer axis the direction lies, as a ratio from 0 (on
@@ -125,7 +125,7 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // arctangent.
   const int scaled = smaller * 32;
   if (!closer_to_end_axis) {
-    return DirType(quadrant + (scaled / bigger));
+    return Direction(quadrant + (scaled / bigger));
   }
 
   // The ratio counts from the closer axis, and here that is the axis the
@@ -135,10 +135,10 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // same thing except when the division is exact: then it landed one step
   // short, due east and due south included.
   const int rounded_up = (scaled + bigger - 1) / bigger;
-  return DirType(quadrant + 0x40 - rounded_up);
+  return Direction(quadrant + 0x40 - rounded_up);
 }
 
-int BodyFrame32(const DirType dir) {
+int BodyFrame32(const Direction dir) {
   return kBodyFrame32.at(base::ToSize(dir.value()));
 }
 

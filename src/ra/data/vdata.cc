@@ -451,8 +451,8 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
 bool VesselTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<VesselClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(
-        cell.Center(), RandomPick(game::DirType::kNorth, kMaxRandomDirection));
+    return unit->Unlimbo(cell.Center(), RandomPick(game::Direction::kNorth,
+                                                   kMaxRandomDirection));
   }
   base::DeletePooled(unit);
   return false;
@@ -539,7 +539,7 @@ void VesselTypeClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
+void VesselTypeClass::Turret_Adjust(game::Direction dir, int& x, int& y) const {
   auto xx = static_cast<int16_t>(x);
   auto yy = static_cast<int16_t>(y);
 
@@ -558,7 +558,7 @@ void VesselTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
 
     case VESSEL_DD:
       base::MovePointIsometric(
-          xx, yy, static_cast<uint8_t>((dir + game::DirType::kSouth).value()),
+          xx, yy, static_cast<uint8_t>((dir + game::Direction::kSouth).value()),
           8);
       x = xx;
       y = yy - 4;

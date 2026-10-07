@@ -226,7 +226,8 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance) {
+Coordinate Coord_Move(Coordinate start, game::Direction dir,
+                      uint16_t distance) {
   auto x = static_cast<int16_t>(start.x());
   auto y = static_cast<int16_t>(start.y());
 
@@ -258,9 +259,9 @@ Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance) {
  * HISTORY: * 02/01/1992 JLB : Created. * 05/13/1992 JLB : Only uses Random(). *
  *=============================================================================================*/
 Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock) {
-  Coordinate newcoord =
-      Coord_Move(coord, Random_Pick(game::DirType::kNorth, kMaxRandomDirection),
-                 static_cast<uint16_t>(distance));
+  Coordinate newcoord = Coord_Move(
+      coord, Random_Pick(game::Direction::kNorth, kMaxRandomDirection),
+      static_cast<uint16_t>(distance));
 
   if ((newcoord.packed() & kHighCoordMask) != 0) {
     newcoord = coord;

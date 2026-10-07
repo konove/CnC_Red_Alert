@@ -310,12 +310,12 @@ bool DeliverReinforcements(TeamType* team_type) {
   // SourceType counts the four edges clockwise from north and FacingType the
   // eight compass points, hence the factor of two. The facing is the edge's own
   // compass point, so the group starts out facing off the map.
-  const game::DirType entry_dir =
+  const game::Direction entry_dir =
       game::DirectionOf(game::AsFacing(static_cast<int>(edge) * 2));
   // Aircraft face the other way, onto the map: a fixed-wing one flies where its
   // nose points and turns slowly, so any other heading sends it on a detour
   // along or off the edge before it comes about.
-  const game::DirType inward_dir = entry_dir + game::DirType::kSouth;
+  const game::Direction inward_dir = entry_dir + game::Direction::kSouth;
   // With an origin waypoint they face that instead: Calculated_Cell() then
   // picks the edge nearest the waypoint, which need not be the house's.
   const Cell origin_cell =
@@ -354,7 +354,7 @@ bool DeliverReinforcements(TeamType* team_type) {
   bool any_placed = false;
   while (place_cell.index() > 0 && member != nullptr) {
     const bool is_aircraft = member->What_Am_I() == RTTI_AIRCRAFT;
-    game::DirType facing = entry_dir;
+    game::Direction facing = entry_dir;
     if (is_aircraft) {
       facing = origin_cell != Cell::None()
                    ? DirectionBetween(place_cell, origin_cell)
@@ -436,7 +436,7 @@ int LaunchAirStrike(HouseClass* house, const AircraftType aircraft_type,
     // it can enter it.
     TheWorld().scenario_init()++;
     const bool placed =
-        aircraft->Unlimbo(entry_cell.Center(), game::DirType::kNorth);
+        aircraft->Unlimbo(entry_cell.Center(), game::Direction::kNorth);
     TheWorld().scenario_init()--;
     if (!placed) {
       base::DeletePooled(aircraft);

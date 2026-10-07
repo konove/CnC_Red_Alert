@@ -2458,7 +2458,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
           if (bullet) {
             const int celly = std::max(cell.y() - 15, 1);
             const Coordinate start = Cell::FromXY(cell.x(), celly).Center();
-            if (!bullet->Unlimbo(start, game::DirType::kSouth)) {
+            if (!bullet->Unlimbo(start, game::Direction::kSouth)) {
               base::DeletePooled(bullet);
             }
             SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == ThePlayer());
@@ -6528,17 +6528,17 @@ ZoneType HouseClass::Which_Zone(Coordinate coord) const {
     return ZONE_NONE;
   }
 
-  const game::DirType facing = DirectionBetween(Center, coord);
-  if (facing < game::DirType::kNorthEast ||
-      facing > game::DirType::kNorthWest) {
+  const game::Direction facing = DirectionBetween(Center, coord);
+  if (facing < game::Direction::kNorthEast ||
+      facing > game::Direction::kNorthWest) {
     return ZONE_NORTH;
   }
-  if (facing >= game::DirType::kNorthEast &&
-      facing < game::DirType::kSouthEast) {
+  if (facing >= game::Direction::kNorthEast &&
+      facing < game::Direction::kSouthEast) {
     return ZONE_EAST;
   }
-  if (facing >= game::DirType::kSouthEast &&
-      facing < game::DirType::kSouthWest) {
+  if (facing >= game::Direction::kSouthEast &&
+      facing < game::Direction::kSouthWest) {
     return ZONE_SOUTH;
   }
   return ZONE_WEST;
@@ -6723,19 +6723,19 @@ Cell HouseClass::Zone_Cell(ZoneType zone) const {
       return Cell::Containing(Center);
 
     case ZONE_NORTH:
-      return Cell::Containing(Coord_Move(Center, game::DirType::kNorth,
+      return Cell::Containing(Coord_Move(Center, game::Direction::kNorth,
                                          static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_EAST:
-      return Cell::Containing(Coord_Move(Center, game::DirType::kEast,
+      return Cell::Containing(Coord_Move(Center, game::Direction::kEast,
                                          static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_WEST:
-      return Cell::Containing(Coord_Move(Center, game::DirType::kWest,
+      return Cell::Containing(Coord_Move(Center, game::Direction::kWest,
                                          static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_SOUTH:
-      return Cell::Containing(Coord_Move(Center, game::DirType::kSouth,
+      return Cell::Containing(Coord_Move(Center, game::Direction::kSouth,
                                          static_cast<uint16_t>(Radius * 3)));
 
     case ZoneType::ZONE_NONE:
@@ -7675,8 +7675,8 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center,
-          RandomPick(game::DirType::kNorth, game::DirType::kEast) -
-              game::DirType(32),
+          RandomPick(game::Direction::kNorth, game::Direction::kEast) -
+              game::Direction(32),
           static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
                                            std::min(Radius * 3, maxdist))));
       break;
@@ -7690,7 +7690,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center,
-          RandomPick(game::DirType::kNorthEast, game::DirType::kSouthEast),
+          RandomPick(game::Direction::kNorthEast, game::Direction::kSouthEast),
           static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
                                            std::min(Radius * 3, maxdist))));
       break;
@@ -7704,7 +7704,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center,
-          RandomPick(game::DirType::kSouthEast, game::DirType::kSouthWest),
+          RandomPick(game::Direction::kSouthEast, game::Direction::kSouthWest),
           static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
                                            std::min(Radius * 3, maxdist))));
       break;
@@ -7718,7 +7718,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       }
       coord = Coord_Move(
           Center,
-          RandomPick(game::DirType::kSouthWest, game::DirType::kNorthWest),
+          RandomPick(game::Direction::kSouthWest, game::Direction::kNorthWest),
           static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
                                            std::min(Radius * 3, maxdist))));
       break;

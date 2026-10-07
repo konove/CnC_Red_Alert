@@ -64,7 +64,7 @@ constexpr int kSamplePoint = (kSamplesPerPixel / 2) - 2;
 
 std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
                                       const int width, const int height,
-                                      const game::DirType rotation,
+                                      const game::Direction rotation,
                                       const int32_t scale) {
   const int out_width = width * 2;
   const int out_height = height * 2;
@@ -80,7 +80,7 @@ std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
   //
   // The matrix below is [[sin, cos], [-cos, sin]], a rotation by `angle`
   // minus a quarter turn, so converting the facing negates it and adds that
-  // quarter turn back. Angles are in 256ths of a circle, like DirType.
+  // quarter turn back. Angles are in 256ths of a circle, like Direction.
   const auto angle = static_cast<uint8_t>(256 - rotation.value() + 64);
   const double radians = angle * 2.0 * std::numbers::pi / 256.0;
 
@@ -127,7 +127,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const WindowNumberType window, ShapeFlags flags,
                    std::span<const uint8_t> fading_data,
                    std::span<const uint8_t> ghostdata,
-                   const game::DirType rotation, const int32_t scale) {
+                   const game::Direction rotation, const int32_t scale) {
   // Special kludge for E3 to prevent crashes
   //
   // Callers that ask for ghosting or fading without supplying the table get
@@ -160,7 +160,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       // Rotation and scale handler.
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
-      if (rotation != game::DirType::kNorth || scale != 0x0100) {
+      if (rotation != game::Direction::kNorth || scale != 0x0100) {
         frame_pixels =
             ScaleRotateShape(frame_pixels, width, height, rotation, scale);
         width *= 2;

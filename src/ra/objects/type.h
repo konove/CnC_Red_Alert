@@ -731,7 +731,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	gets constructed. The facing matches the final stage of the
   **	construction animation.
   */
-  game::DirType StartFace;
+  game::Direction StartFace;
 
   /*
   **	This is the Tiberium storage capacity of the building. The sum of all
@@ -779,7 +779,7 @@ class BuildingTypeClass : public TechnoTypeClass {
       bool is_regulated, bool is_nominal, bool is_wall, bool is_simpledamage,
       bool is_stealthy, bool is_selectable, bool is_legal_target,
       bool is_insignificant, bool is_theater, bool is_turret_equipped,
-      bool is_remappable, RTTIType tobuild, game::DirType sframe,
+      bool is_remappable, RTTIType tobuild, game::Direction sframe,
       game::BSizeType size,
       std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
@@ -1001,7 +1001,7 @@ class UnitTypeClass : public TechnoTypeClass {
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] int Max_Pips() const override;
 
-  void Turret_Adjust(game::DirType dir, int& x, int& y) const;
+  void Turret_Adjust(game::Direction dir, int& x, int& y) const;
 
   void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -1098,7 +1098,7 @@ class VesselTypeClass : public TechnoTypeClass {
   [[nodiscard]] int Max_Pips() const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
 
-  void Turret_Adjust(game::DirType dir, int& x, int& y) const;
+  void Turret_Adjust(game::Direction dir, int& x, int& y) const;
 
   void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;

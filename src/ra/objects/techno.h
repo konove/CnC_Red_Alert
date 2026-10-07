@@ -295,7 +295,7 @@ class TechnoClass : public RadioClass,
         CloakDelay(0),
         TarCom(Target{}),
         SuspendedTarCom(Target{}),
-        PrimaryFacing(game::DirType::kNorth),
+        PrimaryFacing(game::Direction::kNorth),
         Arm(0),
         Ammo(-1),
         PurchasePrice(0) {}
@@ -317,7 +317,7 @@ class TechnoClass : public RadioClass,
   // to [1, 5], or 0 if the object cannot produce survivors.
   [[nodiscard]] virtual int How_Many_Survivors() const;
 
-  [[nodiscard]] virtual game::DirType Turret_Facing() const {
+  [[nodiscard]] virtual game::Direction Turret_Facing() const {
     return PrimaryFacing.Current();
   }
   Cell Nearby_Location(const TechnoClass* techno = nullptr) const;
@@ -336,9 +336,9 @@ class TechnoClass : public RadioClass,
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
   virtual Cell Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] Coordinate Fire_Coord(int which) const override;
-  virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
-                                         Cell& moveto) const;
-  [[nodiscard]] virtual game::DirType Fire_Direction() const;
+  virtual game::Direction Desired_Load_Dir(ObjectClass* /*unused*/,
+                                           Cell& moveto) const;
+  [[nodiscard]] virtual game::Direction Fire_Direction() const;
   [[nodiscard]] HousesType Owner() const override;
   [[nodiscard]] virtual InfantryType Crew_Type() const;
   [[nodiscard]] bool Can_Player_Fire() const override;
@@ -439,7 +439,7 @@ class TechnoClass : public RadioClass,
   // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
   void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
                           int shapenum, int x, int y, WindowNumberType window,
-                          game::DirType rotation = game::DirType::kNorth,
+                          game::Direction rotation = game::Direction::kNorth,
                           int scale = 0x0100) const;
 
   void Draw_It(PixelView& view, int x, int y,
@@ -467,7 +467,7 @@ class TechnoClass : public RadioClass,
   **	Map entry and exit logic.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
   void Detach(Target target, bool all) override;
 
   /*

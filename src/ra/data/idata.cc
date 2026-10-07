@@ -1114,7 +1114,7 @@ bool InfantryTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   if (i != nullptr) {
     const Coordinate coord = TheMap().at(cell).Closest_Free_Spot(cell.Center());
     if (coord) {
-      return i->Unlimbo(coord, game::DirType::kEast);
+      return i->Unlimbo(coord, game::Direction::kEast);
     }
     base::DeletePooled(i);
   }

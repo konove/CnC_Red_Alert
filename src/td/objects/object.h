@@ -190,7 +190,7 @@ class ObjectClass : public AbstractClass {
   */
   virtual bool Limbo();
   virtual bool Unlimbo(Coordinate /*coord*/,
-                       game::DirType facing = game::DirType::kNorth);
+                       game::Direction facing = game::Direction::kNorth);
   virtual void Detach(Target /*unused*/, bool /*unused*/) {}
   virtual void Detach_All(bool all = true);
   static void Detach_This_From_All(Target target, bool all = true);

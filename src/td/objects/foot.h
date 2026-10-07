@@ -253,7 +253,7 @@ class FootClass : public TechnoClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
   bool Limbo() override;
   bool Mark(MarkType mark) override;
 

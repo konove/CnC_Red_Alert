@@ -182,7 +182,7 @@ class UnitClass final : public DriveClass {
   */
   bool Should_Crush_It(const TechnoClass* it) const;
   [[nodiscard]] int Credit_Load() const;
-  [[nodiscard]] game::DirType Turret_Facing() const override {
+  [[nodiscard]] game::Direction Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
@@ -191,8 +191,8 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
-  [[nodiscard]] game::DirType Fire_Direction() const override;
-  bool Ok_To_Move(game::DirType dir) override;
+  [[nodiscard]] game::Direction Fire_Direction() const override;
+  bool Ok_To_Move(game::Direction dir) override;
   [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
   [[nodiscard]] Fixed Tiberium_Load() const override;
@@ -208,7 +208,7 @@ class UnitClass final : public DriveClass {
   */
   bool Limbo() override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -245,8 +245,8 @@ class UnitClass final : public DriveClass {
   **	AI.
   */
   Target Greatest_Threat(ThreatType threat) override;  // const;
-  game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 Cell& moveto) const override;
+  game::Direction Desired_Load_Dir(ObjectClass* passenger,
+                                   Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;

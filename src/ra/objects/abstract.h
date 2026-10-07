@@ -95,14 +95,14 @@ class AbstractClass {
   [[nodiscard]] virtual Coordinate Center_Coord() const { return Coord; }
   [[nodiscard]] virtual Coordinate Target_Coord() const { return Coord; }
 
-  game::DirType DirectionTo(const AbstractClass* object) const {
+  game::Direction DirectionTo(const AbstractClass* object) const {
     return ra::DirectionBetween(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] game::DirType DirectionTo(const Coordinate coord) const {
+  [[nodiscard]] game::Direction DirectionTo(const Coordinate coord) const {
     return ra::DirectionBetween(Center_Coord(), coord);
   }
-  [[nodiscard]] game::DirType DirectionTo(Target target) const;
-  [[nodiscard]] game::DirType DirectionTo(const Cell cell) const {
+  [[nodiscard]] game::Direction DirectionTo(Target target) const;
+  [[nodiscard]] game::Direction DirectionTo(const Cell cell) const {
     return ra::DirectionBetween(Cell::Containing(Center_Coord()), cell);
   }
 

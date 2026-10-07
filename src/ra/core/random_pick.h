@@ -33,9 +33,9 @@ T RandomPick(const T low, const T high) {
 
 // Returns a random direction on the arc that runs clockwise from `low` to
 // `high`, both included; `low` must not be past `high`.
-inline game::DirType RandomPick(const game::DirType low,
-                                const game::DirType high) {
-  return game::DirType(RandomPick(low.value(), high.value()));
+inline game::Direction RandomPick(const game::Direction low,
+                                  const game::Direction high) {
+  return game::Direction(RandomPick(low.value(), high.value()));
 }
 
 // Returns true `percent` times out of 100, drawing from the synchronized

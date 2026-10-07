@@ -123,7 +123,7 @@ class VesselClass : public DriveClass {
   void Combat_AI();
   bool Edge_Of_World_AI();
   void Repair_AI();
-  [[nodiscard]] game::DirType Turret_Facing() const override {
+  [[nodiscard]] game::Direction Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
@@ -142,8 +142,8 @@ class VesselClass : public DriveClass {
                WindowNumberType window) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
-  game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 Cell& moveto) const override;
+  game::Direction Desired_Load_Dir(ObjectClass* passenger,
+                                   Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;

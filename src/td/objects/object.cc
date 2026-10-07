@@ -1070,7 +1070,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
+bool ObjectClass::Unlimbo(Coordinate coord, game::Direction /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
        Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==

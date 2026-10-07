@@ -631,7 +631,7 @@ bool TechnoClass::Is_Allowed_To_Recloak() const { return true; }
 Coordinate TechnoClass::Fire_Coord(int which) const {
   DCHECK(IsActive);
 
-  const game::DirType dir = Turret_Facing();
+  const game::Direction dir = Turret_Facing();
   const TechnoTypeClass* tclass = Techno_Type_Class();
 
   int dist = 0;
@@ -645,13 +645,13 @@ Coordinate TechnoClass::Fire_Coord(int which) const {
   }
 
   Coordinate coord =
-      Coord_Move(Center_Coord(), game::DirType::kNorth,
+      Coord_Move(Center_Coord(), game::Direction::kNorth,
                  static_cast<uint16_t>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
-    coord = Coord_Move(coord, dir + game::DirType::kEast,
+    coord = Coord_Move(coord, dir + game::Direction::kEast,
                        static_cast<uint16_t>(lateral));
   } else {
-    coord = Coord_Move(coord, dir + game::DirType::kWest,
+    coord = Coord_Move(coord, dir + game::Direction::kWest,
                        static_cast<uint16_t>(lateral));
   }
   coord = Coord_Move(coord, dir, static_cast<uint16_t>(dist));
@@ -698,7 +698,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       Cloak(game::UNCLOAKED),
       TarCom(Target{}),
       SuspendedTarCom(Target{}),
-      PrimaryFacing(game::DirType::kNorth),
+      PrimaryFacing(game::Direction::kNorth),
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
@@ -1312,7 +1312,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK(IsActive);
 
   if (RadioClass::Unlimbo(coord, dir)) {
@@ -3267,8 +3267,8 @@ bool TechnoClass::Electric_Zap(Target target, int which,
 BulletClass* TechnoClass::Fire_At(Target target, int which) {
   DCHECK(IsActive);
 
-  game::DirType dir =
-      game::DirType::kNorth;        // The facing to impart upon the projectile.
+  game::Direction dir =
+      game::Direction::kNorth;      // The facing to impart upon the projectile.
   Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -4606,11 +4606,9 @@ game::VisualType TechnoClass::Visual_Character(bool raw) const {
   return game::VISUAL_HIDDEN;
 }
 
-void TechnoClass::Techno_Draw_Object(PixelView& view,
-                                     std::span<const std::byte> shapefile,
-                                     int shapenum, int x, int y,
-                                     WindowNumberType window,
-                                     game::DirType rotation, int scale) const {
+void TechnoClass::Techno_Draw_Object(
+    PixelView& view, std::span<const std::byte> shapefile, int shapenum, int x,
+    int y, WindowNumberType window, game::Direction rotation, int scale) const {
   DCHECK(IsActive);
 
   if (!shapefile.empty()) {
@@ -5516,12 +5514,12 @@ Fixed TechnoClass::Tiberium_Load() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
-                                            Cell& moveto) const {
+game::Direction TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                              Cell& moveto) const {
   DCHECK(IsActive);
 
   moveto = Cell{};
-  return game::DirType::kNorth;
+  return game::Direction::kNorth;
 }
 
 /***********************************************************************************************
@@ -5565,7 +5563,7 @@ int TechnoClass::Pip_Count() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType TechnoClass::Fire_Direction() const {
+game::Direction TechnoClass::Fire_Direction() const {
   DCHECK(IsActive);
 
   return Turret_Facing();

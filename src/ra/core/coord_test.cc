@@ -22,27 +22,28 @@ TEST(CoordTest, DirectionHasTheFullResolution) {
   const Coordinate from = kCell.Center();
 
   EXPECT_EQ(DirectionBetween(from, Cell::FromXY(10, 15).Center()),
-            game::DirType::kNorth);
+            game::Direction::kNorth);
   EXPECT_EQ(DirectionBetween(from, Cell::FromXY(15, 20).Center()),
-            game::DirType::kEast);
+            game::Direction::kEast);
   // A little north of east is neither compass point.
-  const game::DirType dir =
+  const game::Direction dir =
       DirectionBetween(from, Cell::FromXY(18, 19).Center());
-  EXPECT_GT(dir, game::DirType::kNorthEast);
-  EXPECT_LT(dir, game::DirType::kEast);
+  EXPECT_GT(dir, game::Direction::kNorthEast);
+  EXPECT_LT(dir, game::Direction::kEast);
 }
 
 TEST(CoordTest, Direction8SnapsToACompassPoint) {
   const Coordinate from = kCell.Center();
 
   EXPECT_EQ(Direction8(from, Cell::FromXY(18, 19).Center()),
-            game::DirType::kEast);
+            game::Direction::kEast);
   EXPECT_EQ(Direction8(from, Cell::FromXY(10, 25).Center()),
-            game::DirType::kSouth);
+            game::Direction::kSouth);
 }
 
 TEST(CoordTest, CellDirectionSnapsToACompassPoint) {
-  EXPECT_EQ(DirectionBetween(kCell, Cell::FromXY(2, 19)), game::DirType::kWest);
+  EXPECT_EQ(DirectionBetween(kCell, Cell::FromXY(2, 19)),
+            game::Direction::kWest);
 }
 
 TEST(CoordTest, AdjacentCellStepsOneCell) {
@@ -50,7 +51,7 @@ TEST(CoordTest, AdjacentCellStepsOneCell) {
             Cell::FromXY(10, 19));
   EXPECT_EQ(AdjacentCell(kCell, game::FacingType::kSouthEast),
             Cell::FromXY(11, 21));
-  EXPECT_EQ(AdjacentCell(kCell, game::DirType::kWest), Cell::FromXY(9, 20));
+  EXPECT_EQ(AdjacentCell(kCell, game::Direction::kWest), Cell::FromXY(9, 20));
 }
 
 TEST(CoordTest, AdjacentCellWrapsFacingNoneToNorthWest) {
@@ -65,7 +66,7 @@ TEST(CoordTest, AdjacentCoordinateIsTheNeighbouringCellCenter) {
 
   EXPECT_EQ(AdjacentCell(corner, game::FacingType::kSouth),
             Cell::FromXY(10, 21).Center());
-  EXPECT_EQ(AdjacentCell(corner, game::DirType::kEast),
+  EXPECT_EQ(AdjacentCell(corner, game::Direction::kEast),
             Cell::FromXY(11, 20).Center());
 }
 

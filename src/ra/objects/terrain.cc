@@ -560,7 +560,7 @@ void TerrainClass::AI() {
  * HISTORY: * 11/02/1994 JLB : Created. * 11/16/1994 JLB : Checks for theater
  *legality.                                             *
  *=============================================================================================*/
-bool TerrainClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool TerrainClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 

@@ -99,7 +99,7 @@ ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
  *=============================================================================================*/
 void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
   bool player_scrolled = false;
-  static game::DirType direction;
+  static game::Direction direction;
   int rate = 0;
 
   /*

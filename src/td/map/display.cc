@@ -1266,7 +1266,7 @@ void DisplayClass::Write_INI(engine::file::IniFile& ini) {
  *distance parameter.                                                *
  *   08/10/1995 JLB : Any direction scrolling. *
  *=============================================================================================*/
-bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
+bool DisplayClass::Scroll_Map(game::Direction facing, int& distance,
                               bool really) {
   /*
   **	If the distance is invalid then no further checking is required. Bail
@@ -1280,39 +1280,39 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
   if (TacticalCoord.x() == Cell_To_Lepton(MapCellX) &&
       crude != game::FacingType::kWest) {
     if (crude == game::FacingType::kSouthWest) {
-      facing = game::DirType::kSouth;
+      facing = game::Direction::kSouth;
     }
     if (crude == game::FacingType::kNorthWest) {
-      facing = game::DirType::kNorth;
+      facing = game::Direction::kNorth;
     }
   }
   if (TacticalCoord.y() == Cell_To_Lepton(MapCellY) &&
       crude != game::FacingType::kNorth) {
     if (crude == game::FacingType::kNorthWest) {
-      facing = game::DirType::kWest;
+      facing = game::Direction::kWest;
     }
     if (crude == game::FacingType::kNorthEast) {
-      facing = game::DirType::kEast;
+      facing = game::Direction::kEast;
     }
   }
   if (TacticalCoord.x() + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
       crude != game::FacingType::kEast) {
     if (crude == game::FacingType::kNorthEast) {
-      facing = game::DirType::kNorth;
+      facing = game::Direction::kNorth;
     }
     if (crude == game::FacingType::kSouthEast) {
-      facing = game::DirType::kSouth;
+      facing = game::Direction::kSouth;
     }
   }
   if (TacticalCoord.y() + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
       crude != game::FacingType::kSouth) {
     if (crude == game::FacingType::kSouthEast) {
-      facing = game::DirType::kEast;
+      facing = game::Direction::kEast;
     }
     if (crude == game::FacingType::kSouthWest) {
-      facing = game::DirType::kWest;
+      facing = game::Direction::kWest;
     }
   }
 

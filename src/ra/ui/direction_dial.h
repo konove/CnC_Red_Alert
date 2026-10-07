@@ -41,14 +41,14 @@ class DirectionDial : public game::ControlClass {
   // Creates the dial with button ID `id` in the window-relative rectangle
   // `x`, `y`, `width`, `height` (pixels), pointing in `initial_direction`.
   DirectionDial(int id, int x, int y, int width, int height,
-                game::DirType initial_direction);
+                game::Direction initial_direction);
 
   // Returns the direction the dial points in, 0-255. After the player turns
   // it, this is one of the eight snapped values Direction8Toward() returns.
-  [[nodiscard]] game::DirType direction() const;
+  [[nodiscard]] game::Direction direction() const;
   // Points the dial in `direction`, 0-255, and schedules a redraw. Does
   // not report a change to the owner.
-  void set_direction(game::DirType direction);
+  void set_direction(game::Direction direction);
 
   // Draws the dial and its hand if a redraw is pending or `forced` is true.
   // Returns true if it drew.
@@ -67,7 +67,7 @@ class DirectionDial : public game::ControlClass {
   int center_y_;                   // y of the dial's centre, in window pixels
   int decoration_points_[8][2]{};  // x, y of each decoration, by FacingType
   int hand_tips_[8][2]{};          // x, y of the hand's tip, by FacingType
-  game::DirType direction_;        // direction the dial points in, 0-255
+  game::Direction direction_;      // direction the dial points in, 0-255
   game::FacingType facing_;  // direction_ snapped to one of the eight facings
 };
 

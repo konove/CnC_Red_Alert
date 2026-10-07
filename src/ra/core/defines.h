@@ -2182,7 +2182,7 @@ using enum WindowNumberType;
 
 // The highest direction a random facing may take (Tiberian Dawn's stops at
 // 254).
-inline constexpr game::DirType kMaxRandomDirection = game::DirType(255);
+inline constexpr game::Direction kMaxRandomDirection = game::Direction(255);
 
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.

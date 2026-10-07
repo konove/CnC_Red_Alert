@@ -643,7 +643,7 @@ void BulletClass::Detach(Target target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
   Validate();
   /*
   **	Try to unlimbo the bullet as far as the base class is concerned. Use the

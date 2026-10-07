@@ -485,7 +485,7 @@ TechnoClass::TechnoClass()
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::DirType::kNorth);
+  PrimaryFacing.Set(game::Direction::kNorth);
 }
 
 /***********************************************************************************************
@@ -815,7 +815,7 @@ TechnoClass::TechnoClass(HousesType house)
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::DirType::kNorth);
+  PrimaryFacing.Set(game::Direction::kNorth);
 
   /*
   **	There is a chance that a vehicle will be a "lemon".
@@ -1018,7 +1018,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   if (RadioClass::Unlimbo(coord, dir)) {
     PrimaryFacing = dir;
     Enter_Idle_Mode(true);
@@ -2098,8 +2098,8 @@ int TechnoClass::Rearm_Delay(bool second) const {
  *inaccurate projectiles.                            *
  *=============================================================================================*/
 BulletClass* TechnoClass::Fire_At(Target target, int which) {
-  game::DirType dir =
-      game::DirType::kNorth;        // The facing to impart upon the projectile.
+  game::Direction dir =
+      game::Direction::kNorth;      // The facing to impart upon the projectile.
   Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -3820,10 +3820,10 @@ int TechnoClass::Tiberium_Load() const { return 0x0000; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
-                                            Cell& moveto) const {
+game::Direction TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                              Cell& moveto) const {
   moveto = Cell{};
-  return game::DirType::kNorth;
+  return game::Direction::kNorth;
 }
 
 /***********************************************************************************************
@@ -3863,7 +3863,7 @@ int TechnoClass::Pip_Count() const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType TechnoClass::Fire_Direction() const {
+game::Direction TechnoClass::Fire_Direction() const {
   return PrimaryFacing.Current();
 }
 

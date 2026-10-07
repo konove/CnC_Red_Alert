@@ -33,25 +33,25 @@ inline Coordinate XYPixel_Coord(int x, int y) {
       x * game::kCellWidthLeptons / game::kCellWidthPixels,
       y * game::kCellHeightLeptons / game::kCellHeightPixels);
 }
-inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
+inline game::Direction Direction256(Coordinate coord1, Coordinate coord2) {
   return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
                                   coord2.y());
 }
-inline game::DirType DirectionBetween(Coordinate coord1, Coordinate coord2) {
+inline game::Direction DirectionBetween(Coordinate coord1, Coordinate coord2) {
   return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
                                   coord2.y());
 }
-inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
+inline game::Direction Direction8(Coordinate coord1, Coordinate coord2) {
   return game::Direction8Toward(coord1.x(), coord1.y(), coord2.x(), coord2.y());
 }
-inline game::DirType DirectionBetween(Cell cell1, Cell cell2) {
+inline game::Direction DirectionBetween(Cell cell1, Cell cell2) {
   return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
 inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
   return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)
       .Snapped();
 }
-inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
+inline Coordinate Adjacent_Cell(Coordinate coord, game::Direction dir) {
   return Adjacent_Cell(coord, game::NearestFacing(dir));
 }
 inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
@@ -59,7 +59,7 @@ inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
   // does not index before the start of the table.
   return cell.Offset(AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }
-inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
+inline Cell Adjacent_Cell(Cell cell, game::Direction dir) {
   return cell.Offset(AdjacentCell.at(game::NearestFacing(dir)));
 }
 inline int Lepton_To_Pixel(int lepton) {

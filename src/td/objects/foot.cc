@@ -912,7 +912,7 @@ void FootClass::Approach_Target() {
       Coordinate trycoord{};
       const Cell tcell = Cell::Containing(tcoord);
       Cell trycell = tcell;
-      const game::DirType dir = Direction256(tcoord, Center_Coord());
+      const game::Direction dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
       /*
@@ -1032,7 +1032,7 @@ int FootClass::Mission_Guard_Area() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool FootClass::Unlimbo(Coordinate coord, game::Direction dir) {
   /*
   **	Try to unlimbo the unit.
   */

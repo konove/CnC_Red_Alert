@@ -72,7 +72,7 @@ class TurretClass : public DriveClass {
   game::FacingClass SecondaryFacing;
 
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
 
   /*
   **	File I/O.
@@ -85,9 +85,9 @@ class TurretClass : public DriveClass {
   TurretClass& operator=(TurretClass&&) = delete;
 
   BulletClass* Fire_At(Target target, int which) override;
-  game::DirType Fire_Direction() const override;
+  game::Direction Fire_Direction() const override;
   game::FireErrorType Can_Fire(Target target, int which) const override;
-  bool Ok_To_Move(game::DirType dir) override;
+  bool Ok_To_Move(game::Direction dir) override;
   void AI() override;
   Coordinate Fire_Coord(int which) const override;
 

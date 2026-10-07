@@ -16,9 +16,10 @@ T Random_Picky(T a, T b, [[maybe_unused]] const char* sfile,
       GameRandomRange(static_cast<int>(a), static_cast<int>(b)));
 }
 
-inline game::DirType Random_Picky(const game::DirType a, const game::DirType b,
-                                  const char* sfile, const int line) {
-  return game::DirType(Random_Picky(a.value(), b.value(), sfile, line));
+inline game::Direction Random_Picky(const game::Direction a,
+                                    const game::Direction b, const char* sfile,
+                                    const int line) {
+  return game::Direction(Random_Picky(a.value(), b.value(), sfile, line));
 }
 
 #define Random_Pick(low, high) Random_Picky((low), (high), __FILE__, __LINE__)

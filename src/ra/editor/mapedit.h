@@ -189,7 +189,7 @@ class MapEditClass : public MouseClass {
   void Init_IO() override;   // Inits button list
   void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = true) override;
-  bool Scroll_Map(game::DirType facing, int& distance,
+  bool Scroll_Map(game::Direction facing, int& distance,
                   bool really = true) override;
   void Read_INI(engine::file::IniFile& ini) override;
   void Detach(ObjectClass* object) override;

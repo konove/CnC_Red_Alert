@@ -65,7 +65,7 @@ namespace game {
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
 FacingClass::FacingClass()
-    : CurrentFacing(DirType::kNorth), DesiredFacing(DirType::kNorth) {}
+    : CurrentFacing(Direction::kNorth), DesiredFacing(Direction::kNorth) {}
 
 /***********************************************************************************************
  * FacingClass::Set_Desired -- Sets the desired facing  value. *
@@ -86,7 +86,7 @@ FacingClass::FacingClass()
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool FacingClass::Set_Desired(DirType facing) {
+bool FacingClass::Set_Desired(Direction facing) {
   if (DesiredFacing != facing) {
     DesiredFacing = facing;
     return true;
@@ -109,7 +109,7 @@ bool FacingClass::Set_Desired(DirType facing) {
  *                                                                                             *
  * HISTORY: * 03/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool FacingClass::Set_Current(DirType facing) {
+bool FacingClass::Set_Current(Direction facing) {
   if (CurrentFacing != facing) {
     CurrentFacing = facing;
     return true;
@@ -147,7 +147,7 @@ bool FacingClass::Rotation_Adjust(int rate) {
   if (Is_Rotating()) {
     rate = std::min(rate, 127);
 
-    const DirType oldfacing = CurrentFacing;
+    const Direction oldfacing = CurrentFacing;
     const int diff = Difference();
 
     /*
@@ -164,9 +164,9 @@ bool FacingClass::Rotation_Adjust(int rate) {
       *current *	facing.
       */
       if (diff < 0) {
-        CurrentFacing = CurrentFacing - DirType(rate);
+        CurrentFacing = CurrentFacing - Direction(rate);
       } else {
-        CurrentFacing = CurrentFacing + DirType(rate);
+        CurrentFacing = CurrentFacing + Direction(rate);
       }
     }
 

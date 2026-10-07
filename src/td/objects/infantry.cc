@@ -2331,13 +2331,13 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
       TheMap()
           .at(Cell::Containing(headto))
           .Closest_Free_Spot(Coord_Move(
-              headto, DirectionTo(headto) + game::DirType::kSouth, 0x007C));
+              headto, DirectionTo(headto) + game::Direction::kSouth, 0x007C));
   if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto =
         TheMap()
             .at(Cell::Containing(old))
             .Closest_Free_Spot(
-                Coord_Move(old, DirectionTo(headto) + game::DirType::kSouth,
+                Coord_Move(old, DirectionTo(headto) + game::Direction::kSouth,
                            0x0080),
                 true);
   }
@@ -2378,7 +2378,7 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Set_Primary_Facing(game::DirType facing, bool) {
+void InfantryClass::Set_Primary_Facing(game::Direction facing, bool) {
   Validate();
   FootClass::Set_Primary_Facing(facing, true);
 }
@@ -2505,7 +2505,7 @@ BulletClass* InfantryClass::Fire_At(Target target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(Coordinate coord, game::DirType facing) {
+bool InfantryClass::Unlimbo(Coordinate coord, game::Direction facing) {
   Validate();
   /*
   **	Make sure that the infantry start in a legal position on the map.
@@ -3131,7 +3131,7 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
           */
           const MissionType mission = Mission_From_Name(tokens.Next());
           const auto dir =
-              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
+              game::Direction(base::ParseIntegerOr<int>(tokens.Next(), 0));
           infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;

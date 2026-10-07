@@ -397,19 +397,19 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   // Scrolls the tactical map in the direction specified.
   int distance = game::kCellWidthLeptons;
   if (key != 0 && key == TheOptions().KeyScrollLeft) {
-    TheMap().Scroll_Map(game::DirType::kWest, distance, true);
+    TheMap().Scroll_Map(game::Direction::kWest, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == TheOptions().KeyScrollRight) {
-    TheMap().Scroll_Map(game::DirType::kEast, distance, true);
+    TheMap().Scroll_Map(game::Direction::kEast, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == TheOptions().KeyScrollUp) {
-    TheMap().Scroll_Map(game::DirType::kNorth, distance, true);
+    TheMap().Scroll_Map(game::Direction::kNorth, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == TheOptions().KeyScrollDown) {
-    TheMap().Scroll_Map(game::DirType::kSouth, distance, true);
+    TheMap().Scroll_Map(game::Direction::kSouth, distance, true);
     input = KN_NONE;
   }
 

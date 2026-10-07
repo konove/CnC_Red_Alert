@@ -270,7 +270,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] int Value() const override;
   [[nodiscard]] std::span<const std::byte> Get_Image_Data() const override;
   [[nodiscard]] int How_Many_Survivors() const override;
-  [[nodiscard]] game::DirType Turret_Facing() const override;
+  [[nodiscard]] game::Direction Turret_Facing() const override;
   Cell Find_Exit_Cell(const TechnoClass* techno) const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] int Pip_Count() const override;
@@ -281,7 +281,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] game::DirType Fire_Direction() const override;
+  [[nodiscard]] game::Direction Fire_Direction() const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
   [[nodiscard]] int Shape_Number() const;
@@ -309,7 +309,7 @@ class BuildingClass : public TechnoClass {
       Cell cell,
       game::FacingType /*unused*/ = game::FacingType::kNone) const override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
   bool Limbo() override;
 
   /*

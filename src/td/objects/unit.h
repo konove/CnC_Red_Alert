@@ -133,7 +133,7 @@ class UnitClass final : public TarComClass {
   **	Object entry and exit from the game system.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
   bool Limbo() override;
 
   /*
@@ -175,8 +175,8 @@ class UnitClass final : public TarComClass {
   /*
   **	AI.
   */
-  game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 Cell& moveto) const override;
+  game::Direction Desired_Load_Dir(ObjectClass* passenger,
+                                   Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;

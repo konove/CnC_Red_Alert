@@ -330,7 +330,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool AircraftClass::Unlimbo(Coordinate coord, game::Direction dir) {
   Validate();
   if (FootClass::Unlimbo(coord, dir)) {
     /*
@@ -480,7 +480,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       base::MovePoint(
           xx, yy,
           static_cast<uint8_t>(
-              (SecondaryFacing.Current() + game::DirType::kSouth).value()),
+              (SecondaryFacing.Current() + game::Direction::kSouth).value()),
           static_cast<int16_t>(_stretch.at(face) * 2));
       CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
@@ -535,7 +535,7 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
               Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
                   .Center();
           const auto dir =
-              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
+              game::Direction(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
           if (!TheMap().In_Radar(Cell::Containing(coord))) {
             base::DeletePooled(air);
@@ -1069,7 +1069,7 @@ int AircraftClass::Mission_Unload() {
             **	Pick a new direction and fly off.
             */
             PrimaryFacing.Set_Desired(
-                Random_Pick(game::DirType::kNorth, kMaxRandomDirection));
+                Random_Pick(game::Direction::kNorth, kMaxRandomDirection));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
             return kTicksPerSecond * 3;
           }
@@ -2139,12 +2139,12 @@ ActionType AircraftClass::What_Action(Cell cell) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType AircraftClass::Pose_Dir() const {
+game::Direction AircraftClass::Pose_Dir() const {
   Validate();
   if (*this == AIRCRAFT_TRANSPORT) {
-    return game::DirType::kNorth;
+    return game::Direction::kNorth;
   }
-  return game::DirType::kNorthEast;
+  return game::Direction::kNorthEast;
 }
 
 /***********************************************************************************************
@@ -2676,8 +2676,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
  * HISTORY: * 06/12/1995 JLB : Created. * 07/30/1995 JLB : Revamped to scan all
  *adjacent cells.                                     *
  *=============================================================================================*/
-game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
-                                              Cell& moveto) const {
+game::Direction AircraftClass::Desired_Load_Dir(ObjectClass* object,
+                                                Cell& moveto) const {
   Validate();
   const Cell center = Cell::Containing(Center_Coord());
   for (int sweep = static_cast<int>(game::FacingType::kNorth);
@@ -2686,17 +2686,17 @@ game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return game::DirType::kNorth;
+      return game::Direction::kNorth;
     }
 
     moveto = Adjacent_Cell(center, game::FacingType::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return game::DirType::kNorth;
+      return game::Direction::kNorth;
     }
   }
-  return game::DirType::kNorth;
+  return game::Direction::kNorth;
 }
 
 /***********************************************************************************************
@@ -2855,7 +2855,7 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
         const Coordinate newcoord =
-            Coord_Move(tcoord, game::DirType(face), static_cast<uint16_t>(r));
+            Coord_Move(tcoord, game::Direction(face), static_cast<uint16_t>(r));
         const Cell newcell = Cell::Containing(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
@@ -3209,7 +3209,7 @@ void AircraftClass::Set_Speed(int speed) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-game::DirType AircraftClass::Fire_Direction() const {
+game::Direction AircraftClass::Fire_Direction() const {
   Validate();
   return SecondaryFacing.Current();
 }

@@ -183,7 +183,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(Coordinate coord, game::DirType facing) override;
+  bool Unlimbo(Coordinate coord, game::Direction facing) override;
   bool Limbo() override;
   void Detach(Target target, bool all) override;
 

@@ -1135,8 +1135,8 @@ void UnitTypeClass::One_Time() {
 bool UnitTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(
-        cell.Center(), RandomPick(game::DirType::kNorth, kMaxRandomDirection));
+    return unit->Unlimbo(cell.Center(), RandomPick(game::Direction::kNorth,
+                                                   kMaxRandomDirection));
   }
   return false;
 }
@@ -1250,7 +1250,7 @@ int UnitTypeClass::Max_Pips() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
+void UnitTypeClass::Turret_Adjust(game::Direction dir, int& x, int& y) const {
   static const struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N

@@ -374,7 +374,7 @@ void HelpClass::Set_Text(int text) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-bool HelpClass::Scroll_Map(game::DirType facing, int& distance, bool really) {
+bool HelpClass::Scroll_Map(game::Direction facing, int& distance, bool really) {
   if (really) {
     Help_Text(TXT_NONE);
   }

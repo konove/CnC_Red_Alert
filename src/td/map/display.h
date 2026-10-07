@@ -173,7 +173,7 @@ class DisplayClass : public MapClass {
                          int /*unused*/ = -1, int /*unused*/ = kYellow,
                          bool /*unused*/ = false, int /*unused*/ = 0) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
-  virtual bool Scroll_Map(game::DirType facing, int& distance, bool really);
+  virtual bool Scroll_Map(game::Direction facing, int& distance, bool really);
   virtual void Refresh_Cells(Cell cell, std::span<const int16_t> list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);

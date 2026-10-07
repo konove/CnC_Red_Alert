@@ -1556,8 +1556,8 @@ void UnitTypeClass::Init(TheaterType theater) {
 bool UnitTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit) {
-    return unit->Unlimbo(
-        cell.Center(), Random_Pick(game::DirType::kNorth, kMaxRandomDirection));
+    return unit->Unlimbo(cell.Center(), Random_Pick(game::Direction::kNorth,
+                                                    kMaxRandomDirection));
   }
   return false;
 }

@@ -42,10 +42,10 @@ TEST_F(RandomPickTest, RandomPickStaysOnTheArcOfDirections) {
   TheScenario().sync_rng_.set_seed(kSeed);
 
   for (int draw = 0; draw < kDraws; draw++) {
-    const game::DirType dir =
-        RandomPick(game::DirType::kNorthEast, game::DirType::kSouthEast);
-    EXPECT_GE(dir, game::DirType::kNorthEast);
-    EXPECT_LE(dir, game::DirType::kSouthEast);
+    const game::Direction dir =
+        RandomPick(game::Direction::kNorthEast, game::Direction::kSouthEast);
+    EXPECT_GE(dir, game::Direction::kNorthEast);
+    EXPECT_LE(dir, game::Direction::kSouthEast);
   }
 }
 

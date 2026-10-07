@@ -53,13 +53,13 @@ class Dial8Class : public game::ControlClass {
   /*
   ** Constructor/Destructor
   */
-  Dial8Class(int id, int x, int y, int w, int h, game::DirType dir);
+  Dial8Class(int id, int x, int y, int w, int h, game::Direction dir);
 
   /*
   ** Get/Set the direction the dial is currently pointing
   */
-  [[nodiscard]] game::DirType Get_Direction() const;
-  void Set_Direction(game::DirType dir);
+  [[nodiscard]] game::Direction Get_Direction() const;
+  void Set_Direction(game::Direction dir);
 
   /*
   ** Overloaded draw routine
@@ -78,7 +78,7 @@ class Dial8Class : public game::ControlClass {
   int FaceY;             // y-coord of center of face
   int FacePoint[8][2]{};  // coords of the little dial decorations
   int FaceLine[8][2]{};  // coords for drawing the dial hand
-  game::DirType Direction;     // 0-255 numerical direction of dial
+  game::Direction Direction;   // 0-255 numerical direction of dial
   game::FacingType Facing;     // numerical facing direction of dial (0 - 7)
   game::FacingType OldFacing;  // previous Facing value
 };

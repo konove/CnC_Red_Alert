@@ -238,7 +238,6 @@ The following should **not** be changed during type migration:
   - `enum EventType : uint8_t`
   - `enum HousesType : int8_t`
   - `enum TemplateType : uint16_t`
-  - `enum DirType : uint8_t`
   - Any `enum Foo : <type>` declaration
 
 - **Standard type aliases**: `bool`, `char` (for text), `size_t` (at STL boundaries; project code

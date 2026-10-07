@@ -38,7 +38,7 @@ namespace td {
 
 AbstractClass::~AbstractClass() = default;
 
-game::DirType AbstractClass::DirectionTo(Target target) const {
+game::Direction AbstractClass::DirectionTo(Target target) const {
   return td::DirectionBetween(Center_Coord(), target.AsCoordinate());
 }
 

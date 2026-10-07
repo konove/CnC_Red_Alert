@@ -56,7 +56,7 @@ std::vector<std::string> Rows(const std::vector<uint8_t>& image,
 }
 
 // Returns the picture of kShape turned to `rotation` at `scale`.
-std::vector<std::string> Draw(const game::DirType rotation,
+std::vector<std::string> Draw(const game::Direction rotation,
                               const int32_t scale) {
   const std::vector<uint8_t> pixels(kShape.begin(), kShape.end());
   return Rows(
@@ -65,12 +65,12 @@ std::vector<std::string> Draw(const game::DirType rotation,
 }
 
 TEST(ScaleRotateShapeTest, ZeroScaleDrawsNothing) {
-  EXPECT_THAT(Draw(game::DirType::kNorth, 0),
+  EXPECT_THAT(Draw(game::Direction::kNorth, 0),
               testing::Each(std::string(size_t{kShapeWidth} * 2, '.')));
 }
 
 TEST(ScaleRotateShapeTest, UnturnedShapeIsCentredInTheDoubledFrame) {
-  EXPECT_THAT(Draw(game::DirType::kNorth, 0x100),
+  EXPECT_THAT(Draw(game::Direction::kNorth, 0x100),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    "................",  //
@@ -86,7 +86,7 @@ TEST(ScaleRotateShapeTest, UnturnedShapeIsCentredInTheDoubledFrame) {
 }
 
 TEST(ScaleRotateShapeTest, HalfTurnReversesRowsAndColumns) {
-  EXPECT_THAT(Draw(game::DirType::kSouth, 0x100),
+  EXPECT_THAT(Draw(game::Direction::kSouth, 0x100),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    "................",  //
@@ -102,7 +102,7 @@ TEST(ScaleRotateShapeTest, HalfTurnReversesRowsAndColumns) {
 }
 
 TEST(ScaleRotateShapeTest, FacingWestIsAQuarterTurnAnticlockwise) {
-  EXPECT_THAT(Draw(game::DirType::kWest, 0x100),
+  EXPECT_THAT(Draw(game::Direction::kWest, 0x100),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    ".....HPXfnv.....",  //
@@ -118,7 +118,7 @@ TEST(ScaleRotateShapeTest, FacingWestIsAQuarterTurnAnticlockwise) {
 }
 
 TEST(ScaleRotateShapeTest, FacingEastIsAQuarterTurnClockwise) {
-  EXPECT_THAT(Draw(game::DirType::kEast, 0x100),
+  EXPECT_THAT(Draw(game::Direction::kEast, 0x100),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    ".....ogYQIA.....",  //
@@ -136,7 +136,7 @@ TEST(ScaleRotateShapeTest, FacingEastIsAQuarterTurnClockwise) {
 // At one and a half times the size every source pixel is one or two pixels
 // wide and high, the edge ones included, and the picture is 12 x 9.
 TEST(ScaleRotateShapeTest, ScalesEverySourcePixelEvenly) {
-  EXPECT_THAT(Draw(game::DirType::kNorth, 0x180),
+  EXPECT_THAT(Draw(game::Direction::kNorth, 0x180),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    "..AABCCDEEFGGH..",  //
@@ -152,7 +152,7 @@ TEST(ScaleRotateShapeTest, ScalesEverySourcePixelEvenly) {
 }
 
 TEST(ScaleRotateShapeTest, HalfSizeTakesEveryOtherPixel) {
-  EXPECT_THAT(Draw(game::DirType::kNorth, 0x80),
+  EXPECT_THAT(Draw(game::Direction::kNorth, 0x80),
               testing::ElementsAre("................",  //
                                    "................",  //
                                    "................",  //
@@ -174,19 +174,19 @@ TEST(ScaleRotateShapeTest, QuarterTurnsOfAnOddShapeKeepEveryPixelInPlace) {
   const std::vector<uint8_t> pixels = {'A', 'B', 'C', 'D', 'E',
                                        'F', 'G', 'H', 'I'};
   EXPECT_THAT(
-      Rows(ScaleRotateShape(pixels, 3, 3, game::DirType::kNorth, 0x100), 6),
+      Rows(ScaleRotateShape(pixels, 3, 3, game::Direction::kNorth, 0x100), 6),
       testing::ElementsAre("......", "......", "..ABC.", "..DEF.", "..GHI.",
                            "......"));
   EXPECT_THAT(
-      Rows(ScaleRotateShape(pixels, 3, 3, game::DirType::kEast, 0x100), 6),
+      Rows(ScaleRotateShape(pixels, 3, 3, game::Direction::kEast, 0x100), 6),
       testing::ElementsAre("......", "......", "..GDA.", "..HEB.", "..IFC.",
                            "......"));
   EXPECT_THAT(
-      Rows(ScaleRotateShape(pixels, 3, 3, game::DirType::kSouth, 0x100), 6),
+      Rows(ScaleRotateShape(pixels, 3, 3, game::Direction::kSouth, 0x100), 6),
       testing::ElementsAre("......", "......", "..IHG.", "..FED.", "..CBA.",
                            "......"));
   EXPECT_THAT(
-      Rows(ScaleRotateShape(pixels, 3, 3, game::DirType::kWest, 0x100), 6),
+      Rows(ScaleRotateShape(pixels, 3, 3, game::Direction::kWest, 0x100), 6),
       testing::ElementsAre("......", "......", "..CFI.", "..BEH.", "..ADG.",
                            "......"));
 }
@@ -197,7 +197,7 @@ TEST(ScaleRotateShapeTest, EveryRotationKeepsTheArea) {
   const std::vector<uint8_t> pixels(kShape.begin(), kShape.end());
   for (int rotation = 0; rotation < 256; rotation++) {
     const std::vector<uint8_t> image = ScaleRotateShape(
-        pixels, kShapeWidth, kShapeHeight, game::DirType(rotation), 0x100);
+        pixels, kShapeWidth, kShapeHeight, game::Direction(rotation), 0x100);
     const auto drawn = static_cast<int>(std::ranges::count_if(
         image, [](const uint8_t pixel) { return pixel != 0; }));
     EXPECT_NEAR(drawn, kShapeWidth * kShapeHeight, 4) << "at " << rotation;

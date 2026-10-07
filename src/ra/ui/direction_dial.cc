@@ -53,7 +53,7 @@ constexpr int kCompassTenths[8][2] = {{0, -10}, {7, -7}, {10, 0},  {7, 7},
 
 DirectionDial::DirectionDial(const int id, const int x, const int y,
                              const int width, const int height,
-                             const game::DirType initial_direction)
+                             const game::Direction initial_direction)
     : game::ControlClass(static_cast<unsigned>(id), x, y, width, height,
                          kLeftPress | kLeftHeld | kLeftRelease, true),
       center_x_(X + (Width / 2)),
@@ -143,9 +143,9 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   return true;
 }
 
-game::DirType DirectionDial::direction() const { return direction_; }
+game::Direction DirectionDial::direction() const { return direction_; }
 
-void DirectionDial::set_direction(const game::DirType direction) {
+void DirectionDial::set_direction(const game::Direction direction) {
   direction_ = direction;
   facing_ = game::NearestFacing(direction_);
   Flag_To_Redraw();

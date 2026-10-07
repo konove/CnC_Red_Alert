@@ -102,7 +102,7 @@ ScrollClass::ScrollClass() {
  *=============================================================================================*/
 #define EVA_WIDTH 80
 void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
-  static game::DirType direction;
+  static game::Direction direction;
   bool player_scrolled = false;
 
   /*

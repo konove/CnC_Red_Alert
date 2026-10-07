@@ -71,7 +71,7 @@ namespace ra {
  * HISTORY: * 04/24/1994 JLB : Created. * 06/05/1995 JLB : Simplified to just do
  *movement.                                          *
  *=============================================================================================*/
-ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
+ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
   if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, game::kLeptonsPerPixel);

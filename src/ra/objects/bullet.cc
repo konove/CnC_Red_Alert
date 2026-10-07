@@ -130,7 +130,7 @@ BulletClass::BulletClass(BulletType id, Target target, TechnoClass* payback,
     : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this)),
       Class(TheTypeHeaps().bullet().ActiveAt(static_cast<int>(id))),
       Payback(payback),
-      PrimaryFacing(game::DirType::kNorth),
+      PrimaryFacing(game::Direction::kNorth),
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
@@ -328,8 +328,8 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
       index++;
     }
 
-    const Coordinate coord =
-        Coord_Move(Coord, game::DirType::kNorth, static_cast<uint16_t>(Height));
+    const Coordinate coord = Coord_Move(Coord, game::Direction::kNorth,
+                                        static_cast<uint16_t>(Height));
     const Cell cell2 = Cell::Containing(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (ptr.front() != kRefreshEol) {
@@ -696,7 +696,7 @@ void BulletClass::Detach(Target target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
+bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
@@ -879,7 +879,8 @@ Coordinate BulletClass::Target_Coord() const {
 Coordinate BulletClass::Sort_Y() const {
   DCHECK(IsActive);
 
-  return Coord_Move(Coord, game::DirType::kSouth, game::kCellHeightLeptons / 2);
+  return Coord_Move(Coord, game::Direction::kSouth,
+                    game::kCellHeightLeptons / 2);
 }
 
 /***********************************************************************************************

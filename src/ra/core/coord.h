@@ -20,7 +20,7 @@ std::span<const int16_t> Coord_Spillage_List(Coordinate coord, const Rect& rect,
                                              bool no_center = true);
 
 // Moves `start` by `distance` leptons in the given `facing` direction.
-Coordinate Coord_Move(Coordinate start, game::DirType facing,
+Coordinate Coord_Move(Coordinate start, game::Direction facing,
                       uint16_t distance);
 
 // Returns a random coordinate within `distance` pixels of `coord`. If `lock`
@@ -37,14 +37,14 @@ inline Coordinate CoordFromPixels(const int x, const int y) noexcept {
 
 // Returns the direction from `from` to `to` at the full 256-step
 // resolution.
-inline game::DirType DirectionBetween(const Coordinate from,
-                                      const Coordinate to) {
+inline game::Direction DirectionBetween(const Coordinate from,
+                                        const Coordinate to) {
   return game::Direction256Toward(from.x(), from.y(), to.x(), to.y());
 }
 
 // Returns the direction from `from` to `to` as one of the eight compass
 // points, which is cheaper to work out than DirectionBetween().
-inline game::DirType Direction8(const Coordinate from, const Coordinate to) {
+inline game::Direction Direction8(const Coordinate from, const Coordinate to) {
   return game::Direction8Toward(from.x(), from.y(), to.x(), to.y());
 }
 
@@ -60,7 +60,7 @@ inline Coordinate AdjacentCell(const Coordinate coord,
 
 // As above, with `dir` rounded to the nearest of the eight facings.
 inline Coordinate AdjacentCell(const Coordinate coord,
-                               const game::DirType dir) {
+                               const game::Direction dir) {
   return AdjacentCell(coord, game::NearestFacing(dir));
 }
 
@@ -76,12 +76,12 @@ inline Cell AdjacentCell(const Cell cell, const game::FacingType dir) {
 }
 
 // As above, with `dir` rounded to the nearest of the eight facings.
-inline Cell AdjacentCell(const Cell cell, const game::DirType dir) {
+inline Cell AdjacentCell(const Cell cell, const game::Direction dir) {
   return AdjacentCell(cell, game::NearestFacing(dir));
 }
 
-// Calculates the DirType from one cell to another (8-direction accuracy).
-inline game::DirType DirectionBetween(Cell cell1, Cell cell2) {
+// Calculates the Direction from one cell to another (8-direction accuracy).
+inline game::Direction DirectionBetween(Cell cell1, Cell cell2) {
   return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
 

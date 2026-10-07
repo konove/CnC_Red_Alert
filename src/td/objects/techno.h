@@ -243,10 +243,10 @@ class TechnoClass : public RadioClass,
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(Cell cell) const override;
   [[nodiscard]] virtual int Tiberium_Load() const;
-  virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
-                                         Cell& moveto) const;
+  virtual game::Direction Desired_Load_Dir(ObjectClass* /*unused*/,
+                                           Cell& moveto) const;
   [[nodiscard]] virtual int Pip_Count() const;
-  [[nodiscard]] virtual game::DirType Fire_Direction() const;
+  [[nodiscard]] virtual game::Direction Fire_Direction() const;
 
   /*
   **	User I/O.
@@ -340,7 +340,7 @@ class TechnoClass : public RadioClass,
   **	Map entry and exit logic.
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
-               game::DirType dir = game::DirType::kNorth) override;
+               game::Direction dir = game::Direction::kNorth) override;
   void Detach(Target target, bool all) override;
 
   /*

@@ -123,13 +123,13 @@ class DriveClass : public FootClass {
   **	Member function prototypes.
   */
   int Offload_Tiberium_Bail() override;
-  void Do_Turn(game::DirType dir);
+  void Do_Turn(game::Direction dir);
   void Approach_Target() override;
   const ObjectTypeClass& Class_Of() const override;
   virtual void Overrun_Square(Cell cell, bool threaten = true);
   void Assign_Destination(Target target) override;
   void Per_Cell_Process(bool center) override;
-  virtual bool Ok_To_Move(game::DirType /*unused*/);
+  virtual bool Ok_To_Move(game::Direction /*unused*/);
   void Fixup_Path(PathType* path) override;
   void AI() override;
   void Force_Track(int track, Coordinate coord);
@@ -149,9 +149,10 @@ class DriveClass : public FootClass {
   // the refinery tracks: kRefineryApproach while it backs towards the pad and
   // kRefineryDock on the pad, where it unloads and from where it drives out.
   // The original's DIR_SW_X1 and DIR_SW_X2.
-  static constexpr game::DirType kRefineryApproach =
-      game::DirType::kSouthWest - 8;
-  static constexpr game::DirType kRefineryDock = game::DirType::kSouthWest - 16;
+  static constexpr game::Direction kRefineryApproach =
+      game::Direction::kSouthWest - 8;
+  static constexpr game::Direction kRefineryDock =
+      game::Direction::kSouthWest - 16;
 
   static constexpr int kBackupIntoRefinery =
       64;                                    // Track to backup into refinery.
@@ -177,13 +178,13 @@ class DriveClass : public FootClass {
   struct TurnTrackType {
     int Track = 0;          // Which track to use.
     int StartTrack = 0;     // Track when starting from stand-still.
-    game::DirType Facing;   // Facing when track has been completed.
+    game::Direction Facing;   // Facing when track has been completed.
     TrackControlType Flag{};  // List processing flag bits.
   };
 
   struct TrackType {
     Coordinate Offset{};   // Offset to origin coordinate.
-    game::DirType Facing;  // Facing (primary track).
+    game::Direction Facing;  // Facing (primary track).
   };
 
   struct RawTrackType {
@@ -215,7 +216,7 @@ class DriveClass : public FootClass {
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();
-  Coordinate Smooth_Turn(Coordinate adj, game::DirType* dir);
+  Coordinate Smooth_Turn(Coordinate adj, game::Direction* dir);
 
   static const TurnTrackType TrackControl[67];
   static const RawTrackType RawTracks[13];

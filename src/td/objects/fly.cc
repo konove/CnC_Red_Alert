@@ -73,7 +73,7 @@ namespace td {
 
 FlyClass::~FlyClass() = default;
 
-ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
+ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
   if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, game::kLeptonsPerPixel);

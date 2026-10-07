@@ -1303,7 +1303,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
+bool ObjectClass::Unlimbo(Coordinate coord, game::Direction /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
@@ -1754,16 +1754,16 @@ bool ObjectClass::Paradrop(Coordinate coord) {
 
   Height = kFlightLevel;
   IsFalling = true;
-  if (Unlimbo(coord, game::DirType::kSouth)) {
+  if (Unlimbo(coord, game::Direction::kSouth)) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), game::DirType::kNorth,
+          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), game::Direction::kNorth,
                                      static_cast<uint16_t>(0x0030 + Height)));
     } else {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARACHUTE, Coord_Move(Center_Coord(), game::DirType::kNorth,
+          ANIM_PARACHUTE, Coord_Move(Center_Coord(), game::Direction::kNorth,
                                      static_cast<uint16_t>(0x0030 + Height)));
     }
 

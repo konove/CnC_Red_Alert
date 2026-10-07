@@ -265,7 +265,7 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   FacingDial = std::make_unique<Dial8Class>(kPopupFacingdial, kPopupFaceboxX,
                                             kPopupFaceboxY, kPopupFaceboxW,
-                                            kPopupFaceboxH, game::DirType(0));
+                                            kPopupFaceboxH, game::Direction(0));
 
   /*........................................................................
   The base percent-built slider & its label
@@ -1937,7 +1937,7 @@ void MapEditClass::Fatal(int txt) {
   exit(EXIT_FAILURE);
 }
 
-bool MapEditClass::Scroll_Map(game::DirType facing, int& distance,
+bool MapEditClass::Scroll_Map(game::Direction facing, int& distance,
                               bool really) {
   /*
   ** The popup gadgets require the entire map to be redrawn if we scroll.

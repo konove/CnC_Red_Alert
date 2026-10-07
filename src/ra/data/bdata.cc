@@ -226,11 +226,11 @@ static const BuildingTypeClass ClassBarrel(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBarrel3(
@@ -256,11 +256,11 @@ static const BuildingTypeClass ClassBarrel3(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAVMine(
@@ -286,11 +286,11 @@ static const BuildingTypeClass ClassAVMine(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAPMine(
@@ -316,11 +316,11 @@ static const BuildingTypeClass ClassAPMine(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassIronCurtain(
@@ -346,11 +346,11 @@ static const BuildingTypeClass ClassIronCurtain(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List22_0011,            // OCCUPYLIST:	List of active foundation squares.
-    List22_1100             // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List22_0011,              // OCCUPYLIST:	List of active foundation squares.
+    List22_1100               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassForwardCom(
@@ -376,11 +376,11 @@ static const BuildingTypeClass ClassForwardCom(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List22_0011,            // OCCUPYLIST:	List of active foundation squares.
-    List22_1100             // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List22_0011,              // OCCUPYLIST:	List of active foundation squares.
+    List22_1100               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAdvancedTech(
@@ -407,11 +407,11 @@ static const BuildingTypeClass ClassAdvancedTech(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List22,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List22,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassChronosphere(
@@ -437,11 +437,11 @@ static const BuildingTypeClass ClassChronosphere(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List22,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List22,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassWeapon(
@@ -470,11 +470,11 @@ static const BuildingTypeClass ClassWeapon(
     false,          // Does it have a rotating turret?
     true,           // Can the building be color remapped to indicate owner?
     RTTI_UNITTYPE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_32,         // SIZE:			Building size.
-    ExitWeap,               // Preferred exit cell list.
-    ListWeap,               // OCCUPYLIST:	List of active foundation squares.
-    OListWeap               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,           // SIZE:			Building size.
+    ExitWeap,                 // Preferred exit cell list.
+    ListWeap,                 // OCCUPYLIST:	List of active foundation squares.
+    OListWeap                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassShipYard(
@@ -503,11 +503,11 @@ static const BuildingTypeClass ClassShipYard(
     false,            // Does it have a rotating turret?
     true,             // Can the building be color remapped to indicate owner?
     RTTI_VESSELTYPE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
-    OListSPen               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ListSPen,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSPen                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSubPen(
@@ -536,11 +536,11 @@ static const BuildingTypeClass ClassSubPen(
     false,            // Does it have a rotating turret?
     true,             // Can the building be color remapped to indicate owner?
     RTTI_VESSELTYPE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    ExitSub,                // Preferred exit cell list.
-    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
-    OListSPen               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    ExitSub,                  // Preferred exit cell list.
+    ListSPen,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSPen                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassPillbox(
@@ -566,11 +566,11 @@ static const BuildingTypeClass ClassPillbox(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassCamoPillbox(
@@ -596,11 +596,11 @@ static const BuildingTypeClass ClassCamoPillbox(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTesla(
@@ -626,11 +626,11 @@ static const BuildingTypeClass ClassTesla(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_12,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List12,                 // OCCUPYLIST:	List of active foundation squares.
-    OList12                 // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_12,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List12,                   // OCCUPYLIST:	List of active foundation squares.
+    OList12                   // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTurret(
@@ -656,11 +656,11 @@ static const BuildingTypeClass ClassTurret(
     true,       // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType(208),  // Starting idle frame to match construction.
-    game::BSIZE_11,      // SIZE:			Building size.
-    {},                  // Preferred exit cell list.
-    List1,               // OCCUPYLIST:	List of active foundation squares.
-    {}                   // OVERLAPLIST:List of overlap cell offset.
+    game::Direction(208),  // Starting idle frame to match construction.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAAGun(
@@ -686,9 +686,9 @@ static const BuildingTypeClass ClassAAGun(
     true,       // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorthEast,  // Starting idle frame to match construction.
-    game::BSIZE_12,             // SIZE:			Building size.
-    {},                         // Preferred exit cell list.
+    game::Direction::kNorthEast,  // Starting idle frame to match construction.
+    game::BSIZE_12,               // SIZE:			Building size.
+    {},                           // Preferred exit cell list.
     List12,  // OCCUPYLIST:	List of active foundation squares.
     OList12  // OVERLAPLIST:List of overlap cell offset.
 );
@@ -716,11 +716,11 @@ static const BuildingTypeClass ClassFlameTurret(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassConst(
@@ -745,12 +745,12 @@ static const BuildingTypeClass ClassConst(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_BUILDINGTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ListFactory,            // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_BUILDINGTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ListFactory,              // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeConst(
@@ -776,11 +776,11 @@ static const BuildingTypeClass ClassFakeConst(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ListFactory,            // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ListFactory,              // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeWeapon(
@@ -809,11 +809,11 @@ static const BuildingTypeClass ClassFakeWeapon(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_32,         // SIZE:			Building size.
-    ExitWeap,               // Preferred exit cell list.
-    ListWeap,               // OCCUPYLIST:	List of active foundation squares.
-    OListWeap               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,           // SIZE:			Building size.
+    ExitWeap,                 // Preferred exit cell list.
+    ListWeap,                 // OCCUPYLIST:	List of active foundation squares.
+    OListWeap                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRefinery(
@@ -839,11 +839,11 @@ static const BuildingTypeClass ClassRefinery(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List010111100,          // OCCUPYLIST:	List of active foundation squares.
-    List101000011           // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List010111100,            // OCCUPYLIST:	List of active foundation squares.
+    List101000011             // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassStorage(
@@ -869,11 +869,11 @@ static const BuildingTypeClass ClassStorage(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    StoreList,              // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    StoreList,                // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHelipad(
@@ -898,12 +898,12 @@ static const BuildingTypeClass ClassHelipad(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_AIRCRAFTTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List2,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_AIRCRAFTTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List2,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassCommand(
@@ -929,11 +929,11 @@ static const BuildingTypeClass ClassCommand(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ComList,                // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ComList,                  // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassGapGenerator(
@@ -960,11 +960,11 @@ static const BuildingTypeClass ClassGapGenerator(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_12,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0010,               // OCCUPYLIST:	List of active foundation squares.
-    List1                   // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_12,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0010,                 // OCCUPYLIST:	List of active foundation squares.
+    List1                     // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSAM(
@@ -990,11 +990,11 @@ static const BuildingTypeClass ClassSAM(
     true,       // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List21,                 // OCCUPYLIST:	List of active foundation squares.
-    OListSAM                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List21,                   // OCCUPYLIST:	List of active foundation squares.
+    OListSAM                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassMissileSilo(
@@ -1020,11 +1020,11 @@ static const BuildingTypeClass ClassMissileSilo(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List21,                 // OCCUPYLIST:	List of active foundation squares.
-    OListSAM                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List21,                   // OCCUPYLIST:	List of active foundation squares.
+    OListSAM                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAirStrip(
@@ -1049,12 +1049,12 @@ static const BuildingTypeClass ClassAirStrip(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_AIRCRAFTTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_32,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List32,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_AIRCRAFTTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List32,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassPower(
@@ -1080,11 +1080,11 @@ static const BuildingTypeClass ClassPower(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List22,                 // OCCUPYLIST:	List of active foundation squares.
-    List22_1100             // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List22,                   // OCCUPYLIST:	List of active foundation squares.
+    List22_1100               // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAdvancedPower(
@@ -1111,11 +1111,11 @@ static const BuildingTypeClass ClassAdvancedPower(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List000111111,          // OCCUPYLIST:	List of active foundation squares.
-    OListTmpl               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List000111111,            // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSovietTech(
@@ -1141,11 +1141,11 @@ static const BuildingTypeClass ClassSovietTech(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List000111111,          // OCCUPYLIST:	List of active foundation squares.
-    OListTmpl               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List000111111,            // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHospital(
@@ -1171,11 +1171,11 @@ static const BuildingTypeClass ClassHospital(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List2,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List2,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBioLab(
@@ -1201,11 +1201,11 @@ static const BuildingTypeClass ClassBioLab(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List2,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List2,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBarracks(
@@ -1232,12 +1232,12 @@ static const BuildingTypeClass ClassBarracks(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    ExitPyle,               // Preferred exit cell list.
-    List22,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    ExitPyle,                 // Preferred exit cell list.
+    List22,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTent(
@@ -1262,12 +1262,12 @@ static const BuildingTypeClass ClassTent(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    ExitPyle,               // Preferred exit cell list.
-    List22,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    ExitPyle,                 // Preferred exit cell list.
+    List22,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassKennel(
@@ -1292,14 +1292,14 @@ static const BuildingTypeClass ClassKennel(
     false,   // Theater specific graphic image?
     false,   // Does it have a rotating turret?
     true,    // Can the building be color remapped to indicate owner?
-    RTTI_INFANTRYTYPE,      // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-                            //	(short const *)ExitPyle,	// Preferred exit cell
-                            // list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    RTTI_INFANTRYTYPE,        // The object type produced at this factory.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+                              //	(short const *)ExitPyle,	// Preferred exit cell
+                              // list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeShipYard(
@@ -1328,11 +1328,11 @@ static const BuildingTypeClass ClassFakeShipYard(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    ExitWeap,               // Preferred exit cell list.
-    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
-    OListSPen               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    ExitWeap,                 // Preferred exit cell list.
+    ListSPen,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSPen                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeSubPen(
@@ -1361,11 +1361,11 @@ static const BuildingTypeClass ClassFakeSubPen(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    ExitSub,                // Preferred exit cell list.
-    ListSPen,               // OCCUPYLIST:	List of active foundation squares.
-    OListSPen               // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    ExitSub,                  // Preferred exit cell list.
+    ListSPen,                 // OCCUPYLIST:	List of active foundation squares.
+    OListSPen                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassFakeCommand(
@@ -1391,11 +1391,11 @@ static const BuildingTypeClass ClassFakeCommand(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ComList,                // OCCUPYLIST:	List of active foundation squares.
-    OComList                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ComList,                  // OCCUPYLIST:	List of active foundation squares.
+    OComList                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRepair(
@@ -1421,11 +1421,11 @@ static const BuildingTypeClass ClassRepair(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_33,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ListFix,                // OCCUPYLIST:	List of active foundation squares.
-    OListFix                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_33,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ListFix,                  // OCCUPYLIST:	List of active foundation squares.
+    OListFix                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV01(
@@ -1451,11 +1451,11 @@ static const BuildingTypeClass ClassV01(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE: Building size.
-    {},                     // Preferred exit cell list.
-    List0011,               // OCCUPYLIST:	List of active foundation squares.
-    List1100                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE: Building size.
+    {},                       // Preferred exit cell list.
+    List0011,                 // OCCUPYLIST:	List of active foundation squares.
+    List1100                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV02(
@@ -1481,11 +1481,11 @@ static const BuildingTypeClass ClassV02(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0011,               // OCCUPYLIST:	List of active foundation squares.
-    List1100                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0011,                 // OCCUPYLIST:	List of active foundation squares.
+    List1100                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV03(
@@ -1511,11 +1511,11 @@ static const BuildingTypeClass ClassV03(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0111,               // OCCUPYLIST:	List of active foundation squares.
-    List1000                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0111,                 // OCCUPYLIST:	List of active foundation squares.
+    List1000                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV04(
@@ -1541,11 +1541,11 @@ static const BuildingTypeClass ClassV04(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0011,               // OCCUPYLIST:	List of active foundation squares.
-    List1100                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0011,                 // OCCUPYLIST:	List of active foundation squares.
+    List1100                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV05(
@@ -1571,11 +1571,11 @@ static const BuildingTypeClass ClassV05(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV06(
@@ -1601,11 +1601,11 @@ static const BuildingTypeClass ClassV06(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV07(
@@ -1631,11 +1631,11 @@ static const BuildingTypeClass ClassV07(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV08(
@@ -1661,11 +1661,11 @@ static const BuildingTypeClass ClassV08(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV09(
@@ -1691,11 +1691,11 @@ static const BuildingTypeClass ClassV09(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV10(
@@ -1721,11 +1721,11 @@ static const BuildingTypeClass ClassV10(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV11(
@@ -1751,11 +1751,11 @@ static const BuildingTypeClass ClassV11(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV12(
@@ -1781,11 +1781,11 @@ static const BuildingTypeClass ClassV12(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV13(
@@ -1811,11 +1811,11 @@ static const BuildingTypeClass ClassV13(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV14(
@@ -1841,11 +1841,11 @@ static const BuildingTypeClass ClassV14(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV15(
@@ -1871,11 +1871,11 @@ static const BuildingTypeClass ClassV15(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV16(
@@ -1901,11 +1901,11 @@ static const BuildingTypeClass ClassV16(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV17(
@@ -1931,11 +1931,11 @@ static const BuildingTypeClass ClassV17(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV18(
@@ -1961,11 +1961,11 @@ static const BuildingTypeClass ClassV18(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV19(
@@ -1991,11 +1991,11 @@ static const BuildingTypeClass ClassV19(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV20(
@@ -2021,11 +2021,11 @@ static const BuildingTypeClass ClassV20(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0011,               // OCCUPYLIST:	List of active foundation squares.
-    List1100                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0011,                 // OCCUPYLIST:	List of active foundation squares.
+    List1100                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV21(
@@ -2051,11 +2051,11 @@ static const BuildingTypeClass ClassV21(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1101,               // OCCUPYLIST:	List of active foundation squares.
-    List0010                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1101,                 // OCCUPYLIST:	List of active foundation squares.
+    List0010                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV22(
@@ -2081,11 +2081,11 @@ static const BuildingTypeClass ClassV22(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV23(
@@ -2111,11 +2111,11 @@ static const BuildingTypeClass ClassV23(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV24(
@@ -2141,11 +2141,11 @@ static const BuildingTypeClass ClassV24(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0011,               // OCCUPYLIST:	List of active foundation squares.
-    List1100                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0011,                 // OCCUPYLIST:	List of active foundation squares.
+    List1100                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV25(
@@ -2171,11 +2171,11 @@ static const BuildingTypeClass ClassV25(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_22,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List0111,               // OCCUPYLIST:	List of active foundation squares.
-    List1000                // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_22,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List0111,                 // OCCUPYLIST:	List of active foundation squares.
+    List1000                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV26(
@@ -2201,11 +2201,11 @@ static const BuildingTypeClass ClassV26(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV27(
@@ -2231,11 +2231,11 @@ static const BuildingTypeClass ClassV27(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV28(
@@ -2261,11 +2261,11 @@ static const BuildingTypeClass ClassV28(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV29(
@@ -2291,11 +2291,11 @@ static const BuildingTypeClass ClassV29(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV30(
@@ -2321,11 +2321,11 @@ static const BuildingTypeClass ClassV30(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV31(
@@ -2351,11 +2351,11 @@ static const BuildingTypeClass ClassV31(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV32(
@@ -2381,11 +2381,11 @@ static const BuildingTypeClass ClassV32(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV33(
@@ -2411,11 +2411,11 @@ static const BuildingTypeClass ClassV33(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV34(
@@ -2441,11 +2441,11 @@ static const BuildingTypeClass ClassV34(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV35(
@@ -2471,11 +2471,11 @@ static const BuildingTypeClass ClassV35(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV36(
@@ -2501,11 +2501,11 @@ static const BuildingTypeClass ClassV36(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassV37(
     STRUCT_V37,
@@ -2530,11 +2530,11 @@ static const BuildingTypeClass ClassV37(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_42,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    ListWestwood,           // OCCUPYLIST:	List of active foundation squares.
-    OListWestwood           // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_42,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    ListWestwood,             // OCCUPYLIST:	List of active foundation squares.
+    OListWestwood             // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassMission(
     STRUCT_MISSION,
@@ -2559,11 +2559,11 @@ static const BuildingTypeClass ClassMission(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_32,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List32,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_32,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List32,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 // Sandbag wall
@@ -2590,11 +2590,11 @@ static const BuildingTypeClass Sandbag(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 // Cyclone fence
 static const BuildingTypeClass Cyclone(
@@ -2620,11 +2620,11 @@ static const BuildingTypeClass Cyclone(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 // Brick wall
 static const BuildingTypeClass Brick(
@@ -2650,11 +2650,11 @@ static const BuildingTypeClass Brick(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
 static const BuildingTypeClass Barbwire(
@@ -2681,11 +2681,11 @@ static const BuildingTypeClass Barbwire(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
 static const BuildingTypeClass Wood(
@@ -2711,11 +2711,11 @@ static const BuildingTypeClass Wood(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass Fence(
     STRUCT_FENCE,
@@ -2740,11 +2740,11 @@ static const BuildingTypeClass Fence(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassQueen(
@@ -2770,11 +2770,11 @@ static const BuildingTypeClass ClassQueen(
     false,      // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_21,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List11,                 // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_21,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List11,                   // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassLarva1(
     STRUCT_LARVA1,
@@ -2799,11 +2799,11 @@ static const BuildingTypeClass ClassLarva1(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassLarva2(
     STRUCT_LARVA2,
@@ -2828,11 +2828,11 @@ static const BuildingTypeClass ClassLarva2(
     false,      // Does it have a rotating turret?
     false,      // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    game::DirType::kNorth,  // Starting idle frame to match construction.
-    game::BSIZE_11,         // SIZE:			Building size.
-    {},                     // Preferred exit cell list.
-    List1,                  // OCCUPYLIST:	List of active foundation squares.
-    {}                      // OVERLAPLIST:List of overlap cell offset.
+    game::Direction::kNorth,  // Starting idle frame to match construction.
+    game::BSIZE_11,           // SIZE:			Building size.
+    {},                       // Preferred exit cell list.
+    List1,                    // OCCUPYLIST:	List of active foundation squares.
+    {}                        // OVERLAPLIST:List of overlap cell offset.
 );
 std::span<const std::byte> BuildingTypeClass::WarFactoryOverlay;
 
@@ -2857,7 +2857,7 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
     bool is_selectable, bool is_legal_target, bool is_insignificant,
     bool is_theater, bool is_turret_equipped, bool is_remappable,
-    RTTIType tobuild, game::DirType sframe, game::BSizeType size,
+    RTTIType tobuild, game::Direction sframe, game::BSizeType size,
     std::span<const int16_t> exitlist, std::span<const int16_t> sizelist,
     std::span<const int16_t> overlap) noexcept
     : TechnoTypeClass(RTTI_BUILDINGTYPE, static_cast<int>(type), name, ininame,
@@ -3288,7 +3288,7 @@ void BuildingTypeClass::Prep_For_Add() {
 bool BuildingTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr != nullptr) {
-    return ptr->Unlimbo(cell.Center(), game::DirType::kNorth);
+    return ptr->Unlimbo(cell.Center(), game::Direction::kNorth);
   }
   return false;
 }
