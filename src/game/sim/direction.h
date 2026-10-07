@@ -28,6 +28,7 @@
 
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "base/enum_step.h"  // IWYU pragma: export
 
 namespace game {
@@ -67,11 +68,13 @@ constexpr FacingType operator-(const FacingType lhs, const FacingType rhs) {
 constexpr FacingType operator-(const FacingType facing, const int steps) {
   return AsFacing(static_cast<int>(facing) - steps);
 }
-constexpr FacingType operator+=(FacingType& lhs, const FacingType rhs) {
+constexpr FacingType& operator+=(FacingType& lhs ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                 const FacingType rhs) {
   lhs = lhs + rhs;
   return lhs;
 }
-constexpr FacingType operator+=(FacingType& facing, const int steps) {
+constexpr FacingType& operator+=(
+    FacingType& facing ABSL_ATTRIBUTE_LIFETIME_BOUND, const int steps) {
   facing = facing + steps;
   return facing;
 }
@@ -94,9 +97,10 @@ enum class DirType : uint8_t {
   kNorthWest = 7 << 5
 };
 
-// Builds a direction from any angle, wrapping it to the 256-step circle.
-// This is the one place that turns a computed integer into the type, and the
-// one place the analyzer's named-enumerator model of the enum is set aside.
+// Builds a direction from any angle, wrapping it to the 256-step circle. Use
+// it for every computed direction: it is where the analyzer's named-enumerator
+// model of the enum is set aside, so a direct cast of a computed value is
+// reported as out of range.
 constexpr DirType AsDirection(const int angle) {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<DirType>(static_cast<uint32_t>(angle) & 0xFFU);
@@ -146,14 +150,15 @@ constexpr DirType DirectionOf(const FacingType facing) {
 // Returns the facing whose 32-step sector starting at it holds `dir`: unlike
 // NearestFacing(), this truncates, so DirType::kNorthEast - 1 gives
 // FacingType::kNorth.
-// TODO: the `| 0x10` changes nothing, since it sets a bit the division by 32
-// drops. The original probably meant the `+ 0x10` of NearestFacing().
 constexpr FacingType FacingSector(const DirType dir) {
-  return static_cast<FacingType>((static_cast<uint32_t>(dir) | 0x10U) / 32);
+  return static_cast<FacingType>(static_cast<int>(dir) / 32);
 }
 
-// Returns `dir` as one of 16 body frames, 0 north and rising clockwise.
-int BodyFrame16(DirType dir);
+// Returns `dir` as the nearest of 16 evenly spaced body frames, 0 north and
+// rising clockwise.
+constexpr int BodyFrame16(const DirType dir) {
+  return static_cast<int>(dir + 8) / 16;
+}
 
 // Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The
 // steps are uneven to undo the distortion 3D Studio rendered into the
