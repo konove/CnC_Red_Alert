@@ -32,12 +32,6 @@ TEST(NearestFacingTest, RoundsToTheNearestFacing) {
   EXPECT_EQ(NearestFacing(AsDirection(240)), FacingType::kNorth);
 }
 
-TEST(FacingSectorTest, TruncatesToTheFacingBelow) {
-  EXPECT_EQ(FacingSector(AsDirection(31)), FacingType::kNorth);
-  EXPECT_EQ(FacingSector(DirType::kNorthEast), FacingType::kNorthEast);
-  EXPECT_EQ(FacingSector(AsDirection(255)), FacingType::kNorthWest);
-}
-
 TEST(DirectionOfTest, PointsExactlyAtTheFacing) {
   EXPECT_EQ(DirectionOf(FacingType::kNorth), DirType::kNorth);
   EXPECT_EQ(DirectionOf(FacingType::kSouthEast), DirType::kSouthEast);

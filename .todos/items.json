@@ -3998,13 +3998,14 @@
         "bugs",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:57:55Z",
+      "updated": "2026-10-07T08:01:13Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
-      "resolution": "`Direction256Toward()` now rounds the ratio up in the half of a quadrant that counts back from its end axis (`0x40 - ceil(smaller * 32 / bigger)`) instead of subtracting one from the rounded-down ratio, so all eight compass directions are exact; every other exactly dividing ratio in that half (for example 1 in 2) moves one step too. The pinning tests in `direction_test.cc` and `ra/core/coord_test.cc` expect the exact values, and the hashes of four UI scripts whose in-mission screenshots shifted were re-recorded. Not committed.",
+      "fixedIn": "a94bbcc0",
+      "resolution": "`Direction256Toward()` now rounds the ratio up in the half of a quadrant that counts back from its end axis (`0x40 - ceil(smaller * 32 / bigger)`) instead of subtracting one from the rounded-down ratio, so all eight compass directions are exact; every other exactly dividing ratio in that half (for example 1 in 2) moves one step too. The pinning tests in `direction_test.cc` and `ra/core/coord_test.cc` expect the exact values, and the hashes of four UI scripts whose in-mission screenshots shifted were re-recorded.",
       "toDecide": "This is the shipped behaviour of both games and runs inside the simulation (aiming, turret and aircraft facing, scrolling).\n\n- **Leave it**: nothing changes; the tests already document it.\n- **Fix it** (subtract the 1 only when the division leaves a remainder): units aim one step (1.4 degrees) differently on the four exact angles, a fixed build desyncs against an unfixed peer, and recordings and the save/load smoke tests can diverge.",
       "decisions": [
         {
@@ -4046,31 +4047,43 @@
       "tags": [
         "bugs",
         "ra",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T08:04:34Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "resolution": "The question was moot: no aircraft has 8 rotation stages (all seven in `aadata.cc` are 16 or 32, and `Rotation` is never read from an INI), so the `case 8` branch of `AircraftClass::Shape_Number()` never ran. Deleted that branch, `FacingSector()` and its test; nothing on screen changes. Not committed yet.",
       "toDecide": "- **Keep truncating**: nothing changes. The function could then move into `aircraft.cc` as a file-local helper, since nothing else uses it.\n- **Round to the nearest facing**: the caller uses `NearestFacing()` and `FacingSector()` is deleted. Display only (which of 8 body frames an aircraft shows changes for half of each sector), so no desync, but `tools/ui_check.py` screenshots with such an aircraft would change.",
+      "decisions": [
+        {
+          "question": "FacingSector()'s only caller is the `case 8` branch of AircraftClass::Shape_Number(), and no aircraft has 8 rotation stages (all seven in aadata.cc are 16 or 32, and Rotation is never read from an INI), so the branch never runs. What should happen to it?",
+          "options": [
+            "Delete the dead branch (Recommended)",
+            "Round to the nearest facing",
+            "Keep truncating"
+          ],
+          "answer": "Delete the dead branch (Recommended)",
+          "time": "2026-10-07T08:02:19Z"
+        }
+      ],
       "anchors": [
         {
-          "path": "src/game/sim/direction.h",
-          "startLine": 141,
-          "endLine": 141,
-          "text": "constexpr FacingType FacingSector(const DirType dir) {",
+          "path": "src/ra/objects/aircraft.cc",
+          "startLine": 430,
+          "endLine": 448,
+          "text": "int AircraftClass::Shape_Number() const {\n  int shapenum = 0;\n\n  switch (Class->Rotation) {\n    case 32:\n      shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));\n      break;\n\n    case 16:\n      shapenum = base::At(BodyShape, static_cast<base::ssize>(\n                                         game::BodyFrame16(SecondaryFacing)) *\n                                         2) /\n                 2;\n      break;\n\n    default:\n      break;\n  }\n",
           "before": [
-            "// Returns the facing whose 32-step sector starting at it holds `dir`: unlike",
-            "// NearestFacing(), this truncates, so DirType::kNorthEast - 1 gives",
-            "// FacingType::kNorth."
+            " *                                                                                             *",
+            " * HISTORY: * 07/26/1996 JLB : Created. *",
+            " *=============================================================================================*/"
           ],
           "after": [
-            "  return static_cast<FacingType>(static_cast<int>(dir) / 32);",
-            "}",
-            ""
+            "  /*",
+            "  **\tIf there is a door on this aircraft (Chinook), then adjust the",
+            "  **\tshape number to match the door open state."
           ],
           "lost": false
         }
@@ -4115,8 +4128,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 160,
-          "endLine": 160,
+          "startLine": 153,
+          "endLine": 153,
           "text": "constexpr int SignedDirectionDifference(const DirType from, const DirType to) {",
           "before": [
             "// and above are negative), so the result spans -255..255. This is not the",
@@ -4320,8 +4333,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 154,
-          "endLine": 154,
+          "startLine": 147,
+          "endLine": 147,
           "text": "int BodyFrame32(DirType dir);",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",

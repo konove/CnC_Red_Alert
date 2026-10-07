@@ -442,13 +442,6 @@ int AircraftClass::Shape_Number() const {
                  2;
       break;
 
-    case 8:
-      shapenum = base::At(BodyShape, static_cast<base::ssize>(
-                                         game::FacingSector(SecondaryFacing)) *
-                                         4) /
-                 4;
-      break;
-
     default:
       break;
   }

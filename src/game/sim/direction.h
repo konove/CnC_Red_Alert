@@ -135,13 +135,6 @@ constexpr DirType DirectionOf(const FacingType facing) {
   return AsDirection(static_cast<int>(facing) * 32);
 }
 
-// Returns the facing whose 32-step sector starting at it holds `dir`: unlike
-// NearestFacing(), this truncates, so DirType::kNorthEast - 1 gives
-// FacingType::kNorth.
-constexpr FacingType FacingSector(const DirType dir) {
-  return static_cast<FacingType>(static_cast<int>(dir) / 32);
-}
-
 // Returns `dir` as the nearest of 16 evenly spaced body frames, 0 north and
 // rising clockwise.
 constexpr int BodyFrame16(const DirType dir) {
