@@ -1546,10 +1546,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T09:17:29Z",
+      "updated": "2026-10-07T01:17:45Z",
       "anchor": {
         "path": "src/ra/ai/team_type.h",
         "startLine": 169,
