@@ -120,9 +120,8 @@ DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);
 // accuracy, with the same axes as Direction8Toward(). The angle is interpolated
 // linearly along the shorter offset rather than taken from an arctangent, so
 // it is exact only on the axes and diagonals and up to four steps off between
-// them. Due east, due south, exact south-east and exact north-west come out
-// one step short (DirType::kEast - 1, ...), as they did in the original. Equal
-// points give 255, just shy of north.
+// them. An angle between two steps rounds toward the axis its quadrant starts
+// on, going clockwise. Equal points give 255, just shy of north.
 DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle

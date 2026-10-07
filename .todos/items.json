@@ -3996,31 +3996,42 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T07:57:55Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "resolution": "`Direction256Toward()` now rounds the ratio up in the half of a quadrant that counts back from its end axis (`0x40 - ceil(smaller * 32 / bigger)`) instead of subtracting one from the rounded-down ratio, so all eight compass directions are exact; every other exactly dividing ratio in that half (for example 1 in 2) moves one step too. The pinning tests in `direction_test.cc` and `ra/core/coord_test.cc` expect the exact values, and the hashes of four UI scripts whose in-mission screenshots shifted were re-recorded. Not committed.",
       "toDecide": "This is the shipped behaviour of both games and runs inside the simulation (aiming, turret and aircraft facing, scrolling).\n\n- **Leave it**: nothing changes; the tests already document it.\n- **Fix it** (subtract the 1 only when the division leaves a remainder): units aim one step (1.4 degrees) differently on the four exact angles, a fixed build desyncs against an unfixed peer, and recordings and the save/load smoke tests can diverge.",
+      "decisions": [
+        {
+          "question": "Should Direction256Toward stop landing one step short on due east, due south and the exact south-east and north-west diagonals?",
+          "options": [
+            "Leave it (Recommended)",
+            "Fix it"
+          ],
+          "answer": "Fix it",
+          "time": "2026-10-07T07:51:13Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/direction.cc",
-          "startLine": 133,
-          "endLine": 133,
-          "text": "    fraction = 0x40 - fraction - 1;",
+          "startLine": 135,
+          "endLine": 136,
+          "text": "  const int rounded_up = (scaled + bigger - 1) / bigger;\n  return AsDirection(quadrant + 0x40 - rounded_up);",
           "before": [
-            "  // exactly on the end axis, or on the diagonal of a quadrant that starts on",
-            "  // the X axis, one step short.",
-            "  if (closer_to_end_axis) {"
+            "  // original subtracted one from the rounded-down ratio instead, which is the",
+            "  // same thing except when the division is exact: then it landed one step",
+            "  // short, due east and due south included."
           ],
           "after": [
-            "  }",
-            "  return AsDirection(quadrant + fraction);",
-            "}"
+            "}",
+            "",
+            "int BodyFrame32(const DirType dir) {"
           ],
           "lost": false
         }
@@ -4048,8 +4059,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 142,
-          "endLine": 142,
+          "startLine": 141,
+          "endLine": 141,
           "text": "constexpr FacingType FacingSector(const DirType dir) {",
           "before": [
             "// Returns the facing whose 32-step sector starting at it holds `dir`: unlike",
@@ -4104,8 +4115,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 161,
-          "endLine": 161,
+          "startLine": 160,
+          "endLine": 160,
           "text": "constexpr int SignedDirectionDifference(const DirType from, const DirType to) {",
           "before": [
             "// and above are negative), so the result spans -255..255. This is not the",
@@ -4309,8 +4320,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 155,
-          "endLine": 155,
+          "startLine": 154,
+          "endLine": 154,
           "text": "int BodyFrame32(DirType dir);",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
@@ -4364,13 +4375,13 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 126,
-          "endLine": 126,
+          "startLine": 125,
+          "endLine": 125,
           "text": "DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
           "before": [
-            "// them. Due east, due south, exact south-east and exact north-west come out",
-            "// one step short (DirType::kEast - 1, ...), as they did in the original. Equal",
-            "// points give 255, just shy of north."
+            "// it is exact only on the axes and diagonals and up to four steps off between",
+            "// them. An angle between two steps rounds toward the axis its quadrant starts",
+            "// on, going clockwise. Equal points give 255, just shy of north."
           ],
           "after": [
             "",

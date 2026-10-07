@@ -131,34 +131,38 @@ TEST(Direction8TowardTest, SamePointGivesNorthEast) {
   EXPECT_EQ(Direction8Toward(3, 3, 3, 3), DirType::kNorthEast);
 }
 
-TEST(Direction256TowardTest, ReturnsTheExactAngle) {
+TEST(Direction256TowardTest, IsExactOnTheAxes) {
   EXPECT_EQ(Direction256Toward(0, 0, 0, -100), DirType::kNorth);
+  EXPECT_EQ(Direction256Toward(0, 0, 100, 0), DirType::kEast);
+  EXPECT_EQ(Direction256Toward(0, 0, 0, 100), DirType::kSouth);
   EXPECT_EQ(Direction256Toward(0, 0, -100, 0), DirType::kWest);
+}
+
+TEST(Direction256TowardTest, IsExactOnTheDiagonals) {
   EXPECT_EQ(Direction256Toward(0, 0, 100, -100), DirType::kNorthEast);
-}
-
-TEST(Direction256TowardTest, EastAndSouthLandOneStepShort) {
-  // The quadrants that count down from the next axis subtract one too many,
-  // as the original did.
-  EXPECT_EQ(Direction256Toward(0, 0, 100, 0), DirType::kEast - 1);
-  EXPECT_EQ(Direction256Toward(0, 0, 0, 100), DirType::kSouth - 1);
-}
-
-TEST(Direction256TowardTest, TwoDiagonalsLandOneStepShort) {
+  EXPECT_EQ(Direction256Toward(0, 0, 100, 100), DirType::kSouthEast);
   EXPECT_EQ(Direction256Toward(0, 0, -100, 100), DirType::kSouthWest);
-  EXPECT_EQ(Direction256Toward(0, 0, 100, 100), DirType::kSouthEast - 1);
-  EXPECT_EQ(Direction256Toward(0, 0, -100, -100), DirType::kNorthWest - 1);
+  EXPECT_EQ(Direction256Toward(0, 0, -100, -100), DirType::kNorthWest);
 }
 
 TEST(Direction256TowardTest, InterpolatesLinearlyBetweenAxisAndDiagonal) {
   // Halfway along the shorter offset is halfway to the diagonal, 16 steps,
   // where the true angle (26.6 degrees) would be 19.
   EXPECT_EQ(Direction256Toward(0, 0, 50, -100), AsDirection(16));
-  // Past the diagonal the count runs back from the axis ahead, less one.
-  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), AsDirection(64 - 16 - 1));
-  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), AsDirection(128 - 16 - 1));
+  // Past the diagonal the count runs back from the axis ahead.
+  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), AsDirection(64 - 16));
+  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), AsDirection(128 - 16));
   EXPECT_EQ(Direction256Toward(0, 0, -50, 100), AsDirection(128 + 16));
-  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), AsDirection(256 - 16 - 1));
+  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), AsDirection(256 - 16));
+}
+
+TEST(Direction256TowardTest, RoundsTowardTheStartOfTheQuadrant) {
+  // 1 in 3 is 10.67 steps off the nearer axis. Both halves of a quadrant
+  // round it toward the axis the quadrant starts on.
+  EXPECT_EQ(Direction256Toward(0, 0, 1, -3), AsDirection(10));
+  EXPECT_EQ(Direction256Toward(0, 0, 3, -1), AsDirection(64 - 11));
+  EXPECT_EQ(Direction256Toward(0, 0, 3, 1), AsDirection(64 + 10));
+  EXPECT_EQ(Direction256Toward(0, 0, 1, 3), AsDirection(128 - 11));
 }
 
 TEST(Direction256TowardTest, NeverLeavesTheQuadrantOfTheTarget) {

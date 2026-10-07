@@ -121,18 +121,19 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // How far from the closer axis the direction lies, as a ratio from 0 (on
   // the axis) to 32 (on the diagonal). This is the linear stand-in for the
   // arctangent.
-  int fraction = smaller * 32 / bigger;
-
-  // `fraction` counts from the closer axis. When that is the axis the
-  // quadrant ends on, count back from it instead. The extra -1 makes that
-  // half round toward the start of the quadrant like the other half, and
-  // keeps the result inside the quadrant, but it also puts a direction
-  // exactly on the end axis, or on the diagonal of a quadrant that starts on
-  // the X axis, one step short.
-  if (closer_to_end_axis) {
-    fraction = 0x40 - fraction - 1;
+  const int scaled = smaller * 32;
+  if (!closer_to_end_axis) {
+    return AsDirection(quadrant + (scaled / bigger));
   }
-  return AsDirection(quadrant + fraction);
+
+  // The ratio counts from the closer axis, and here that is the axis the
+  // quadrant ends on, so count back from it. Rounding the ratio up makes this
+  // half round toward the start of the quadrant like the other half. The
+  // original subtracted one from the rounded-down ratio instead, which is the
+  // same thing except when the division is exact: then it landed one step
+  // short, due east and due south included.
+  const int rounded_up = (scaled + bigger - 1) / bigger;
+  return AsDirection(quadrant + 0x40 - rounded_up);
 }
 
 int BodyFrame32(const DirType dir) {
