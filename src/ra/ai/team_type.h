@@ -25,6 +25,7 @@
 #ifndef CNC_RED_ALERT_RA_AI_TEAM_TYPE_H_
 #define CNC_RED_ALERT_RA_AI_TEAM_TYPE_H_
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 #include <string_view>
@@ -261,6 +262,11 @@ class TeamType : public AbstractTypeClass {
   void set_is_transient(const bool value) { is_transient_ = value; }
   [[nodiscard]] int recruit_priority() const { return recruit_priority_; }
   [[nodiscard]] int max_teams() const { return max_teams_; }
+  // Take any number: see StoredCount().
+  void set_max_teams(const int value) { max_teams_ = StoredCount(value); }
+  void set_initial_count(const int value) {
+    initial_count_ = StoredCount(value);
+  }
   [[nodiscard]] HousesType house() const { return house_; }
   void set_house(const HousesType value) { house_ = value; }
   [[nodiscard]] TriggerType* trigger() const { return trigger_; }
@@ -299,6 +305,13 @@ class TeamType : public AbstractTypeClass {
   void ClearMembers() { member_count_ = 0; }
 
  private:
+  // Returns `value` as the byte a team count is stored in: 255 for more than
+  // that, and 255 for a negative number too. The original game read the
+  // number into the byte, so a scenario's -1 has always meant "no limit".
+  static constexpr unsigned char StoredCount(const int value) {
+    return static_cast<unsigned char>(value < 0 ? 255 : std::min(value, 255));
+  }
+
   // True while the object occupies its heap slot. operator new sets it
   // before the constructor runs, so the initializer must agree with it;
   // operator delete clears it.

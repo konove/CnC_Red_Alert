@@ -18,7 +18,6 @@
 
 // The scenario editor's team type dialog, TeamType::Edit().
 
-#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -687,10 +686,9 @@ bool TeamType::Edit() {
         recruit_priority_ =
             base::ParseIntegerOr<int>(priority_edit.Get_Text(), 0);
         // The fields take three digits; the team type stores a byte.
-        initial_count_ = static_cast<unsigned char>(std::clamp(
-            base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0), 0, 255));
-        max_teams_ = static_cast<unsigned char>(std::clamp(
-            base::ParseIntegerOr<int>(max_edit.Get_Text(), 0), 0, 255));
+        set_initial_count(
+            base::ParseIntegerOr<int>(initial_edit.Get_Text(), 0));
+        set_max_teams(base::ParseIntegerOr<int>(max_edit.Get_Text(), 0));
         house_ = static_cast<HousesType>(house_drop.Current_Index());
         trigger_ = nullptr;
         if (trigger_drop.Current_Index() > 0) {

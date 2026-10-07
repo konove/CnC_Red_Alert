@@ -303,10 +303,8 @@ bool TeamType::ReadIniEntry(const std::string_view name,
   }
 
   recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);
-  initial_count_ =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  max_teams_ =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));
   set_origin(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   if (lists_options) {

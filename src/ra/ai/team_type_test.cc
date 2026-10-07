@@ -140,6 +140,21 @@ TEST_F(TeamTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(team_type_->missions()[1].quarry(), QuarryType{2});
 }
 
+TEST_F(TeamTypeTest, ACountAboveWhatATeamTypeStoresIsTheMost) {
+  // Initial number 999, maximum 256.
+  team_type_->ReadIniEntry("tanks", "2,0,7,999,256,-1,-1,0,0");
+
+  EXPECT_EQ(team_type_->max_teams(), 255);
+  EXPECT_EQ(team_type_->ToIniEntry(), "2,0,7,255,255,-1,-1,0,0");
+}
+
+TEST_F(TeamTypeTest, ANegativeCountIsTheMost) {
+  team_type_->ReadIniEntry("tanks", "2,0,7,-1,-1,-1,-1,0,0");
+
+  EXPECT_EQ(team_type_->max_teams(), 255);
+  EXPECT_EQ(team_type_->ToIniEntry(), "2,0,7,255,255,-1,-1,0,0");
+}
+
 TEST_F(TeamTypeTest, TheOtherOptionBitsAreSuicideAndPrebuilt) {
   team_type_->ReadIniEntry("tanks", "2,10,7,0,1,-1,-1,0,0");
 

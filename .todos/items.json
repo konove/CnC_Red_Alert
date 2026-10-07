@@ -1552,8 +1552,8 @@
       "updated": "2026-10-07T01:17:45Z",
       "anchor": {
         "path": "src/ra/ai/team_type.h",
-        "startLine": 169,
-        "endLine": 169,
+        "startLine": 170,
+        "endLine": 170,
         "text": "  void* operator new(std::size_t /*unused*/) noexcept;",
         "before": [
           "  // Allocates from the team type heap. Returns nullptr when the heap is full;",
@@ -3227,22 +3227,21 @@
     {
       "id": "T-146",
       "title": "Decide how a team type entry's counts above 255 or below 0 are read",
-      "details": "`TeamType::ReadIniEntry()` (`ra/ai/team_type.cc`) casts the initial number and the maximum number of teams to the `unsigned char` the team type stores (it is in the saved game, so the type stays): a scenario's 999 is read as 231 and 256 as 0, which means the team is never created (`CreateTeam()` compares `team_count_ < max_teams_`). `2d9b4f60` clamped the same two fields in the editor dialog to 0..255.\n\nTo decide: above 255 should clearly clamp to 255, but -1 wraps to 255 today, effectively \"no limit\", and a plain `std::clamp(value, 0, 255)` would turn it into 0, never created. Either clamp and keep the wrap for negatives, or clamp both ends knowingly. A `set_max_teams(int)` / `set_initial_count(int)` pair on `TeamType` would then own the conversion for the reader and the dialog (about 15 lines plus tests). Run `30c6f6ae..e9ac6245`.",
+      "details": "Decided 2026-10-06: clamp above 255 to 255 and read any negative number as 255, \"no limit\", which is what the original game's cast did with -1. `TeamType::set_max_teams(int)` and `set_initial_count(int)` (`ra/ai/team_type.h`) own the conversion through the private `StoredCount()`; `TeamType::ReadIniEntry()` and the editor dialog (`ra/editor/team_type_dialog.cc`) both call them, so the dialog no longer turns a negative number into 0. `ACountAboveWhatATeamTypeStoresIsTheMost` and `ANegativeCountIsTheMost` in `ra/ai/team_type_test.cc` cover it; against the code before, 999 read as 231 and 256 as 0.",
       "priority": "p2",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-07T01:36:51Z",
       "anchor": {
         "path": "src/ra/ai/team_type.cc",
         "startLine": 306,
-        "endLine": 309,
-        "text": "  initial_count_ =\n      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  max_teams_ =\n      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+        "endLine": 307,
+        "text": "  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));",
         "before": [
           "  }",
           "",
@@ -3304,8 +3303,8 @@
       "updated": "2026-10-06T09:18:07Z",
       "anchor": {
         "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 175,
-        "endLine": 175,
+        "startLine": 174,
+        "endLine": 174,
         "text": "  if (house_ == HOUSE_NONE) {",
         "before": [
           "  for (const HousesType house : magic_enum::enum_values<HousesType>()) {",
@@ -3337,8 +3336,8 @@
       "updated": "2026-10-06T09:18:07Z",
       "anchor": {
         "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 81,
-        "endLine": 81,
+        "startLine": 80,
+        "endLine": 80,
         "text": "int ParseHexDigits(const std::string_view text) {",
         "before": [
           "",
@@ -3401,8 +3400,8 @@
       "updated": "2026-10-06T09:18:07Z",
       "anchor": {
         "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 416,
-        "endLine": 416,
+        "startLine": 415,
+        "endLine": 415,
         "text": "            mission.value() >= ScenarioClass::kHomeWaypoint) {",
         "before": [
           "      case NEED_WAYPOINT:",
@@ -3433,8 +3432,8 @@
       "updated": "2026-10-06T09:18:07Z",
       "anchor": {
         "path": "src/ra/ai/team_type.cc",
-        "startLine": 429,
-        "endLine": 429,
+        "startLine": 427,
+        "endLine": 427,
         "text": "  TeamType* choices[20];",
         "before": [
           "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
@@ -3466,8 +3465,8 @@
       "updated": "2026-10-06T09:18:45Z",
       "anchor": {
         "path": "src/ra/ai/team_type.h",
-        "startLine": 329,
-        "endLine": 329,
+        "startLine": 342,
+        "endLine": 342,
         "text": "  bool is_transient_ : 1 = false;",
         "before": [
           "",
@@ -3497,8 +3496,8 @@
       "updated": "2026-10-06T09:18:45Z",
       "anchor": {
         "path": "src/ra/ai/team_type.h",
-        "startLine": 281,
-        "endLine": 281,
+        "startLine": 287,
+        "endLine": 287,
         "text": "  [[nodiscard]] const MissionArray& missions() const",
         "before": [
           "  // The script: the first mission_count() entries of missions(). The rest",
@@ -3530,8 +3529,8 @@
       "updated": "2026-10-06T09:18:45Z",
       "anchor": {
         "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 661,
-        "endLine": 661,
+        "startLine": 660,
+        "endLine": 660,
         "text": "      case engine::window::ButtonKey(kButtonMembers):",
         "before": [
           "        break;",
@@ -3623,8 +3622,8 @@
       "updated": "2026-10-06T09:18:45Z",
       "anchor": {
         "path": "src/ra/ai/team_type.cc",
-        "startLine": 341,
-        "endLine": 341,
+        "startLine": 339,
+        "endLine": 339,
         "text": "      TeamMember& member = base::At(members_, member_count_++);",
         "before": [
           "    // next member takes its place in Members.",
