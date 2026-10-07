@@ -16,28 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FACE.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : FACE.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 03/08/96 *
- *                                                                                             *
- *                  Last Update : March 8, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Desired_Facing8 -- Determines facing from one coordinate to
- *another.                      * Desired_Facing256 -- Determines facing from
- *one coordinate to another.                    *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The direction between two points and the tables that turn a direction into
+// a body frame.
+//
+// Originally FACE.CPP by Joe L. Bostic, started March 8, 1996.
 
 #include "game/sim/direction.h"
 
@@ -49,9 +31,10 @@
 namespace game {
 namespace {
 
-// These convert 0..255 facing values into 16 or 32 facing values. A simple
-// shift won't suffice because 0..255 facing values should be converted to the
-// CLOSEST appropriate facing, NOT rounded down to the nearest facing.
+// The body frame for each of the 256 directions. A simple shift won't do:
+// a direction converts to the CLOSEST frame, not the one below it, so each
+// frame's entries straddle its exact direction and the last few wrap to 0.
+// The 16-frame table is even, sixteen directions a frame.
 constexpr std::array<uint8_t, 256> kFacing16 = {
     0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
     1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
@@ -68,6 +51,8 @@ constexpr std::array<uint8_t, 256> kFacing16 = {
     14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
     15, 0,  0,  0,  0,  0,  0,  0,  0};
 
+// The 32-frame table is uneven, between six and eleven directions a frame,
+// to match the angles the vehicle shapes were actually rendered at.
 constexpr std::array<uint8_t, 256> kFacing32 = {
     0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,
     2,  2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,
@@ -86,59 +71,31 @@ constexpr std::array<uint8_t, 256> kFacing32 = {
 
 }  // namespace
 
-/***********************************************************************************************
- * Desired_Facing8 -- Determines facing from one coordinate to another. *
- *                                                                                             *
- *    This routine will find the facing (compass direction) from one location to
- *another.      * Typical use of this is in find path and other 'monster'
- *movement logic.                  *
- *                                                                                             *
- * INPUT:   x1,y1    -- X and Y coordinates for the source location. The
- *coordinate 0,0 is     * presumed to be the northwest corner of the map. *
- *                                                                                             *
- *          x2,y2    -- X and Y coordinates for the destination (target)
- *location.             *
- *                                                                                             *
- * OUTPUT:  Returns with the facing from the first coordinate to the second
- *coordinate. The    * value returned will range from 0 being North, increasing
- *clockwise until reaching  * 255 which is just shy of North in a Westerly
- *direction.                            *
- *                                                                                             *
- * WARNINGS:   This routine is only accurate to the 8 primary compass
- *directions. It is much   * faster than the Desired_Facing256() function so it
- *should be used where speed   * is more important than accuracy. *
- *                                                                                             *
- * HISTORY: * 03/08/1996 JLB : Created. *
- *=============================================================================================*/
 DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
-  uint32_t index = 0;  // Facing composite value.
+  // The direction being built. It starts as the first direction of the
+  // quadrant: 0x00 north-east, 0x40 south-east, 0x80 south-west, 0xC0
+  // north-west.
+  uint32_t index = 0;
 
-  /*
-  **	Figure the absolute X difference. This determines
-  **	if the facing is leftward or not.
-  */
+  // Take the absolute X difference. A westward target starts in the
+  // north-west quadrant.
   int xdiff = x2 - x1;
   if (xdiff < 0) {
     index |= 0x00C0;
     xdiff = -xdiff;
   }
 
-  /*
-  **	Figure the absolute Y difference. This determines
-  **	if the facing is downward or not. This also clarifies
-  **	exactly which quadrant the facing lies.
-  */
+  // Take the absolute Y difference, north positive. A southward target flips
+  // the 0x40 bit, which moves north-east to south-east and north-west to
+  // south-west and so settles the quadrant.
   int ydiff = y1 - y2;
   if (ydiff < 0) {
     index ^= 0x0040;
     ydiff = -ydiff;
   }
 
-  /*
-  **	Determine which of the two direction offsets it bigger. The
-  **	offset direction that is bigger (X or Y) will indicate which
-  **	orthogonal direction the facing is closer to.
-  */
+  // Find which of the two offsets is bigger. The bigger one (X or Y) tells
+  // which axis the direction is closer to.
   int bigger = 0;
   int smaller = 0;
   if (xdiff < ydiff) {
@@ -149,19 +106,19 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
     bigger = xdiff;
   }
 
-  /*
-  **	If on the diagonal, then incorporate this into the facing
-  **	and then bail. The facing is known.
-  */
+  // If the smaller offset is at least half the bigger one, call it the
+  // diagonal, which lies 0x20 into every quadrant, and bail. Equal points
+  // land here too, in the north-east quadrant.
   if ((bigger + 1) / 2 <= smaller) {
     index += 0x0020;
     return static_cast<DirType>(index);
   }
 
-  /*
-  **	Determine if the facing is closer to the Y axis or
-  **	the X axis.
-  */
+  // Otherwise the direction is the axis at the start of the quadrant or the
+  // one at its end, 0x40 further on. The north-east and south-west quadrants
+  // start on the Y axis and the other two (0x40 set) on the X axis, so step
+  // on when the closer axis is not the one the quadrant starts on. From the
+  // north-west quadrant that step wraps to north.
   uint32_t adder = index & 0x0040;
   if (xdiff == bigger) {
     adder ^= 0x0040;
@@ -171,66 +128,35 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   return AsDirection(static_cast<int>(index));
 }
 
-/***********************************************************************************************
- * Desired_Facing256 -- Determines facing from one coordinate to another. *
- *                                                                                             *
- *    This routine will figure the facing from the source coordinate toward the
- *destination    * coordinate. Typically, this routine is used for movement and
- *other 'monster' logic. It   * is more accurate than the corresponding
- *Desired_Facing8() function, but is slower.       *
- *                                                                                             *
- * INPUT:   srcx, srcy  -- The source coordinate to determine the facing from. *
- *                                                                                             *
- *          dstx, dsty  -- The destination (or target) coordinate to determine
- *the facing      * toward. *
- *                                                                                             *
- * OUTPUT:  Returns with the facing from the source coordinate toward the
- *destination          * coordinate with 0 being North increasing in a clockwise
- *direction. 64 is East,     * 128 is South, etc. *
- *                                                                                             *
- * WARNINGS:   The coordinate 0,0 is presumed to be in the Northwest corner of
- *the map.        * Although this routine is fast, it is not as fast as
- *Desired_Facing8().          *
- *                                                                                             *
- * HISTORY: * 03/08/1996 JLB : Created. *
- *=============================================================================================*/
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
-  uint32_t composite = 0;  // Facing built from intermediate calculations.
+  // The direction being built, starting as the first direction of the
+  // quadrant exactly as in Desired_Facing8().
+  uint32_t composite = 0;
 
-  /*
-  **	Fetch the absolute X difference. This also gives a clue as
-  **	to which hemisphere the direction lies.
-  */
+  // Take the absolute X difference. A westward target starts in the
+  // north-west quadrant.
   int xdiff = dstx - srcx;
   if (xdiff < 0) {
     composite |= 0x00C0;
     xdiff = -xdiff;
   }
 
-  /*
-  **	Fetch the absolute Y difference. This clarifies the exact
-  **	quadrant that the direction lies.
-  */
+  // Take the absolute Y difference, north positive. A southward target flips
+  // the 0x40 bit and so settles the quadrant.
   int ydiff = srcy - dsty;
   if (ydiff < 0) {
     composite ^= 0x0040;
     ydiff = -ydiff;
   }
 
-  /*
-  **	Bail early if the coordinates are the same. This check also
-  **	has the added bonus of ensuring that checking for division
-  **	by zero is not needed in the following section.
-  */
+  // Bail early if the coordinates are the same. This also keeps the division
+  // below away from zero.
   if (xdiff == 0 && ydiff == 0) {
     return AsDirection(0xFF);
   }
 
-  /*
-  **	Determine which of the two direction offsets it bigger. The
-  **	offset direction that is bigger (X or Y) will indicate which
-  **	orthogonal direction the facing is closer to.
-  */
+  // Find which of the two offsets is bigger. The bigger one (X or Y) tells
+  // which axis the direction is closer to.
   int bigger = 0;
   int smaller = 0;
   if (xdiff < ydiff) {
@@ -241,22 +167,21 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
     bigger = xdiff;
   }
 
-  /*
-  **	Now that the quadrant is known, we need to determine how far
-  **	from the orthogonal directions, the facing lies. This value
-  **	is calculated as a ratio from 0 (matches orthogonal) to 31
-  **	(matches diagonal).
-  */
+  // Now that the quadrant is known, work out how far from the closer axis
+  // the direction lies, as a ratio from 0 (on the axis) to 32 (on the
+  // diagonal). This is the linear stand-in for the arctangent.
+  //
   // CHECK(a != b), not CHECK_NE: the shallow analyzer does not see through the
   // CHECK_NE helper and would still report the division below.
   CHECK(bigger != 0);
   int frac = smaller * 32 / bigger;
 
-  /*
-  **	Given the quadrant and knowing whether the facing is closer
-  **	to the X or Y axis, we must make an adjustment toward the
-  **	subsequent quadrant if necessary.
-  */
+  // `frac` counts from the closer axis. When that is the axis the quadrant
+  // ends on (the same test as in Desired_Facing8(), where `adder` is 0x40),
+  // count back from it instead. The extra -1 makes that half round toward the
+  // start of the quadrant like the other half, and keeps the result inside
+  // the quadrant, but it also puts a direction exactly on the end axis, or on
+  // the diagonal of a quadrant that starts on the X axis, one step short.
   uint32_t adder = composite & 0x0040;
   if (xdiff > ydiff) {
     adder ^= 0x0040;
@@ -265,14 +190,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
     frac = static_cast<int>(adder) - frac - 1;
   }
 
-  /*
-  **	Integrate the fraction value into the quadrant.
-  */
   composite += static_cast<uint32_t>(frac);
-
-  /*
-  **	Return with the final facing value.
-  */
   return AsDirection(static_cast<int>(composite));
 }
 
