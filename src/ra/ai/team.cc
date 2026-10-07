@@ -2415,7 +2415,11 @@ bool TeamClass::Is_Leaving_Map() const {
     const TeamMission* mission =
         base::Suffix(Class->missions(), CurrentMission).data();
 
+    // A waypoint number outside the table is not a destination at all, so the
+    // team is not going anywhere.
     if (mission->mission() == TeamMissionType::kMove &&
+        static_cast<unsigned>(mission->value()) <
+            ScenarioClass::kWaypointCount &&
         !TheMap().In_Radar(
             base::At(TheScenario().Waypoint, mission->value()))) {
       return true;

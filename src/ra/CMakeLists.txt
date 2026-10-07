@@ -180,6 +180,16 @@ target_compile_definitions(ra_reinforcements_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_reinforcements_test)
 apply_language_setting(ra_reinforcements_test)
 
+# A team working through its script, with a real Game.
+add_gtest(
+    NAME ra_team_test
+    SOURCES ai/team_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_team_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_team_test)
+apply_language_setting(ra_team_test)
+
 # The text table lookup, the random picks and the coordinate helpers in a real
 # Game.
 add_gtest(

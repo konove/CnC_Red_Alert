@@ -3264,18 +3264,18 @@
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-06T09:18:07Z",
+      "updated": "2026-10-07T01:43:19Z",
       "anchor": {
         "path": "src/ra/ai/team.cc",
-        "startLine": 2420,
-        "endLine": 2420,
+        "startLine": 2424,
+        "endLine": 2424,
         "text": "            base::At(TheScenario().Waypoint, mission->value()))) {",
         "before": [
-          "",
-          "    if (mission->mission() == TeamMissionType::kMove &&",
+          "        static_cast<unsigned>(mission->value()) <",
+          "            ScenarioClass::kWaypointCount &&",
           "        !TheMap().In_Radar("
         ],
         "after": [
