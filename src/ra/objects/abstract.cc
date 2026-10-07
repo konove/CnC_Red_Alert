@@ -31,8 +31,8 @@ namespace ra {
 
 AbstractClass::~AbstractClass() = default;
 
-game::DirType AbstractClass::Direction(const Target target) const {
-  return ra::Direction(Center_Coord(), target.AsCoordinate());
+game::DirType AbstractClass::DirectionTo(const Target target) const {
+  return ra::DirectionBetween(Center_Coord(), target.AsCoordinate());
 }
 
 int AbstractClass::Distance(const Target target) const {

@@ -1041,7 +1041,7 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
     }
 
     const game::DirType dir =
-        Direction(target);  // The facing to impart upon the projectile.
+        DirectionTo(target);  // The facing to impart upon the projectile.
 
     if (weapon->Bullet->IsSubSurface) {
       if (!isseatarget && target.is_object()) {
@@ -2157,7 +2157,7 @@ ActionType VesselClass::What_Action(Cell cell) const {
  *=============================================================================================*/
 void VesselClass::Rotation_AI() {
   if (TarCom && !IsRotating) {
-    const game::DirType dir = Direction(TarCom);
+    const game::DirType dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);
@@ -2214,10 +2214,10 @@ void VesselClass::Combat_AI() {
 
       case game::FIRE_FACING:
         if (Class->IsTurretEquipped) {
-          SecondaryFacing.Set_Desired(Direction(TarCom));
+          SecondaryFacing.Set_Desired(DirectionTo(TarCom));
         } else {
           if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(Direction(TarCom));
+            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
           }
         }
         break;

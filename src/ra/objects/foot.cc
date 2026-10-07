@@ -851,7 +851,7 @@ void FootClass::Approach_Target() {
       Coordinate trycoord{};
       const Cell tcell = Cell::Containing(tcoord);
       Cell trycell = tcell;
-      const game::DirType dir = ra::Direction(tcoord, Center_Coord());
+      const game::DirType dir = ra::DirectionBetween(tcoord, Center_Coord());
       bool found = false;
 
       /*

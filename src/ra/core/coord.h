@@ -37,12 +37,13 @@ inline Coordinate CoordFromPixels(const int x, const int y) noexcept {
 
 // Returns the direction from `from` to `to` at the full 256-step
 // resolution.
-inline game::DirType Direction(const Coordinate from, const Coordinate to) {
+inline game::DirType DirectionBetween(const Coordinate from,
+                                      const Coordinate to) {
   return game::Direction256Toward(from.x(), from.y(), to.x(), to.y());
 }
 
 // Returns the direction from `from` to `to` as one of the eight compass
-// points, which is cheaper to work out than Direction().
+// points, which is cheaper to work out than DirectionBetween().
 inline game::DirType Direction8(const Coordinate from, const Coordinate to) {
   return game::Direction8Toward(from.x(), from.y(), to.x(), to.y());
 }
@@ -80,7 +81,7 @@ inline Cell AdjacentCell(const Cell cell, const game::DirType dir) {
 }
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
-inline game::DirType Direction(Cell cell1, Cell cell2) {
+inline game::DirType DirectionBetween(Cell cell1, Cell cell2) {
   return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
 

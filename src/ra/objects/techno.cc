@@ -3317,7 +3317,7 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
       fire_coord = Center_Coord();
     }
   } else {
-    dir = ra::Direction(fire_coord, target_coord);
+    dir = ra::DirectionBetween(fire_coord, target_coord);
   }
 
   /*

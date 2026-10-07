@@ -95,15 +95,15 @@ class AbstractClass {
   [[nodiscard]] virtual Coordinate Center_Coord() const { return Coord; }
   [[nodiscard]] virtual Coordinate Target_Coord() const { return Coord; }
 
-  game::DirType Direction(const AbstractClass* object) const {
-    return ra::Direction(Center_Coord(), object->Target_Coord());
+  game::DirType DirectionTo(const AbstractClass* object) const {
+    return ra::DirectionBetween(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] game::DirType Direction(const Coordinate coord) const {
-    return ra::Direction(Center_Coord(), coord);
+  [[nodiscard]] game::DirType DirectionTo(const Coordinate coord) const {
+    return ra::DirectionBetween(Center_Coord(), coord);
   }
-  [[nodiscard]] game::DirType Direction(Target target) const;
-  [[nodiscard]] game::DirType Direction(const Cell cell) const {
-    return ra::Direction(Cell::Containing(Center_Coord()), cell);
+  [[nodiscard]] game::DirType DirectionTo(Target target) const;
+  [[nodiscard]] game::DirType DirectionTo(const Cell cell) const {
+    return ra::DirectionBetween(Cell::Containing(Center_Coord()), cell);
   }
 
   // Returns distance in leptons to the target. For buildings, subtracts

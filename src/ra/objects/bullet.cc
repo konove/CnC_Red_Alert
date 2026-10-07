@@ -411,7 +411,8 @@ void BulletClass::AI() {
   *makes *	missiles not so deadly).
   */
   if (game::CurrentFrame() % 2 != 0 && Class->ROT != 0 && TarCom) {
-    PrimaryFacing.Set_Desired(ra::Direction(Coord, TarCom.AsCoordinate()));
+    PrimaryFacing.Set_Desired(
+        ra::DirectionBetween(Coord, TarCom.AsCoordinate()));
   }
 
   /*
@@ -717,7 +718,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     *the *	direction specified and let the chips fall where they may.
     */
     if (Class->ROT == 0 && !Class->IsDropping) {
-      dir = Direction(tcoord);
+      dir = DirectionTo(tcoord);
     }
 
     /*

@@ -21,12 +21,13 @@ TEST(CoordTest, CoordFromPixelsRoundsToTheNearestLepton) {
 TEST(CoordTest, DirectionHasTheFullResolution) {
   const Coordinate from = kCell.Center();
 
-  EXPECT_EQ(Direction(from, Cell::FromXY(10, 15).Center()),
+  EXPECT_EQ(DirectionBetween(from, Cell::FromXY(10, 15).Center()),
             game::DirType::kNorth);
-  EXPECT_EQ(Direction(from, Cell::FromXY(15, 20).Center()),
+  EXPECT_EQ(DirectionBetween(from, Cell::FromXY(15, 20).Center()),
             game::DirType::kEast);
   // A little north of east is neither compass point.
-  const game::DirType dir = Direction(from, Cell::FromXY(18, 19).Center());
+  const game::DirType dir =
+      DirectionBetween(from, Cell::FromXY(18, 19).Center());
   EXPECT_GT(dir, game::DirType::kNorthEast);
   EXPECT_LT(dir, game::DirType::kEast);
 }
@@ -41,7 +42,7 @@ TEST(CoordTest, Direction8SnapsToACompassPoint) {
 }
 
 TEST(CoordTest, CellDirectionSnapsToACompassPoint) {
-  EXPECT_EQ(Direction(kCell, Cell::FromXY(2, 19)), game::DirType::kWest);
+  EXPECT_EQ(DirectionBetween(kCell, Cell::FromXY(2, 19)), game::DirType::kWest);
 }
 
 TEST(CoordTest, AdjacentCellStepsOneCell) {

@@ -2469,7 +2469,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           TheWorld().scenario_init()++;
           cell = Find_Exit_Cell(base);
           if (cell.index() != 0 &&
-              base->Unlimbo(cell.Center(), Direction(cell.Center()))) {
+              base->Unlimbo(cell.Center(), DirectionTo(cell.Center()))) {
             base->Assign_Mission(MISSION_GUARD);
             TheWorld().scenario_init()--;
             return 2;
@@ -2629,7 +2629,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
           cell = Find_Exit_Cell(base);
           if (cell.index() != 0) {
-            const game::DirType dir = Direction(cell);
+            const game::DirType dir = DirectionTo(cell);
             const Coordinate start = Exit_Coord();
 
             TheWorld().scenario_init()++;
@@ -2747,7 +2747,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         default:
           cell = Find_Exit_Cell(base);
           if (cell.index() != 0) {
-            const game::DirType dir = Direction(cell);
+            const game::DirType dir = DirectionTo(cell);
             const Coordinate start = Exit_Coord();
 
             TheWorld().scenario_init()++;
@@ -3052,7 +3052,7 @@ bool BuildingClass::Limbo() {
  *=============================================================================================*/
 game::DirType BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && TarCom) {
-    return ra::Direction(Center_Coord(), TarCom.AsCoordinate());
+    return ra::DirectionBetween(Center_Coord(), TarCom.AsCoordinate());
   }
   return PrimaryFacing.Current();
 }
@@ -3612,7 +3612,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
     **	temporarily postponed.
     */
     if (Class->IsTurretEquipped) {
-      int diff = PrimaryFacing.Difference(Direction(TarCom));
+      int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
       diff = abs(diff);
       if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
         //			if (std::abs(diff) > 8) {
@@ -4396,7 +4396,7 @@ int BuildingClass::Mission_Attack() {
           return 1;
         }
         if (!PrimaryFacing.Is_Rotating()) {
-          const game::DirType facing = Direction(TarCom);
+          const game::DirType facing = DirectionTo(TarCom);
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
@@ -4460,11 +4460,11 @@ int BuildingClass::Mission_Attack() {
       break;
 
     case game::FIRE_FACING:
-      PrimaryFacing.Set_Desired(Direction(TarCom));
+      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
       return 2;
 
     case game::FIRE_REARM:
-      PrimaryFacing.Set_Desired(Direction(TarCom));
+      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
       return static_cast<int>(Arm.Remaining());
 
     case game::FIRE_BUSY:
@@ -4483,7 +4483,7 @@ int BuildingClass::Mission_Attack() {
     default:
       break;
   }
-  PrimaryFacing.Set_Desired(Direction(TarCom));
+  PrimaryFacing.Set_Desired(DirectionTo(TarCom));
   return 1;
   //	return(MissionControl[Mission].Normal_Delay() + RandomPick(0, 2));
 }

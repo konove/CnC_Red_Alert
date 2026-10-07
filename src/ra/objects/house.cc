@@ -6528,7 +6528,7 @@ ZoneType HouseClass::Which_Zone(Coordinate coord) const {
     return ZONE_NONE;
   }
 
-  const game::DirType facing = Direction(Center, coord);
+  const game::DirType facing = DirectionBetween(Center, coord);
   if (facing < game::DirType::kNorthEast ||
       facing > game::DirType::kNorthWest) {
     return ZONE_NORTH;

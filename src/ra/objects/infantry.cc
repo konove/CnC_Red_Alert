@@ -2057,10 +2057,10 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   **	Convert the head to coordinate to a legal sub-position location.
   */
   headto = TheMap().at(headto).Closest_Free_Spot(
-      Coord_Move(headto, Direction(headto) + game::DirType::kSouth, 0x007C));
+      Coord_Move(headto, DirectionTo(headto) + game::DirType::kSouth, 0x007C));
   if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
-        Coord_Move(old, Direction(headto) + game::DirType::kSouth, 0x0080),
+        Coord_Move(old, DirectionTo(headto) + game::DirType::kSouth, 0x0080),
         true);
   }
 
@@ -4057,7 +4057,7 @@ void InfantryClass::Movement_AI() {
           maxspeed = FormationMaxSpeed;
         }
 
-        Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
+        Coord = Coord_Move(Coord, DirectionTo(Head_To_Coord()),
                            static_cast<uint16_t>(static_cast<int>(maxspeed) *
                                                  Fixed(movespeed, 256)));
       }

@@ -497,7 +497,7 @@ void UnitClass::AI() {
  *=============================================================================================*/
 void UnitClass::Rotation_AI() {
   if (TarCom && !IsRotating) {
-    const game::DirType dir = Direction(TarCom);
+    const game::DirType dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);
@@ -545,7 +545,7 @@ void UnitClass::Rotation_AI() {
           if (!NavCom) {
             SecondaryFacing.Set_Desired(PrimaryFacing.Current());
           } else {
-            SecondaryFacing.Set_Desired(Direction(NavCom));
+            SecondaryFacing.Set_Desired(DirectionTo(NavCom));
           }
         }
       }
@@ -650,11 +650,11 @@ void UnitClass::Firing_AI() {
       case game::FIRE_FACING:
         if (Class->IsLockTurret || Class->Type == UNIT_DEMOTRUCK) {
           if (!NavCom && !IsDriving) {
-            PrimaryFacing.Set_Desired(Direction(TarCom));
+            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
           }
         } else {
-          SecondaryFacing.Set_Desired(Direction(TarCom));
+          SecondaryFacing.Set_Desired(DirectionTo(TarCom));
         }
         break;
 
@@ -3727,7 +3727,7 @@ void UnitClass::Exit_Repair() {
     }
   }
   if (found) {
-    //		DirType	dir = Direction(cell);
+    //		DirType	dir = DirectionTo(cell);
 
     Assign_Mission(MISSION_MOVE);
     Assign_Destination(Target::FromCell(cell));
@@ -3835,7 +3835,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *transport facing if it is going to unload.
   */
   const game::DirType faceto =
-      passenger != nullptr ? Direction(passenger)
+      passenger != nullptr ? DirectionTo(passenger)
                            : PrimaryFacing.Current() + game::DirType::kSouth;
 
   /*
@@ -4268,7 +4268,7 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
     }
 
     const game::DirType dir =
-        Direction(target);  // The facing to impart upon the projectile.
+        DirectionTo(target);  // The facing to impart upon the projectile.
 
     /*
     **	Determine if the turret facing isn't too far off of facing the target.

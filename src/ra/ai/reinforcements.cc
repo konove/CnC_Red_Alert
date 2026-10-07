@@ -356,8 +356,9 @@ bool DeliverReinforcements(TeamType* team_type) {
     const bool is_aircraft = member->What_Am_I() == RTTI_AIRCRAFT;
     game::DirType facing = entry_dir;
     if (is_aircraft) {
-      facing = origin_cell != Cell::None() ? Direction(place_cell, origin_cell)
-                                           : inward_dir;
+      facing = origin_cell != Cell::None()
+                   ? DirectionBetween(place_cell, origin_cell)
+                   : inward_dir;
     }
 
     // scenario_init places the member on the edge cell without asking whether

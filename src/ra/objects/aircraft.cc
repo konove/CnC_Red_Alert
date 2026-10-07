@@ -773,7 +773,7 @@ int AircraftClass::Mission_Hunt() {
               return kTicksPerSecond * 2;
             }
             if (!PrimaryFacing.Is_Rotating() && TarCom) {
-              PrimaryFacing.Set_Desired(Direction(TarCom));
+              PrimaryFacing.Set_Desired(DirectionTo(TarCom));
             }
             break;
 
@@ -802,7 +802,7 @@ int AircraftClass::Mission_Hunt() {
           case game::FireErrorType::FIRE_BUSY:
           default:
             if (!PrimaryFacing.Is_Rotating() && TarCom) {
-              PrimaryFacing.Set_Desired(Direction(TarCom));
+              PrimaryFacing.Set_Desired(DirectionTo(TarCom));
             }
             break;
         }
@@ -1731,7 +1731,7 @@ int AircraftClass::Mission_Move() {
         return 1;
 
       case kFlyTowardTarget: {
-        PrimaryFacing.Set_Desired(Direction(NavCom));
+        PrimaryFacing.Set_Desired(DirectionTo(NavCom));
         const int distance = Distance(NavCom);
 
         if (distance < 0x00C0) {
@@ -1859,7 +1859,7 @@ int AircraftClass::Mission_Move() {
 
         if (distance < 0x0080) {
           if (TarCom) {
-            SecondaryFacing.Set_Desired(Direction(TarCom));
+            SecondaryFacing.Set_Desired(DirectionTo(TarCom));
           } else {
             SecondaryFacing.Set_Desired(Pose_Dir());
           }
@@ -1870,9 +1870,9 @@ int AircraftClass::Mission_Move() {
           return 1;
         }
 
-        //				SecondaryFacing.Set_Desired(ra::Direction(Fire_Coord(0),
+        //				SecondaryFacing.Set_Desired(ra::DirectionBetween(Fire_Coord(0),
         // NavCom.AsCoordinate()));
-        SecondaryFacing.Set_Desired(Direction(NavCom));
+        SecondaryFacing.Set_Desired(DirectionTo(NavCom));
 
       } else {
         Assign_Destination(New_LZ(NavCom));
@@ -2142,7 +2142,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, Target dest) {
   }
   int distance = Distance(coord);
 
-  PrimaryFacing.Set_Desired(Direction(coord));
+  PrimaryFacing.Set_Desired(DirectionTo(coord));
 
   if (slowdown) {
     int speed = std::min(distance, 0x0300);
@@ -2511,7 +2511,7 @@ int AircraftClass::Mission_Attack() {
           **	As the flight progresses, the body will rotate to face
           **	the direction of travel.
           */
-          int diff = SecondaryFacing.Difference(Direction(NavCom));
+          int diff = SecondaryFacing.Difference(DirectionTo(NavCom));
           diff = std::clamp(diff, -128, 128);
           PrimaryFacing = static_cast<game::DirType>(
               static_cast<int>(SecondaryFacing.Current()) + diff);
@@ -2538,7 +2538,7 @@ int AircraftClass::Mission_Attack() {
         const int distance = Process_Fly_To(true, NavCom);
 
         if (distance < 0x0200) {
-          SecondaryFacing.Set_Desired(Direction(TarCom));
+          SecondaryFacing.Set_Desired(DirectionTo(TarCom));
 
           if (distance < 0x0010) {
             Status = kFireAtTarget;
@@ -2546,7 +2546,7 @@ int AircraftClass::Mission_Attack() {
           }
         } else {
           SecondaryFacing.Set_Desired(
-              ra::Direction(Fire_Coord(0), NavCom.AsCoordinate()));
+              ra::DirectionBetween(Fire_Coord(0), NavCom.AsCoordinate()));
           return 1;
         }
       } else {
@@ -2563,8 +2563,8 @@ int AircraftClass::Mission_Attack() {
         return 1;
       }
 
-      PrimaryFacing.Set_Desired(Direction(TarCom));
-      SecondaryFacing.Set_Desired(Direction(TarCom));
+      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+      SecondaryFacing.Set_Desired(DirectionTo(TarCom));
       switch (Can_Fire(TarCom, 0)) {
         case game::FIRE_CLOAKED:
           Do_Uncloak();
@@ -2606,8 +2606,8 @@ int AircraftClass::Mission_Attack() {
         return 1;
       }
 
-      PrimaryFacing.Set_Desired(Direction(TarCom));
-      SecondaryFacing.Set_Desired(Direction(TarCom));
+      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+      SecondaryFacing.Set_Desired(DirectionTo(TarCom));
       switch (Can_Fire(TarCom, 0)) {
         case game::FIRE_CLOAKED:
           Do_Uncloak();
@@ -3026,7 +3026,7 @@ bool AircraftClass::Process_Take_Off() {
         break;
 
       case kFlightLevel / 2:
-        PrimaryFacing.Set_Desired(Direction(NavCom));
+        PrimaryFacing.Set_Desired(DirectionTo(NavCom));
         break;
 
       case kFlightLevel - (kFlightLevel / 3):
@@ -3078,7 +3078,7 @@ bool AircraftClass::Process_Landing() {
 
     if (distance > 0x0100) {
       SecondaryFacing.Set_Desired(
-          ra::Direction(Fire_Coord(0), NavCom.AsCoordinate()));
+          ra::DirectionBetween(Fire_Coord(0), NavCom.AsCoordinate()));
     }
 
     if (Height == 0) {
@@ -3496,7 +3496,7 @@ int AircraftClass::Mission_Enter() {
         }
         if (distance < 0x0080) {
           if (TarCom) {
-            SecondaryFacing.Set_Desired(Direction(TarCom));
+            SecondaryFacing.Set_Desired(DirectionTo(TarCom));
           } else {
             SecondaryFacing.Set_Desired(Pose_Dir());
           }
@@ -3513,7 +3513,7 @@ int AircraftClass::Mission_Enter() {
           }
           break;
         }
-        SecondaryFacing.Set_Desired(Direction(NavCom));
+        SecondaryFacing.Set_Desired(DirectionTo(NavCom));
         return 3;
       }
       break;
@@ -4097,7 +4097,7 @@ game::FireErrorType AircraftClass::Can_Fire(Target target, int which) const {
   **	temporarily postponed.
   */
   if ((canfire == game::FIRE_OK) && Class->IsFixedWing) {
-    const int diff = PrimaryFacing.Difference(Direction(TarCom));
+    const int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
     if (std::abs(diff) > (fudge ? 16 : 8)) {
       return game::FIRE_FACING;
     }
