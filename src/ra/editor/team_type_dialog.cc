@@ -415,21 +415,21 @@ bool TeamType::Edit() {
         }
         break;
 
-      case NeedType::NEED_NONE:
-      case NeedType::NEED_THEME:
-      case NeedType::NEED_MOVIE:
-      case NeedType::NEED_SOUND:
-      case NeedType::NEED_SPEECH:
-      case NeedType::NEED_INFANTRY:
-      case NeedType::NEED_UNIT:
-      case NeedType::NEED_AIRCRAFT:
-      case NeedType::NEED_STRUCTURE:
-      case NeedType::NEED_TRIGGER:
-      case NeedType::NEED_TEAM:
-      case NeedType::NEED_HOUSE:
-      case NeedType::NEED_TIME:
-      case NeedType::NEED_BOOL:
-      case NeedType::NEED_SPECIAL:
+      case NEED_NONE:
+      case NEED_THEME:
+      case NEED_MOVIE:
+      case NEED_SOUND:
+      case NEED_SPEECH:
+      case NEED_INFANTRY:
+      case NEED_UNIT:
+      case NEED_AIRCRAFT:
+      case NEED_STRUCTURE:
+      case NEED_TRIGGER:
+      case NEED_TEAM:
+      case NEED_HOUSE:
+      case NEED_TIME:
+      case NEED_BOOL:
+      case NEED_SPECIAL:
       default:
         break;
     }
@@ -467,21 +467,21 @@ bool TeamType::Edit() {
       unit_mission_drop.Remove();
       switch (TeamMissionNeeds(
           static_cast<TeamMissionType>(mission_drop.Current_Index()))) {
-        case NeedType::NEED_NONE:
-        case NeedType::NEED_THEME:
-        case NeedType::NEED_MOVIE:
-        case NeedType::NEED_SOUND:
-        case NeedType::NEED_SPEECH:
-        case NeedType::NEED_INFANTRY:
-        case NeedType::NEED_UNIT:
-        case NeedType::NEED_AIRCRAFT:
-        case NeedType::NEED_STRUCTURE:
-        case NeedType::NEED_TRIGGER:
-        case NeedType::NEED_TEAM:
-        case NeedType::NEED_HOUSE:
-        case NeedType::NEED_TIME:
-        case NeedType::NEED_BOOL:
-        case NeedType::NEED_SPECIAL:
+        case NEED_NONE:
+        case NEED_THEME:
+        case NEED_MOVIE:
+        case NEED_SOUND:
+        case NEED_SPEECH:
+        case NEED_INFANTRY:
+        case NEED_UNIT:
+        case NEED_AIRCRAFT:
+        case NEED_STRUCTURE:
+        case NEED_TRIGGER:
+        case NEED_TEAM:
+        case NEED_HOUSE:
+        case NEED_TIME:
+        case NEED_BOOL:
+        case NEED_SPECIAL:
         default:
           break;
 
@@ -589,21 +589,21 @@ bool TeamType::Edit() {
             case NEED_WAYPOINT:
               base::SafeCopy(argument_text, WaypointLetters(line.value()));
               break;
-            case NeedType::NEED_NONE:
-            case NeedType::NEED_THEME:
-            case NeedType::NEED_MOVIE:
-            case NeedType::NEED_SOUND:
-            case NeedType::NEED_SPEECH:
-            case NeedType::NEED_INFANTRY:
-            case NeedType::NEED_UNIT:
-            case NeedType::NEED_AIRCRAFT:
-            case NeedType::NEED_STRUCTURE:
-            case NeedType::NEED_TRIGGER:
-            case NeedType::NEED_TEAM:
-            case NeedType::NEED_HOUSE:
-            case NeedType::NEED_TIME:
-            case NeedType::NEED_BOOL:
-            case NeedType::NEED_SPECIAL:
+            case NEED_NONE:
+            case NEED_THEME:
+            case NEED_MOVIE:
+            case NEED_SOUND:
+            case NEED_SPEECH:
+            case NEED_INFANTRY:
+            case NEED_UNIT:
+            case NEED_AIRCRAFT:
+            case NEED_STRUCTURE:
+            case NEED_TRIGGER:
+            case NEED_TEAM:
+            case NEED_HOUSE:
+            case NEED_TIME:
+            case NEED_BOOL:
+            case NEED_SPECIAL:
             default:
               break;
           }
