@@ -2594,7 +2594,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 #endif
 
           if (found) {
-            const game::DirType dir = Direction(cell);
+            const game::DirType dir = DirectionTo(cell);
             const Coordinate start = Coord + Class->ExitPoint;
 
             TheWorld().scenario_init()++;
@@ -3042,8 +3042,8 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
     case STRUCT_ATOWER:
       coord = Coord_Move(coord, game::DirType::kNorth, 0x0030);
       if (TarCom) {
-        coord = Coord_Move(coord, td::Direction(coord, TarCom.AsCoordinate()),
-                           0x0040);
+        coord = Coord_Move(
+            coord, td::DirectionBetween(coord, TarCom.AsCoordinate()), 0x0040);
       }
       break;
     case STRUCT_OBELISK:
@@ -3694,7 +3694,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
         return game::FIRE_ROTATING;
       }
 
-      const int diff = PrimaryFacing.Difference(Direction(TarCom));
+      const int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
       if (std::abs(diff) > 8) {
         return game::FIRE_FACING;
       }
@@ -4441,7 +4441,7 @@ int BuildingClass::Mission_Attack() {
           return kTicksPerSecond;
         }
         if (!PrimaryFacing.Is_Rotating()) {
-          const game::DirType facing = Direction(TarCom);
+          const game::DirType facing = DirectionTo(TarCom);
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
@@ -4486,7 +4486,7 @@ int BuildingClass::Mission_Attack() {
           return kTicksPerSecond;
         }
         if (!PrimaryFacing.Is_Rotating()) {
-          const game::DirType facing = Direction(TarCom);
+          const game::DirType facing = DirectionTo(TarCom);
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
@@ -4567,7 +4567,7 @@ int BuildingClass::Mission_Attack() {
         break;
 
       case game::FIRE_FACING:
-        PrimaryFacing.Set_Desired(Direction(TarCom));
+        PrimaryFacing.Set_Desired(DirectionTo(TarCom));
         return 2;
 
       case game::FIRE_REARM:

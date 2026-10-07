@@ -168,7 +168,7 @@ void TurretClass::AI() {
           if (!NavCom) {
             SecondaryFacing.Set_Desired(PrimaryFacing.Current());
           } else {
-            SecondaryFacing.Set_Desired(Direction(NavCom));
+            SecondaryFacing.Set_Desired(DirectionTo(NavCom));
           }
         }
       }
@@ -258,7 +258,7 @@ game::FireErrorType TurretClass::Can_Fire(Target target, int which) const {
     }
 
     const game::DirType dir =
-        Direction(target);  // The facing to impart upon the projectile.
+        DirectionTo(target);  // The facing to impart upon the projectile.
 
     /*
     **	Determine if the turret facing isn't too far off of facing the target.

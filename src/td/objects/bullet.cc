@@ -658,7 +658,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     *the *	direction specified and let the chips fall where they may.
     */
     if (!Class->IsHoming && !Class->IsDropping) {
-      dir = Direction(tcoord);
+      dir = DirectionTo(tcoord);
     }
 
     /*
@@ -699,7 +699,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
       if (Payback &&
           (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1))) {
         tcoord = Coord_Move(
-            tcoord, td::Direction(tcoord, Coord),
+            tcoord, td::DirectionBetween(tcoord, Coord),
             static_cast<uint16_t>(
                 Distance(tcoord) -
                 std::max(Payback->Weapon_Range(0), Payback->Weapon_Range(1))));

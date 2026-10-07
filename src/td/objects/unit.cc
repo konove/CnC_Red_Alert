@@ -3777,7 +3777,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *transport facing if it is going to unload.
   */
   const game::DirType faceto =
-      passenger ? Direction(passenger)
+      passenger ? DirectionTo(passenger)
                 : PrimaryFacing.Current() + game::DirType::kSouth;
 
   /*

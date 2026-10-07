@@ -358,7 +358,8 @@ bool FootClass::Basic_Path() {
     if (Can_Enter_Cell(cell) == game::MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<game::FacingType>(
-          static_cast<unsigned>(td::Direction(cell, Cell::Containing(Coord))) >>
+          static_cast<unsigned>(
+              td::DirectionBetween(cell, Cell::Containing(Coord))) >>
           5);
 
       for (const int index : _faceadjust) {

@@ -37,14 +37,14 @@ inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
   return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
                                   coord2.y());
 }
-inline game::DirType Direction(Coordinate coord1, Coordinate coord2) {
+inline game::DirType DirectionBetween(Coordinate coord1, Coordinate coord2) {
   return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
                                   coord2.y());
 }
 inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
   return game::Direction8Toward(coord1.x(), coord1.y(), coord2.x(), coord2.y());
 }
-inline game::DirType Direction(Cell cell1, Cell cell2) {
+inline game::DirType DirectionBetween(Cell cell1, Cell cell2) {
   return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
 inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {

@@ -98,15 +98,15 @@ class AbstractClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  game::DirType Direction(const AbstractClass* object) const {
-    return td::Direction(Center_Coord(), object->Target_Coord());
+  game::DirType DirectionTo(const AbstractClass* object) const {
+    return td::DirectionBetween(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] game::DirType Direction(Coordinate coord) const {
-    return td::Direction(Center_Coord(), coord);
+  [[nodiscard]] game::DirType DirectionTo(Coordinate coord) const {
+    return td::DirectionBetween(Center_Coord(), coord);
   }
-  [[nodiscard]] game::DirType Direction(Target target) const;
-  [[nodiscard]] game::DirType Direction(Cell cell) const {
-    return td::Direction(Cell::Containing(Center_Coord()), cell);
+  [[nodiscard]] game::DirType DirectionTo(Target target) const;
+  [[nodiscard]] game::DirType DirectionTo(Cell cell) const {
+    return td::DirectionBetween(Cell::Containing(Center_Coord()), cell);
   }
   [[nodiscard]] int Distance(Target target) const;
   [[nodiscard]] int Distance(Coordinate coord) const {

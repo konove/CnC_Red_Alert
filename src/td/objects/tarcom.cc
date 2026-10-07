@@ -118,15 +118,15 @@ void TarComClass::AI() {
       case game::FIRE_FACING:
         if (Class->IsLockTurret) {
           if (!NavCom && !IsDriving) {
-            PrimaryFacing.Set_Desired(Direction(TarCom));
+            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
           }
         } else {
           if (*this == UNIT_FTANK) {
             SecondaryFacing.Set_Desired(
-                game::DirectionOf(game::NearestFacing(Direction(TarCom))));
+                game::DirectionOf(game::NearestFacing(DirectionTo(TarCom))));
           } else {
-            SecondaryFacing.Set_Desired(Direction(TarCom));
+            SecondaryFacing.Set_Desired(DirectionTo(TarCom));
           }
           //					SecondaryFacing.Set_Desired(Direction256(Center_Coord(),
           // TarCom.AsCoordinate()));
@@ -151,7 +151,7 @@ void TarComClass::AI() {
   }
 
   if (TarCom && !IsRotating) {
-    const game::DirType dir = Direction(TarCom);
+    const game::DirType dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);

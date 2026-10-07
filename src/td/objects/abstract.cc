@@ -38,8 +38,8 @@ namespace td {
 
 AbstractClass::~AbstractClass() = default;
 
-game::DirType AbstractClass::Direction(Target target) const {
-  return td::Direction(Center_Coord(), target.AsCoordinate());
+game::DirType AbstractClass::DirectionTo(Target target) const {
+  return td::DirectionBetween(Center_Coord(), target.AsCoordinate());
 }
 
 int AbstractClass::Distance(const Target target) const {
