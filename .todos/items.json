@@ -3898,10 +3898,12 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-07T07:31:53Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T15:31:42Z",
+      "fixedIn": "4009d949",
+      "resolution": "Done with T-170: the two directions left `game::DirType` and are now `DriveClass::kRefineryApproach` and `DriveClass::kRefineryDock` in each game's `objects/drive.h` (936ef467, 4009d949).",
       "comments": [
         {
           "author": "agent",
@@ -3925,7 +3927,7 @@
             "  kNorthWest = 7 << 5",
             "};"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -3954,8 +3956,8 @@
           "text": "enum class DirType : uint8_t {",
           "before": [
             "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
-            "// west. Every byte value is a valid direction; only the compass points and",
-            "// the two harvester poses are named."
+            "// west. Every byte value is a valid direction; only the compass points are",
+            "// named."
           ],
           "after": [
             "  kNorth = 0,",
@@ -4142,8 +4144,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 151,
-          "endLine": 151,
+          "startLine": 147,
+          "endLine": 147,
           "text": "constexpr int ShortestTurn(const DirType from, const DirType to) {",
           "before": [
             "",
@@ -4202,8 +4204,8 @@
           "text": "enum class DirType : uint8_t {",
           "before": [
             "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
-            "// west. Every byte value is a valid direction; only the compass points and",
-            "// the two harvester poses are named."
+            "// west. Every byte value is a valid direction; only the compass points are",
+            "// named."
           ],
           "after": [
             "  kNorth = 0,",
@@ -4222,16 +4224,39 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T15:31:42Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "4009d949",
+      "resolution": "Removed `kSouthWestX1`/`kSouthWestX2` from `game::DirType` and added `DriveClass::kRefineryApproach` (152) and `DriveClass::kRefineryDock` (144) as `static constexpr game::DirType` in `ra/objects/drive.h` and `td/objects/drive.h`; the track tables and the refinery exit in each game's `building.cc` use them (936ef467, 4009d949).",
       "toDecide": "Keep `kSouthWestX1`/`kSouthWestX2`, or name them for their use, for example `kRefineryApproach` (152) and `kRefineryDock` (144).",
+      "decisions": [
+        {
+          "question": "What should the two harvester directions (152, formerly kSouthWestX1, and 144, formerly kSouthWestX2) be called once they leave DirType?",
+          "options": [
+            "kRefineryApproach / kRefineryDock (Recommended)",
+            "kRefineryBackIn1 / kRefineryBackIn2",
+            "Keep kSouthWestX1 / kSouthWestX2"
+          ],
+          "answer": "kRefineryApproach / kRefineryDock (Recommended)",
+          "time": "2026-10-07T15:23:12Z"
+        },
+        {
+          "question": "Where should the two constants live after they leave the shared enum?",
+          "options": [
+            "DriveClass in each game (Recommended)",
+            "Shared constants in game/sim/direction.h",
+            "File-local in drive.cc + UnitClass accessor"
+          ],
+          "answer": "DriveClass in each game (Recommended)",
+          "time": "2026-10-07T15:23:12Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
@@ -4248,7 +4273,7 @@
             "  kNorthWest = 7 << 5",
             "};"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4273,8 +4298,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 93,
-          "endLine": 93,
+          "startLine": 89,
+          "endLine": 89,
           "text": "constexpr DirType AsDirection(const int angle) {",
           "before": [
             "// it for every computed direction: it is where the analyzer's named-enumerator",
@@ -4347,8 +4372,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 147,
-          "endLine": 147,
+          "startLine": 143,
+          "endLine": 143,
           "text": "int BodyFrame32(DirType dir);",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
@@ -4385,8 +4410,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 117,
-          "endLine": 117,
+          "startLine": 113,
+          "endLine": 113,
           "text": "DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);",
           "before": [
             "// The diagonals take more than their share of the circle: a slope steeper than",
@@ -4402,8 +4427,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 125,
-          "endLine": 125,
+          "startLine": 121,
+          "endLine": 121,
           "text": "DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
           "before": [
             "// it is exact only on the axes and diagonals and up to four steps off between",
