@@ -13,14 +13,13 @@
 namespace game {
 namespace {
 
-TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
-  EXPECT_EQ(AsFacing(8), FacingType::kNorth);
-  EXPECT_EQ(AsFacing(-1), FacingType::kNorthWest);
-  EXPECT_EQ(FacingType::kNorthWest + 1, FacingType::kNorth);
-  EXPECT_EQ(FacingType::kNorth - FacingType::kEast, FacingType::kWest);
-  EXPECT_EQ(FacingType::kSouthWest + FacingType::kSouth,
-            FacingType::kNorthEast);
-  EXPECT_EQ(FacingType::kNorth - 3, FacingType::kSouthWest);
+TEST(FacingTest, ArithmeticWrapsOntoEightFacings) {
+  EXPECT_EQ(AsFacing(8), Facing::kNorth);
+  EXPECT_EQ(AsFacing(-1), Facing::kNorthWest);
+  EXPECT_EQ(Facing::kNorthWest + 1, Facing::kNorth);
+  EXPECT_EQ(Facing::kNorth - Facing::kEast, Facing::kWest);
+  EXPECT_EQ(Facing::kSouthWest + Facing::kSouth, Facing::kNorthEast);
+  EXPECT_EQ(Facing::kNorth - 3, Facing::kSouthWest);
 }
 
 TEST(DirectionTest, ArithmeticWrapsAroundTheCircle) {
@@ -61,16 +60,16 @@ TEST(DirectionTest, SerializesAsFourBytes) {
 }
 
 TEST(NearestFacingTest, RoundsToTheNearestFacing) {
-  EXPECT_EQ(NearestFacing(Direction(15)), FacingType::kNorth);
-  EXPECT_EQ(NearestFacing(Direction(16)), FacingType::kNorthEast);
-  EXPECT_EQ(NearestFacing(Direction(239)), FacingType::kNorthWest);
-  EXPECT_EQ(NearestFacing(Direction(240)), FacingType::kNorth);
+  EXPECT_EQ(NearestFacing(Direction(15)), Facing::kNorth);
+  EXPECT_EQ(NearestFacing(Direction(16)), Facing::kNorthEast);
+  EXPECT_EQ(NearestFacing(Direction(239)), Facing::kNorthWest);
+  EXPECT_EQ(NearestFacing(Direction(240)), Facing::kNorth);
 }
 
 TEST(DirectionOfTest, PointsExactlyAtTheFacing) {
-  EXPECT_EQ(DirectionOf(FacingType::kNorth), Direction::kNorth);
-  EXPECT_EQ(DirectionOf(FacingType::kSouthEast), Direction::kSouthEast);
-  EXPECT_EQ(DirectionOf(FacingType::kNorthWest), Direction::kNorthWest);
+  EXPECT_EQ(DirectionOf(Facing::kNorth), Direction::kNorth);
+  EXPECT_EQ(DirectionOf(Facing::kSouthEast), Direction::kSouthEast);
+  EXPECT_EQ(DirectionOf(Facing::kNorthWest), Direction::kNorthWest);
 }
 
 TEST(BodyFrameTest, SixteenFramesRoundToTheNearest) {

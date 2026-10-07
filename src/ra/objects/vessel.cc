@@ -302,7 +302,7 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 game::MoveType VesselClass::Can_Enter_Cell(Cell cell,
-                                           game::FacingType /*from*/) const {
+                                           game::Facing /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -695,8 +695,7 @@ bool VesselClass::Per_Cell_Process(PCPType why) {
     IsPlanningToLook = false;
 
     if (IsToSelfRepair) {
-      for (const game::FacingType face :
-           magic_enum::enum_values<game::FacingType>()) {
+      for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
         const Cell cell = Cell::Containing(AdjacentCell(Center_Coord(), face));
         const BuildingClass* whom = TheMap().at(cell).Cell_Building();
         if (whom != nullptr &&
@@ -757,8 +756,8 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
       // check to see if the transporter can unload.
       bool found = false;
       if (*this != VESSEL_CARRIER) {
-        for (const game::FacingType face :
-             magic_enum::enum_values<game::FacingType>()) {
+        for (const game::Facing face :
+             magic_enum::enum_values<game::Facing>()) {
           if (found) {
             break;
           }
@@ -1575,10 +1574,9 @@ game::Direction VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  game::FacingType bestdir = game::FacingType::kNorth;
+  game::Facing bestdir = game::Facing::kNorth;
   int bestval = -1;
-  for (const game::FacingType face :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
     int value = 0;
     const Cell cellnum = AdjacentCell(Cell::Containing(Coord), face);
 
@@ -1628,7 +1626,7 @@ game::Direction VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = Cell{};
   if (bestval > 0) {
-    static constexpr base::EnumArray<game::FacingType, game::Direction>
+    static constexpr base::EnumArray<game::Facing, game::Direction>
         _desired_to_actual = {
             game::Direction::kSouth,     game::Direction::kSouthWest,
             game::Direction::kNorthWest, game::Direction::kNorthWest,
@@ -1759,8 +1757,8 @@ int VesselClass::Mission_Unload() {
                 game::Direction::kSouth + PrimaryFacing;
             bool placed = false;
 
-            for (const game::FacingType face :
-                 magic_enum::enum_values<game::FacingType>()) {
+            for (const game::Facing face :
+                 magic_enum::enum_values<game::Facing>()) {
               const game::Direction newface = toface + game::DirectionOf(face);
               const Cell newcell =
                   AdjacentCell(Cell::Containing(Coord), newface);
@@ -1794,8 +1792,8 @@ int VesselClass::Mission_Unload() {
               /*
               **	Tell everyone around the transport to scatter.
               */
-              for (const game::FacingType face :
-                   magic_enum::enum_values<game::FacingType>()) {
+              for (const game::Facing face :
+                   magic_enum::enum_values<game::Facing>()) {
                 CellClass* cellptr = &TheMap().at(Coord).Adjacent_Cell(face);
                 if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                   cellptr->Incoming(Coordinate{}, true);

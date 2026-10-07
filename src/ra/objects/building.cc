@@ -1479,7 +1479,7 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::Direction dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
+    if (Can_Enter_Cell(Cell::Containing(coord), game::Facing::kNone) ==
         game::MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
@@ -1867,8 +1867,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(
-                  AdjacentCell(cellcenter, game::FacingType::kNorth)),
+              Target::FromCell(AdjacentCell(cellcenter, game::Facing::kNorth)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1877,8 +1876,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(
-                  AdjacentCell(cellcenter, game::FacingType::kEast)),
+              Target::FromCell(AdjacentCell(cellcenter, game::Facing::kEast)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1887,8 +1885,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(
-                  AdjacentCell(cellcenter, game::FacingType::kSouth)),
+              Target::FromCell(AdjacentCell(cellcenter, game::Facing::kSouth)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -1897,8 +1894,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              Target::FromCell(
-                  AdjacentCell(cellcenter, game::FacingType::kWest)),
+              Target::FromCell(AdjacentCell(cellcenter, game::Facing::kWest)),
               nullptr, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
@@ -2576,7 +2572,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             cell = Cell::Containing(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
-            cell = AdjacentCell(cell, game::FacingType::kSouthWest);
+            cell = AdjacentCell(cell, game::Facing::kSouthWest);
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     AdjacentCell(cell, game::Direction::kSouth).Center(),
@@ -3929,8 +3925,8 @@ Coordinate BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-game::MoveType BuildingClass::Can_Enter_Cell(
-    Cell cell, game::FacingType /*unused*/) const {
+game::MoveType BuildingClass::Can_Enter_Cell(Cell cell,
+                                             game::Facing /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -5242,8 +5238,7 @@ int BuildingClass::Mission_Unload() {
           /*
           **	Scatter everything around the weapon's factory door.
           */
-          for (const game::FacingType f :
-               magic_enum::enum_values<game::FacingType>()) {
+          for (const game::Facing f : magic_enum::enum_values<game::Facing>()) {
             CellClass* cptr = &cellptr->Adjacent_Cell(f);
             if (cptr->Cell_Building() == nullptr) {
               cptr->Incoming(coord, true, true);
@@ -5270,8 +5265,8 @@ int BuildingClass::Mission_Unload() {
             }
             unit->Force_Track(DriveClass::kOutOfWeaponFactory, coord);
             //						unit->Force_Track(DriveClass::kOutOfWeaponFactory,
-            // Adjacent_Cell(Adjacent_Cell(Center_Coord(), FacingType::kSouth),
-            // FacingType::kSouth));
+            // Adjacent_Cell(Adjacent_Cell(Center_Coord(), Facing::kSouth),
+            // Facing::kSouth));
             unit->Set_Speed(128);
             Status = kLeave;
           } else {
@@ -5955,7 +5950,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 Coordinate BuildingClass::Target_Coord() const {
-  if (Class->FoundationFace != game::FacingType::kNone) {
+  if (Class->FoundationFace != game::Facing::kNone) {
     return AdjacentCell(Center_Coord(), Class->FoundationFace);
   }
   return Center_Coord();

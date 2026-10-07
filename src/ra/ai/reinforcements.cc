@@ -242,8 +242,7 @@ static TechnoClass* FindHostNear(const Cell origin) {
   if (UnitClass* transport = transport_in(origin_cell)) {
     return transport;
   }
-  for (const game::FacingType facing :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing facing : magic_enum::enum_values<game::Facing>()) {
     if (UnitClass* transport =
             transport_in(origin_cell.Adjacent_Cell(facing))) {
       return transport;
@@ -255,8 +254,7 @@ static TechnoClass* FindHostNear(const Cell origin) {
 // Returns the first cell around `cell` that is off the visible map and that
 // `member` can enter, or Cell::None() when there is none.
 static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
-  for (const game::FacingType direction :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing direction : magic_enum::enum_values<game::Facing>()) {
     const Cell neighbor = AdjacentCell(cell, direction);
     if (!TheMap().In_Radar(neighbor) &&
         member.Can_Enter_Cell(neighbor, direction) == game::MOVE_OK) {
@@ -307,7 +305,7 @@ bool DeliverReinforcements(TeamType* team_type) {
     edge = SOURCE_NORTH;
   }
 
-  // SourceType counts the four edges clockwise from north and FacingType the
+  // SourceType counts the four edges clockwise from north and Facing the
   // eight compass points, hence the factor of two. The facing is the edge's own
   // compass point, so the group starts out facing off the map.
   const game::Direction entry_dir =
@@ -348,7 +346,7 @@ bool DeliverReinforcements(TeamType* team_type) {
   // Unlimbo() fail, so two edge cells next to each other would otherwise hand
   // the member back and forth for ever.
   constexpr int kMaxRetries =
-      static_cast<int>(magic_enum::enum_count<game::FacingType>());
+      static_cast<int>(magic_enum::enum_count<game::Facing>());
   int retries_left = kMaxRetries;
   FootClass* member = PopHead(group);
   bool any_placed = false;

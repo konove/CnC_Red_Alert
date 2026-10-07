@@ -247,7 +247,7 @@ class FootClass : public TechnoClass {
   *generations *	of path lists before the ultimate destination is
   *reached. The game logic *	handles regenerating the path list as necessary.
   */
-  game::FacingType Path[kConquerPathMax]{};
+  game::Facing Path[kConquerPathMax]{};
 
   /*
   **	This value keeps track of how serious the unit is in trying to reach the
@@ -323,7 +323,7 @@ class FootClass : public TechnoClass {
         FormationSpeed(SPEED_FOOT),
         FormationMaxSpeed(game::MPH_IMMOBILE),
         HeadToCoord() {
-    base::At(Path, 0) = game::FacingType::kNone;
+    base::At(Path, 0) = game::Facing::kNone;
   }
 
  public:
@@ -412,8 +412,7 @@ class FootClass : public TechnoClass {
   virtual void Approach_Target();
   virtual void Set_Speed(int speed);
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell,
-      game::FacingType from = game::FacingType::kNone) const override;
+      Cell cell, game::Facing from = game::Facing::kNone) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, Target tarcom,
                         Target navcom) override;
@@ -424,18 +423,18 @@ class FootClass : public TechnoClass {
   int Rescue_Mission(Target tarcom);
 
  private:
-  int Passable_Cell(Cell cell, game::FacingType face, int threat,
+  int Passable_Cell(Cell cell, game::Facing face, int threat,
                     game::MoveType threshhold);
-  PathType* Find_Path(Cell dest, std::span<game::FacingType> final_moves,
+  PathType* Find_Path(Cell dest, std::span<game::Facing> final_moves,
                       int maxlen, game::MoveType threshhold);
   void Debug_Draw_Map(const char* txt, Cell start, Cell dest, bool pause);
   void Debug_Draw_Path(PathType* path);
-  bool Follow_Edge(Cell start, Cell target, PathType* path,
-                   game::FacingType search, game::FacingType olddir, int threat,
-                   int threat_stage, int max_cells, game::MoveType threshhold);
-  bool Register_Cell(PathType* path, Cell cell, game::FacingType dir, int cost,
+  bool Follow_Edge(Cell start, Cell target, PathType* path, game::Facing search,
+                   game::Facing olddir, int threat, int threat_stage,
+                   int max_cells, game::MoveType threshhold);
+  bool Register_Cell(PathType* path, Cell cell, game::Facing dir, int cost,
                      game::MoveType threshhold);
-  bool Unravel_Loop(PathType* path, Cell& cell, game::FacingType& dir, int sx,
+  bool Unravel_Loop(PathType* path, Cell& cell, game::Facing& dir, int sx,
                     int sy, int dx, int dy, game::MoveType threshhold);
 
   /*

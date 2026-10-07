@@ -44,7 +44,7 @@ namespace ra {
 namespace {
 
 // Where each facing points on a unit circle, in tenths, north first and going
-// clockwise to match FacingType; y grows downward. A 45-degree angle meets the
+// clockwise to match Facing; y grows downward. A 45-degree angle meets the
 // circle at (.707, .707), written as 7.
 constexpr int kCompassTenths[8][2] = {{0, -10}, {7, -7}, {10, 0},  {7, 7},
                                       {0, 10},  {-7, 7}, {-10, 0}, {-7, -7}};
@@ -85,7 +85,7 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   // Follow the mouse on a press, or while the button is held after a press on
   // the dial (StuckOn); a drag that starts elsewhere must not turn it.
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
-    const game::FacingType old_facing = facing_;
+    const game::Facing old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
     direction_ = game::Direction8Toward(
         center_x_, center_y_, game::TheMouse().x(), game::TheMouse().y());

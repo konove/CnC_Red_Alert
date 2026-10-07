@@ -128,7 +128,7 @@ static void Sort_Cells(std::span<Cell> cells, int numcells,
 static int Furthest_Cell(std::span<const Cell> ref_cells, int num_ref_cells,
                          std::span<const Cell> test_cells, int num_test_cells);
 static Cell Clip_Scatter(Cell cell, int maxdist);
-static Cell Clip_Move(Cell cell, game::FacingType facing, int dist);
+static Cell Clip_Move(Cell cell, game::Facing facing, int dist);
 
 /***********************************************************************************************
  * Set_Scenario_Name -- Creates the INI scenario name string. *
@@ -1341,9 +1341,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
     /*.....................................................................
     Pick a random starting direction
     .....................................................................*/
-    auto rot =
-        Random_Pick(game::FacingType::kNorth,
-                    game::FacingType::kNorthWest);  // for object placement
+    auto rot = Random_Pick(game::Facing::kNorth,
+                           game::Facing::kNorthWest);  // for object placement
     /*.....................................................................
     Try all directions twice
     .....................................................................*/
@@ -1351,8 +1350,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
       /*..................................................................
       Loop through all directions, at this distance.
       ..................................................................*/
-      for (game::FacingType fcounter = game::FacingType::kNorth;
-           fcounter <= game::FacingType::kNorthWest; fcounter++) {
+      for (game::Facing fcounter = game::Facing::kNorth;
+           fcounter <= game::Facing::kNorthWest; fcounter++) {
         bool skipit = false;
 
         /*...............................................................
@@ -1391,8 +1390,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
         }
 
         rot++;
-        if (rot > game::FacingType::kNorthWest) {
-          rot = game::FacingType::kNorth;
+        if (rot > game::Facing::kNorthWest) {
+          rot = game::Facing::kNorth;
         }
       }
     }
@@ -1570,7 +1569,7 @@ static Cell Clip_Scatter(Cell cell, int maxdist) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
+static Cell Clip_Move(Cell cell, game::Facing facing, int dist) {
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
   ------------------------------------------------------------------------*/
@@ -1589,42 +1588,42 @@ static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
   Adjust the x-coordinate
   ------------------------------------------------------------------------*/
   switch (facing) {
-    case game::FacingType::kNorth:
+    case game::Facing::kNorth:
       y -= dist;
       break;
 
-    case game::FacingType::kNorthEast:
+    case game::Facing::kNorthEast:
       x += dist;
       y -= dist;
       break;
 
-    case game::FacingType::kEast:
+    case game::Facing::kEast:
       x += dist;
       break;
 
-    case game::FacingType::kSouthEast:
+    case game::Facing::kSouthEast:
       x += dist;
       y += dist;
       break;
 
-    case game::FacingType::kSouth:
+    case game::Facing::kSouth:
       y += dist;
       break;
 
-    case game::FacingType::kSouthWest:
+    case game::Facing::kSouthWest:
       x -= dist;
       y += dist;
       break;
 
-    case game::FacingType::kWest:
+    case game::Facing::kWest:
       x -= dist;
       break;
 
-    case game::FacingType::kNorthWest:
+    case game::Facing::kNorthWest:
       x -= dist;
       y -= dist;
       break;
-    case game::FacingType::kNone:
+    case game::Facing::kNone:
     default:
       break;
   }

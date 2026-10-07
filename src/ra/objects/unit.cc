@@ -1428,7 +1428,7 @@ bool UnitClass::Goto_Clear_Spot() {
   if (!NavCom &&
       BuildingTypeClass::As_Reference(STRUCT_CONST)
           .Legal_Placement(AdjacentCell(Cell::Containing(Center_Coord()),
-                                        game::FacingType::kNorthWest))) {
+                                        game::Facing::kNorthWest))) {
     Mark(MARK_DOWN);
     return true;
   }
@@ -1459,7 +1459,7 @@ bool UnitClass::Goto_Clear_Spot() {
     std::span<const int> ptr(_offsets);
     while (ptr.front()) {
       const Cell cell = Cell::Containing(Coord).Offset(base::ConsumeFront(ptr));
-      const Cell check_cell = AdjacentCell(cell, game::FacingType::kNorthWest);
+      const Cell check_cell = AdjacentCell(cell, game::Facing::kNorthWest);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
         Assign_Destination(Target::FromCell(cell));
@@ -1512,7 +1512,7 @@ bool UnitClass::Try_To_Deploy() {
       */
       Mark(MARK_UP);
       const Cell cell = Cell::Containing(
-          AdjacentCell(Center_Coord(), game::FacingType::kNorthWest));
+          AdjacentCell(Center_Coord(), game::Facing::kNorthWest));
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(cell)) {
         if (ThePlayer() == House) {
@@ -1550,8 +1550,7 @@ bool UnitClass::Try_To_Deploy() {
       auto* building =
           base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building != nullptr) {
-        if (building->Unlimbo(
-                AdjacentCell(Coord, game::FacingType::kNorthWest))) {
+        if (building->Unlimbo(AdjacentCell(Coord, game::Facing::kNorthWest))) {
           /*
           **	Play the buildup sound for the player if this is the players
           **	MCV.
@@ -1814,7 +1813,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     /*
     **	Certain units require some setup time after they come to a halt.
     */
-    if ((!NavCom && Path[0] == game::FacingType::kNone) &&
+    if ((!NavCom && Path[0] == game::Facing::kNone) &&
         Class->IsNoFireWhileMoving) {
       Arm.Set(Rearm_Delay(true) / 4);
     }
@@ -2497,8 +2496,8 @@ int UnitClass::Mission_Unload() {
                   game::Direction::kSouth + PrimaryFacing;
               bool placed = false;
 
-              for (const game::FacingType face :
-                   magic_enum::enum_values<game::FacingType>()) {
+              for (const game::Facing face :
+                   magic_enum::enum_values<game::Facing>()) {
                 const game::Direction newface =
                     toface + game::DirectionOf(face);
                 const Cell newcell =
@@ -2583,8 +2582,8 @@ int UnitClass::Mission_Unload() {
                   game::Direction::kSouth + PrimaryFacing;
               bool placed = false;
 
-              for (const game::FacingType face :
-                   magic_enum::enum_values<game::FacingType>()) {
+              for (const game::Facing face :
+                   magic_enum::enum_values<game::Facing>()) {
                 const game::Direction newface =
                     toface + game::DirectionOf(face);
                 const Cell newcell =
@@ -2635,7 +2634,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MCV:
       switch (Status) {
         case 0:
-          Path[0] = game::FacingType::kNone;
+          Path[0] = game::Facing::kNone;
           Status = 1;
           break;
 
@@ -2767,8 +2766,8 @@ int UnitClass::Mission_Unload() {
           const game::Direction toface =
               game::Direction::kSouth + PrimaryFacing;
 
-          for (const game::FacingType face :
-               magic_enum::enum_values<game::FacingType>()) {
+          for (const game::Facing face :
+               magic_enum::enum_values<game::Facing>()) {
             const game::Direction newface = toface + game::DirectionOf(face);
             const Cell newcell = AdjacentCell(Cell::Containing(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -3154,7 +3153,7 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
 game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
-                                         game::FacingType /*from*/) const {
+                                         game::Facing /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3519,8 +3518,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Cell::Containing(AdjacentCell(
-                   Center_Coord(), game::FacingType::kNorthWest)))) {
+               .Legal_Placement(Cell::Containing(
+                   AdjacentCell(Center_Coord(), game::Facing::kNorthWest)))) {
         action = ACTION_NO_DEPLOY;
       }
       Mark(MARK_DOWN);
@@ -3845,10 +3844,9 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  game::FacingType bestdir = game::FacingType::kNorth;
+  game::Facing bestdir = game::Facing::kNorth;
   int bestval = -1;
-  for (const game::FacingType face :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
     int value = 0;
     const Cell cellnum = AdjacentCell(Cell::Containing(Coord), face);
 
@@ -3887,11 +3885,10 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
         std::abs(static_cast<int>(static_cast<signed char>(
                      game::DirectionOf(face).value())) -
                  static_cast<int>(static_cast<signed char>(faceto.value())));
-    if (face == game::FacingType::kSouth) {
+    if (face == game::Facing::kSouth) {
       value -= 100;
     }
-    if (face == game::FacingType::kSouthWest ||
-        face == game::FacingType::kSouthEast) {
+    if (face == game::Facing::kSouthWest || face == game::Facing::kSouthEast) {
       value += 64;
     }
 
@@ -3910,7 +3907,7 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = Cell{};
   if (bestval > 0) {
-    static constexpr base::EnumArray<game::FacingType, game::Direction>
+    static constexpr base::EnumArray<game::Facing, game::Direction>
         _desired_to_actual = {
             game::Direction::kSouth,     game::Direction::kSouthWest,
             game::Direction::kNorthWest, game::Direction::kNorthWest,
@@ -4616,10 +4613,10 @@ void UnitClass::Assign_Destination(Target target) {
         }
       }
     } else {
-      Path[0] = game::FacingType::kNone;
+      Path[0] = game::Facing::kNone;
     }
   } else {
-    Path[0] = game::FacingType::kNone;
+    Path[0] = game::Facing::kNone;
   }
 
   /*
@@ -4657,7 +4654,7 @@ void UnitClass::Assign_Destination(Target target) {
             // reset is done by hand on the next line.
             // NOLINTNEXTLINE(bugprone-parent-virtual-call)
             FootClass::Assign_Destination(target);
-            Path[0] = game::FacingType::kNone;
+            Path[0] = game::Facing::kNone;
             return;
           }
 

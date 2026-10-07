@@ -217,19 +217,18 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
         !dynamic_cast<UnitClass*>(this)->IsDumping) &&
        (!NavCom || (nokidding && !IsRotating))) &&
       (!TarCom || forced || RandomPick(1, 4) == 1)) {
-    game::FacingType toface = game::FacingType::kNone;
+    game::Facing toface = game::Facing::kNone;
 
     if (threat) {
       toface = game::NearestFacing(Direction8(threat, Coord));
-      toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
+      toface = toface + static_cast<game::Facing>(RandomPick(0, 2) - 1);
     } else {
       toface = game::NearestFacing(PrimaryFacing.Current());
-      toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
+      toface = toface + static_cast<game::Facing>(RandomPick(0, 2) - 1);
     }
 
-    for (const game::FacingType face :
-         magic_enum::enum_values<game::FacingType>()) {
-      const game::FacingType newface = toface + face;
+    for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
+      const game::Facing newface = toface + face;
       const Cell newcell = AdjacentCell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
@@ -557,7 +556,7 @@ void DriveClass::Assign_Destination(Target target) {
   */
   FootClass::Assign_Destination(target);
 
-  base::At(Path, 0) = game::FacingType::kNone;  // Force recalculation of path.
+  base::At(Path, 0) = game::Facing::kNone;  // Force recalculation of path.
   if (!IsDriving && Mission != MISSION_UNLOAD) {
     Start_Of_Move();
   }
@@ -626,7 +625,7 @@ bool DriveClass::While_Moving() {
     std::span<const TrackType> ptr =
         base::At(RawTracks, tracknum - 1)
             .Track;  // Pointer to coord offset values.
-    const game::FacingType nextface =
+    const game::Facing nextface =
         base::At(Path, 0);  // Next facing queued in path.
 
     /*
@@ -634,7 +633,7 @@ bool DriveClass::While_Moving() {
     **	a turn, then track jumping might occur.
     */
     bool adj = false;  // Is a turn coming up?
-    if (nextface != game::FacingType::kNone &&
+    if (nextface != game::Facing::kNone &&
         game::NearestFacing(track->Facing) != nextface) {
       adj = true;
     }
@@ -671,12 +670,12 @@ bool DriveClass::While_Moving() {
         **	The unit could "jump tracks". Check to see if the unit should
         **	do so.
         */
-        if (/**this != UNIT_GUNBOAT &&*/ nextface != game::FacingType::kNone &&
+        if (/**this != UNIT_GUNBOAT &&*/ nextface != game::Facing::kNone &&
             adj && base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
               (static_cast<int>(game::NearestFacing(track->Facing)) *
-               static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
+               static_cast<int>(magic_enum::enum_count<game::Facing>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
               base::Suffix(TrackControl, tnum)
@@ -711,9 +710,9 @@ bool DriveClass::While_Moving() {
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                                   std::as_bytes(base::Suffix(Path, 1)),
                                   kConquerPathMax - 1);
-                  base::At(Path, kConquerPathMax - 1) = game::FacingType::kNone;
+                  base::At(Path, kConquerPathMax - 1) = game::Facing::kNone;
                 } else {
-                  base::At(Path, 0) = game::FacingType::kNone;
+                  base::At(Path, 0) = game::Facing::kNone;
                   TrackNumber = -1;
                   actual = 0;
                 }
@@ -805,7 +804,7 @@ bool DriveClass::Per_Cell_Process(PCPType why) {
     if (NavCom.AsCell() == cell) {
       IsTurretLockedDown = false;
       NavCom = Target{};
-      base::At(Path, 0) = game::FacingType::kNone;
+      base::At(Path, 0) = game::Facing::kNone;
     }
 
     Lay_Track();
@@ -839,10 +838,9 @@ bool DriveClass::Per_Cell_Process(PCPType why) {
 bool DriveClass::Start_Of_Move() {
   DCHECK(IsActive);
 
-  game::FacingType facing =
-      base::At(Path, 0);  // Direction movement will commence.
+  game::Facing facing = base::At(Path, 0);  // Direction movement will commence.
 
-  if (!NavCom && facing == game::FacingType::kNone) {
+  if (!NavCom && facing == game::Facing::kNone) {
     IsTurretLockedDown = false;
     Stop_Driver();
     if (Mission == MISSION_MOVE) {
@@ -855,12 +853,12 @@ bool DriveClass::Start_Of_Move() {
   **	Reduce the path length if the target is a unit and the
   **	range to the unit is less than the precalculated path steps.
   */
-  if (facing != game::FacingType::kNone &&
+  if (facing != game::Facing::kNone &&
       (NavCom.kind() == RTTI_VESSEL || NavCom.kind() == RTTI_UNIT ||
        NavCom.kind() == RTTI_INFANTRY)) {
     const int dist = Lepton_To_Cell(Distance(NavCom));
     if (dist < std::ssize(Path)) {
-      base::At(Path, dist) = game::FacingType::kNone;
+      base::At(Path, dist) = game::Facing::kNone;
       facing = base::At(Path, 0);  // Maybe needed.
     }
   }
@@ -869,7 +867,7 @@ bool DriveClass::Start_Of_Move() {
   **	If the path is invalid at this point, then generate one. If
   **	generating a new path fails, then abort NavCom.
   */
-  if (facing == game::FacingType::kNone) {
+  if (facing == game::Facing::kNone) {
     /*
     **	If after a path search, there is still no valid path, then set the
     **	NavCom to null and let the script take care of assigning a new
@@ -1050,7 +1048,7 @@ bool DriveClass::Start_Of_Move() {
 
     Stop_Driver();
     if (cando != game::MOVE_MOVING_BLOCK) {
-      base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
+      base::At(Path, 0) = game::Facing::kNone;  // Path is blocked!
     }
 
     /*
@@ -1114,7 +1112,7 @@ bool DriveClass::Start_Of_Move() {
   **	occupied AS this unit is moving into it.
   */
   if (cando != game::MOVE_OK) {
-    base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
+    base::At(Path, 0) = game::Facing::kNone;  // Path is blocked!
     TrackNumber = -1;
     dest = Coordinate{};
   } else {
@@ -1123,18 +1121,17 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	Determine which track to use (based on recorded path).
     */
-    game::FacingType nextface = base::At(Path, 1);
-    if (nextface == game::FacingType::kNone) {
+    game::Facing nextface = base::At(Path, 1);
+    if (nextface == game::Facing::kNone) {
       nextface = facing;
     }
 
     IsOnShortTrack = false;
-    TrackNumber =
-        (static_cast<int>(facing) *
-         static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
-        static_cast<int>(nextface);
+    TrackNumber = (static_cast<int>(facing) *
+                   static_cast<int>(magic_enum::enum_count<game::Facing>())) +
+                  static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
-      base::At(Path, 0) = game::FacingType::kNone;
+      base::At(Path, 0) = game::Facing::kNone;
       TrackNumber = -1;
       return true;
     }
@@ -1176,7 +1173,7 @@ bool DriveClass::Start_Of_Move() {
           TheMap().at(destcell).Shimmer();
         }
 
-        base::At(Path, 0) = game::FacingType::kNone;  // Path is blocked!
+        base::At(Path, 0) = game::Facing::kNone;  // Path is blocked!
         TrackNumber = -1;
         dest = Coordinate{};
         if (cando == game::MOVE_DESTROYABLE) {
@@ -1202,7 +1199,7 @@ bool DriveClass::Start_Of_Move() {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 2)),
                         kConquerPathMax - 2);
-        base::At(Path, kConquerPathMax - 2) = game::FacingType::kNone;
+        base::At(Path, kConquerPathMax - 2) = game::Facing::kNone;
         IsPlanningToLook = true;
       }
     } else {
@@ -1210,14 +1207,14 @@ bool DriveClass::Start_Of_Move() {
                       std::as_bytes(base::Suffix(Path, 1)),
                       kConquerPathMax - 1);
     }
-    base::At(Path, kConquerPathMax - 1) = game::FacingType::kNone;
+    base::At(Path, kConquerPathMax - 1) = game::Facing::kNone;
   }
 
   IsNewNavCom = false;
   TrackIndex = 0;
   if (!Start_Driver(dest)) {
     TrackNumber = -1;
-    base::At(Path, 0) = game::FacingType::kNone;
+    base::At(Path, 0) = game::Facing::kNone;
     Set_Speed(0);
   }
   return false;
@@ -1280,7 +1277,7 @@ void DriveClass::AI() {
       return;
     }
     if (TrackNumber == -1 &&
-        (NavCom || base::At(Path, 0) != game::FacingType::kNone) &&
+        (NavCom || base::At(Path, 0) != game::Facing::kNone) &&
         (What_Am_I() != RTTI_UNIT ||
          !dynamic_cast<UnitClass*>(this)->IsDumping)) {
       Start_Of_Move();
@@ -1314,7 +1311,7 @@ void DriveClass::AI() {
       **	then start on a new track.
       */
       if ((Mission != MISSION_GUARD || NavCom) && Mission != MISSION_UNLOAD) {
-        if (NavCom || base::At(Path, 0) != game::FacingType::kNone) {
+        if (NavCom || base::At(Path, 0) != game::Facing::kNone) {
           /*
           **	Double check to make sure that the movement destination is
           **	in a zone that this unit can travel to. If not, then abort

@@ -47,15 +47,15 @@ inline game::Direction Direction8(Coordinate coord1, Coordinate coord2) {
 inline game::Direction DirectionBetween(Cell cell1, Cell cell2) {
   return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
-inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
+inline Coordinate Adjacent_Cell(Coordinate coord, game::Facing dir) {
   return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)
       .Snapped();
 }
 inline Coordinate Adjacent_Cell(Coordinate coord, game::Direction dir) {
   return Adjacent_Cell(coord, game::NearestFacing(dir));
 }
-inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
-  // Masked like the Coordinate overload above, so that FacingType::kNone (-1)
+inline Cell Adjacent_Cell(Cell cell, game::Facing dir) {
+  // Masked like the Coordinate overload above, so that Facing::kNone (-1)
   // does not index before the start of the table.
   return cell.Offset(AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }

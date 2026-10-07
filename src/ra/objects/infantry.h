@@ -258,7 +258,7 @@ class InfantryClass final : public FootClass {
   bool Random_Animate() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell /*cell*/,
-      game::FacingType /*from*/ = game::FacingType::kNone) const override;
+      game::Facing /*from*/ = game::Facing::kNone) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Enter_Idle_Mode(bool initial = false) override;
   void Scatter(Coordinate threat, bool forced = false,

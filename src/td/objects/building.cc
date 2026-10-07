@@ -1548,7 +1548,7 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::Direction dir) {
   Validate();
 #ifdef OBSOLETE
   if (*this == STRUCT_ROAD) {
-    if (Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
+    if (Can_Enter_Cell(Cell::Containing(coord), game::Facing::kNone) ==
         game::MOVE_OK) {
       ObjectClass* o =
           OverlayTypeClass::As_Reference(OVERLAY_ROAD).Create_One_Of(House);
@@ -1567,7 +1567,7 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::Direction dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
+    if (Can_Enter_Cell(Cell::Containing(coord), game::Facing::kNone) ==
         game::MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
@@ -2523,7 +2523,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             Cell cell = Cell::Containing(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
-            cell = Adjacent_Cell(cell, game::FacingType::kSouthWest);
+            cell = Adjacent_Cell(cell, game::Facing::kSouthWest);
             TheWorld().scenario_init()++;
             if (unit->Unlimbo(
                     unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
@@ -4025,8 +4025,8 @@ Coordinate BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-game::MoveType BuildingClass::Can_Enter_Cell(
-    Cell cell, game::FacingType /*unused*/) const {
+game::MoveType BuildingClass::Can_Enter_Cell(Cell cell,
+                                             game::Facing /*unused*/) const {
   Validate();
   return Class->Legal_Placement(cell) ? game::MOVE_OK : game::MOVE_NO;
 }
@@ -5201,7 +5201,7 @@ int BuildingClass::Mission_Unload() {
             unit->Assign_Mission(MISSION_MOVE);
             unit->Force_Track(
                 DriveClass::kOutOfWeaponFactory,
-                Adjacent_Cell(Center_Coord(), game::FacingType::kSouthWest));
+                Adjacent_Cell(Center_Coord(), game::Facing::kSouthWest));
             unit->Set_Speed(128);
             Status = kLeave;
           } else {
@@ -5632,8 +5632,7 @@ bool BuildingClass::Passes_Proximity_Check(Cell homecell) {
       return false;
     }
 
-    for (const game::FacingType facing :
-         magic_enum::enum_values<game::FacingType>()) {
+    for (const game::Facing facing : magic_enum::enum_values<game::Facing>()) {
       const Cell newcell = Adjacent_Cell(cell, facing);
 
       const TechnoClass* base = TheMap().at(newcell).Cell_Techno();

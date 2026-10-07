@@ -71,8 +71,7 @@ static bool IsUnitType(const TechnoTypeClass& type, const UnitType unit) {
 // Returns the first cell around `cell` that is off the visible map and that
 // `member` can enter, or Cell::None() when there is none.
 static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
-  for (const game::FacingType direction :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing direction : magic_enum::enum_values<game::Facing>()) {
     const Cell neighbor = Adjacent_Cell(cell, direction);
     if (!TheMap().In_Radar(neighbor) &&
         member.Can_Enter_Cell(neighbor, direction) == game::MOVE_OK) {
@@ -87,16 +86,15 @@ static Cell FindEdgeCellNextTo(const Cell cell, const FootClass& member) {
 // them their orders. Members that find no room are deleted.
 static void EnterFromEdge(FootClass* group, const SourceType edge,
                           const HousesType house, const bool has_team) {
-  // SourceType counts the four edges clockwise from north and FacingType the
+  // SourceType counts the four edges clockwise from north and Facing the
   // eight compass points, hence the factor of two. The facing is the edge's
   // own compass point, so the members start out facing off the map.
-  const game::FacingType entry_facing =
-      game::AsFacing(static_cast<int>(edge) * 2);
+  const game::Facing entry_facing = game::AsFacing(static_cast<int>(edge) * 2);
   const game::Direction facing = game::DirectionOf(entry_facing);
   // The opposite compass point, which leads from an edge cell onto the map.
-  const game::FacingType inward_facing = game::AsFacing(
-      (static_cast<int>(entry_facing) + 4) %
-      static_cast<int>(magic_enum::enum_count<game::FacingType>()));
+  const game::Facing inward_facing =
+      game::AsFacing((static_cast<int>(entry_facing) + 4) %
+                     static_cast<int>(magic_enum::enum_count<game::Facing>()));
 
   // `member` is the one being placed and `group` the rest of the list. A cell
   // index of 0 or less means there is no cell.

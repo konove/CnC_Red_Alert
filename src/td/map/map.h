@@ -164,7 +164,7 @@ class MapClass : public GScreenClass {
   static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };
 
-int Terrain_Cost(Cell cell, game::FacingType facing);
+int Terrain_Cost(Cell cell, game::Facing facing);
 int Coord_Spillage_Number(Coordinate coord, int maxsize);
 
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);

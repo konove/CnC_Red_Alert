@@ -2136,7 +2136,7 @@ struct PathType {
   Cell Start{};                   // Starting cell number.
   int Cost = 0;                   // Accumulated terrain cost.
   int Length = 0;                 // Command string length.
-  std::span<game::FacingType> Command;  // Pointer to command string.
+  std::span<game::Facing> Command;  // Pointer to command string.
   std::span<uint32_t> Overlap;    // Overlap bitmap, see td/map/path_overlap.h.
   Cell LastOverlap{};             // stores position of last overlap
   Cell LastFixup{};               // stores position of last overlap

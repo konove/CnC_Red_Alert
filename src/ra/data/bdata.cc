@@ -205,13 +205,13 @@ static const int16_t OListTmpl[] = {0, 1, 2, kRefreshEol};
  */
 static const BuildingTypeClass ClassBarrel(
     STRUCT_BARREL,
-    TXT_BARREL,               // NAME:			Short name of the structure.
-    "BARL",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_BARREL,             // NAME:			Short name of the structure.
+    "BARL",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -235,13 +235,13 @@ static const BuildingTypeClass ClassBarrel(
 
 static const BuildingTypeClass ClassBarrel3(
     STRUCT_BARREL3,
-    TXT_BARREL,               // NAME:			Short name of the structure.
-    "BRL3",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_BARREL,             // NAME:			Short name of the structure.
+    "BRL3",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -265,13 +265,13 @@ static const BuildingTypeClass ClassBarrel3(
 
 static const BuildingTypeClass ClassAVMine(
     STRUCT_AVMINE,
-    TXT_AVMINE,               // NAME:			Short name of the structure.
-    "MINV",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_AVMINE,             // NAME:			Short name of the structure.
+    "MINV",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -295,13 +295,13 @@ static const BuildingTypeClass ClassAVMine(
 
 static const BuildingTypeClass ClassAPMine(
     STRUCT_APMINE,
-    TXT_APMINE,               // NAME:			Short name of the structure.
-    "MINP",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_APMINE,             // NAME:			Short name of the structure.
+    "MINP",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -325,13 +325,13 @@ static const BuildingTypeClass ClassAPMine(
 
 static const BuildingTypeClass ClassIronCurtain(
     STRUCT_IRON_CURTAIN,
-    TXT_IRON_CURTAIN,          // NAME:			Short name of the structure.
-    "IRON",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_IRON_CURTAIN,       // NAME:			Short name of the structure.
+    "IRON",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -355,13 +355,13 @@ static const BuildingTypeClass ClassIronCurtain(
 
 static const BuildingTypeClass ClassForwardCom(
     STRUCT_FORWARD_COM,
-    TXT_FORWARD_COM,           // NAME:			Short name of the structure.
-    "FCOM",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_FORWARD_COM,        // NAME:			Short name of the structure.
+    "FCOM",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -385,14 +385,14 @@ static const BuildingTypeClass ClassForwardCom(
 
 static const BuildingTypeClass ClassAdvancedTech(
     STRUCT_ADVANCED_TECH,
-    TXT_ADVANCED_TECH,        // NAME:			Short name of the
-                              // structure.
-    "ATEK",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_ADVANCED_TECH,      // NAME:			Short name of the
+                            // structure.
+    "ATEK",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -416,13 +416,13 @@ static const BuildingTypeClass ClassAdvancedTech(
 
 static const BuildingTypeClass ClassChronosphere(
     STRUCT_CHRONOSPHERE,
-    TXT_CHRONOSPHERE,         // NAME:			Short name of the structure.
-    "PDOX",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CHRONOSPHERE,       // NAME:			Short name of the structure.
+    "PDOX",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -446,10 +446,10 @@ static const BuildingTypeClass ClassChronosphere(
 
 static const BuildingTypeClass ClassWeapon(
     STRUCT_WEAP,
-    TXT_WEAPON_FACTORY,       // NAME:			Short name of the
-                              // structure.
-    "WEAP",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_WEAPON_FACTORY,   // NAME:			Short name of the
+                          // structure.
+    "WEAP",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     Coordinate::FromLeptons(
         game::kCellWidthLeptons + (game::kCellWidthLeptons / 2),
         game::kCellHeightLeptons),  // Exit point for produced units.
@@ -479,9 +479,9 @@ static const BuildingTypeClass ClassWeapon(
 
 static const BuildingTypeClass ClassShipYard(
     STRUCT_SHIP_YARD,
-    TXT_SHIP_YARD,            // NAME:			Short name of the structure.
-    "SYRD",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_SHIP_YARD,        // NAME:			Short name of the structure.
+    "SYRD",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     CoordFromPixels(22 + (game::kCellWidthPixels / 2),
                     (game::kCellHeightPixels * 2) -
                         (game::kCellHeightPixels /
@@ -512,9 +512,9 @@ static const BuildingTypeClass ClassShipYard(
 
 static const BuildingTypeClass ClassSubPen(
     STRUCT_SUB_PEN,
-    TXT_SUB_PEN,              // NAME:			Short name of the structure.
-    "SPEN",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_SUB_PEN,          // NAME:			Short name of the structure.
+    "SPEN",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     CoordFromPixels(22 + (game::kCellWidthPixels / 2),
                     (game::kCellHeightPixels * 2) -
                         (game::kCellHeightPixels /
@@ -545,13 +545,13 @@ static const BuildingTypeClass ClassSubPen(
 
 static const BuildingTypeClass ClassPillbox(
     STRUCT_PILLBOX,
-    TXT_PILLBOX,              // NAME:			Short name of the structure.
-    "PBOX",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0010,                   //	Vertical offset.
-    0x0040,                   // Primary weapon offset along turret centerline.
+    TXT_PILLBOX,            // NAME:			Short name of the structure.
+    "PBOX",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0010,                 //	Vertical offset.
+    0x0040,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -575,13 +575,13 @@ static const BuildingTypeClass ClassPillbox(
 
 static const BuildingTypeClass ClassCamoPillbox(
     STRUCT_CAMOPILLBOX,
-    TXT_CAMOPILLBOX,          // NAME:			Short name of the structure.
-    "HBOX",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0010,                   //	Vertical offset.
-    0x0040,                   // Primary weapon offset along turret centerline.
+    TXT_CAMOPILLBOX,        // NAME:			Short name of the structure.
+    "HBOX",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0010,                 //	Vertical offset.
+    0x0040,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -605,13 +605,13 @@ static const BuildingTypeClass ClassCamoPillbox(
 
 static const BuildingTypeClass ClassTesla(
     STRUCT_TESLA,
-    TXT_TESLA,                 // NAME:			Short name of the structure.
-    "TSLA",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x00C8,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_TESLA,              // NAME:			Short name of the structure.
+    "TSLA",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x00C8,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -635,13 +635,13 @@ static const BuildingTypeClass ClassTesla(
 
 static const BuildingTypeClass ClassTurret(
     STRUCT_TURRET,
-    TXT_TURRET,               // NAME:			Short name of the structure.
-    "GUN",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0030,                   //	Vertical offset.
-    0x0080,                   // Primary weapon offset along turret centerline.
+    TXT_TURRET,             // NAME:			Short name of the structure.
+    "GUN",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0030,                 //	Vertical offset.
+    0x0080,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -665,13 +665,13 @@ static const BuildingTypeClass ClassTurret(
 
 static const BuildingTypeClass ClassAAGun(
     STRUCT_AAGUN,
-    TXT_AAGUN,                 // NAME:			Short name of the structure.
-    "AGUN",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_AAGUN,              // NAME:			Short name of the structure.
+    "AGUN",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -695,13 +695,13 @@ static const BuildingTypeClass ClassAAGun(
 
 static const BuildingTypeClass ClassFlameTurret(
     STRUCT_FLAME_TURRET,
-    TXT_FLAME_TURRET,         // NAME:			Short name of the structure.
-    "FTUR",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_FLAME_TURRET,       // NAME:			Short name of the structure.
+    "FTUR",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -725,13 +725,13 @@ static const BuildingTypeClass ClassFlameTurret(
 
 static const BuildingTypeClass ClassConst(
     STRUCT_CONST,
-    TXT_CONST_YARD,           // NAME:			Short name of the structure.
-    "FACT",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CONST_YARD,         // NAME:			Short name of the structure.
+    "FACT",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,  // Primary weapon lateral offset along turret centerline.
     false,   // Is this building a fake (decoy?)
     false,   // Animation rate is regulated for constant speed?
@@ -755,13 +755,13 @@ static const BuildingTypeClass ClassConst(
 
 static const BuildingTypeClass ClassFakeConst(
     STRUCT_FAKECONST,
-    TXT_FAKE_CONST,           // NAME:			Short name of the structure.
-    "FACF",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_FAKE_CONST,         // NAME:			Short name of the structure.
+    "FACF",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     true,       // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -785,9 +785,9 @@ static const BuildingTypeClass ClassFakeConst(
 
 static const BuildingTypeClass ClassFakeWeapon(
     STRUCT_FAKEWEAP,
-    TXT_FAKE_WEAP,            // NAME:			Short name of the structure.
-    "WEAF",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_FAKE_WEAP,        // NAME:			Short name of the structure.
+    "WEAF",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     CoordFromPixels(10 + (game::kCellWidthPixels / 2),
                     (game::kCellHeightPixels * 3) -
                         (game::kCellHeightPixels / 2) -
@@ -818,13 +818,13 @@ static const BuildingTypeClass ClassFakeWeapon(
 
 static const BuildingTypeClass ClassRefinery(
     STRUCT_REFINERY,
-    TXT_REFINERY,             // NAME:			Short name of the structure.
-    "PROC",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_REFINERY,           // NAME:			Short name of the structure.
+    "PROC",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -848,13 +848,13 @@ static const BuildingTypeClass ClassRefinery(
 
 static const BuildingTypeClass ClassStorage(
     STRUCT_STORAGE,
-    TXT_STORAGE,              // NAME:			Short name of the structure.
-    "SILO",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_STORAGE,            // NAME:			Short name of the structure.
+    "SILO",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -878,13 +878,13 @@ static const BuildingTypeClass ClassStorage(
 
 static const BuildingTypeClass ClassHelipad(
     STRUCT_HELIPAD,
-    TXT_HELIPAD,              // NAME:			Short name of the structure.
-    "HPAD",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_HELIPAD,            // NAME:			Short name of the structure.
+    "HPAD",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,  // Primary weapon lateral offset along turret centerline.
     false,   // Is this building a fake (decoy?)
     false,   // Animation rate is regulated for constant speed?
@@ -908,13 +908,13 @@ static const BuildingTypeClass ClassHelipad(
 
 static const BuildingTypeClass ClassCommand(
     STRUCT_RADAR,
-    TXT_COMMAND,              // NAME:			Short name of the structure.
-    "DOME",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_COMMAND,            // NAME:			Short name of the structure.
+    "DOME",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -938,14 +938,14 @@ static const BuildingTypeClass ClassCommand(
 
 static const BuildingTypeClass ClassGapGenerator(
     STRUCT_GAP,
-    TXT_GAP_GENERATOR,         // NAME:			Short name of the
-                               // structure.
-    "GAP",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_GAP_GENERATOR,      // NAME:			Short name of the
+                            // structure.
+    "GAP",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -969,13 +969,13 @@ static const BuildingTypeClass ClassGapGenerator(
 
 static const BuildingTypeClass ClassSAM(
     STRUCT_SAM,
-    TXT_SAM,                  // NAME:			Short name of the structure.
-    "SAM",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0030,                   //	Vertical offset.
-    0x0080,                   // Primary weapon offset along turret centerline.
+    TXT_SAM,                // NAME:			Short name of the structure.
+    "SAM",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0030,                 //	Vertical offset.
+    0x0080,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -999,13 +999,13 @@ static const BuildingTypeClass ClassSAM(
 
 static const BuildingTypeClass ClassMissileSilo(
     STRUCT_MSLO,
-    TXT_MSLO,                 // NAME:			Short name of the structure.
-    "MSLO",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_MSLO,               // NAME:			Short name of the structure.
+    "MSLO",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1029,13 +1029,13 @@ static const BuildingTypeClass ClassMissileSilo(
 
 static const BuildingTypeClass ClassAirStrip(
     STRUCT_AIRSTRIP,
-    TXT_AIRSTRIP,              // NAME:			Short name of the structure.
-    "AFLD",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_AIRSTRIP,           // NAME:			Short name of the structure.
+    "AFLD",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,  // Primary weapon lateral offset along turret centerline.
     false,   // Is this building a fake (decoy?)
     true,    // Animation rate is regulated for constant speed?
@@ -1059,13 +1059,13 @@ static const BuildingTypeClass ClassAirStrip(
 
 static const BuildingTypeClass ClassPower(
     STRUCT_POWER,
-    TXT_POWER,                 // NAME:			Short name of the structure.
-    "POWR",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_POWER,              // NAME:			Short name of the structure.
+    "POWR",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1089,14 +1089,14 @@ static const BuildingTypeClass ClassPower(
 
 static const BuildingTypeClass ClassAdvancedPower(
     STRUCT_ADVANCED_POWER,
-    TXT_ADVANCED_POWER,        // NAME:			Short name of the
-                               // structure.
-    "APWR",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_ADVANCED_POWER,     // NAME:			Short name of the
+                            // structure.
+    "APWR",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1120,13 +1120,13 @@ static const BuildingTypeClass ClassAdvancedPower(
 
 static const BuildingTypeClass ClassSovietTech(
     STRUCT_SOVIET_TECH,
-    TXT_SOVIET_TECH,           // NAME:			Short name of the structure.
-    "STEK",                    // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_SOVIET_TECH,        // NAME:			Short name of the structure.
+    "STEK",                 // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1150,13 +1150,13 @@ static const BuildingTypeClass ClassSovietTech(
 
 static const BuildingTypeClass ClassHospital(
     STRUCT_HOSPITAL,
-    TXT_HOSPITAL,             // NAME:			Short name of the structure.
-    "HOSP",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_HOSPITAL,           // NAME:			Short name of the structure.
+    "HOSP",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1180,13 +1180,13 @@ static const BuildingTypeClass ClassHospital(
 
 static const BuildingTypeClass ClassBioLab(
     STRUCT_BIO_LAB,
-    TXT_BIO_LAB,              // NAME:			Short name of the structure.
-    "BIO",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_BIO_LAB,            // NAME:			Short name of the structure.
+    "BIO",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1212,7 +1212,7 @@ static const BuildingTypeClass ClassBarracks(
     STRUCT_BARRACKS,
     TXT_BARRACKS,             // NAME:			Short name of the structure.
     "BARR",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    game::Facing::kNone,      // Foundation direction from center of building.
                               //	CoordFromPixels(24,47), // Exit
                               // point for produced units.
     CoordFromPixels(18, 47),  // Exit point for produced units.
@@ -1244,7 +1244,7 @@ static const BuildingTypeClass ClassTent(
     STRUCT_TENT,
     TXT_BARRACKS,             // NAME:			Short name of the structure.
     "TENT",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    game::Facing::kNone,      // Foundation direction from center of building.
     CoordFromPixels(24, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
@@ -1272,13 +1272,13 @@ static const BuildingTypeClass ClassTent(
 
 static const BuildingTypeClass ClassKennel(
     STRUCT_KENNEL,
-    TXT_KENNEL,               // NAME:			Short name of the structure.
-    "KENN",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(8, 16),   // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_KENNEL,              // NAME:			Short name of the structure.
+    "KENN",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,     // Foundation direction from center of building.
+    CoordFromPixels(8, 16),  // Exit point for produced units.
+    REMAP_ALTERNATE,         // Sidebar remap logic.
+    0x0000,                  //	Vertical offset.
+    0x0000,                  // Primary weapon offset along turret centerline.
     0x0000,  // Primary weapon lateral offset along turret centerline.
     false,   // Is this building a fake (decoy?)
     true,    // Animation rate is regulated for constant speed?
@@ -1304,9 +1304,9 @@ static const BuildingTypeClass ClassKennel(
 
 static const BuildingTypeClass ClassFakeShipYard(
     STRUCT_FAKE_YARD,
-    TXT_FAKE_YARD,            // NAME:			Short name of the structure.
-    "SYRF",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_FAKE_YARD,        // NAME:			Short name of the structure.
+    "SYRF",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     CoordFromPixels(22 + (game::kCellWidthPixels / 2),
                     (game::kCellHeightPixels * 2) -
                         (game::kCellHeightPixels /
@@ -1337,9 +1337,9 @@ static const BuildingTypeClass ClassFakeShipYard(
 
 static const BuildingTypeClass ClassFakeSubPen(
     STRUCT_FAKE_PEN,
-    TXT_FAKE_PEN,             // NAME:			Short name of the structure.
-    "SPEF",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    TXT_FAKE_PEN,         // NAME:			Short name of the structure.
+    "SPEF",               // NAME:			Short name of the structure.
+    game::Facing::kNone,  // Foundation direction from center of building.
     CoordFromPixels(22 + (game::kCellWidthPixels / 2),
                     (game::kCellHeightPixels * 2) -
                         (game::kCellHeightPixels /
@@ -1370,13 +1370,13 @@ static const BuildingTypeClass ClassFakeSubPen(
 
 static const BuildingTypeClass ClassFakeCommand(
     STRUCT_FAKE_RADAR,
-    TXT_FAKE_RADAR,           // NAME:			Short name of the structure.
-    "DOMF",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_FAKE_RADAR,         // NAME:			Short name of the structure.
+    "DOMF",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     true,       // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1400,13 +1400,13 @@ static const BuildingTypeClass ClassFakeCommand(
 
 static const BuildingTypeClass ClassRepair(
     STRUCT_REPAIR,
-    TXT_FIX_IT,               // NAME:			Short name of the structure.
-    "FIX",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_FIX_IT,             // NAME:			Short name of the structure.
+    "FIX",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1430,13 +1430,13 @@ static const BuildingTypeClass ClassRepair(
 
 static const BuildingTypeClass ClassV01(
     STRUCT_V01,
-    TXT_CIV1,                  // NAME:			Short name of the structure.
-    "V01",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV1,               // NAME:			Short name of the structure.
+    "V01",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1460,13 +1460,13 @@ static const BuildingTypeClass ClassV01(
 
 static const BuildingTypeClass ClassV02(
     STRUCT_V02,
-    TXT_CIV2,                  // NAME:			Short name of the structure.
-    "V02",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV2,               // NAME:			Short name of the structure.
+    "V02",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1490,13 +1490,13 @@ static const BuildingTypeClass ClassV02(
 
 static const BuildingTypeClass ClassV03(
     STRUCT_V03,
-    TXT_CIV3,                  // NAME:			Short name of the structure.
-    "V03",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV3,               // NAME:			Short name of the structure.
+    "V03",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1520,13 +1520,13 @@ static const BuildingTypeClass ClassV03(
 
 static const BuildingTypeClass ClassV04(
     STRUCT_V04,
-    TXT_CIV4,                  // NAME:			Short name of the structure.
-    "V04",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV4,               // NAME:			Short name of the structure.
+    "V04",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1550,13 +1550,13 @@ static const BuildingTypeClass ClassV04(
 
 static const BuildingTypeClass ClassV05(
     STRUCT_V05,
-    TXT_CIV5,                 // NAME:			Short name of the structure.
-    "V05",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV5,               // NAME:			Short name of the structure.
+    "V05",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1580,13 +1580,13 @@ static const BuildingTypeClass ClassV05(
 
 static const BuildingTypeClass ClassV06(
     STRUCT_V06,
-    TXT_CIV6,                 // NAME:			Short name of the structure.
-    "V06",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV6,               // NAME:			Short name of the structure.
+    "V06",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1610,13 +1610,13 @@ static const BuildingTypeClass ClassV06(
 
 static const BuildingTypeClass ClassV07(
     STRUCT_V07,
-    TXT_CIV7,                 // NAME:			Short name of the structure.
-    "V07",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV7,               // NAME:			Short name of the structure.
+    "V07",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1640,13 +1640,13 @@ static const BuildingTypeClass ClassV07(
 
 static const BuildingTypeClass ClassV08(
     STRUCT_V08,
-    TXT_CIV8,                 // NAME:			Short name of the structure.
-    "V08",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV8,               // NAME:			Short name of the structure.
+    "V08",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1670,13 +1670,13 @@ static const BuildingTypeClass ClassV08(
 
 static const BuildingTypeClass ClassV09(
     STRUCT_V09,
-    TXT_CIV9,                 // NAME:			Short name of the structure.
-    "V09",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV9,               // NAME:			Short name of the structure.
+    "V09",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1700,13 +1700,13 @@ static const BuildingTypeClass ClassV09(
 
 static const BuildingTypeClass ClassV10(
     STRUCT_V10,
-    TXT_CIV10,                // NAME:			Short name of the structure.
-    "V10",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV10,              // NAME:			Short name of the structure.
+    "V10",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1730,13 +1730,13 @@ static const BuildingTypeClass ClassV10(
 
 static const BuildingTypeClass ClassV11(
     STRUCT_V11,
-    TXT_CIV11,                // NAME:			Short name of the structure.
-    "V11",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV11,              // NAME:			Short name of the structure.
+    "V11",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1760,13 +1760,13 @@ static const BuildingTypeClass ClassV11(
 
 static const BuildingTypeClass ClassV12(
     STRUCT_V12,
-    TXT_CIV12,                // NAME:			Short name of the structure.
-    "V12",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV12,              // NAME:			Short name of the structure.
+    "V12",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1790,13 +1790,13 @@ static const BuildingTypeClass ClassV12(
 
 static const BuildingTypeClass ClassV13(
     STRUCT_V13,
-    TXT_CIV13,                // NAME:			Short name of the structure.
-    "V13",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV13,              // NAME:			Short name of the structure.
+    "V13",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1820,13 +1820,13 @@ static const BuildingTypeClass ClassV13(
 
 static const BuildingTypeClass ClassV14(
     STRUCT_V14,
-    TXT_CIV14,                // NAME:			Short name of the structure.
-    "V14",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV14,              // NAME:			Short name of the structure.
+    "V14",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1850,13 +1850,13 @@ static const BuildingTypeClass ClassV14(
 
 static const BuildingTypeClass ClassV15(
     STRUCT_V15,
-    TXT_CIV15,                // NAME:			Short name of the structure.
-    "V15",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV15,              // NAME:			Short name of the structure.
+    "V15",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1880,13 +1880,13 @@ static const BuildingTypeClass ClassV15(
 
 static const BuildingTypeClass ClassV16(
     STRUCT_V16,
-    TXT_CIV16,                // NAME:			Short name of the structure.
-    "V16",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV16,              // NAME:			Short name of the structure.
+    "V16",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1910,13 +1910,13 @@ static const BuildingTypeClass ClassV16(
 
 static const BuildingTypeClass ClassV17(
     STRUCT_V17,
-    TXT_CIV17,                // NAME:			Short name of the structure.
-    "V17",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV17,              // NAME:			Short name of the structure.
+    "V17",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1940,13 +1940,13 @@ static const BuildingTypeClass ClassV17(
 
 static const BuildingTypeClass ClassV18(
     STRUCT_V18,
-    TXT_CIV18,                // NAME:			Short name of the structure.
-    "V18",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV18,              // NAME:			Short name of the structure.
+    "V18",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -1970,13 +1970,13 @@ static const BuildingTypeClass ClassV18(
 
 static const BuildingTypeClass ClassV19(
     STRUCT_PUMP,
-    TXT_PUMP,                 // NAME:			Short name of the structure.
-    "V19",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_PUMP,               // NAME:			Short name of the structure.
+    "V19",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2000,13 +2000,13 @@ static const BuildingTypeClass ClassV19(
 
 static const BuildingTypeClass ClassV20(
     STRUCT_V20,
-    TXT_CIV20,                 // NAME:			Short name of the structure.
-    "V20",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV20,              // NAME:			Short name of the structure.
+    "V20",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2030,13 +2030,13 @@ static const BuildingTypeClass ClassV20(
 
 static const BuildingTypeClass ClassV21(
     STRUCT_V21,
-    TXT_CIV21,                // NAME:			Short name of the structure.
-    "V21",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV21,              // NAME:			Short name of the structure.
+    "V21",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2060,13 +2060,13 @@ static const BuildingTypeClass ClassV21(
 
 static const BuildingTypeClass ClassV22(
     STRUCT_V22,
-    TXT_CIV22,                // NAME:			Short name of the structure.
-    "V22",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV22,              // NAME:			Short name of the structure.
+    "V22",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2090,13 +2090,13 @@ static const BuildingTypeClass ClassV22(
 
 static const BuildingTypeClass ClassV23(
     STRUCT_V23,
-    TXT_CIV23,                // NAME:			Short name of the structure.
-    "V23",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV23,              // NAME:			Short name of the structure.
+    "V23",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2120,13 +2120,13 @@ static const BuildingTypeClass ClassV23(
 
 static const BuildingTypeClass ClassV24(
     STRUCT_V24,
-    TXT_CIV24,                 // NAME:			Short name of the structure.
-    "V24",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV24,              // NAME:			Short name of the structure.
+    "V24",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2150,13 +2150,13 @@ static const BuildingTypeClass ClassV24(
 
 static const BuildingTypeClass ClassV25(
     STRUCT_V25,
-    TXT_CIV25,                 // NAME:			Short name of the structure.
-    "V25",                     // NAME:			Short name of the structure.
-    game::FacingType::kSouth,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),     // Exit point for produced units.
-    REMAP_ALTERNATE,           // Sidebar remap logic.
-    0x0000,                    //	Vertical offset.
-    0x0000,                    // Primary weapon offset along turret centerline.
+    TXT_CIV25,              // NAME:			Short name of the structure.
+    "V25",                  // NAME:			Short name of the structure.
+    game::Facing::kSouth,   // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2180,13 +2180,13 @@ static const BuildingTypeClass ClassV25(
 
 static const BuildingTypeClass ClassV26(
     STRUCT_V26,
-    TXT_CIV26,                // NAME:			Short name of the structure.
-    "V26",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV26,              // NAME:			Short name of the structure.
+    "V26",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2210,13 +2210,13 @@ static const BuildingTypeClass ClassV26(
 
 static const BuildingTypeClass ClassV27(
     STRUCT_V27,
-    TXT_CIV27,                // NAME:			Short name of the structure.
-    "V27",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV27,              // NAME:			Short name of the structure.
+    "V27",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2240,13 +2240,13 @@ static const BuildingTypeClass ClassV27(
 
 static const BuildingTypeClass ClassV28(
     STRUCT_V28,
-    TXT_CIV28,                // NAME:			Short name of the structure.
-    "V28",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV28,              // NAME:			Short name of the structure.
+    "V28",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2270,13 +2270,13 @@ static const BuildingTypeClass ClassV28(
 
 static const BuildingTypeClass ClassV29(
     STRUCT_V29,
-    TXT_CIV29,                // NAME:			Short name of the structure.
-    "V29",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV29,              // NAME:			Short name of the structure.
+    "V29",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2300,13 +2300,13 @@ static const BuildingTypeClass ClassV29(
 
 static const BuildingTypeClass ClassV30(
     STRUCT_V30,
-    TXT_CIV30,                // NAME:			Short name of the structure.
-    "V30",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV30,              // NAME:			Short name of the structure.
+    "V30",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2330,13 +2330,13 @@ static const BuildingTypeClass ClassV30(
 
 static const BuildingTypeClass ClassV31(
     STRUCT_V31,
-    TXT_CIV31,                // NAME:			Short name of the structure.
-    "V31",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV31,              // NAME:			Short name of the structure.
+    "V31",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2360,13 +2360,13 @@ static const BuildingTypeClass ClassV31(
 
 static const BuildingTypeClass ClassV32(
     STRUCT_V32,
-    TXT_CIV32,                // NAME:			Short name of the structure.
-    "V32",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV32,              // NAME:			Short name of the structure.
+    "V32",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2390,13 +2390,13 @@ static const BuildingTypeClass ClassV32(
 
 static const BuildingTypeClass ClassV33(
     STRUCT_V33,
-    TXT_CIV33,                // NAME:			Short name of the structure.
-    "V33",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV33,              // NAME:			Short name of the structure.
+    "V33",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2420,13 +2420,13 @@ static const BuildingTypeClass ClassV33(
 
 static const BuildingTypeClass ClassV34(
     STRUCT_V34,
-    TXT_CIV34,                // NAME:			Short name of the structure.
-    "V34",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV34,              // NAME:			Short name of the structure.
+    "V34",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2450,13 +2450,13 @@ static const BuildingTypeClass ClassV34(
 
 static const BuildingTypeClass ClassV35(
     STRUCT_V35,
-    TXT_CIV35,                // NAME:			Short name of the structure.
-    "V35",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV35,              // NAME:			Short name of the structure.
+    "V35",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2480,13 +2480,13 @@ static const BuildingTypeClass ClassV35(
 
 static const BuildingTypeClass ClassV36(
     STRUCT_V36,
-    TXT_CIV36,                // NAME:			Short name of the structure.
-    "V36",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV36,              // NAME:			Short name of the structure.
+    "V36",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2509,13 +2509,13 @@ static const BuildingTypeClass ClassV36(
 );
 static const BuildingTypeClass ClassV37(
     STRUCT_V37,
-    TXT_CIV37,                // NAME:			Short name of the structure.
-    "V37",                    // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIV37,              // NAME:			Short name of the structure.
+    "V37",                  // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2538,13 +2538,13 @@ static const BuildingTypeClass ClassV37(
 );
 static const BuildingTypeClass ClassMission(
     STRUCT_MISSION,
-    TXT_CIVMISS,              // NAME:			Short name of the structure.
-    "MISS",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CIVMISS,            // NAME:			Short name of the structure.
+    "MISS",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     true,       // Animation rate is regulated for constant speed?
@@ -2569,13 +2569,13 @@ static const BuildingTypeClass ClassMission(
 // Sandbag wall
 static const BuildingTypeClass Sandbag(
     STRUCT_SANDBAG_WALL,
-    TXT_SANDBAG_WALL,         // NAME:			Short name of the structure.
-    "SBAG",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_SANDBAG_WALL,       // NAME:			Short name of the structure.
+    "SBAG",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2599,13 +2599,13 @@ static const BuildingTypeClass Sandbag(
 // Cyclone fence
 static const BuildingTypeClass Cyclone(
     STRUCT_CYCLONE_WALL,
-    TXT_CYCLONE_WALL,         // NAME:			Short name of the structure.
-    "CYCL",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_CYCLONE_WALL,       // NAME:			Short name of the structure.
+    "CYCL",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2629,13 +2629,13 @@ static const BuildingTypeClass Cyclone(
 // Brick wall
 static const BuildingTypeClass Brick(
     STRUCT_BRICK_WALL,
-    TXT_BRICK_WALL,           // NAME:			Short name of the structure.
-    "BRIK",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_BRICK_WALL,         // NAME:			Short name of the structure.
+    "BRIK",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2659,14 +2659,14 @@ static const BuildingTypeClass Brick(
 // Barbwire wall
 static const BuildingTypeClass Barbwire(
     STRUCT_BARBWIRE_WALL,
-    TXT_BARBWIRE_WALL,        // NAME:			Short name of the
-                              // structure.
-    "BARB",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_BARBWIRE_WALL,      // NAME:			Short name of the
+                            // structure.
+    "BARB",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2690,13 +2690,13 @@ static const BuildingTypeClass Barbwire(
 // Wood wall
 static const BuildingTypeClass Wood(
     STRUCT_WOOD_WALL,
-    TXT_WOOD_WALL,            // NAME:			Short name of the structure.
-    "WOOD",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_WOOD_WALL,          // NAME:			Short name of the structure.
+    "WOOD",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2719,13 +2719,13 @@ static const BuildingTypeClass Wood(
 );
 static const BuildingTypeClass Fence(
     STRUCT_FENCE,
-    TXT_FENCE,                // NAME:			Short name of the structure.
-    "FENC",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_NONE,               // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_FENCE,              // NAME:			Short name of the structure.
+    "FENC",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_NONE,             // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2751,7 +2751,7 @@ static const BuildingTypeClass ClassQueen(
     STRUCT_QUEEN,
     TXT_NONE,                 // NAME:			Short name of the structure.
     "QUEE",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
+    game::Facing::kNone,      // Foundation direction from center of building.
     CoordFromPixels(24, 47),  // Exit point for produced units.
     REMAP_ALTERNATE,          // Sidebar remap logic.
     0x0000,                   //	Vertical offset.
@@ -2778,13 +2778,13 @@ static const BuildingTypeClass ClassQueen(
 );
 static const BuildingTypeClass ClassLarva1(
     STRUCT_LARVA1,
-    TXT_NONE,                 // NAME:			Short name of the structure.
-    "LAR1",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_NONE,               // NAME:			Short name of the structure.
+    "LAR1",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2807,13 +2807,13 @@ static const BuildingTypeClass ClassLarva1(
 );
 static const BuildingTypeClass ClassLarva2(
     STRUCT_LARVA2,
-    TXT_NONE,                 // NAME:			Short name of the structure.
-    "LAR2",                   // NAME:			Short name of the structure.
-    game::FacingType::kNone,  // Foundation direction from center of building.
-    CoordFromPixels(0, 0),    // Exit point for produced units.
-    REMAP_ALTERNATE,          // Sidebar remap logic.
-    0x0000,                   //	Vertical offset.
-    0x0000,                   // Primary weapon offset along turret centerline.
+    TXT_NONE,               // NAME:			Short name of the structure.
+    "LAR2",                 // NAME:			Short name of the structure.
+    game::Facing::kNone,    // Foundation direction from center of building.
+    CoordFromPixels(0, 0),  // Exit point for produced units.
+    REMAP_ALTERNATE,        // Sidebar remap logic.
+    0x0000,                 //	Vertical offset.
+    0x0000,                 // Primary weapon offset along turret centerline.
     0x0000,     // Primary weapon lateral offset along turret centerline.
     false,      // Is this building a fake (decoy?)
     false,      // Animation rate is regulated for constant speed?
@@ -2851,7 +2851,7 @@ std::span<const std::byte> BuildingTypeClass::WarFactoryOverlay;
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass::BuildingTypeClass(
-    StructType type, int name, const char* ininame, game::FacingType foundation,
+    StructType type, int name, const char* ininame, game::Facing foundation,
     Coordinate exitpoint, RemapType remap, int verticaloffset,
     int primaryoffset, int primarylateral, bool is_fake, bool is_regulated,
     bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,

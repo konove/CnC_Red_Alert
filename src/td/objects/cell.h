@@ -227,12 +227,12 @@ class CellClass {
   [[nodiscard]] BuildingClass* Cell_Building() const;
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.
-  [[nodiscard]] const CellClass& Adjacent_Cell(game::FacingType face) const
+  [[nodiscard]] const CellClass& Adjacent_Cell(game::Facing face) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  CellClass& Adjacent_Cell(game::FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  CellClass& Adjacent_Cell(game::Facing face) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns the cell-index delta from this cell to its neighbour in direction
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
-  [[nodiscard]] int Adjacent_Offset(game::FacingType face) const;
+  [[nodiscard]] int Adjacent_Offset(game::Facing face) const;
   [[nodiscard]] Coordinate Center_Coord() const;
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] Cell Cell_Number() const;

@@ -1668,9 +1668,9 @@ bool Select_Game(bool fade) {
       vehicle->Reload.Set(173);
       vehicle->SecondaryFacing.Set(game::Direction::kNorthEast);
       vehicle->SecondaryFacing = game::Direction::kSouthWest;
-      base::At(vehicle->Path, 0) = game::FacingType::kNorthEast;
-      base::At(vehicle->Path, 1) = game::FacingType::kEast;
-      base::At(vehicle->Path, 2) = game::FacingType::kNone;
+      base::At(vehicle->Path, 0) = game::Facing::kNorthEast;
+      base::At(vehicle->Path, 1) = game::Facing::kEast;
+      base::At(vehicle->Path, 2) = game::Facing::kNone;
       vehicle->PathDelay.Set(181);
       vehicle->BaseAttackTimer.Set(217);
       vehicle->TryTryAgain = 3;

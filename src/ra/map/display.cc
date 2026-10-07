@@ -772,8 +772,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         break;
       }
 
-      for (const game::FacingType facing :
-           magic_enum::enum_values<game::FacingType>()) {
+      for (const game::Facing facing :
+           magic_enum::enum_values<game::Facing>()) {
         const Cell newcell = AdjacentCell(cell, facing);
 
         if (!In_Radar(newcell)) {
@@ -819,8 +819,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           break;
         }
 
-        for (const game::FacingType newface :
-             magic_enum::enum_values<game::FacingType>()) {
+        for (const game::Facing newface :
+             magic_enum::enum_values<game::Facing>()) {
           const Cell newercell = AdjacentCell(newcell, newface);
 
           if ((building->IsWall ||
@@ -1230,43 +1230,43 @@ bool DisplayClass::Scroll_Map(game::Direction facing, int& distance,
   if (distance == 0) {
     return false;
   }
-  const game::FacingType crude = game::NearestFacing(facing);
+  const game::Facing crude = game::NearestFacing(facing);
 
   if (TacticalCoord.x() == Cell_To_Lepton(MapCellX) &&
-      crude != game::FacingType::kWest) {
-    if (crude == game::FacingType::kSouthWest) {
+      crude != game::Facing::kWest) {
+    if (crude == game::Facing::kSouthWest) {
       facing = game::Direction::kSouth;
     }
-    if (crude == game::FacingType::kNorthWest) {
+    if (crude == game::Facing::kNorthWest) {
       facing = game::Direction::kNorth;
     }
   }
   if (TacticalCoord.y() == Cell_To_Lepton(MapCellY) &&
-      crude != game::FacingType::kNorth) {
-    if (crude == game::FacingType::kNorthWest) {
+      crude != game::Facing::kNorth) {
+    if (crude == game::Facing::kNorthWest) {
       facing = game::Direction::kWest;
     }
-    if (crude == game::FacingType::kNorthEast) {
+    if (crude == game::Facing::kNorthEast) {
       facing = game::Direction::kEast;
     }
   }
   if (TacticalCoord.x() + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
-      crude != game::FacingType::kEast) {
-    if (crude == game::FacingType::kNorthEast) {
+      crude != game::Facing::kEast) {
+    if (crude == game::Facing::kNorthEast) {
       facing = game::Direction::kNorth;
     }
-    if (crude == game::FacingType::kSouthEast) {
+    if (crude == game::Facing::kSouthEast) {
       facing = game::Direction::kSouth;
     }
   }
   if (TacticalCoord.y() + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
-      crude != game::FacingType::kSouth) {
-    if (crude == game::FacingType::kSouthEast) {
+      crude != game::Facing::kSouth) {
+    if (crude == game::Facing::kSouthEast) {
       facing = game::Direction::kEast;
     }
-    if (crude == game::FacingType::kSouthWest) {
+    if (crude == game::Facing::kSouthWest) {
       facing = game::Direction::kWest;
     }
   }
@@ -1542,8 +1542,7 @@ bool DisplayClass::Map_Cell(Cell cell, HouseClass* house) {
   **	are not allowed, and to fix this, just map the cells until
   **	all is ok.
   */
-  for (const game::FacingType dir :
-       magic_enum::enum_values<game::FacingType>()) {
+  for (const game::Facing dir : magic_enum::enum_values<game::Facing>()) {
     const Cell c = AdjacentCell(cell, dir);
     CellClass* cptr = &(*this).at(c);
     cptr->Redraw_Objects();
@@ -2634,7 +2633,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
             //*)PlayerPtr->UnitToTeleport.AsObject())->Can_Enter_Cell(cell,
-            // FacingType::kNone) != MOVE_OK) {
+            // Facing::kNone) != MOVE_OK) {
             action = ACTION_NOMOVE;
           }
 
@@ -4004,8 +4003,7 @@ void DisplayClass::Shroud_Cell(Cell cell /*KO, bool shadeit*/) {
     **	shrouded cells such that more cells must be shrouded in order for
     **	this to work.
     */
-    for (const game::FacingType dir :
-         magic_enum::enum_values<game::FacingType>()) {
+    for (const game::Facing dir : magic_enum::enum_values<game::Facing>()) {
       const Cell c = AdjacentCell(cell, dir);
       CellClass* cptr = &(*this).at(c);
 

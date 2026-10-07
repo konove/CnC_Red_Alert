@@ -251,8 +251,7 @@ class BuildingClass final : public TechnoClass {
   void Grand_Opening(bool captured = false);
   void Update_Buildables();
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell,
-      game::FacingType /*unused*/ = game::FacingType::kNone) const override;
+      Cell cell, game::Facing /*unused*/ = game::Facing::kNone) const override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::Direction dir = game::Direction::kNorth) override;
   bool Limbo() override;

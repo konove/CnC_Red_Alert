@@ -27,8 +27,8 @@ extern const base::EnumArray<TheaterType, TheaterDataType, kTheaterCount>
     Theaters;
 extern const unsigned char Pixel2Lepton[24];
 extern const Coordinate StoppingCoordAbs[5];
-extern const base::EnumArray<game::FacingType, int> AdjacentCell;
-extern const base::EnumArray<game::FacingType, Coordinate> AdjacentCoord;
+extern const base::EnumArray<game::Facing, int> AdjacentCell;
+extern const base::EnumArray<game::Facing, Coordinate> AdjacentCoord;
 
 }  // namespace td
 

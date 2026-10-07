@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// The two direction types both games share. FacingType is one of the eight
+// The two direction types both games share. Facing is one of the eight
 // neighbouring cells; Direction is a 256-step compass where 0 is north and
 // values rise clockwise, so one facing is 32 direction steps. Conversions
 // between them and the direction from one point to another live here too.
@@ -34,7 +34,7 @@ namespace game {
 
 // The eight cells around a cell, clockwise from north. Used when moving
 // between cells and by the path finder.
-enum class FacingType : int8_t {
+enum class Facing : int8_t {
   kNone = -1,  // No facing: a failed search, or the end of a path.
   kNorth,
   kNorthEast,
@@ -48,23 +48,23 @@ enum class FacingType : int8_t {
 
 // Wraps a facing sum or difference onto the eight compass facings. Negative
 // values wrap the way the old low-three-bits mask did (-1 is
-// FacingType::kNorthWest), so the result is never FacingType::kNone.
-constexpr FacingType AsFacing(const int facing) {
-  return static_cast<FacingType>(static_cast<uint32_t>(facing) & 0x07U);
+// Facing::kNorthWest), so the result is never Facing::kNone.
+constexpr Facing AsFacing(const int facing) {
+  return static_cast<Facing>(static_cast<uint32_t>(facing) & 0x07U);
 }
 
-// Facing arithmetic wraps around the eight facings. FacingType::kNone is not a
+// Facing arithmetic wraps around the eight facings. Facing::kNone is not a
 // number to add to: as -1 it would step one facing anticlockwise.
-constexpr FacingType operator+(const FacingType lhs, const FacingType rhs) {
+constexpr Facing operator+(const Facing lhs, const Facing rhs) {
   return AsFacing(static_cast<int>(lhs) + static_cast<int>(rhs));
 }
-constexpr FacingType operator+(const FacingType facing, const int steps) {
+constexpr Facing operator+(const Facing facing, const int steps) {
   return AsFacing(static_cast<int>(facing) + steps);
 }
-constexpr FacingType operator-(const FacingType lhs, const FacingType rhs) {
+constexpr Facing operator-(const Facing lhs, const Facing rhs) {
   return AsFacing(static_cast<int>(lhs) - static_cast<int>(rhs));
 }
-constexpr FacingType operator-(const FacingType facing, const int steps) {
+constexpr Facing operator-(const Facing facing, const int steps) {
   return AsFacing(static_cast<int>(facing) - steps);
 }
 
@@ -157,13 +157,13 @@ Direction Direction8Toward(int from_x, int from_y, int to_x, int to_y);
 Direction Direction256Toward(int from_x, int from_y, int to_x, int to_y);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
-// rounds up to FacingType::kNorth.
-constexpr FacingType NearestFacing(const Direction dir) {
-  return static_cast<FacingType>((dir + 0x10).value() / 32);
+// rounds up to Facing::kNorth.
+constexpr Facing NearestFacing(const Direction dir) {
+  return static_cast<Facing>((dir + 0x10).value() / 32);
 }
 
 // Returns the direction that points exactly at `facing`.
-constexpr Direction DirectionOf(const FacingType facing) {
+constexpr Direction DirectionOf(const Facing facing) {
   return Direction(static_cast<int>(facing) * 32);
 }
 
@@ -188,6 +188,6 @@ constexpr int ShortestTurn(const Direction from, const Direction to) {
 
 // The path finder and the facing scans walk the facings in order.
 template <>
-inline constexpr bool base::kIsSteppableEnum<game::FacingType> = true;
+inline constexpr bool base::kIsSteppableEnum<game::Facing> = true;
 
 #endif  // CNC_RED_ALERT_GAME_SIM_DIRECTION_H_

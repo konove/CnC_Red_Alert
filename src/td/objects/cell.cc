@@ -1230,15 +1230,13 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
  *=============================================================================================*/
 void CellClass::Concrete_Calc() {
   Validate();
-  static const game::FacingType _even[5] = {
-      game::FacingType::kNorth, game::FacingType::kSouth,
-      game::FacingType::kSouthWest, game::FacingType::kWest,
-      game::FacingType::kNorthWest};
-  static const game::FacingType _odd[5] = {
-      game::FacingType::kNorth, game::FacingType::kNorthEast,
-      game::FacingType::kEast, game::FacingType::kSouthEast,
-      game::FacingType::kSouth};
-  std::span<const game::FacingType>
+  static const game::Facing _even[5] = {
+      game::Facing::kNorth, game::Facing::kSouth, game::Facing::kSouthWest,
+      game::Facing::kWest, game::Facing::kNorthWest};
+  static const game::Facing _odd[5] = {
+      game::Facing::kNorth, game::Facing::kNorthEast, game::Facing::kEast,
+      game::Facing::kSouthEast, game::Facing::kSouth};
+  std::span<const game::Facing>
       ptr;                    // Working pointer into adjacent cell list.
   uint32_t index = 0;         // Constructed bit index.
   int icon = 0;               // Icon number.
@@ -1457,10 +1455,9 @@ void CellClass::Concrete_Calc() {
  *=============================================================================================*/
 void CellClass::Wall_Update() {
   Validate();
-  static const game::FacingType _offsets[5] = {
-      game::FacingType::kNorth, game::FacingType::kEast,
-      game::FacingType::kSouth, game::FacingType::kWest,
-      game::FacingType::kNone};
+  static const game::Facing _offsets[5] = {
+      game::Facing::kNorth, game::Facing::kEast, game::Facing::kSouth,
+      game::Facing::kWest, game::Facing::kNone};
 
   for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
@@ -1617,10 +1614,10 @@ bool CellClass::Reduce_Wall(int damage) {
           OverlayData = 0;
           Recalc_Attributes();
           Redraw_Objects();
-          Adjacent_Cell(game::FacingType::kNorth).Wall_Update();
-          Adjacent_Cell(game::FacingType::kWest).Wall_Update();
-          Adjacent_Cell(game::FacingType::kSouth).Wall_Update();
-          Adjacent_Cell(game::FacingType::kEast).Wall_Update();
+          Adjacent_Cell(game::Facing::kNorth).Wall_Update();
+          Adjacent_Cell(game::Facing::kWest).Wall_Update();
+          Adjacent_Cell(game::Facing::kSouth).Wall_Update();
+          Adjacent_Cell(game::Facing::kEast).Wall_Update();
           return true;
         }
       }
@@ -1848,10 +1845,9 @@ void CellClass::Incoming(Coordinate threat, bool forced) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-int CellClass::Adjacent_Offset(game::FacingType face) const {
+int CellClass::Adjacent_Offset(game::Facing face) const {
   Validate();
-  if (static_cast<unsigned>(face) >=
-      magic_enum::enum_count<game::FacingType>()) {
+  if (static_cast<unsigned>(face) >= magic_enum::enum_count<game::Facing>()) {
     return 0;
   }
 
@@ -1936,8 +1932,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     **	Add up all adjacent cells that contain tiberium.
     ** (Skip those cells which aren't on the map)
     */
-    for (const game::FacingType face :
-         magic_enum::enum_values<game::FacingType>()) {
+    for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
       const CellClass& adj = Adjacent_Cell(face);
 
       if (adj.Overlay != OVERLAY_NONE &&
@@ -2486,12 +2481,12 @@ Cell CellClass::Cell_Number() const {
   return Cell::FromIndex(static_cast<int>(TheMap().ID(this)));
 }
 
-CellClass& CellClass::Adjacent_Cell(game::FacingType face) {
+CellClass& CellClass::Adjacent_Cell(game::Facing face) {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }
 
-const CellClass& CellClass::Adjacent_Cell(game::FacingType face) const {
+const CellClass& CellClass::Adjacent_Cell(game::Facing face) const {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }

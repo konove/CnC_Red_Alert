@@ -684,7 +684,7 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Move(game::FacingType facing) {
+void ObjectClass::Move(game::Facing facing) {
   Mark(MARK_UP);
   const Coordinate coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Cell::Containing(coord)) == game::MOVE_OK) {
@@ -856,13 +856,13 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
           int oldy = 0;
 
           if (foot->Head_To_Coord() &&
-              base::At(foot->Path, 0) != game::FacingType::kNone) {
-            Cell cell = Adjacent_Cell(
-                Cell::Containing(foot->Head_To_Coord()),
-                base::At(foot->Path, 0) + game::FacingType::kSouth);
+              base::At(foot->Path, 0) != game::Facing::kNone) {
+            Cell cell =
+                Adjacent_Cell(Cell::Containing(foot->Head_To_Coord()),
+                              base::At(foot->Path, 0) + game::Facing::kSouth);
             TheMap().Coord_To_Pixel(cell.Center(), oldx, oldy);
             for (const auto& index : foot->Path) {
-              if (index == game::FacingType::kNone) {
+              if (index == game::Facing::kNone) {
                 break;
               }
               cell = Adjacent_Cell(cell, index);
@@ -1073,7 +1073,7 @@ bool ObjectClass::Limbo() {
 bool ObjectClass::Unlimbo(Coordinate coord, game::Direction /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
+       Can_Enter_Cell(Cell::Containing(coord), game::Facing::kNone) ==
            game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;

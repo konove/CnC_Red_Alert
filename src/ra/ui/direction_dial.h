@@ -65,10 +65,10 @@ class DirectionDial : public game::ControlClass {
  private:
   int center_x_;                   // x of the dial's centre, in window pixels
   int center_y_;                   // y of the dial's centre, in window pixels
-  int decoration_points_[8][2]{};  // x, y of each decoration, by FacingType
-  int hand_tips_[8][2]{};          // x, y of the hand's tip, by FacingType
+  int decoration_points_[8][2]{};  // x, y of each decoration, by Facing
+  int hand_tips_[8][2]{};          // x, y of the hand's tip, by Facing
   game::Direction direction_;      // direction the dial points in, 0-255
-  game::FacingType facing_;  // direction_ snapped to one of the eight facings
+  game::Facing facing_;  // direction_ snapped to one of the eight facings
 };
 
 }  // namespace ra

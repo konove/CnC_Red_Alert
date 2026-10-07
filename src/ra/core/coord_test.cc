@@ -47,16 +47,15 @@ TEST(CoordTest, CellDirectionSnapsToACompassPoint) {
 }
 
 TEST(CoordTest, AdjacentCellStepsOneCell) {
-  EXPECT_EQ(AdjacentCell(kCell, game::FacingType::kNorth),
-            Cell::FromXY(10, 19));
-  EXPECT_EQ(AdjacentCell(kCell, game::FacingType::kSouthEast),
+  EXPECT_EQ(AdjacentCell(kCell, game::Facing::kNorth), Cell::FromXY(10, 19));
+  EXPECT_EQ(AdjacentCell(kCell, game::Facing::kSouthEast),
             Cell::FromXY(11, 21));
   EXPECT_EQ(AdjacentCell(kCell, game::Direction::kWest), Cell::FromXY(9, 20));
 }
 
 TEST(CoordTest, AdjacentCellWrapsFacingNoneToNorthWest) {
-  EXPECT_EQ(AdjacentCell(kCell, game::FacingType::kNone), Cell::FromXY(9, 19));
-  EXPECT_EQ(AdjacentCell(kCell.Center(), game::FacingType::kNone),
+  EXPECT_EQ(AdjacentCell(kCell, game::Facing::kNone), Cell::FromXY(9, 19));
+  EXPECT_EQ(AdjacentCell(kCell.Center(), game::Facing::kNone),
             Cell::FromXY(9, 19).Center());
 }
 
@@ -64,18 +63,18 @@ TEST(CoordTest, AdjacentCoordinateIsTheNeighbouringCellCenter) {
   // Wherever in the cell the coordinate lies, the result is a cell center.
   const Coordinate corner = kCell.Center() - Coordinate::FromLeptons(100, 100);
 
-  EXPECT_EQ(AdjacentCell(corner, game::FacingType::kSouth),
+  EXPECT_EQ(AdjacentCell(corner, game::Facing::kSouth),
             Cell::FromXY(10, 21).Center());
   EXPECT_EQ(AdjacentCell(corner, game::Direction::kEast),
             Cell::FromXY(11, 20).Center());
 }
 
 TEST(CoordTest, AdjacentOffsetTablesAgree) {
-  for (const game::FacingType facing :
-       {game::FacingType::kNorth, game::FacingType::kNorthEast,
-        game::FacingType::kEast, game::FacingType::kSouthEast,
-        game::FacingType::kSouth, game::FacingType::kSouthWest,
-        game::FacingType::kWest, game::FacingType::kNorthWest}) {
+  for (const game::Facing facing :
+       {game::Facing::kNorth, game::Facing::kNorthEast, game::Facing::kEast,
+        game::Facing::kSouthEast, game::Facing::kSouth,
+        game::Facing::kSouthWest, game::Facing::kWest,
+        game::Facing::kNorthWest}) {
     EXPECT_EQ(Cell::Containing(AdjacentCell(kCell.Center(), facing)),
               AdjacentCell(kCell, facing));
   }

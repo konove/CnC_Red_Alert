@@ -147,8 +147,9 @@ int Distance(const Target target1, const Target target2) {
 
 std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
                                              int maxsize) {
-  static const int16_t kFacingOffsets
-      [static_cast<int>(magic_enum::enum_count<game::FacingType>()) + 1][5] = {
+  static const int16_t
+      kFacingOffsets[static_cast<int>(magic_enum::enum_count<game::Facing>()) +
+                     1][5] = {
           {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
           {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), kRefreshEol},   // NE
           {0, 1, kRefreshEol, 0, 0},                             // E

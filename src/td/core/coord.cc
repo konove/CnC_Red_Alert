@@ -92,7 +92,7 @@ namespace td {
  *=============================================================================================*/
 std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
   static const int16_t
-      MoveSpillage[magic_enum::enum_count<game::FacingType>() + 1][5] = {
+      MoveSpillage[magic_enum::enum_count<game::Facing>() + 1][5] = {
           {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
           {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
           {0, 1, REFRESH_EOL, 0, 0},                             // E

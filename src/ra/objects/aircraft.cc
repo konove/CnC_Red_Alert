@@ -572,15 +572,15 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
   }
 
   if (*this == AIRCRAFT_TRANSPORT) {
-    const base::EnumArray<game::FacingType, int> _stretch = {8, 9, 10, 9,
-                                                             8, 9, 10, 9};
+    const base::EnumArray<game::Facing, int> _stretch = {8, 9, 10, 9,
+                                                         8, 9, 10, 9};
 
     /*
     **	Dual rotors offset along flight axis.
     */
     auto xx = static_cast<int16_t>(x);
     auto yy = static_cast<int16_t>(y - Lepton_To_Pixel(Height));
-    const game::FacingType face = game::NearestFacing(SecondaryFacing);
+    const game::Facing face = game::NearestFacing(SecondaryFacing);
     base::MovePoint(xx, yy,
                     static_cast<uint8_t>(SecondaryFacing.Current().value()),
                     static_cast<int16_t>(_stretch.at(face)));
@@ -1474,12 +1474,12 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   DCHECK(IsActive);
 
   // Priority order for trying adjacent cells when unloading passengers.
-  static constexpr game::FacingType
-      kUnloadPriority[magic_enum::enum_count<game::FacingType>()] = {
-          game::FacingType::kSouth,     game::FacingType::kSouthWest,
-          game::FacingType::kSouthEast, game::FacingType::kNorthWest,
-          game::FacingType::kNorthEast, game::FacingType::kNorth,
-          game::FacingType::kWest,      game::FacingType::kEast};
+  static constexpr game::Facing
+      kUnloadPriority[magic_enum::enum_count<game::Facing>()] = {
+          game::Facing::kSouth,     game::Facing::kSouthWest,
+          game::Facing::kSouthEast, game::Facing::kNorthWest,
+          game::Facing::kNorthEast, game::Facing::kNorth,
+          game::Facing::kWest,      game::Facing::kEast};
 
   /*
   **	Find a free cell to drop the unit off at.
@@ -2707,16 +2707,16 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     */
     for (int radius = 0;
          radius < TheRules().LZScanRadius / game::kCellWidthLeptons; radius++) {
-      const game::FacingType modifier =
-          RandomPick(game::FacingType::kNorth, game::FacingType::kNorthWest);
+      const game::Facing modifier =
+          RandomPick(game::Facing::kNorth, game::Facing::kNorthWest);
       Cell lastcell = Cell::None();
 
       /*
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (const game::FacingType facing :
-           magic_enum::enum_values<game::FacingType>()) {
+      for (const game::Facing facing :
+           magic_enum::enum_values<game::Facing>()) {
         const Cell newcell = Cell::Containing(Coord_Move(
             coord, game::DirectionOf(facing + modifier),
             static_cast<uint16_t>(radius * game::kCellWidthLeptons)));
@@ -2971,16 +2971,16 @@ game::Direction AircraftClass::Desired_Load_Dir(ObjectClass* object,
   DCHECK(IsActive);
 
   const Cell center = Cell::Containing(Center_Coord());
-  for (int sweep = static_cast<int>(game::FacingType::kNorth);
-       sweep < static_cast<int>(game::FacingType::kSouth); sweep++) {
-    moveto = AdjacentCell(center, game::FacingType::kSouth + sweep);
+  for (int sweep = static_cast<int>(game::Facing::kNorth);
+       sweep < static_cast<int>(game::Facing::kSouth); sweep++) {
+    moveto = AdjacentCell(center, game::Facing::kSouth + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
       return game::Direction::kNorth;
     }
 
-    moveto = AdjacentCell(center, game::FacingType::kSouth - sweep);
+    moveto = AdjacentCell(center, game::Facing::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Clear_To_Move(SPEED_FOOT, false, false))) {
@@ -3130,7 +3130,7 @@ bool AircraftClass::Process_Landing() {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 game::MoveType AircraftClass::Can_Enter_Cell(Cell cell,
-                                             game::FacingType /*from*/) const {
+                                             game::Facing /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 

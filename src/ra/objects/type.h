@@ -691,7 +691,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *find a *	legitimate foundation square. This location will be used for
   *targeting and capture *	move destination purposes.
   */
-  game::FacingType FoundationFace;
+  game::Facing FoundationFace;
 
   /*
   **	Adjacent distance for building next to.
@@ -773,14 +773,13 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	This is the building type explicit constructor.
   */
   BuildingTypeClass(
-      StructType type, int name, const char* ininame,
-      game::FacingType foundation, Coordinate exitpoint, RemapType remap,
-      int verticaloffset, int primaryoffset, int primarylateral, bool is_fake,
-      bool is_regulated, bool is_nominal, bool is_wall, bool is_simpledamage,
-      bool is_stealthy, bool is_selectable, bool is_legal_target,
-      bool is_insignificant, bool is_theater, bool is_turret_equipped,
-      bool is_remappable, RTTIType tobuild, game::Direction sframe,
-      game::BSizeType size,
+      StructType type, int name, const char* ininame, game::Facing foundation,
+      Coordinate exitpoint, RemapType remap, int verticaloffset,
+      int primaryoffset, int primarylateral, bool is_fake, bool is_regulated,
+      bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
+      bool is_selectable, bool is_legal_target, bool is_insignificant,
+      bool is_theater, bool is_turret_equipped, bool is_remappable,
+      RTTIType tobuild, game::Direction sframe, game::BSizeType size,
       std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;

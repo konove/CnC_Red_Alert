@@ -79,8 +79,8 @@ class Dial8Class : public game::ControlClass {
   int FacePoint[8][2]{};  // coords of the little dial decorations
   int FaceLine[8][2]{};  // coords for drawing the dial hand
   game::Direction Direction;   // 0-255 numerical direction of dial
-  game::FacingType Facing;     // numerical facing direction of dial (0 - 7)
-  game::FacingType OldFacing;  // previous Facing value
+  game::Facing Facing;         // numerical facing direction of dial (0 - 7)
+  game::Facing OldFacing;      // previous Facing value
 };
 
 }  // namespace td

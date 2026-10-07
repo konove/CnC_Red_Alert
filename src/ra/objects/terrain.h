@@ -120,8 +120,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
                game::Direction dir = game::Direction::kNorth) override;
   bool Limbo() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell,
-      game::FacingType facing = game::FacingType::kNone) const override;
+      Cell cell, game::Facing facing = game::Facing::kNone) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

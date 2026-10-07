@@ -31,11 +31,11 @@ TEST_F(RandomPickTest, RandomPickStaysInRange) {
 TEST_F(RandomPickTest, RandomPickKeepsTheEnumType) {
   TheScenario().sync_rng_.set_seed(kSeed);
 
-  const game::FacingType facing =
-      RandomPick(game::FacingType::kEast, game::FacingType::kSouth);
+  const game::Facing facing =
+      RandomPick(game::Facing::kEast, game::Facing::kSouth);
 
-  EXPECT_GE(facing, game::FacingType::kEast);
-  EXPECT_LE(facing, game::FacingType::kSouth);
+  EXPECT_GE(facing, game::Facing::kEast);
+  EXPECT_LE(facing, game::Facing::kSouth);
 }
 
 TEST_F(RandomPickTest, RandomPickStaysOnTheArcOfDirections) {

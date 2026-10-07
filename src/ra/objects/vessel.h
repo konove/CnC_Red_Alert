@@ -136,8 +136,7 @@ class VesselClass : public DriveClass {
   void LST_Close_Door();
   [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      Cell cell,
-      game::FacingType from = game::FacingType::kNone) const override;
+      Cell cell, game::Facing from = game::Facing::kNone) const override;
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(

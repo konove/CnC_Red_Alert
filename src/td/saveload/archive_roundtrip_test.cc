@@ -331,9 +331,9 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   unit->NavCom = Target::FromCellIndex(Cell::FromIndex(1200));
   unit->Flagged = HOUSE_BAD;
   unit->Reload.Set(87);
-  unit->Path[0] = game::FacingType::kEast;
-  unit->Path[1] = game::FacingType::kNone;
-  unit->Path[kConquerPathMax - 1] = game::FacingType::kSouth;
+  unit->Path[0] = game::Facing::kEast;
+  unit->Path[1] = game::Facing::kNone;
+  unit->Path[kConquerPathMax - 1] = game::Facing::kSouth;
   const auto bytes = Save(*unit);
   auto* restored = base::NewPooled<UnitClass>();
   ASSERT_TRUE(Restore(*restored, bytes));
@@ -344,9 +344,9 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   EXPECT_EQ(restored->NavCom, unit->NavCom);
   EXPECT_EQ(restored->Flagged, HOUSE_BAD);
   EXPECT_EQ(restored->Reload.Remaining(), 87);
-  EXPECT_EQ(restored->Path[0], game::FacingType::kEast);
-  EXPECT_EQ(restored->Path[1], game::FacingType::kNone);
-  EXPECT_EQ(restored->Path[kConquerPathMax - 1], game::FacingType::kSouth);
+  EXPECT_EQ(restored->Path[0], game::Facing::kEast);
+  EXPECT_EQ(restored->Path[1], game::Facing::kNone);
+  EXPECT_EQ(restored->Path[kConquerPathMax - 1], game::Facing::kSouth);
   EXPECT_EQ(Save(*restored), bytes);
 }
 

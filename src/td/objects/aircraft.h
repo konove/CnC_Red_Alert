@@ -92,8 +92,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Threat_Range(int control) const override;
   int Rearm_Delay(bool second) const override;
   game::MoveType Can_Enter_Cell(
-      Cell cell,
-      game::FacingType facing = game::FacingType::kNone) const override;
+      Cell cell, game::Facing facing = game::Facing::kNone) const override;
   LayerType In_Which_Layer() const override;
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) override;

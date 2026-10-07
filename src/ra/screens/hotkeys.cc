@@ -487,36 +487,36 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 }
 
-game::FacingType KN_To_Facing(const engine::window::KeyNumber input) {
+game::Facing KN_To_Facing(const engine::window::KeyNumber input) {
   switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
-      return game::FacingType::kWest;
+      return game::Facing::kWest;
 
     case KN_RIGHT:
-      return game::FacingType::kEast;
+      return game::Facing::kEast;
 
     case KN_UP:
-      return game::FacingType::kNorth;
+      return game::Facing::kNorth;
 
     case KN_DOWN:
-      return game::FacingType::kSouth;
+      return game::Facing::kSouth;
 
     case KN_UPLEFT:
-      return game::FacingType::kNorthWest;
+      return game::Facing::kNorthWest;
 
     case KN_UPRIGHT:
-      return game::FacingType::kNorthEast;
+      return game::Facing::kNorthEast;
 
     case KN_DOWNLEFT:
-      return game::FacingType::kSouthWest;
+      return game::Facing::kSouthWest;
 
     case KN_DOWNRIGHT:
-      return game::FacingType::kSouthEast;
+      return game::Facing::kSouthEast;
 
     default:
       break;
   }
-  return game::FacingType::kNone;
+  return game::Facing::kNone;
 }
 
 }  // namespace ra

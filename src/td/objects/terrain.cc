@@ -452,7 +452,7 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().FreeAll(); }
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
 game::MoveType TerrainClass::Can_Enter_Cell(Cell cell,
-                                            game::FacingType /*unused*/) const {
+                                            game::Facing /*unused*/) const {
   Validate();
 
   if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {

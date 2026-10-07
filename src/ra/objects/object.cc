@@ -1030,7 +1030,7 @@ void ObjectClass::Sell_Back(int /*unused*/) { DCHECK(IsActive); }
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Move(game::FacingType facing) {
+void ObjectClass::Move(game::Facing facing) {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
@@ -1307,7 +1307,7 @@ bool ObjectClass::Unlimbo(Coordinate coord, game::Direction /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Cell::Containing(coord), game::FacingType::kNone) ==
+       Can_Enter_Cell(Cell::Containing(coord), game::Facing::kNone) ==
            game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;

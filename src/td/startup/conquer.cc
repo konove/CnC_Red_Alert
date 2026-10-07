@@ -817,15 +817,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
 #ifdef NEVER
-  game::FacingType facing = KN_To_Facing(input);
+  game::Facing facing = KN_To_Facing(input);
 
   /*
   **	Scroll the map according to the cursor key pressed.
   */
-  if (facing != game::FacingType::kNone) {
+  if (facing != game::Facing::kNone) {
     TheMap().Scroll_Map(facing);
     input = 0;
-    facing = game::FacingType::kNone;
+    facing = game::Facing::kNone;
   }
 #endif
 
@@ -1532,41 +1532,41 @@ TheaterType Theater_From_Name(const char* name) {
  * INPUT:   input -- The KN number to convert. *
  *                                                                                             *
  * OUTPUT:  Returns with the facing type that the keyboard number represents. If
- *it could      * not be translated, then FacingType::kNone is returned. *
+ *it could      * not be translated, then Facing::kNone is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-game::FacingType KN_To_Facing(const engine::window::KeyNumber input) {
+game::Facing KN_To_Facing(const engine::window::KeyNumber input) {
   switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
-      return game::FacingType::kWest;
+      return game::Facing::kWest;
 
     case KN_RIGHT:
-      return game::FacingType::kEast;
+      return game::Facing::kEast;
 
     case KN_UP:
-      return game::FacingType::kNorth;
+      return game::Facing::kNorth;
 
     case KN_DOWN:
-      return game::FacingType::kSouth;
+      return game::Facing::kSouth;
 
     case KN_UPLEFT:
-      return game::FacingType::kNorthWest;
+      return game::Facing::kNorthWest;
 
     case KN_UPRIGHT:
-      return game::FacingType::kNorthEast;
+      return game::Facing::kNorthEast;
 
     case KN_DOWNLEFT:
-      return game::FacingType::kSouthWest;
+      return game::Facing::kSouthWest;
 
     case KN_DOWNRIGHT:
-      return game::FacingType::kSouthEast;
+      return game::Facing::kSouthEast;
     default:
       break;
   }
-  return game::FacingType::kNone;
+  return game::Facing::kNone;
 }
 
 /***********************************************************************************************

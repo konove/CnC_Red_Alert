@@ -309,7 +309,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	Scenario and debug support.
   */
-  virtual void Move(game::FacingType /*facing*/);
+  virtual void Move(game::Facing /*facing*/);
 
   static constexpr int kFlightLevel = 256;
 };

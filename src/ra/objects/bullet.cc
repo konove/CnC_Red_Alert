@@ -192,7 +192,7 @@ BulletClass::~BulletClass() {
         */
         for (int i = -1; i < 8; i++) {
           if (i != -1) {
-            newcoord = AdjacentCell(Coord, static_cast<game::FacingType>(i));
+            newcoord = AdjacentCell(Coord, static_cast<game::Facing>(i));
           }
           TheWorld().scenario_init()++;
           if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {

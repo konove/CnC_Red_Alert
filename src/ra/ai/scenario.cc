@@ -181,7 +181,7 @@ using enum engine::window::KeyNumber;
 static void Remove_AI_Players();
 static void Create_Units(bool official);
 static Cell Clip_Scatter(Cell cell, int maxdist);
-static Cell Clip_Move(Cell cell, game::FacingType facing, int dist);
+static Cell Clip_Move(Cell cell, game::Facing facing, int dist);
 
 // Adds every living object of `heap` that is on the map to the carryover list.
 template <class T>
@@ -3038,9 +3038,9 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
     /*
     **	Pick a random starting direction
     */
-    game::FacingType rot =
-        RandomPick(game::FacingType::kNorth,
-                   game::FacingType::kNorthWest);  // for object placement
+    game::Facing rot =
+        RandomPick(game::Facing::kNorth,
+                   game::Facing::kNorthWest);  // for object placement
 
     /*
     **	Try all directions twice
@@ -3049,8 +3049,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
       /*
       **	Loop through all directions, at this distance.
       */
-      for (game::FacingType fcounter = game::FacingType::kNorth;
-           fcounter <= game::FacingType::kNorthWest; fcounter++) {
+      for (game::Facing fcounter = game::Facing::kNorth;
+           fcounter <= game::Facing::kNorthWest; fcounter++) {
         bool skipit = false;
 
         /*
@@ -3090,8 +3090,8 @@ bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
         }
 
         rot++;
-        if (rot > game::FacingType::kNorthWest) {
-          rot = game::FacingType::kNorth;
+        if (rot > game::Facing::kNorthWest) {
+          rot = game::Facing::kNorth;
         }
       }
     }
@@ -3165,7 +3165,7 @@ static Cell Clip_Scatter(Cell cell, int maxdist) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
+static Cell Clip_Move(Cell cell, game::Facing facing, int dist) {
   /*
   **	Get X & Y coords of given starting cell
   */
@@ -3184,42 +3184,42 @@ static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
   **	Adjust the x-coordinate
   */
   switch (facing) {
-    case game::FacingType::kNorth:
+    case game::Facing::kNorth:
       y -= dist;
       break;
 
-    case game::FacingType::kNorthEast:
+    case game::Facing::kNorthEast:
       x += dist;
       y -= dist;
       break;
 
-    case game::FacingType::kEast:
+    case game::Facing::kEast:
       x += dist;
       break;
 
-    case game::FacingType::kSouthEast:
+    case game::Facing::kSouthEast:
       x += dist;
       y += dist;
       break;
 
-    case game::FacingType::kSouth:
+    case game::Facing::kSouth:
       y += dist;
       break;
 
-    case game::FacingType::kSouthWest:
+    case game::Facing::kSouthWest:
       x -= dist;
       y += dist;
       break;
 
-    case game::FacingType::kWest:
+    case game::Facing::kWest:
       x -= dist;
       break;
 
-    case game::FacingType::kNorthWest:
+    case game::Facing::kNorthWest:
       x -= dist;
       y -= dist;
       break;
-    case game::FacingType::kNone:
+    case game::Facing::kNone:
     default:
       break;
   }

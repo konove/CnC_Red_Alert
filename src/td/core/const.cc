@@ -212,7 +212,7 @@ const unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-const base::EnumArray<game::FacingType, int> AdjacentCell = {
+const base::EnumArray<game::Facing, int> AdjacentCell = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -225,7 +225,7 @@ const base::EnumArray<game::FacingType, int> AdjacentCell = {
 
 // The lepton offset of the adjacent cell in each direction. Negative
 // components wrap to their 16-bit words, which operator+ undoes.
-const base::EnumArray<game::FacingType, Coordinate> AdjacentCoord = {
+const base::EnumArray<game::Facing, Coordinate> AdjacentCoord = {
     Coordinate::FromLeptons(0, -0x100),        // North
     Coordinate::FromLeptons(0x100, -0x100),    // North East
     Coordinate::FromLeptons(0x100, 0),         // East

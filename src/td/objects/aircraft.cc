@@ -462,15 +462,15 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {
-      const base::EnumArray<game::FacingType, int> _stretch = {8, 9, 10, 9,
-                                                               8, 9, 10, 9};
+      const base::EnumArray<game::Facing, int> _stretch = {8, 9, 10, 9,
+                                                           8, 9, 10, 9};
 
       /*
       **	Dual rotors offset along flight axis.
       */
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
-      const game::FacingType face = game::NearestFacing(SecondaryFacing);
+      const game::Facing face = game::NearestFacing(SecondaryFacing);
       base::MovePoint(xx, yy,
                       static_cast<uint8_t>(SecondaryFacing.Current().value()),
                       static_cast<int16_t>(_stretch.at(face)));
@@ -1472,19 +1472,18 @@ int AircraftClass::Mission_Retreat() {
  *=============================================================================================*/
 int AircraftClass::Exit_Object(TechnoClass* unit) {
   Validate();
-  static const base::EnumArray<game::FacingType, game::FacingType> _toface = {
-      game::FacingType::kSouth,     game::FacingType::kSouthWest,
-      game::FacingType::kSouthEast, game::FacingType::kNorthWest,
-      game::FacingType::kNorthEast, game::FacingType::kNorth,
-      game::FacingType::kWest,      game::FacingType::kEast};
+  static const base::EnumArray<game::Facing, game::Facing> _toface = {
+      game::Facing::kSouth,     game::Facing::kSouthWest,
+      game::Facing::kSouthEast, game::Facing::kNorthWest,
+      game::Facing::kNorthEast, game::Facing::kNorth,
+      game::Facing::kWest,      game::Facing::kEast};
   Cell cell{};
 
   /*
   **	Find a free cell to drop the unit off at.
   */
-  game::FacingType face = game::FacingType::kNorth;
-  for (const game::FacingType candidate :
-       magic_enum::enum_values<game::FacingType>()) {
+  game::Facing face = game::Facing::kNorth;
+  for (const game::Facing candidate : magic_enum::enum_values<game::Facing>()) {
     face = candidate;
     cell = Adjacent_Cell(Cell::Containing(Coord), _toface.at(face));
     if (unit->Can_Enter_Cell(cell) == game::MOVE_OK) {
@@ -2403,16 +2402,16 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     **	in cells.
     */
     for (int radius = 0; radius < 16; radius++) {
-      const game::FacingType modifier =
-          Random_Pick(game::FacingType::kNorth, game::FacingType::kNorthWest);
+      const game::Facing modifier =
+          Random_Pick(game::Facing::kNorth, game::Facing::kNorthWest);
       Cell lastcell = Cell::None();
 
       /*
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (const game::FacingType facing :
-           magic_enum::enum_values<game::FacingType>()) {
+      for (const game::Facing facing :
+           magic_enum::enum_values<game::Facing>()) {
         const Cell newcell = Cell::Containing(Coord_Move(
             coord, game::DirectionOf(facing + modifier),
             static_cast<uint16_t>(radius * game::kCellWidthLeptons)));
@@ -2680,16 +2679,16 @@ game::Direction AircraftClass::Desired_Load_Dir(ObjectClass* object,
                                                 Cell& moveto) const {
   Validate();
   const Cell center = Cell::Containing(Center_Coord());
-  for (int sweep = static_cast<int>(game::FacingType::kNorth);
-       sweep < static_cast<int>(game::FacingType::kSouth); sweep++) {
-    moveto = Adjacent_Cell(center, game::FacingType::kSouth + sweep);
+  for (int sweep = static_cast<int>(game::Facing::kNorth);
+       sweep < static_cast<int>(game::Facing::kSouth); sweep++) {
+    moveto = Adjacent_Cell(center, game::Facing::kSouth + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
       return game::Direction::kNorth;
     }
 
-    moveto = Adjacent_Cell(center, game::FacingType::kSouth - sweep);
+    moveto = Adjacent_Cell(center, game::Facing::kSouth - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
@@ -2799,8 +2798,8 @@ bool AircraftClass::Process_Landing() {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-game::MoveType AircraftClass::Can_Enter_Cell(
-    Cell cell, game::FacingType /*unused*/) const {
+game::MoveType AircraftClass::Can_Enter_Cell(Cell cell,
+                                             game::Facing /*unused*/) const {
   Validate();
   if (!TheMap().In_Radar(cell)) {
     return game::MOVE_NO;

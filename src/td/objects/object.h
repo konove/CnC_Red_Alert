@@ -254,7 +254,7 @@ class ObjectClass : public AbstractClass {
   virtual void Repair(int /*unused*/);
   virtual void Sell_Back(int /*unused*/);
 
-  virtual void Move(game::FacingType /*facing*/);
+  virtual void Move(game::Facing /*facing*/);
 };
 
 extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
