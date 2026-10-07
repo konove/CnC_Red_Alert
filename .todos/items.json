@@ -922,8 +922,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/building.cc",
-          "startLine": 5172,
-          "endLine": 5172,
+          "startLine": 5173,
+          "endLine": 5173,
           "text": "game::DirType BuildingClass::Fire_Direction() const {",
           "before": [
             " *                                                                                             *",

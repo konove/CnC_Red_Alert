@@ -274,7 +274,7 @@ game::FireErrorType TurretClass::Can_Fire(Target target, int which) const {
     **	Special flame tank logic.
     */
     if (weapon->Fires == BULLET_FLAME) {
-      if (game::Dir_Facing(dir) == game::Dir_Facing(PrimaryFacing)) {
+      if (game::NearestFacing(dir) == game::NearestFacing(PrimaryFacing)) {
         diff = 0;
       }
     }

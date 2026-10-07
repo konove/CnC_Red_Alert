@@ -158,11 +158,11 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
           }
           alty = std::min(alty, TheScreen().visible_view().height());
 
-          direction = game::Desired_Facing256(
+          direction = game::Direction256Toward(
               TheScreen().visible_view().width() / 2,
               TheScreen().visible_view().height() / 2, altx, alty);
         }
-        const int control = static_cast<int>(game::Dir_Facing(direction));
+        const int control = static_cast<int>(game::NearestFacing(direction));
 
         /*
         **	The mouse is over a scroll region so set the mouse shape
@@ -194,7 +194,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	accordingly.
         */
         if (!TheOptions().IsFreeScroll) {
-          direction = game::Facing_Dir(game::Dir_Facing(direction));
+          direction = game::DirectionOf(game::NearestFacing(direction));
         }
 
         // Inertia and the scroll rate option both feed into rate without any

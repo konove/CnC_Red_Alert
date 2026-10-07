@@ -597,7 +597,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
 void InfantryClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
-  const int facing = game::Dir_To_32(PrimaryFacing.Current());
+  const int facing = game::BodyFrame32(PrimaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
@@ -2009,14 +2009,14 @@ void InfantryClass::Random_Animate() {
       case 4:
       case 3:
       case 0:
-        PrimaryFacing.Set(game::Facing_Dir(Random_Pick(
+        PrimaryFacing.Set(game::DirectionOf(Random_Pick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE);
         break;
 
       case 1:
         Do_Action(DO_IDLE1);
-        PrimaryFacing.Set(game::Facing_Dir(Random_Pick(
+        PrimaryFacing.Set(game::DirectionOf(Random_Pick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         if (Sim_Random_Pick(1, 20) == 1 && !IsSelected &&
             *this == INFANTRY_MOEBIUS && IsDiscoveredByPlayer) {
@@ -2041,7 +2041,7 @@ void InfantryClass::Random_Animate() {
 
       case 2:
         Do_Action(DO_IDLE2);
-        PrimaryFacing.Set(game::Facing_Dir(Random_Pick(
+        PrimaryFacing.Set(game::DirectionOf(Random_Pick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_RAMBO &&
             Sim_Random_Pick(0, 2) == 0) {
@@ -2122,16 +2122,16 @@ void InfantryClass::Scatter(Coordinate threat, bool forced) {
     game::FacingType toface = game::FacingType::kNone;
 
     if (threat) {
-      toface = game::Dir_Facing(Direction8(threat, Coord));
+      toface = game::NearestFacing(Direction8(threat, Coord));
       toface = toface + (Random_Pick(0, 4) - 2);
     } else {
       const Coordinate coord = Coord.Fraction();
 
       if (coord != Coordinate::CellCenterOffset()) {
-        toface = game::Dir_Facing(
-            game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
+        toface = game::NearestFacing(
+            game::Direction8Toward(0x0080, 0x0080, coord.x(), coord.y()));
       } else {
-        toface = game::Dir_Facing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.Current());
       }
       toface = toface + (Random_Pick(0, 4) - 2);
     }

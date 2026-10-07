@@ -139,8 +139,8 @@ void DriveClass::Do_Turn(game::DirType dir) {
       int facediff = PrimaryFacing.Difference(dir) >> 5;
       facediff = std::clamp(facediff, -2, 2);
       if (facediff) {
-        const game::FacingType face =
-            game::Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).
+        const game::FacingType face = game::NearestFacing(
+            PrimaryFacing);  // Current facing (ordinal value).
 
         IsOnShortTrack = true;
         Force_Track(
@@ -639,7 +639,7 @@ bool DriveClass::While_Moving() {
     */
     bool adj = false;  // Is a turn coming up?
     if (nextface != game::FacingType::kNone &&
-        game::Dir_Facing(track->Facing) != nextface) {
+        game::NearestFacing(track->Facing) != nextface) {
       adj = true;
     }
 
@@ -678,7 +678,7 @@ bool DriveClass::While_Moving() {
             adj && base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
-              (static_cast<int>(game::Dir_Facing(track->Facing)) *
+              (static_cast<int>(game::NearestFacing(track->Facing)) *
                static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
@@ -986,7 +986,7 @@ bool DriveClass::Start_Of_Move() {
   */
   dest = Adjacent_Cell(Coord, facing);
   const game::DirType dir =
-      game::Facing_Dir(facing);  // Desired actual facing toward destination.
+      game::DirectionOf(facing);  // Desired actual facing toward destination.
 
   /*
   **	Set the facing correctly if it isn't already correct. This
@@ -1372,7 +1372,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   **	If the original path starts in the same direction as the unit, then
   **	there is no problem to resolve -- abort.
   */
-  const auto first_direction = game::Facing_Dir(base::At(path->Command, 0));
+  const auto first_direction = game::DirectionOf(base::At(path->Command, 0));
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
@@ -1383,7 +1383,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   }
 
   // The diagonal facings are the odd ones.
-  if (static_cast<int>(game::Dir_Facing(PrimaryFacing)) % 2 != 0) {
+  if (static_cast<int>(game::NearestFacing(PrimaryFacing)) % 2 != 0) {
     ptr = base::Suffix(base::At(_dpath, std::abs(facediff) - 1),
                        1);  // Pointer to path adjust list.
     counter =
@@ -1400,8 +1400,8 @@ void DriveClass::Fixup_Path(PathType* path) {
   bool ok = true;  // Presume adjustment is all ok.
   Cell cell = Cell::Containing(
       Coord);  // Working cell value.              // Starting cell.
-  game::FacingType nextpath =
-      game::Dir_Facing(PrimaryFacing);  // Next path value.  // Starting path.
+  game::FacingType nextpath = game::NearestFacing(
+      PrimaryFacing);  // Next path value.  // Starting path.
   for (int index = 0; index < counter; index++) {
     /*
     **	Determine next path element and add it to the
@@ -1437,7 +1437,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.
     cell = Cell::Containing(Coord);        // Starting cell.
-    nextpath = game::Dir_Facing(PrimaryFacing);  // Starting path.
+    nextpath = game::NearestFacing(PrimaryFacing);  // Starting path.
     for (int index = 0; index < counter; index++) {
       /*
       **	Determine next path element and add it to the

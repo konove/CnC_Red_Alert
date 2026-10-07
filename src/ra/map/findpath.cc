@@ -108,7 +108,7 @@ constexpr game::FacingType kCounterclockwise =
 **	a value between 0 and 7, with 0 being North and moving
 **	clockwise (just like map degrees).
 */
-#define CELL_FACING(a, b) game::Dir_Facing(ra::Direction((a), (b)))
+#define CELL_FACING(a, b) game::NearestFacing(ra::Direction((a), (b)))
 
 /*-------------------------------------------------------------------------*/
 /*

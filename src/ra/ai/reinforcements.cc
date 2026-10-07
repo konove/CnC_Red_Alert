@@ -311,7 +311,7 @@ bool DeliverReinforcements(TeamType* team_type) {
   // eight compass points, hence the factor of two. The facing is the edge's own
   // compass point, so the group starts out facing off the map.
   const game::DirType entry_dir =
-      game::Facing_Dir(game::AsFacing(static_cast<int>(edge) * 2));
+      game::DirectionOf(game::AsFacing(static_cast<int>(edge) * 2));
   // Aircraft face the other way, onto the map: a fixed-wing one flies where its
   // nose points and turns slowly, so any other heading sends it on a detour
   // along or off the edge before it comes about.

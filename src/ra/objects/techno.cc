@@ -3196,7 +3196,7 @@ bool TechnoClass::Electric_Zap(Target target, int which,
         **	destination (actually the source coordinate of the zap).
         */
         int facing = static_cast<int>(
-            game::Dir_Facing(game::Desired_Facing8(x, y, x1, y1)));
+            game::NearestFacing(game::Direction8Toward(x, y, x1, y1)));
 
         /*
         ** If there's quite a bit of distance to go,
@@ -3377,13 +3377,13 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
       case ANIM_GUN_N:
         a = static_cast<AnimType>(
             static_cast<int>(a) +
-            static_cast<int>(game::Dir_Facing(Fire_Direction())));
+            static_cast<int>(game::NearestFacing(Fire_Direction())));
         break;
 
       case ANIM_SAM_N:
         a = static_cast<AnimType>(
             static_cast<int>(ANIM_SAM_N) +
-            static_cast<int>(game::Dir_Facing(PrimaryFacing.Current())));
+            static_cast<int>(game::NearestFacing(PrimaryFacing.Current())));
         break;
       case AnimType::ANIM_NONE:
       case AnimType::ANIM_FBALL1:

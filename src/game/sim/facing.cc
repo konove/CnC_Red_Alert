@@ -175,7 +175,7 @@ bool FacingClass::Rotation_Adjust(int rate) {
     **	new 1/32 rotation zone (likely to cause a redraw), then return
     **	this fact with a true value.
     */
-    return Dir_To_32(CurrentFacing) != Dir_To_32(oldfacing);
+    return BodyFrame32(CurrentFacing) != BodyFrame32(oldfacing);
   }
   return false;
 }

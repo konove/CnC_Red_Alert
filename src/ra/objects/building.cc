@@ -957,7 +957,8 @@ int BuildingClass::Shape_Number() const {
     **	the direction the turret is facing.
     */
     if (Class->IsTurretEquipped) {
-      shapenum = base::At(BodyShape, game::Dir_To_32(PrimaryFacing.Current()));
+      shapenum =
+          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.Current()));
 
       if (*this == STRUCT_SAM) {
         /*

@@ -1270,7 +1270,7 @@ void UnitTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
       break;
 
     case UNIT_MGG:
-      index = game::Dir_To_32(dir);
+      index = game::BodyFrame32(dir);
       x += base::At(_adjust, index).X;
       y += base::At(_adjust, index).Y;
       break;

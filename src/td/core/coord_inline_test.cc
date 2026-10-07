@@ -1,6 +1,6 @@
-// Checks Dir_Diff against the signed byte poke it replaced. The cell and
-// coordinate conversions this file used to pin are Cell's members now
-// (cell_test.cc).
+// Checks SignedDirectionDifference against the signed byte poke it replaced.
+// The cell and coordinate conversions this file used to pin are Cell's members
+// now (cell_test.cc).
 
 #include <cstring>
 #include <span>
@@ -26,7 +26,8 @@ TEST(TdCoordInline, DirDiffMatchesSignedBytes) {
     for (int second = 0; second < 256; second += 3) {
       const game::DirType dir1 = game::AsDirection(first);
       const game::DirType dir2 = game::AsDirection(second);
-      EXPECT_EQ(game::Dir_Diff(dir1, dir2), LegacyDirDiff(dir1, dir2))
+      EXPECT_EQ(game::SignedDirectionDifference(dir1, dir2),
+                LegacyDirDiff(dir1, dir2))
           << first << " " << second;
     }
   }

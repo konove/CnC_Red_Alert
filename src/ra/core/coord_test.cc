@@ -24,8 +24,8 @@ TEST(CoordTest, DirectionHasTheFullResolution) {
   EXPECT_EQ(Direction(from, Cell::FromXY(10, 15).Center()),
             game::DirType::kNorth);
   // Due east comes out one step short of DirType::kEast:
-  // game::Desired_Facing256() rounds the octant's last step down. Every machine
-  // does the same.
+  // game::Direction256Toward() rounds the octant's last step down. Every
+  // machine does the same.
   EXPECT_EQ(Direction(from, Cell::FromXY(15, 20).Center()),
             game::AsDirection(0x3F));
   // A little north of east is neither compass point.

@@ -723,7 +723,8 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     **	the direction the turret is facing.
     */
     if (Class->IsTurretEquipped) {
-      shapenum = base::At(BodyShape, game::Dir_To_32(PrimaryFacing.Current()));
+      shapenum =
+          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.Current()));
 
       if (*this == STRUCT_SAM) {
         /*
@@ -1059,7 +1060,7 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
       auto* anim = base::NewPooled<AnimClass>(
           static_cast<AnimType>(
               static_cast<int>(ANIM_SAM_N) +
-              static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))),
+              static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))),
           Center_Coord());
       if (anim) {
         anim->Attach_To(this);
@@ -1075,7 +1076,7 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
         base::NewPooled<AnimClass>(
             static_cast<AnimType>(
                 static_cast<int>(ANIM_GUN_N) +
-                static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))),
+                static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))),
             Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {

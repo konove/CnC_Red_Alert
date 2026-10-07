@@ -92,7 +92,7 @@ static void EnterFromEdge(FootClass* group, const SourceType edge,
   // own compass point, so the members start out facing off the map.
   const game::FacingType entry_facing =
       game::AsFacing(static_cast<int>(edge) * 2);
-  const game::DirType facing = game::Facing_Dir(entry_facing);
+  const game::DirType facing = game::DirectionOf(entry_facing);
   // The opposite compass point, which leads from an edge cell onto the map.
   const game::FacingType inward_facing = game::AsFacing(
       (static_cast<int>(entry_facing) + 4) %

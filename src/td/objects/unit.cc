@@ -253,7 +253,7 @@ static void Recoil_Adjust(game::DirType dir, int& x, int& y) {
                    {1, 0},   {1, 1},   {1, 1},   {1, 1},    // NW
                    {1, 1},   {0, 1},   {0, 1}};
 
-  const int index = game::Dir_To_32(dir);
+  const int index = game::BodyFrame32(dir);
   x += base::At(_adjust, index).X;
   y += base::At(_adjust, index).Y;
 }
@@ -288,7 +288,7 @@ static void Turret_Adjust(game::DirType dir, int& x, int& y) {
                    {5, -1},  {5, -1},  {4, 0},   {3, 0},    // NE
                    {2, 0},   {2, 1},   {1, 2}};
 
-  const int index = game::Dir_To_32(dir);
+  const int index = game::BodyFrame32(dir);
   x += base::At(_adjust, index).X;
   y += base::At(_adjust, index).Y;
 }
@@ -732,7 +732,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::DirType dir) {
   /*
   **	All units must start out facing one of the 8 major directions.
   */
-  dir = game::Facing_Dir(game::Dir_Facing(dir));
+  dir = game::DirectionOf(game::NearestFacing(dir));
 
   if (TarComClass::Unlimbo(coord, dir)) {
     /*
@@ -1352,7 +1352,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
     if (!NavCom) {
       const Cell cell = Cell::Containing(Adjacent_Cell(
           Coord,
-          game::Dir_Facing(PrimaryFacing.Current())));  // Cell to unload to.
+          game::NearestFacing(PrimaryFacing.Current())));  // Cell to unload to.
 
       FootClass* unit = Attached_Object();  // The unit to be unloaded.
 
@@ -1384,7 +1384,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
               u->Assign_Mission(MISSION_MOVE);
               u->NavCom = Target::FromCellIndex(cell);
               base::At(u->Path, 0) =
-                  game::Dir_Facing(u->PrimaryFacing.Current());
+                  game::NearestFacing(u->PrimaryFacing.Current());
               base::At(u->Path, 1) = game::FacingType::kNone;
               u->Set_Speed(0x80);
               u->IsUnloading = true;
@@ -1909,8 +1909,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
                         WindowNumberType window) {
   Validate();
   int shapenum = 0;  // Working shape number.
-  int facing = game::Dir_To_32(PrimaryFacing.Current());
-  const int tfacing = game::Dir_To_32(SecondaryFacing.Current());
+  int facing = game::BodyFrame32(PrimaryFacing.Current());
+  const int tfacing = game::BodyFrame32(SecondaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
@@ -1930,7 +1930,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	For eight facing units, adjust the facing number accordingly.
     */
     if (Class->IsPieceOfEight) {
-      facing = static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()));
+      facing = static_cast<int>(game::NearestFacing(PrimaryFacing.Current()));
     }
 
     /*
@@ -1946,7 +1946,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
 
         int xx = x;
         const int yy = y;
-        switch (game::Dir_Facing(PrimaryFacing.Current())) {
+        switch (game::NearestFacing(PrimaryFacing.Current())) {
           case game::FacingType::kNorthEast:
           case game::FacingType::kEast:
           case game::FacingType::kSouthEast:
@@ -2782,9 +2782,9 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
       ** be prepared to wait for the unit to get out of our way.
       */
       if (dynamic_cast<const FootClass*>(techno)->NavCom != Target{}) {
-        int face = game::Dir_Facing(PrimaryFacing);
+        int face = game::NearestFacing(PrimaryFacing);
         int techface =
-            game::Dir_Facing(
+            game::NearestFacing(
                 dynamic_cast<const FootClass*>(techno)->PrimaryFacing) ^
             4;
         if (face != techface &&
@@ -2974,9 +2974,9 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const game::FacingType face = game::Dir_Facing(PrimaryFacing);
+          const game::FacingType face = game::NearestFacing(PrimaryFacing);
           const game::FacingType techface =
-              game::Dir_Facing(
+              game::NearestFacing(
                   dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
@@ -3164,10 +3164,10 @@ void UnitClass::Scatter(Coordinate threat, bool forced) {
       game::FacingType toface = game::FacingType::kNone;
 
       if (threat) {
-        toface = game::Dir_Facing(Direction8(threat, Coord));
+        toface = game::NearestFacing(Direction8(threat, Coord));
         toface = toface + (Random_Pick(0, 2) - 1);
       } else {
-        toface = game::Dir_Facing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.Current());
       }
 
       for (const game::FacingType face :
@@ -3648,7 +3648,7 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   Cell cell = Cell::Containing(Coord).Offset(
-      ExitRepair.at(game::Dir_Facing(PrimaryFacing.Current())));
+      ExitRepair.at(game::NearestFacing(PrimaryFacing.Current())));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
@@ -3821,7 +3821,8 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= std::abs(game::Dir_Diff(game::Facing_Dir(face), faceto));
+    value -= std::abs(
+        game::SignedDirectionDifference(game::DirectionOf(face), faceto));
     if (face == game::FacingType::kSouth) {
       value -= 100;
     }

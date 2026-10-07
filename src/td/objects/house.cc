@@ -3672,7 +3672,7 @@ bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
           for (game::FacingType fcounter = game::FacingType::kNorth;
                fcounter <= game::FacingType::kNorthWest; fcounter++) {
             newcell = Cell::Containing(
-                Coord_Move(cell.Center(), game::Facing_Dir(rot),
+                Coord_Move(cell.Center(), game::DirectionOf(rot),
                            static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {
@@ -3694,7 +3694,7 @@ bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
           for (game::FacingType fcounter = game::FacingType::kNorthWest;
                fcounter >= game::FacingType::kNorth; fcounter--) {
             newcell = Cell::Containing(
-                Coord_Move(cell.Center(), game::Facing_Dir(rot),
+                Coord_Move(cell.Center(), game::DirectionOf(rot),
                            static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {

@@ -513,7 +513,7 @@ void BulletClass::AI() {
 void BulletClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
   Validate();
-  const int facing = game::Dir_To_32(PrimaryFacing);
+  const int facing = game::BodyFrame32(PrimaryFacing);
 
   /*
   **	Certain projectiles aren't visible. This includes small bullets (which

@@ -386,7 +386,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
   int shapenum = 0;
-  const int facing = game::Dir_To_32(SecondaryFacing);
+  const int facing = game::BodyFrame32(SecondaryFacing);
 
   /*
   **	Verify the legality of the unit class.
@@ -470,7 +470,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       */
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
-      const game::FacingType face = game::Dir_Facing(SecondaryFacing);
+      const game::FacingType face = game::NearestFacing(SecondaryFacing);
       base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                       static_cast<int16_t>(_stretch.at(face)));
       CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
@@ -1431,7 +1431,7 @@ int AircraftClass::Mission_Retreat() {
       *map edge.
       */
       PrimaryFacing.Set_Desired(
-          game::Facing_Dir(game::AsFacing(static_cast<int>(House->Edge) * 2)));
+          game::DirectionOf(game::AsFacing(static_cast<int>(House->Edge) * 2)));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = kKeepFlying;
       break;
@@ -1496,7 +1496,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   *This is used *	to make sure that the transport waits until the
   *passenger is clear before *	unloading the next passenger or taking off.
   */
-  if (unit->Unlimbo(Coord, game::Facing_Dir(_toface.at(face)))) {
+  if (unit->Unlimbo(Coord, game::DirectionOf(_toface.at(face)))) {
     unit->Assign_Mission(MISSION_MOVE);
     unit->Assign_Destination(Target::FromCellIndex(cell));
     if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
@@ -2410,7 +2410,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
       for (const game::FacingType facing :
            magic_enum::enum_values<game::FacingType>()) {
         const Cell newcell = Cell::Containing(Coord_Move(
-            coord, game::Facing_Dir(facing + modifier),
+            coord, game::DirectionOf(facing + modifier),
             static_cast<uint16_t>(radius * game::kCellWidthLeptons)));
         if (TheMap().In_Radar(newcell)) {
           const Target newtarget = Target::FromCellIndex(newcell);

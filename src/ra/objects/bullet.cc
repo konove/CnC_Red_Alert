@@ -529,7 +529,7 @@ int BulletClass::Shape_Number() const {
   int shapenum = 0;
 
   if (!Class->IsFaceless) {
-    shapenum = base::At(UnitClass::BodyShape, game::Dir_To_32(PrimaryFacing));
+    shapenum = base::At(UnitClass::BodyShape, game::BodyFrame32(PrimaryFacing));
   }
 
   /*

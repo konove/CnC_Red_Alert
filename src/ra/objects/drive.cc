@@ -220,10 +220,10 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     game::FacingType toface = game::FacingType::kNone;
 
     if (threat) {
-      toface = game::Dir_Facing(Direction8(threat, Coord));
+      toface = game::NearestFacing(Direction8(threat, Coord));
       toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
     } else {
-      toface = game::Dir_Facing(PrimaryFacing.Current());
+      toface = game::NearestFacing(PrimaryFacing.Current());
       toface = toface + static_cast<game::FacingType>(RandomPick(0, 2) - 1);
     }
 
@@ -635,7 +635,7 @@ bool DriveClass::While_Moving() {
     */
     bool adj = false;  // Is a turn coming up?
     if (nextface != game::FacingType::kNone &&
-        game::Dir_Facing(track->Facing) != nextface) {
+        game::NearestFacing(track->Facing) != nextface) {
       adj = true;
     }
 
@@ -675,7 +675,7 @@ bool DriveClass::While_Moving() {
             adj && base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
-              (static_cast<int>(game::Dir_Facing(track->Facing)) *
+              (static_cast<int>(game::NearestFacing(track->Facing)) *
                static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
@@ -998,7 +998,7 @@ bool DriveClass::Start_Of_Move() {
   */
   Coordinate dest = AdjacentCell(Coord, facing);  // Destination coordinate.
   const game::DirType dir =
-      game::Facing_Dir(facing);  // Desired actual facing toward destination.
+      game::DirectionOf(facing);  // Desired actual facing toward destination.
 
   /*
   **	Set the facing correctly if it isn't already correct. This

@@ -389,7 +389,7 @@ int VesselClass::Shape_Number() const {
   */
   int shapenum =
       base::At(BodyShape,
-               static_cast<base::ssize>(game::Dir_To_16(PrimaryFacing)) * 2) /
+               static_cast<base::ssize>(game::BodyFrame16(PrimaryFacing)) * 2) /
       2;
 
   /*
@@ -471,30 +471,30 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
       */
       int shapenum = 0;
       auto turdir =
-          static_cast<game::DirType>(game::Dir_To_16(PrimaryFacing) * 16);
+          static_cast<game::DirType>(game::BodyFrame16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
           shapefile = TechnoTypeClass::TurretShapes;
-          shapenum = base::At(BodyShape, game::Dir_To_32(SecondaryFacing));
+          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
           xx = x;
           yy = y;
           turdir = static_cast<game::DirType>(
-              game::Dir_To_16(PrimaryFacing + game::DirType::kSouth) * 16);
+              game::BodyFrame16(PrimaryFacing + game::DirType::kSouth) * 16);
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_DD:
           shapefile = TechnoTypeClass::SamShapes;
-          shapenum = base::At(BodyShape, game::Dir_To_32(SecondaryFacing));
+          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_PT:
           shapefile = TechnoTypeClass::MGunShapes;
-          shapenum = base::At(BodyShape, game::Dir_To_32(SecondaryFacing));
+          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
@@ -504,7 +504,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
         case VesselType::VESSEL_MISSILESUB:
         case VesselType::VESSEL_CARRIER:
         default:
-          shapenum = base::At(BodyShape, game::Dir_To_32(SecondaryFacing));
+          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
       }
@@ -1760,7 +1760,7 @@ int VesselClass::Mission_Unload() {
 
             for (const game::FacingType face :
                  magic_enum::enum_values<game::FacingType>()) {
-              const game::DirType newface = toface + game::Facing_Dir(face);
+              const game::DirType newface = toface + game::DirectionOf(face);
               const Cell newcell =
                   AdjacentCell(Cell::Containing(Coord), newface);
 

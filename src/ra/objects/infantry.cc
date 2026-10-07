@@ -531,7 +531,7 @@ int InfantryClass::Shape_Number() const {
   */
   if (base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump) {
     shapenum +=
-        base::At(HumanShape, game::Dir_To_32(PrimaryFacing.Current())) *
+        base::At(HumanShape, game::BodyFrame32(PrimaryFacing.Current())) *
         base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump;
   }
 
@@ -1715,7 +1715,7 @@ bool InfantryClass::Random_Animate() {
 
       case 6:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+        PrimaryFacing.Set(game::DirectionOf(RandomPick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
@@ -1723,7 +1723,7 @@ bool InfantryClass::Random_Animate() {
       case 7:
         Do_Action(DO_IDLE2);
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+        PrimaryFacing.Set(game::DirectionOf(RandomPick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
@@ -1737,7 +1737,7 @@ bool InfantryClass::Random_Animate() {
       */
       case 8:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+        PrimaryFacing.Set(game::DirectionOf(RandomPick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
@@ -1748,7 +1748,7 @@ bool InfantryClass::Random_Animate() {
       case 9:
       case 10:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::Facing_Dir(RandomPick(
+        PrimaryFacing.Set(game::DirectionOf(RandomPick(
             game::FacingType::kNorth, game::FacingType::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
@@ -1833,16 +1833,16 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     game::FacingType toface = game::FacingType::kNone;
 
     if (threat) {
-      toface = game::Dir_Facing(Direction8(threat, Coord));
+      toface = game::NearestFacing(Direction8(threat, Coord));
       toface = toface + static_cast<game::FacingType>(RandomPick(0, 4) - 2);
     } else {
       const Coordinate coord = Center_Coord().Fraction();
 
       if (coord != Coordinate::CellCenterOffset()) {
-        toface = game::Dir_Facing(
-            game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
+        toface = game::NearestFacing(
+            game::Direction8Toward(0x0080, 0x0080, coord.x(), coord.y()));
       } else {
-        toface = game::Dir_Facing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.Current());
       }
       toface = toface + static_cast<game::FacingType>(RandomPick(0, 4) - 2);
     }

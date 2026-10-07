@@ -1275,7 +1275,7 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
   if (distance == 0) {
     return false;
   }
-  const game::FacingType crude = game::Dir_Facing(facing);
+  const game::FacingType crude = game::NearestFacing(facing);
 
   if (TacticalCoord.x() == Cell_To_Lepton(MapCellX) &&
       crude != game::FacingType::kWest) {

@@ -59,7 +59,7 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
       center_x_(X + (Width / 2)),
       center_y_(Y + (Height / 2)),
       direction_(initial_direction),
-      facing_(game::Dir_Facing(direction_)) {
+      facing_(game::NearestFacing(direction_)) {
   // The decorations sit at 8/10 of the radius and the hand reaches 6/10 of
   // it, with Width/2 as the x radius and Height/2 as the y radius. Integer
   // division truncates toward zero, so this lands on the same pixels as the
@@ -87,9 +87,9 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
     const game::FacingType old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
-    direction_ = game::Desired_Facing8(
+    direction_ = game::Direction8Toward(
         center_x_, center_y_, game::TheMouse().x(), game::TheMouse().y());
-    facing_ = game::Dir_Facing(direction_);
+    facing_ = game::NearestFacing(direction_);
 
     if (facing_ != old_facing) {
       // Report the change: ControlClass::Action notifies the peer, replaces
@@ -147,7 +147,7 @@ game::DirType DirectionDial::direction() const { return direction_; }
 
 void DirectionDial::set_direction(const game::DirType direction) {
   direction_ = direction;
-  facing_ = game::Dir_Facing(direction_);
+  facing_ = game::NearestFacing(direction_);
   Flag_To_Redraw();
 }
 

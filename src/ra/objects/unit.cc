@@ -208,7 +208,7 @@ static void Recoil_Adjust(game::DirType dir, int& x, int& y) {
                    {1, 0},   {1, 1},   {1, 1},   {1, 1},    // NW
                    {1, 1},   {0, 1},   {0, 1}};
 
-  const int index = game::Dir_To_32(dir);
+  const int index = game::BodyFrame32(dir);
   x += base::At(_adjust, index).X;
   y += base::At(_adjust, index).Y;
 }
@@ -940,7 +940,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::DirType dir) {
   /*
   **	All units must start out facing one of the 8 major directions.
   */
-  dir = game::Facing_Dir(game::Dir_Facing(dir));
+  dir = game::DirectionOf(game::NearestFacing(dir));
   if (DriveClass::Unlimbo(coord, dir)) {
     SecondaryFacing = dir;
     /*
@@ -1959,7 +1959,7 @@ int UnitClass::Shape_Number() const {
   DCHECK(IsActive);
 
   int shapenum = 0;  // Working shape number.
-  const int facing = game::Dir_To_32(PrimaryFacing);
+  const int facing = game::BodyFrame32(PrimaryFacing);
 
   /*
   **	This handles the ant case.
@@ -2084,7 +2084,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  const int tfacing = game::Dir_To_32(SecondaryFacing);
+  const int tfacing = game::BodyFrame32(SecondaryFacing);
   const game::DirType rotation = game::DirType::kNorth;
   const int scale = 0x0100;
 
@@ -2498,7 +2498,7 @@ int UnitClass::Mission_Unload() {
 
               for (const game::FacingType face :
                    magic_enum::enum_values<game::FacingType>()) {
-                const game::DirType newface = toface + game::Facing_Dir(face);
+                const game::DirType newface = toface + game::DirectionOf(face);
                 const Cell newcell =
                     AdjacentCell(Cell::Containing(Coord), newface);
 
@@ -2583,7 +2583,7 @@ int UnitClass::Mission_Unload() {
 
               for (const game::FacingType face :
                    magic_enum::enum_values<game::FacingType>()) {
-                const game::DirType newface = toface + game::Facing_Dir(face);
+                const game::DirType newface = toface + game::DirectionOf(face);
                 const Cell newcell =
                     AdjacentCell(Cell::Containing(Coord), newface);
 
@@ -2765,7 +2765,7 @@ int UnitClass::Mission_Unload() {
 
           for (const game::FacingType face :
                magic_enum::enum_values<game::FacingType>()) {
-            const game::DirType newface = toface + game::Facing_Dir(face);
+            const game::DirType newface = toface + game::DirectionOf(face);
             const Cell newcell = AdjacentCell(Cell::Containing(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == game::MOVE_OK) {
               TheWorld().scenario_init()++;
@@ -3276,9 +3276,9 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const int face = static_cast<int>(game::Dir_Facing(PrimaryFacing));
+          const int face = static_cast<int>(game::NearestFacing(PrimaryFacing));
           const int techface =
-              (static_cast<int>(game::Dir_Facing(
+              (static_cast<int>(game::NearestFacing(
                    dynamic_cast<const FootClass*>(obj)->PrimaryFacing)) +
                4) %
               8;
@@ -3710,8 +3710,9 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  Cell cell = Cell::Containing(Coord).Offset(base::At(
-      ExitRepair, static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))));
+  Cell cell = Cell::Containing(Coord).Offset(
+      base::At(ExitRepair,
+               static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
@@ -3879,7 +3880,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     *transport or the *	least roundabout movement for the potential passenger.
     */
     value -= std::abs(
-        static_cast<int>(static_cast<signed char>(game::Facing_Dir(face))) -
+        static_cast<int>(static_cast<signed char>(game::DirectionOf(face))) -
         static_cast<int>(static_cast<signed char>(faceto)));
     if (face == game::FacingType::kSouth) {
       value -= 100;

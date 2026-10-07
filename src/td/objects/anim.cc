@@ -1217,12 +1217,12 @@ void AnimClass::Middle() {
   if (Class->IsFlameThrower) {
     Coordinate c2 = Coord_Move(
         Center_Coord(),
-        game::Facing_Dir(static_cast<game::FacingType>(
+        game::DirectionOf(static_cast<game::FacingType>(
             static_cast<int>(Class->Type) - static_cast<int>(ANIM_FLAME_N))),
         0x00E0);
     const Coordinate c3 = TheMap().Closest_Free_Spot(
         Coord_Move(Center_Coord(),
-                   game::Facing_Dir(static_cast<game::FacingType>(
+                   game::DirectionOf(static_cast<game::FacingType>(
                        static_cast<int>(Class->Type) -
                        static_cast<int>(ANIM_FLAME_N))),
                    0x0140),

@@ -55,25 +55,25 @@ constexpr FacingType AsFacing(const int facing) {
 
 // Facing arithmetic wraps around the eight facings. FacingType::kNone is not a
 // number to add to: as -1 it would step one facing anticlockwise.
-constexpr FacingType operator+(const FacingType f1, const FacingType f2) {
-  return AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
+constexpr FacingType operator+(const FacingType lhs, const FacingType rhs) {
+  return AsFacing(static_cast<int>(lhs) + static_cast<int>(rhs));
 }
-constexpr FacingType operator+(const FacingType f1, const int f2) {
-  return AsFacing(static_cast<int>(f1) + f2);
+constexpr FacingType operator+(const FacingType facing, const int steps) {
+  return AsFacing(static_cast<int>(facing) + steps);
 }
-constexpr FacingType operator-(const FacingType f1, const FacingType f2) {
-  return AsFacing(static_cast<int>(f1) - static_cast<int>(f2));
+constexpr FacingType operator-(const FacingType lhs, const FacingType rhs) {
+  return AsFacing(static_cast<int>(lhs) - static_cast<int>(rhs));
 }
-constexpr FacingType operator-(const FacingType f1, const int f2) {
-  return AsFacing(static_cast<int>(f1) - f2);
+constexpr FacingType operator-(const FacingType facing, const int steps) {
+  return AsFacing(static_cast<int>(facing) - steps);
 }
-constexpr FacingType operator+=(FacingType& f1, const FacingType f2) {
-  f1 = f1 + f2;
-  return f1;
+constexpr FacingType operator+=(FacingType& lhs, const FacingType rhs) {
+  lhs = lhs + rhs;
+  return lhs;
 }
-constexpr FacingType operator+=(FacingType& f1, const int f2) {
-  f1 = f1 + f2;
-  return f1;
+constexpr FacingType operator+=(FacingType& facing, const int steps) {
+  facing = facing + steps;
+  return facing;
 }
 
 // A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192
@@ -103,69 +103,69 @@ constexpr DirType AsDirection(const int angle) {
 }
 
 // Direction arithmetic wraps around the circle.
-constexpr DirType operator+(const DirType f1, const DirType f2) {
-  return AsDirection(static_cast<int>(f1) + static_cast<int>(f2));
+constexpr DirType operator+(const DirType lhs, const DirType rhs) {
+  return AsDirection(static_cast<int>(lhs) + static_cast<int>(rhs));
 }
-constexpr DirType operator+(const DirType f1, const int f2) {
-  return AsDirection(static_cast<int>(f1) + f2);
+constexpr DirType operator+(const DirType dir, const int steps) {
+  return AsDirection(static_cast<int>(dir) + steps);
 }
-constexpr DirType operator-(const DirType f1, const DirType f2) {
-  return AsDirection(static_cast<int>(f1) - static_cast<int>(f2));
+constexpr DirType operator-(const DirType lhs, const DirType rhs) {
+  return AsDirection(static_cast<int>(lhs) - static_cast<int>(rhs));
 }
-constexpr DirType operator-(const DirType f1, const int f2) {
-  return AsDirection(static_cast<int>(f1) - f2);
+constexpr DirType operator-(const DirType dir, const int steps) {
+  return AsDirection(static_cast<int>(dir) - steps);
 }
 
-// Returns the direction from (x1, y1) to (x2, y2) as one of the eight compass
-// points; (0, 0) is the north-west corner, so y grows southward. The diagonals
-// take more than their share of the circle: a slope steeper than 1 in 2 off an
-// axis already counts as diagonal (26.6 degrees, where an even split would be
-// 22.5). Equal points give DirType::kNorthEast.
-DirType Desired_Facing8(int x1, int y1, int x2, int y2);
+// Returns the direction from (from_x, from_y) to (to_x, to_y) as one of the
+// eight compass points; (0, 0) is the north-west corner, so y grows southward.
+// The diagonals take more than their share of the circle: a slope steeper than
+// 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even
+// split would be 22.5). Equal points give DirType::kNorthEast.
+DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);
 
-// Returns the direction from (srcx, srcy) to (dstx, dsty) to full 256-step
-// accuracy, with the same axes as Desired_Facing8(). The angle is interpolated
+// Returns the direction from (from_x, from_y) to (to_x, to_y) to full 256-step
+// accuracy, with the same axes as Direction8Toward(). The angle is interpolated
 // linearly along the shorter offset rather than taken from an arctangent, so
 // it is exact only on the axes and diagonals and up to four steps off between
 // them. Due east, due south, exact south-east and exact north-west come out
 // one step short (DirType::kEast - 1, ...), as they did in the original. Equal
 // points give 255, just shy of north.
-DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty);
+DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
 // rounds up to FacingType::kNorth.
-constexpr FacingType Dir_Facing(const DirType dir) {
+constexpr FacingType NearestFacing(const DirType dir) {
   return static_cast<FacingType>(static_cast<int>(dir + 0x10) / 32);
 }
 
 // Returns the direction that points exactly at `facing`.
-constexpr DirType Facing_Dir(const FacingType facing) {
+constexpr DirType DirectionOf(const FacingType facing) {
   return AsDirection(static_cast<int>(facing) * 32);
 }
 
 // Returns the facing whose 32-step sector starting at it holds `dir`: unlike
-// Dir_Facing(), this truncates, so DirType::kNorthEast - 1 gives
+// NearestFacing(), this truncates, so DirType::kNorthEast - 1 gives
 // FacingType::kNorth.
 // TODO: the `| 0x10` changes nothing, since it sets a bit the division by 32
-// drops. The original probably meant the `+ 0x10` of Dir_Facing().
-constexpr FacingType Dir_To_8(const DirType dir) {
+// drops. The original probably meant the `+ 0x10` of NearestFacing().
+constexpr FacingType FacingSector(const DirType dir) {
   return static_cast<FacingType>((static_cast<uint32_t>(dir) | 0x10U) / 32);
 }
 
 // Returns `dir` as one of 16 body frames, 0 north and rising clockwise.
-int Dir_To_16(DirType dir);
+int BodyFrame16(DirType dir);
 
 // Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The
 // steps are uneven to undo the distortion 3D Studio rendered into the
 // vehicle shapes.
-int Dir_To_32(DirType dir);
+int BodyFrame32(DirType dir);
 
-// Returns `dir2` minus `dir1` with both read as signed bytes (DirType::kSouth
+// Returns `to` minus `from` with both read as signed bytes (DirType::kSouth
 // and above are negative), so the result spans -255..255. This is not the
 // shortest turn between the two: across south it is nearly a full circle (127
 // to 128 gives -255, not 1).
-constexpr int Dir_Diff(const DirType dir1, const DirType dir2) {
-  return static_cast<int8_t>(dir2) - static_cast<int8_t>(dir1);
+constexpr int SignedDirectionDifference(const DirType from, const DirType to) {
+  return static_cast<int8_t>(to) - static_cast<int8_t>(from);
 }
 
 }  // namespace game

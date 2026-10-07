@@ -124,7 +124,7 @@ void TarComClass::AI() {
         } else {
           if (*this == UNIT_FTANK) {
             SecondaryFacing.Set_Desired(
-                game::Facing_Dir(game::Dir_Facing(Direction(TarCom))));
+                game::DirectionOf(game::NearestFacing(Direction(TarCom))));
           } else {
             SecondaryFacing.Set_Desired(Direction(TarCom));
           }
@@ -166,7 +166,8 @@ void TarComClass::AI() {
       if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) && !NavCom &&
           !IsDriving && PrimaryFacing.Difference(dir)) {
         if (*this == UNIT_FTANK) {
-          PrimaryFacing.Set_Desired(game::Facing_Dir(game::Dir_Facing(dir)));
+          PrimaryFacing.Set_Desired(
+              game::DirectionOf(game::NearestFacing(dir)));
         } else {
           PrimaryFacing.Set_Desired(dir);
         }

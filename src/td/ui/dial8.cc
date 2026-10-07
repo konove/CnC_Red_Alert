@@ -81,7 +81,7 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::DirType dir)
       FaceX(X + (Width / 2)),
       FaceY(Y + (Height / 2)),
       Direction(dir),
-      Facing(game::Dir_Facing(Direction)),
+      Facing(game::NearestFacing(Direction)),
       OldFacing(Facing) {
   /*
   **	Center coordinates.
@@ -188,13 +188,13 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     /*
     **	Get new dial position (0-255)
     */
-    Direction = game::Desired_Facing8(FaceX, FaceY, game::TheMouse().x(),
-                                      game::TheMouse().y());
+    Direction = game::Direction8Toward(FaceX, FaceY, game::TheMouse().x(),
+                                       game::TheMouse().y());
 
     /*
     **	Convert to Facing value (0-7).
     */
-    Facing = game::Dir_Facing(Direction);
+    Facing = game::NearestFacing(Direction);
 
     /*
     **	If it's moved, redraw.
@@ -318,7 +318,7 @@ game::DirType Dial8Class::Get_Direction() const { return Direction; }
  *=========================================================================*/
 void Dial8Class::Set_Direction(game::DirType dir) {
   Direction = dir;
-  Facing = game::Dir_Facing(Direction);
+  Facing = game::NearestFacing(Direction);
   OldFacing = Facing;
   Flag_To_Redraw();
 }

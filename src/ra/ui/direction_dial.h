@@ -44,7 +44,7 @@ class DirectionDial : public game::ControlClass {
                 game::DirType initial_direction);
 
   // Returns the direction the dial points in, 0-255. After the player turns
-  // it, this is one of the eight snapped values Desired_Facing8() returns.
+  // it, this is one of the eight snapped values Direction8Toward() returns.
   [[nodiscard]] game::DirType direction() const;
   // Points the dial in `direction`, 0-255, and schedules a redraw. Does
   // not report a change to the owner.

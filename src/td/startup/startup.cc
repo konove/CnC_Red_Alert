@@ -243,7 +243,7 @@ static int Run(int argc, char* argv[])
   /*
   ** These values return 0x47 if code is working correctly
   */
-  //	int temp = Desired_Facing256 (1070, 5419, 1408, 5504);
+  //	int temp = Direction256Toward (1070, 5419, 1408, 5504);
 
 #ifdef _WIN32
   ProgramInstance = instance;
