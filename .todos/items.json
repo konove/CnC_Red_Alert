@@ -33,8 +33,8 @@
       "anchors": [
         {
           "path": "src/td/map/display.cc",
-          "startLine": 2351,
-          "endLine": 2351,
+          "startLine": 2349,
+          "endLine": 2349,
           "text": "  return Cell::FromIndex(cell.index());",
           "before": [
             "    }",
@@ -571,8 +571,8 @@
       "anchors": [
         {
           "path": "src/ra/assets/shape_draw.cc",
-          "startLine": 195,
-          "endLine": 197,
+          "startLine": 194,
+          "endLine": 196,
           "text": "int PredatorOffset(const int frame, const int x, const int window_width) {\n  return x > window_width / 2 ? -frame : frame;\n}",
           "before": [
             "// The offset walks with the frame counter, which is what makes the cloak",
@@ -918,13 +918,20 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z",
+      "updated": "2026-10-07T23:30:39Z",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-07T23:30:31Z",
+          "text": "Names changed since this was written (aa7523ec..741ef70a): the type is `game::Direction`, the wrong line is now `return game::Direction(TarCom.packed());` and the fix is `return DirectionTo(TarCom);`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/objects/building.cc",
-          "startLine": 5173,
-          "endLine": 5173,
-          "text": "game::DirType BuildingClass::Fire_Direction() const {",
+          "startLine": 5169,
+          "endLine": 5169,
+          "text": "game::Direction BuildingClass::Fire_Direction() const {",
           "before": [
             " *                                                                                             *",
             " * HISTORY: * 07/04/1995 JLB : Created. *",
@@ -1056,8 +1063,8 @@
       "anchors": [
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 3141,
-          "endLine": 3141,
+          "startLine": 3140,
+          "endLine": 3140,
           "text": "void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,",
           "before": [
             " * HISTORY: * 02/24/1995 JLB : Created. * 03/27/1995 JLB : Handles sell and",
@@ -1300,8 +1307,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/cell.cc",
-          "startLine": 1711,
-          "endLine": 1711,
+          "startLine": 1709,
+          "endLine": 1709,
           "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
           "before": [
             " *=========================================================================*/",
@@ -1410,8 +1417,8 @@
       "anchors": [
         {
           "path": "src/td/ai/reinforcements.cc",
-          "startLine": 88,
-          "endLine": 88,
+          "startLine": 87,
+          "endLine": 87,
           "text": "static void EnterFromEdge(FootClass* group, const SourceType edge,",
           "before": [
             "// Puts the ground members of the list `group` on the map at the map edge",
@@ -1420,7 +1427,7 @@
           ],
           "after": [
             "                          const HousesType house, const bool has_team) {",
-            "  // SourceType counts the four edges clockwise from north and FacingType the",
+            "  // SourceType counts the four edges clockwise from north and Facing the",
             "  // eight compass points, hence the factor of two. The facing is the edge's"
           ],
           "lost": false
@@ -1472,8 +1479,8 @@
       "anchors": [
         {
           "path": "src/td/ai/reinforcements.cc",
-          "startLine": 444,
-          "endLine": 444,
+          "startLine": 442,
+          "endLine": 442,
           "text": "// Returns whether a ground unit can drive onto the map over its south edge:",
           "before": [
             "  return true;",
@@ -2026,8 +2033,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/foot.cc",
-          "startLine": 623,
-          "endLine": 623,
+          "startLine": 622,
+          "endLine": 622,
           "text": "  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())",
           "before": [
             "    }",
@@ -2131,7 +2138,7 @@
           ],
           "after": [
             "                                      const int width, const int height,",
-            "                                      const game::DirType rotation,",
+            "                                      const game::Direction rotation,",
             "                                      const int32_t scale) {"
           ],
           "lost": false
@@ -3898,10 +3905,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-07T07:31:53Z",
-      "updated": "2026-10-07T15:31:42Z",
+      "updated": "2026-10-07T22:25:28Z",
       "fixedIn": "4009d949",
       "resolution": "Done with T-170: the two directions left `game::DirType` and are now `DriveClass::kRefineryApproach` and `DriveClass::kRefineryDock` in each game's `objects/drive.h` (936ef467, 4009d949).",
       "comments": [
@@ -3937,10 +3944,12 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-07T07:32:22Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:39Z",
+      "fixedIn": "0354aa34",
+      "resolution": "The two types stay separate: `Facing` is a neighbour-cell index with a `kNone` and `Direction` an angle that uses all 256 values. `Direction` is no longer an enum but a class over one `uint8_t` whose explicit constructor wraps any angle; the compass points are constants, `AsDirection()` and its analyzer suppression are gone, and saves still hold it in four bytes.",
       "comments": [
         {
           "author": "agent",
@@ -3951,18 +3960,18 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 74,
-          "endLine": 74,
-          "text": "enum class DirType : uint8_t {",
+          "startLine": 78,
+          "endLine": 78,
+          "text": "class Direction {",
           "before": [
-            "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
-            "// west. Every byte value is a valid direction; only the compass points are",
-            "// named."
+            "// Example:",
+            "//   const Direction behind = facing + Direction::kSouth;",
+            "//   const Direction a_little_right = facing + 8;"
           ],
           "after": [
-            "  kNorth = 0,",
-            "  kNorthEast = 1 << 5,",
-            "  kEast = 2 << 5,"
+            " public:",
+            "  static const Direction kNorth;",
+            "  static const Direction kNorthEast;"
           ],
           "lost": false
         }
@@ -4036,7 +4045,7 @@
             "",
             "int BodyFrame32(const DirType dir) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4127,8 +4136,8 @@
       "anchors": [
         {
           "path": "src/td/objects/unit.cc",
-          "startLine": 3824,
-          "endLine": 3824,
+          "startLine": 3820,
+          "endLine": 3820,
           "text": "    value -= std::abs(game::ShortestTurn(game::DirectionOf(face), faceto));",
           "before": [
             "    **\tGive more weight to the cells that require the least rotation of the",
@@ -4136,7 +4145,7 @@
             "    */"
           ],
           "after": [
-            "    if (face == game::FacingType::kSouth) {",
+            "    if (face == game::Facing::kSouth) {",
             "      value -= 100;",
             "    }"
           ],
@@ -4144,8 +4153,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 147,
-          "endLine": 147,
+          "startLine": 181,
+          "endLine": 181,
           "text": "constexpr int ShortestTurn(const DirType from, const DirType to) {",
           "before": [
             "",
@@ -4153,11 +4162,11 @@
             "// clockwise, and the two opposite directions are -128 apart."
           ],
           "after": [
-            "  return static_cast<int8_t>(to - from);",
+            "  return static_cast<int8_t>((to - from).value());",
             "}",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4169,22 +4178,95 @@
       "effort": "m",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:50Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "741ef70a",
+      "resolution": "`DirType` is now `Direction` and `FacingType` is `Facing` (d4f21fd4, 741ef70a). The `Direction()` functions that held the name became `DirectionTo()` (the `AbstractClass` members) and `DirectionBetween()` (the free functions), aa7523ec and 3018d981. On the user's call `Direction` also stopped being an enum: it is a class over one `uint8_t` with the compass points as constants (0354aa34). `FacingClass` keeps its name; see T-176.",
       "toDecide": "- **Keep `DirType` and `FacingType`** (the game's own vocabulary; nothing to do).\n- **Rename**: candidates are `Dir256` or `Heading` for `DirType` and `CompassFacing` or `Facing8` for `FacingType`. A scripted tree-wide rename, one commit per type.\n- **Free the good names first**: rename the `Direction()` functions (for example `DirectionTo()`), then `DirType` becomes `Direction`.",
+      "decisions": [
+        {
+          "question": "What should DirType (the 256-step compass) be called?",
+          "options": [
+            "Direction (Recommended)",
+            "Heading",
+            "Dir256",
+            "Keep DirType"
+          ],
+          "answer": "Direction (Recommended)",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "What should FacingType (the eight neighbouring cells) be called?",
+          "options": [
+            "Facing (Recommended)",
+            "Facing8",
+            "CompassFacing",
+            "Keep FacingType"
+          ],
+          "answer": "Facing (Recommended)",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "If DirType becomes Direction, what do the Direction() functions become?",
+          "options": [
+            "DirectionTo / DirectionBetween (Recommended)",
+            "DirectionTo for both",
+            "DirectionToward for both",
+            "Not applicable"
+          ],
+          "answer": "DirectionTo / DirectionBetween (Recommended)",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "Do we really need two types, and should DirType be an enum, a bare uint8_t alias or a small class over uint8_t? (asked by the user: \"I feel like Facing can stay - indicating direction, but Direction (DIRType) is just an int or uint8_t, there could be conversion functions from FacingToDirection, and even back - DirectionToFacingApprox\")",
+          "options": [
+            "Class over uint8_t (Recommended)",
+            "Bare uint8_t alias"
+          ],
+          "answer": "go with the class",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "Keep Direction::kNorth constants, or spell compass points through Facing (DirectionOf(Facing::kNorth))?",
+          "options": [
+            "Keep the constants (Recommended)",
+            "Spell them through Facing"
+          ],
+          "answer": "keep the constants",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "Rename the conversions to FacingToDirection / DirectionToFacingApprox, or keep DirectionOf / NearestFacing?",
+          "options": [
+            "Keep DirectionOf / NearestFacing (Recommended)",
+            "FacingToDirection / DirectionToFacingApprox"
+          ],
+          "answer": "keep the constants and conversion names",
+          "time": "2026-10-07T22:42:22Z"
+        },
+        {
+          "question": "If FacingType becomes Facing, what happens to FacingClass (current + desired DirType, 36 uses in 13 files)?",
+          "options": [
+            "Leave it for now (Recommended)",
+            "Rename to Heading",
+            "Rename to TurnState"
+          ],
+          "answer": "(not answered; the recommended option is taken: leave it and file a TODO)",
+          "time": "2026-10-07T22:42:22Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
           "startLine": 37,
           "endLine": 37,
-          "text": "enum class FacingType : int8_t {",
+          "text": "enum class Facing : int8_t {",
           "before": [
             "",
             "// The eight cells around a cell, clockwise from north. Used when moving",
@@ -4199,18 +4281,18 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 74,
-          "endLine": 74,
-          "text": "enum class DirType : uint8_t {",
+          "startLine": 78,
+          "endLine": 78,
+          "text": "class Direction {",
           "before": [
-            "// A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192",
-            "// west. Every byte value is a valid direction; only the compass points are",
-            "// named."
+            "// Example:",
+            "//   const Direction behind = facing + Direction::kSouth;",
+            "//   const Direction a_little_right = facing + 8;"
           ],
           "after": [
-            "  kNorth = 0,",
-            "  kNorthEast = 1 << 5,",
-            "  kEast = 2 << 5,"
+            " public:",
+            "  static const Direction kNorth;",
+            "  static const Direction kNorthEast;"
           ],
           "lost": false
         }
@@ -4226,10 +4308,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T15:31:42Z",
+      "updated": "2026-10-07T22:26:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "4009d949",
@@ -4289,27 +4371,29 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "0354aa34",
+      "resolution": "Obsolete in its original form: `AsDirection()` is gone. Every computed direction, the track tables included, now goes through the wrapping `Direction(int)` constructor; no `static_cast` to the type is left.",
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 89,
-          "endLine": 89,
-          "text": "constexpr DirType AsDirection(const int angle) {",
+          "startLine": 78,
+          "endLine": 78,
+          "text": "class Direction {",
           "before": [
-            "// it for every computed direction: it is where the analyzer's named-enumerator",
-            "// model of the enum is set aside, so a direct cast of a computed value is",
-            "// reported as out of range."
+            "// Example:",
+            "//   const Direction behind = facing + Direction::kSouth;",
+            "//   const Direction a_little_right = facing + 8;"
           ],
           "after": [
-            "  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)",
-            "  return static_cast<DirType>(static_cast<uint32_t>(angle) & 0xFFU);",
-            "}"
+            " public:",
+            "  static const Direction kNorth;",
+            "  static const Direction kNorthEast;"
           ],
           "lost": false
         }
@@ -4327,27 +4411,29 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "c682310b",
+      "resolution": "The `Track13` entries, both bullet scatters, the turret adjustment and the track mirroring in both games' `drive.cc` use the `Direction` operators (0354aa34, c682310b). What still passes `value()` to the constructor are the two random-pick overloads, which have to draw an `int`.",
       "anchors": [
         {
           "path": "src/td/objects/drive.cc",
-          "startLine": 2110,
-          "endLine": 2176,
-          "text": "     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -21),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -20),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(10, -20),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -18),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -18),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(9, -17),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(8, -16),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(8, -15),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(7, -14),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(7, -13),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(6, -12),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(6, -11),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(5, -10),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(5, -9),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(4, -8),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(4, -7),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(3, -6),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                10)},\n    {Pixel_Offset_Coord(3, -5),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                9)},\n    {Pixel_Offset_Coord(2, -4),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                7)},\n    {Pixel_Offset_Coord(2, -3),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                5)},\n    {Pixel_Offset_Coord(1, -2),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -\n                                3)},\n    {Pixel_Offset_Coord(1, -1),\n     static_cast<game::DirType>(static_cast<int>(game::DirType::kSouthWest) -",
+          "startLine": 2099,
+          "endLine": 2099,
+          "text": "const DriveClass::TrackType DriveClass::Track13[] = {",
           "before": [
-            "*/",
-            "const DriveClass::TrackType DriveClass::Track13[] = {",
-            "    {Pixel_Offset_Coord(10, -21),"
+            "/*",
+            "**\tDrive out of weapon's factory.",
+            "*/"
           ],
           "after": [
-            "                                1)},",
-            "",
-            "    {Coordinate{}, game::DirType::kSouthWest}};"
+            "    {Pixel_Offset_Coord(10, -21), game::Direction::kSouthWest - 10},",
+            "    {Pixel_Offset_Coord(10, -21), game::Direction::kSouthWest - 10},",
+            "    {Pixel_Offset_Coord(10, -20), game::Direction::kSouthWest - 10},"
           ],
           "lost": false
         }
@@ -4366,15 +4452,15 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 143,
-          "endLine": 143,
-          "text": "int BodyFrame32(DirType dir);",
+          "startLine": 179,
+          "endLine": 179,
+          "text": "int BodyFrame32(Direction dir);",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
             "// steps are uneven to undo the distortion 3D Studio rendered into the",
@@ -4403,20 +4489,27 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:46Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "toDecide": "Leave the four ints (simple, and the wrappers hide them), or add a small `{x, y}` struct to `game/sim` or `base` and take two of them. The second touches about 18 call sites in both games.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-07T23:30:43Z",
+          "text": "Both functions return `game::Direction` since d4f21fd4; the signatures are otherwise unchanged."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 113,
-          "endLine": 113,
-          "text": "DirType Direction8Toward(int from_x, int from_y, int to_x, int to_y);",
+          "startLine": 149,
+          "endLine": 149,
+          "text": "Direction Direction8Toward(int from_x, int from_y, int to_x, int to_y);",
           "before": [
             "// The diagonals take more than their share of the circle: a slope steeper than",
-            "// 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even",
-            "// split would be 22.5). Equal points give DirType::kNorthEast."
+            "// 1 in 2 off an axis already coun  ts as diagonal (26.6 degrees, where an even",
+            "// split would be 22.5). Equal points give Direction::kNorthEast."
           ],
           "after": [
             "",
@@ -4427,9 +4520,9 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 121,
-          "endLine": 121,
-          "text": "DirType Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
+          "startLine": 157,
+          "endLine": 157,
+          "text": "Direction Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
           "before": [
             "// it is exact only on the axes and diagonals and up to four steps off between",
             "// them. An angle between two steps rounds toward the axis its quadrant starts",
@@ -4438,7 +4531,7 @@
           "after": [
             "",
             "// Returns the facing nearest to `dir`; the last sixteenth of the circle",
-            "// rounds up to FacingType::kNorth."
+            "// rounds up to Facing::kNorth."
           ],
           "lost": false
         }
@@ -4494,9 +4587,16 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-07T23:30:31Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-07T23:30:31Z",
+          "text": "From T-169: `FacingType` is now `game::Facing`, so this class cannot simply drop its `Class` suffix. It holds a current and a desired `Direction` and the turning logic, not a `Facing`; `Heading` and `TurnState` were the candidates offered. Its `Difference()` overloads now call `ShortestTurn()`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/facing.h",
