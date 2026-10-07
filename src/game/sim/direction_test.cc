@@ -1,5 +1,8 @@
 #include "game/sim/direction.h"
 
+#include <array>
+
+#include "base/numeric.h"
 #include "gtest/gtest.h"
 
 namespace game {
@@ -12,6 +15,7 @@ TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
   EXPECT_EQ(FacingType::kNorth - FacingType::kEast, FacingType::kWest);
   EXPECT_EQ(FacingType::kSouthWest + FacingType::kSouth,
             FacingType::kNorthEast);
+  EXPECT_EQ(FacingType::kNorth - 3, FacingType::kSouthWest);
 }
 
 TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
@@ -38,6 +42,33 @@ TEST(DirectionOfTest, PointsExactlyAtTheFacing) {
   EXPECT_EQ(DirectionOf(FacingType::kNorth), DirType::kNorth);
   EXPECT_EQ(DirectionOf(FacingType::kSouthEast), DirType::kSouthEast);
   EXPECT_EQ(DirectionOf(FacingType::kNorthWest), DirType::kNorthWest);
+}
+
+TEST(BodyFrameTest, SixteenFramesRoundToTheNearest) {
+  EXPECT_EQ(BodyFrame16(AsDirection(7)), 0);
+  EXPECT_EQ(BodyFrame16(AsDirection(8)), 1);
+  EXPECT_EQ(BodyFrame16(AsDirection(247)), 15);
+  EXPECT_EQ(BodyFrame16(AsDirection(248)), 0);
+}
+
+TEST(BodyFrameTest, ThirtyTwoFramesRiseClockwiseInUnevenSteps) {
+  std::array<int, 32> directions_per_frame{};
+  int previous = 0;
+  for (int angle = 0; angle < 256; ++angle) {
+    const int frame = BodyFrame32(AsDirection(angle));
+    ASSERT_GE(frame, 0);
+    ASSERT_LT(frame, 32);
+    // The last few directions round up to north again.
+    if (frame != 0) {
+      EXPECT_GE(frame, previous) << angle;
+      previous = frame;
+    }
+    ++directions_per_frame.at(base::ToSize(frame));
+  }
+  for (const int count : directions_per_frame) {
+    EXPECT_GE(count, 6);
+    EXPECT_LE(count, 11);
+  }
 }
 
 TEST(BodyFrameTest, CompassPointsLandOnEvenFrames) {
@@ -75,6 +106,27 @@ TEST(Direction8TowardTest, ReturnsTheCompassPoint) {
   EXPECT_EQ(Direction8Toward(0, 0, -5, -4), DirType::kNorthWest);
 }
 
+TEST(Direction8TowardTest, ReturnsTheDiagonals) {
+  EXPECT_EQ(Direction8Toward(0, 0, 5, -5), DirType::kNorthEast);
+  EXPECT_EQ(Direction8Toward(0, 0, -5, 5), DirType::kSouthWest);
+  EXPECT_EQ(Direction8Toward(0, 0, -5, -5), DirType::kNorthWest);
+}
+
+TEST(Direction8TowardTest, ASlopeOfOneInTwoIsAlreadyDiagonal) {
+  EXPECT_EQ(Direction8Toward(0, 0, 4, -2), DirType::kNorthEast);
+  EXPECT_EQ(Direction8Toward(0, 0, 5, -2), DirType::kEast);
+  EXPECT_EQ(Direction8Toward(0, 0, 2, -4), DirType::kNorthEast);
+  EXPECT_EQ(Direction8Toward(0, 0, 2, -5), DirType::kNorth);
+  EXPECT_EQ(Direction8Toward(0, 0, -2, 5), DirType::kSouth);
+  EXPECT_EQ(Direction8Toward(0, 0, 2, 5), DirType::kSouth);
+  EXPECT_EQ(Direction8Toward(0, 0, -2, -5), DirType::kNorth);
+}
+
+TEST(Direction8TowardTest, DependsOnlyOnTheOffset) {
+  EXPECT_EQ(Direction8Toward(100, -40, 105, -40), DirType::kEast);
+  EXPECT_EQ(Direction8Toward(100, -40, 100, -45), DirType::kNorth);
+}
+
 TEST(Direction8TowardTest, SamePointGivesNorthEast) {
   EXPECT_EQ(Direction8Toward(3, 3, 3, 3), DirType::kNorthEast);
 }
@@ -90,6 +142,34 @@ TEST(Direction256TowardTest, EastAndSouthLandOneStepShort) {
   // as the original did.
   EXPECT_EQ(Direction256Toward(0, 0, 100, 0), DirType::kEast - 1);
   EXPECT_EQ(Direction256Toward(0, 0, 0, 100), DirType::kSouth - 1);
+}
+
+TEST(Direction256TowardTest, TwoDiagonalsLandOneStepShort) {
+  EXPECT_EQ(Direction256Toward(0, 0, -100, 100), DirType::kSouthWest);
+  EXPECT_EQ(Direction256Toward(0, 0, 100, 100), DirType::kSouthEast - 1);
+  EXPECT_EQ(Direction256Toward(0, 0, -100, -100), DirType::kNorthWest - 1);
+}
+
+TEST(Direction256TowardTest, InterpolatesLinearlyBetweenAxisAndDiagonal) {
+  // Halfway along the shorter offset is halfway to the diagonal, 16 steps,
+  // where the true angle (26.6 degrees) would be 19.
+  EXPECT_EQ(Direction256Toward(0, 0, 50, -100), AsDirection(16));
+  // Past the diagonal the count runs back from the axis ahead, less one.
+  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), AsDirection(64 - 16 - 1));
+  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), AsDirection(128 - 16 - 1));
+  EXPECT_EQ(Direction256Toward(0, 0, -50, 100), AsDirection(128 + 16));
+  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), AsDirection(256 - 16 - 1));
+}
+
+TEST(Direction256TowardTest, NeverLeavesTheQuadrantOfTheTarget) {
+  for (int x = 1; x <= 40; ++x) {
+    for (int y = 1; y <= 40; ++y) {
+      const int north_east = static_cast<int>(Direction256Toward(0, 0, x, -y));
+      EXPECT_LT(north_east, 64) << x << " " << y;
+      const int north_west = static_cast<int>(Direction256Toward(0, 0, -x, -y));
+      EXPECT_GE(north_west, 192) << x << " " << y;
+    }
+  }
 }
 
 TEST(Direction256TowardTest, SamePointGivesJustShyOfNorth) {
