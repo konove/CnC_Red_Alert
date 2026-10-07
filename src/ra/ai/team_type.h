@@ -184,7 +184,8 @@ class TeamType : public AbstractTypeClass {
   // its heap, -1 for none.
   [[nodiscard]] std::string ToIniEntry() const;
   // Creates a team type for every entry of the [TeamTypes] section of `ini`.
-  // Entries past the heap's capacity are dropped.
+  // Entries past the heap's capacity are dropped, and so are the entries
+  // ReadIniEntry() rejects.
   static void ReadIni(const engine::file::IniFile& ini);
   // Names this team type `name` and sets it from `entry`, a [TeamTypes] value
   // as ToIniEntry() writes it. The older scenario formats (NewINIFormat
@@ -192,8 +193,9 @@ class TeamType : public AbstractTypeClass {
   // last. A member whose type name is unknown is skipped, and an origin that
   // is not a waypoint of the scenario is taken as none; a member or mission
   // count that is missing or out of range leaves the team type with no
-  // members and no missions.
-  void ReadIniEntry(std::string_view name, std::string_view entry);
+  // members and no missions. Returns false, leaving the team type unfit for
+  // use, when the house or a mission is not a number of its enum.
+  bool ReadIniEntry(std::string_view name, std::string_view entry);
   // Replaces the [TeamTypes] section of `ini` with every team type.
   static void WriteIni(engine::file::IniFile& ini);
   // Saved-game support; defined in ioobj.cc.

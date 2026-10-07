@@ -47,6 +47,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
+#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/waypoint_name.h"
@@ -261,23 +262,25 @@ std::string TeamType::ToIniEntry() const {
 void TeamType::ReadIni(const engine::file::IniFile& ini) {
   for (const auto& [entry, value] : ini.Entries(kIniSection)) {
     auto* team_type = base::NewPooled<TeamType>();
-    if (team_type != nullptr) {
-      team_type->ReadIniEntry(entry, value);
+    if (team_type != nullptr && !team_type->ReadIniEntry(entry, value)) {
+      base::DeletePooled(team_type);
     }
   }
 }
 
-void TeamType::ReadIniEntry(const std::string_view name,
+bool TeamType::ReadIniEntry(const std::string_view name,
                             const std::string_view entry) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
-  // TODO: the house and the mission numbers below are taken from the file
-  // unchecked; an out-of-range one CHECK-fails later, where the team type is
-  // used.
-  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  const auto house =
+      static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  if (!magic_enum::enum_contains(house)) {
+    return false;
+  }
+  house_ = house;
 
   // The scenario's NewINIFormat: 0 and 1 list each option and end the entry
   // with the trigger; the later ones pack the options into one bit field and
@@ -320,7 +323,7 @@ void TeamType::ReadIniEntry(const std::string_view name,
   member_count_ = 0;
   if (listed_count < 0 || listed_count > kMaxMemberTypes) {
     mission_count_ = 0;
-    return;
+    return true;
   }
   for (int listed = 0; listed < listed_count; listed++) {
     const std::string_view type_name = tokens.Next(",:");
@@ -328,7 +331,7 @@ void TeamType::ReadIniEntry(const std::string_view name,
     if (type_name.empty() || quantity_text.empty()) {
       member_count_ = 0;
       mission_count_ = 0;
-      return;
+      return true;
     }
 
     // An unknown type (a unit this build does not have) is dropped and the
@@ -346,12 +349,15 @@ void TeamType::ReadIniEntry(const std::string_view name,
   if (mission_count_ < 0 || mission_count_ > kMaxMissions) {
     member_count_ = 0;
     mission_count_ = 0;
-    return;
+    return true;
   }
   for (int index = 0; index < mission_count_; index++) {
-    base::At(missions_, index)
-        .set_mission(static_cast<TeamMissionType>(
-            base::ParseIntegerOr<int>(tokens.Next(",:"), 0)));
+    const auto mission = static_cast<TeamMissionType>(
+        base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
+    if (!magic_enum::enum_contains(mission)) {
+      return false;
+    }
+    base::At(missions_, index).set_mission(mission);
     base::At(missions_, index)
         .set_value(base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
   }
@@ -361,6 +367,7 @@ void TeamType::ReadIniEntry(const std::string_view name,
     trigger_ = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
+  return true;
 }
 
 void TeamType::WriteIni(engine::file::IniFile& ini) {

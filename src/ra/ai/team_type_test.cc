@@ -270,6 +270,37 @@ TEST_F(TeamTypeTest, ReadIniCreatesATeamTypePerEntry) {
   EXPECT_TRUE(dawn->is_autocreate());
 }
 
+TEST_F(TeamTypeTest, ReadIniEntryRejectsAHouseThatIsNoHouse) {
+  EXPECT_FALSE(team_type_->ReadIniEntry("tanks", "20,0,7,0,1,-1,-1,0,0"));
+  EXPECT_FALSE(team_type_->ReadIniEntry("tanks", "-1,0,7,0,1,-1,-1,0,0"));
+  EXPECT_TRUE(team_type_->ReadIniEntry("tanks", "19,0,7,0,1,-1,-1,0,0"));
+}
+
+TEST_F(TeamTypeTest, ReadIniEntryRejectsAMissionThatIsNoMission) {
+  const auto entry = [](const std::string_view script) {
+    return absl::StrCat("2,0,7,0,1,-1,-1,1,", Infantry(), ":1,", script);
+  };
+
+  EXPECT_FALSE(team_type_->ReadIniEntry("tanks", entry("2,3:5,17:0")));
+  EXPECT_FALSE(team_type_->ReadIniEntry("tanks", entry("1,-1:0")));
+  EXPECT_TRUE(team_type_->ReadIniEntry("tanks", entry("2,3:5,16:0")));
+}
+
+TEST_F(TeamTypeTest, ReadIniDropsTheEntriesItRejects) {
+  TeamType::FreeAll();
+  engine::file::IniFile ini;
+  ASSERT_TRUE(ini.PutString(kIniSection, "wave", SovietEntry(0, 2)));
+  ASSERT_TRUE(ini.PutString(kIniSection, "lost", "99,0,7,0,1,-1,-1,0,0"));
+  ASSERT_TRUE(ini.PutString(kIniSection, "dawn", SovietEntry(4, 5)));
+
+  TeamType::ReadIni(ini);
+
+  EXPECT_EQ(TheObjectHeaps().team_type().Count(), 2);
+  EXPECT_NE(TeamType::FromName("wave"), nullptr);
+  EXPECT_EQ(TeamType::FromName("lost"), nullptr);
+  EXPECT_NE(TeamType::FromName("dawn"), nullptr);
+}
+
 TEST_F(TeamTypeTest, ReadIniDropsTheEntriesTheHeapHasNoRoomFor) {
   TeamType::FreeAll();
   engine::file::IniFile ini;
