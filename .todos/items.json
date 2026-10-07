@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "nextId": 161,
   "items": [
     {
@@ -30,23 +30,25 @@
       "author": "agent",
       "created": "2026-10-06T00:17:54Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/td/map/display.cc",
-        "startLine": 2351,
-        "endLine": 2351,
-        "text": "  return Cell::FromIndex(cell.index());",
-        "before": [
-          "    }",
-          "  }",
-          "  // A prvalue, since the other returns are (-Wnrvo)."
-        ],
-        "after": [
-          "}",
-          "",
-          "/***********************************************************************************************"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/map/display.cc",
+          "startLine": 2351,
+          "endLine": 2351,
+          "text": "  return Cell::FromIndex(cell.index());",
+          "before": [
+            "    }",
+            "  }",
+            "  // A prvalue, since the other returns are (-Wnrvo)."
+          ],
+          "after": [
+            "}",
+            "",
+            "/***********************************************************************************************"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-4",
@@ -61,23 +63,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/engine/window/display_test.cc",
-        "startLine": 456,
-        "endLine": 458,
-        "text": "class DisplayEventsTest : public ::testing::Test {\n protected:\n  void SetUp() override { SDL_Init(SDL_INIT_EVENTS); }",
-        "before": [
-          "}",
-          "",
-          "// Pumps a Display that has no window: the loop needs only SDL's event queue."
-        ],
-        "after": [
-          "",
-          "  RecordingClient client_;",
-          "};"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/display_test.cc",
+          "startLine": 456,
+          "endLine": 458,
+          "text": "class DisplayEventsTest : public ::testing::Test {\n protected:\n  void SetUp() override { SDL_Init(SDL_INIT_EVENTS); }",
+          "before": [
+            "}",
+            "",
+            "// Pumps a Display that has no window: the loop needs only SDL's event queue."
+          ],
+          "after": [
+            "",
+            "  RecordingClient client_;",
+            "};"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-5",
@@ -92,23 +96,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/engine/window/hardware_cursor.cc",
-        "startLine": 50,
-        "endLine": 50,
-        "text": "static std::optional<std::vector<uint8_t>> DecodeShapePixels(",
-        "before": [
-          "// transparent (color 0) pixels to skip. Returns the width * original_height",
-          "// pixels, or nullopt for data that runs out early or holds a zero or overlong",
-          "// count."
-        ],
-        "after": [
-          "    const gfx::ShapeHeader& header, const std::span<const std::byte> data) {",
-          "  const std::vector<uint8_t> rle_data =",
-          "      LcwUncompress(data, header.decompressed_bytes);"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/hardware_cursor.cc",
+          "startLine": 50,
+          "endLine": 50,
+          "text": "static std::optional<std::vector<uint8_t>> DecodeShapePixels(",
+          "before": [
+            "// transparent (color 0) pixels to skip. Returns the width * original_height",
+            "// pixels, or nullopt for data that runs out early or holds a zero or overlong",
+            "// count."
+          ],
+          "after": [
+            "    const gfx::ShapeHeader& header, const std::span<const std::byte> data) {",
+            "  const std::vector<uint8_t> rle_data =",
+            "      LcwUncompress(data, header.decompressed_bytes);"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-6",
@@ -123,23 +129,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/engine/file/mix_archive_test.cc",
-        "startLine": 95,
-        "endLine": 95,
-        "text": "class VectorSink : public ByteSink {",
-        "before": [
-          "}",
-          "",
-          "// Collects what a sink is given, so an encrypted header can be built in memory."
-        ],
-        "after": [
-          " public:",
-          "  std::vector<char> bytes;",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/file/mix_archive_test.cc",
+          "startLine": 95,
+          "endLine": 95,
+          "text": "class VectorSink : public ByteSink {",
+          "before": [
+            "}",
+            "",
+            "// Collects what a sink is given, so an encrypted header can be built in memory."
+          ],
+          "after": [
+            " public:",
+            "  std::vector<char> bytes;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-7",
@@ -170,23 +178,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/engine/file/ini_file_test.cc",
-        "startLine": 288,
-        "endLine": 288,
-        "text": "TEST(IniFileTest, RemovalAcceptsTheNameOfTheElementItRemoves) {",
-        "before": [
-          "}",
-          "",
-          "// EntryName() and SectionName() view the element a removal destroys."
-        ],
-        "after": [
-          "  IniFile ini;",
-          "  LoadText(ini, \"[S]\\nA=1\\nKey=2\\nB=3\\nkey=4\\nC=5\\n[T]\\nM=6\\n[s]\\nN=7\\n\");",
-          "  ASSERT_TRUE(ini.PutString(\"S\", ini.EntryName(\"S\", 1), \"new\"));"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/file/ini_file_test.cc",
+          "startLine": 288,
+          "endLine": 288,
+          "text": "TEST(IniFileTest, RemovalAcceptsTheNameOfTheElementItRemoves) {",
+          "before": [
+            "}",
+            "",
+            "// EntryName() and SectionName() view the element a removal destroys."
+          ],
+          "after": [
+            "  IniFile ini;",
+            "  LoadText(ini, \"[S]\\nA=1\\nKey=2\\nB=3\\nkey=4\\nC=5\\n[T]\\nM=6\\n[s]\\nN=7\\n\");",
+            "  ASSERT_TRUE(ini.PutString(\"S\", ini.EntryName(\"S\", 1), \"new\"));"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-9",
@@ -215,23 +225,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/base/fixed_test.cc",
-        "startLine": 20,
-        "endLine": 23,
-        "text": "// FromString: null and empty input.\n\nTEST(FixedFromStringTest, NullReturnsZero) {\n  const Fixed f = Fixed::FromString(nullptr);",
-        "before": [
-          "",
-          "namespace {",
-          ""
-        ],
-        "after": [
-          "  EXPECT_EQ(f.whole(), 0);",
-          "  EXPECT_EQ(f.fraction(), 0);",
-          "}"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/fixed_test.cc",
+          "startLine": 20,
+          "endLine": 23,
+          "text": "// FromString: null and empty input.\n\nTEST(FixedFromStringTest, NullReturnsZero) {\n  const Fixed f = Fixed::FromString(nullptr);",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  EXPECT_EQ(f.whole(), 0);",
+            "  EXPECT_EQ(f.fraction(), 0);",
+            "}"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-11",
@@ -246,23 +258,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/ra/map/layer.cc",
-        "startLine": 74,
-        "endLine": 86,
-        "text": "void LayerClass::Sort() {\n  for (int index = 0; index < Count() - 1; index++) {\n    ObjectClass*& here = base::At(objects_, index);\n    ObjectClass*& next = base::At(objects_, index + 1);\n    if (*next < *here) {\n      std::swap(here, next);\n    }\n  }\n}\n\n// A linear search, not std::upper_bound: Sort() leaves the layer only\n// partly sorted, and inserting anywhere else would change draw order.\nbool LayerClass::Sorted_Add(ObjectClass* const object) {",
-        "before": [
-          "",
-          "// One pass only: the layer is re-sorted a little every frame rather than",
-          "// fully, so draw order settles over several frames."
-        ],
-        "after": [
-          "  const auto later = std::ranges::find_if(",
-          "      objects_,",
-          "      [object](const ObjectClass* other) { return *other > *object; });"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/map/layer.cc",
+          "startLine": 74,
+          "endLine": 86,
+          "text": "void LayerClass::Sort() {\n  for (int index = 0; index < Count() - 1; index++) {\n    ObjectClass*& here = base::At(objects_, index);\n    ObjectClass*& next = base::At(objects_, index + 1);\n    if (*next < *here) {\n      std::swap(here, next);\n    }\n  }\n}\n\n// A linear search, not std::upper_bound: Sort() leaves the layer only\n// partly sorted, and inserting anywhere else would change draw order.\nbool LayerClass::Sorted_Add(ObjectClass* const object) {",
+          "before": [
+            "",
+            "// One pass only: the layer is re-sorted a little every frame rather than",
+            "// fully, so draw order settles over several frames."
+          ],
+          "after": [
+            "  const auto later = std::ranges::find_if(",
+            "      objects_,",
+            "      [object](const ObjectClass* other) { return *other > *object; });"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-12",
@@ -291,23 +305,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/ra/core/cell_test.cc",
-        "startLine": 30,
-        "endLine": 35,
-        "text": "static_assert(kCell.index() == 389);\nstatic_assert(Cell::Containing(kSample) == Cell::FromXY(0x56, 0x12));\n\n// EventClass carries cells in a union and sends them as raw bytes, so a cell\n// is the 16-bit word and nothing else.\nstatic_assert(sizeof(Cell) == 2);",
-        "before": [
-          "constexpr Cell kCell = Cell::FromXY(5, 3);",
-          "",
-          "// The factories and accessors are usable in constant expressions."
-        ],
-        "after": [
-          "static_assert(std::is_trivially_copyable_v<Cell>);",
-          "static_assert(std::is_trivially_default_constructible_v<Cell>);",
-          "static_assert(std::is_standard_layout_v<Cell>);"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/core/cell_test.cc",
+          "startLine": 30,
+          "endLine": 35,
+          "text": "static_assert(kCell.index() == 389);\nstatic_assert(Cell::Containing(kSample) == Cell::FromXY(0x56, 0x12));\n\n// EventClass carries cells in a union and sends them as raw bytes, so a cell\n// is the 16-bit word and nothing else.\nstatic_assert(sizeof(Cell) == 2);",
+          "before": [
+            "constexpr Cell kCell = Cell::FromXY(5, 3);",
+            "",
+            "// The factories and accessors are usable in constant expressions."
+          ],
+          "after": [
+            "static_assert(std::is_trivially_copyable_v<Cell>);",
+            "static_assert(std::is_trivially_default_constructible_v<Cell>);",
+            "static_assert(std::is_standard_layout_v<Cell>);"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-14",
@@ -353,23 +369,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/ra/map/help.cc",
-        "startLine": 143,
-        "endLine": 143,
-        "text": "  if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {",
-        "before": [
-          " * HISTORY: * 11/18/1994 JLB : Created. *",
-          " *=============================================================================================*/",
-          "std::span<const int16_t> HelpClass::Overlap_List() const {"
-        ],
-        "after": [
-          "    OverlapList[0] = kRefreshEol;",
-          "  }",
-          "  return OverlapList;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/map/help.cc",
+          "startLine": 143,
+          "endLine": 143,
+          "text": "  if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {",
+          "before": [
+            " * HISTORY: * 11/18/1994 JLB : Created. *",
+            " *=============================================================================================*/",
+            "std::span<const int16_t> HelpClass::Overlap_List() const {"
+          ],
+          "after": [
+            "    OverlapList[0] = kRefreshEol;",
+            "  }",
+            "  return OverlapList;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-17",
@@ -384,23 +402,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T01:24:05Z",
-      "anchor": {
-        "path": "src/ra/screens/special_options.cc",
-        "startLine": 92,
-        "endLine": 97,
-        "text": "    // keep coming, so the game runs on behind it. RunFrame() returns true when\n    // that game is over, which closes the dialog without applying anything.\n    if (TheSession().Type == GAME_NORMAL) {\n      ServiceRealTime();\n    } else {\n      if (RunFrame()) {",
-        "before": [
-          "  bool process = true;",
-          "  while (process) {",
-          "    // A multiplayer game cannot pause for a dialog: the other players' frames"
-        ],
-        "after": [
-          "        process = false;",
-          "      }",
-          "    }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/screens/special_options.cc",
+          "startLine": 92,
+          "endLine": 97,
+          "text": "    // keep coming, so the game runs on behind it. RunFrame() returns true when\n    // that game is over, which closes the dialog without applying anything.\n    if (TheSession().Type == GAME_NORMAL) {\n      ServiceRealTime();\n    } else {\n      if (RunFrame()) {",
+          "before": [
+            "  bool process = true;",
+            "  while (process) {",
+            "    // A multiplayer game cannot pause for a dialog: the other players' frames"
+          ],
+          "after": [
+            "        process = false;",
+            "      }",
+            "    }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-18",
@@ -415,23 +435,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/ra/ai/trigger_action.cc",
-        "startLine": 757,
-        "endLine": 782,
-        "text": "class PlayMovieAction final : public TriggerAction {\n public:\n  explicit PlayMovieAction(const VQType movie) : movie_(movie) {}\n\n  [[nodiscard]] TriggerActionType type() const override {\n    return TriggerActionType::kPlayMovie;\n  }\n  bool Perform(const TriggerActionContext& /*context*/) override {\n    game::TheMouse().Hide();\n    TheScreen().visible_view().Clear();\n    Play_Movie(movie_, THEME_NONE, true);\n    ThePalettes().game_palette().Set();\n    TheMap().Flag_To_Redraw(true);\n    game::TheMouse().Show();\n    return true;\n  }\n  [[nodiscard]] TriggerActionRecord ToRecord() const override {\n    return {.type = type(), .value = static_cast<int>(movie_)};\n  }\n\n private:\n  VQType movie_;\n};\n\n// Plays a sound effect.\nclass PlaySoundAction final : public TriggerAction {",
-        "before": [
-          "// Plays a movie at once. The game is suspended while it plays; the movie",
-          "// leaves its own palette behind, so the game's is restored and the whole map",
-          "// redrawn."
-        ],
-        "after": [
-          " public:",
-          "  explicit PlaySoundAction(const VocType sound) : sound_(sound) {}",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_action.cc",
+          "startLine": 757,
+          "endLine": 782,
+          "text": "class PlayMovieAction final : public TriggerAction {\n public:\n  explicit PlayMovieAction(const VQType movie) : movie_(movie) {}\n\n  [[nodiscard]] TriggerActionType type() const override {\n    return TriggerActionType::kPlayMovie;\n  }\n  bool Perform(const TriggerActionContext& /*context*/) override {\n    game::TheMouse().Hide();\n    TheScreen().visible_view().Clear();\n    Play_Movie(movie_, THEME_NONE, true);\n    ThePalettes().game_palette().Set();\n    TheMap().Flag_To_Redraw(true);\n    game::TheMouse().Show();\n    return true;\n  }\n  [[nodiscard]] TriggerActionRecord ToRecord() const override {\n    return {.type = type(), .value = static_cast<int>(movie_)};\n  }\n\n private:\n  VQType movie_;\n};\n\n// Plays a sound effect.\nclass PlaySoundAction final : public TriggerAction {",
+          "before": [
+            "// Plays a movie at once. The game is suspended while it plays; the movie",
+            "// leaves its own palette behind, so the game's is restored and the whole map",
+            "// redrawn."
+          ],
+          "after": [
+            " public:",
+            "  explicit PlaySoundAction(const VocType sound) : sound_(sound) {}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-19",
@@ -447,23 +469,25 @@
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
       "updated": "2026-10-06T00:32:46Z",
-      "anchor": {
-        "path": "src/ra/ai/trigger_type.cc",
-        "startLine": 90,
-        "endLine": 90,
-        "text": "std::string TriggerType::Description() const {",
-        "before": [
-          "  action2->Detach(target);",
-          "}",
-          ""
-        ],
-        "after": [
-          "  if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {",
-          "    return {};",
-          "  }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_type.cc",
+          "startLine": 90,
+          "endLine": 90,
+          "text": "std::string TriggerType::Description() const {",
+          "before": [
+            "  action2->Detach(target);",
+            "}",
+            ""
+          ],
+          "after": [
+            "  if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {",
+            "    return {};",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-20",
@@ -478,23 +502,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T06:27:09Z",
-      "anchor": {
-        "path": "src/ra/objects/techno.cc",
-        "startLine": 4169,
-        "endLine": 4169,
-        "text": "game::ResultType TechnoClass::Take_Damage(int& damage, int distance,",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 06/20/1995 JLB : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "                                          WarheadType warhead,",
-          "                                          TechnoClass* source, bool forced) {",
-          "  DCHECK(IsActive);"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 4169,
+          "endLine": 4169,
+          "text": "game::ResultType TechnoClass::Take_Damage(int& damage, int distance,",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 06/20/1995 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "                                          WarheadType warhead,",
+            "                                          TechnoClass* source, bool forced) {",
+            "  DCHECK(IsActive);"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-21",
@@ -509,23 +535,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T06:40:40Z",
-      "anchor": {
-        "path": "src/engine/window/hardware_cursor.cc",
-        "startLine": 163,
-        "endLine": 163,
-        "text": "void HardwareCursor::SetShape(const int hot_x, const int hot_y,",
-        "before": [
-          "",
-          "HardwareCursor::~HardwareCursor() = default;",
-          ""
-        ],
-        "after": [
-          "                              const std::span<const std::byte> shape) {",
-          "  if (std::ssize(shape) < gfx::kShapeHeaderSize ||",
-          "      current_shape_ == shape.data()) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/hardware_cursor.cc",
+          "startLine": 163,
+          "endLine": 163,
+          "text": "void HardwareCursor::SetShape(const int hot_x, const int hot_y,",
+          "before": [
+            "",
+            "HardwareCursor::~HardwareCursor() = default;",
+            ""
+          ],
+          "after": [
+            "                              const std::span<const std::byte> shape) {",
+            "  if (std::ssize(shape) < gfx::kShapeHeaderSize ||",
+            "      current_shape_ == shape.data()) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-22",
@@ -540,23 +568,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T02:03:47Z",
-      "anchor": {
-        "path": "src/ra/assets/shape_draw.cc",
-        "startLine": 195,
-        "endLine": 197,
-        "text": "int PredatorOffset(const int frame, const int x, const int window_width) {\n  return x > window_width / 2 ? -frame : frame;\n}",
-        "before": [
-          "// The offset walks with the frame counter, which is what makes the cloak",
-          "// shimmer. Shapes on the right half of the window walk it the other way, so",
-          "// that two cloaked objects side by side do not ripple in lockstep."
-        ],
-        "after": [
-          "",
-          "Rect Shape_Dimensions(const std::span<const std::byte> shapedata,",
-          "                      const int shape_num) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/assets/shape_draw.cc",
+          "startLine": 195,
+          "endLine": 197,
+          "text": "int PredatorOffset(const int frame, const int x, const int window_width) {\n  return x > window_width / 2 ? -frame : frame;\n}",
+          "before": [
+            "// The offset walks with the frame counter, which is what makes the cloak",
+            "// shimmer. Shapes on the right half of the window walk it the other way, so",
+            "// that two cloaked objects side by side do not ripple in lockstep."
+          ],
+          "after": [
+            "",
+            "Rect Shape_Dimensions(const std::span<const std::byte> shapedata,",
+            "                      const int shape_num) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-23",
@@ -571,23 +601,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T07:46:19Z",
-      "anchor": {
-        "path": "src/engine/gfx/shape_blitter.cc",
-        "startLine": 159,
-        "endLine": 159,
-        "text": "void DrawShapeFrame(int x, int y, const int width, const int height,",
-        "before": [
-          "",
-          "}  // namespace",
-          ""
-        ],
-        "after": [
-          "                    const std::span<const std::byte> frame, PixelView& dest,",
-          "                    const ShapeFlags flags, const ShapeEffects& effects) {",
-          "  if (width <= 0 || height <= 0 ||"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/gfx/shape_blitter.cc",
+          "startLine": 159,
+          "endLine": 159,
+          "text": "void DrawShapeFrame(int x, int y, const int width, const int height,",
+          "before": [
+            "",
+            "}  // namespace",
+            ""
+          ],
+          "after": [
+            "                    const std::span<const std::byte> frame, PixelView& dest,",
+            "                    const ShapeFlags flags, const ShapeEffects& effects) {",
+            "  if (width <= 0 || height <= 0 ||"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-24",
@@ -602,23 +634,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T07:52:14Z",
-      "anchor": {
-        "path": "src/ra/objects/warhead.cc",
-        "startLine": 181,
-        "endLine": 192,
-        "text": "    const std::string verses = ini.GetString(Name(), \"Verses\");\n    base::Tokenizer tokens(verses);\n    for (const game::ArmorType armor :\n         magic_enum::enum_values<game::ArmorType>()) {\n      const std::string_view token = tokens.Next();\n      if (token.empty()) {\n        break;\n      }\n      Modifier.at(armor) = Fixed::FromString(token);\n    }\n\n    IsOrganic = Modifier.at(game::ARMOR_STEEL) == 0;",
-        "before": [
-          "    // An armor the line has no entry for keeps its modifier, and so does",
-          "    // every armor when there is no line: a rules file read on top of another",
-          "    // overrides only what it names."
-        ],
-        "after": [
-          "    return true;",
-          "  }",
-          "  return false;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/warhead.cc",
+          "startLine": 181,
+          "endLine": 192,
+          "text": "    const std::string verses = ini.GetString(Name(), \"Verses\");\n    base::Tokenizer tokens(verses);\n    for (const game::ArmorType armor :\n         magic_enum::enum_values<game::ArmorType>()) {\n      const std::string_view token = tokens.Next();\n      if (token.empty()) {\n        break;\n      }\n      Modifier.at(armor) = Fixed::FromString(token);\n    }\n\n    IsOrganic = Modifier.at(game::ARMOR_STEEL) == 0;",
+          "before": [
+            "    // An armor the line has no entry for keeps its modifier, and so does",
+            "    // every armor when there is no line: a rules file read on top of another",
+            "    // overrides only what it names."
+          ],
+          "after": [
+            "    return true;",
+            "  }",
+            "  return false;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-25",
@@ -634,23 +668,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/base/fixed.cc",
-        "startLine": 53,
-        "endLine": 53,
-        "text": "Fixed Fixed::FromString(const std::string_view text) {",
-        "before": [
-          "",
-          "}  // namespace",
-          ""
-        ],
-        "after": [
-          "  // Empty text, and any part with no digits, reads as zero.",
-          "  const auto trimmed = absl::StripLeadingAsciiWhitespace(text);",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/fixed.cc",
+          "startLine": 53,
+          "endLine": 53,
+          "text": "Fixed Fixed::FromString(const std::string_view text) {",
+          "before": [
+            "",
+            "}  // namespace",
+            ""
+          ],
+          "after": [
+            "  // Empty text, and any part with no digits, reads as zero.",
+            "  const auto trimmed = absl::StripLeadingAsciiWhitespace(text);",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-26",
@@ -665,23 +701,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/engine/gfx/keyframe.cc",
-        "startLine": 183,
-        "endLine": 183,
-        "text": "std::vector<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,",
-        "before": [
-          "",
-          "}  // namespace",
-          ""
-        ],
-        "after": [
-          "                                const int frame) {",
-          "  const KeyframeHeader header = ReadHeader(shape_file);",
-          "  const base::ssize pixel_count = base::ssize{header.width} * header.height;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/gfx/keyframe.cc",
+          "startLine": 183,
+          "endLine": 183,
+          "text": "std::vector<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,",
+          "before": [
+            "",
+            "}  // namespace",
+            ""
+          ],
+          "after": [
+            "                                const int frame) {",
+            "  const KeyframeHeader header = ReadHeader(shape_file);",
+            "  const base::ssize pixel_count = base::ssize{header.width} * header.height;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-27",
@@ -710,23 +748,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/net/netdlg.cc",
-        "startLine": 2628,
-        "endLine": 2628,
-        "text": "      if (TheNetwork().winsock().Get_Connected()) {",
-        "before": [
-          "        TheSpecialFlags().tiberium_spreads = 0;",
-          "      }",
-          ""
-        ],
-        "after": [
-          "        TheSession().scenario_index() =",
-          "            TheNetwork().global_packet().ScenarioInfo.Scenario;",
-          "      } else {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/net/netdlg.cc",
+          "startLine": 2628,
+          "endLine": 2628,
+          "text": "      if (TheNetwork().winsock().Get_Connected()) {",
+          "before": [
+            "        TheSpecialFlags().tiberium_spreads = 0;",
+            "      }",
+            ""
+          ],
+          "after": [
+            "        TheSession().scenario_index() =",
+            "            TheNetwork().global_packet().ScenarioInfo.Scenario;",
+            "      } else {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-29",
@@ -769,23 +809,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ai/team.cc",
-        "startLine": 1180,
-        "endLine": 1180,
-        "text": "int TeamClass::Recruit(int typeindex) {",
-        "before": [
-          " * HISTORY: * 12/29/1994 JLB : Created. * 04/10/1995 JLB : Scans for units too.",
-          " **",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  DCHECK(IsActive);",
-          "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
-          "  Coordinate center = Zone.AsCoordinate();"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team.cc",
+          "startLine": 1180,
+          "endLine": 1180,
+          "text": "int TeamClass::Recruit(int typeindex) {",
+          "before": [
+            " * HISTORY: * 12/29/1994 JLB : Created. * 04/10/1995 JLB : Scans for units too.",
+            " **",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  DCHECK(IsActive);",
+            "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
+            "  Coordinate center = Zone.AsCoordinate();"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-32",
@@ -815,23 +857,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/objects/combat.cc",
-        "startLine": 456,
-        "endLine": 456,
-        "text": "      (static_cast<uint16_t>(radius) + game::kCellWidthLeptons - 1) /",
-        "before": [
-          "  // The radius was a 16-bit lepton word; an exploding unit's strength times",
-          "  // the explosion spread still wraps the way it always did.",
-          "  const int cell_radius ="
-        ],
-        "after": [
-          "      game::kCellWidthLeptons;",
-          "  const Cell cell = Cell::Containing(coord);",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/combat.cc",
+          "startLine": 456,
+          "endLine": 456,
+          "text": "      (static_cast<uint16_t>(radius) + game::kCellWidthLeptons - 1) /",
+          "before": [
+            "  // The radius was a 16-bit lepton word; an exploding unit's strength times",
+            "  // the explosion spread still wraps the way it always did.",
+            "  const int cell_radius ="
+          ],
+          "after": [
+            "      game::kCellWidthLeptons;",
+            "  const Cell cell = Cell::Containing(coord);",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-34",
@@ -875,23 +919,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/objects/building.cc",
-        "startLine": 5163,
-        "endLine": 5163,
-        "text": "game::DirType BuildingClass::Fire_Direction() const {",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 07/04/1995 JLB : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);",
-          "  DCHECK(IsActive);",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/building.cc",
+          "startLine": 5163,
+          "endLine": 5163,
+          "text": "game::DirType BuildingClass::Fire_Direction() const {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 07/04/1995 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);",
+            "  DCHECK(IsActive);",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-37",
@@ -907,23 +953,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/td/core/target.h",
-        "startLine": 47,
-        "endLine": 47,
-        "text": "// Unlike Red Alert's Target, Make() does not mask the value: a value of 4096",
-        "before": [
-          "//",
-          "// Target{} (word 0) is \"no target\"; test for it with `!target`.",
-          "//"
-        ],
-        "after": [
-          "// or more, or a negative one, is ORed over the kind bits.",
-          "//",
-          "// Example:"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/core/target.h",
+          "startLine": 47,
+          "endLine": 47,
+          "text": "// Unlike Red Alert's Target, Make() does not mask the value: a value of 4096",
+          "before": [
+            "//",
+            "// Target{} (word 0) is \"no target\"; test for it with `!target`.",
+            "//"
+          ],
+          "after": [
+            "// or more, or a negative one, is ORed over the kind bits.",
+            "//",
+            "// Example:"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-38",
@@ -939,23 +987,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/core/target.h",
-        "startLine": 44,
-        "endLine": 44,
-        "text": "//   - the cell index, Cell::index() itself (FromCellIndex(); read by",
-        "before": [
-          "//",
-          "// RTTI_CELL has two value encodings, and nothing in the word says which one a",
-          "// target holds:"
-        ],
-        "after": [
-          "//     cell_index() and AsMovementCoordinate());",
-          "//   - a sub-cell spot, 12 bits per axis in units of 16 leptons, Y over X",
-          "//     (FromCell(), FromCoordinate(), CellClass::As_Target(); read by"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/core/target.h",
+          "startLine": 44,
+          "endLine": 44,
+          "text": "//   - the cell index, Cell::index() itself (FromCellIndex(); read by",
+          "before": [
+            "//",
+            "// RTTI_CELL has two value encodings, and nothing in the word says which one a",
+            "// target holds:"
+          ],
+          "after": [
+            "//     cell_index() and AsMovementCoordinate());",
+            "//   - a sub-cell spot, 12 bits per axis in units of 16 leptons, Y over X",
+            "//     (FromCell(), FromCoordinate(), CellClass::As_Target(); read by"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-39",
@@ -970,23 +1020,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/map/map.cc",
-        "startLine": 1977,
-        "endLine": 1977,
-        "text": "bool MapClass::Destroy_Bridge_At(Cell cell) {",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 07/29/1996 JLB : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  if (In_Radar(cell) && !TheSpecialFlags().capture_the_flag) {",
-          "    const CellClass* cellptr = &(*this).at(cell);",
-          "    TemplateType ttype = cellptr->TType;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/map/map.cc",
+          "startLine": 1977,
+          "endLine": 1977,
+          "text": "bool MapClass::Destroy_Bridge_At(Cell cell) {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 07/29/1996 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  if (In_Radar(cell) && !TheSpecialFlags().capture_the_flag) {",
+            "    const CellClass* cellptr = &(*this).at(cell);",
+            "    TemplateType ttype = cellptr->TType;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-40",
@@ -1001,23 +1053,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/map/display.cc",
-        "startLine": 3141,
-        "endLine": 3141,
-        "text": "void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,",
-        "before": [
-          " * HISTORY: * 02/24/1995 JLB : Created. * 03/27/1995 JLB : Handles sell and",
-          " *repair actions.                                         *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "                                      ObjectClass* object, ActionType action,",
-          "                                      bool wsmall) {",
-          "  if (PendingObjectPtr) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/map/display.cc",
+          "startLine": 3141,
+          "endLine": 3141,
+          "text": "void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,",
+          "before": [
+            " * HISTORY: * 02/24/1995 JLB : Created. * 03/27/1995 JLB : Handles sell and",
+            " *repair actions.                                         *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "                                      ObjectClass* object, ActionType action,",
+            "                                      bool wsmall) {",
+            "  if (PendingObjectPtr) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-41",
@@ -1032,23 +1086,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/objects/techno.cc",
-        "startLine": 3070,
-        "endLine": 3070,
-        "text": "Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 07/06/1995 JLB : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  /*",
-          "  **\tRadiate outward from the object's location, looking for the best",
-          "  **\ttarget."
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/objects/techno.cc",
+          "startLine": 3070,
+          "endLine": 3070,
+          "text": "Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 07/06/1995 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  /*",
+            "  **\tRadiate outward from the object's location, looking for the best",
+            "  **\ttarget."
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-42",
@@ -1064,23 +1120,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/td/core/cell.h",
-        "startLine": 89,
-        "endLine": 89,
-        "text": "  [[nodiscard]] constexpr int y() const noexcept {",
-        "before": [
-          "  // masks it, and a negative index is sign-extended first, so a sentinel",
-          "  // reads as a huge row: None() is 67108863, not 63. Off-map positive",
-          "  // indices read past 63 too (REFRESH_EOL is 511)."
-        ],
-        "after": [
-          "    return static_cast<int>(static_cast<unsigned>(index()) >> kAxisBits);",
-          "  }",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/core/cell.h",
+          "startLine": 89,
+          "endLine": 89,
+          "text": "  [[nodiscard]] constexpr int y() const noexcept {",
+          "before": [
+            "  // masks it, and a negative index is sign-extended first, so a sentinel",
+            "  // reads as a huge row: None() is 67108863, not 63. Off-map positive",
+            "  // indices read past 63 too (REFRESH_EOL is 511)."
+          ],
+          "after": [
+            "    return static_cast<int>(static_cast<unsigned>(index()) >> kAxisBits);",
+            "  }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-43",
@@ -1096,23 +1154,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/td/core/cell.h",
-        "startLine": 56,
-        "endLine": 56,
-        "text": "  static constexpr Cell Containing(Coordinate coord) noexcept {",
-        "before": [
-          "  // Returns the cell a coordinate lies in: the Y cell byte shifted over the",
-          "  // whole X cell byte, as the original assembly's OR did. An X cell of 64 or",
-          "  // more (off the map) therefore sets Y bits."
-        ],
-        "after": [
-          "    return FromXY(coord.cell_x(), coord.cell_y());",
-          "  }",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/core/cell.h",
+          "startLine": 56,
+          "endLine": 56,
+          "text": "  static constexpr Cell Containing(Coordinate coord) noexcept {",
+          "before": [
+            "  // Returns the cell a coordinate lies in: the Y cell byte shifted over the",
+            "  // whole X cell byte, as the original assembly's OR did. An X cell of 64 or",
+            "  // more (off the map) therefore sets Y bits."
+          ],
+          "after": [
+            "    return FromXY(coord.cell_x(), coord.cell_y());",
+            "  }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-44",
@@ -1157,23 +1217,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/ui/dialog.cc",
-        "startLine": 410,
-        "endLine": 410,
-        "text": "bool HasGradientFontBits(const FontType font) {",
-        "before": [
-          "",
-          "}  // namespace",
-          ""
-        ],
-        "after": [
-          "  switch (font) {",
-          "    case FontType::k8Point:",
-          "    case FontType::k3Point:"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ui/dialog.cc",
+          "startLine": 410,
+          "endLine": 410,
+          "text": "bool HasGradientFontBits(const FontType font) {",
+          "before": [
+            "",
+            "}  // namespace",
+            ""
+          ],
+          "after": [
+            "  switch (font) {",
+            "    case FontType::k8Point:",
+            "    case FontType::k3Point:"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-47",
@@ -1202,23 +1264,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/net/mplayer.cc",
-        "startLine": 411,
-        "endLine": 411,
-        "text": "void Read_MultiPlayer_Settings() {",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 02/14/1995 BR : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  /*------------------------------------------------------------------------",
-          "  Create filename and read the file. Without one the lists stay empty and",
-          "  everything else keeps its value."
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/net/mplayer.cc",
+          "startLine": 411,
+          "endLine": 411,
+          "text": "void Read_MultiPlayer_Settings() {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 02/14/1995 BR : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  /*------------------------------------------------------------------------",
+            "  Create filename and read the file. Without one the lists stay empty and",
+            "  everything else keeps its value."
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-49",
@@ -1233,23 +1297,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/objects/cell.cc",
-        "startLine": 1710,
-        "endLine": 1710,
-        "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
-        "before": [
-          " *=========================================================================*/",
-          "// Not const: changes the other houses' threat values.",
-          "// NOLINTNEXTLINE(readability-make-member-function-const)"
-        ],
-        "after": [
-          "  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);",
-          "",
-          "  const int region = MapEditClass::Cell_Region(Cell_Number());"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/cell.cc",
+          "startLine": 1710,
+          "endLine": 1710,
+          "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
+          "before": [
+            " *=========================================================================*/",
+            "// Not const: changes the other houses' threat values.",
+            "// NOLINTNEXTLINE(readability-make-member-function-const)"
+          ],
+          "after": [
+            "  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);",
+            "",
+            "  const int region = MapEditClass::Cell_Region(Cell_Number());"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-50",
@@ -1293,23 +1359,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ai/reinforcements.cc",
-        "startLine": 223,
-        "endLine": 223,
-        "text": "static TechnoClass* FindHostNear(const Cell origin) {",
-        "before": [
-          "// Returns something at `origin` or in one of the eight cells around it that",
-          "// infantry can come out of: a transport vehicle if there is one, otherwise a",
-          "// building; nullptr when there is neither."
-        ],
-        "after": [
-          "  const CellClass& origin_cell = TheMap().at(origin);",
-          "  TechnoClass* building_host = nullptr;",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/reinforcements.cc",
+          "startLine": 223,
+          "endLine": 223,
+          "text": "static TechnoClass* FindHostNear(const Cell origin) {",
+          "before": [
+            "// Returns something at `origin` or in one of the eight cells around it that",
+            "// infantry can come out of: a transport vehicle if there is one, otherwise a",
+            "// building; nullptr when there is neither."
+          ],
+          "after": [
+            "  const CellClass& origin_cell = TheMap().at(origin);",
+            "  TechnoClass* building_host = nullptr;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-53",
@@ -1339,23 +1407,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/td/ai/reinforcements.cc",
-        "startLine": 88,
-        "endLine": 88,
-        "text": "static void EnterFromEdge(FootClass* group, const SourceType edge,",
-        "before": [
-          "// Puts the ground members of the list `group` on the map at the map edge",
-          "// `edge` of `house`, one at a time. `has_team` says whether a team will give",
-          "// them their orders. Members that find no room are deleted."
-        ],
-        "after": [
-          "                          const HousesType house, const bool has_team) {",
-          "  // SourceType counts the four edges clockwise from north and FacingType the",
-          "  // eight compass points, hence the factor of two. The facing is the edge's"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/ai/reinforcements.cc",
+          "startLine": 88,
+          "endLine": 88,
+          "text": "static void EnterFromEdge(FootClass* group, const SourceType edge,",
+          "before": [
+            "// Puts the ground members of the list `group` on the map at the map edge",
+            "// `edge` of `house`, one at a time. `has_team` says whether a team will give",
+            "// them their orders. Members that find no room are deleted."
+          ],
+          "after": [
+            "                          const HousesType house, const bool has_team) {",
+            "  // SourceType counts the four edges clockwise from north and FacingType the",
+            "  // eight compass points, hence the factor of two. The facing is the edge's"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-55",
@@ -1399,23 +1469,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/ai/reinforcements.cc",
-        "startLine": 444,
-        "endLine": 444,
-        "text": "// Returns whether a ground unit can drive onto the map over its south edge:",
-        "before": [
-          "  return true;",
-          "}",
-          ""
-        ],
-        "after": [
-          "// whether some column's cell below the map and its bottom map cell are both",
-          "// clear. The last column is not looked at.",
-          "static bool HasLandRouteFromSouth() {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/ai/reinforcements.cc",
+          "startLine": 444,
+          "endLine": 444,
+          "text": "// Returns whether a ground unit can drive onto the map over its south edge:",
+          "before": [
+            "  return true;",
+            "}",
+            ""
+          ],
+          "after": [
+            "// whether some column's cell below the map and its bottom map cell are both",
+            "// clear. The last column is not looked at.",
+            "static bool HasLandRouteFromSouth() {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-58",
@@ -1474,23 +1546,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ai/trigger_action.cc",
-        "startLine": 996,
-        "endLine": 996,
-        "text": "TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {",
-        "before": [
-          "  return NEED_NONE;",
-          "}",
-          ""
-        ],
-        "after": [
-          "  TriggerActionRecord record;",
-          "  record.type = static_cast<TriggerActionType>(",
-          "      base::ParseIntegerOr<int>(tokens.Next(), 0));"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_action.cc",
+          "startLine": 996,
+          "endLine": 996,
+          "text": "TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {",
+          "before": [
+            "  return NEED_NONE;",
+            "}",
+            ""
+          ],
+          "after": [
+            "  TriggerActionRecord record;",
+            "  record.type = static_cast<TriggerActionType>(",
+            "      base::ParseIntegerOr<int>(tokens.Next(), 0));"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-62",
@@ -1519,23 +1593,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ai/team.cc",
-        "startLine": 1369,
-        "endLine": 1369,
-        "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
-        "before": [
-          " *                                                                                             *",
-          " * HISTORY: * 12/29/1994 JLB : Created. *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "  DCHECK(IsActive);",
-          "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team.cc",
+          "startLine": 1369,
+          "endLine": 1369,
+          "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 12/29/1994 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  DCHECK(IsActive);",
+            "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-64",
@@ -1550,23 +1626,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-07T01:17:45Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.h",
-        "startLine": 170,
-        "endLine": 170,
-        "text": "  void* operator new(std::size_t /*unused*/) noexcept;",
-        "before": [
-          "  // Allocates from the team type heap. Returns nullptr when the heap is full;",
-          "  // noexcept is what makes a new-expression test for that instead of",
-          "  // constructing at null."
-        ],
-        "after": [
-          "  void* operator new(std::size_t /*unused*/,",
-          "                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {",
-          "    return ptr;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.h",
+          "startLine": 170,
+          "endLine": 170,
+          "text": "  void* operator new(std::size_t /*unused*/) noexcept;",
+          "before": [
+            "  // Allocates from the team type heap. Returns nullptr when the heap is full;",
+            "  // noexcept is what makes a new-expression test for that instead of",
+            "  // constructing at null."
+          ],
+          "after": [
+            "  void* operator new(std::size_t /*unused*/,",
+            "                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {",
+            "    return ptr;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-65",
@@ -1595,23 +1673,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ai/trigger.cc",
-        "startLine": 209,
-        "endLine": 209,
-        "text": "    if (HouseClass::As_Pointer(Class->house)->Blockage) {",
-        "before": [
-          "  if (TheGameState().active() && Class != nullptr &&",
-          "      Class->house != HOUSE_NONE &&",
-          "      Class->action1->type() == TriggerActionType::kAllowWin) {"
-        ],
-        "after": [
-          "      HouseClass::As_Pointer(Class->house)->Blockage--;",
-          "    }",
-          "    HouseClass::As_Pointer(Class->house)"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger.cc",
+          "startLine": 209,
+          "endLine": 209,
+          "text": "    if (HouseClass::As_Pointer(Class->house)->Blockage) {",
+          "before": [
+            "  if (TheGameState().active() && Class != nullptr &&",
+            "      Class->house != HOUSE_NONE &&",
+            "      Class->action1->type() == TriggerActionType::kAllowWin) {"
+          ],
+          "after": [
+            "      HouseClass::As_Pointer(Class->house)->Blockage--;",
+            "    }",
+            "    HouseClass::As_Pointer(Class->house)"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-67",
@@ -1627,23 +1707,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/screens/credits_roll.cc",
-        "startLine": 127,
-        "endLine": 127,
-        "text": "constexpr int kFadeStep = 255 / kFadeFrames;",
-        "before": [
-          "// 216/255: a slide is shown at 85% of its brightness, and the fade down has",
-          "// to black out the colours at the end.",
-          "constexpr int kFadeFrames = 37;"
-        ],
-        "after": [
-          "",
-          "// The flags the text printer draws a string of the credits with.",
-          "constexpr TextPrintType PrintFlags(const CreditAlignment alignment) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/screens/credits_roll.cc",
+          "startLine": 127,
+          "endLine": 127,
+          "text": "constexpr int kFadeStep = 255 / kFadeFrames;",
+          "before": [
+            "// 216/255: a slide is shown at 85% of its brightness, and the fade down has",
+            "// to black out the colours at the end.",
+            "constexpr int kFadeFrames = 37;"
+          ],
+          "after": [
+            "",
+            "// The flags the text printer draws a string of the credits with.",
+            "constexpr TextPrintType PrintFlags(const CreditAlignment alignment) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-68",
@@ -1715,23 +1797,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/engine/window/display.h",
-        "startLine": 115,
-        "endLine": 115,
-        "text": "  virtual void DropScaledFrame() = 0;",
-        "before": [
-          "                                  int height) = 0;",
-          "  // Drops the scaled frame, so the next present shows the surface again.",
-          "  // Unlock() calls it as soon as anything draws."
-        ],
-        "after": [
-          "",
-          "  // Presents `frame` stretched to the window like PresentScaledFrame(), but",
-          "  // as a backdrop: the surface is drawn over it with color 0 see-through, and"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/display.h",
+          "startLine": 115,
+          "endLine": 115,
+          "text": "  virtual void DropScaledFrame() = 0;",
+          "before": [
+            "                                  int height) = 0;",
+            "  // Drops the scaled frame, so the next present shows the surface again.",
+            "  // Unlock() calls it as soon as anything draws."
+          ],
+          "after": [
+            "",
+            "  // Presents `frame` stretched to the window like PresentScaledFrame(), but",
+            "  // as a backdrop: the surface is drawn over it with color 0 see-through, and"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-73",
@@ -1802,23 +1886,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/engine/window/hardware_cursor.h",
-        "startLine": 247,
-        "endLine": 247,
-        "text": "extern bool mouse_grab_disabled;",
-        "before": [
-          "",
-          "// Leaves the mouse free to leave the window, for debugging. Set from the",
-          "// command line before the window opens."
-        ],
-        "after": [
-          "",
-          "}  // namespace engine::window",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/hardware_cursor.h",
+          "startLine": 247,
+          "endLine": 247,
+          "text": "extern bool mouse_grab_disabled;",
+          "before": [
+            "",
+            "// Leaves the mouse free to leave the window, for debugging. Set from the",
+            "// command line before the window opens."
+          ],
+          "after": [
+            "",
+            "}  // namespace engine::window",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-78",
@@ -1834,23 +1920,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/engine/window/hardware_cursor.cc",
-        "startLine": 244,
-        "endLine": 244,
-        "text": "void HardwareCursor::UpdatePalette() {",
-        "before": [
-          "",
-          "void HardwareCursor::ReleaseMouse() { TheDisplay().SetMouseGrab(false); }",
-          ""
-        ],
-        "after": [
-          "  const SDL_Palette* game_palette = GamePalette();",
-          "  if (game_palette == nullptr || !sdl_surface_) {",
-          "    return;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/window/hardware_cursor.cc",
+          "startLine": 244,
+          "endLine": 244,
+          "text": "void HardwareCursor::UpdatePalette() {",
+          "before": [
+            "",
+            "void HardwareCursor::ReleaseMouse() { TheDisplay().SetMouseGrab(false); }",
+            ""
+          ],
+          "after": [
+            "  const SDL_Palette* game_palette = GamePalette();",
+            "  if (game_palette == nullptr || !sdl_surface_) {",
+            "    return;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-79",
@@ -1935,23 +2023,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/objects/foot.cc",
-        "startLine": 622,
-        "endLine": 622,
-        "text": "  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())",
-        "before": [
-          "    }",
-          "  }",
-          ""
-        ],
-        "after": [
-          "                           : dtime + RandomPick(0, 2);",
-          "}",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/foot.cc",
+          "startLine": 622,
+          "endLine": 622,
+          "text": "  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())",
+          "before": [
+            "    }",
+            "  }",
+            ""
+          ],
+          "after": [
+            "                           : dtime + RandomPick(0, 2);",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-85",
@@ -1995,23 +2085,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/wol/wol_logn.cc",
-        "startLine": 438,
-        "endLine": 439,
-        "text": "        /*\n                                case( kEditboxPass | KN_BUTTON ):",
-        "before": [
-          "        break;",
-          "      }",
-          ""
-        ],
-        "after": [
-          "                                {",
-          "                                        //\tMessage with delay so that user",
-          "           has time to read it... Timer<SystemTickSource> timer; timer ="
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/wol/wol_logn.cc",
+          "startLine": 438,
+          "endLine": 439,
+          "text": "        /*\n                                case( kEditboxPass | KN_BUTTON ):",
+          "before": [
+            "        break;",
+            "      }",
+            ""
+          ],
+          "after": [
+            "                                {",
+            "                                        //\tMessage with delay so that user",
+            "           has time to read it... Timer<SystemTickSource> timer; timer ="
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-88",
@@ -2026,23 +2118,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T06:16:10Z",
-      "anchor": {
-        "path": "src/ra/assets/shape_draw.cc",
-        "startLine": 65,
-        "endLine": 65,
-        "text": "std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,",
-        "before": [
-          "",
-          "}  // namespace",
-          ""
-        ],
-        "after": [
-          "                                      const int width, const int height,",
-          "                                      const game::DirType rotation,",
-          "                                      const int32_t scale) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/assets/shape_draw.cc",
+          "startLine": 65,
+          "endLine": 65,
+          "text": "std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,",
+          "before": [
+            "",
+            "}  // namespace",
+            ""
+          ],
+          "after": [
+            "                                      const int width, const int height,",
+            "                                      const game::DirType rotation,",
+            "                                      const int32_t scale) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-89",
@@ -2057,23 +2151,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/screens/mapsel.cc",
-        "startLine": 73,
-        "endLine": 73,
-        "text": "struct Point {",
-        "before": [
-          "                                               SCEN_VAR_C};",
-          "",
-          "// A position on the 320x200 map artwork."
-        ],
-        "after": [
-          "  int x;",
-          "  int y;",
-          "};"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/screens/mapsel.cc",
+          "startLine": 73,
+          "endLine": 73,
+          "text": "struct Point {",
+          "before": [
+            "                                               SCEN_VAR_C};",
+            "",
+            "// A position on the 320x200 map artwork."
+          ],
+          "after": [
+            "  int x;",
+            "  int y;",
+            "};"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-90",
@@ -2088,23 +2184,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/data/options.cc",
-        "startLine": 477,
-        "endLine": 477,
-        "text": "void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,",
-        "before": [
-          " * HISTORY: * 07/21/1994 JLB : Created. * 12/02/1995 JLB : Uses palette class",
-          " *objects.                                              *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "                                  PaletteClass& newpal, Fixed brightness,",
-          "                                  Fixed color, Fixed tint, Fixed contrast) {",
-          "  // At the neutral settings every slider leaves its component unchanged, but"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/data/options.cc",
+          "startLine": 477,
+          "endLine": 477,
+          "text": "void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,",
+          "before": [
+            " * HISTORY: * 07/21/1994 JLB : Created. * 12/02/1995 JLB : Uses palette class",
+            " *objects.                                              *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "                                  PaletteClass& newpal, Fixed brightness,",
+            "                                  Fixed color, Fixed tint, Fixed contrast) {",
+            "  // At the neutral settings every slider leaves its component unchanged, but"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-91",
@@ -2119,23 +2217,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/base/hsv.h",
-        "startLine": 43,
-        "endLine": 43,
-        "text": "  constexpr int kMaxComponent = 255;",
-        "before": [
-          "// Example:",
-          "//   const base::Rgb8 color = base::HsvToRgb8(hue, saturation, value);",
-          "constexpr Rgb8 HsvToRgb8(int hue, int saturation, int value) {"
-        ],
-        "after": [
-          "",
-          "  hue = std::clamp(hue, 0, kMaxComponent);",
-          "  saturation = std::clamp(saturation, 0, kMaxComponent);"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/hsv.h",
+          "startLine": 43,
+          "endLine": 43,
+          "text": "  constexpr int kMaxComponent = 255;",
+          "before": [
+            "// Example:",
+            "//   const base::Rgb8 color = base::HsvToRgb8(hue, saturation, value);",
+            "constexpr Rgb8 HsvToRgb8(int hue, int saturation, int value) {"
+          ],
+          "after": [
+            "",
+            "  hue = std::clamp(hue, 0, kMaxComponent);",
+            "  saturation = std::clamp(saturation, 0, kMaxComponent);"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-92",
@@ -2178,23 +2278,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/engine/gfx/shape_blitter.h",
-        "startLine": 36,
-        "endLine": 36,
-        "text": "  int predator_offset = 0;",
-        "before": [
-          "  // sample offsets that makes a cloaked shape shimmer. Only the low three bits",
-          "  // of its magnitude matter. Negative uses the second set of offsets, which",
-          "  // sample the row below instead of the same row."
-        ],
-        "after": [
-          "};",
-          "",
-          "// Draws the width x height shape frame in `frame` (row-major, width bytes per"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/gfx/shape_blitter.h",
+          "startLine": 36,
+          "endLine": 36,
+          "text": "  int predator_offset = 0;",
+          "before": [
+            "  // sample offsets that makes a cloaked shape shimmer. Only the low three bits",
+            "  // of its magnitude matter. Negative uses the second set of offsets, which",
+            "  // sample the row below instead of the same row."
+          ],
+          "after": [
+            "};",
+            "",
+            "// Draws the width x height shape frame in `frame` (row-major, width bytes per"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-95",
@@ -2238,23 +2340,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/engine/gfx/keyframe.h",
-        "startLine": 33,
-        "endLine": 33,
-        "text": "int KeyframeWidth(std::span<const std::byte> shape_file);",
-        "before": [
-          "// every frame shares, in pixels. All return 0 if `shape_file` is too short to",
-          "// hold a header.",
-          "int KeyframeFrameCount(std::span<const std::byte> shape_file);"
-        ],
-        "after": [
-          "int KeyframeHeight(std::span<const std::byte> shape_file);",
-          "",
-          "}  // namespace engine::gfx"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/gfx/keyframe.h",
+          "startLine": 33,
+          "endLine": 33,
+          "text": "int KeyframeWidth(std::span<const std::byte> shape_file);",
+          "before": [
+            "// every frame shares, in pixels. All return 0 if `shape_file` is too short to",
+            "// hold a header.",
+            "int KeyframeFrameCount(std::span<const std::byte> shape_file);"
+          ],
+          "after": [
+            "int KeyframeHeight(std::span<const std::byte> shape_file);",
+            "",
+            "}  // namespace engine::gfx"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-98",
@@ -2269,23 +2373,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/base/clip.h",
-        "startLine": 47,
-        "endLine": 50,
-        "text": "// A caller that has a second rectangle to carry along - a source to match a\n// clipped destination, or the reverse - clips with OutCodeOf() directly\n// instead, because it has to move that rectangle by however much came off\n// each edge.",
-        "before": [
-          "// through the four references. Returns false, leaving all four alone, when",
-          "// the rectangle lies wholly outside the window.",
-          "//"
-        ],
-        "after": [
-          "constexpr bool ClipRect(int& x, int& y, int& width, int& height, int clip_width,",
-          "                        int clip_height) {",
-          "  int x0 = x;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/clip.h",
+          "startLine": 47,
+          "endLine": 50,
+          "text": "// A caller that has a second rectangle to carry along - a source to match a\n// clipped destination, or the reverse - clips with OutCodeOf() directly\n// instead, because it has to move that rectangle by however much came off\n// each edge.",
+          "before": [
+            "// through the four references. Returns false, leaving all four alone, when",
+            "// the rectangle lies wholly outside the window.",
+            "//"
+          ],
+          "after": [
+            "constexpr bool ClipRect(int& x, int& y, int& width, int& height, int clip_width,",
+            "                        int clip_height) {",
+            "  int x0 = x;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-99",
@@ -2328,23 +2434,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/base/fixed.h",
-        "startLine": 52,
-        "endLine": 52,
-        "text": "class Fixed {",
-        "before": [
-          "// Example:",
-          "//   const Fixed ratio = Fixed::FromString(\"75%\");  // 192/256",
-          "//   const int cost = 400 * ratio;                  // 300"
-        ],
-        "after": [
-          " public:",
-          "  // Default-constructs to zero.",
-          "  constexpr Fixed() noexcept : raw_(0) {}"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/fixed.h",
+          "startLine": 52,
+          "endLine": 52,
+          "text": "class Fixed {",
+          "before": [
+            "// Example:",
+            "//   const Fixed ratio = Fixed::FromString(\"75%\");  // 192/256",
+            "//   const int cost = 400 * ratio;                  // 300"
+          ],
+          "after": [
+            " public:",
+            "  // Default-constructs to zero.",
+            "  constexpr Fixed() noexcept : raw_(0) {}"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-102",
@@ -2373,23 +2481,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/base/fixed.h",
-        "startLine": 191,
-        "endLine": 191,
-        "text": "  Fixed& SaturateBelow(const int cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {",
-        "before": [
-          "  // Caps the value just below `cap`, at cap - 1/256. Volumes use a cap of 1 so",
-          "  // that `volume * 256` still fits in a byte. `cap` must be positive: zero",
-          "  // wraps round to 255 255/256."
-        ],
-        "after": [
-          "    if (raw_ >= ToRaw(cap)) {",
-          "      raw_ = static_cast<uint16_t>(ToRaw(cap) - 1);",
-          "    }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/base/fixed.h",
+          "startLine": 191,
+          "endLine": 191,
+          "text": "  Fixed& SaturateBelow(const int cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {",
+          "before": [
+            "  // Caps the value just below `cap`, at cap - 1/256. Volumes use a cap of 1 so",
+            "  // that `volume * 256` still fits in a byte. `cap` must be positive: zero",
+            "  // wraps round to 255 255/256."
+          ],
+          "after": [
+            "    if (raw_ >= ToRaw(cap)) {",
+            "      raw_ = static_cast<uint16_t>(ToRaw(cap) - 1);",
+            "    }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-104",
@@ -2404,23 +2514,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/objects/techno.cc",
-        "startLine": 727,
-        "endLine": 730,
-        "text": "// #define UNIT_BUILD_BIAS fixed(5,4)\n// #define UNIT_BUILD_BIAS fixed(6,4)\n// #define UNIT_BUILD_BIAS fixed(1, 1)\n// #define UNIT_BUILD_BIAS fixed(5,1)",
-        "before": [
-          " * HISTORY: * 07/29/1996 JLB : Created. * 09/27/1996 JLB : Takes into account",
-          " *the power availability.                               *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "",
-          "int TechnoClass::Time_To_Build() const {",
-          "  int val = Class_Of().Time_To_Build();"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 727,
+          "endLine": 730,
+          "text": "// #define UNIT_BUILD_BIAS fixed(5,4)\n// #define UNIT_BUILD_BIAS fixed(6,4)\n// #define UNIT_BUILD_BIAS fixed(1, 1)\n// #define UNIT_BUILD_BIAS fixed(5,1)",
+          "before": [
+            " * HISTORY: * 07/29/1996 JLB : Created. * 09/27/1996 JLB : Takes into account",
+            " *the power availability.                               *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "",
+            "int TechnoClass::Time_To_Build() const {",
+            "  int val = Class_Of().Time_To_Build();"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-105",
@@ -2435,23 +2547,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/editor/mapedsel.cc",
-        "startLine": 359,
-        "endLine": 359,
-        "text": "                           .at(0)",
-        "before": [
-          "  }",
-          "  const int strength = TheWorld()",
-          "                           .current_object()"
-        ],
-        "after": [
-          "                           ->Health_Ratio();  // object's 0-255 strength value",
-          "",
-          "  /*"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/editor/mapedsel.cc",
+          "startLine": 359,
+          "endLine": 359,
+          "text": "                           .at(0)",
+          "before": [
+            "  }",
+            "  const int strength = TheWorld()",
+            "                           .current_object()"
+          ],
+          "after": [
+            "                           ->Health_Ratio();  // object's 0-255 strength value",
+            "",
+            "  /*"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-106",
@@ -2466,23 +2580,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/map/layer.h",
-        "startLine": 86,
-        "endLine": 86,
-        "text": "  bool Delete(const ObjectClass* object);",
-        "before": [
-          "",
-          "  // Removes `object`, keeping the others in order. Returns false if the layer",
-          "  // does not hold it."
-        ],
-        "after": [
-          "",
-          "  // Empties the layer.",
-          "  void Clear() { objects_.clear(); }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/map/layer.h",
+          "startLine": 86,
+          "endLine": 86,
+          "text": "  bool Delete(const ObjectClass* object);",
+          "before": [
+            "",
+            "  // Removes `object`, keeping the others in order. Returns false if the layer",
+            "  // does not hold it."
+          ],
+          "after": [
+            "",
+            "  // Empties the layer.",
+            "  void Clear() { objects_.clear(); }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-107",
@@ -2511,23 +2627,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/objects/anim.cc",
-        "startLine": 494,
-        "endLine": 494,
-        "text": "AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,",
-        "before": [
-          " * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed",
-          " *affect parameter.                                        *",
-          " *=============================================================================================*/"
-        ],
-        "after": [
-          "                     int loop)",
-          "    : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().SlotIndexOf(this)),",
-          "      Class(TheTypeHeaps().anim().ActiveAt(static_cast<int>(animnum))),"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/objects/anim.cc",
+          "startLine": 494,
+          "endLine": 494,
+          "text": "AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,",
+          "before": [
+            " * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed",
+            " *affect parameter.                                        *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "                     int loop)",
+            "    : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().SlotIndexOf(this)),",
+            "      Class(TheTypeHeaps().anim().ActiveAt(static_cast<int>(animnum))),"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-109",
@@ -2557,23 +2675,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/game/core/heap_slot_ptr.h",
-        "startLine": 31,
-        "endLine": 31,
-        "text": "class HeapSlotPtr {",
-        "before": [
-          "//     ar(HeapSlotPtr(Trigger, TheObjectHeaps().trigger()));",
-          "//   }",
-          "template <class T>"
-        ],
-        "after": [
-          " public:",
-          "  using Heap = ObjectHeap<std::remove_const_t<T>>;",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/game/core/heap_slot_ptr.h",
+          "startLine": 31,
+          "endLine": 31,
+          "text": "class HeapSlotPtr {",
+          "before": [
+            "//     ar(HeapSlotPtr(Trigger, TheObjectHeaps().trigger()));",
+            "//   }",
+            "template <class T>"
+          ],
+          "after": [
+            " public:",
+            "  using Heap = ObjectHeap<std::remove_const_t<T>>;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-111",
@@ -2589,23 +2709,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/game/core/object_heap.h",
-        "startLine": 199,
-        "endLine": 199,
-        "text": "class ObjectHeap : private ObjectHeapBase {",
-        "before": [
-          "//   std::destroy_at(widget);",
-          "//   heap.Free(widget);",
-          "template <class T>"
-        ],
-        "after": [
-          " public:",
-          "  static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,",
-          "                \"the slots come from operator new, which aligns no more\");"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/game/core/object_heap.h",
+          "startLine": 199,
+          "endLine": 199,
+          "text": "class ObjectHeap : private ObjectHeapBase {",
+          "before": [
+            "//   std::destroy_at(widget);",
+            "//   heap.Free(widget);",
+            "template <class T>"
+          ],
+          "after": [
+            " public:",
+            "  static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,",
+            "                \"the slots come from operator new, which aligns no more\");"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-112",
@@ -2620,23 +2742,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/game/core/object_heap.h",
-        "startLine": 257,
-        "endLine": 257,
-        "text": "  bool Save(ArchiveWriter& writer)",
-        "before": [
-          "  // Writes the active count, then each object's slot index and contents.",
-          "  // Returns writer.ok(): false once the sink has failed. Not const because",
-          "  // each object's Serialize() is one template for both directions."
-        ],
-        "after": [
-          "    requires Serializable<T>;",
-          "  // Reads what Save wrote back into the same slots of an empty heap sized",
-          "  // for them. Returns false on a malformed stream, with the reason in"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/game/core/object_heap.h",
+          "startLine": 257,
+          "endLine": 257,
+          "text": "  bool Save(ArchiveWriter& writer)",
+          "before": [
+            "  // Writes the active count, then each object's slot index and contents.",
+            "  // Returns writer.ok(): false once the sink has failed. Not const because",
+            "  // each object's Serialize() is one template for both directions."
+          ],
+          "after": [
+            "    requires Serializable<T>;",
+            "  // Reads what Save wrote back into the same slots of an empty heap sized",
+            "  // for them. Returns false on a malformed stream, with the reason in"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-113",
@@ -2679,23 +2803,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/td/startup/init.cc",
-        "startLine": 194,
-        "endLine": 194,
-        "text": "  DLOG(INFO) << \"C&C95 - About to enter Units.Set_Heap\";",
-        "before": [
-          "  /*",
-          "  **\tInitialize the game object heaps.",
-          "  */"
-        ],
-        "after": [
-          "  TheObjectHeaps().unit().Reset(kUnitMax);",
-          "  DLOG(INFO) << \"C&C95 - About to enter Factories.Set_Heap\";",
-          "  TheObjectHeaps().factory().Reset(kFactoryMax);"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/td/startup/init.cc",
+          "startLine": 194,
+          "endLine": 194,
+          "text": "  DLOG(INFO) << \"C&C95 - About to enter Units.Set_Heap\";",
+          "before": [
+            "  /*",
+            "  **\tInitialize the game object heaps.",
+            "  */"
+          ],
+          "after": [
+            "  TheObjectHeaps().unit().Reset(kUnitMax);",
+            "  DLOG(INFO) << \"C&C95 - About to enter Factories.Set_Heap\";",
+            "  TheObjectHeaps().factory().Reset(kFactoryMax);"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-116",
@@ -2726,23 +2852,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/core/coordinate.h",
-        "startLine": 25,
-        "endLine": 25,
-        "text": "class Coordinate {",
-        "before": [
-          "// Example:",
-          "//   const Coordinate center = Coordinate::FromLeptons(0x0580, 0x0380);",
-          "//   const Coordinate corner = center.Whole();  // Cell (5, 3), offset 0."
-        ],
-        "after": [
-          " public:",
-          "  // Combines X and Y lepton components. Each keeps its low 16 bits, so a",
-          "  // negative component becomes its two's complement word."
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/core/coordinate.h",
+          "startLine": 25,
+          "endLine": 25,
+          "text": "class Coordinate {",
+          "before": [
+            "// Example:",
+            "//   const Coordinate center = Coordinate::FromLeptons(0x0580, 0x0380);",
+            "//   const Coordinate corner = center.Whole();  // Cell (5, 3), offset 0."
+          ],
+          "after": [
+            " public:",
+            "  // Combines X and Y lepton components. Each keeps its low 16 bits, so a",
+            "  // negative component becomes its two's complement word."
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-118",
@@ -2770,23 +2898,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/core/packed.h",
-        "startLine": 19,
-        "endLine": 19,
-        "text": "constexpr int Lepton_Cell(int lepton) noexcept {",
-        "before": [
-          "",
-          "// Returns the cell byte of a lepton word: whole cells. The lepton keeps its",
-          "// low 16 bits, so -1 is the word 0xFFFF."
-        ],
-        "after": [
-          "  return static_cast<uint16_t>(lepton) >> 8U;",
-          "}",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/core/packed.h",
+          "startLine": 19,
+          "endLine": 19,
+          "text": "constexpr int Lepton_Cell(int lepton) noexcept {",
+          "before": [
+            "",
+            "// Returns the cell byte of a lepton word: whole cells. The lepton keeps its",
+            "// low 16 bits, so -1 is the word 0xFFFF."
+          ],
+          "after": [
+            "  return static_cast<uint16_t>(lepton) >> 8U;",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-120",
@@ -2913,23 +3043,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/engine/file/ini_file.cc",
-        "startLine": 104,
-        "endLine": 104,
-        "text": "std::string_view StripComment(const std::string_view line) {",
-        "before": [
-          "}",
-          "",
-          "// Returns `line` up to its first ';', without trailing blanks."
-        ],
-        "after": [
-          "  return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));",
-          "}",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/engine/file/ini_file.cc",
+          "startLine": 104,
+          "endLine": 104,
+          "text": "std::string_view StripComment(const std::string_view line) {",
+          "before": [
+            "}",
+            "",
+            "// Returns `line` up to its first ';', without trailing blanks."
+          ],
+          "after": [
+            "  return absl::StripTrailingAsciiWhitespace(line.substr(0, line.find(';')));",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-129",
@@ -2972,23 +3104,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:43:35Z",
-      "anchor": {
-        "path": "src/ra/ai/scenario.cc",
-        "startLine": 2009,
-        "endLine": 2009,
-        "text": "      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {",
-        "before": [
-          "",
-          "  const auto file = OpenGameFile(fname);",
-          "  if (!file ||"
-        ],
-        "after": [
-          "    return false;",
-          "  }",
-          ""
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/scenario.cc",
+          "startLine": 2009,
+          "endLine": 2009,
+          "text": "      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {",
+          "before": [
+            "",
+            "  const auto file = OpenGameFile(fname);",
+            "  if (!file ||"
+          ],
+          "after": [
+            "    return false;",
+            "  }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-132",
@@ -3073,23 +3207,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/ra/ui/dialog.h",
-        "startLine": 30,
-        "endLine": 30,
-        "text": "int Format_Window_String(const FontStyle& font, std::span<char> string,",
-        "before": [
-          "// \"width\" receives the pixel width of the widest resulting line and \"height\"",
-          "// the total pixel height of all lines. Returns the number of lines, or 0 if",
-          "// \"string\" is nullptr."
-        ],
-        "after": [
-          "                         int max_line_len, int& width, int& height);",
-          "extern void Dialog_Box(int x, int y, int w, int h);",
-          "void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ui/dialog.h",
+          "startLine": 30,
+          "endLine": 30,
+          "text": "int Format_Window_String(const FontStyle& font, std::span<char> string,",
+          "before": [
+            "// \"width\" receives the pixel width of the widest resulting line and \"height\"",
+            "// the total pixel height of all lines. Returns the number of lines, or 0 if",
+            "// \"string\" is nullptr."
+          ],
+          "after": [
+            "                         int max_line_len, int& width, int& height);",
+            "extern void Dialog_Box(int x, int y, int w, int h);",
+            "void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-138",
@@ -3161,23 +3297,25 @@
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
       "updated": "2026-10-06T00:35:14Z",
-      "anchor": {
-        "path": "src/game/core/object_heap.cc",
-        "startLine": 152,
-        "endLine": 152,
-        "text": "std::string ObjectHeapBase::CheckBookkeeping() const {",
-        "before": [
-          "  return static_cast<int>(base::IndexOf(active_, pointer));",
-          "}",
-          ""
-        ],
-        "after": [
-          "  for (int position = 0; position < Count(); position++) {",
-          "    const void* pointer = ActiveSlot(position);",
-          "    if (!Owns(pointer)) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/game/core/object_heap.cc",
+          "startLine": 152,
+          "endLine": 152,
+          "text": "std::string ObjectHeapBase::CheckBookkeeping() const {",
+          "before": [
+            "  return static_cast<int>(base::IndexOf(active_, pointer));",
+            "}",
+            ""
+          ],
+          "after": [
+            "  for (int position = 0; position < Count(); position++) {",
+            "    const void* pointer = ActiveSlot(position);",
+            "    if (!Owns(pointer)) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-143",
@@ -3206,23 +3344,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-07T00:49:05Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.cc",
-        "startLine": 277,
-        "endLine": 280,
-        "text": "  // TODO: the house and the mission numbers below are taken from the file\n  // unchecked; an out-of-range one CHECK-fails later, where the team type is\n  // used.\n  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
-        "before": [
-          "  Set_Name(name);",
-          "",
-          "  base::Tokenizer tokens(entry);"
-        ],
-        "after": [
-          "",
-          "  // The scenario's NewINIFormat: 0 and 1 list each option and end the entry",
-          "  // with the trigger; the later ones pack the options into one bit field and"
-        ],
-        "lost": true
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 277,
+          "endLine": 280,
+          "text": "  // TODO: the house and the mission numbers below are taken from the file\n  // unchecked; an out-of-range one CHECK-fails later, where the team type is\n  // used.\n  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+          "before": [
+            "  Set_Name(name);",
+            "",
+            "  base::Tokenizer tokens(entry);"
+          ],
+          "after": [
+            "",
+            "  // The scenario's NewINIFormat: 0 and 1 list each option and end the entry",
+            "  // with the trigger; the later ones pack the options into one bit field and"
+          ],
+          "lost": true
+        }
+      ]
     },
     {
       "id": "T-146",
@@ -3237,23 +3377,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-07T01:36:51Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.cc",
-        "startLine": 306,
-        "endLine": 307,
-        "text": "  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));",
-        "before": [
-          "  }",
-          "",
-          "  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);"
-        ],
-        "after": [
-          "  set_origin(base::ParseIntegerOr<int>(tokens.Next(), 0));",
-          "",
-          "  if (lists_options) {"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 306,
+          "endLine": 307,
+          "text": "  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+          "before": [
+            "  }",
+            "",
+            "  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);"
+          ],
+          "after": [
+            "  set_origin(base::ParseIntegerOr<int>(tokens.Next(), 0));",
+            "",
+            "  if (lists_options) {"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-147",
@@ -3268,23 +3410,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-07T01:43:19Z",
-      "anchor": {
-        "path": "src/ra/ai/team.cc",
-        "startLine": 2424,
-        "endLine": 2424,
-        "text": "            base::At(TheScenario().Waypoint, mission->value()))) {",
-        "before": [
-          "        static_cast<unsigned>(mission->value()) <",
-          "            ScenarioClass::kWaypointCount &&",
-          "        !TheMap().In_Radar("
-        ],
-        "after": [
-          "      return true;",
-          "    }",
-          "  }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team.cc",
+          "startLine": 2424,
+          "endLine": 2424,
+          "text": "            base::At(TheScenario().Waypoint, mission->value()))) {",
+          "before": [
+            "        static_cast<unsigned>(mission->value()) <",
+            "            ScenarioClass::kWaypointCount &&",
+            "        !TheMap().In_Radar("
+          ],
+          "after": [
+            "      return true;",
+            "    }",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-148",
@@ -3301,23 +3445,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-06T09:18:07Z",
-      "anchor": {
-        "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 174,
-        "endLine": 174,
-        "text": "  if (house_ == HOUSE_NONE) {",
-        "before": [
-          "  for (const HousesType house : magic_enum::enum_values<HousesType>()) {",
-          "    house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);",
-          "  }"
-        ],
-        "after": [
-          "    house_ = HOUSE_GOOD;",
-          "  }",
-          "  house_drop.Set_Selected_Index(static_cast<int>(house_));"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/editor/team_type_dialog.cc",
+          "startLine": 172,
+          "endLine": 172,
+          "text": "  if (house_ == HOUSE_NONE) {",
+          "before": [
+            "  for (const HousesType house : magic_enum::enum_values<HousesType>()) {",
+            "    house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);",
+            "  }"
+          ],
+          "after": [
+            "    house_ = HOUSE_GOOD;",
+            "  }",
+            "  house_drop.Set_Selected_Index(static_cast<int>(house_));"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-149",
@@ -3334,23 +3480,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-06T09:18:07Z",
-      "anchor": {
-        "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 80,
-        "endLine": 80,
-        "text": "int ParseHexDigits(const std::string_view text) {",
-        "before": [
-          "",
-          "// Returns the value of the hex digits in `text`, for the editor's cell-number",
-          "// field. A character that is not a hex digit counts as 0."
-        ],
-        "after": [
-          "  int value = 0;",
-          "  for (const char digit : text) {",
-          "    value *= 16;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/editor/team_type_dialog.cc",
+          "startLine": 80,
+          "endLine": 80,
+          "text": "int ParseHexDigits(const std::string_view text) {",
+          "before": [
+            "",
+            "// Returns the value of the hex digits in `text`, for the editor's cell-number",
+            "// field. A character that is not a hex digit counts as 0."
+          ],
+          "after": [
+            "  int value = 0;",
+            "  for (const char digit : text) {",
+            "    value *= 16;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-150",
@@ -3366,23 +3514,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-06T09:18:07Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.cc",
-        "startLine": 121,
-        "endLine": 121,
-        "text": "void DrawListEntry(PixelView& view, const std::string& text,",
-        "before": [
-          "",
-          "// Draws `text` as a list box entry in the given rectangle, highlighted when",
-          "// `selected`. `tab_stops` are the pixel columns its tabs advance to."
-        ],
-        "after": [
-          "                   const std::span<const int> tab_stops, const int x,",
-          "                   const int y, const int width, const int height,",
-          "                   const bool selected, const FontType font,"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 121,
+          "endLine": 121,
+          "text": "void DrawListEntry(PixelView& view, const std::string& text,",
+          "before": [
+            "",
+            "// Draws `text` as a list box entry in the given rectangle, highlighted when",
+            "// `selected`. `tab_stops` are the pixel columns its tabs advance to."
+          ],
+          "after": [
+            "                   const std::span<const int> tab_stops, const int x,",
+            "                   const int y, const int width, const int height,",
+            "                   const bool selected, const FontType font,"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-151",
@@ -3398,23 +3548,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-06T09:18:07Z",
-      "anchor": {
-        "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 415,
-        "endLine": 415,
-        "text": "            mission.value() >= ScenarioClass::kHomeWaypoint) {",
-        "before": [
-          "      case NEED_WAYPOINT:",
-          "        mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));",
-          "        if (mission.value() < 0 ||"
-        ],
-        "after": [
-          "          mission.set_value(0);",
-          "        }",
-          "        break;"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/editor/team_type_dialog.cc",
+          "startLine": 413,
+          "endLine": 413,
+          "text": "            mission.value() >= ScenarioClass::kHomeWaypoint) {",
+          "before": [
+            "      case NEED_WAYPOINT:",
+            "        mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));",
+            "        if (mission.value() < 0 ||"
+          ],
+          "after": [
+            "          mission.set_value(0);",
+            "        }",
+            "        break;"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-152",
@@ -3430,23 +3582,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
       "updated": "2026-10-06T09:18:07Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.cc",
-        "startLine": 427,
-        "endLine": 427,
-        "text": "  TeamType* choices[20];",
-        "before": [
-          "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
-          "                                   const bool alerted) {",
-          "  // Only the first 20 candidates in heap order take part in the draw."
-        ],
-        "after": [
-          "  int choice_count = 0;",
-          "",
-          "  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 427,
+          "endLine": 427,
+          "text": "  TeamType* choices[20];",
+          "before": [
+            "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
+            "                                   const bool alerted) {",
+            "  // Only the first 20 candidates in heap order take part in the draw."
+          ],
+          "after": [
+            "  int choice_count = 0;",
+            "",
+            "  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-153",
@@ -3463,23 +3617,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
       "updated": "2026-10-06T09:18:45Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.h",
-        "startLine": 342,
-        "endLine": 342,
-        "text": "  bool is_transient_ : 1 = false;",
-        "before": [
-          "",
-          "  // Created only to bring on reinforcements for one special event (the",
-          "  // paratrooper drop), not by the scenario."
-        ],
-        "after": [
-          "",
-          "  // Rank among teams when recruiting, 0 to 15: a team takes members from",
-          "  // teams of lower priority."
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.h",
+          "startLine": 342,
+          "endLine": 342,
+          "text": "  bool is_transient_ : 1 = false;",
+          "before": [
+            "",
+            "  // Created only to bring on reinforcements for one special event (the",
+            "  // paratrooper drop), not by the scenario."
+          ],
+          "after": [
+            "",
+            "  // Rank among teams when recruiting, 0 to 15: a team takes members from",
+            "  // teams of lower priority."
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-154",
@@ -3494,23 +3650,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
       "updated": "2026-10-06T09:18:45Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.h",
-        "startLine": 287,
-        "endLine": 287,
-        "text": "  [[nodiscard]] const MissionArray& missions() const",
-        "before": [
-          "  // The script: the first mission_count() entries of missions(). The rest",
-          "  // are unused.",
-          "  [[nodiscard]] int mission_count() const { return mission_count_; }"
-        ],
-        "after": [
-          "      ABSL_ATTRIBUTE_LIFETIME_BOUND {",
-          "    return missions_;",
-          "  }"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.h",
+          "startLine": 287,
+          "endLine": 287,
+          "text": "  [[nodiscard]] const MissionArray& missions() const",
+          "before": [
+            "  // The script: the first mission_count() entries of missions(). The rest",
+            "  // are unused.",
+            "  [[nodiscard]] int mission_count() const { return mission_count_; }"
+          ],
+          "after": [
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND {",
+            "    return missions_;",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-155",
@@ -3527,23 +3685,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
       "updated": "2026-10-06T09:18:45Z",
-      "anchor": {
-        "path": "src/ra/editor/team_type_dialog.cc",
-        "startLine": 660,
-        "endLine": 660,
-        "text": "      case engine::window::ButtonKey(kButtonMembers):",
-        "before": [
-          "        break;",
-          "",
-          "      // Invoke the members dialog"
-        ],
-        "after": [
-          "",
-          "        // The button stays pressed otherwise: the other dialog takes the",
-          "        // release."
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/editor/team_type_dialog.cc",
+          "startLine": 660,
+          "endLine": 660,
+          "text": "      case engine::window::ButtonKey(kButtonMembers):",
+          "before": [
+            "        break;",
+            "",
+            "      // Invoke the members dialog"
+          ],
+          "after": [
+            "",
+            "        // The button stays pressed otherwise: the other dialog takes the",
+            "        // release."
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-156",
@@ -3559,23 +3719,25 @@
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
       "updated": "2026-10-06T09:19:17Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type_test.cc",
-        "startLine": 51,
-        "endLine": 51,
-        "text": "  void SetUp() override {",
-        "before": [
-          "// reading the current scenario format, and one team type to work on.",
-          "class TeamTypeTest : public UiFixture {",
-          " protected:"
-        ],
-        "after": [
-          "    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());",
-          "    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());",
-          "    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());"
-        ],
-        "lost": false
-      }
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type_test.cc",
+          "startLine": 51,
+          "endLine": 51,
+          "text": "  void SetUp() override {",
+          "before": [
+            "// reading the current scenario format, and one team type to work on.",
+            "class TeamTypeTest : public UiFixture {",
+            " protected:"
+          ],
+          "after": [
+            "    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());",
+            "    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());",
+            "    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());"
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-157",
@@ -3616,27 +3778,31 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-06T09:18:45Z",
-      "anchor": {
-        "path": "src/ra/ai/team_type.cc",
-        "startLine": 339,
-        "endLine": 339,
-        "text": "      TeamMember& member = base::At(members_, member_count_++);",
-        "before": [
-          "    // next member takes its place in Members.",
-          "    const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);",
-          "    if (member_type != nullptr) {"
-        ],
-        "after": [
-          "      member.type = member_type;",
-          "      member.quantity = base::ParseIntegerOr<int>(quantity_text, 0);",
-          "    }"
-        ],
-        "lost": false
-      }
+      "updated": "2026-10-07T06:57:29Z",
+      "fixedIn": "ad6d85f7",
+      "resolution": "The findings read through `mcp__clion__get_file_problems` (which returns the messages `getDiagnostics` leaves empty): both `member` locals were \"can be replaced with structured bindings\", `kCheckTextOffsetX` was \"can be moved to inner scope\". `ReadIniEntry()` now assigns the entry as one designated-initializer aggregate, `MemberDescription()` binds `[quantity, type]` (as `ra/ai/prebuilt_base.cc` does), and the constant sits in the redraw block that uses it. All three are gone from the IDE; the strict build and the team tests pass.",
+      "anchors": [
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 339,
+          "endLine": 341,
+          "text": "      base::At(members_, member_count_++) = {\n          .quantity = base::ParseIntegerOr<int>(quantity_text, 0),\n          .type = member_type};",
+          "before": [
+            "    // next member takes its place in Members.",
+            "    const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);",
+            "    if (member_type != nullptr) {"
+          ],
+          "after": [
+            "    }",
+            "  }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
     },
     {
       "id": "T-160",
