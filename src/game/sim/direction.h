@@ -28,7 +28,6 @@
 
 #include <cstdint>
 
-#include "absl/base/attributes.h"
 #include "base/enum_step.h"  // IWYU pragma: export
 
 namespace game {
@@ -67,16 +66,6 @@ constexpr FacingType operator-(const FacingType lhs, const FacingType rhs) {
 }
 constexpr FacingType operator-(const FacingType facing, const int steps) {
   return AsFacing(static_cast<int>(facing) - steps);
-}
-constexpr FacingType& operator+=(FacingType& lhs ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                                 const FacingType rhs) {
-  lhs = lhs + rhs;
-  return lhs;
-}
-constexpr FacingType& operator+=(
-    FacingType& facing ABSL_ATTRIBUTE_LIFETIME_BOUND, const int steps) {
-  facing = facing + steps;
-  return facing;
 }
 
 // A direction on the 256-step compass: 0 is north, 64 east, 128 south and 192

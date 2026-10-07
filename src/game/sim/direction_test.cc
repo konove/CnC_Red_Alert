@@ -10,9 +10,8 @@ TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
   EXPECT_EQ(AsFacing(-1), FacingType::kNorthWest);
   EXPECT_EQ(FacingType::kNorthWest + 1, FacingType::kNorth);
   EXPECT_EQ(FacingType::kNorth - FacingType::kEast, FacingType::kWest);
-  FacingType facing = FacingType::kSouthWest;
-  facing += FacingType::kSouth;
-  EXPECT_EQ(facing, FacingType::kNorthEast);
+  EXPECT_EQ(FacingType::kSouthWest + FacingType::kSouth,
+            FacingType::kNorthEast);
 }
 
 TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
