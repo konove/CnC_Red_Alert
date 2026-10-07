@@ -3778,10 +3778,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-07T06:57:29Z",
+      "updated": "2026-10-07T07:00:00Z",
       "fixedIn": "ad6d85f7",
       "resolution": "The findings read through `mcp__clion__get_file_problems` (which returns the messages `getDiagnostics` leaves empty): both `member` locals were \"can be replaced with structured bindings\", `kCheckTextOffsetX` was \"can be moved to inner scope\". `ReadIniEntry()` now assigns the entry as one designated-initializer aggregate, `MemberDescription()` binds `[quantity, type]` (as `ra/ai/prebuilt_base.cc` does), and the constant sits in the redraw block that uses it. All three are gone from the IDE; the strict build and the team tests pass.",
       "anchors": [
