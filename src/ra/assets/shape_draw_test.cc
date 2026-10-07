@@ -197,7 +197,7 @@ TEST(ScaleRotateShapeTest, EveryRotationKeepsTheArea) {
   const std::vector<uint8_t> pixels(kShape.begin(), kShape.end());
   for (int rotation = 0; rotation < 256; rotation++) {
     const std::vector<uint8_t> image = ScaleRotateShape(
-        pixels, kShapeWidth, kShapeHeight, game::AsDirection(rotation), 0x100);
+        pixels, kShapeWidth, kShapeHeight, game::DirType(rotation), 0x100);
     const auto drawn = static_cast<int>(std::ranges::count_if(
         image, [](const uint8_t pixel) { return pixel != 0; }));
     EXPECT_NEAR(drawn, kShapeWidth * kShapeHeight, 4) << "at " << rotation;

@@ -7676,7 +7676,7 @@ Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       coord = Coord_Move(
           Center,
           RandomPick(game::DirType::kNorth, game::DirType::kEast) -
-              static_cast<game::DirType>(32),
+              game::DirType(32),
           static_cast<uint16_t>(RandomPick(std::min(Radius * 2, maxdist),
                                            std::min(Radius * 3, maxdist))));
       break;

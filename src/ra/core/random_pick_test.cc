@@ -38,6 +38,17 @@ TEST_F(RandomPickTest, RandomPickKeepsTheEnumType) {
   EXPECT_LE(facing, game::FacingType::kSouth);
 }
 
+TEST_F(RandomPickTest, RandomPickStaysOnTheArcOfDirections) {
+  TheScenario().sync_rng_.set_seed(kSeed);
+
+  for (int draw = 0; draw < kDraws; draw++) {
+    const game::DirType dir =
+        RandomPick(game::DirType::kNorthEast, game::DirType::kSouthEast);
+    EXPECT_GE(dir, game::DirType::kNorthEast);
+    EXPECT_LE(dir, game::DirType::kSouthEast);
+  }
+}
+
 TEST_F(RandomPickTest, RandomPickRepeatsFromTheSameSeed) {
   TheScenario().sync_rng_.set_seed(kSeed);
   const int first = RandomPick(0, 1000);

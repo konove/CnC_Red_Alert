@@ -545,20 +545,21 @@ void VesselTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
 
   switch (Type) {
     case VESSEL_CA:
-      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir), 22);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir.value()), 22);
       x = xx;
       y = yy - 4;
       break;
 
     case VESSEL_PT:
-      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir), 14);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir.value()), 14);
       x = xx;
       y = yy + 1;
       break;
 
     case VESSEL_DD:
       base::MovePointIsometric(
-          xx, yy, static_cast<uint8_t>(dir + game::DirType::kSouth), 8);
+          xx, yy, static_cast<uint8_t>((dir + game::DirType::kSouth).value()),
+          8);
       x = xx;
       y = yy - 4;
       break;

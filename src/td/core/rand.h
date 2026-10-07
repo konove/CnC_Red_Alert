@@ -1,6 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_CORE_RAND_H_
 #define CNC_RED_ALERT_TD_CORE_RAND_H_
 
+#include "game/sim/direction.h"
 #include "td/core/randomstate.h"
 
 namespace td {
@@ -13,6 +14,11 @@ T Random_Picky(T a, T b, [[maybe_unused]] const char* sfile,
                [[maybe_unused]] int line) {
   return static_cast<T>(
       GameRandomRange(static_cast<int>(a), static_cast<int>(b)));
+}
+
+inline game::DirType Random_Picky(const game::DirType a, const game::DirType b,
+                                  const char* sfile, const int line) {
+  return game::DirType(Random_Picky(a.value(), b.value(), sfile, line));
 }
 
 #define Random_Pick(low, high) Random_Picky((low), (high), __FILE__, __LINE__)

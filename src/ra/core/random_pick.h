@@ -5,6 +5,7 @@
 #define CNC_RED_ALERT_RA_CORE_RANDOM_PICK_H_
 
 #include "base/random.h"
+#include "game/sim/direction.h"
 #include "ra/ai/scenario.h"
 #include "ra/map/world.h"
 
@@ -28,6 +29,13 @@ template <class T>
 T RandomPick(const T low, const T high) {
   return static_cast<T>(TheScenario().sync_rng_.InRange(
       static_cast<int>(low), static_cast<int>(high)));
+}
+
+// Returns a random direction on the arc that runs clockwise from `low` to
+// `high`, both included; `low` must not be past `high`.
+inline game::DirType RandomPick(const game::DirType low,
+                                const game::DirType high) {
+  return game::DirType(RandomPick(low.value(), high.value()));
 }
 
 // Returns true `percent` times out of 100, drawing from the synchronized

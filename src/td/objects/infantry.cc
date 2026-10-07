@@ -3130,8 +3130,8 @@ void InfantryClass::Read_INI(const engine::file::IniFile& ini) {
           **	Fetch the mission and facing.
           */
           const MissionType mission = Mission_From_Name(tokens.Next());
-          const auto dir = static_cast<game::DirType>(
-              base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir =
+              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
           infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;
@@ -3201,7 +3201,7 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
           Mission_Name(infantry->Mission == MISSION_NONE
                            ? infantry->MissionQueue
                            : infantry->Mission),
-          infantry->PrimaryFacing.Current(),
+          infantry->PrimaryFacing.Current().value(),
           infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }

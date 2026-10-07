@@ -470,8 +470,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
       **	is any firing animation in progress.
       */
       int shapenum = 0;
-      auto turdir =
-          static_cast<game::DirType>(game::BodyFrame16(PrimaryFacing) * 16);
+      auto turdir = game::DirType(game::BodyFrame16(PrimaryFacing) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
@@ -481,7 +480,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
           Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
           xx = x;
           yy = y;
-          turdir = static_cast<game::DirType>(
+          turdir = game::DirType(
               game::BodyFrame16(PrimaryFacing + game::DirType::kSouth) * 16);
           Class->Turret_Adjust(turdir, xx, yy);
           break;
@@ -1991,8 +1990,8 @@ void VesselClass::Read_INI(engine::file::IniFile& ini) {
 
           const Coordinate coord = cell.Center();
 
-          const auto dir = static_cast<game::DirType>(
-              base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir =
+              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
               Mission_From_Name(tokens.Next());
 
@@ -2071,7 +2070,8 @@ void VesselClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
           vessel->House->Class->IniName, vessel->Class->IniName,
           vessel->Health_Ratio() * 256, Cell::Containing(vessel->Coord).index(),
-          vessel->PrimaryFacing.Current(), Mission_Name(vessel->Mission),
+          vessel->PrimaryFacing.Current().value(),
+          Mission_Name(vessel->Mission),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
       ini.PutString(INI_Name(), uname, buf);

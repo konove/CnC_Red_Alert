@@ -3879,9 +3879,10 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -= std::abs(
-        static_cast<int>(static_cast<signed char>(game::DirectionOf(face))) -
-        static_cast<int>(static_cast<signed char>(faceto)));
+    value -=
+        std::abs(static_cast<int>(static_cast<signed char>(
+                     game::DirectionOf(face).value())) -
+                 static_cast<int>(static_cast<signed char>(faceto.value())));
     if (face == game::FacingType::kSouth) {
       value -= 100;
     }
@@ -4178,9 +4179,9 @@ game::DirType UnitClass::Fire_Direction() const {
           std::abs(SecondaryFacing.Difference(game::DirType::kNorth)),
           64 - diff);
       if (SecondaryFacing.Difference(game::DirType::kNorth) < 0) {
-        return SecondaryFacing - game::AsDirection(adj);
+        return SecondaryFacing - game::DirType(adj);
       }
-      return SecondaryFacing + game::AsDirection(adj);
+      return SecondaryFacing + game::DirType(adj);
     }
     return SecondaryFacing.Current();
   }
@@ -4738,8 +4739,8 @@ void UnitClass::Read_INI(engine::file::IniFile& ini) {
 
           const Coordinate coord = cell.Center();
 
-          const auto dir = static_cast<game::DirType>(
-              base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir =
+              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
               Mission_From_Name(tokens.Next());
 
@@ -4811,8 +4812,8 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
       absl::SNPrintF(
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio() * 256,
-          Cell::Containing(unit->Coord).index(), unit->PrimaryFacing.Current(),
-          Mission_Name(unit->Mission),
+          Cell::Containing(unit->Coord).index(),
+          unit->PrimaryFacing.Current().value(), Mission_Name(unit->Mission),
           unit->Trigger != nullptr ? unit->Trigger->Class->IniName : "None");
       ini.PutString(INI_Name(), uname, buf);
     }

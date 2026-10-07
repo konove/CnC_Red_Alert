@@ -294,8 +294,8 @@ void Debug_Key(unsigned input) {
             int y = 0;
             int x1 = 0;
             int y1 = 0;
-            const game::DirType r1 = game::AsDirection(r);
-            const game::DirType r2 = game::AsDirection(r + 10);
+            const game::DirType r1 = game::DirType(r);
+            const game::DirType r2 = game::DirType(r + 10);
 
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

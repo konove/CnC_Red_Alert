@@ -450,10 +450,9 @@ game::DirType TurretClass::Fire_Direction() const {
           std::abs(SecondaryFacing.Difference(game::DirType::kNorth)),
           64 - diff);
       if (SecondaryFacing.Difference(game::DirType::kNorth) < 0) {
-        return game::AsDirection(static_cast<int>(SecondaryFacing.Current()) -
-                                 adj);
+        return SecondaryFacing.Current() - adj;
       }
-      return SecondaryFacing + static_cast<game::DirType>(adj);
+      return SecondaryFacing + game::DirType(adj);
     }
     return SecondaryFacing.Current();
   }

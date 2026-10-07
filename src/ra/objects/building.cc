@@ -4871,7 +4871,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kDoorOpening: {
         const Coordinate door =
-            Coord_Move(Center_Coord(), static_cast<game::DirType>(0xC0), 0x30);
+            Coord_Move(Center_Coord(), game::DirType(0xC0), 0x30);
         const auto* sput = base::NewPooled<AnimClass>(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
@@ -4896,8 +4896,8 @@ int BuildingClass::Mission_Missile() {
               BULLET_GPS_SATELLITE, targ, this, 200, WARHEAD_FIRE,
               static_cast<int>(game::MPH_ROCKET));
           if (bullet) {
-            const Coordinate launch = Coord_Move(
-                Center_Coord(), static_cast<game::DirType>(0xC0), 0x30);
+            const Coordinate launch =
+                Coord_Move(Center_Coord(), game::DirType(0xC0), 0x30);
             if (!bullet->Unlimbo(launch, game::DirType::kNorth)) {
               base::DeletePooled(bullet);
               bullet = nullptr;
@@ -4958,7 +4958,7 @@ int BuildingClass::Mission_Missile() {
             static_cast<int>(game::MPH_VERY_FAST));
         if (bullet) {
           const Coordinate launch =
-              Coord_Move(Center_Coord(), game::AsDirection(28), 0xA0);
+              Coord_Move(Center_Coord(), game::DirType(28), 0xA0);
           if (!bullet->Unlimbo(launch, game::DirType::kNorth)) {
             base::DeletePooled(bullet);
             bullet = nullptr;
@@ -5177,7 +5177,7 @@ game::DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return game::AsDirection(TarCom.packed());
+  return game::DirType(TarCom.packed());
 }
 
 /***********************************************************************************************
@@ -5836,8 +5836,8 @@ void BuildingClass::Read_INI(engine::file::IniFile& ini) {
       /*
       **	5th token: facing.
       */
-      const auto facing = static_cast<game::DirType>(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
+      const auto facing =
+          game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be empty).
@@ -5927,7 +5927,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
                      building->House->Class->IniName, building->Class->IniName,
                      building->Health_Ratio() * 256,
                      Cell::Containing(building->Coord).index(),
-                     building->PrimaryFacing.Current(),
+                     building->PrimaryFacing.Current().value(),
                      building->Trigger != nullptr
                          ? building->Trigger->Class->IniName
                          : "None",

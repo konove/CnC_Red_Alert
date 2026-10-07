@@ -741,8 +741,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
         scatterdist = std::min(scatterdist, TheRules().HomingScatter);
         scatterdist = std::max(scatterdist, 0);
 
-        dir =
-            game::AsDirection(static_cast<int>(dir) + (RandomPick(0, 10) - 5));
+        dir = dir + (RandomPick(0, 10) - 5);
         tcoord = Coord_Scatter(tcoord, RandomPick(0, scatterdist));
       } else {
         int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;

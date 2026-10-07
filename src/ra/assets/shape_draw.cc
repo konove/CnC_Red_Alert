@@ -81,8 +81,7 @@ std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
   // The matrix below is [[sin, cos], [-cos, sin]], a rotation by `angle`
   // minus a quarter turn, so converting the facing negates it and adds that
   // quarter turn back. Angles are in 256ths of a circle, like DirType.
-  const auto angle =
-      static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64);
+  const auto angle = static_cast<uint8_t>(256 - rotation.value() + 64);
   const double radians = angle * 2.0 * std::numbers::pi / 256.0;
 
   // scale is 24.8 fixed point, so 256 / scale is its reciprocal, which is

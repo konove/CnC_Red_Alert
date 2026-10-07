@@ -28,6 +28,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "base/numeric.h"
+
 namespace game {
 namespace {
 
@@ -99,12 +101,12 @@ DirType Direction8Toward(const int from_x, const int from_y, const int to_x,
   // diagonal, which lies 0x20 into every quadrant, and bail. Equal points
   // land here too, in the north-east quadrant.
   if ((bigger + 1) / 2 <= smaller) {
-    return AsDirection(quadrant + 0x20);
+    return DirType(quadrant + 0x20);
   }
 
   // Otherwise it is one of the quadrant's two axes. From the north-west
   // quadrant the end axis wraps to north.
-  return AsDirection(quadrant + (closer_to_end_axis ? 0x40 : 0));
+  return DirType(quadrant + (closer_to_end_axis ? 0x40 : 0));
 }
 
 DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
@@ -115,7 +117,7 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // Bail early if the coordinates are the same. This also keeps the division
   // below away from zero.
   if (bigger == 0) {
-    return AsDirection(0xFF);
+    return DirType(0xFF);
   }
 
   // How far from the closer axis the direction lies, as a ratio from 0 (on
@@ -123,7 +125,7 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // arctangent.
   const int scaled = smaller * 32;
   if (!closer_to_end_axis) {
-    return AsDirection(quadrant + (scaled / bigger));
+    return DirType(quadrant + (scaled / bigger));
   }
 
   // The ratio counts from the closer axis, and here that is the axis the
@@ -133,11 +135,11 @@ DirType Direction256Toward(const int from_x, const int from_y, const int to_x,
   // same thing except when the division is exact: then it landed one step
   // short, due east and due south included.
   const int rounded_up = (scaled + bigger - 1) / bigger;
-  return AsDirection(quadrant + 0x40 - rounded_up);
+  return DirType(quadrant + 0x40 - rounded_up);
 }
 
 int BodyFrame32(const DirType dir) {
-  return kBodyFrame32.at(static_cast<uint8_t>(dir));
+  return kBodyFrame32.at(base::ToSize(dir.value()));
 }
 
 }  // namespace game

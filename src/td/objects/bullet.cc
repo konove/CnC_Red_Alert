@@ -685,8 +685,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
-        dir =
-            game::AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
+        dir = dir + (Random_Pick(0, 10) - 5);
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         tcoord = Coord_Move(tcoord, dir,

@@ -3529,8 +3529,8 @@ void BuildingClass::Read_INI(const engine::file::IniFile& ini) {
       /*
       **	5th token: facing.
       */
-      const auto facing = static_cast<game::DirType>(
-          base::ParseIntegerOr<int>(tokens.Next(), 0));
+      const auto facing =
+          game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be missing).
@@ -3599,7 +3599,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s",
           building->House->Class->IniName, building->Class->IniName,
           building->Health_Ratio(), Cell::Containing(building->Coord).index(),
-          building->PrimaryFacing.Current(),
+          building->PrimaryFacing.Current().value(),
           building->Trigger ? building->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
@@ -4893,7 +4893,7 @@ int BuildingClass::Mission_Missile() {
         auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_UP);
         if (bullet) {
           const Coordinate launch =
-              Coord_Move(Center_Coord(), game::AsDirection(1), 0x1A0);
+              Coord_Move(Center_Coord(), game::DirType(1), 0x1A0);
           bullet->Assign_Target(Target{});
           bullet->Payback = nullptr;
           bullet->Strength = 1;
@@ -5135,7 +5135,7 @@ game::DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return game::AsDirection(TarCom.packed());
+  return game::DirType(TarCom.packed());
 }
 
 /***********************************************************************************************

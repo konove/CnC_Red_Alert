@@ -100,7 +100,7 @@ Coordinate Coord_Move(const Coordinate start, const game::DirType facing,
                       const uint16_t distance) {
   auto x = static_cast<int16_t>(start.x());
   auto y = static_cast<int16_t>(start.y());
-  base::MovePoint(x, y, static_cast<uint8_t>(facing),
+  base::MovePoint(x, y, static_cast<uint8_t>(facing.value()),
                   static_cast<int16_t>(distance));
   return Coordinate::FromLeptons(x, y);
 }

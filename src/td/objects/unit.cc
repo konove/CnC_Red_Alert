@@ -3539,8 +3539,8 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
           const Coordinate coord =
               Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
                   .Center();
-          const auto dir = static_cast<game::DirType>(
-              base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir =
+              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission = Mission_From_Name(tokens.Next());
           unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {
@@ -3617,12 +3617,12 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
     UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
-      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
-                     unit->House->Class->IniName, unit->Class->IniName,
-                     unit->Health_Ratio(),
-                     Cell::Containing(unit->Coord).index(),
-                     unit->PrimaryFacing.Current(), Mission_Name(unit->Mission),
-                     unit->Trigger ? unit->Trigger->Get_Name() : "None");
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
+          unit->Class->IniName, unit->Health_Ratio(),
+          Cell::Containing(unit->Coord).index(),
+          unit->PrimaryFacing.Current().value(), Mission_Name(unit->Mission),
+          unit->Trigger ? unit->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
   }

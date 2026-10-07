@@ -359,7 +359,7 @@ bool FootClass::Basic_Path() {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<game::FacingType>(
           static_cast<unsigned>(
-              td::DirectionBetween(cell, Cell::Containing(Coord))) >>
+              td::DirectionBetween(cell, Cell::Containing(Coord)).value()) >>
           5);
 
       for (const int index : _faceadjust) {

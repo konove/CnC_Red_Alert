@@ -27,14 +27,14 @@ TEST(FacingClassTest, DifferenceTakesTheShortWayRound) {
   EXPECT_EQ(facing.Difference(), 64);
   facing.Set_Desired(DirType::kWest);
   EXPECT_EQ(facing.Difference(), -64);
-  EXPECT_EQ(facing.Difference(AsDirection(200)), -56);
+  EXPECT_EQ(facing.Difference(DirType(200)), -56);
 }
 
 TEST(FacingClassTest, RotatesClockwiseByTheRate) {
   FacingClass facing(DirType::kNorth);
   facing.Set_Desired(DirType::kEast);
   EXPECT_TRUE(facing.Rotation_Adjust(16));
-  EXPECT_EQ(facing.Current(), AsDirection(16));
+  EXPECT_EQ(facing.Current(), DirType(16));
   EXPECT_TRUE(facing.Is_Rotating());
 }
 
@@ -42,7 +42,7 @@ TEST(FacingClassTest, RotatesCounterclockwiseTowardACloserTarget) {
   FacingClass facing(DirType::kNorth);
   facing.Set_Desired(DirType::kWest);
   facing.Rotation_Adjust(16);
-  EXPECT_EQ(facing.Current(), AsDirection(240));
+  EXPECT_EQ(facing.Current(), DirType(240));
 }
 
 TEST(FacingClassTest, SnapsWhenTheRateCoversTheGap) {
@@ -59,7 +59,7 @@ TEST(FacingClassTest, ReportsNoRedrawInsideOneFrame) {
   facing.Set_Desired(DirType::kEast);
   // Directions 0..4 all show body frame 0 of 32.
   EXPECT_FALSE(facing.Rotation_Adjust(2));
-  EXPECT_EQ(facing.Current(), AsDirection(2));
+  EXPECT_EQ(facing.Current(), DirType(2));
 }
 
 }  // namespace

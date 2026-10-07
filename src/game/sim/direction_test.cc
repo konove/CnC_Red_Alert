@@ -1,8 +1,13 @@
 #include "game/sim/direction.h"
 
 #include <array>
+#include <cstddef>
+#include <span>
 
 #include "base/numeric.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 
 namespace game {
@@ -19,17 +24,47 @@ TEST(FacingTypeTest, ArithmeticWrapsOntoEightFacings) {
 }
 
 TEST(DirTypeTest, ArithmeticWrapsAroundTheCircle) {
-  EXPECT_EQ(AsDirection(256), DirType::kNorth);
-  EXPECT_EQ(AsDirection(-1), AsDirection(255));
+  EXPECT_EQ(DirType(256), DirType::kNorth);
+  EXPECT_EQ(DirType(-1), DirType(255));
   EXPECT_EQ(DirType::kNorthWest + DirType::kEast, DirType::kNorthEast);
   EXPECT_EQ(DirType::kNorth - 32, DirType::kNorthWest);
 }
 
+TEST(DirTypeTest, StartsNorthAndReadsBackItsAngle) {
+  EXPECT_EQ(DirType(), DirType::kNorth);
+  EXPECT_EQ(DirType::kEast.value(), 64);
+  EXPECT_EQ(DirType(300).value(), 44);
+}
+
+TEST(DirTypeTest, OrdersByAngle) {
+  EXPECT_LT(DirType::kNorth, DirType::kNorthEast);
+  EXPECT_GT(DirType(255), DirType::kNorthWest);
+}
+
+// Saves written while a direction was an enum hold it as four bytes.
+TEST(DirTypeTest, SerializesAsFourBytes) {
+  std::array<std::byte, 4> bytes{};
+  SpanSink sink(bytes);
+  ArchiveWriter writer(sink);
+  DirType written = DirType::kSouthWest;
+  writer(written);
+  ASSERT_TRUE(writer.ok());
+  EXPECT_EQ(bytes, (std::array{std::byte{0xA0}, std::byte{0}, std::byte{0},
+                               std::byte{0}}));
+
+  SpanSource source{std::span<const std::byte>(bytes)};
+  ArchiveReader reader(source);
+  DirType read;
+  reader(read);
+  ASSERT_TRUE(reader.ok());
+  EXPECT_EQ(read, DirType::kSouthWest);
+}
+
 TEST(NearestFacingTest, RoundsToTheNearestFacing) {
-  EXPECT_EQ(NearestFacing(AsDirection(15)), FacingType::kNorth);
-  EXPECT_EQ(NearestFacing(AsDirection(16)), FacingType::kNorthEast);
-  EXPECT_EQ(NearestFacing(AsDirection(239)), FacingType::kNorthWest);
-  EXPECT_EQ(NearestFacing(AsDirection(240)), FacingType::kNorth);
+  EXPECT_EQ(NearestFacing(DirType(15)), FacingType::kNorth);
+  EXPECT_EQ(NearestFacing(DirType(16)), FacingType::kNorthEast);
+  EXPECT_EQ(NearestFacing(DirType(239)), FacingType::kNorthWest);
+  EXPECT_EQ(NearestFacing(DirType(240)), FacingType::kNorth);
 }
 
 TEST(DirectionOfTest, PointsExactlyAtTheFacing) {
@@ -39,17 +74,17 @@ TEST(DirectionOfTest, PointsExactlyAtTheFacing) {
 }
 
 TEST(BodyFrameTest, SixteenFramesRoundToTheNearest) {
-  EXPECT_EQ(BodyFrame16(AsDirection(7)), 0);
-  EXPECT_EQ(BodyFrame16(AsDirection(8)), 1);
-  EXPECT_EQ(BodyFrame16(AsDirection(247)), 15);
-  EXPECT_EQ(BodyFrame16(AsDirection(248)), 0);
+  EXPECT_EQ(BodyFrame16(DirType(7)), 0);
+  EXPECT_EQ(BodyFrame16(DirType(8)), 1);
+  EXPECT_EQ(BodyFrame16(DirType(247)), 15);
+  EXPECT_EQ(BodyFrame16(DirType(248)), 0);
 }
 
 TEST(BodyFrameTest, ThirtyTwoFramesRiseClockwiseInUnevenSteps) {
   std::array<int, 32> directions_per_frame{};
   int previous = 0;
   for (int angle = 0; angle < 256; ++angle) {
-    const int frame = BodyFrame32(AsDirection(angle));
+    const int frame = BodyFrame32(DirType(angle));
     ASSERT_GE(frame, 0);
     ASSERT_LT(frame, 32);
     // The last few directions round up to north again.
@@ -69,12 +104,12 @@ TEST(BodyFrameTest, CompassPointsLandOnEvenFrames) {
   EXPECT_EQ(BodyFrame16(DirType::kNorth), 0);
   EXPECT_EQ(BodyFrame16(DirType::kEast), 4);
   EXPECT_EQ(BodyFrame16(DirType::kSouth), 8);
-  EXPECT_EQ(BodyFrame16(AsDirection(255)), 0);
+  EXPECT_EQ(BodyFrame16(DirType(255)), 0);
   EXPECT_EQ(BodyFrame32(DirType::kNorth), 0);
   EXPECT_EQ(BodyFrame32(DirType::kEast), 8);
   EXPECT_EQ(BodyFrame32(DirType::kSouth), 16);
   EXPECT_EQ(BodyFrame32(DirType::kWest), 24);
-  EXPECT_EQ(BodyFrame32(AsDirection(255)), 0);
+  EXPECT_EQ(BodyFrame32(DirType(255)), 0);
 }
 
 TEST(BodyFrameTest, ThirtyTwoStepsAreSkewedTowardTheDiagonals) {
@@ -91,10 +126,10 @@ TEST(ShortestTurnTest, IsSignedAndClockwisePositive) {
 }
 
 TEST(ShortestTurnTest, WrapsAcrossNorthAndSouth) {
-  EXPECT_EQ(ShortestTurn(AsDirection(127), AsDirection(128)), 1);
-  EXPECT_EQ(ShortestTurn(AsDirection(128), AsDirection(127)), -1);
-  EXPECT_EQ(ShortestTurn(AsDirection(255), DirType::kNorth), 1);
-  EXPECT_EQ(ShortestTurn(DirType::kSouthWest, AsDirection(96)), -64);
+  EXPECT_EQ(ShortestTurn(DirType(127), DirType(128)), 1);
+  EXPECT_EQ(ShortestTurn(DirType(128), DirType(127)), -1);
+  EXPECT_EQ(ShortestTurn(DirType(255), DirType::kNorth), 1);
+  EXPECT_EQ(ShortestTurn(DirType::kSouthWest, DirType(96)), -64);
 }
 
 TEST(ShortestTurnTest, OppositeDirectionsAreHalfACircleApart) {
@@ -153,36 +188,36 @@ TEST(Direction256TowardTest, IsExactOnTheDiagonals) {
 TEST(Direction256TowardTest, InterpolatesLinearlyBetweenAxisAndDiagonal) {
   // Halfway along the shorter offset is halfway to the diagonal, 16 steps,
   // where the true angle (26.6 degrees) would be 19.
-  EXPECT_EQ(Direction256Toward(0, 0, 50, -100), AsDirection(16));
+  EXPECT_EQ(Direction256Toward(0, 0, 50, -100), DirType(16));
   // Past the diagonal the count runs back from the axis ahead.
-  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), AsDirection(64 - 16));
-  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), AsDirection(128 - 16));
-  EXPECT_EQ(Direction256Toward(0, 0, -50, 100), AsDirection(128 + 16));
-  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), AsDirection(256 - 16));
+  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), DirType(64 - 16));
+  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), DirType(128 - 16));
+  EXPECT_EQ(Direction256Toward(0, 0, -50, 100), DirType(128 + 16));
+  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), DirType(256 - 16));
 }
 
 TEST(Direction256TowardTest, RoundsTowardTheStartOfTheQuadrant) {
   // 1 in 3 is 10.67 steps off the nearer axis. Both halves of a quadrant
   // round it toward the axis the quadrant starts on.
-  EXPECT_EQ(Direction256Toward(0, 0, 1, -3), AsDirection(10));
-  EXPECT_EQ(Direction256Toward(0, 0, 3, -1), AsDirection(64 - 11));
-  EXPECT_EQ(Direction256Toward(0, 0, 3, 1), AsDirection(64 + 10));
-  EXPECT_EQ(Direction256Toward(0, 0, 1, 3), AsDirection(128 - 11));
+  EXPECT_EQ(Direction256Toward(0, 0, 1, -3), DirType(10));
+  EXPECT_EQ(Direction256Toward(0, 0, 3, -1), DirType(64 - 11));
+  EXPECT_EQ(Direction256Toward(0, 0, 3, 1), DirType(64 + 10));
+  EXPECT_EQ(Direction256Toward(0, 0, 1, 3), DirType(128 - 11));
 }
 
 TEST(Direction256TowardTest, NeverLeavesTheQuadrantOfTheTarget) {
   for (int x = 1; x <= 40; ++x) {
     for (int y = 1; y <= 40; ++y) {
-      const int north_east = static_cast<int>(Direction256Toward(0, 0, x, -y));
+      const int north_east = Direction256Toward(0, 0, x, -y).value();
       EXPECT_LT(north_east, 64) << x << " " << y;
-      const int north_west = static_cast<int>(Direction256Toward(0, 0, -x, -y));
+      const int north_west = Direction256Toward(0, 0, -x, -y).value();
       EXPECT_GE(north_west, 192) << x << " " << y;
     }
   }
 }
 
 TEST(Direction256TowardTest, SamePointGivesJustShyOfNorth) {
-  EXPECT_EQ(Direction256Toward(7, 7, 7, 7), AsDirection(255));
+  EXPECT_EQ(Direction256Toward(7, 7, 7, 7), DirType(255));
 }
 
 }  // namespace

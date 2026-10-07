@@ -656,12 +656,11 @@ static const BuildingTypeClass ClassTurret(
     true,       // Does it have a rotating turret?
     true,       // Can the building be color remapped to indicate owner?
     RTTI_NONE,  // The object type produced at this factory.
-    static_cast<game::DirType>(
-        208),        // Starting idle frame to match construction.
-    game::BSIZE_11,  // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::DirType(208),  // Starting idle frame to match construction.
+    game::BSIZE_11,      // SIZE:			Building size.
+    {},                  // Preferred exit cell list.
+    List1,               // OCCUPYLIST:	List of active foundation squares.
+    {}                   // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAAGun(

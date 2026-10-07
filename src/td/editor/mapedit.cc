@@ -263,9 +263,9 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The facing dial
   ........................................................................*/
-  FacingDial = std::make_unique<Dial8Class>(
-      kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY, kPopupFaceboxW,
-      kPopupFaceboxH, static_cast<game::DirType>(0));
+  FacingDial = std::make_unique<Dial8Class>(kPopupFacingdial, kPopupFaceboxX,
+                                            kPopupFaceboxY, kPopupFaceboxW,
+                                            kPopupFaceboxH, game::DirType(0));
 
   /*........................................................................
   The base percent-built slider & its label

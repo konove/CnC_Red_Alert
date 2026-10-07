@@ -230,7 +230,7 @@ Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance) {
   auto x = static_cast<int16_t>(start.x());
   auto y = static_cast<int16_t>(start.y());
 
-  base::MovePoint(x, y, static_cast<uint8_t>(dir),
+  base::MovePoint(x, y, static_cast<uint8_t>(dir.value()),
                   static_cast<int16_t>(distance));
   return Coordinate::FromLeptons(x, y);
 }

@@ -175,14 +175,14 @@ class DriveClass : public FootClass {
 
  private:
   struct TurnTrackType {
-    int Track;              // Which track to use.
-    int StartTrack;         // Track when starting from stand-still.
+    int Track = 0;          // Which track to use.
+    int StartTrack = 0;     // Track when starting from stand-still.
     game::DirType Facing;   // Facing when track has been completed.
-    TrackControlType Flag;  // List processing flag bits.
+    TrackControlType Flag{};  // List processing flag bits.
   };
 
   struct TrackType {
-    Coordinate Offset;     // Offset to origin coordinate.
+    Coordinate Offset{};   // Offset to origin coordinate.
     game::DirType Facing;  // Facing (primary track).
   };
 

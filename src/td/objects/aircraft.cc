@@ -471,15 +471,17 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
       const game::FacingType face = game::NearestFacing(SecondaryFacing);
-      base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
+      base::MovePoint(xx, yy,
+                      static_cast<uint8_t>(SecondaryFacing.Current().value()),
                       static_cast<int16_t>(_stretch.at(face)));
       CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
-      base::MovePoint(xx, yy,
-                      static_cast<uint8_t>(SecondaryFacing.Current() +
-                                           game::DirType::kSouth),
-                      static_cast<int16_t>(_stretch.at(face) * 2));
+      base::MovePoint(
+          xx, yy,
+          static_cast<uint8_t>(
+              (SecondaryFacing.Current() + game::DirType::kSouth).value()),
+          static_cast<int16_t>(_stretch.at(face) * 2));
       CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
@@ -532,8 +534,8 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
           const Coordinate coord =
               Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
                   .Center();
-          const auto dir = static_cast<game::DirType>(
-              base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir =
+              game::DirType(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
           if (!TheMap().In_Radar(Cell::Containing(coord))) {
             base::DeletePooled(air);
@@ -587,7 +589,8 @@ void AircraftClass::Write_INI(engine::file::IniFile& ini) {
       absl::SNPrintF(
           buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio(),
-          Cell::Containing(unit->Coord).index(), unit->PrimaryFacing.Current(),
+          Cell::Containing(unit->Coord).index(),
+          unit->PrimaryFacing.Current().value(),
           // Read_INI() queues the scenario's mission behind the
           // move an aircraft enters the map with, so the queue is
           // where an aircraft just read keeps it.
@@ -2851,8 +2854,8 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const Coordinate newcoord = Coord_Move(tcoord, game::AsDirection(face),
-                                               static_cast<uint16_t>(r));
+        const Coordinate newcoord =
+            Coord_Move(tcoord, game::DirType(face), static_cast<uint16_t>(r));
         const Cell newcell = Cell::Containing(newcoord);
 
         if (TheMap().In_Radar(newcell) &&

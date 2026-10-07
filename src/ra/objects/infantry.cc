@@ -3339,11 +3339,10 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
               Mission_From_Name(tokens.Next());
           const std::string_view validation = tokens.Next();
           if (!validation.empty()) {
-            dir = static_cast<game::DirType>(
-                base::ParseIntegerOr<int>(validation, 0));
+            dir = game::DirType(base::ParseIntegerOr<int>(validation, 0));
             tp = TriggerType::FromName(tokens.Next());
           } else {
-            dir = static_cast<game::DirType>(0);
+            dir = game::DirType(0);
             tp = nullptr;
           }
 
@@ -3421,7 +3420,7 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
                      Mission_Name(infantry->Mission == MISSION_NONE
                                       ? infantry->MissionQueue
                                       : infantry->Mission),
-                     infantry->PrimaryFacing.Current(),
+                     infantry->PrimaryFacing.Current().value(),
                      infantry->Trigger != nullptr
                          ? infantry->Trigger->Class->IniName
                          : "None");

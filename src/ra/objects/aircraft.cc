@@ -497,8 +497,8 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   */
   game::DirType rotation = game::DirType::kNorth;
   if (Class->Rotation == 16) {
-    rotation = game::AsDirection(
-        base::At(Rotation16, static_cast<int>(SecondaryFacing.Current())));
+    rotation =
+        game::DirType(base::At(Rotation16, SecondaryFacing.Current().value()));
   }
 
   /*
@@ -581,14 +581,16 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
     auto xx = static_cast<int16_t>(x);
     auto yy = static_cast<int16_t>(y - Lepton_To_Pixel(Height));
     const game::FacingType face = game::NearestFacing(SecondaryFacing);
-    base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
+    base::MovePoint(xx, yy,
+                    static_cast<uint8_t>(SecondaryFacing.Current().value()),
                     static_cast<int16_t>(_stretch.at(face)));
     CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
                   window, flags, {}, DisplayClass::UnitShadow);
 
     base::MovePoint(
         xx, yy,
-        static_cast<uint8_t>(SecondaryFacing.Current() + game::DirType::kSouth),
+        static_cast<uint8_t>(
+            (SecondaryFacing.Current() + game::DirType::kSouth).value()),
         static_cast<int16_t>(_stretch.at(face) * 2));
     CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                   window, flags, {}, DisplayClass::UnitShadow);
@@ -655,8 +657,7 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
 
           token = tokens.Next();
           if (!token.empty()) {
-            dir =
-                static_cast<game::DirType>(base::ParseIntegerOr<int>(token, 0));
+            dir = game::DirType(base::ParseIntegerOr<int>(token, 0));
           } else {
             dir = game::DirType::kNorth;
           }
@@ -1431,8 +1432,8 @@ int AircraftClass::Mission_Retreat() {
       *results. Use this value to head the aircraft *	toward the "friendly"
       *map edge.
       */
-      PrimaryFacing.Set_Desired(static_cast<game::DirType>(
-          (static_cast<uint32_t>(House->Control.Edge) & 0x03U) << 6U));
+      PrimaryFacing.Set_Desired(game::DirType(static_cast<int>(
+          (static_cast<uint32_t>(House->Control.Edge) & 0x03U) << 6U)));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = kKeepFlying;
       break;
@@ -2513,8 +2514,7 @@ int AircraftClass::Mission_Attack() {
           */
           int diff = SecondaryFacing.Difference(DirectionTo(NavCom));
           diff = std::clamp(diff, -128, 128);
-          PrimaryFacing = static_cast<game::DirType>(
-              static_cast<int>(SecondaryFacing.Current()) + diff);
+          PrimaryFacing = SecondaryFacing.Current() + diff;
         }
         return 1;
       }
@@ -3204,8 +3204,8 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
 
     for (int r = range - 0x0100; r > 0x0100; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const Coordinate newcoord = Coord_Move(tcoord, game::AsDirection(face),
-                                               static_cast<uint16_t>(r));
+        const Coordinate newcoord =
+            Coord_Move(tcoord, game::DirType(face), static_cast<uint16_t>(r));
         const Cell newcell = Cell::Containing(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
