@@ -285,7 +285,7 @@ bool TeamType::Edit() {
       up_shape, down_shape);
   for (const TeamMissionType mission :
        magic_enum::enum_values<TeamMissionType>()) {
-    mission_drop.Add_Item(TeamType::MissionName(mission));
+    mission_drop.Add_Item(MissionName(mission));
   }
   mission_drop.Set_Selected_Index(0);
   mission_drop.Add_Tail(*commands);
@@ -294,7 +294,7 @@ bool TeamType::Edit() {
   // list and the redraw links in the one the selected mission needs: a text
   // field for a number or waypoint, or a list of quarries, formations or unit
   // missions.
-  char argument_text[6] = {0};
+  char argument_text[6] = {};
   EditClass argument_edit(kButtonArg, argument_text, sizeof(argument_text),
                           FontType::kEditor, TPF_NOSHADOW,
                           mission_drop.X + mission_drop.Width + 15,
