@@ -567,8 +567,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
             TextString(
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
-            &ThePalettes().color_remaps().at(ThePlayer()->RemapColor), kTBlack,
-            kTextFont, TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
+            &ThePalettes().color_remaps().at(ThePlayer()->RemapColor),
+            kTransparentBlack, kTextFont,
+            TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
       }
 
       MouseClass::Repair.Draw_Me(view, true);
@@ -974,7 +975,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = kTBlack;  // Color of the pixel to plot.
+    int color = kTransparentBlack;  // Color of the pixel to plot.
     const auto housebit = base::Bit<uint16_t>(ThePlayer()->Class->House);
     const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
@@ -983,7 +984,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // TheDebugState().unshroud())) {
       color = cellptr->Cell_Color(true);
-      if (celljammed & housebit && color == kTBlack) {
+      if (celljammed & housebit && color == kTransparentBlack) {
         color = kBlack;  // FadingWayDark[color];
         usjamming = true;
       }
@@ -995,7 +996,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     **	If no color override occurs for this cell, then render the underlying
     **	terrain.
     */
-    if (color == kTBlack) {
+    if (color == kTransparentBlack) {
       if (ZoomFactor > 1) {
         std::span<const std::byte> ptr;
         int icon = 0;
@@ -1459,20 +1460,20 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
                         RadY + RadOffY + BaseY + view.y_pos(), RadarWidth,
                         RadarHeight);
 
-  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
-  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLightGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLightGreen);
 
   // Draw upper right hand corner
-  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLtGreen);
-  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLightGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLightGreen);
 
   // Draw lower left hand corner
-  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLtGreen);
-  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLightGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLightGreen);
 
   // Draw lower right hand corner
-  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLtGreen);
-  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLightGreen);
 
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
@@ -2170,8 +2171,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
   MouseClass::Zoom.Draw_Me(view, true);
 
   Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   FontType::k6PointGradient, TPF_NOSHADOW);
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                   kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW);
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
@@ -2202,8 +2203,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_BUILDNGS, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     FontType::k6PointGradient, TPF_NOSHADOW);
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                     kTransparentBlack, FontType::k6PointGradient,
+                     TPF_NOSHADOW);
     y += 12 + 1;
 
     // count & print buildings
@@ -2213,8 +2215,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_UNITS, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     FontType::k6PointGradient, TPF_NOSHADOW);
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                     kTransparentBlack, FontType::k6PointGradient,
+                     TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
@@ -2223,8 +2226,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_INFANTRY, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     FontType::k6PointGradient, TPF_NOSHADOW);
+                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                     kTransparentBlack, FontType::k6PointGradient,
+                     TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
@@ -2264,14 +2268,16 @@ void RadarClass::Draw_Names(PixelView& view) const {
   int y = RadY + RadOffY + 4;
 
   Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   FontType::k6PointGradient, TPF_NOSHADOW);
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                   kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW);
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   FontType::k6PointGradient, TPF_RIGHT | TPF_NOSHADOW);
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                   kTransparentBlack, FontType::k6PointGradient,
+                   TPF_RIGHT | TPF_NOSHADOW);
   y += 12 + 1;
 
-  view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y, kLtGrey);
+  view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
+                kLightGrey);
   y += 4;
 
   for (HousesType house = HOUSE_MULTI1;
@@ -2316,7 +2322,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTBlack,
+    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTransparentBlack,
                      FontType::k6PointGradient, style);
 
     int kills = 0;
@@ -2326,7 +2332,8 @@ void RadarClass::Draw_Names(PixelView& view) const {
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
     Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                     kTBlack, FontType::k6PointGradient, style | TPF_RIGHT);
+                     kTransparentBlack, FontType::k6PointGradient,
+                     style | TPF_RIGHT);
 
     y += 12 + 1;
   }

@@ -127,22 +127,22 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
 
           // Filler, Shadow, Hilite, Corner colors
 
-          {kLtGrey, kWhite, kGrey, kLtGrey},   // 0 Button is down.
-          {kLtGrey, kGrey, kWhite, kLtGrey},   // 1 Button is up w/border.
-          {kLtBlue, kBlue, kLtCyan, kLtBlue},  // 2 Raised blue.
-          {kGrey, kWhite, kBlack, kGrey},      // 3 Button is disabled down.
-          {kGrey, kBlack, kWhite, kLtGrey},    // 4 Button is disabled up.
-          {kLtGrey, kGrey, kWhite, kLtGrey},   // 5 Button is up w/arrows.
+          {kLightGrey, kWhite, kGrey, kLightGrey},  // 0 Button is down.
+          {kLightGrey, kGrey, kWhite, kLightGrey},  // 1 Button is up w/border.
+          {kLightBlue, kBlue, kLightCyan, kLightBlue},  // 2 Raised blue.
+          {kGrey, kWhite, kBlack, kGrey},       // 3 Button is disabled down.
+          {kGrey, kBlack, kWhite, kLightGrey},  // 4 Button is disabled up.
+          {kLightGrey, kGrey, kWhite, kLightGrey},  // 5 Button is up w/arrows.
           //{ CC_GREEN_BKGD, CC_LIGHT_GREEN, CC_GREEN_SHADOW,  CC_GREEN_CORNERS
           //},
           //// 6 Button is down.
           //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS
           //},
           //// 7 Button is up w/border.
-          {kCcGreenBkgd, 14, 12, 13},       // 6 Button is down.
-          {kCcGreenBkgd, 12, 14, 13},       // 7 Button is up w/border.
-          {kGrey, kWhite, kBlack, kGrey},   // 8 Button is disabled down.
-          {kGrey, kBlack, kLtGrey, kGrey},  // 9 Button is disabled up.
+          {kCcGreenBkgd, 14, 12, 13},          // 6 Button is down.
+          {kCcGreenBkgd, 12, 14, 13},          // 7 Button is up w/border.
+          {kGrey, kWhite, kBlack, kGrey},      // 8 Button is disabled down.
+          {kGrey, kBlack, kLightGrey, kGrey},  // 9 Button is disabled up.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
           {kBlack, 14, 14, kBlack},  // 10 List box.

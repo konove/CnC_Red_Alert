@@ -443,8 +443,8 @@ int MapEditClass::Placement_Dialog() {
       **	functions won't work!
       */
       Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,
-                       kPictureY + kMargin, scheme, kTBlack, FontType::kEditor,
-                       TPF_CENTER | TPF_NOSHADOW);
+                       kPictureY + kMargin, scheme, kTransparentBlack,
+                       FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
 
       /*
       **	Redraw buttons

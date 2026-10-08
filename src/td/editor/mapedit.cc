@@ -1460,7 +1460,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     /*
     ......................... print the label ..........................
     */
-    Fancy_Text_Print(view, buf, 320, 0, kCcTan, kTBlack,
+    Fancy_Text_Print(view, buf, 320, 0, kCcTan, kTransparentBlack,
                      FontType::k6PointGradient,
                      TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
   }

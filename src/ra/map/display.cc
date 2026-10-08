@@ -367,7 +367,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   static constexpr auto MouseCols =
       std::to_array<TranslucentColor>({{kBlack, kBlack, 110},
                                        {kWhite, kWhite, 110},
-                                       {kLtGrey, kLtGrey, 110},
+                                       {kLightGrey, kLightGrey, 110},
                                        {DKGREY, DKGREY, 110}});
   static constexpr auto MagicCols =
       std::to_array<TranslucentColor>({{32, 32, 110},
@@ -380,9 +380,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                                        {39, 39, 110},
                                        {kBlack, kBlack, 200},
                                        {kWhite, kBlack, 40},
-                                       {kLtGrey, kBlack, 80},
+                                       {kLightGrey, kBlack, 80},
                                        {DKGREY, kBlack, 140},
-                                       {kLtGreen, kBlack, 130}});
+                                       {kLightGreen, kBlack, 130}});
   static constexpr auto WhiteCols =
       std::to_array<TranslucentColor>({{1, kWhite, 80}});
   static constexpr auto ShadowCols =
@@ -391,12 +391,12 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                                        {LTGRAY, kBlack, 250},
                                        {DKGRAY, kBlack, 250}});
   static constexpr auto UShadowCols =
-      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 130}});
+      std::to_array<TranslucentColor>({{kLightGreen, kBlack, 130}});
   // Only the source color matters; the fade is the gold remap table.
   static constexpr auto UShadowColsAir =
-      std::to_array<TranslucentColor>({{kLtGreen, kWhite, 0}});
+      std::to_array<TranslucentColor>({{kLightGreen, kWhite, 0}});
   static constexpr auto UShadowColsSnow =
-      std::to_array<TranslucentColor>({{kLtGreen, kBlack, 75}});
+      std::to_array<TranslucentColor>({{kLightGreen, kBlack, 75}});
 
   /*
   **	Invoke parent's init routine.
@@ -3028,7 +3028,7 @@ void DisplayClass::Mouse_Left_Up(Cell cell, bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object != nullptr) {
-      int color = kLtGrey;
+      int color = kLightGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
@@ -3037,7 +3037,7 @@ void DisplayClass::Mouse_Left_Up(Cell cell, bool shadow, ObjectClass* object,
         color = kGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = kLtGrey;
+          color = kLightGrey;
         } else {
           color = kPink;
         }

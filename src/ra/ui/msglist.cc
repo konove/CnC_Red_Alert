@@ -1140,8 +1140,8 @@ void MessageListClass::Draw(PixelView& view) {
           EditLabel->X + StringPixelWidth(TextFontStyle(EditLabel->TextFont,
                                                         EditLabel->Style),
                                           EditLabel->Text),
-          EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->TextFont,
-          EditLabel->Style);
+          EditLabel->Y, EditLabel->Color, kTransparentBlack,
+          EditLabel->TextFont, EditLabel->Style);
     }
 
     if (TheScreen().IsVisible(&view)) {

@@ -181,8 +181,8 @@ void CreditLine::Render(PixelView& view) const {
   // The text printer does not clip vertically, so a line is only drawn while
   // all of it is on the page.
   if (y_ < view.height() && y_ > -kMarginRows) {
-    Fancy_Text_Print(view, text_.c_str(), x_, y_, Get_Color_Scheme(), kTBlack,
-                     kCreditFont, PrintFlags(alignment_));
+    Fancy_Text_Print(view, text_.c_str(), x_, y_, Get_Color_Scheme(),
+                     kTransparentBlack, kCreditFont, PrintFlags(alignment_));
   }
 }
 

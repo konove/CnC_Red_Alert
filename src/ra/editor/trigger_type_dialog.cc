@@ -120,8 +120,8 @@ void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
     scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
                                                        : PCOLOR_GREY);
   }
-  Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                          flags, width, kTabStops);
+  Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTransparentBlack,
+                          font, flags, width, kTabStops);
 }
 
 // Returns the name selected in `list`, or an empty view when the list has no
@@ -962,16 +962,17 @@ bool TriggerType::Edit() {
 
       // Draw the captions
       Fancy_Text_Print(view, "Trigger Event:", event1_list.X, event1_list.Y - 7,
-                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Action to Perform:", action1_list.X,
-                       action1_list.Y - 7, scheme, kTBlack, FontType::kEditor,
+                       scheme, kTransparentBlack, FontType::kEditor,
                        TPF_NOSHADOW);
+      Fancy_Text_Print(view, "Action to Perform:", action1_list.X,
+                       action1_list.Y - 7, scheme, kTransparentBlack,
+                       FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "House:", owner_list.X, owner_list.Y - 7, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Name:", name_edit.X, name_edit.Y - 7, scheme,
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
+                       kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Persistence:", persistence_list.X,
-                       persistence_list.Y - 7, scheme, kTBlack,
+                       persistence_list.Y - 7, scheme, kTransparentBlack,
                        FontType::kEditor, TPF_NOSHADOW);
 
       // For linked events, draw a bracket from each event list to the action

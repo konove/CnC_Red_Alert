@@ -505,8 +505,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/techno.cc",
-          "startLine": 4170,
-          "endLine": 4170,
+          "startLine": 4171,
+          "endLine": 4171,
           "text": "game::ResultType TechnoClass::Take_Damage(int& damage, int distance,",
           "before": [
             " *                                                                                             *",
@@ -751,8 +751,8 @@
       "anchors": [
         {
           "path": "src/td/net/netdlg.cc",
-          "startLine": 2628,
-          "endLine": 2628,
+          "startLine": 2629,
+          "endLine": 2629,
           "text": "      if (TheNetwork().winsock().Get_Connected()) {",
           "before": [
             "        TheSpecialFlags().tiberium_spreads = 0;",
@@ -1096,8 +1096,8 @@
       "anchors": [
         {
           "path": "src/td/objects/techno.cc",
-          "startLine": 3071,
-          "endLine": 3071,
+          "startLine": 3072,
+          "endLine": 3072,
           "text": "Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {",
           "before": [
             " *                                                                                             *",
@@ -1307,8 +1307,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/cell.cc",
-          "startLine": 1709,
-          "endLine": 1709,
+          "startLine": 1711,
+          "endLine": 1711,
           "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
           "before": [
             " *=========================================================================*/",
@@ -3114,8 +3114,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/scenario.cc",
-          "startLine": 2009,
-          "endLine": 2009,
+          "startLine": 2010,
+          "endLine": 2010,
           "text": "      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {",
           "before": [
             "",

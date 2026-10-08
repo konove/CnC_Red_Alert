@@ -256,7 +256,7 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
                        {
                            .Filler = kGrey,
                            .Shadow = kBlack,
-                           .Highlight = kLtGrey,
+                           .Highlight = kLightGrey,
                            .Corner = kGrey,
                        });
       break;
@@ -922,11 +922,11 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
       Fancy_Text_Print(view, text, (w / 2) + x, 4 + y, Get_Color_Scheme(),
-                       kTBlack, FontType::kEditor,
+                       kTransparentBlack, FontType::kEditor,
                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
       Fancy_Text_Print(view, text, (w / 2) + x, 16 + y, Get_Color_Scheme(),
-                       kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+                       kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
       const FontStyle font = TextFontStyle(kTextFont, TPF_CENTER | kTextFlags);
       const int length = StringPixelWidth(font, text);
       view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,

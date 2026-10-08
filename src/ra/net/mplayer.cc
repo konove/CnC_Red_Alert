@@ -578,7 +578,7 @@ int Surrender_Dialog(const char* text) {
       //...............................................................
       // Stalemate games.
       Fancy_Text_Print(view, text, kDDialogCx, kDDialogY + kDTopmargin,
-                       Get_Color_Scheme(), kTBlack, kTextFont,
+                       Get_Color_Scheme(), kTransparentBlack, kTextFont,
                        TPF_CENTER | kTextFlags);
 
       //..................................................................
@@ -760,8 +760,8 @@ int Abort_Dialog() {
       //	Draw the captions
       //...............................................................
       Fancy_Text_Print(view, TextString(TXT_CONFIRM_EXIT), kDDialogCx,
-                       kDDialogY + kDTopmargin, Get_Color_Scheme(), kTBlack,
-                       kTextFont, TPF_CENTER | kTextFlags);
+                       kDDialogY + kDTopmargin, Get_Color_Scheme(),
+                       kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
 
       //..................................................................
       //	Redraw the buttons

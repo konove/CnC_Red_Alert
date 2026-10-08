@@ -1775,35 +1775,35 @@ static int Net_Join_Dialog() {
         //...............................................................
         Fancy_Text_Print(view, TXT_CHANNEL_GAMES,
                          d_gamelist_x + (d_gamelist_w / 2),
-                         d_gamelist_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                         TPF_CENTER | kTextFlags);
+                         d_gamelist_y - d_txt6_h, scheme, kTransparentBlack,
+                         kTextFont, TPF_CENTER | kTextFlags);
         Fancy_Text_Print(view, TXT_PLAYERS,
                          d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                         TPF_CENTER | kTextFlags);
+                         d_playerlist_y - d_txt6_h, scheme, kTransparentBlack,
+                         kTextFont, TPF_CENTER | kTextFlags);
 
         //...............................................................
         // For game-browsing, label the name, side, & color buttons:
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
           Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
-                           d_name_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                           TPF_CENTER | kTextFlags);
+                           d_name_y - d_txt6_h, scheme, kTransparentBlack,
+                           kTextFont, TPF_CENTER | kTextFlags);
 
 #ifdef OLDWAY
           Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
-                           d_gdi_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                           TPF_CENTER | kTextFlags);
+                           d_gdi_y - d_txt6_h, scheme, kTransparentBlack,
+                           kTextFont, TPF_CENTER | kTextFlags);
 #else
           Fancy_Text_Print(view, TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
-                           d_house_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                           TPF_CENTER | kTextFlags);
+                           d_house_y - d_txt6_h, scheme, kTransparentBlack,
+                           kTextFont, TPF_CENTER | kTextFlags);
 #endif
 
           Fancy_Text_Print(view, TXT_COLOR_COLON,
                            d_dialog_x + (d_dialog_w / 4 * 3),
-                           d_color_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                           TPF_CENTER | kTextFlags);
+                           d_color_y - d_txt6_h, scheme, kTransparentBlack,
+                           kTextFont, TPF_CENTER | kTextFlags);
         } else {
           //...............................................................
           // If we're joined to a game, just print the player's name & side.
@@ -1824,7 +1824,7 @@ static int Net_Join_Dialog() {
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                   : &ThePalettes().color_remaps().at(TheSession().ColorIdx),
-              kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+              kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
         }
 
         //...............................................................
@@ -1988,7 +1988,7 @@ static int Net_Join_Dialog() {
         // Unit count, tech level, credits, ai players
         //...............................................................
         Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticcount.Set_Text(txt);
@@ -1997,7 +1997,7 @@ static int Net_Join_Dialog() {
         // d_count_w + 2 *2, d_count_y, scheme, BLACK, kTpfText);
 
         Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
@@ -2009,7 +2009,8 @@ static int Net_Join_Dialog() {
         // d_level_w + 2 *2, d_level_y, scheme, BLACK, kTpfText);
 
         Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         scheme, kTransparentBlack, kTextFont,
+                         kTextFlags | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me(view);
@@ -2017,7 +2018,7 @@ static int Net_Join_Dialog() {
         // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, kTpfText);
 
         Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                         d_aiplayers_y, scheme, kTBlack, kTextFont,
+                         d_aiplayers_y, scheme, kTransparentBlack, kTextFont,
                          kTextFlags | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
@@ -4469,20 +4470,21 @@ static int Net_New_Dialog() {
         //...............................................................
         Fancy_Text_Print(view, TXT_PLAYERS,
                          d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+                         d_playerlist_y - d_txt6_h, scheme, kTransparentBlack,
+                         kTextFont, kTextFlags | TPF_CENTER);
         Fancy_Text_Print(view, TXT_SCENARIOS,
                          d_scenariolist_x + (d_scenariolist_w / 2),
-                         d_scenariolist_y - d_txt6_h, scheme, kTBlack,
+                         d_scenariolist_y - d_txt6_h, scheme, kTransparentBlack,
                          kTextFont, kTextFlags | TPF_CENTER);
         Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         scheme, kTransparentBlack, kTextFont,
+                         kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                         d_aiplayers_y, scheme, kTBlack, kTextFont,
+                         d_aiplayers_y, scheme, kTransparentBlack, kTextFont,
                          kTextFlags | TPF_RIGHT);
       }
 
@@ -5711,15 +5713,15 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(view, status.c_str(), 320, y + (d_margin * 2), scheme,
-                     kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+                     kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
 
     Fancy_Text_Print(view, time_allowed.c_str(), 320,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kTBlack,
-                     kTextFont, TPF_CENTER | kTextFlags);
+                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme,
+                     kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
 
     Fancy_Text_Print(view, bForfeitWarning ? szNewCancelMessage : buf3, 320,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
-                     kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+                     kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
 
     game::TheMouse().Show();
   }

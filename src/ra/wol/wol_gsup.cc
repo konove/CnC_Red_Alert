@@ -1016,12 +1016,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //...............................................................
         Fancy_Text_Print(view, TXT_PLAYERS,
                          d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+                         d_playerlist_y - d_txt6_h, scheme, kTransparentBlack,
+                         kTextFont, kTextFlags | TPF_CENTER);
         if (bHost) {
           Fancy_Text_Print(view, TXT_SCENARIOS,
                            d_scenariolist_x + d_scenariolist_w,
-                           d_scenariolist_y - 12, scheme, kTBlack,
+                           d_scenariolist_y - 12, scheme, kTransparentBlack,
                            FontType::kType, TPF_RIGHT);
         }
         //				else
@@ -1029,22 +1029,23 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
         Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
-                         kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, kTBlack, kTextFont, kTextFlags | TPF_RIGHT);
+                         scheme, kTransparentBlack, kTextFont,
+                         kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                         d_aiplayers_y, scheme, kTBlack, kTextFont,
+                         d_aiplayers_y, scheme, kTransparentBlack, kTextFont,
                          kTextFlags | TPF_RIGHT);
         Fancy_Text_Print(
             view, TXT_SIDE_COLON,
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
-            kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+            kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
         Fancy_Text_Print(view, TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
-                         d_color_y - d_txt6_h, scheme, kTBlack, kTextFont,
-                         TPF_CENTER | kTextFlags);
+                         d_color_y - d_txt6_h, scheme, kTransparentBlack,
+                         kTextFont, TPF_CENTER | kTextFlags);
 
         const char* szGameKind = nullptr;
         const dib::Image* pIcon = nullptr;
@@ -1076,7 +1077,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //	Game kind.
         Fancy_Text_Print(view, szGameKind, d_gamekind_x,
                          d_gamekind_y - (iGameInfoSpacingY * 1), scheme,
-                         kTBlack, FontType::kType, TPF_NONE);
+                         kTransparentBlack, FontType::kType, TPF_NONE);
         //	Game kind icon.
         if (pIcon != nullptr) {
           DrawDib(view, *pIcon, d_gamekind_x - 16,
@@ -1087,7 +1088,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Fancy_Text_Print(view, TXT_WOL_CG_TOURNAMENT,
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
-                           kTBlack, FontType::kType, TPF_NONE);
+                           kTransparentBlack, FontType::kType, TPF_NONE);
           DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconTournament),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
@@ -1100,7 +1101,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Fancy_Text_Print(view, szPrivatePassword.c_str(),
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
-                           kTBlack, FontType::kType, TPF_NONE);
+                           kTransparentBlack, FontType::kType, TPF_NONE);
           DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconPrivate),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
@@ -1229,8 +1230,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
         //	Print scenario name.
         Conquer_Clip_Text_Print(view, szScenarioNameDisplay, d_gamekind_x,
-                                d_gamekind_y, scheme, kTBlack, FontType::kType,
-                                TPF_NONE, d_gamekind_w);
+                                d_gamekind_y, scheme, kTransparentBlack,
+                                FontType::kType, TPF_NONE, d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);

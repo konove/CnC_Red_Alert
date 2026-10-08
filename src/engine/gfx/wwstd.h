@@ -32,21 +32,21 @@
 
 // Index 0 shows as black, but a transparent blit or a text background skips it:
 // "transparent black". kBlack is the black that is always drawn.
-inline constexpr int kTBlack = 0;
+inline constexpr int kTransparentBlack = 0;
 inline constexpr int kPurple = 1;
 inline constexpr int kCyan = 2;
 inline constexpr int kGreen = 3;
-inline constexpr int kLtGreen = 4;
+inline constexpr int kLightGreen = 4;
 inline constexpr int kYellow = 5;
 inline constexpr int kPink = 6;
 inline constexpr int kBrown = 7;
 inline constexpr int kRed = 8;
-inline constexpr int kLtCyan = 9;
-inline constexpr int kLtBlue = 10;
+inline constexpr int kLightCyan = 9;
+inline constexpr int kLightBlue = 10;
 inline constexpr int kBlue = 11;
 inline constexpr int kBlack = 12;
 inline constexpr int kGrey = 13;
-inline constexpr int kLtGrey = 14;
+inline constexpr int kLightGrey = 14;
 inline constexpr int kWhite = 15;
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_

@@ -349,7 +349,7 @@ std::vector<unsigned char> Get_Radar_Icon(
                   pixel =
                       ptr.at(base::ToSize((sample_y * pixel_width) + sample_x));
 
-                  if (pixel == kLtGreen) {
+                  if (pixel == kLightGreen) {
                     pixel = 0;
                   }
                   if (pixel) {

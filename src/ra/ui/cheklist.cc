@@ -146,8 +146,8 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTBlack, TextFont, flags,
-                          width, Tabs);
+  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTransparentBlack,
+                          TextFont, flags, width, Tabs);
 }
 
 }  // namespace ra

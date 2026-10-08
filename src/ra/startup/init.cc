@@ -372,7 +372,7 @@ bool Init_Game() {
     game::TheMouse().Hide();
     Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
-                     kTBlack, kTextFont,
+                     kTransparentBlack, kTextFont,
                      TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
     game::TheMouse().Show();
 
@@ -2317,13 +2317,13 @@ static void Bootstrap() {
   Init_Expansion_Files();
 
   SidebarScheme.Background = kBlack;
-  SidebarScheme.Corners = kLtGrey;
+  SidebarScheme.Corners = kLightGrey;
   SidebarScheme.Shadow = DKGREY;
   SidebarScheme.Highlight = kWhite;
-  SidebarScheme.Color = kLtGrey;
+  SidebarScheme.Color = kLightGrey;
   SidebarScheme.Bright = kWhite;
   SidebarScheme.BrightColor = kWhite;
-  SidebarScheme.Box = kLtGrey;
+  SidebarScheme.Box = kLightGrey;
   Set_Color_Scheme(&SidebarScheme);
 }
 

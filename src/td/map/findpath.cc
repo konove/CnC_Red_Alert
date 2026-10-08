@@ -132,7 +132,8 @@ static inline void Draw_Cell_Point(Cell cell, bool passable, int threat_stage,
 
       if (TheMap().Coord_To_Pixel(cell.Center(), x, y)) {
         if (threat_stage > 2) {
-          TheScreen().visible_view().PutPixel(x, y, passable ? kLtGreen : kRed);
+          TheScreen().visible_view().PutPixel(x, y,
+                                              passable ? kLightGreen : kRed);
         } else {
           TheScreen().visible_view().PutPixel(
               x, y,
@@ -328,7 +329,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::Facing& dir,
     /*
     ** Mark cell on the map
     */
-    Draw_Cell_Point(curr_pos, true, -1, kLtCyan);
+    Draw_Cell_Point(curr_pos, true, -1, kLightCyan);
 
     /*
     ** Adjust to the next list position and direction.
@@ -435,7 +436,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         path->Cost -=
             Passable_Cell(pos, base::At(path->Command, list), -1, threshhold);
         Clear_Overlap(path, pos);
-        Draw_Cell_Point(pos, true, -1, kLtBlue);
+        Draw_Cell_Point(pos, true, -1, kLightBlue);
         idx++;
         list++;
       }
@@ -521,7 +522,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         pos = Adjacent_Cell(pos, path->Command[list]);
         path->Cost -= Passable_Cell(pos, path->Command[list], -1, threshhold);
         path->Overlap[pos.index() >> 5] &= ~(1 << ((pos.index() & 31) - 1));
-        Draw_Cell_Point(pos, true, -1, kLtBlue);
+        Draw_Cell_Point(pos, true, -1, kLightBlue);
         idx++;
         list++;
       }
@@ -1602,7 +1603,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
           color = kGreen;
           break;
         case game::MOVE_MOVING_BLOCK:
-          color = kLtGreen;
+          color = kLightGreen;
           break;
 
         case game::MOVE_DESTROYABLE:
@@ -1618,7 +1619,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
           break;
       }
       if (Cell::FromXY(x, y) == start) {
-        color = kLtBlue;
+        color = kLightBlue;
       }
       if (Cell::FromXY(x, y) == dest) {
         color = kBlue;

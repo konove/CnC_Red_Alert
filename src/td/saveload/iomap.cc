@@ -284,7 +284,7 @@ void HelpClass::ResetTransientUiState() {
   IsRight = false;
   Cost = X = Y = DrawX = DrawY = Width = 0;
   Text = TXT_NONE;
-  Color = kLtGrey;
+  Color = kLightGrey;
   CountDownTimer.Set(0);
   base::At(OverlapList, 0) = REFRESH_EOL;
 }

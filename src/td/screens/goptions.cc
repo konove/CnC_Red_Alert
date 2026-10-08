@@ -317,7 +317,7 @@ void GameOptionsClass::Process() {
               WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
               ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
                                                     : (24 * resfactor)),
-          kGrey, kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
+          kGrey, kTransparentBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
           ScenarioName, TheGameState().version_text());
 #else
       Fancy_Text_Print(
@@ -334,7 +334,7 @@ void GameOptionsClass::Process() {
                        kWindowHeight) -
               (TheSession().type() == GAME_NORMAL ? 32 * resfactor
                                                   : 24 * resfactor),
-          kGrey, kTBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
+          kGrey, kTransparentBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
           TheWorld().scenario_name(), Version_Number(),
           TheGameState().version_text());
 #endif
@@ -674,7 +674,7 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   */
   if (text != TXT_NONE) {
     Fancy_Text_Print(view, text, (w / 2) + x, (5 * factor) + y, kCcGreen,
-                     kTBlack, FontType::k6PointGradient,
+                     kTransparentBlack, FontType::k6PointGradient,
                      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     const FontStyle font =

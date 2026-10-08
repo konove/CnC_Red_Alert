@@ -62,8 +62,8 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
     return pressed || on ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
                          : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
   }();
-  Fancy_Text_Print(view, text, x, y, Get_Color_Scheme(), kTBlack, font,
-                   flags | state | TPF_CENTER);
+  Fancy_Text_Print(view, text, x, y, Get_Color_Scheme(), kTransparentBlack,
+                   font, flags | state | TPF_CENTER);
 }
 
 int UiSkin::Scale(const int amount, const int numerator,
@@ -102,15 +102,16 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
   const TextPrintType state =
       focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack, font,
-                          flags | state, width - 2);
+  Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTransparentBlack,
+                          font, flags | state, width - 2);
 
   const FontStyle style = TextFontStyle(font, flags | state);
   if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
       StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
           width - 2) {
     Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
-                            y + 1, color, kTBlack, font, flags | state);
+                            y + 1, color, kTransparentBlack, font,
+                            flags | state);
   }
 }
 
@@ -131,20 +132,21 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
   } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
     flags = flags | TPF_MEDIUM_COLOR;
   }
-  Conquer_Clip_Text_Print(view, text, x, y, scheme, kTBlack, font, flags, width,
-                          tabs);
+  Conquer_Clip_Text_Print(view, text, x, y, scheme, kTransparentBlack, font,
+                          flags, width, tabs);
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const Font font,
                          const PrintFlags style) {
-  Simple_Text_Print(view, text, x, y, color, kTBlack, font, style);
+  Simple_Text_Print(view, text, x, y, color, kTransparentBlack, font, style);
 }
 
 void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
                            const int y, TextColor color, const Font font,
                            const PrintFlags style, const int width) {
-  Conquer_Clip_Text_Print(view, text, x, y, color, kTBlack, font, style, width);
+  Conquer_Clip_Text_Print(view, text, x, y, color, kTransparentBlack, font,
+                          style, width);
 }
 
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,
@@ -152,7 +154,7 @@ void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,
   Draw_Box(view, x, y, width, height, BOXSTYLE_DOWN, false);
   view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, DKGREY);
   if (on) {
-    view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, kLtGreen);
+    view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, kLightGreen);
   }
 }
 

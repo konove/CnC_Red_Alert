@@ -173,7 +173,7 @@ bool Get_Broadcast_Addresses() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(view, "IP Addresses", d_dialog_cx - (width / 2),
-                         d_dialog_y + 50, scheme, kTBlack, kTextFont,
+                         d_dialog_y + 50, scheme, kTransparentBlack, kTextFont,
                          kTextFlags);
 
         //...............................................................

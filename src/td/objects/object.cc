@@ -894,7 +894,8 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
               x + (base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
                             kWindowX) *
                    8),
-              y, kPink, kTBlack, FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
+              y, kPink, kTransparentBlack, FontType::k6Point,
+              TPF_CENTER | TPF_NOSHADOW);
         }
       }
 

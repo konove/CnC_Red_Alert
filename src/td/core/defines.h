@@ -2428,7 +2428,7 @@ using enum SpecialDialogType;
 inline constexpr int kCcGdiColor = kYellow;
 inline constexpr int kCcNodColor = kRed;
 inline constexpr int kCcBlueGreen = kCyan;
-inline constexpr int kCcBlueGrey = kLtBlue;
+inline constexpr int kCcBlueGrey = kLightBlue;
 inline constexpr int kCcOrange = kPurple;
 inline constexpr int kCcGreen = kGreen;
 inline constexpr int kCcTan = kBrown;

@@ -93,7 +93,7 @@ inline constexpr int kMenupadding = 0x1000;
 #define GRAY kGrey
 #define DKGREY kGrey
 #define DKGRAY kGrey
-#define LTGRAY kLtGrey
+#define LTGRAY kLightGrey
 
 // A view retains the archive extent rather than treating a file header as an
 // object.

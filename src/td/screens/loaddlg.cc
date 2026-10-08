@@ -330,7 +330,7 @@ bool LoadOptionsClass::Process() {
 
       if (Style == SAVE) {
         Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
-                         d_edit_y - d_txt8_h, kCcGreen, kTBlack,
+                         d_edit_y - d_txt8_h, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }

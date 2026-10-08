@@ -853,7 +853,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = kTBlack;  // Color of the pixel to plot.
+    int color = kTransparentBlack;  // Color of the pixel to plot.
     if ((*this).at(cell).IsVisible || TheDebugState().unshroud()) {
       color = cellptr->Cell_Color(true);
     } else {
@@ -869,7 +869,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     **	If no color override occurs for this cell, then render the underlying
     **	terrain.
     */
-    if (color == kTBlack) {
+    if (color == kTransparentBlack) {
       if (ZoomFactor > 1) {
         const auto data = TemplateTypeClass::As_Reference(
                               cellptr->TType != TEMPLATE_NONE ? cellptr->TType
@@ -1257,20 +1257,20 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
                         RadY + RadOffY + BaseY + view.y_pos(), RadarWidth,
                         RadarHeight);
 
-  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
-  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLightGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLightGreen);
 
   // Draw upper right hand corner
-  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLtGreen);
-  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLightGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLightGreen);
 
   // Draw lower left hand corner
-  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLtGreen);
-  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLightGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLightGreen);
 
   // Draw lower right hand corner
-  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLtGreen);
-  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLightGreen);
 
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
@@ -1860,16 +1860,18 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   int y = RadY + RadOffY;
 
-  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, kLtGrey, kTBlack,
-                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, kLightGrey,
+                   kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   kLtGrey, kTBlack, FontType::k6PointGradient,
+                   kLightGrey, kTransparentBlack, FontType::k6PointGradient,
                    TPF_RIGHT | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
 
   y += (6 * factor) + 1;
 
-  view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y, kLtGrey);
+  view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
+                kLightGrey);
 
   y += 2 * factor;
 

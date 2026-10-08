@@ -133,10 +133,10 @@ void ShutDown() {
 static void InitWindowList() {
   static constexpr int kRows[kWindowCount][8] = {
       // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y
-      {0, 0, 40 * 16, 400, kWhite, kBlack, 0, 0},            // Screen.
-      {1 * 8, 75, 38 * 8, 100, kWhite, kBlack, 0, 0},        // Error message.
-      {0, 0, 40 * 16, 400, kWhite, kLtGrey, 0, 0},           // Tactical map.
-      {12 * 8, 199 - 42, 16 * 8, 42, kLtGrey, kGrey, 0, 0},  // Initial menu.
+      {0, 0, 40 * 16, 400, kWhite, kBlack, 0, 0},      // Screen.
+      {1 * 8, 75, 38 * 8, 100, kWhite, kBlack, 0, 0},  // Error message.
+      {0, 0, 40 * 16, 400, kWhite, kLightGrey, 0, 0},  // Tactical map.
+      {12 * 8, 199 - 42, 16 * 8, 42, kLightGrey, kGrey, 0, 0},  // Initial menu.
       {0, 0, 0, 0, 0, 0, 0, 0},              // Sidebar clipping.
       {5 * 8, 30, 30 * 8, 140, 0, 0, 0, 0},  // Scenario editor.
       {0, 0, 0, 0, kWhite, kBlack, 0, 0},    // Partial object draw.

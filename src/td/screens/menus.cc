@@ -268,8 +268,8 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(view, 0, 0, 0, kTBlack, kTBlack, FontType::k8Point,
-                   TPF_DROPSHADOW);
+  Fancy_Text_Print(view, 0, 0, 0, kTransparentBlack, kTransparentBlack,
+                   FontType::k8Point, TPF_DROPSHADOW);
   const int font_height =
       FontMaxHeight(TextFontStyle(FontType::k8Point, TPF_DROPSHADOW));
   game::TheMouse().Hide();
@@ -280,7 +280,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
         view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
         text_index == selected_entry && MenuUpdate ? menu.highlight_color
                                                    : menu.normal_color,
-        kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+        kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   game::TheMouse().Show();
@@ -426,11 +426,13 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+                     normcol, kTransparentBlack, FontType::k8Point,
+                     TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+                     litcol, kTransparentBlack, FontType::k8Point,
+                     TPF_DROPSHADOW);
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -439,7 +441,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     game::TheMouse().Hide(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
-               litcol, kTBlack);
+               litcol, kTransparentBlack);
     game::TheMouse().Show();
     select = idx;
   }
@@ -866,12 +868,12 @@ int Main_Menu(int timeout) {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTBlack,
+                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
                          FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTBlack,
+                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
                          FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text(),
                          FOREIGN_VERSION_NUMBER);
@@ -885,12 +887,12 @@ int Main_Menu(int timeout) {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTBlack,
+                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
                          FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTBlack,
+                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
                          FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text());
 #endif

@@ -250,13 +250,14 @@ void GameControlsClass::Process() {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(view, TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h,
-                       kCcGreen, kTBlack, FontType::k6PointGradient, style);
+                       kCcGreen, kTransparentBlack, FontType::k6PointGradient,
+                       style);
 
       Fancy_Text_Print(view, TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 1,
-                       kCcGreen, kTBlack, FontType::k6PointGradient,
+                       kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       Fancy_Text_Print(view, TXT_FASTER, d_speed_x + d_speed_w,
-                       d_speed_y + d_speed_h + 1, kCcGreen, kTBlack,
+                       d_speed_y + d_speed_h + 1, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
@@ -268,13 +269,15 @@ void GameControlsClass::Process() {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(view, TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       kCcGreen, kTBlack, FontType::k6PointGradient, style);
+                       kCcGreen, kTransparentBlack, FontType::k6PointGradient,
+                       style);
 
-      Fancy_Text_Print(
-          view, TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 1, kCcGreen,
-          kTBlack, FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      Fancy_Text_Print(view, TXT_SLOWER, d_scroll_x,
+                       d_scroll_y + d_scroll_h + 1, kCcGreen, kTransparentBlack,
+                       FontType::k6PointGradient,
+                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       Fancy_Text_Print(view, TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 1, kCcGreen, kTBlack,
+                       d_scroll_y + d_scroll_h + 1, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 

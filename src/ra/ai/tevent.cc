@@ -188,14 +188,14 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
-                            flags, width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme,
+                            kTransparentBlack, font, flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, font, flags, width, _tabs);
+        kTransparentBlack, font, flags, width, _tabs);
   }
 }
 

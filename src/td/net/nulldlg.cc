@@ -348,7 +348,7 @@ int Test_Null_Modem() {
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
-                   kTBlack, FontType::k6PointGradient,
+                   kTransparentBlack, FontType::k6PointGradient,
                    TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All(view);
@@ -700,7 +700,7 @@ static int Reconnect_Null_Modem() {
   Dialog_Box(view, x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(view, buffer, x + 20, y + 25, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, buffer, x + 20, y + 25, kCcGreen, kTransparentBlack,
                    FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All(view);
@@ -1549,8 +1549,8 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTransparentBlack,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -1560,19 +1560,19 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
                      d_dialog_w);
 
         Fancy_Text_Print(view, TXT_DATA_COMPRESSION, d_compression_x - 26,
-                         d_compression_y + 2, kCcGreen, kTBlack,
+                         d_compression_y + 2, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_ERROR_CORRECTION, d_errorcorrection_x - 26,
-                         d_errorcorrection_y + 2, kCcGreen, kTBlack,
+                         d_errorcorrection_y + 2, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_HARDWARE_FLOW_CONTROL,
                          d_hardwareflowcontrol_x - 26,
-                         d_hardwareflowcontrol_y + 2, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+                         d_hardwareflowcontrol_y + 2, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -2368,8 +2368,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTransparentBlack,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -2378,29 +2378,29 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         Draw_Caption(view, TXT_SETTINGS, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(view, TXT_PORT_COLON, d_port_x - 3,
-                         d_port_y + (1 * factor), kCcGreen, kTBlack,
+                         d_port_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
 #ifdef EDIT_IRQ
         Fancy_Text_Print(view, TXT_IRQ_COLON, d_irq_x - 3, d_irq_y + 1 * factor,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #endif  // EDIT_IRQ
 
         Fancy_Text_Print(view, TXT_BAUD_COLON, d_baud_x - 3,
-                         d_baud_y + (1 * factor), kCcGreen, kTBlack,
+                         d_baud_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_INIT_STRING, d_initstr_x,
                          d_initstr_y - d_txt6_h - (3 * factor), kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_CWAIT_STRING, d_cwaitstr_x,
                          d_cwaitstr_y - d_txt6_h - (3 * factor), kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -3537,8 +3537,8 @@ int Com_Scenario_Dialog() {
 
         // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTransparentBlack,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -3558,38 +3558,38 @@ int Com_Scenario_Dialog() {
 #endif  // FORCE_WINSOCK
 
         Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x - (5 * factor),
-                         d_name_y + (1 * factor), kCcGreen, kTBlack,
+                         d_name_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x - (5 * factor),
-                         d_gdi_y + (1 * factor), kCcGreen, kTBlack,
+                         d_gdi_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_START_CREDITS_COLON,
                          d_credits_x - (5 * factor), d_credits_y + (1 * factor),
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_COLOR_COLON,
                          base::At(cbox_x, 0) - (5 * factor),
-                         d_color_y + (1 * factor), kCcGreen, kTBlack,
+                         d_color_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_SCENARIOS,
                          d_scenariolist_x + (d_scenariolist_w / 2),
-                         d_scenariolist_y - d_txt6_h, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+                         d_scenariolist_y - d_txt6_h, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_COUNT, d_count_x - (3 * factor), d_count_y,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         Fancy_Text_Print(view, TXT_LEVEL, d_level_x - (3 * factor), d_level_y,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
 
@@ -3639,13 +3639,14 @@ int Com_Scenario_Dialog() {
                                  txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
-                             d_opponent_y, kCcGreen, kTBlack,
+                             d_opponent_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
             Fancy_Text_Print(view, TXT_OPPONENT_COLON,
                              d_opponent_x - (3 * factor), d_opponent_y,
-                             kCcGreen, kTBlack, FontType::k6PointGradient,
+                             kCcGreen, kTransparentBlack,
+                             FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
@@ -3658,7 +3659,7 @@ int Com_Scenario_Dialog() {
 
             Fancy_Text_Print(view, txt, d_opponent_x, d_opponent_y,
                              base::At(TheSession().text_colors(), TheirColor),
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -4874,18 +4875,18 @@ int Com_Show_Scenario_Dialog() {
 #endif  // FORCE_WINSOCK
 
         Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x - (5 * factor),
-                         d_name_y + (1 * factor), kCcGreen, kTBlack,
+                         d_name_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x - (5 * factor),
-                         d_gdi_y + (1 * factor), kCcGreen, kTBlack,
+                         d_gdi_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_COLOR_COLON,
                          base::At(cbox_x, 0) - (5 * factor),
-                         d_color_y + (1 * factor), kCcGreen, kTBlack,
+                         d_color_y + (1 * factor), kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -4936,7 +4937,7 @@ int Com_Show_Scenario_Dialog() {
                                  txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
-                             d_opponent_y, kCcGreen, kTBlack,
+                             d_opponent_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
@@ -4945,7 +4946,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(view, TXT_OPPONENT_COLON,
                              d_dialog_cx - (3 * factor), d_opponent_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheirHouse == HOUSE_GOOD) {
@@ -4958,7 +4959,7 @@ int Com_Show_Scenario_Dialog() {
 
             Fancy_Text_Print(view, txt, d_dialog_cx, d_opponent_y,
                              base::At(TheSession().text_colors(), TheirColor),
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4966,7 +4967,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(view, TXT_SCENARIO_COLON,
                              d_dialog_cx - (3 * factor), d_scenario_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().scenario_index() != -1) {
@@ -4975,13 +4976,13 @@ int Com_Show_Scenario_Dialog() {
                                       TheSession().scenario_index()));
 
               Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, kCcGreen,
-                               kTBlack, FontType::k6PointGradient,
+                               kTransparentBlack, FontType::k6PointGradient,
                                TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             } else {
               base::SafeCopy(txt, Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, kRed,
-                               kTBlack, FontType::k6PointGradient,
+                               kTransparentBlack, FontType::k6PointGradient,
                                TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             }
 
@@ -4990,12 +4991,12 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(view, TXT_START_CREDITS_COLON,
                              d_dialog_cx - (3 * factor), d_credits_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().credits());
             Fancy_Text_Print(view, txt, d_dialog_cx, d_credits_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -5003,13 +5004,13 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
 
             Fancy_Text_Print(view, TXT_COUNT, d_dialog_cx - (3 * factor),
-                             d_count_y, kCcGreen, kTBlack,
+                             d_count_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             absl::SNPrintF(txt, sizeof(txt), "%d ", TheSession().unit_count());
             Fancy_Text_Print(view, txt, d_dialog_cx, d_count_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -5017,7 +5018,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
 
             Fancy_Text_Print(view, TXT_LEVEL, d_dialog_cx - (3 * factor),
-                             d_level_y, kCcGreen, kTBlack,
+                             d_level_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -5027,14 +5028,14 @@ int Com_Show_Scenario_Dialog() {
               absl::SNPrintF(txt, sizeof(txt), "**");
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_level_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
             Bases status
             ............................................................*/
             Fancy_Text_Print(view, TXT_BASES_COLON, d_dialog_cx - (3 * factor),
-                             d_bases_y, kCcGreen, kTBlack,
+                             d_bases_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -5044,7 +5045,7 @@ int Com_Show_Scenario_Dialog() {
               base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_bases_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -5052,7 +5053,7 @@ int Com_Show_Scenario_Dialog() {
             ............................................................*/
             Fancy_Text_Print(view, TXT_TIBERIUM_COLON,
                              d_dialog_cx - (3 * factor), d_tiberium_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().tiberium()) {
@@ -5061,14 +5062,14 @@ int Com_Show_Scenario_Dialog() {
               base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_tiberium_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
             Goodies status
             ............................................................*/
             Fancy_Text_Print(view, TXT_CRATES_COLON, d_dialog_cx - (3 * factor),
-                             d_goodies_y, kCcGreen, kTBlack,
+                             d_goodies_y, kCcGreen, kTransparentBlack,
                              FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -5078,7 +5079,7 @@ int Com_Show_Scenario_Dialog() {
               base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_goodies_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -5088,13 +5089,13 @@ int Com_Show_Scenario_Dialog() {
               base::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
               base::SafeAppend(txt, ":");
               Fancy_Text_Print(view, txt, d_dialog_cx - (3 * factor),
-                               d_ghosts_y, kCcGreen, kTBlack,
+                               d_ghosts_y, kCcGreen, kTransparentBlack,
                                FontType::k6PointGradient,
                                TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
               base::SafeCopy(txt, Text_String(TXT_ON));
               Fancy_Text_Print(view, txt, d_dialog_cx, d_ghosts_y, kCcGreen,
-                               kTBlack, FontType::k6PointGradient,
+                               kTransparentBlack, FontType::k6PointGradient,
                                TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             } else {
               /*............................................................
@@ -5102,7 +5103,7 @@ int Com_Show_Scenario_Dialog() {
               ............................................................*/
               Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON,
                                d_dialog_cx - (3 * factor), d_ghosts_y, kCcGreen,
-                               kTBlack, FontType::k6PointGradient,
+                               kTransparentBlack, FontType::k6PointGradient,
                                TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
               if (TheSession().ghosts()) {
@@ -5111,7 +5112,7 @@ int Com_Show_Scenario_Dialog() {
                 base::SafeCopy(txt, Text_String(TXT_OFF));
               }
               Fancy_Text_Print(view, txt, d_dialog_cx, d_ghosts_y, kCcGreen,
-                               kTBlack, FontType::k6PointGradient,
+                               kTransparentBlack, FontType::k6PointGradient,
                                TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             }
           }
@@ -6017,8 +6018,8 @@ static int Phone_Dialog() {
 
         // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTransparentBlack,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -6625,8 +6626,8 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
 
         // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, kTransparentBlack,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         /*...............................................................
@@ -6636,11 +6637,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
                      d_dialog_w);
 
         Fancy_Text_Print(view, TXT_NAME_COLON, d_name_x - 5, d_name_y + 1,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, TXT_NUMBER_COLON, d_number_x - 5, d_number_y + 1,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*

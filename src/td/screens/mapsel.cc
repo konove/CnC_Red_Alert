@@ -585,8 +585,8 @@ void Map_Selection() {
   greyearth.DrawFrame(TheScreen().sys_mem_page().view(), 0);
 
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page());
-  show.page().view().PutPixel(237, 92, kTBlack);
-  show.page().view().PutPixel(237, 93, kTBlack);
+  show.page().view().PutPixel(237, 92, kTransparentBlack);
+  show.page().view().PutPixel(237, 93, kTransparentBlack);
 
   show.ShowPage();
 
@@ -697,7 +697,7 @@ void Map_Selection() {
             0, 20,
             2 * StringPixelWidth(score_font,
                                  Text_String(TXT_READING_IMAGE_DATA)),
-            2 * (10 + 12), kTBlack);
+            2 * (10 + 12), kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, "ANALYZING", 0, 10, _othergreenpal));
         break;
@@ -711,7 +711,7 @@ void Map_Selection() {
       case 34:
         show.text_page().view().FillRect(
             0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
-            2 * (10 + 12), kTBlack);
+            2 * (10 + 12), kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10,
             _othergreenpal));
@@ -730,7 +730,7 @@ void Map_Selection() {
             0, 20,
             2 * StringPixelWidth(score_font,
                                  Text_String(TXT_ENHANCING_IMAGE_DATA)),
-            2 * (10 + 12), kTBlack);
+            2 * (10 + 12), kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
             _othergreenpal));
@@ -749,7 +749,7 @@ void Map_Selection() {
             0, 20,
             2 * StringPixelWidth(
                     score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
-            2 * (10 + 12), kTBlack);
+            2 * (10 + 12), kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
             _othergreenpal));
@@ -778,7 +778,7 @@ void Map_Selection() {
       0, 20,
       2 * StringPixelWidth(
               score_font, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-      2 * (10 + 24), kTBlack);
+      2 * (10 + 24), kTransparentBlack);
   Call_Back_Delay(show, 1);
 
   anim.Close();
@@ -915,17 +915,18 @@ void Map_Selection() {
   */
   if (lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 186, kTBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTransparentBlack);
+    show.page().view().FillRect(0, 160, 20 * 6, 186, kTransparentBlack);
     show.text_page().view().FillRect(0, 320, 40 * 6, 372, kBlack);
-    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 372, kTBlack);
-    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 372, kTBlack);
+    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 372, kTransparentBlack);
+    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 372, kTransparentBlack);
 #else
-    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176, kTBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 176, kTBlack);
+    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176,
+                                               kTransparentBlack);
+    show.page().view().FillRect(0, 160, 20 * 6, 176, kTransparentBlack);
     show.text_page().view().FillRect(0, 320, 40 * 6, 352, kBlack);
-    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 352, kTBlack);
-    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 352, kTBlack);
+    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 352, kTransparentBlack);
+    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 352, kTransparentBlack);
 #endif
     show.ClearTextRects();
     Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page());
@@ -1004,20 +1005,20 @@ void Map_Selection() {
                 0, 20,
                 2 * StringPixelWidth(score_font,
                                      Text_String(TXT_ENHANCING_IMAGE)),
-                2 * (10 + 12), kTBlack);
+                2 * (10 + 12), kTransparentBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
                 360, 20,
                 2 * (180 + StringPixelWidth(score_font,
                                             Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kTBlack);
+                2 * (10 + 12), kTransparentBlack);
 #else
             show.text_page().view().FillRect(
                 420, 20,
                 2 * (210 + StringPixelWidth(score_font,
                                             Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kTBlack);
+                2 * (10 + 12), kTransparentBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1041,12 +1042,13 @@ void Map_Selection() {
   engine::audio::TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 186, kTBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTransparentBlack);
+    show.page().view().FillRect(0, 160, 20 * 6, 186, kTransparentBlack);
     show.text_page().view().FillRect(0, 320, 40 * 6, 372, kBlack);
 #else
-    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176, kTBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 176, kTBlack);
+    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176,
+                                               kTransparentBlack);
+    show.page().view().FillRect(0, 160, 20 * 6, 176, kTransparentBlack);
     show.text_page().view().FillRect(0, 320, 40 * 6, 352, kBlack);
 #endif
   }

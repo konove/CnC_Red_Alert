@@ -31,7 +31,8 @@ int Format_Window_String(const FontStyle& font, std::span<char> string,
                          int max_line_len, int& width, int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,
-                             int y, RemapControlType* fore, int back = kTBlack,
+                             int y, RemapControlType* fore,
+                             int back = kTransparentBlack,
                              FontType font = FontType::k8Point,
                              TextPrintType flag = TPF_DROPSHADOW,
                              int width = -1, std::span<const int> tabs = {});
@@ -92,8 +93,8 @@ FontStyle TextFontStyle(FontType font, TextPrintType flags);
 // (PCOLOR_RED if nullptr) and `back` uses: TextFontStyle() plus the glyph
 // palette.
 TextStyle TextStyleFor(FontType font, TextPrintType flags,
-                       RemapControlType* fore = nullptr, int back = kTBlack);
-
+                       RemapControlType* fore = nullptr,
+                       int back = kTransparentBlack);
 
 // Whether the packed flags of the old TextPrintType tested true for
 // `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button

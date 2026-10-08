@@ -1452,9 +1452,9 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     /*
     **	print the label
     */
-    Fancy_Text_Print(view, buf, 160, 0,
-                     &ThePalettes().color_remaps().at(PCOLOR_BROWN), kTBlack,
-                     FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
+    Fancy_Text_Print(
+        view, buf, 160, 0, &ThePalettes().color_remaps().at(PCOLOR_BROWN),
+        kTransparentBlack, FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
   }
 }
 

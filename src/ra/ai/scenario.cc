@@ -850,8 +850,8 @@ void Do_Win() {
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
     Fancy_Text_Print(view, TXT_SCENARIO_WON, x, 180,
-                     &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                     FontType::kVcr,
+                     &ThePalettes().color_remaps().at(PCOLOR_RED),
+                     kTransparentBlack, FontType::kVcr,
                      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     speech_timer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
@@ -1025,8 +1025,8 @@ void Do_Lose() {
   */
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, 180,
-                   &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                   FontType::kVcr,
+                   &ThePalettes().color_remaps().at(PCOLOR_RED),
+                   kTransparentBlack, FontType::kVcr,
                    TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
@@ -1116,9 +1116,10 @@ void Do_Draw() {
   **	Announce win to player.
   */
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(
-      view, TXT_WOL_DRAW, x, 180, &ThePalettes().color_remaps().at(PCOLOR_RED),
-      kTBlack, FontType::kVcr, TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+  Fancy_Text_Print(view, TXT_WOL_DRAW, x, 180,
+                   &ThePalettes().color_remaps().at(PCOLOR_RED),
+                   kTransparentBlack, FontType::kVcr,
+                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
@@ -1449,7 +1450,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     } else {
       if (base::At(bufprint, 0) != 20) {
         TheScreen().visible_view().Print(typed, bufprint, xprint, yprint,
-                                         kTBlack, kTBlack);
+                                         kTransparentBlack, kTransparentBlack);
         xprint += CharPixelWidth(typed, base::At(bufprint, 0));
       }
     }

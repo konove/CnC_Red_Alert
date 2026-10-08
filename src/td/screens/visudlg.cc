@@ -240,7 +240,7 @@ void VisualControlsClass::Process() {
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(
             view, base::At(_titles, i), slider_x - 16,
-            text_y + (i * slider_y_spacing), kCcGreen, kTBlack,
+            text_y + (i * slider_y_spacing), kCcGreen, kTransparentBlack,
             FontType::k6PointGradient,
             TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));

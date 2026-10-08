@@ -2918,7 +2918,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object) {
-      int color = kLtGrey;
+      int color = kLightGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
@@ -2927,7 +2927,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
         color = kCcGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = kLtGrey;
+          color = kLightGrey;
         } else {
           color = kPink;
         }

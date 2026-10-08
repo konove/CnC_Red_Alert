@@ -124,9 +124,9 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab(view);
-    Fancy_Text_Print(view, "%ld", xx, 0, &ThePalettes().metal_scheme(), kTBlack,
-                     FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
-                     Current);
+    Fancy_Text_Print(view, "%ld", xx, 0, &ThePalettes().metal_scheme(),
+                     kTransparentBlack, FontType::kMetal12,
+                     TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (TheScenario().MissionTimer.IsRunning()) {
       int64_t secs = TheScenario().MissionTimer.Remaining() / kTicksPerSecond;
@@ -173,12 +173,12 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
 
       if (hours) {
         Fancy_Text_Print(view, TXT_TIME_FORMAT_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), kTBlack,
+                         &ThePalettes().metal_scheme(), kTransparentBlack,
                          FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
                          hours, mins, secs);
       } else {
         Fancy_Text_Print(view, TXT_TIME_FORMAT_NO_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), kTBlack,
+                         &ThePalettes().metal_scheme(), kTransparentBlack,
                          FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
                          mins, secs);
       }

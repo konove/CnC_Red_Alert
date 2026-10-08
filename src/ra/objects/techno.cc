@@ -1243,7 +1243,8 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
 
       pwidth = std::clamp(pwidth, 1, width - 2);
 
-      int color = kLtGreen;  // The color to give the interior of the bargraph.
+      int color =
+          kLightGreen;  // The color to give the interior of the bargraph.
       if (ratio <= TheRules().ConditionYellow) {
         color = kYellow;
       }

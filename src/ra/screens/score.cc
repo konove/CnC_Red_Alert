@@ -259,7 +259,8 @@ void ScorePrintClass::Update() {
     if (Stage) {
       localstr[0] = Text().at(base::ToSize(Stage - 1));
       TheScreen().hidden_view().Print(ScoreFontStyle(PrimaryPalette), localstr,
-                                      pos - 12, YPos, kTBlack, kTBlack);
+                                      pos - 12, YPos, kTransparentBlack,
+                                      kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), pos - 12,
                                        YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
@@ -268,12 +269,12 @@ void ScorePrintClass::Update() {
     if (base::ToSize(Stage) < Text().size()) {
       localstr[0] = Text().at(base::ToSize(Stage));
       const FontStyle white = ScoreFontStyle(_whitepal);
-      TheScreen().visible_view().Print(white, localstr, pos, YPos - 1, kTBlack,
-                                       kTBlack);
-      TheScreen().visible_view().Print(white, localstr, pos, YPos + 1, kTBlack,
-                                       kTBlack);
-      TheScreen().visible_view().Print(white, localstr, pos + 1, YPos, kTBlack,
-                                       kTBlack);
+      TheScreen().visible_view().Print(white, localstr, pos, YPos - 1,
+                                       kTransparentBlack, kTransparentBlack);
+      TheScreen().visible_view().Print(white, localstr, pos, YPos + 1,
+                                       kTransparentBlack, kTransparentBlack);
+      TheScreen().visible_view().Print(white, localstr, pos + 1, YPos,
+                                       kTransparentBlack, kTransparentBlack);
     }
     Stage++;
   }
@@ -295,10 +296,10 @@ void ScoreScaleClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
     if (Stage) {
-      TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTBlack);
+      TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTransparentBlack);
       TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
                                       std::string(Text()).c_str(), 0, 0,
-                                      kTBlack, kTBlack);
+                                      kTransparentBlack, kTransparentBlack);
       TheScreen().hidden_view().Scale(TheScreen().visible_view(), 0, 0,
                                       base::At(_destx, Stage) * 2, YPos, 10, 12,
                                       base::At(_destw, Stage) * 2,
@@ -309,7 +310,7 @@ void ScoreScaleClass::Update() {
       // Input_Name() is waiting on) and self-destruct.
       TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
                                       std::string(Text()).c_str(), XPos, YPos,
-                                      kTBlack, kTBlack);
+                                      kTransparentBlack, kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), XPos, YPos,
                                        XPos, YPos, 12, 12);
       Release_Slot(this);
@@ -800,7 +801,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // then replaced by the final coloured frame.
   PixelView& hidden = TheScreen().hidden_view();
   PixelView& view = TheScreen().visible_view();
-  hidden.FillRect(0, 0, 248, 18, kTBlack);
+  hidden.FillRect(0, 0, 248, 18, kTransparentBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, ShapeFlags::kNone, {},
                 {});
   const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
@@ -919,7 +920,7 @@ void ScoreClass::Print_Minutes(int minutes,
     text = base::FormatRuntime(TextString(TXT_SCORE_TIMEFORMAT2), minutes);
   }
   TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(), 550,
-                                   18, kTBlack, kTBlack);
+                                   18, kTransparentBlack, kTransparentBlack);
 }
 
 void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
@@ -928,7 +929,8 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
   const std::string text =
       base::FormatRuntime(str, percent <= maxval ? percent : maxval);
   TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(),
-                                   xpos * 2, ypos * 2, kTBlack, kBlack);
+                                   xpos * 2, ypos * 2, kTransparentBlack,
+                                   kBlack);
 }
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
@@ -1045,7 +1047,7 @@ void Animate_Cursor(int pos, int ypos) {
   }
   TheScreen().visible_view().DrawLine((HALLFAME_X + (pos * 6)) * 2, ypos,
                                       (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                                      _state ? kLtBlue : kTBlack);
+                                      _state ? kLightBlue : kTransparentBlack);
   // Toggle the color of the cursor, blue or hidden, if it's time to do so:
   // every 5 ticks.
   if (_timer.IsFinished()) {

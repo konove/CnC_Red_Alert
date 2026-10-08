@@ -252,11 +252,11 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       */
       {
         Fancy_Text_Print(view, TXT_WOL_NAME, d_name_x + (d_name_w / 2),
-                         d_name_y - 14, Get_Color_Scheme(), kTBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+                         d_name_y - 14, Get_Color_Scheme(), kTransparentBlack,
+                         kTextFont, kTextFlags | TPF_CENTER);
         Fancy_Text_Print(view, TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
-                         d_pass_y - 14, Get_Color_Scheme(), kTBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+                         d_pass_y - 14, Get_Color_Scheme(), kTransparentBlack,
+                         kTextFont, kTextFlags | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
       game::TheMouse().Show();

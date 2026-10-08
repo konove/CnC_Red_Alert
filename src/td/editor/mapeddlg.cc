@@ -719,11 +719,11 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Scenario", kDialogCx - 5, kScenY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1050,54 +1050,54 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ...............................................................*/
         txt_x = kDialogCx;
         txt_y = kDialogY + 8;
-        Fancy_Text_Print(view, "Clear Terrain", txt_x, txt_y, kLtGrey, kTBlack,
+        Fancy_Text_Print(view, "Clear Terrain", txt_x, txt_y, kLightGrey,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
+        txt_y += 16;
+        Fancy_Text_Print(view, "Water", txt_x, txt_y, kBlue, kTransparentBlack,
                          FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Water", txt_x, txt_y, kBlue, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Tiberium", txt_x, txt_y, kGrey,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Tiberium", txt_x, txt_y, kGrey, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Rock/Wall/Road", txt_x, txt_y, kBrown,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Rock/Wall/Road", txt_x, txt_y, kBrown, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "GDI Unit", txt_x, txt_y, kYellow,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "GDI Unit", txt_x, txt_y, kYellow, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Nod Unit", txt_x, txt_y, kRed,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Nod Unit", txt_x, txt_y, kRed, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Neutral Unit", txt_x, txt_y, kPurple,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Neutral Unit", txt_x, txt_y, kPurple, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Terrain Object", txt_x, txt_y, kGreen,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         txt_y += 16;
-        Fancy_Text_Print(view, "Terrain Object", txt_x, txt_y, kGreen, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
-        txt_y += 16;
-        Fancy_Text_Print(view, "Starting Cell", txt_x, txt_y, kWhite, kTBlack,
-                         FontType::k6Point, TPF_DROPSHADOW);
+        Fancy_Text_Print(view, "Starting Cell", txt_x, txt_y, kWhite,
+                         kTransparentBlack, FontType::k6Point, TPF_DROPSHADOW);
         /*
         .................. Draw the coordinate labels ...................
         */
         txt_x = kDialogX + (kDialogW / 8);
         txt_y = kDialogY + kDialogH - kOkH - 10 - 33;
-        Fancy_Text_Print(view, "X", txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, "X", txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
-        Fancy_Text_Print(view, "Y", txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, "Y", txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
-        Fancy_Text_Print(view, "Width", txt_x, txt_y, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, "Width", txt_x, txt_y, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
-        Fancy_Text_Print(view, "Height", txt_x, txt_y, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, "Height", txt_x, txt_y, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         view.Unlock();
@@ -1207,25 +1207,25 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         txt_x = kDialogX + (kDialogW / 8);
         txt_y = kDialogY + kDialogH - kOkH - 10 - 22;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x1 - kBordX1 - 1);
-        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y1 - kBordY1 - 1);
-        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x2 - map_x1 + 1);
-        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y2 - map_y1 + 1);
-        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTBlack,
+        Fancy_Text_Print(view, txt, txt_x, txt_y, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -1782,42 +1782,42 @@ int MapEditClass::Scenario_Dialog() {
         ....................... Draw the labels .........................
         */
         Fancy_Text_Print(view, "Theater", kTheaterX + (kTheaterW / 2),
-                         kTheaterY - kTxt8H, kCcGreen, kTBlack,
+                         kTheaterY - kTxt8H, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Build Level", kLevelX, kLevelY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Credits/1000", kGdicredX + (kGdicredW / 2),
-                         kGdicredY - kTxt8H, kCcGreen, kTBlack,
+                         kGdicredY - kTxt8H, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "GDI", kGdicredX - 5, kGdicredY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "NOD", kNodcredX - 5, kNodcredY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Neutral", kNeutcredX - 5, kNeutcredY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Reinforcements", kDialogCx,
-                         kLevelY + kLevelH + kMargin, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+                         kLevelY + kLevelH + kMargin, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "GDI", kGdinX + (kGdinW / 2), kGdinY - kTxt8H,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "NOD", kNodnX + (kNodnW / 2), kNodnY - kTxt8H,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       game::TheMouse().Show();
@@ -2374,7 +2374,7 @@ int MapEditClass::Select_Trigger() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, "Triggers", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -2798,32 +2798,32 @@ int MapEditClass::Edit_Trigger() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, "Trigger Editor", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Events", kEventX + (kEventW / 2),
-                         kEventY - kTxt8H, kCcGreen, kTBlack,
+                         kEventY - kTxt8H, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Actions", kActionX + (kActionW / 2),
-                         kActionY - kTxt8H, kCcGreen, kTBlack,
+                         kActionY - kTxt8H, kCcGreen, kTransparentBlack,
                          FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Fancy_Text_Print(view, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, "Name", kNameX - 5, kNameY, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (event_idx == EVENT_CREDITS) {  // use 'Data' for Credits
           Fancy_Text_Print(view, "Credits", kDataX - 5, kDataY, kCcGreen,
-                           kTBlack, FontType::k6PointGradient,
+                           kTransparentBlack, FontType::k6PointGradient,
                            TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           if (event_idx == EVENT_TIME) {  // use 'Data' for Time
             Fancy_Text_Print(view, "1/10 Min", kDataX - 5, kDataY, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -2831,12 +2831,12 @@ int MapEditClass::Edit_Trigger() {
         if (TriggerClass::Action_Need_Team(action_idx)) {
           if (CurTrigger->Team) {
             Fancy_Text_Print(view, CurTrigger->Team->IniName,
-                             kTeamX + kTeamW + 5, kTeamY, kCcGreen, kTBlack,
-                             FontType::k6PointGradient,
+                             kTeamX + kTeamW + 5, kTeamY, kCcGreen,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
             Fancy_Text_Print(view, "!!!", kTeamX + kTeamW + 5, kTeamY, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -3243,7 +3243,7 @@ int MapEditClass::Import_Triggers() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, "Import Triggers", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -3525,7 +3525,7 @@ int MapEditClass::Import_Teams() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, "Import Teams", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*

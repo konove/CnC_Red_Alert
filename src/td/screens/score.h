@@ -182,11 +182,11 @@ class ScorePrintClass : public ScoreAnimClass {
   ScorePrintClass(Presentation& show, const char* string, int xpos, int ypos,
                   std::span<const uint8_t> palette
                       ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = kTBlack);
+                  int background = kTransparentBlack);
   ScorePrintClass(Presentation& show, int string, int xpos, int ypos,
                   std::span<const uint8_t> palette
                       ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = kTBlack);
+                  int background = kTransparentBlack);
   ~ScorePrintClass() override = default;
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
@@ -202,11 +202,11 @@ class MultiStagePrintClass : public ScoreAnimClass {
   MultiStagePrintClass(
       Presentation& show, const char* string, int xpos, int ypos,
       std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      int background = kTBlack);
+      int background = kTransparentBlack);
   MultiStagePrintClass(Presentation& show, int string, int xpos, int ypos,
                        std::span<const uint8_t> palette
                            ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                       int background = kTBlack);
+                       int background = kTransparentBlack);
   ~MultiStagePrintClass() override = default;
   MultiStagePrintClass(const MultiStagePrintClass&) = delete;
   MultiStagePrintClass& operator=(const MultiStagePrintClass&) = delete;

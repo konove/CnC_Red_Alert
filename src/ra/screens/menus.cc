@@ -234,8 +234,8 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
-  Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack, FontType::k8Point,
-                   TPF_DROPSHADOW);
+  Plain_Text_Print(view, 0, 0, 0, kTransparentBlack, kTransparentBlack,
+                   FontType::k8Point, TPF_DROPSHADOW);
   const int item_height =
       FontMaxHeight(TextFontStyle(kMenuTextFont, kMenuTextFlags));
   game::TheMouse().Hide();
@@ -245,7 +245,7 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
     Plain_Text_Print(
         view, base::At(text, base::ToSize(idx)), menux, drawy,
         base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
-        kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+        kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[base::ToSize(idx)], menux, drawy,
     //menuptr[kHilite],
@@ -394,11 +394,13 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+                     normcol, kTransparentBlack, FontType::k8Point,
+                     TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
+                     litcol, kTransparentBlack, FontType::k8Point,
+                     TPF_DROPSHADOW);
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -407,7 +409,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     game::TheMouse().Hide(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
-               litcol, kTBlack);
+               litcol, kTransparentBlack);
     game::TheMouse().Show();
     select = idx;
   }
@@ -727,8 +729,8 @@ int Main_Menu(int32_t /*unused*/) {
       commands->Draw_All(hidden);
       Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10, Get_Color_Scheme(),
-                       kTBlack, FontType::kEditor, TPF_NOSHADOW | TPF_RIGHT,
-                       Version_Name());
+                       kTransparentBlack, FontType::kEditor,
+                       TPF_NOSHADOW | TPF_RIGHT, Version_Name());
 
       /*
       **	Copy the menu to the visible page.

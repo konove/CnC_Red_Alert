@@ -367,20 +367,20 @@ void SoundControlsClass::Process() {
       ** Draw the Music, Speech & Sound titles.
       */
       Fancy_Text_Print(view, TXT_MUSIC_VOLUME, Option_X + MSlider_X - 5,
-                       Option_Y + MSlider_Y - 2, kCcGreen, kTBlack,
+                       Option_Y + MSlider_Y - 2, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(view, TXT_SOUND_VOLUME, Option_X + FXSlider_X - 5,
-                       Option_Y + FXSlider_Y - 2, kCcGreen, kTBlack,
+                       Option_Y + FXSlider_Y - 2, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       Fancy_Text_Print(view, TXT_SHUFFLE, Option_X + Shuffle_X - 5,
-                       Option_Y + Shuffle_Y + 1, kCcGreen, kTBlack,
+                       Option_Y + Shuffle_Y + 1, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(view, TXT_REPEAT, Option_X + Repeat_X - 5,
-                       Option_Y + Repeat_Y + 1, kCcGreen, kTBlack,
+                       Option_Y + Repeat_Y + 1, kCcGreen, kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
@@ -489,13 +489,13 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
-                            TextFont, flags, width, Tabs);
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen,
+                            kTransparentBlack, TextFont, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            selected ? kBlue : kWhite, kTBlack, TextFont,
-                            TextFlags, width, Tabs);
+                            selected ? kBlue : kWhite, kTransparentBlack,
+                            TextFont, TextFlags, width, Tabs);
   }
 }
 

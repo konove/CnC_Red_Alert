@@ -430,7 +430,7 @@ int MapEditClass::Select_Team(const char* caption) {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -1031,27 +1031,27 @@ int MapEditClass::Edit_Team() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, "Team Edit", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Fancy_Text_Print(view, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, "Name", kNameX - 5, kNameY, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Priority", kPriorityX - 5, kPriorityY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(view, "Init Num", kInitnumX - 5, kInitnumY, kCcGreen,
-                         kTBlack, FontType::k6PointGradient,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Fancy_Text_Print(view, "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
-                         FontType::k6PointGradient,
+        Fancy_Text_Print(view, "Fear", kFearX - 5, kFearY, kCcGreen,
+                         kTransparentBlack, FontType::k6PointGradient,
                          TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -1690,7 +1690,7 @@ int MapEditClass::Team_Members(HousesType house) {
         Dialog_Box(view, kDialogX, dlg_y, kDialogW, dlg_h);
         Draw_Caption(view, TXT_NONE, kDialogX, dlg_y, kDialogW);
         Fancy_Text_Print(view, "Team Members", kDialogCx, dlg_y + kMargin,
-                         kCcGreen, kTBlack, FontType::k6PointGradient,
+                         kCcGreen, kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         //
@@ -1708,8 +1708,8 @@ int MapEditClass::Team_Members(HousesType house) {
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(view,
                            teamclass.at(base::ToSize(curclass))->Full_Name(),
-                           kDialogX + (kDialogW / 2), msg_y, kCcTan, kTBlack,
-                           FontType::k6PointGradient,
+                           kDialogX + (kDialogW / 2), msg_y, kCcTan,
+                           kTransparentBlack, FontType::k6PointGradient,
                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
       }
@@ -1789,7 +1789,7 @@ int MapEditClass::Team_Members(HousesType house) {
             Fancy_Text_Print(view,
                              teamclass.at(base::ToSize(curclass))->Full_Name(),
                              kDialogX + (kDialogW / 2), msg_y, kCcGreen,
-                             kTBlack, FontType::k6PointGradient,
+                             kTransparentBlack, FontType::k6PointGradient,
                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
 
@@ -1955,8 +1955,8 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
                house);
 
   if (quant > 0) {
-    Fancy_Text_Print(view, "%d", x + 1, y + kPictureH - 16, kCcGreen, kTBlack,
-                     FontType::k6PointGradient,
+    Fancy_Text_Print(view, "%d", x + 1, y + kPictureH - 16, kCcGreen,
+                     kTransparentBlack, FontType::k6PointGradient,
                      TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
   }
 
