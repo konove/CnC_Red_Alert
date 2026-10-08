@@ -32,56 +32,55 @@
 
 // Appends `pixels`, one row of the picture, to `file` as a run-length encoded
 // PCX scanline. An empty row writes nothing.
-static void Write_Pcx_ScanLine(ByteStream& file,
-                               std::span<const uint8_t> pixels);
+static void EncodeScanline(ByteStream& file, std::span<const uint8_t> pixels);
 
-bool Write_PCX_File(std::string_view name, PixelView& pic,
-                    const engine::gfx::Palette& palette) {
+bool WritePcxFile(std::string_view file_name, PixelView& view,
+                  const engine::gfx::Palette& palette) {
   // An 8-bit, single-plane, run-length encoded version 5 picture. The sizes
   // are set below; the device resolution stays 320x200 whatever the picture.
-  PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
-                       320, 200, {}, 0, 1, 320, 1,   {}};
+  PcxHeader header = {10,  5,   1,  8, 0, 0,   319, 199,
+                      320, 200, {}, 0, 1, 320, 1,   {}};
 
   // A surface's page has pixels only while it is locked, and a view that was
   // never attached has none at all.
-  if (!pic.Lock()) {
+  if (!view.Lock()) {
     return false;
   }
-  const auto file = OpenGameFile(name, FileAccess::kWrite);
+  const auto file = OpenGameFile(file_name, FileAccess::kWrite);
   if (!file) {
-    pic.Unlock();
+    view.Unlock();
     return false;
   }
 
-  header.width = static_cast<int16_t>(pic.width() - 1);
-  header.height = static_cast<int16_t>(pic.height() - 1);
-  header.byte_per_line = static_cast<int16_t>(pic.width());
+  header.right = static_cast<int16_t>(view.width() - 1);
+  header.bottom = static_cast<int16_t>(view.height() - 1);
+  header.bytes_per_line = static_cast<int16_t>(view.width());
   file->WriteObject(header);
 
-  const int VP_Scan_Line = pic.stride();
-  const auto pixels = pic.pixels();
-  for (int i = 0; i < pic.height(); i++) {
-    Write_Pcx_ScanLine(*file, pixels.subspan(base::ToSize(i * VP_Scan_Line),
-                                             base::ToSize(pic.width())));
+  const int stride = view.stride();
+  const auto pixels = view.pixels();
+  for (int row = 0; row < view.height(); row++) {
+    EncodeScanline(*file, pixels.subspan(base::ToSize(row * stride),
+                                         base::ToSize(view.width())));
   }
   // The 256-color palette closes the file, 8 bits a component, behind a byte
   // of 12 that tells it from pixel data.
   const uint8_t palette_marker = 0x0c;
   file->WriteObject(palette_marker);
-  const std::array<uint8_t, engine::gfx::Palette::kFileSize> palcopy =
+  const std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb =
       palette.ToRgb();
-  file->WriteObject(palcopy);
-  pic.Unlock();
+  file->WriteObject(rgb);
+  view.Unlock();
   return file->ok();
 }
 
 // How many encoded bytes are collected before they go to the stream, which is
 // not buffered itself.
-constexpr int kPoolSize = 2048;
-void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
-  std::array<uint8_t, kPoolSize> pool{};
+constexpr int kEncodeBufferBytes = 2048;
+void EncodeScanline(ByteStream& file, std::span<const uint8_t> pixels) {
+  std::array<uint8_t, kEncodeBufferBytes> encoded{};
 
-  int used = 0;
+  int encoded_count = 0;
   if (pixels.empty()) {
     return;
   }
@@ -90,49 +89,50 @@ void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
   // most 63) and the byte after it the color; any other byte is one pixel of
   // that color. A lone pixel whose color has both bits set would read as a
   // count, so it goes out as a run of one.
-  const auto write_char = [&](uint8_t x) {
-    pool.at(base::ToSize(used++)) = x;
-    if (used >= kPoolSize) {
-      file.Write(std::span(pool));
-      used = 0;
+  const auto append = [&](uint8_t byte) {
+    encoded.at(base::ToSize(encoded_count++)) = byte;
+    if (encoded_count >= kEncodeBufferBytes) {
+      file.Write(std::span(encoded));
+      encoded_count = 0;
     }
   };
-  uint8_t last = pixels.front();
-  // How many pixels of `last` have been seen and not written yet; 0 just after
-  // a full run went out.
-  int rle = 1;
+  uint8_t run_color = pixels.front();
+  // How many pixels of `run_color` have been seen and not written yet; 0 just
+  // after a full run went out.
+  int run_length = 1;
 
   for (const uint8_t color : pixels.subspan(1)) {
-    if (color == last) {
-      rle++;
+    if (color == run_color) {
+      run_length++;
       // A count cannot hold more: write the full run (255 is 192 | 63) and
       // start counting afresh.
-      if (rle == 63) {
-        write_char(255);
-        write_char(color);
-        rle = 0;
+      if (run_length == 63) {
+        append(255);
+        append(color);
+        run_length = 0;
       }
     } else {
-      if (rle != 0) {
-        if (rle == 1 && (last & 0xC0U) != 0xC0U) {
-          write_char(last);
+      if (run_length != 0) {
+        if (run_length == 1 && (run_color & 0xC0U) != 0xC0U) {
+          append(run_color);
         } else {
-          write_char(static_cast<uint8_t>(0xC0U | static_cast<unsigned>(rle)));
-          write_char(last);
+          append(
+              static_cast<uint8_t>(0xC0U | static_cast<unsigned>(run_length)));
+          append(run_color);
         }
       }
-      last = color;
-      rle = 1;
+      run_color = color;
+      run_length = 1;
     }
   }
-  if (rle != 0) {
-    if (rle == 1 && (last & 0xC0U) != 0xC0U) {
-      write_char(last);
+  if (run_length != 0) {
+    if (run_length == 1 && (run_color & 0xC0U) != 0xC0U) {
+      append(run_color);
     } else {
-      write_char(static_cast<uint8_t>(0xC0U | static_cast<unsigned>(rle)));
-      write_char(last);
+      append(static_cast<uint8_t>(0xC0U | static_cast<unsigned>(run_length)));
+      append(run_color);
     }
   }
 
-  file.Write(std::span(pool).first(base::ToSize(used)));
+  file.Write(std::span(encoded).first(base::ToSize(encoded_count)));
 }

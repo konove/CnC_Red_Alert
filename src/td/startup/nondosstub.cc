@@ -187,15 +187,15 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   if (!file_handle) {
     return nullptr;
   }
-  PCX_HEADER header{};
+  PcxHeader header{};
   if (!file_handle->ReadObject(header) || header.id != 10 ||
-      header.version != 5 || header.pixelsize != 8 ||
+      header.version != 5 || header.bits_per_pixel != 8 ||
       header.color_planes != 1 || header.encoding != 1) {
     return nullptr;
   }
-  const int width = header.width - header.x + 1;
-  int height = header.height - header.y + 1;
-  if (width <= 0 || height <= 0 || header.byte_per_line < width || size < 0 ||
+  const int width = header.right - header.left + 1;
+  int height = header.bottom - header.top + 1;
+  if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0 ||
       static_cast<int64_t>(width) * height > INT32_MAX) {
     return nullptr;
   }
@@ -215,7 +215,7 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   BufferedFileReader reader(*file_handle);
   for (int row = 0; row < height; ++row) {
     int column = 0;
-    while (column < header.byte_per_line) {
+    while (column < header.bytes_per_line) {
       const auto code = reader.ReadByte();
       if (!code) {
         pic.reset();
@@ -232,7 +232,7 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
         }
         color = *value;
       }
-      if (count > header.byte_per_line - column) {
+      if (count > header.bytes_per_line - column) {
         pic.reset();
         return pic;
       }

@@ -117,7 +117,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   engine::gfx::Palette palette;
   palette.at(1) = engine::gfx::PaletteColor(255, 80, 3);
 
-  Write_PCX_File(path.string(), picture.view(), palette);
+  WritePcxFile(path.string(), picture.view(), palette);
 
   engine::gfx::Palette loaded_palette;
   const std::unique_ptr<PixelBuffer> loaded =

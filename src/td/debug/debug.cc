@@ -145,7 +145,7 @@ void Debug_Key(unsigned input) {
             }
           }
 
-          Write_PCX_File(filename, temp_page.view(), CurrentPalette);
+          WritePcxFile(filename, temp_page.view(), CurrentPalette);
           // Map.Place_Random_Crate();
         }
         break;

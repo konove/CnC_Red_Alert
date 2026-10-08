@@ -31,7 +31,7 @@ void Screenshot_Key(const engine::window::KeyNumber key) {
         }
       }
 
-      Write_PCX_File(filename, temp_page.view(), CurrentPalette);
+      WritePcxFile(filename, temp_page.view(), CurrentPalette);
     }
   }
 }
