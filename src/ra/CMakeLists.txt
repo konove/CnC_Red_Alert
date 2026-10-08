@@ -380,6 +380,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_writepcx_test
+    SOURCES assets/writepcx_test.cc assets/writepcx.cc
+    LIBS base engine_gfx engine_stream absl::core_headers
+)
+
+add_gtest(
     NAME ra_wolapi_iids_test
     SOURCES wol/wolapi_iids_test.cc wol/wolapi_iids.cc
     LIBS engine_platform

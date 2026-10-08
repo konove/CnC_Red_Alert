@@ -101,6 +101,12 @@ static const unsigned char rle_full_run =
  *=============================================================================================*/
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
                    const engine::gfx::Palette& palette) {
+  // A surface's buffer has pixels only while it is locked.
+  PixelView& view = pic.view();
+  if (!view.Lock()) {
+    return 0;
+  }
+
   const PCX_HEADER header = {10,
                              5,
                              1,
@@ -125,15 +131,17 @@ int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
   file.WriteObject(header);
 
   /*
-  **	Write out the picture, line by line.
+  **	Write out the picture, line by line. A surface's rows can be further
+  **	apart than the picture is wide.
   */
-  const int VP_Scan_Line = pic.width() + pic.view().x_add();
-  const auto pixels = pic.view().pixels();
+  const int stride = view.stride();
+  const auto pixels = view.pixels();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line,
                        pixels.subspan(static_cast<size_t>(line) *
-                                      static_cast<size_t>(VP_Scan_Line)));
+                                      static_cast<size_t>(stride)));
   }
+  view.Unlock();
 
   /*
   **	Special marker for end of RLE data.

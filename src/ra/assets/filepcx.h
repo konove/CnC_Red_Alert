@@ -85,7 +85,8 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
 
 // Writes pic as a PCX picture with palette to file, which the caller has
 // opened for writing; the picture starts at the stream's current position and
-// the stream is left open. Returns 0.
+// the stream is left open. Writes nothing for a buffer without pixels (a
+// surface that will not lock). Returns 0.
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
                    const engine::gfx::Palette& palette);
 
