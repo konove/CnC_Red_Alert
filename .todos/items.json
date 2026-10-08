@@ -3944,10 +3944,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-07T07:32:22Z",
-      "updated": "2026-10-07T23:30:39Z",
+      "updated": "2026-10-08T03:21:27Z",
       "fixedIn": "0354aa34",
       "resolution": "The two types stay separate: `Facing` is a neighbour-cell index with a `kNone` and `Direction` an angle that uses all 256 values. `Direction` is no longer an enum but a class over one `uint8_t` whose explicit constructor wraps any angle; the compass points are constants, `AsDirection()` and its analyzer suppression are gone, and saves still hold it in four bytes.",
       "comments": [
@@ -4180,10 +4180,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:50Z",
+      "updated": "2026-10-08T03:21:36Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "741ef70a",
@@ -4371,10 +4371,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:39Z",
+      "updated": "2026-10-08T03:21:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "0354aa34",
@@ -4411,10 +4411,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:39Z",
+      "updated": "2026-10-08T03:21:32Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "c682310b",
@@ -4458,8 +4458,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 179,
-          "endLine": 179,
+          "startLine": 185,
+          "endLine": 185,
           "text": "int BodyFrame32(Direction dir);",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
@@ -4483,16 +4483,29 @@
       "effort": "m",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:46Z",
+      "updated": "2026-10-08T03:41:38Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "4e9fa83f",
+      "resolution": "Added `struct game::Point { int x; int y; }` to `game/sim/direction.h`; `Direction8Toward()` and `Direction256Toward()` now take `(Point from, Point to)`. Updated the 13 call sites in both games and `direction_test.cc`; no behaviour change.",
       "toDecide": "Leave the four ints (simple, and the wrappers hide them), or add a small `{x, y}` struct to `game/sim` or `base` and take two of them. The second touches about 18 call sites in both games.",
+      "decisions": [
+        {
+          "question": "T-174: should Direction8Toward()/Direction256Toward() keep their four ints or take two points? (13 production calls: 7 in the coord.h/inline.h wrappers, 6 direct in scroll.cc, the dials, infantry.cc, techno.cc; plus ~50 lines in direction_test.cc.)",
+          "options": [
+            "game::Point in game/sim (Recommended)",
+            "base::Point in base/",
+            "Leave the four ints"
+          ],
+          "answer": "game::Point in game/sim (Recommended)",
+          "time": "2026-10-08T03:25:00Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -4503,30 +4516,30 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 149,
-          "endLine": 149,
-          "text": "Direction Direction8Toward(int from_x, int from_y, int to_x, int to_y);",
+          "startLine": 155,
+          "endLine": 155,
+          "text": "Direction Direction8Toward(Point from, Point to);",
           "before": [
             "// The diagonals take more than their share of the circle: a slope steeper than",
-            "// 1 in 2 off an axis already coun  ts as diagonal (26.6 degrees, where an even",
+            "// 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even",
             "// split would be 22.5). Equal points give Direction::kNorthEast."
           ],
           "after": [
             "",
-            "// Returns the direction from (from_x, from_y) to (to_x, to_y) to full 256-step",
-            "// accuracy, with the same axes as Direction8Toward(). The angle is interpolated"
+            "// Returns the direction from `from` to `to` to full 256-step accuracy. The",
+            "// angle is interpolated linearly along the shorter offset rather than taken"
           ],
           "lost": false
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 157,
-          "endLine": 157,
-          "text": "Direction Direction256Toward(int from_x, int from_y, int to_x, int to_y);",
+          "startLine": 163,
+          "endLine": 163,
+          "text": "Direction Direction256Toward(Point from, Point to);",
           "before": [
-            "// it is exact only on the axes and diagonals and up to four steps off between",
-            "// them. An angle between two steps rounds toward the axis its quadrant starts",
-            "// on, going clockwise. Equal points give 255, just shy of north."
+            "// four steps off between them. An angle between two steps rounds toward the",
+            "// axis its quadrant starts on, going clockwise. Equal points give 255, just",
+            "// shy of north."
           ],
           "after": [
             "",
