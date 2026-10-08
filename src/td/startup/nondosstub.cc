@@ -17,24 +17,15 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
-#include <array>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <memory>
 #include <optional>
 #include <span>
 
-#include "absl/base/attributes.h"
-#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/stream/byte_stream.h"
-#include "engine/stream/seek_origin.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
@@ -100,162 +91,12 @@ void Focus_Restore() {
 
 void Load_Title_Screen(const char* name, PixelView* video_page,
                        engine::gfx::Palette& palette) {
-  const std::unique_ptr<PixelBuffer> load_buffer =
-      Read_PCX_File(name, &palette, {}, 0);
-
-  if (load_buffer) {
-    load_buffer->view().BlitTo(*video_page);
+  if (const std::optional<engine::gfx::PcxPicture> picture =
+          engine::gfx::ReadPcxFile(name)) {
+    video_page->CopyFromBuffer(0, 0, picture->width, picture->height,
+                               picture->pixels);
+    palette = picture->palette;
   }
-}
-
-/***************************************************************************
- * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *
- *                                                                         *
- *	PixelBuffer* Read_PCX_File (char* name, char* palette ,void
- **Buff, long size );	*
- *  																								*
- *                                                                         *
- * INPUT: name is a NULL terminated string of the format [xxxx.pcx]        *
- *        palette is optional, if palette != NULL the the color palette of *
- *					 the pcx file will be place in the
- *memory block pointed	   * by palette.
- ** Buff is optional, if Buff == NULL a new memory Buffer
- ** will be allocated, otherwise the file will be placed 		* at
- *location pointed by Buffer;
- ** Size is the size in bytes of the memory block pointed by Buff * is also
- *optional;
- **                                                                         *
- * OUTPUT: on success a pointer to a PixelBuffer containing the     *
- *         pcx file, NULL otherwise.                                       *
- *																									*
- * WARNINGS:                                                               *
- *         Appears to be a comment-free zone                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/03/1995 JRJ : Created.                                             *
- *   04/30/1996 ST : Tidied up and modified to use GameFile             *
- *=========================================================================*/
-
-class BufferedFileReader {
- public:
-  static constexpr size_t kBufferSize = 2048;
-
-  explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : file_(file) {}
-
-  // Delete copy/move to prevent accidental state duplication.
-  ~BufferedFileReader() = default;
-  BufferedFileReader(const BufferedFileReader&) = delete;
-  BufferedFileReader& operator=(const BufferedFileReader&) = delete;
-  BufferedFileReader(BufferedFileReader&&) = delete;
-  BufferedFileReader& operator=(BufferedFileReader&&) = delete;
-
-  // Returns the next byte, or nullopt at end of file.
-  std::optional<uint8_t> ReadByte() {
-    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
-      return std::nullopt;
-    }
-
-    return buffer_.at(cursor_++);
-  }
-
- private:
-  // Returns true if data was successfully read, false on EOF.
-  bool RefillBuffer() {
-    cursor_ = 0;
-    // Track exactly how many bytes were read.
-    bytes_in_buffer_ =
-        base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));
-    return bytes_in_buffer_ > 0;
-  }
-
-  ByteStream& file_;
-
-  // Use std::array for standard compliance and bounds awareness.
-  std::array<uint8_t, kBufferSize> buffer_{};
-
-  // cursor_ tracks current position; bytes_in_buffer_ tracks valid data range.
-  size_t cursor_ = 0;
-  size_t bytes_in_buffer_ = 0;
-};
-
-std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette,
-                                           std::span<uint8_t> buff,
-                                           int32_t size) {
-  const auto file_handle = OpenGameFile(name);
-  if (!file_handle) {
-    return nullptr;
-  }
-  engine::gfx::PcxHeader header{};
-  if (!file_handle->ReadObject(header) || header.id != 10 ||
-      header.version != 5 || header.bits_per_pixel != 8 ||
-      header.color_planes != 1 || header.encoding != 1) {
-    return nullptr;
-  }
-  const int width = header.right - header.left + 1;
-  int height = header.bottom - header.top + 1;
-  if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0 ||
-      static_cast<int64_t>(width) * height > INT32_MAX) {
-    return nullptr;
-  }
-  if (!buff.empty()) {
-    const auto available =
-        size == 0 ? buff.size() : std::min(buff.size(), base::ToSize(size));
-    height =
-        std::min(height, static_cast<int>(available / base::ToSize(width)));
-    if (height <= 0) {
-      return nullptr;
-    }
-  }
-  // Every exit below returns `pic`, emptied on failure, so the return is
-  // elided.
-  auto pic = std::make_unique<PixelBuffer>(width, height, buff);
-  const auto pixels = pic->bytes();
-  BufferedFileReader reader(*file_handle);
-  for (int row = 0; row < height; ++row) {
-    int column = 0;
-    while (column < header.bytes_per_line) {
-      const auto code = reader.ReadByte();
-      if (!code) {
-        pic.reset();
-        return pic;
-      }
-      int count = 1;
-      uint8_t color = *code;
-      if ((color & 0xc0U) == 0xc0U) {
-        count = color & 0x3fU;
-        const auto value = reader.ReadByte();
-        if (!value || count == 0) {
-          pic.reset();
-          return pic;
-        }
-        color = *value;
-      }
-      if (count > header.bytes_per_line - column) {
-        pic.reset();
-        return pic;
-      }
-      const int visible = std::min(count, std::max(0, width - column));
-      if (visible > 0) {
-        std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),
-                                         base::ToSize(visible)),
-                          color);
-      }
-      column += count;
-    }
-  }
-  if (palette != nullptr) {
-    // The file's palette is 8 bits a component.
-    std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
-    file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
-    if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {
-      pic.reset();
-      return pic;
-    }
-    *palette = engine::gfx::Palette::FromRgb(rgb);
-  }
-  return pic;
 }
 
 }  // namespace td

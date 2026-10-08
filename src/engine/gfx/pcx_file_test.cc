@@ -371,6 +371,59 @@ std::vector<std::optional<PcxPicture>> ReadRowOfTwo(
   return pictures;
 }
 
+// The pixels each of `pictures` holds, or nothing for one that did not read.
+std::vector<std::vector<uint8_t>> PixelsOf(
+    const std::vector<std::optional<PcxPicture>>& pictures) {
+  std::vector<std::vector<uint8_t>> pixels;
+  pixels.reserve(pictures.size());
+  for (const std::optional<PcxPicture>& picture : pictures) {
+    pixels.push_back(picture ? picture->pixels : std::vector<uint8_t>{});
+  }
+  return pixels;
+}
+
+TEST(PcxFileTest, ReadsLonePixels) {
+  EXPECT_EQ(PixelsOf(ReadRowOfTwo({7, 8, 0, 0})),
+            (std::vector<std::vector<uint8_t>>{{7, 8}, {7, 8}}));
+}
+
+TEST(PcxFileTest, ReadsRuns) {
+  EXPECT_EQ(PixelsOf(ReadRowOfTwo({0xC2, 7, 0xC2, 0})),
+            (std::vector<std::vector<uint8_t>>{{7, 7}, {7, 7}}));
+}
+
+TEST(PcxFileTest, RejectsARunThatCrossesIntoTheNextRow) {
+  EXPECT_FALSE(ReadBytes(FileOf(HeaderOf(2, 1, 2), {0xC3, 7})).has_value());
+}
+
+TEST(PcxFileTest, RejectsARunOfNoPixels) {
+  EXPECT_FALSE(
+      ReadBytes(FileOf(HeaderOf(2, 1, 2), {0xC0, 7, 7, 8})).has_value());
+}
+
+// Runs longer than a count holds, lone pixels and lone pixels of a color that
+// reads as a count come back as they went out, with the palette.
+TEST(PcxFileTest, ReadsWhatWasWritten) {
+  constexpr int kWidth = 70;
+  std::vector<uint8_t> pixels(base::ToSize(2 * kWidth), 9);
+  for (int x = 0; x < kWidth; x++) {
+    pixels.at(base::ToSize(kWidth + x)) =
+        static_cast<uint8_t>(x % 2 == 0 ? 0xC5 : x);
+  }
+  Picture picture(kWidth, pixels);
+  Palette palette;
+  palette.at(1) = PaletteColor(255, 80, 3);
+
+  const std::optional<PcxPicture> read =
+      ReadBytes(WrittenFile(picture.view(), palette));
+
+  ASSERT_TRUE(read.has_value());
+  EXPECT_EQ(read->width, kWidth);
+  EXPECT_EQ(read->height, 2);
+  EXPECT_EQ(read->pixels, pixels);
+  EXPECT_EQ(read->palette, palette);
+}
+
 // The palette's bytes behind a picture that is cut short are not pixels.
 TEST(PcxFileTest, RejectsScanlinesThatAreCutShort) {
   const std::vector<std::vector<uint8_t>> cut_short = {

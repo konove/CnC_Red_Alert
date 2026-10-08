@@ -3,14 +3,9 @@
 #ifndef CNC_RED_ALERT_TD_STARTUP_WINSTUB_H_
 #define CNC_RED_ALERT_TD_STARTUP_WINSTUB_H_
 
-#include <cstdint>
-#include <memory>
-#include <span>
-
 #include "engine/gfx/palette.h"
 #include "engine/window/window_events.h"
 
-class PixelBuffer;
 class PixelView;
 
 namespace game {
@@ -43,15 +38,6 @@ class GameWindowEvents final : public engine::window::WindowEvents {
 // Opens the game's window.
 void Create_Main_Window(void* instance, int command_show, int width,
                         int height);
-
-// Reads the PCX picture `name` into a new buffer, backed by `buff` when it is
-// not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette` with
-// the file's palette when `palette` is not nullptr. Returns null if the file
-// is missing, malformed or does not fit.
-std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette,
-                                           std::span<uint8_t> buff,
-                                           int32_t size);
 
 // Reads a title screen picture into the given page and its palette.
 void Load_Title_Screen(const char* name, PixelView* video_page,
