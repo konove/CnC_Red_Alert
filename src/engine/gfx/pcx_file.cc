@@ -22,6 +22,7 @@
 #include <array>
 #include <cstdint>
 #include <iterator>
+#include <limits>
 #include <optional>
 #include <span>
 #include <string_view>
@@ -131,11 +132,18 @@ std::vector<uint8_t> EncodeScanlines(PixelView& view) {
   return encoded;
 }
 
-// Returns the scanlines of the picture in `view`, or nothing for a view without
-// pixels: a surface's page has them only while it is locked, and a view that
-// was never attached has none at all.
+// Returns whether the header's 16-bit fields hold the size of `view`: its
+// width as it is, in bytes_per_line, and its height less one, in bottom.
+bool FitsHeader(const PixelView& view) {
+  constexpr int kMaxField = std::numeric_limits<int16_t>::max();
+  return view.width() <= kMaxField && view.height() - 1 <= kMaxField;
+}
+
+// Returns the scanlines of the picture in `view`, or nothing for a view too
+// large for a header or without pixels: a surface's page has them only while
+// it is locked, and a view that was never attached has none at all.
 std::optional<std::vector<uint8_t>> LockedScanlines(PixelView& view) {
-  if (!view.Lock()) {
+  if (!FitsHeader(view) || !view.Lock()) {
     return std::nullopt;
   }
   std::vector<uint8_t> scanlines = EncodeScanlines(view);
@@ -144,7 +152,7 @@ std::optional<std::vector<uint8_t>> LockedScanlines(PixelView& view) {
 }
 
 // Writes the picture in `view`, whose encoded rows are `scanlines`, to `out`.
-// Returns whether `out` took all of it.
+// Returns whether `out` took all of it. The caller has checked FitsHeader().
 bool WriteEncoded(ByteStream& out, const PixelView& view,
                   const std::span<const uint8_t> scanlines,
                   const Palette& palette) {
@@ -221,7 +229,8 @@ bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette) {
 
 bool WritePcxFile(const std::string_view file_name, PixelView& view,
                   const Palette& palette) {
-  // Encoding comes first, so that a view without pixels creates no file.
+  // Encoding comes first, so that a view that cannot be written creates no
+  // file.
   const std::optional<std::vector<uint8_t>> scanlines = LockedScanlines(view);
   if (!scanlines) {
     return false;

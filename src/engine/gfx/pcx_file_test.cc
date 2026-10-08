@@ -329,6 +329,45 @@ TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
   EXPECT_FALSE(std::filesystem::exists(path));
 }
 
+// The header's fields are 16 bits and signed: the width goes into one as it
+// is, the height less one.
+TEST(PcxFileTest, WritesThePictureOfTheLargestSizeAHeaderHolds) {
+  Picture wide(32767, std::vector<uint8_t>(32767));
+  Picture tall(1, std::vector<uint8_t>(32768));
+  RecordingStream out;
+
+  EXPECT_TRUE(WritePcx(out, wide.view(), {}));
+  EXPECT_TRUE(WritePcx(out, tall.view(), {}));
+}
+
+TEST(PcxFileTest, WritesNothingForAPictureTooWideForTheHeader) {
+  Picture picture(32768, std::vector<uint8_t>(32768));
+  RecordingStream out;
+
+  EXPECT_FALSE(WritePcx(out, picture.view(), {}));
+
+  EXPECT_TRUE(out.bytes().empty());
+}
+
+TEST(PcxFileTest, WritesNothingForAPictureTooTallForTheHeader) {
+  Picture picture(1, std::vector<uint8_t>(32769));
+  RecordingStream out;
+
+  EXPECT_FALSE(WritePcx(out, picture.view(), {}));
+
+  EXPECT_TRUE(out.bytes().empty());
+}
+
+TEST(PcxFileTest, CreatesNoFileForAPictureTooLargeForTheHeader) {
+  Picture picture(32768, std::vector<uint8_t>(32768));
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("large.pcx");
+
+  EXPECT_FALSE(WritePcxFile(path.string(), picture.view(), {}));
+
+  EXPECT_FALSE(std::filesystem::exists(path));
+}
+
 // Stores `value` in the 16-bit field of `header` at `offset`.
 void SetField(std::vector<uint8_t>& header, const std::size_t offset,
               const int value) {

@@ -49,11 +49,13 @@ struct PcxPicture {
 // Writes `view` as a PCX picture with `palette` to `out` at its current
 // position, and leaves `out` open. Returns whether all of it was written;
 // nothing is for a view without pixels (unattached, or of a surface that will
-// not lock).
+// not lock) or one larger than a PCX header can say: wider than 32767 pixels
+// or taller than 32768.
 bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
 
 // Writes the same picture to the game file `file_name`, which OpenGameFile()
-// creates as a loose file. A view without pixels creates no file.
+// creates as a loose file. A view that WritePcx() writes nothing for creates
+// no file.
 bool WritePcxFile(std::string_view file_name, PixelView& view,
                   const Palette& palette);
 
