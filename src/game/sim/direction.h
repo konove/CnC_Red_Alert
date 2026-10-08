@@ -141,20 +141,26 @@ inline constexpr Direction Direction::kNorthWest{7 << 5};
 // Objects, tracks and packets hold a direction in one byte.
 static_assert(sizeof(Direction) == 1);
 
-// Returns the direction from (from_x, from_y) to (to_x, to_y) as one of the
-// eight compass points; (0, 0) is the north-west corner, so y grows southward.
+// A position on a plane where (0, 0) is the north-west corner, so y grows
+// southward. The unit is the caller's: pixels, leptons or cells.
+struct Point {
+  int x = 0;
+  int y = 0;
+};
+
+// Returns the direction from `from` to `to` as one of the eight compass points.
 // The diagonals take more than their share of the circle: a slope steeper than
 // 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even
 // split would be 22.5). Equal points give Direction::kNorthEast.
-Direction Direction8Toward(int from_x, int from_y, int to_x, int to_y);
+Direction Direction8Toward(Point from, Point to);
 
-// Returns the direction from (from_x, from_y) to (to_x, to_y) to full 256-step
-// accuracy, with the same axes as Direction8Toward(). The angle is interpolated
-// linearly along the shorter offset rather than taken from an arctangent, so
-// it is exact only on the axes and diagonals and up to four steps off between
-// them. An angle between two steps rounds toward the axis its quadrant starts
-// on, going clockwise. Equal points give 255, just shy of north.
-Direction Direction256Toward(int from_x, int from_y, int to_x, int to_y);
+// Returns the direction from `from` to `to` to full 256-step accuracy. The
+// angle is interpolated linearly along the shorter offset rather than taken
+// from an arctangent, so it is exact only on the axes and diagonals and up to
+// four steps off between them. An angle between two steps rounds toward the
+// axis its quadrant starts on, going clockwise. Equal points give 255, just
+// shy of north.
+Direction Direction256Toward(Point from, Point to);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
 // rounds up to Facing::kNorth.

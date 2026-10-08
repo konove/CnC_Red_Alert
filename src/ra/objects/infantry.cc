@@ -1840,7 +1840,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
 
       if (coord != Coordinate::CellCenterOffset()) {
         toface = game::NearestFacing(
-            game::Direction8Toward(0x0080, 0x0080, coord.x(), coord.y()));
+            game::Direction8Toward({0x0080, 0x0080}, {coord.x(), coord.y()}));
       } else {
         toface = game::NearestFacing(PrimaryFacing.Current());
       }

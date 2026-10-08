@@ -188,8 +188,8 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     /*
     **	Get new dial position (0-255)
     */
-    Direction = game::Direction8Toward(FaceX, FaceY, game::TheMouse().x(),
-                                       game::TheMouse().y());
+    Direction = game::Direction8Toward(
+        {FaceX, FaceY}, {game::TheMouse().x(), game::TheMouse().y()});
 
     /*
     **	Convert to Facing value (0-7).

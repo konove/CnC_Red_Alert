@@ -70,11 +70,10 @@ struct QuadrantOffset {
   bool closer_to_end_axis = false;
 };
 
-QuadrantOffset QuadrantOffsetToward(const int from_x, const int from_y,
-                                    const int to_x, const int to_y) {
-  const int x_offset = to_x - from_x;
+QuadrantOffset QuadrantOffsetToward(const Point from, const Point to) {
+  const int x_offset = to.x - from.x;
   // (0, 0) is the north-west corner, so north is the negative Y direction.
-  const int y_offset = to_y - from_y;
+  const int y_offset = to.y - from.y;
   const bool west = x_offset < 0;
   const bool south = y_offset > 0;
   const int x_distance = std::abs(x_offset);
@@ -92,10 +91,9 @@ QuadrantOffset QuadrantOffsetToward(const int from_x, const int from_y,
 
 }  // namespace
 
-Direction Direction8Toward(const int from_x, const int from_y, const int to_x,
-                           const int to_y) {
+Direction Direction8Toward(const Point from, const Point to) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
-      QuadrantOffsetToward(from_x, from_y, to_x, to_y);
+      QuadrantOffsetToward(from, to);
 
   // If the smaller offset is at least half the bigger one, call it the
   // diagonal, which lies 0x20 into every quadrant, and bail. Equal points
@@ -109,10 +107,9 @@ Direction Direction8Toward(const int from_x, const int from_y, const int to_x,
   return Direction(quadrant + (closer_to_end_axis ? 0x40 : 0));
 }
 
-Direction Direction256Toward(const int from_x, const int from_y, const int to_x,
-                             const int to_y) {
+Direction Direction256Toward(const Point from, const Point to) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
-      QuadrantOffsetToward(from_x, from_y, to_x, to_y);
+      QuadrantOffsetToward(from, to);
 
   // Bail early if the coordinates are the same. This also keeps the division
   // below away from zero.

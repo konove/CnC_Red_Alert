@@ -137,86 +137,86 @@ TEST(ShortestTurnTest, OppositeDirectionsAreHalfACircleApart) {
 }
 
 TEST(Direction8TowardTest, ReturnsTheCompassPoint) {
-  EXPECT_EQ(Direction8Toward(0, 0, 0, -5), Direction::kNorth);
-  EXPECT_EQ(Direction8Toward(0, 0, 5, 0), Direction::kEast);
-  EXPECT_EQ(Direction8Toward(0, 0, 5, 5), Direction::kSouthEast);
-  EXPECT_EQ(Direction8Toward(0, 0, 0, 5), Direction::kSouth);
-  EXPECT_EQ(Direction8Toward(0, 0, -5, 0), Direction::kWest);
-  EXPECT_EQ(Direction8Toward(0, 0, -5, -4), Direction::kNorthWest);
+  EXPECT_EQ(Direction8Toward({0, 0}, {0, -5}), Direction::kNorth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {5, 0}), Direction::kEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {5, 5}), Direction::kSouthEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {0, 5}), Direction::kSouth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-5, 0}), Direction::kWest);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-5, -4}), Direction::kNorthWest);
 }
 
 TEST(Direction8TowardTest, ReturnsTheDiagonals) {
-  EXPECT_EQ(Direction8Toward(0, 0, 5, -5), Direction::kNorthEast);
-  EXPECT_EQ(Direction8Toward(0, 0, -5, 5), Direction::kSouthWest);
-  EXPECT_EQ(Direction8Toward(0, 0, -5, -5), Direction::kNorthWest);
+  EXPECT_EQ(Direction8Toward({0, 0}, {5, -5}), Direction::kNorthEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-5, 5}), Direction::kSouthWest);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-5, -5}), Direction::kNorthWest);
 }
 
 TEST(Direction8TowardTest, ASlopeOfOneInTwoIsAlreadyDiagonal) {
-  EXPECT_EQ(Direction8Toward(0, 0, 4, -2), Direction::kNorthEast);
-  EXPECT_EQ(Direction8Toward(0, 0, 5, -2), Direction::kEast);
-  EXPECT_EQ(Direction8Toward(0, 0, 2, -4), Direction::kNorthEast);
-  EXPECT_EQ(Direction8Toward(0, 0, 2, -5), Direction::kNorth);
-  EXPECT_EQ(Direction8Toward(0, 0, -2, 5), Direction::kSouth);
-  EXPECT_EQ(Direction8Toward(0, 0, 2, 5), Direction::kSouth);
-  EXPECT_EQ(Direction8Toward(0, 0, -2, -5), Direction::kNorth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {4, -2}), Direction::kNorthEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {5, -2}), Direction::kEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {2, -4}), Direction::kNorthEast);
+  EXPECT_EQ(Direction8Toward({0, 0}, {2, -5}), Direction::kNorth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-2, 5}), Direction::kSouth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {2, 5}), Direction::kSouth);
+  EXPECT_EQ(Direction8Toward({0, 0}, {-2, -5}), Direction::kNorth);
 }
 
 TEST(Direction8TowardTest, DependsOnlyOnTheOffset) {
-  EXPECT_EQ(Direction8Toward(100, -40, 105, -40), Direction::kEast);
-  EXPECT_EQ(Direction8Toward(100, -40, 100, -45), Direction::kNorth);
+  EXPECT_EQ(Direction8Toward({100, -40}, {105, -40}), Direction::kEast);
+  EXPECT_EQ(Direction8Toward({100, -40}, {100, -45}), Direction::kNorth);
 }
 
 TEST(Direction8TowardTest, SamePointGivesNorthEast) {
-  EXPECT_EQ(Direction8Toward(3, 3, 3, 3), Direction::kNorthEast);
+  EXPECT_EQ(Direction8Toward({3, 3}, {3, 3}), Direction::kNorthEast);
 }
 
 TEST(Direction256TowardTest, IsExactOnTheAxes) {
-  EXPECT_EQ(Direction256Toward(0, 0, 0, -100), Direction::kNorth);
-  EXPECT_EQ(Direction256Toward(0, 0, 100, 0), Direction::kEast);
-  EXPECT_EQ(Direction256Toward(0, 0, 0, 100), Direction::kSouth);
-  EXPECT_EQ(Direction256Toward(0, 0, -100, 0), Direction::kWest);
+  EXPECT_EQ(Direction256Toward({0, 0}, {0, -100}), Direction::kNorth);
+  EXPECT_EQ(Direction256Toward({0, 0}, {100, 0}), Direction::kEast);
+  EXPECT_EQ(Direction256Toward({0, 0}, {0, 100}), Direction::kSouth);
+  EXPECT_EQ(Direction256Toward({0, 0}, {-100, 0}), Direction::kWest);
 }
 
 TEST(Direction256TowardTest, IsExactOnTheDiagonals) {
-  EXPECT_EQ(Direction256Toward(0, 0, 100, -100), Direction::kNorthEast);
-  EXPECT_EQ(Direction256Toward(0, 0, 100, 100), Direction::kSouthEast);
-  EXPECT_EQ(Direction256Toward(0, 0, -100, 100), Direction::kSouthWest);
-  EXPECT_EQ(Direction256Toward(0, 0, -100, -100), Direction::kNorthWest);
+  EXPECT_EQ(Direction256Toward({0, 0}, {100, -100}), Direction::kNorthEast);
+  EXPECT_EQ(Direction256Toward({0, 0}, {100, 100}), Direction::kSouthEast);
+  EXPECT_EQ(Direction256Toward({0, 0}, {-100, 100}), Direction::kSouthWest);
+  EXPECT_EQ(Direction256Toward({0, 0}, {-100, -100}), Direction::kNorthWest);
 }
 
 TEST(Direction256TowardTest, InterpolatesLinearlyBetweenAxisAndDiagonal) {
   // Halfway along the shorter offset is halfway to the diagonal, 16 steps,
   // where the true angle (26.6 degrees) would be 19.
-  EXPECT_EQ(Direction256Toward(0, 0, 50, -100), Direction(16));
+  EXPECT_EQ(Direction256Toward({0, 0}, {50, -100}), Direction(16));
   // Past the diagonal the count runs back from the axis ahead.
-  EXPECT_EQ(Direction256Toward(0, 0, 100, -50), Direction(64 - 16));
-  EXPECT_EQ(Direction256Toward(0, 0, 50, 100), Direction(128 - 16));
-  EXPECT_EQ(Direction256Toward(0, 0, -50, 100), Direction(128 + 16));
-  EXPECT_EQ(Direction256Toward(0, 0, -50, -100), Direction(256 - 16));
+  EXPECT_EQ(Direction256Toward({0, 0}, {100, -50}), Direction(64 - 16));
+  EXPECT_EQ(Direction256Toward({0, 0}, {50, 100}), Direction(128 - 16));
+  EXPECT_EQ(Direction256Toward({0, 0}, {-50, 100}), Direction(128 + 16));
+  EXPECT_EQ(Direction256Toward({0, 0}, {-50, -100}), Direction(256 - 16));
 }
 
 TEST(Direction256TowardTest, RoundsTowardTheStartOfTheQuadrant) {
   // 1 in 3 is 10.67 steps off the nearer axis. Both halves of a quadrant
   // round it toward the axis the quadrant starts on.
-  EXPECT_EQ(Direction256Toward(0, 0, 1, -3), Direction(10));
-  EXPECT_EQ(Direction256Toward(0, 0, 3, -1), Direction(64 - 11));
-  EXPECT_EQ(Direction256Toward(0, 0, 3, 1), Direction(64 + 10));
-  EXPECT_EQ(Direction256Toward(0, 0, 1, 3), Direction(128 - 11));
+  EXPECT_EQ(Direction256Toward({0, 0}, {1, -3}), Direction(10));
+  EXPECT_EQ(Direction256Toward({0, 0}, {3, -1}), Direction(64 - 11));
+  EXPECT_EQ(Direction256Toward({0, 0}, {3, 1}), Direction(64 + 10));
+  EXPECT_EQ(Direction256Toward({0, 0}, {1, 3}), Direction(128 - 11));
 }
 
 TEST(Direction256TowardTest, NeverLeavesTheQuadrantOfTheTarget) {
   for (int x = 1; x <= 40; ++x) {
     for (int y = 1; y <= 40; ++y) {
-      const int north_east = Direction256Toward(0, 0, x, -y).value();
+      const int north_east = Direction256Toward({0, 0}, {x, -y}).value();
       EXPECT_LT(north_east, 64) << x << " " << y;
-      const int north_west = Direction256Toward(0, 0, -x, -y).value();
+      const int north_west = Direction256Toward({0, 0}, {-x, -y}).value();
       EXPECT_GE(north_west, 192) << x << " " << y;
     }
   }
 }
 
 TEST(Direction256TowardTest, SamePointGivesJustShyOfNorth) {
-  EXPECT_EQ(Direction256Toward(7, 7, 7, 7), Direction(255));
+  EXPECT_EQ(Direction256Toward({7, 7}, {7, 7}), Direction(255));
 }
 
 }  // namespace

@@ -159,8 +159,9 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
           alty = std::min(alty, TheScreen().visible_view().height());
 
           direction = game::Direction256Toward(
-              TheScreen().visible_view().width() / 2,
-              TheScreen().visible_view().height() / 2, altx, alty);
+              {TheScreen().visible_view().width() / 2,
+               TheScreen().visible_view().height() / 2},
+              {altx, alty});
         }
         const int control = static_cast<int>(game::NearestFacing(direction));
 

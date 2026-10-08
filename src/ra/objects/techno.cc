@@ -3196,7 +3196,7 @@ bool TechnoClass::Electric_Zap(Target target, int which,
         **	destination (actually the source coordinate of the zap).
         */
         int facing = static_cast<int>(
-            game::NearestFacing(game::Direction8Toward(x, y, x1, y1)));
+            game::NearestFacing(game::Direction8Toward({x, y}, {x1, y1})));
 
         /*
         ** If there's quite a bit of distance to go,

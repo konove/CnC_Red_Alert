@@ -34,18 +34,19 @@ inline Coordinate XYPixel_Coord(int x, int y) {
       y * game::kCellHeightLeptons / game::kCellHeightPixels);
 }
 inline game::Direction Direction256(Coordinate coord1, Coordinate coord2) {
-  return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
-                                  coord2.y());
+  return game::Direction256Toward({coord1.x(), coord1.y()},
+                                  {coord2.x(), coord2.y()});
 }
 inline game::Direction DirectionBetween(Coordinate coord1, Coordinate coord2) {
-  return game::Direction256Toward(coord1.x(), coord1.y(), coord2.x(),
-                                  coord2.y());
+  return game::Direction256Toward({coord1.x(), coord1.y()},
+                                  {coord2.x(), coord2.y()});
 }
 inline game::Direction Direction8(Coordinate coord1, Coordinate coord2) {
-  return game::Direction8Toward(coord1.x(), coord1.y(), coord2.x(), coord2.y());
+  return game::Direction8Toward({coord1.x(), coord1.y()},
+                                {coord2.x(), coord2.y()});
 }
 inline game::Direction DirectionBetween(Cell cell1, Cell cell2) {
-  return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
+  return game::Direction8Toward({cell1.x(), cell1.y()}, {cell2.x(), cell2.y()});
 }
 inline Coordinate Adjacent_Cell(Coordinate coord, game::Facing dir) {
   return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)

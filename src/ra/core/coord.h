@@ -39,13 +39,13 @@ inline Coordinate CoordFromPixels(const int x, const int y) noexcept {
 // resolution.
 inline game::Direction DirectionBetween(const Coordinate from,
                                         const Coordinate to) {
-  return game::Direction256Toward(from.x(), from.y(), to.x(), to.y());
+  return game::Direction256Toward({from.x(), from.y()}, {to.x(), to.y()});
 }
 
 // Returns the direction from `from` to `to` as one of the eight compass
 // points, which is cheaper to work out than DirectionBetween().
 inline game::Direction Direction8(const Coordinate from, const Coordinate to) {
-  return game::Direction8Toward(from.x(), from.y(), to.x(), to.y());
+  return game::Direction8Toward({from.x(), from.y()}, {to.x(), to.y()});
 }
 
 // Returns the center of the cell next to the one `coord` lies in, in direction
@@ -81,7 +81,7 @@ inline Cell AdjacentCell(const Cell cell, const game::Direction dir) {
 
 // Calculates the Direction from one cell to another (8-direction accuracy).
 inline game::Direction DirectionBetween(Cell cell1, Cell cell2) {
-  return game::Direction8Toward(cell1.x(), cell1.y(), cell2.x(), cell2.y());
+  return game::Direction8Toward({cell1.x(), cell1.y()}, {cell2.x(), cell2.y()});
 }
 
 // Returns the lepton distance between two coordinates using the "Dragon

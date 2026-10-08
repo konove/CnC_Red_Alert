@@ -88,7 +88,7 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
     const game::Facing old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
     direction_ = game::Direction8Toward(
-        center_x_, center_y_, game::TheMouse().x(), game::TheMouse().y());
+        {center_x_, center_y_}, {game::TheMouse().x(), game::TheMouse().y()});
     facing_ = game::NearestFacing(direction_);
 
     if (facing_ != old_facing) {
