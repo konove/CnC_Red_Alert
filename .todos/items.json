@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 179,
+  "nextId": 184,
   "items": [
     {
       "id": "T-2",
@@ -4588,12 +4588,27 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:31Z",
+      "updated": "2026-10-08T04:48:56Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "1f244fe5",
+      "resolution": "Ran `/modernize-file`: `FacingClass` is now `game::Heading` in `game/sim/heading.{h,cc}` (name chosen by the user), with `current()`/`desired()`, `set_current()`/`set_desired()`, `SnapTo()`, `IsRotating()`, `RemainingTurn()`, `ShortestTurnTo()` and `Turn(max_steps)`. The banners are gone, the unused setter results and `Get()` were dropped, and the tests cover both files fully.",
+      "decisions": [
+        {
+          "question": "What should game::FacingClass be called? The file is renamed to match.",
+          "options": [
+            "Heading",
+            "TurnState",
+            "TurningDirection",
+            "Keep FacingClass"
+          ],
+          "answer": "Heading",
+          "time": "2026-10-08T04:27:58Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -4603,7 +4618,7 @@
       ],
       "anchors": [
         {
-          "path": "src/game/sim/facing.h",
+          "path": "src/game/sim/heading.h",
           "lost": false
         }
       ]
@@ -4681,6 +4696,162 @@
             "",
             "// The one Game; main() creates it and ShutDown() destroys it. nullptr before",
             "// main() and after ShutDown(). The pointer itself is never destroyed: a Game"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-179",
+      "title": "Leftovers from the game/sim/heading.h modernization",
+      "details": "What the `/modernize-file` run on `src/game/sim/facing.{h,cc}` (now `heading.{h,cc}`, class `game::Heading`) noticed and did not change. The parts are the child items.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T04:48:56Z",
+      "updated": "2026-10-08T04:48:56Z",
+      "source": "8a04d474..1f244fe5",
+      "anchors": [
+        {
+          "path": "src/game/sim/heading.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-180",
+      "title": "Decide between Heading::SnapTo() and assigning a Direction",
+      "details": "`game::Heading` has two ways to point somewhere at once: `heading.SnapTo(dir)` (26 callers in `src/ra` and `src/td`) and `heading = dir` through the implicit constructor (about 29 assignments such as `PrimaryFacing = dir`). Both set the current and the desired direction. Keeping one makes the call sites read alike.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T04:49:09Z",
+      "parent": "T-179",
+      "source": "8a04d474..1f244fe5",
+      "toDecide": "Which form stays?\n\n- **Assignment**: delete `SnapTo()` and rewrite its 26 callers as `x = dir`. Shortest; relies on the implicit constructor.\n- **`SnapTo()`**: rewrite the ~29 assignments; says that the turn is skipped, and is a step toward making the constructor explicit.\n- **Both**: leave as is.",
+      "anchors": [
+        {
+          "path": "src/game/sim/heading.h",
+          "startLine": 78,
+          "endLine": 82,
+          "text": "  // Points in `direction` at once, with nothing left to turn.\n  void SnapTo(const Direction direction) {\n    current_ = direction;\n    desired_ = direction;\n  }",
+          "before": [
+            "  // back if they now differ.",
+            "  void set_current(const Direction direction) { current_ = direction; }",
+            ""
+          ],
+          "after": [
+            "",
+            "  // Whether the current direction has yet to reach the desired one.",
+            "  [[nodiscard]] bool IsRotating() const { return desired_ != current_; }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-181",
+      "title": "Replace Heading::ShortestTurnTo() with game::ShortestTurn()",
+      "details": "`Heading::ShortestTurnTo(direction)` in `src/game/sim/heading.h` only returns `ShortestTurn(current_, direction)`, and a `Heading` already converts to its current `Direction`, so its 30 callers in `src/ra` and `src/td` could call `game::ShortestTurn(PrimaryFacing, dir)` and the member could go. Keeps behaviour; `RemainingTurn()` stays, since `Turn()` and the tests use it.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T04:49:09Z",
+      "parent": "T-179",
+      "source": "8a04d474..1f244fe5",
+      "anchors": [
+        {
+          "path": "src/game/sim/heading.h",
+          "startLine": 92,
+          "endLine": 94,
+          "text": "  [[nodiscard]] int ShortestTurnTo(Direction direction) const {\n    return ShortestTurn(current_, direction);\n  }",
+          "before": [
+            "  [[nodiscard]] int RemainingTurn() const {",
+            "    return ShortestTurn(current_, desired_);",
+            "  }"
+          ],
+          "after": [
+            "",
+            "  // Turns the current direction toward the desired one by up to `max_steps`",
+            "  // direction steps, the short way round, stopping at the desired direction."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-182",
+      "title": "Heading::Turn() turns the wrong way for a negative step",
+      "details": "`Heading::Turn(max_steps)` in `src/game/sim/heading.cc` caps `max_steps` at 127 but has no lower bound: a negative value never snaps (`abs(turn) < max_steps` is false) and the signed step moves the current direction away from the desired one. The callers pass `Class->ROT`, `ROT + 1`, 12, 15 or `ROT * GroundspeedBias` (`ra/objects/drive.cc:1299`, `ra/objects/vessel.cc:2170`), so it needs a negative ROT or bias in the rules to happen; not seen. A `DCHECK_GE(max_steps, 0)` or a clamp at 0 would state the contract; the clamp changes what a bad rules file does.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T04:49:09Z",
+      "parent": "T-179",
+      "source": "8a04d474..1f244fe5",
+      "anchors": [
+        {
+          "path": "src/game/sim/heading.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-183",
+      "title": "Add a Red Alert save test for game::Heading",
+      "details": "`src/td/saveload/savevalues_test.cc` has `HeadingPreservesCurrentAndDesiredSeparately`, which checks that a `game::Heading` is saved as its current and desired `Direction`. Red Alert's save tests have nothing that names `game::Heading`, and `Heading::Serialize()` is not instantiated by `game_sim_test` either. Add the same test to the RA save-value tests, or move the one test to `src/game/sim/heading_test.cc` with a small archive.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "tests",
+        "ra",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T04:49:09Z",
+      "parent": "T-179",
+      "source": "8a04d474..1f244fe5",
+      "anchors": [
+        {
+          "path": "src/game/sim/heading.h",
+          "startLine": 64,
+          "endLine": 68,
+          "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(current_, desired_);\n  }",
+          "before": [
+            "  [[nodiscard]] Direction current() const { return current_; }",
+            "  [[nodiscard]] Direction desired() const { return desired_; }",
+            ""
+          ],
+          "after": [
+            "",
+            "  // Sets the direction to turn toward and leaves the current one alone; the",
+            "  // following Turn() calls close the gap."
           ],
           "lost": false
         }
