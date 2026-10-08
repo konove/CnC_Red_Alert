@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 194,
+  "nextId": 207,
   "items": [
     {
       "id": "T-2",
@@ -5376,6 +5376,611 @@
             "//     palette.Set();",
             "//   }",
             "template <engine::platform::TickSource T>"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-194",
+      "title": "Leftovers from the pcx_file modernization",
+      "details": "What the `/modernize-file` run on `src/engine/gfx/pcx_file.{h,cc}` found and left: the PCX reader still lives in each game, Red Alert has its own writer, and a few clean-ups reach outside the two files.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:01Z",
+      "updated": "2026-10-08T07:46:01Z",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-195",
+      "title": "Move the PCX reader into the engine beside the writer",
+      "details": "`Read_PCX_File()` and its `BufferedFileReader` are defined twice, in `src/td/startup/nondosstub.cc` (declared in `td/startup/winstub.h`) and in `src/ra/startup/nondosstub.cc` (declared in `ra/assets/filepcx.h`), while the writer is `engine::gfx::WritePcxFile()` in `src/engine/gfx/pcx_file.cc`. The reader belongs there too: it needs only `PixelBuffer`, `Palette` and `OpenGameFile()`, all of which `engine_gfx` may include.\n\n- Move TD's copy to `engine/gfx/pcx_file.{h,cc}` as `engine::gfx::ReadPcxFile()`, convert its Westwood banner, and move the reader tests from `src/td/assets/pcx_test.cc` to `src/engine/gfx/pcx_file_test.cc` (they can then round-trip with the writer).\n- Diff RA's copy against TD's before deleting it; both callers are `Load_Title_Screen()`.\n- The `backing`/`size` parameters are passed as `{}` and `0` by every caller found; check and drop them.\n\nThe run did not make the move because it crosses from the games into an engine library.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "engine",
+        "td",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "toDecide": "Go ahead with moving `Read_PCX_File()` out of both games into `engine/gfx/pcx_file`? And should it keep taking a file name, or read from a `ByteStream&` the caller opened (see the writer's item)? About 80 lines per game, 6-8 files.",
+      "anchors": [
+        {
+          "path": "src/td/startup/nondosstub.cc",
+          "startLine": 139,
+          "endLine": 260,
+          "text": "class BufferedFileReader {\n public:\n  static constexpr size_t kBufferSize = 2048;\n\n  explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)\n      : file_(file) {}\n\n  // Delete copy/move to prevent accidental state duplication.\n  ~BufferedFileReader() = default;\n  BufferedFileReader(const BufferedFileReader&) = delete;\n  BufferedFileReader& operator=(const BufferedFileReader&) = delete;\n  BufferedFileReader(BufferedFileReader&&) = delete;\n  BufferedFileReader& operator=(BufferedFileReader&&) = delete;\n\n  // Returns the next byte, or nullopt at end of file.\n  std::optional<uint8_t> ReadByte() {\n    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {\n      return std::nullopt;\n    }\n\n    return buffer_.at(cursor_++);\n  }\n\n private:\n  // Returns true if data was successfully read, false on EOF.\n  bool RefillBuffer() {\n    cursor_ = 0;\n    // Track exactly how many bytes were read.\n    bytes_in_buffer_ =\n        base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));\n    return bytes_in_buffer_ > 0;\n  }\n\n  ByteStream& file_;\n\n  // Use std::array for standard compliance and bounds awareness.\n  std::array<uint8_t, kBufferSize> buffer_{};\n\n  // cursor_ tracks current position; bytes_in_buffer_ tracks valid data range.\n  size_t cursor_ = 0;\n  size_t bytes_in_buffer_ = 0;\n};\n\nstd::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,\n                                           engine::gfx::Palette* palette,\n                                           std::span<uint8_t> buff,\n                                           int32_t size) {\n  const auto file_handle = OpenGameFile(name);\n  if (!file_handle) {\n    return nullptr;\n  }\n  engine::gfx::PcxHeader header{};\n  if (!file_handle->ReadObject(header) || header.id != 10 ||\n      header.version != 5 || header.bits_per_pixel != 8 ||\n      header.color_planes != 1 || header.encoding != 1) {\n    return nullptr;\n  }\n  const int width = header.right - header.left + 1;\n  int height = header.bottom - header.top + 1;\n  if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0 ||\n      static_cast<int64_t>(width) * height > INT32_MAX) {\n    return nullptr;\n  }\n  if (!buff.empty()) {\n    const auto available =\n        size == 0 ? buff.size() : std::min(buff.size(), base::ToSize(size));\n    height =\n        std::min(height, static_cast<int>(available / base::ToSize(width)));\n    if (height <= 0) {\n      return nullptr;\n    }\n  }\n  // Every exit below returns `pic`, emptied on failure, so the return is\n  // elided.\n  auto pic = std::make_unique<PixelBuffer>(width, height, buff);\n  const auto pixels = pic->bytes();\n  BufferedFileReader reader(*file_handle);\n  for (int row = 0; row < height; ++row) {\n    int column = 0;\n    while (column < header.bytes_per_line) {\n      const auto code = reader.ReadByte();\n      if (!code) {\n        pic.reset();\n        return pic;\n      }\n      int count = 1;\n      uint8_t color = *code;\n      if ((color & 0xc0U) == 0xc0U) {\n        count = color & 0x3fU;\n        const auto value = reader.ReadByte();\n        if (!value || count == 0) {\n          pic.reset();\n          return pic;\n        }\n        color = *value;\n      }\n      if (count > header.bytes_per_line - column) {\n        pic.reset();\n        return pic;\n      }\n      const int visible = std::min(count, std::max(0, width - column));\n      if (visible > 0) {\n        std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),\n                                         base::ToSize(visible)),\n                          color);\n      }\n      column += count;\n    }\n  }\n  if (palette != nullptr) {\n    // The file's palette is 8 bits a component.\n    std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};\n    file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);\n    if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {\n      pic.reset();\n      return pic;\n    }\n    *palette = engine::gfx::Palette::FromRgb(rgb);\n  }\n  return pic;\n}\n",
+          "before": [
+            " *   04/30/1996 ST : Tidied up and modified to use GameFile             *",
+            " *=========================================================================*/",
+            ""
+          ],
+          "after": [
+            "}  // namespace td",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/startup/nondosstub.cc",
+          "startLine": 113,
+          "endLine": 113,
+          "text": "class BufferedFileReader {",
+          "before": [
+            " *   04/30/1996 ST : Tidied up and modified to use GameFile             *",
+            " *=========================================================================*/",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  static constexpr size_t kBufferSize = 2048;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/winstub.h",
+          "startLine": 51,
+          "endLine": 51,
+          "text": "std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,",
+          "before": [
+            "// not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette` with",
+            "// the file's palette when `palette` is not nullptr. Returns null if the file",
+            "// is missing, malformed or does not fit."
+          ],
+          "after": [
+            "                                           engine::gfx::Palette* palette,",
+            "                                           std::span<uint8_t> buff,",
+            "                                           int32_t size);"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-196",
+      "title": "Decide whether WritePcxFile takes a stream or a file name",
+      "details": "`engine::gfx::WritePcxFile(std::string_view file_name, PixelView&, const Palette&)` opens the file itself with `OpenGameFile(name, FileAccess::kWrite)`. Red Alert's own writer, `ra::Write_PCX_File(ByteStream&, PixelBuffer&, const Palette&)` in `src/ra/assets/writepcx.cc`, takes a stream its caller opened (RA's callers pick `OpenDiskFile`).\n\nWith a `ByteStream&`: the engine function loses the open and two includes, its tests write to a memory stream instead of a temporary file, and RA's four callers become drop-in. Cost: TD's five callers (`td/debug/debug.cc`, `td/map/gscreen.cc`, `td/ui/screenshot.cc`, `td/startup/scripted_run.cc`, `td/assets/pcx_test.cc`) each gain an `if (const auto file = Open...)`; about 7 files, 30 lines. A caller that opens the file first leaves an empty file behind when the view cannot be locked, where today no file is created.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "engine",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "toDecide": "`ByteStream&` (RA's shape, caller opens the file), keep the file name, or the stream form plus a small name-taking overload?",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.h",
+          "startLine": 71,
+          "endLine": 71,
+          "text": "bool WritePcxFile(std::string_view file_name, PixelView& view,",
+          "before": [
+            "// which OpenGameFile() creates as a loose file. Returns whether all of it was",
+            "// written; nothing is, and no file is created, for a view without pixels",
+            "// (unattached, or of a surface that will not lock)."
+          ],
+          "after": [
+            "                  const Palette& palette);",
+            "",
+            "}  // namespace engine::gfx"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-197",
+      "title": "Replace Red Alert's own PCX writer with the engine's",
+      "details": "`src/ra/assets/writepcx.cc` and `src/ra/assets/filepcx.h` hold a second `Write_PCX_File()`, `Write_Pcx_ScanLine()`, `PCX_HEADER` and `RGB`, duplicating `engine::gfx::WritePcxFile()`. Callers: `ra/startup/conquer.cc:620`, `ra/startup/scripted_run.cc:45`, `ra/ui/screenshot.cc:41`, `ra/screens/credits_roll_test.cc:60`.\n\nThe two encoders differ: RA caps a run at 47 pixels (`rle_max_run = 0x2F`) where the engine's uses the format's 63, and RA writes the picture's size into the header's resolution fields where the engine writes 320x200. Both read back the same, but the file bytes change, so re-record anything that hashes RA's PCX output (`tools/ui_check.py --accept` after checking the pictures).\n\nDeleting RA's copy also removes its latent stride defect (separate item).",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:46Z",
+      "blockedBy": [
+        "T-196"
+      ],
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/ra/assets/writepcx.cc",
+          "startLine": 102,
+          "endLine": 102,
+          "text": "int Write_PCX_File(ByteStream& file, PixelBuffer& pic,",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 06/03/1996 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "                   const engine::gfx::Palette& palette) {",
+            "  const PCX_HEADER header = {10,",
+            "                             5,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-198",
+      "title": "Fix the row stride and missing lock in Red Alert's Write_PCX_File",
+      "details": "`ra::Write_PCX_File()` steps through `pic.view().pixels()` by `pic.width() + pic.view().x_add()`, which leaves out the buffer's `pitch()`, and never locks the view: for a surface-backed `PixelBuffer` the rows are skewed, and while the surface is unlocked `pixels()` is empty and the first `subspan` runs past its end. Every caller passes a memory buffer, so it is latent.\n\nThe engine's writer had the same defect, fixed in `f588fbad` (lock the view, use `stride()`); `engine/gfx/pcx_file_test.cc`'s `WritesASurfaceSkippingItsRowPadding` is the test to copy. Goes away by itself if RA switches to the engine's writer.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/ra/assets/writepcx.cc",
+          "startLine": 130,
+          "endLine": 136,
+          "text": "  const int VP_Scan_Line = pic.width() + pic.view().x_add();\n  const auto pixels = pic.view().pixels();\n  for (int line = 0; line < header.height + 1; line++) {\n    Write_Pcx_ScanLine(file, header.byte_per_line,\n                       pixels.subspan(static_cast<size_t>(line) *\n                                      static_cast<size_t>(VP_Scan_Line)));\n  }",
+          "before": [
+            "  /*",
+            "  **\tWrite out the picture, line by line.",
+            "  */"
+          ],
+          "after": [
+            "",
+            "  /*",
+            "  **\tSpecial marker for end of RLE data."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-199",
+      "title": "Hide PcxHeader in pcx_file.cc once the reader is in the engine",
+      "details": "`engine::gfx::PcxHeader` is public in `src/engine/gfx/pcx_file.h` only because Tiberian Dawn's `Read_PCX_File()` reads through it, and the header's magic values (10, 5, 1, 8, 1) are written in `pcx_file.cc` and checked again by hand in `td/startup/nondosstub.cc`. When the reader moves into `pcx_file.cc`, move the struct into its anonymous namespace, name the magic values once, and take the sentence about TD out of the struct's comment.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:46Z",
+      "blockedBy": [
+        "T-195"
+      ],
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.h",
+          "startLine": 40,
+          "endLine": 40,
+          "text": "struct PcxHeader {",
+          "before": [
+            "// 16-bit fields are little-endian and all fall on even offsets, so the struct",
+            "// has no padding and is read and written whole. Tiberian Dawn's PCX reader",
+            "// (td/startup/nondosstub.cc) uses it too."
+          ],
+          "after": [
+            "  uint8_t id;         // 10 marks a PCX file.",
+            "  uint8_t version;    // 5 is the first that can end in a 256-color palette.",
+            "  uint8_t encoding;   // 1 means run-length encoded, the only encoding there is."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-200",
+      "title": "Decide whether a PCX scanline is padded to an even length",
+      "details": "`WritePcxFile()` sets the header's `bytes_per_line` to the picture's width. The PCX specification requires an even number, so a picture of odd width is written with an odd one. The games' own reader accepts any value not below the width; a strict third-party reader may not. Padding means writing one extra byte per row for odd widths, which changes the file bytes (and any recorded screenshot hash of an odd-width picture).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "engine",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "toDecide": "Pad odd-width scanlines to an even `bytes_per_line` as the specification says, or leave the files as the original game wrote them?",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.cc",
+          "startLine": 116,
+          "endLine": 116,
+          "text": "      .bytes_per_line = static_cast<int16_t>(view.width()),",
+          "before": [
+            "      .ega_palette = {},",
+            "      .reserved = 0,",
+            "      .color_planes = 1,"
+          ],
+          "after": [
+            "      .palette_type = 1,",
+            "      .padding = {},",
+            "  };"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-201",
+      "title": "Decide what resolution a written PCX header states",
+      "details": "`WritePcxFile()` writes 320 and 200 into the header's `horizontal_dpi` and `vertical_dpi` whatever the picture's size, as the Tiberian Dawn original did; Red Alert's own writer puts the picture's width and height there. Readers ignore the fields, so this only matters for agreeing on one writer.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "engine",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "toDecide": "Keep 320x200, write the picture's size as Red Alert does, or write a real dpi?",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.cc",
+          "startLine": 111,
+          "endLine": 112,
+          "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
+          "before": [
+            "      .top = 0,",
+            "      .right = static_cast<int16_t>(view.width() - 1),",
+            "      .bottom = static_cast<int16_t>(view.height() - 1),"
+          ],
+          "after": [
+            "      .ega_palette = {},",
+            "      .reserved = 0,",
+            "      .color_planes = 1,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-202",
+      "title": "Reject a picture too large for a PCX header",
+      "details": "`WritePcxFile()` narrows `view.width() - 1`, `view.height() - 1` and the width into the header's `int16_t` fields with `static_cast`. A view wider or taller than 32768 pixels writes a header that does not describe the scanlines after it. No screen is that large; return false before opening the file (with a test) rather than write a corrupt picture.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.cc",
+          "startLine": 109,
+          "endLine": 116,
+          "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = 1,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
+          "before": [
+            "      .bits_per_pixel = 8,",
+            "      .left = 0,",
+            "      .top = 0,"
+          ],
+          "after": [
+            "      .palette_type = 1,",
+            "      .padding = {},",
+            "  };"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-203",
+      "title": "Check the result of WritePcxFile in Tiberian Dawn's screenshot code",
+      "details": "`engine::gfx::WritePcxFile()` returns whether the picture was written since `99201dd4`; it used to return 0 on every path. None of the four callers looks: `td/ui/screenshot.cc:34`, `td/debug/debug.cc:148`, `td/map/gscreen.cc:436`, `td/startup/scripted_run.cc:38`. At least the scripted run (`-SCRIPT`, used by `tools/ui_check.py`) should report a shot it could not save on stderr; the function could also be `[[nodiscard]]` once they do.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/td/startup/scripted_run.cc",
+          "startLine": 38,
+          "endLine": 38,
+          "text": "  engine::gfx::WritePcxFile(path.string(), page.view(), CurrentPalette);",
+          "before": [
+            "    return;",
+            "  }",
+            "  PixelBuffer page(picture.width, picture.height, picture.pixels);"
+          ],
+          "after": [
+            "}",
+            "",
+            "}  // namespace"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/ui/screenshot.cc",
+          "startLine": 34,
+          "endLine": 34,
+          "text": "      engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);",
+          "before": [
+            "        }",
+            "      }",
+            ""
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/debug/debug.cc",
+          "startLine": 148,
+          "endLine": 148,
+          "text": "          engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);",
+          "before": [
+            "            }",
+            "          }",
+            ""
+          ],
+          "after": [
+            "          // Map.Place_Random_Crate();",
+            "        }",
+            "        break;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/gscreen.cc",
+          "startLine": 436,
+          "endLine": 436,
+          "text": "        engine::gfx::WritePcxFile(filename, base::At(ScreenList, i)->view(),",
+          "before": [
+            "      char filename[20];",
+            "      for (int i = 0; i < MAX_SCREENS_SAVED; i++) {",
+            "        absl::SNPrintF(filename, sizeof(filename), \"SCRN%04d.PCX\", i);"
+          ],
+          "after": [
+            "                                  CurrentPalette);",
+            "        base::At(ScreenList, i).reset();",
+            "      }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-204",
+      "title": "Add a scoped lock for PixelView",
+      "details": "`PixelView::Lock()` / `Unlock()` are paired by hand at about 35 sites, with the rule that `Unlock()` must not follow a failed `Lock()`; an early return between them leaks a nested lock count. Nothing in `src/base`, `src/engine` or `src/game` wraps the pair (`ra::LockedWindow` in `ra/assets/winbits.cc` is tied to the window table).\n\nAdd a small guard to `src/engine/gfx/pixel_buffer.h`, for example `class PixelLock { explicit PixelLock(PixelView&); explicit operator bool() const; ~PixelLock(); }`, non-copyable, unlocking only if it locked, with tests in `pixel_buffer_test.cc` (about 20 lines each). First users: `WritePcxFile()` in `engine/gfx/pcx_file.cc`, `engine/gfx/wsa_animation.cc` and `ra::LockedWindow`; the other sites are an optional sweep.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pixel_buffer.h",
+          "startLine": 111,
+          "endLine": 119,
+          "text": "\n  // Locks the buffer's surface so its pixels can be read or written, and\n  // reattaches this view to them, since locking can move them. Locks\n  // nest: the surface is only really locked and unlocked by the outermost\n  // pair. Lock() returns false if the view has no buffer, or if the\n  // surface could not be locked, in which case the matching Unlock() must\n  // not be called.\n  bool Lock();\n  void Unlock();",
+          "before": [
+            "  // the buffer. Rows are stride() bytes apart. Empty if the view is not",
+            "  // attached to a buffer.",
+            "  std::span<uint8_t> pixels();"
+          ],
+          "after": [
+            "  // How deep the buffer's nested locks are; 0 when the view has no buffer.",
+            "  [[nodiscard]] int lock_count() const;",
+            "  // Whether drawing to this view has to lock a surface first."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-205",
+      "title": "Share the fake pixel surface between the gfx tests",
+      "details": "`FakeSurface` in `src/engine/gfx/pixel_buffer_test.cc` and `PaddedSurface` in `src/engine/gfx/pcx_file_test.cc` are both a memory `PixelSurface` with a pitch; the first also counts locks and can refuse them, the second takes its initial pixels. Move one class with both abilities to `engine/gfx/pixel_surface_test_util.h` (as `font_test_util.h` is shared inside `engine_gfx_test`) and use it in both tests.\n\nThen add the test `pcx_file_test.cc` cannot write today: `WritePcxFile()` returns false and creates no file for a surface that refuses its lock (only the unattached view is covered).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pixel_buffer_test.cc",
+          "startLine": 81,
+          "endLine": 81,
+          "text": "class FakeSurface final : public PixelSurface {",
+          "before": [
+            "",
+            "// A surface of plain memory that counts the locks it sees and can be told to",
+            "// refuse them, standing in for the window."
+          ],
+          "after": [
+            " public:",
+            "  // `pitch` bytes to a row, so a pitch wider than the page leaves padding",
+            "  // that drawing must skip."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/gfx/pcx_file_test.cc",
+          "startLine": 193,
+          "endLine": 193,
+          "text": "class PaddedSurface final : public PixelSurface {",
+          "before": [
+            "}",
+            "",
+            "// A surface of plain memory whose rows are `pitch` bytes apart."
+          ],
+          "after": [
+            " public:",
+            "  PaddedSurface(const int pitch, std::vector<uint8_t> pixels)",
+            "      : pixels_(std::move(pixels)), pitch_(pitch) {}"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-206",
+      "title": "Share the read-everything helper of the stream tests",
+      "details": "`ReadAll(ByteStream&, int)` is defined three times, in `src/engine/file/disk_stream_test.cc`, `src/engine/stream/range_stream_test.cc` and `src/engine/stream/memory_stream_test.cc`, and `src/engine/gfx/pcx_file_test.cc` reads its written file back with a `std::ifstream` of its own. One helper in a `engine/stream` test util header would serve all four.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T07:46:43Z",
+      "parent": "T-194",
+      "source": "b82abfc1..f63eabc6",
+      "anchors": [
+        {
+          "path": "src/engine/file/disk_stream_test.cc",
+          "startLine": 35,
+          "endLine": 35,
+          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
+          "before": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "after": [
+            "  std::string out(static_cast<size_t>(count), '\\0');",
+            "  out.resize(",
+            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/stream/range_stream_test.cc",
+          "startLine": 23,
+          "endLine": 23,
+          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
+          "before": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "after": [
+            "  std::string out(static_cast<size_t>(count), '\\0');",
+            "  out.resize(",
+            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/stream/memory_stream_test.cc",
+          "startLine": 20,
+          "endLine": 20,
+          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
+          "before": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "after": [
+            "  std::string out(static_cast<size_t>(count), '\\0');",
+            "  out.resize(",
+            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
           ],
           "lost": false
         }
