@@ -18,10 +18,10 @@
 
 #include "engine/gfx/pcx_file.h"
 
-#include <array>
 #include <cstdint>
 #include <span>
 #include <string_view>
+#include <vector>
 
 #include "base/numeric.h"
 #include "engine/file/file_access.h"
@@ -32,63 +32,51 @@
 
 namespace {
 
-// How many encoded bytes are collected before they go to the stream, which is
-// not buffered itself.
-constexpr int kEncodeBufferBytes = 2048;
-
-// The two top bits that make a byte of the pixel data a run count, and the
-// longest run the six bits under them can count.
-constexpr unsigned kRunMarker = 0xC0;
+// A byte of the pixel data from this value up is a run count, in the six bits
+// under its two top ones, and the byte after it the color; any lower byte is
+// one pixel of that color.
+constexpr int kRunMarker = 0xC0;
 constexpr int kMaxRunLength = 63;
 
-// Appends `pixels`, one row of the picture, to `file` as a run-length encoded
-// PCX scanline. An empty row writes nothing.
-void EncodeScanline(ByteStream& file, std::span<const uint8_t> pixels) {
+// Appends `pixels`, one row of the picture, to `encoded` as a run-length
+// encoded PCX scanline.
+void AppendScanline(std::span<const uint8_t> pixels,
+                    std::vector<uint8_t>& encoded) {
   if (pixels.empty()) {
     return;
   }
-  std::array<uint8_t, kEncodeBufferBytes> encoded{};
-  int encoded_count = 0;
-  const auto append = [&](uint8_t byte) {
-    encoded.at(base::ToSize(encoded_count++)) = byte;
-    if (encoded_count >= kEncodeBufferBytes) {
-      file.Write(std::span(encoded));
-      encoded_count = 0;
-    }
-  };
-
   uint8_t run_color = pixels.front();
-  // How many pixels of `run_color` have been seen and not written yet; 0 just
-  // after a full run went out.
-  int run_length = 1;
-  // A byte with its top two bits set is a run count and the byte after it the
-  // color; any other byte is one pixel of that color. A lone pixel whose color
-  // has both bits set would read as a count, so it goes out as a run of one.
+  int run_length = 0;
   const auto append_run = [&] {
-    if (run_length == 0) {
-      return;
+    // A lone pixel of a color that would read as a count goes out as a run of
+    // one.
+    if (run_length > 1 || run_color >= kRunMarker) {
+      encoded.push_back(static_cast<uint8_t>(kRunMarker + run_length));
     }
-    if (run_length > 1 || (run_color & kRunMarker) == kRunMarker) {
-      append(
-          static_cast<uint8_t>(kRunMarker | static_cast<unsigned>(run_length)));
-    }
-    append(run_color);
+    encoded.push_back(run_color);
   };
-
-  for (const uint8_t color : pixels.subspan(1)) {
-    if (color != run_color) {
+  for (const uint8_t color : pixels) {
+    if (color != run_color || run_length == kMaxRunLength) {
       append_run();
       run_color = color;
-      run_length = 1;
-    } else if (++run_length == kMaxRunLength) {
-      // A count cannot hold more: write the run and start counting afresh.
-      append_run();
       run_length = 0;
     }
+    ++run_length;
   }
   append_run();
+}
 
-  file.Write(std::span(encoded).first(base::ToSize(encoded_count)));
+// Returns the scanlines of the picture in `view`, which the caller has locked.
+std::vector<uint8_t> EncodeScanlines(PixelView& view) {
+  std::vector<uint8_t> encoded;
+  const int stride = view.stride();
+  const auto pixels = view.pixels();
+  for (int row = 0; row < view.height(); row++) {
+    AppendScanline(
+        pixels.subspan(base::ToSize(row * stride), base::ToSize(view.width())),
+        encoded);
+  }
+  return encoded;
 }
 
 }  // namespace
@@ -100,12 +88,13 @@ bool WritePcxFile(std::string_view file_name, PixelView& view,
   if (!view.Lock()) {
     return false;
   }
+  const std::vector<uint8_t> scanlines = EncodeScanlines(view);
+  view.Unlock();
+
   const auto file = OpenGameFile(file_name, FileAccess::kWrite);
   if (!file) {
-    view.Unlock();
     return false;
   }
-
   // An 8-bit, single-plane, run-length encoded version 5 picture. The device
   // resolution is 320x200 whatever the picture's size.
   const PcxHeader header = {
@@ -127,18 +116,11 @@ bool WritePcxFile(std::string_view file_name, PixelView& view,
       .padding = {},
   };
   file->WriteObject(header);
-
-  const int stride = view.stride();
-  const auto pixels = view.pixels();
-  for (int row = 0; row < view.height(); row++) {
-    EncodeScanline(*file, pixels.subspan(base::ToSize(row * stride),
-                                         base::ToSize(view.width())));
-  }
+  file->Write(std::span(scanlines));
   // The 256-color palette closes the file, 8 bits a component, behind a byte
   // of 12 that tells it from pixel data.
   const uint8_t palette_marker = 12;
   file->WriteObject(palette_marker);
   file->WriteObject(palette.ToRgb());
-  view.Unlock();
   return file->ok();
 }
