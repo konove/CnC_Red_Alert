@@ -76,8 +76,7 @@ void Focus_Restore() {
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        engine::gfx::Palette& palette) {
-  const auto load_buffer =
-      Read_PCX_File(std::string(name).c_str(), &palette, {}, 0);
+  const auto load_buffer = Read_PCX_File(std::string(name).c_str(), &palette);
 
   if (load_buffer) {
     load_buffer->view().BlitTo(*video_page);
@@ -131,9 +130,7 @@ class BufferedFileReader {
 };
 
 std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette,
-                                           std::span<uint8_t> backing,
-                                           int32_t size) {
+                                           engine::gfx::Palette* palette) {
   const auto file_handle = OpenGameFile(name);
   if (!file_handle) {
     return nullptr;
@@ -147,8 +144,8 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
     return nullptr;
   }
   const int width = header.right - header.left + 1;
-  int height = header.bottom - header.top + 1;
-  if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0) {
+  const int height = header.bottom - header.top + 1;
+  if (width <= 0 || height <= 0 || header.bytes_per_line < width) {
     return nullptr;
   }
   // A PixelBuffer's size in bytes is an int32_t.
@@ -156,18 +153,7 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
       static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
     return nullptr;
   }
-  // A picture taller than the caller's memory loses its bottom rows.
-  if (!backing.empty()) {
-    const auto available = size == 0
-                               ? backing.size()
-                               : std::min(backing.size(), base::ToSize(size));
-    height =
-        std::min(height, static_cast<int>(available / base::ToSize(width)));
-    if (height <= 0) {
-      return nullptr;
-    }
-  }
-  auto pic = std::make_unique<PixelBuffer>(width, height, backing);
+  auto pic = std::make_unique<PixelBuffer>(width, height);
   // Every exit returns `pic`, emptied on failure, so the return is elided.
   const bool decoded = [&] {
     const auto pixels = pic->bytes();

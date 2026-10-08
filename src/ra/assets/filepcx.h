@@ -23,23 +23,18 @@
 #ifndef CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 #define CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 
-#include <cstdint>
 #include <memory>
-#include <span>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
 namespace ra {
 
-// Reads the PCX picture `name` into a new buffer, backed by `backing` when it
-// is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`
-// with the file's palette when `palette` is not nullptr. Returns null if the
-// file is missing, malformed or does not fit.
+// Reads the PCX picture `name` into a new buffer. Fills `*palette` with the
+// file's palette when `palette` is not nullptr. Returns null if the file is
+// missing or malformed.
 std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette,
-                                           std::span<uint8_t> backing,
-                                           int32_t size);
+                                           engine::gfx::Palette* palette);
 
 }  // namespace ra
 
