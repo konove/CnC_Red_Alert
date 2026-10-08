@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 186,
+  "nextId": 194,
   "items": [
     {
       "id": "T-2",
@@ -2256,7 +2256,14 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-06T00:35:14Z"
+      "updated": "2026-10-08T07:13:58Z",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-08T07:13:58Z",
+          "text": "`engine/gfx/wwstd.h` is no longer part of this: the 2026-10-08 modernization moved it to `game/ui/standard_colors.h` in namespace `game` (1328328f, 323cb376)."
+        }
+      ]
     },
     {
       "id": "T-93",
@@ -4936,6 +4943,439 @@
             "  const auto packed = base::MakeFormatArgs(args...);",
             "  Fancy_Text_Print(view, text, x, y, fore, back, font, flag,",
             "                   absl::MakeConstSpan(packed));"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-186",
+      "title": "Leftovers from the game/ui/standard_colors.h modernization",
+      "details": "What the /modernize-file run on `engine/gfx/wwstd.h` left open. The run removed `kInvalidHandle`, renamed `kTBlack` to `kTransparentBlack` and `kLt*` to `kLight*`, moved the header to `game/ui/standard_colors.h` and put its sixteen constants in namespace `game`. The parts are below.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:27Z",
+      "updated": "2026-10-08T07:13:27Z",
+      "source": "37ea18f9..323cb376",
+      "anchors": [
+        {
+          "path": "src/game/ui/standard_colors.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-187",
+      "title": "Decide whether palette indices get their own type",
+      "details": "The sixteen `game::k...` colors are plain `int`, because every drawing function (`PixelView::FillRect`, `DrawLine`, `Print`, `Fancy_Text_Print`, ...) takes its color as `int`. Nothing stops a caller passing a pixel count or a shape number where a color is expected, and `0` is written as a literal in places that mean `game::kTransparentBlack` (e.g. `td/map/findpath.cc:1151`).",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "game",
+        "engine",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "37ea18f9..323cb376",
+      "toDecide": "Introduce a palette-index type, or keep `int`?\n\n- **Keep `int`**: nothing to do; close this.\n- **A strong type** (an `enum class PaletteIndex : uint8_t` or a small class in `engine/gfx`) taken by the drawing functions: tree-wide, several thousand call sites in both games, a plan of its own (`docs/*_PLAN.md`).\n- **Only an alias** (`using PaletteIndex = int`): documents the parameters, checks nothing; a few hundred signatures.",
+      "anchors": [
+        {
+          "path": "src/game/ui/standard_colors.h",
+          "startLine": 37,
+          "endLine": 52,
+          "text": "inline constexpr int kTransparentBlack = 0;\ninline constexpr int kPurple = 1;\ninline constexpr int kCyan = 2;\ninline constexpr int kGreen = 3;\ninline constexpr int kLightGreen = 4;\ninline constexpr int kYellow = 5;\ninline constexpr int kPink = 6;\ninline constexpr int kBrown = 7;\ninline constexpr int kRed = 8;\ninline constexpr int kLightCyan = 9;\ninline constexpr int kLightBlue = 10;\ninline constexpr int kBlue = 11;\ninline constexpr int kBlack = 12;\ninline constexpr int kGrey = 13;\ninline constexpr int kLightGrey = 14;\ninline constexpr int kWhite = 15;",
+          "before": [
+            "",
+            "// Index 0 shows as black, but a transparent blit or a text background skips it:",
+            "// \"transparent black\". kBlack is the black that is always drawn."
+          ],
+          "after": [
+            "",
+            "}  // namespace game",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-188",
+      "title": "Decide between kTransparentBlack and a shorter name for palette index 0",
+      "details": "The run renamed `kTBlack` to `kTransparentBlack` (525 uses). Most of them pass it as a text background, where it means \"no background\"; the rest fill or draw with it, where it means black (`td/screens/mapsel.cc` `FillRect`, `td/screens/score.cc` `DrawLine`), and `ra/map/radar.cc` compares a cell color against it.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "5d374065",
+      "toDecide": "Keep `game::kTransparentBlack`, or rename it?\n\n- **Keep**: accurate for both uses, but long at 525 sites.\n- **`game::kTransparent`**: shorter and right for the text-background majority, wrong where it is drawn as black. `kTransparent` already has 8 unrelated uses in the tree to check.\n- **Two names for index 0** (`kTransparent` for backgrounds, `kTransparentBlack` or `kBlack0` for fills): says what each call means; every site has to be read to choose.",
+      "anchors": [
+        {
+          "path": "src/game/ui/standard_colors.h",
+          "startLine": 35,
+          "endLine": 37,
+          "text": "// Index 0 shows as black, but a transparent blit or a text background skips it:\n// \"transparent black\". kBlack is the black that is always drawn.\ninline constexpr int kTransparentBlack = 0;",
+          "before": [
+            "",
+            "// Palette indices, `int` because that is what the drawing functions take.",
+            ""
+          ],
+          "after": [
+            "inline constexpr int kPurple = 1;",
+            "inline constexpr int kCyan = 2;",
+            "inline constexpr int kGreen = 3;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-189",
+      "title": "Use Tiberian Dawn's own color aliases where it draws with the misnamed slots",
+      "details": "The standard color names are the Westwood library's; in Tiberian Dawn's palette slot 1 is orange, 2 blue-green, 7 tan and 10 blue-grey, and `td/core/defines.h` aliases them (`kCcOrange = game::kPurple`, `kCcBlueGreen = game::kCyan`, `kCcTan = game::kBrown`, `kCcBlueGrey = game::kLightBlue`). TD code still names the slots directly in a few places: `mapeddlg.cc` draws the \"Rock/Wall/Road\" and \"Neutral Unit\" legend with `game::kBrown` and `game::kPurple`, and `findpath.cc`'s debug overlay uses `game::kCyan` and `game::kBrown`. Replace those with the `kCc...` aliases so the name matches what shows on screen. `findpath.cc:1151` also passes a literal `0` beside `game::kBrown`; it means `game::kTransparentBlack`. No behaviour change. Check with `git grep -nE 'game::k(Purple|Cyan|Brown|LightBlue)' -- src/td`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "37ea18f9..323cb376",
+      "anchors": [
+        {
+          "path": "src/td/core/defines.h",
+          "startLine": 2428,
+          "endLine": 2434,
+          "text": "inline constexpr int kCcGdiColor = game::kYellow;\ninline constexpr int kCcNodColor = game::kRed;\ninline constexpr int kCcBlueGreen = game::kCyan;\ninline constexpr int kCcBlueGrey = game::kLightBlue;\ninline constexpr int kCcOrange = game::kPurple;\ninline constexpr int kCcGreen = game::kGreen;\ninline constexpr int kCcTan = game::kBrown;",
+          "before": [
+            "};",
+            "using enum SpecialDialogType;",
+            ""
+          ],
+          "after": [
+            "inline constexpr int kCcGreenShadow = 140;",
+            "inline constexpr int kCcGreenBkgd = 141;",
+            "inline constexpr int kCcGreenCorners = kCcGreenBkgd;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/editor/mapeddlg.cc",
+          "startLine": 1065,
+          "endLine": 1065,
+          "text": "        Fancy_Text_Print(view, \"Rock/Wall/Road\", txt_x, txt_y, game::kBrown,",
+          "before": [
+            "                         game::kTransparentBlack, FontType::k6Point,",
+            "                         TPF_DROPSHADOW);",
+            "        txt_y += 16;"
+          ],
+          "after": [
+            "                         game::kTransparentBlack, FontType::k6Point,",
+            "                         TPF_DROPSHADOW);",
+            "        txt_y += 16;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/editor/mapeddlg.cc",
+          "startLine": 1077,
+          "endLine": 1077,
+          "text": "        Fancy_Text_Print(view, \"Neutral Unit\", txt_x, txt_y, game::kPurple,",
+          "before": [
+            "                         game::kTransparentBlack, FontType::k6Point,",
+            "                         TPF_DROPSHADOW);",
+            "        txt_y += 16;"
+          ],
+          "after": [
+            "                         game::kTransparentBlack, FontType::k6Point,",
+            "                         TPF_DROPSHADOW);",
+            "        txt_y += 16;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/findpath.cc",
+          "startLine": 313,
+          "endLine": 313,
+          "text": "        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);",
+          "before": [
+            "        dir = base::At(path->Command, base::ToSize(list - 1));",
+            "        path->Length = idx;",
+            "        path->LastFixup = curr_pos;"
+          ],
+          "after": [
+            "        return true;",
+            "      }",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/findpath.cc",
+          "startLine": 1151,
+          "endLine": 1151,
+          "text": "                      forcefail ? game::kBrown : 0);",
+          "before": [
+            "        }",
+            "      }",
+            "      Draw_Cell_Point(newcell, false, threat_stage,"
+          ],
+          "after": [
+            "      if (newcell == target) {",
+            "        forceout = true;",
+            "        break;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/findpath.cc",
+          "startLine": 1616,
+          "endLine": 1616,
+          "text": "          color = game::kBrown;",
+          "before": [
+            "          color = game::kYellow;",
+            "          break;",
+            "        case game::MOVE_TEMP:"
+          ],
+          "after": [
+            "          break;",
+            "        case game::MoveType::MOVE_CLOAK:",
+            "        case game::MoveType::MOVE_NO:"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-190",
+      "title": "Tell game::kLightGreen and TD's kCcLightGreen apart",
+      "details": "Since `kLtGreen` became `game::kLightGreen` (palette slot 4), Tiberian Dawn has two near-identical names for different slots: `game::kLightGreen = 4` and its own `kCcLightGreen = 159` (the dialog green, also aliased as `kCcGreenBox`). A reader can pick the wrong one. Options: rename TD's to say what it is for (it already has `kCcGreenBox`; the other `kCcGreen...` constants are named by role), or leave both and add a comment at `kCcLightGreen`. Small; TD only.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "5d374065",
+      "anchors": [
+        {
+          "path": "src/game/ui/standard_colors.h",
+          "startLine": 41,
+          "endLine": 41,
+          "text": "inline constexpr int kLightGreen = 4;",
+          "before": [
+            "inline constexpr int kPurple = 1;",
+            "inline constexpr int kCyan = 2;",
+            "inline constexpr int kGreen = 3;"
+          ],
+          "after": [
+            "inline constexpr int kYellow = 5;",
+            "inline constexpr int kPink = 6;",
+            "inline constexpr int kBrown = 7;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/core/defines.h",
+          "startLine": 2438,
+          "endLine": 2438,
+          "text": "inline constexpr int kCcLightGreen = 159;",
+          "before": [
+            "inline constexpr int kCcGreenShadow = 140;",
+            "inline constexpr int kCcGreenBkgd = 141;",
+            "inline constexpr int kCcGreenCorners = kCcGreenBkgd;"
+          ],
+          "after": [
+            "inline constexpr int kCcGreenBox = kCcLightGreen;",
+            "inline constexpr int kCcBrightGreen = 167;",
+            "inline constexpr int kCcUnderline = kCcBrightGreen;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-191",
+      "title": "Check the 'slots 0-15 are reserved' claim against the palette files",
+      "details": "The new file comment says the games' palettes reserve slots 0-15 for a fixed set of colors. That was inferred from how the code uses the constants and from TD's aliases, not checked against the data. Dump the first sixteen entries of the palettes each game loads (`tools/mixdump`; RA: TEMPERAT.PAL, SNOW.PAL, INTERIOR.PAL, PALETTE.CPS-derived menus; TD: TEMPERAT.PAL, DESERT.PAL, WINTER.PAL) and either confirm the sentence or correct it, listing per game which names are off (TD: purple is orange, brown is tan, cyan is blue-green, light blue is blue-grey).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "docs",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "53dd4a3b",
+      "anchors": [
+        {
+          "path": "src/game/ui/standard_colors.h",
+          "startLine": 22,
+          "endLine": 26,
+          "text": "// The games' palettes reserve slots 0-15 for a fixed set of colors, so text,\n// dialog frames and debug overlays can name a color without looking it up in\n// the palette that happens to be current. The names are the Westwood library's\n// and only approximate: Tiberian Dawn's palette has orange at kPurple and tan at\n// kBrown, and aliases them in td/core/defines.h (kCcOrange, kCcTan).",
+          "before": [
+            "// Names for the first sixteen palette indices. Originally part of the Westwood",
+            "// standard header (WWSTD.H, Jeff Wilson, March 1994).",
+            "//"
+          ],
+          "after": [
+            "",
+            "#ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_",
+            "#define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-192",
+      "title": "Silence the header warnings that flood tools/strict_tu.py output",
+      "details": "A `tools/strict_tu.py` run over the 112 files this modernization touched printed 142,000 lines, exit 0 and no errors, almost all of it the same warnings repeated per translation unit: `-Wlifetime-safety-lifetimebound-violation` at `base/array.h:40,49,56,70,77,96` and `base/enum_array.h:80` (about 2,650 times), `-Wunsafe-buffer-usage-in-container` at `base/buffer.h:49` and `base/bytes_of.h:53`, and `-Wnullability-extension` at `engine/crypto/digit_cursor.h:114-144` (120 times each line). They are warnings, not errors, so nothing fails, but a real finding in that output is hard to see. Either fix them at the source (`[[clang::lifetimebound]]` on the `base::At` overloads, the span constructions, the nullability macros), or turn the three diagnostics off in the strict flags with a comment saying why. Check whether the full `build-strict` build prints them too (its last lines were `113 warnings generated`).",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "tooling",
+        "build"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "37ea18f9..323cb376",
+      "anchors": [
+        {
+          "path": "src/base/array.h",
+          "startLine": 40,
+          "endLine": 40,
+          "text": "constexpr T& At(T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N],",
+          "before": [
+            "// Clang 23 cannot trace the reference through libstdc++ span operations.",
+            "// The span is constructed directly from array and never escapes.",
+            "// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)"
+          ],
+          "after": [
+            "                std::integral auto index) {",
+            "  return base::At(std::span(array), index);",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/base/buffer.h",
+          "startLine": 49,
+          "endLine": 49,
+          "text": "  return std::span<Byte>(reinterpret_cast<Byte*>(objects.data()),",
+          "before": [
+            "  // Unsigned char may alias any object representation. Both pointer and byte",
+            "  // extent come from the same live span, including for an empty view.",
+            "  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast,clang-diagnostic-unsafe-buffer-usage-in-container)"
+          ],
+          "after": [
+            "                         objects.size_bytes());",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/base/bytes_of.h",
+          "startLine": 53,
+          "endLine": 53,
+          "text": "  return std::span<Char>(chars, bytes.size());",
+          "before": [
+            "  auto* chars = reinterpret_cast<Char*>(bytes.data());",
+            "  // A byte and a character have equal size; the source span proves capacity.",
+            "  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)"
+          ],
+          "after": [
+            "}",
+            "",
+            "// UnsignedBytes (the same unsigned-char view, for any trivially copyable T,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/crypto/digit_cursor.h",
+          "startLine": 114,
+          "endLine": 114,
+          "text": "    CHECK_EQ(bytes.size() % sizeof(Value), 0);",
+          "before": [
+            "      : bytes_(other.bytes_), position_(other.position_) {}",
+            "",
+            "  static DigitCursor FromBytes(std::span<Byte> bytes) {"
+          ],
+          "after": [
+            "    DigitCursor result;",
+            "    result.bytes_ = bytes;",
+            "    return result;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-193",
+      "title": "Qualify kWhite in the GlowPulse example comment",
+      "details": "The `// Example:` block in `engine/gfx/glow_pulse.h` writes `palette.at(kWhite)`. `kWhite` is now `game::kWhite` in `game/ui/standard_colors.h`, which the engine may not include, so the example neither compiles as written nor says where the name comes from. Use a literal index with a word of explanation, or a local constant in the example.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "docs",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-08T07:13:58Z",
+      "parent": "T-186",
+      "source": "323cb376",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/glow_pulse.h",
+          "startLine": 20,
+          "endLine": 20,
+          "text": "//     palette.at(kPulseColor) = pulse.Apply(palette.at(kWhite));",
+          "before": [
+            "// Example:",
+            "//   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);",
+            "//   if (pulse.Update()) {"
+          ],
+          "after": [
+            "//     palette.Set();",
+            "//   }",
+            "template <engine::platform::TickSource T>"
           ],
           "lost": false
         }
