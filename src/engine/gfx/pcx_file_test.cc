@@ -163,6 +163,32 @@ TEST(PcxFileTest, EndsWithThePalette) {
             expected);
 }
 
+// A view can be squeezed to no width at all; its rows then encode to nothing.
+TEST(PcxFileTest, WritesNoScanlinesForAViewWithoutWidth) {
+  Picture picture(4, std::vector<uint8_t>(8, 7));
+  PixelView view(picture.view().buffer(), 0, 0, 0, 2);
+  ASSERT_EQ(view.width(), 0);
+  ASSERT_EQ(view.height(), 2);
+
+  const std::vector<uint8_t> file = WrittenFile(view, {});
+
+  EXPECT_EQ(std::ssize(file), kHeaderSize + 1 + Palette::kFileSize);
+}
+
+TEST(PcxFileTest, ReportsWhetherTheFileWasWritten) {
+  Picture picture(1, {0});
+  engine::file::TestGameFiles files;
+
+  EXPECT_TRUE(
+      WritePcxFile(files.Path("picture.pcx").string(), picture.view(), {}));
+  // A file cannot be created in a directory that does not exist.
+  EXPECT_FALSE(WritePcxFile(files.Path("missing/picture.pcx").string(),
+                            picture.view(), {}));
+  PixelView unattached;
+  EXPECT_FALSE(
+      WritePcxFile(files.Path("unattached.pcx").string(), unattached, {}));
+}
+
 // A surface of plain memory whose rows are `pitch` bytes apart.
 class PaddedSurface final : public PixelSurface {
  public:
