@@ -24,6 +24,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/stream/byte_stream.h"
+#include "engine/stream/memory_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
 
@@ -311,6 +312,92 @@ TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
   EXPECT_FALSE(WritePcxFile(path.string(), view, {}));
 
   EXPECT_FALSE(std::filesystem::exists(path));
+}
+
+// The header of a `width` by `height` picture at 0,0 whose scanlines decode
+// to `bytes_per_line` pixels.
+PcxHeader HeaderOf(const int width, const int height,
+                   const int bytes_per_line) {
+  return {
+      .id = 10,
+      .version = 5,
+      .encoding = 1,
+      .bits_per_pixel = 8,
+      .left = 0,
+      .top = 0,
+      .right = static_cast<int16_t>(width - 1),
+      .bottom = static_cast<int16_t>(height - 1),
+      .horizontal_dpi = 0,
+      .vertical_dpi = 0,
+      .ega_palette = {},
+      .reserved = 0,
+      .color_planes = 1,
+      .bytes_per_line = static_cast<int16_t>(bytes_per_line),
+      .palette_type = 1,
+      .padding = {},
+  };
+}
+
+// The bytes of a PCX file: `header`, `scanlines` as they are, and `palette`
+// behind its marker.
+std::vector<uint8_t> FileOf(const PcxHeader& header,
+                            const std::vector<uint8_t>& scanlines,
+                            const Palette& palette = {}) {
+  std::vector<uint8_t> file(kHeaderSize);
+  std::ranges::copy(std::as_bytes(std::span(&header, 1)),
+                    std::as_writable_bytes(std::span(file)).begin());
+  file.insert(file.end(), scanlines.begin(), scanlines.end());
+  file.push_back(12);
+  const auto rgb = palette.ToRgb();
+  file.insert(file.end(), rgb.begin(), rgb.end());
+  return file;
+}
+
+std::optional<PcxPicture> ReadBytes(const std::vector<uint8_t>& file) {
+  MemoryStream in(std::as_bytes(std::span(file)));
+  return ReadPcx(in);
+}
+
+// What a picture of one row of two pixels reads as when its scanline is
+// `scanline`: with the row as wide as the picture, and with two bytes of
+// padding behind it.
+std::vector<std::optional<PcxPicture>> ReadRowOfTwo(
+    const std::vector<uint8_t>& scanline) {
+  std::vector<std::optional<PcxPicture>> pictures;
+  for (const int bytes_per_line : {2, 4}) {
+    pictures.push_back(
+        ReadBytes(FileOf(HeaderOf(2, 1, bytes_per_line), scanline)));
+  }
+  return pictures;
+}
+
+// The palette's bytes behind a picture that is cut short are not pixels.
+TEST(PcxFileTest, RejectsScanlinesThatAreCutShort) {
+  const std::vector<std::vector<uint8_t>> cut_short = {
+      {},        // No pixel at all.
+      {7},       // One pixel of two.
+      {0xC2},    // A run without its color.
+      {0xC1, 7}  // A run of one and nothing behind it.
+  };
+  for (const std::vector<uint8_t>& scanline : cut_short) {
+    for (const std::optional<PcxPicture>& picture : ReadRowOfTwo(scanline)) {
+      EXPECT_FALSE(picture.has_value()) << testing::PrintToString(scanline);
+    }
+  }
+}
+
+TEST(PcxFileTest, RejectsPaddingThatIsCutShort) {
+  // The picture's two pixels are there, the scanline's other two are not.
+  EXPECT_FALSE(ReadBytes(FileOf(HeaderOf(2, 1, 4), {0xC2, 7})).has_value());
+  EXPECT_FALSE(
+      ReadBytes(FileOf(HeaderOf(2, 1, 4), {0xC2, 7, 0xC1})).has_value());
+}
+
+TEST(PcxFileTest, RejectsAPictureWithoutAPaletteMarker) {
+  std::vector<uint8_t> file = FileOf(HeaderOf(2, 1, 2), {7, 8});
+  file.at(file.size() - Palette::kFileSize - 1) = 13;
+
+  EXPECT_FALSE(ReadBytes(file).has_value());
 }
 
 }  // namespace

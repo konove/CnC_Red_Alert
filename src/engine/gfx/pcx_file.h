@@ -89,8 +89,8 @@ struct PcxPicture {
 };
 
 // Reads the PCX picture that `in` holds from its current position to its end.
-// Returns nothing if that is not a run-length encoded 8-bit picture with a
-// palette, or if it is damaged.
+// Returns nothing if that is not a run-length encoded 8-bit picture ending in
+// a palette, or if its scanlines end before the picture does.
 std::optional<PcxPicture> ReadPcx(ByteStream& in);
 
 // Reads the PCX picture in the game file `file_name`. Returns nothing if the
