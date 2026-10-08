@@ -929,8 +929,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/building.cc",
-          "startLine": 5169,
-          "endLine": 5169,
+          "startLine": 5167,
+          "endLine": 5167,
           "text": "game::Direction BuildingClass::Fire_Direction() const {",
           "before": [
             " *                                                                                             *",
@@ -4422,8 +4422,8 @@
       "anchors": [
         {
           "path": "src/td/objects/drive.cc",
-          "startLine": 2099,
-          "endLine": 2099,
+          "startLine": 2097,
+          "endLine": 2097,
           "text": "const DriveClass::TrackType DriveClass::Track13[] = {",
           "before": [
             "/*",
@@ -4879,16 +4879,17 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "done",
       "author": "user",
       "created": "2026-10-08T06:10:42Z",
-      "updated": "2026-10-08T06:20:59Z",
+      "updated": "2026-10-08T06:26:43Z",
+      "resolution": "The three lines are now `PrimaryFacing.SnapTo(DirectionTo(NavCom))`, in Red Alert and in the same code in `td/objects/aircraft.cc`. `ShortestTurn()` already returns -128..127, so the clamp did nothing, and adding the turn back to `SecondaryFacing` wraps to the target direction itself.",
       "anchors": [
         {
           "path": "src/ra/objects/aircraft.cc",
           "startLine": 2515,
-          "endLine": 2517,
-          "text": "          int diff = game::ShortestTurn(SecondaryFacing, DirectionTo(NavCom));\n          diff = std::clamp(diff, -128, 128);\n          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);",
+          "endLine": 2515,
+          "text": "          PrimaryFacing.SnapTo(DirectionTo(NavCom));",
           "before": [
             "          **\tAs the flight progresses, the body will rotate to face",
             "          **\tthe direction of travel.",
