@@ -247,7 +247,7 @@ TEST_F(ReinforcementTest, AHouseWithoutAnEdgeEntersFromTheNorth) {
   // One cell north of the visible map, which starts at row 1.
   EXPECT_EQ(Cell::Containing(jeep->Coord).y(), 0);
   // Facing the edge it came from, as from any other edge.
-  EXPECT_EQ(jeep->PrimaryFacing.Current(), game::Direction::kNorth);
+  EXPECT_EQ(jeep->PrimaryFacing.current(), game::Direction::kNorth);
 }
 
 TEST_F(ReinforcementTest, OnlyAsManyMembersArriveAsThePoolHolds) {
@@ -572,7 +572,7 @@ TEST_F(ReinforcementTest, AnAircraftArrivesFacingInwardFromItsEdge) {
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 4);
   for (int index = 0; index < 4; index++) {
     const AircraftClass* yak = TheObjectHeaps().aircraft().ActiveAt(index);
-    EXPECT_EQ(yak->PrimaryFacing.Current(),
+    EXPECT_EQ(yak->PrimaryFacing.current(),
               index < 2 ? game::Direction::kWest : game::Direction::kSouth);
   }
 }
@@ -590,7 +590,7 @@ TEST_F(ReinforcementTest, AnAircraftWithAnOriginArrivesFacingIt) {
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
-  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->PrimaryFacing.Current(),
+  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->PrimaryFacing.current(),
             game::Direction::kSouth);
 }
 

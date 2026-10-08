@@ -30,14 +30,14 @@ namespace game {
 
 // The direction something points in, together with the direction it is
 // turning toward. Objects keep one for the body and, when they have one, one
-// for the turret; callers set the desired direction and call Rotation_Adjust()
-// each game frame until Is_Rotating() is false. It reads as its current
-// direction, so the turning stays out of the code that only draws or aims.
+// for the turret; callers set the desired direction and call Turn() each game
+// frame until IsRotating() is false. It reads as its current direction, so the
+// turning stays out of the code that only draws or aims.
 //
 // Example:
 //   Heading turret(Direction::kNorth);
-//   turret.Set_Desired(Direction::kEast);
-//   if (turret.Rotation_Adjust(rate)) {
+//   turret.set_desired(Direction::kEast);
+//   if (turret.Turn(turn_rate)) {
 //     // The turret shows another frame: redraw.
 //   }
 class Heading {
@@ -45,69 +45,68 @@ class Heading {
   // Points north and is not turning.
   Heading();
 
-  // Points in `dir` and is not turning. Implicit: a heading reads and assigns
-  // as its direction.
+  // Points in `direction` and is not turning. Implicit: a heading reads and
+  // assigns as its direction.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  Heading(Direction dir) : CurrentFacing(dir), DesiredFacing(dir) {}
+  Heading(Direction direction) : current_(direction), desired_(direction) {}
 
   // The current direction. Implicit, so a heading compares with a direction
   // and passes where one is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator Direction() const { return CurrentFacing; }
+  operator Direction() const { return current_; }
 
   // The direction pointed in now, and the one being turned toward. They are
   // equal when not turning.
-  [[nodiscard]] Direction Current() const { return CurrentFacing; }
-  [[nodiscard]] Direction Desired() const { return DesiredFacing; }
+  [[nodiscard]] Direction current() const { return current_; }
+  [[nodiscard]] Direction desired() const { return desired_; }
 
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(CurrentFacing, DesiredFacing);
+    ar(current_, desired_);
   }
 
   // Sets the direction to turn toward and leaves the current one alone; the
-  // following Rotation_Adjust() calls close the gap. Returns whether the
-  // desired direction changed.
-  bool Set_Desired(Direction facing);
+  // following Turn() calls close the gap. Returns whether the desired
+  // direction changed.
+  bool set_desired(Direction direction);
 
   // Sets the current direction and leaves the desired one alone, so it turns
   // back if they now differ. Returns whether the current direction changed.
-  bool Set_Current(Direction facing);
+  bool set_current(Direction direction);
 
-  // Points in `facing` at once, with nothing left to turn.
-  void Set(Direction facing) {
-    Set_Current(facing);
-    Set_Desired(facing);
+  // Points in `direction` at once, with nothing left to turn.
+  void SnapTo(Direction direction) {
+    set_current(direction);
+    set_desired(direction);
   }
 
-  // The current direction, like Current().
-  [[nodiscard]] Direction Get() const { return CurrentFacing; }
+  // The current direction, like current().
+  [[nodiscard]] Direction Get() const { return current_; }
 
   // Whether the current direction has yet to reach the desired one.
-  [[nodiscard]] bool Is_Rotating() const {
-    return DesiredFacing != CurrentFacing;
-  }
+  [[nodiscard]] bool IsRotating() const { return desired_ != current_; }
 
   // The shortest turn from the current direction to the desired one, or to
-  // `facing`: -128..127 direction steps, positive clockwise.
-  [[nodiscard]] int Difference() const {
-    return ShortestTurn(CurrentFacing, DesiredFacing);
+  // `direction`: -128..127 direction steps, positive clockwise.
+  [[nodiscard]] int RemainingTurn() const {
+    return ShortestTurn(current_, desired_);
   }
-  [[nodiscard]] int Difference(Direction facing) const {
-    return ShortestTurn(CurrentFacing, facing);
+  [[nodiscard]] int ShortestTurnTo(Direction direction) const {
+    return ShortestTurn(current_, direction);
   }
 
-  // Turns the current direction toward the desired one by `rate` direction
-  // steps, the short way round, stopping at the desired direction. Rates above
-  // 127 count as 127, which reaches any direction but the exact opposite in
-  // one call. Returns whether the turn crossed into another of the 32 body
-  // frames, in which case the owner most likely needs to be redrawn.
-  bool Rotation_Adjust(int rate);
+  // Turns the current direction toward the desired one by up to `max_steps`
+  // direction steps, the short way round, stopping at the desired direction.
+  // More than 127 steps count as 127, which reaches any direction but the
+  // exact opposite in one call. Returns whether the turn crossed into another
+  // of the 32 body frames, in which case the owner most likely needs to be
+  // redrawn.
+  bool Turn(int max_steps);
 
  private:
-  Direction CurrentFacing;
-  Direction DesiredFacing;
+  Direction current_;
+  Direction desired_;
 };
 
 }  // namespace game

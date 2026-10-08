@@ -531,7 +531,7 @@ int InfantryClass::Shape_Number() const {
   */
   if (base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump) {
     shapenum +=
-        base::At(HumanShape, game::BodyFrame32(PrimaryFacing.Current())) *
+        base::At(HumanShape, game::BodyFrame32(PrimaryFacing.current())) *
         base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump;
   }
 
@@ -1715,7 +1715,7 @@ bool InfantryClass::Random_Animate() {
 
       case 6:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             RandomPick(game::Facing::kNorth, game::Facing::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
@@ -1723,7 +1723,7 @@ bool InfantryClass::Random_Animate() {
       case 7:
         Do_Action(DO_IDLE2);
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             RandomPick(game::Facing::kNorth, game::Facing::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
@@ -1737,7 +1737,7 @@ bool InfantryClass::Random_Animate() {
       */
       case 8:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             RandomPick(game::Facing::kNorth, game::Facing::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
@@ -1748,7 +1748,7 @@ bool InfantryClass::Random_Animate() {
       case 9:
       case 10:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             RandomPick(game::Facing::kNorth, game::Facing::kNorthWest)));
         Mark(MARK_CHANGE_REDRAW);
         break;
@@ -1842,7 +1842,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
         toface = game::NearestFacing(
             game::Direction8Toward({0x0080, 0x0080}, {coord.x(), coord.y()}));
       } else {
-        toface = game::NearestFacing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.current());
       }
       toface = toface + static_cast<game::Facing>(RandomPick(0, 4) - 2);
     }
@@ -3419,7 +3419,7 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
                      Mission_Name(infantry->Mission == MISSION_NONE
                                       ? infantry->MissionQueue
                                       : infantry->Mission),
-                     infantry->PrimaryFacing.Current().value(),
+                     infantry->PrimaryFacing.current().value(),
                      infantry->Trigger != nullptr
                          ? infantry->Trigger->Class->IniName
                          : "None");
@@ -3580,7 +3580,8 @@ void InfantryClass::Firing_AI() {
           IsFiring = true;
           Mark(MARK_OVERLAP_DOWN);
 
-          PrimaryFacing.Set(Direction8(Center_Coord(), TarCom.AsCoordinate()));
+          PrimaryFacing.SnapTo(
+              Direction8(Center_Coord(), TarCom.AsCoordinate()));
 
           /*
           **	If the target is in range, and the NavCom is the same, then just
@@ -3951,7 +3952,7 @@ void InfantryClass::Movement_AI() {
             if (!IsActive) {
               return;
             }
-            PrimaryFacing.Set(Direction8(Center_Coord(), Head_To_Coord()));
+            PrimaryFacing.SnapTo(Direction8(Center_Coord(), Head_To_Coord()));
             if (IsFormationMove) {
               Set_Speed(TheRules()
                             .ground()

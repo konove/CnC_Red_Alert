@@ -2550,7 +2550,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell) {
             if (!bullet->Unlimbo(start, game::Direction::kSouth)) {
               base::DeletePooled(bullet);
             } else {
-              bullet->PrimaryFacing.Set_Current(game::Direction::kSouth);
+              bullet->PrimaryFacing.set_current(game::Direction::kSouth);
             }
             Speak(VOX_INCOMING_NUKE);
             Sound_Effect(VOC_NUKE_FIRE, start);

@@ -223,7 +223,7 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
       toface = game::NearestFacing(Direction8(threat, Coord));
       toface = toface + static_cast<game::Facing>(RandomPick(0, 2) - 1);
     } else {
-      toface = game::NearestFacing(PrimaryFacing.Current());
+      toface = game::NearestFacing(PrimaryFacing.current());
       toface = toface + static_cast<game::Facing>(RandomPick(0, 2) - 1);
     }
 
@@ -336,7 +336,7 @@ void DriveClass::Do_Turn(game::Direction dir) {
   DCHECK(IsActive);
 
   if (dir != PrimaryFacing) {
-    PrimaryFacing.Set_Desired(dir);
+    PrimaryFacing.set_desired(dir);
   }
 }
 
@@ -366,7 +366,7 @@ bool DriveClass::Teleport_To(Cell cell) {
 
   Stop_Driver();
   Force_Track(-1, Coordinate{});
-  PrimaryFacing.Set_Current(PrimaryFacing.Desired());
+  PrimaryFacing.set_current(PrimaryFacing.desired());
   Transmit_Message(RADIO_OVER_OUT);
   Assign_Destination(Target{});
   Assign_Target(Target{});
@@ -652,7 +652,7 @@ bool DriveClass::While_Moving() {
         game::Direction dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, dir);
 
-        PrimaryFacing.Set(dir);
+        PrimaryFacing.SnapTo(dir);
 
         /*
         **	See if "per cell" processing is necessary.
@@ -899,7 +899,7 @@ bool DriveClass::Start_Of_Move() {
         *cause that blockage *	to scatter.
         */
         const Cell cell = AdjacentCell(Cell::Containing(Center_Coord()),
-                                       PrimaryFacing.Current());
+                                       PrimaryFacing.current());
         if (TheMap().In_Radar(cell)) {
           const game::MoveType ok = Can_Enter_Cell(cell);
           if (ok == game::MOVE_TEMP) {
@@ -1002,7 +1002,7 @@ bool DriveClass::Start_Of_Move() {
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  const int facediff = PrimaryFacing.Difference(
+  const int facediff = PrimaryFacing.ShortestTurnTo(
       dir);  // Difference between current and desired facing.
   if (facediff) {
     /*
@@ -1294,10 +1294,10 @@ void DriveClass::AI() {
     /*
     **	For tracked units that are rotating in place, perform the rotation now.
     */
-    if (PrimaryFacing.Is_Rotating()) {
+    if (PrimaryFacing.IsRotating()) {
       Mark(MARK_CHANGE_REDRAW);
-      if (PrimaryFacing.Rotation_Adjust(Techno_Type_Class()->ROT *
-                                        House->GroundspeedBias)) {
+      if (PrimaryFacing.Turn(Techno_Type_Class()->ROT *
+                             House->GroundspeedBias)) {
         Mark(MARK_CHANGE_REDRAW);
       }
       if (!IsRotating && Per_Cell_Process(PCP_ROTATION)) {

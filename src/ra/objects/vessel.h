@@ -125,9 +125,9 @@ class VesselClass : public DriveClass {
   void Repair_AI();
   [[nodiscard]] game::Direction Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
-      return SecondaryFacing.Current();
+      return SecondaryFacing.current();
     }
-    return PrimaryFacing.Current();
+    return PrimaryFacing.current();
   }
   bool Start_Driver(Coordinate& headto) override;
   int Mission_Retreat() override;

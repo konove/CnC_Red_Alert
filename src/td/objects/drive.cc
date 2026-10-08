@@ -136,7 +136,7 @@ void DriveClass::Do_Turn(game::Direction dir) {
       // Signed difference between current and desired facing, in eighths;
       // the shift floors negative differences as the original did.
       // NOLINTNEXTLINE(bugprone-signed-bitwise)
-      int facediff = PrimaryFacing.Difference(dir) >> 5;
+      int facediff = PrimaryFacing.ShortestTurnTo(dir) >> 5;
       facediff = std::clamp(facediff, -2, 2);
       if (facediff) {
         const game::Facing face = game::NearestFacing(
@@ -152,10 +152,10 @@ void DriveClass::Do_Turn(game::Direction dir) {
         Set_Speed(0xFF);  // Full speed.
       }
     } else {
-      PrimaryFacing.Set_Desired(dir);
+      PrimaryFacing.set_desired(dir);
       if (TheSpecialFlags().jurassic && TheGameState().thingies_enabled() &&
           What_Am_I() == RTTI_UNIT && this->Class->IsPieceOfEight) {
-        PrimaryFacing.Set_Current(dir);
+        PrimaryFacing.set_current(dir);
       }
     }
   }
@@ -654,7 +654,7 @@ bool DriveClass::While_Moving() {
         game::Direction dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, &dir);
 
-        PrimaryFacing.Set(dir);
+        PrimaryFacing.SnapTo(dir);
 
         /*
         **	See if "per cell" processing is necessary.
@@ -911,7 +911,7 @@ bool DriveClass::Start_Of_Move() {
         *cause that blockage *	to scatter.
         */
         const Cell cell = Adjacent_Cell(Cell::Containing(Center_Coord()),
-                                        PrimaryFacing.Current());
+                                        PrimaryFacing.current());
         if (TheMap().In_Radar(cell) &&
             (Can_Enter_Cell(cell) == game::MOVE_TEMP)) {
           CellClass* cellptr = &TheMap().at(cell);
@@ -988,7 +988,7 @@ bool DriveClass::Start_Of_Move() {
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  facediff = PrimaryFacing.Difference(dir);
+  facediff = PrimaryFacing.ShortestTurnTo(dir);
   if (facediff) {
     /*
     **	Request a change of facing.
@@ -1258,8 +1258,8 @@ void DriveClass::AI() {
          Class->Speed == SPEED_TRACK ||
          (Class->Speed == SPEED_WHEEL &&
           !TheSpecialFlags().three_point_turns)) &&
-        PrimaryFacing.Is_Rotating()) {
-      if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
+        PrimaryFacing.IsRotating()) {
+      if (PrimaryFacing.Turn(Class->ROT)) {
         Mark(MARK_CHANGE);
       }
       if (!IsRotating) {
@@ -1368,7 +1368,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
-  int facediff = PrimaryFacing.Difference(first_direction) >> 5;
+  int facediff = PrimaryFacing.ShortestTurnTo(first_direction) >> 5;
 
   if (!facediff) {
     return;

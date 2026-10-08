@@ -724,7 +724,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     */
     if (Class->IsTurretEquipped) {
       shapenum =
-          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.Current()));
+          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.current()));
 
       if (*this == STRUCT_SAM) {
         /*
@@ -1060,7 +1060,7 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
       auto* anim = base::NewPooled<AnimClass>(
           static_cast<AnimType>(
               static_cast<int>(ANIM_SAM_N) +
-              static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))),
+              static_cast<int>(game::NearestFacing(PrimaryFacing.current()))),
           Center_Coord());
       if (anim) {
         anim->Attach_To(this);
@@ -1076,7 +1076,7 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
         base::NewPooled<AnimClass>(
             static_cast<AnimType>(
                 static_cast<int>(ANIM_GUN_N) +
-                static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))),
+                static_cast<int>(game::NearestFacing(PrimaryFacing.current()))),
             Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
@@ -1507,16 +1507,16 @@ void BuildingClass::AI() {
   */
   if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
        Mission != MISSION_DECONSTRUCTION) &&
-      PrimaryFacing.Is_Rotating()) {
+      PrimaryFacing.IsRotating()) {
     /*
     **	Rotate turret to match desired facing.
     */
     if (*this == STRUCT_SAM) {
-      if (PrimaryFacing.Rotation_Adjust(15)) {
+      if (PrimaryFacing.Turn(15)) {
         Mark(MARK_CHANGE);
       }
     } else {
-      if (PrimaryFacing.Rotation_Adjust(12)) {
+      if (PrimaryFacing.Turn(12)) {
         Mark(MARK_CHANGE);
       }
     }
@@ -1987,8 +1987,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           **	Generate a random rotation effect since there is nothing else
           *that this *	building can do.
           */
-          if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(
+          if (!PrimaryFacing.IsRotating()) {
+            PrimaryFacing.set_desired(
                 Random_Pick(game::Direction::kNorth, kMaxRandomDirection));
           }
         }
@@ -3056,7 +3056,7 @@ Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
     case STRUCT_SAM:
     case STRUCT_TURRET:
       coord = Coord_Move(coord, game::Direction::kNorth, 0x0030);
-      coord = Coord_Move(coord, PrimaryFacing.Current(), 0x0080);
+      coord = Coord_Move(coord, PrimaryFacing.current(), 0x0080);
       break;
   }
 
@@ -3599,7 +3599,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s",
           building->House->Class->IniName, building->Class->IniName,
           building->Health_Ratio(), Cell::Containing(building->Coord).index(),
-          building->PrimaryFacing.Current().value(),
+          building->PrimaryFacing.current().value(),
           building->Trigger ? building->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
@@ -3690,11 +3690,11 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
       /*
       **	If the turret is rotating then firing must be delayed.
       */
-      if (PrimaryFacing.Is_Rotating()) {
+      if (PrimaryFacing.IsRotating()) {
         return game::FIRE_ROTATING;
       }
 
-      const int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
+      const int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
       if (std::abs(diff) > 8) {
         return game::FIRE_FACING;
       }
@@ -4440,10 +4440,10 @@ int BuildingClass::Mission_Attack() {
           Status = kSamLocking;
           return kTicksPerSecond;
         }
-        if (!PrimaryFacing.Is_Rotating()) {
+        if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.Difference(facing)) {
-            PrimaryFacing.Set_Desired(facing);
+          if (PrimaryFacing.ShortestTurnTo(facing)) {
+            PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring;
           }
@@ -4485,10 +4485,10 @@ int BuildingClass::Mission_Attack() {
           Status = kSamLocking;
           return kTicksPerSecond;
         }
-        if (!PrimaryFacing.Is_Rotating()) {
+        if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.Difference(facing)) {
-            PrimaryFacing.Set_Desired(facing);
+          if (PrimaryFacing.ShortestTurnTo(facing)) {
+            PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring2;
           }
@@ -4524,13 +4524,13 @@ int BuildingClass::Mission_Attack() {
       **	Rotating to face north in preparation for lowering to reload.
       */
       case kSamLocking:
-        if (!PrimaryFacing.Is_Rotating()) {
+        if (!PrimaryFacing.IsRotating()) {
           if (PrimaryFacing == game::Direction::kNorth) {
             Set_Rate(2);
             Set_Stage(48);
             Status = kSamLowering;
           } else {
-            PrimaryFacing.Set_Desired(game::Direction::kNorth);
+            PrimaryFacing.set_desired(game::Direction::kNorth);
           }
         }
         return 1;
@@ -4567,7 +4567,7 @@ int BuildingClass::Mission_Attack() {
         break;
 
       case game::FIRE_FACING:
-        PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+        PrimaryFacing.set_desired(DirectionTo(TarCom));
         return 2;
 
       case game::FIRE_REARM:
@@ -4901,7 +4901,7 @@ int BuildingClass::Mission_Missile() {
             base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
-            bullet->PrimaryFacing.Set_Current(game::Direction::kNorth);
+            bullet->PrimaryFacing.set_current(game::Direction::kNorth);
             Sound_Effect(VOC_NUKE_FIRE, launch);
             if (House == ThePlayer()) {
               Speak(VOX_NUKE_LAUNCHED);
@@ -4937,7 +4937,7 @@ int BuildingClass::Mission_Missile() {
             base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
-            bullet->PrimaryFacing.Set_Current(game::Direction::kSouth);
+            bullet->PrimaryFacing.set_current(game::Direction::kSouth);
           }
           Speak(VOX_INCOMING_NUKE);
           Sound_Effect(VOC_NUKE_FIRE, start);
@@ -5133,7 +5133,7 @@ void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
 game::Direction BuildingClass::Fire_Direction() const {
   Validate();
   if (Class->IsTurretEquipped) {
-    return PrimaryFacing.Current();
+    return PrimaryFacing.current();
   }
   return game::Direction(TarCom.packed());
 }

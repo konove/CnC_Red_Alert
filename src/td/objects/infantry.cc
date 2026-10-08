@@ -597,7 +597,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
 void InfantryClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
-  const int facing = game::BodyFrame32(PrimaryFacing.Current());
+  const int facing = game::BodyFrame32(PrimaryFacing.current());
 
   /*
   **	Verify the legality of the unit class.
@@ -1156,7 +1156,8 @@ void InfantryClass::AI() {
           }
 #endif
 
-          PrimaryFacing.Set(Direction8(Center_Coord(), TarCom.AsCoordinate()));
+          PrimaryFacing.SnapTo(
+              Direction8(Center_Coord(), TarCom.AsCoordinate()));
 
           /*
           **	If the target is in range, and the NavCom is the same, then just
@@ -1418,7 +1419,7 @@ void InfantryClass::AI() {
 
         } else {
           if (Start_Driver(acoord)) {
-            PrimaryFacing.Set(Direction8(Center_Coord(), Head_To_Coord()));
+            PrimaryFacing.SnapTo(Direction8(Center_Coord(), Head_To_Coord()));
             Set_Speed(0xFF);
             if (IsProne) {
               Do_Action(DO_CRAWL);
@@ -1902,7 +1903,7 @@ game::FireErrorType InfantryClass::Can_Fire(Target target, int which) const {
   ** If we're moving, but not facing the right direction, then exit.
   */
   if (!TheSpecialFlags().defender_advantage && IsDriving) {
-    const int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
+    const int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
     if (std::abs(diff) >= 32) {
       return game::FIRE_MOVING;
     }
@@ -2009,14 +2010,14 @@ void InfantryClass::Random_Animate() {
       case 4:
       case 3:
       case 0:
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             Random_Pick(game::Facing::kNorth, game::Facing::kNorthWest)));
         Mark(MARK_CHANGE);
         break;
 
       case 1:
         Do_Action(DO_IDLE1);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             Random_Pick(game::Facing::kNorth, game::Facing::kNorthWest)));
         if (Sim_Random_Pick(1, 20) == 1 && !IsSelected &&
             *this == INFANTRY_MOEBIUS && IsDiscoveredByPlayer) {
@@ -2041,7 +2042,7 @@ void InfantryClass::Random_Animate() {
 
       case 2:
         Do_Action(DO_IDLE2);
-        PrimaryFacing.Set(game::DirectionOf(
+        PrimaryFacing.SnapTo(game::DirectionOf(
             Random_Pick(game::Facing::kNorth, game::Facing::kNorthWest)));
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_RAMBO &&
             Sim_Random_Pick(0, 2) == 0) {
@@ -2131,7 +2132,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced) {
         toface = game::NearestFacing(
             game::Direction8Toward({0x0080, 0x0080}, {coord.x(), coord.y()}));
       } else {
-        toface = game::NearestFacing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.current());
       }
       toface = toface + (Random_Pick(0, 4) - 2);
     }
@@ -2213,7 +2214,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
 
       case DO_ON_GUARD:
         IsBoxing = true;
-        PrimaryFacing.Set(Direction8(Center_Coord(), TarCom.AsCoordinate()));
+        PrimaryFacing.SnapTo(Direction8(Center_Coord(), TarCom.AsCoordinate()));
         base::At(Path, 0) = game::Facing::kNone;
         break;
 
@@ -3200,7 +3201,7 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
           Mission_Name(infantry->Mission == MISSION_NONE
                            ? infantry->MissionQueue
                            : infantry->Mission),
-          infantry->PrimaryFacing.Current().value(),
+          infantry->PrimaryFacing.current().value(),
           infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }

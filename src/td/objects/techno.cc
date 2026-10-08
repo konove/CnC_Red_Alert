@@ -485,7 +485,7 @@ TechnoClass::TechnoClass()
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::Direction::kNorth);
+  PrimaryFacing.SnapTo(game::Direction::kNorth);
 }
 
 /***********************************************************************************************
@@ -815,7 +815,7 @@ TechnoClass::TechnoClass(HousesType house)
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(game::Direction::kNorth);
+  PrimaryFacing.SnapTo(game::Direction::kNorth);
 
   /*
   **	There is a chance that a vehicle will be a "lemon".
@@ -3864,7 +3864,7 @@ int TechnoClass::Pip_Count() const { return 0; }
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 game::Direction TechnoClass::Fire_Direction() const {
-  return PrimaryFacing.Current();
+  return PrimaryFacing.current();
 }
 
 /***********************************************************************************************

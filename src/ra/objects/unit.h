@@ -184,9 +184,9 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] int Credit_Load() const;
   [[nodiscard]] game::Direction Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
-      return SecondaryFacing.Current();
+      return SecondaryFacing.current();
     }
-    return PrimaryFacing.Current();
+    return PrimaryFacing.current();
   }
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Pip_Count() const override;

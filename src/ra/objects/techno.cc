@@ -3383,7 +3383,7 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
       case ANIM_SAM_N:
         a = static_cast<AnimType>(
             static_cast<int>(ANIM_SAM_N) +
-            static_cast<int>(game::NearestFacing(PrimaryFacing.Current())));
+            static_cast<int>(game::NearestFacing(PrimaryFacing.current())));
         break;
       case AnimType::ANIM_NONE:
       case AnimType::ANIM_FBALL1:

@@ -500,7 +500,7 @@ void UnitClass::Rotation_AI() {
     const game::Direction dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
-      SecondaryFacing.Set_Desired(dir);
+      SecondaryFacing.set_desired(dir);
     } else {
       /*
       **	Non turret equipped vehicles will rotate their body to face the
@@ -510,26 +510,26 @@ void UnitClass::Rotation_AI() {
       *aren't maneuverable enough.
       */
       if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ && !NavCom &&
-          !IsDriving && PrimaryFacing.Difference(dir)) {
-        PrimaryFacing.Set_Desired(dir);
+          !IsDriving && PrimaryFacing.ShortestTurnTo(dir)) {
+        PrimaryFacing.set_desired(dir);
       }
     }
   }
 
   if (Class->IsRadarEquipped) {
     Mark(MARK_CHANGE_REDRAW);
-    SecondaryFacing.Set(SecondaryFacing.Current() + 8);
+    SecondaryFacing.SnapTo(SecondaryFacing.current() + 8);
     Mark(MARK_CHANGE_REDRAW);
   } else {
     IsRotating = false;
     if (Class->IsTurretEquipped) {
       if (IsTurretLockedDown) {
-        SecondaryFacing.Set_Desired(PrimaryFacing.Current());
+        SecondaryFacing.set_desired(PrimaryFacing.current());
       }
 
-      if (SecondaryFacing.Is_Rotating()) {
+      if (SecondaryFacing.IsRotating()) {
         Mark(MARK_CHANGE_REDRAW);
-        if (SecondaryFacing.Rotation_Adjust(Class->ROT + 1)) {
+        if (SecondaryFacing.Turn(Class->ROT + 1)) {
           Mark(MARK_CHANGE_REDRAW);
         }
 
@@ -538,14 +538,14 @@ void UnitClass::Rotation_AI() {
         **	has stopped.
         */
         if (!Class->IsRadarEquipped) {
-          IsRotating = SecondaryFacing.Is_Rotating();
+          IsRotating = SecondaryFacing.IsRotating();
         }
       } else {
         if (!IsTurretLockedDown && !TarCom) {
           if (!NavCom) {
-            SecondaryFacing.Set_Desired(PrimaryFacing.Current());
+            SecondaryFacing.set_desired(PrimaryFacing.current());
           } else {
-            SecondaryFacing.Set_Desired(DirectionTo(NavCom));
+            SecondaryFacing.set_desired(DirectionTo(NavCom));
           }
         }
       }
@@ -650,11 +650,11 @@ void UnitClass::Firing_AI() {
       case game::FIRE_FACING:
         if (Class->IsLockTurret || Class->Type == UNIT_DEMOTRUCK) {
           if (!NavCom && !IsDriving) {
-            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
-            SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
+            PrimaryFacing.set_desired(DirectionTo(TarCom));
+            SecondaryFacing.set_desired(PrimaryFacing.desired());
           }
         } else {
-          SecondaryFacing.Set_Desired(DirectionTo(TarCom));
+          SecondaryFacing.set_desired(DirectionTo(TarCom));
         }
         break;
 
@@ -1534,9 +1534,9 @@ bool UnitClass::Try_To_Deploy() {
       *deployed. This is *	because it will deploy as soon as it reaches the
       *correct facing.
       */
-      if (PrimaryFacing.Current() != game::Direction::kSouthWest) {
+      if (PrimaryFacing.current() != game::Direction::kSouthWest) {
         Do_Turn(game::Direction::kSouthWest);
-        //				PrimaryFacing.Set_Desired(Direction::kSouthWest);
+        //				PrimaryFacing.set_desired(Direction::kSouthWest);
         IsDeploying = true;
         return true;
       }
@@ -1989,7 +1989,7 @@ int UnitClass::Shape_Number() const {
     /*
     **	Fetch the harvesting animation stage as appropriate.
     */
-    if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom && !IsDriving) {
+    if (IsHarvesting && !PrimaryFacing.IsRotating() && !NavCom && !IsDriving) {
       //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
       // 0};
       int stage = Fetch_Stage();
@@ -2107,7 +2107,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	The artillery unit should have its entire body recoil when it fires.
     */
     if (*this == UNIT_ARTY && IsInRecoilState) {
-      Recoil_Adjust(PrimaryFacing.Current(), x, y);
+      Recoil_Adjust(PrimaryFacing.current(), x, y);
     }
 
     /*
@@ -3268,10 +3268,10 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
       const bool is_moving =
           obj->Is_Foot() &&
           (dynamic_cast<FootClass*>(obj)->NavCom ||
-           dynamic_cast<FootClass*>(obj)->PrimaryFacing.Is_Rotating() ||
+           dynamic_cast<FootClass*>(obj)->PrimaryFacing.IsRotating() ||
            dynamic_cast<FootClass*>(obj)->IsDriving);
       //						(((FootClass
-      //*)obj)->PrimaryFacing.Is_Rotating() || ((FootClass *)obj)->IsDriving);
+      //*)obj)->PrimaryFacing.IsRotating() || ((FootClass *)obj)->IsDriving);
       //						(((FootClass
       //*)obj)->IsRotating || ((FootClass *)obj)->IsDriving);
       //						((((FootClass
@@ -3715,7 +3715,7 @@ void UnitClass::Exit_Repair() {
 
   Cell cell = Cell::Containing(Coord).Offset(
       base::At(ExitRepair,
-               static_cast<int>(game::NearestFacing(PrimaryFacing.Current()))));
+               static_cast<int>(game::NearestFacing(PrimaryFacing.current()))));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
@@ -3839,7 +3839,7 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   const game::Direction faceto =
       passenger != nullptr ? DirectionTo(passenger)
-                           : PrimaryFacing.Current() + game::Direction::kSouth;
+                           : PrimaryFacing.current() + game::Direction::kSouth;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
@@ -4171,20 +4171,20 @@ game::Direction UnitClass::Fire_Direction() const {
 
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_V2_LAUNCHER) {
-      int diff1 = SecondaryFacing.Difference(game::Direction::kEast);
-      int diff2 = SecondaryFacing.Difference(game::Direction::kWest);
+      int diff1 = SecondaryFacing.ShortestTurnTo(game::Direction::kEast);
+      int diff2 = SecondaryFacing.ShortestTurnTo(game::Direction::kWest);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
       const int adj = base::FixedToCardinal(
-          std::abs(SecondaryFacing.Difference(game::Direction::kNorth)),
+          std::abs(SecondaryFacing.ShortestTurnTo(game::Direction::kNorth)),
           64 - diff);
-      if (SecondaryFacing.Difference(game::Direction::kNorth) < 0) {
+      if (SecondaryFacing.ShortestTurnTo(game::Direction::kNorth) < 0) {
         return SecondaryFacing - game::Direction(adj);
       }
       return SecondaryFacing + game::Direction(adj);
     }
-    return SecondaryFacing.Current();
+    return SecondaryFacing.current();
   }
 
   return DriveClass::Fire_Direction();
@@ -4216,8 +4216,8 @@ bool UnitClass::Ok_To_Move(game::Direction dir) {
     if (IsRotating) {
       return false;
     }
-    if (SecondaryFacing.Difference(dir)) {
-      SecondaryFacing.Set_Desired(dir);
+    if (SecondaryFacing.ShortestTurnTo(dir)) {
+      SecondaryFacing.set_desired(dir);
       return false;
     }
   }
@@ -4276,9 +4276,9 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = SecondaryFacing.Difference(dir);
+      diff = SecondaryFacing.ShortestTurnTo(dir);
     } else {
-      diff = PrimaryFacing.Difference(dir);
+      diff = PrimaryFacing.ShortestTurnTo(dir);
     }
     diff = std::abs(diff);
 
@@ -4814,7 +4814,7 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio() * 256,
           Cell::Containing(unit->Coord).index(),
-          unit->PrimaryFacing.Current().value(), Mission_Name(unit->Mission),
+          unit->PrimaryFacing.current().value(), Mission_Name(unit->Mission),
           unit->Trigger != nullptr ? unit->Trigger->Class->IniName : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
@@ -4956,7 +4956,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     return;
   }
 
-  if (PrimaryFacing.Is_Rotating()) {
+  if (PrimaryFacing.IsRotating()) {
     return;
   }
   //	if (IsRotating) return;

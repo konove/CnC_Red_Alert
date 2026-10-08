@@ -1352,7 +1352,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
     if (!NavCom) {
       const Cell cell = Cell::Containing(Adjacent_Cell(
           Coord,
-          game::NearestFacing(PrimaryFacing.Current())));  // Cell to unload to.
+          game::NearestFacing(PrimaryFacing.current())));  // Cell to unload to.
 
       FootClass* unit = Attached_Object();  // The unit to be unloaded.
 
@@ -1383,7 +1383,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
               u->Assign_Mission(MISSION_MOVE);
               u->NavCom = Target::FromCellIndex(cell);
               base::At(u->Path, 0) =
-                  game::NearestFacing(u->PrimaryFacing.Current());
+                  game::NearestFacing(u->PrimaryFacing.current());
               base::At(u->Path, 1) = game::Facing::kNone;
               u->Set_Speed(0x80);
               u->IsUnloading = true;
@@ -1538,9 +1538,9 @@ bool UnitClass::Try_To_Deploy() {
       *deployed. This is *	because it will deploy as soon as it reaches the
       *correct facing.
       */
-      if (PrimaryFacing.Current() != game::Direction::kSouthWest) {
+      if (PrimaryFacing.current() != game::Direction::kSouthWest) {
         Do_Turn(game::Direction::kSouthWest);
-        //				PrimaryFacing.Set_Desired(Direction::kSouthWest);
+        //				PrimaryFacing.set_desired(Direction::kSouthWest);
         IsDeploying = true;
         return true;
       }
@@ -1907,8 +1907,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
                         WindowNumberType window) {
   Validate();
   int shapenum = 0;  // Working shape number.
-  int facing = game::BodyFrame32(PrimaryFacing.Current());
-  const int tfacing = game::BodyFrame32(SecondaryFacing.Current());
+  int facing = game::BodyFrame32(PrimaryFacing.current());
+  const int tfacing = game::BodyFrame32(SecondaryFacing.current());
 
   /*
   **	Verify the legality of the unit class.
@@ -1928,7 +1928,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	For eight facing units, adjust the facing number accordingly.
     */
     if (Class->IsPieceOfEight) {
-      facing = static_cast<int>(game::NearestFacing(PrimaryFacing.Current()));
+      facing = static_cast<int>(game::NearestFacing(PrimaryFacing.current()));
     }
 
     /*
@@ -1944,7 +1944,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
 
         int xx = x;
         const int yy = y;
-        switch (game::NearestFacing(PrimaryFacing.Current())) {
+        switch (game::NearestFacing(PrimaryFacing.current())) {
           case game::Facing::kNorthEast:
           case game::Facing::kEast:
           case game::Facing::kSouthEast:
@@ -1990,7 +1990,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       /*
       **	Fetch the harvesting animation stage as appropriate.
       */
-      if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
+      if (IsHarvesting && !PrimaryFacing.IsRotating() && !NavCom &&
           !IsDriving) {
         static const char _hstage[6] = {0, 1, 2, 3, 2, 1};
         shapenum = 32 + ((base::At(BodyShape, facing) + 2) / 4 * 4) +
@@ -2039,7 +2039,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	The artillery unit should have its entire body recoil when it fires.
     */
     if (*this == UNIT_ARTY && IsInRecoilState) {
-      Recoil_Adjust(PrimaryFacing.Current(), x, y);
+      Recoil_Adjust(PrimaryFacing.current(), x, y);
     }
 
     /*
@@ -2087,7 +2087,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       **	A recoiling turret moves "backward" one pixel.
       */
       if (IsInRecoilState) {
-        Recoil_Adjust(SecondaryFacing.Current(), x1, y1);
+        Recoil_Adjust(SecondaryFacing.current(), x1, y1);
       }
 
       /*
@@ -3133,7 +3133,7 @@ void UnitClass::Init() { TheObjectHeaps().unit().FreeAll(); }
 Coordinate UnitClass::Target_Coord() const {
   Validate();
   //	if (*this == UNIT_GUNBOAT) {
-  //		return(Coord_Move(Coord, PrimaryFacing.Current(), 0x0080));
+  //		return(Coord_Move(Coord, PrimaryFacing.current(), 0x0080));
   //	}
   return TarComClass::Center_Coord();
 }
@@ -3165,7 +3165,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced) {
         toface = game::NearestFacing(Direction8(threat, Coord));
         toface = toface + (Random_Pick(0, 2) - 1);
       } else {
-        toface = game::NearestFacing(PrimaryFacing.Current());
+        toface = game::NearestFacing(PrimaryFacing.current());
       }
 
       for (const game::Facing face : magic_enum::enum_values<game::Facing>()) {
@@ -3560,8 +3560,8 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
             *the destination *	of the drive.
             */
             if (*unit == UNIT_GUNBOAT) {
-              unit->PrimaryFacing.Set_Desired(game::Direction::kWest);
-              unit->PrimaryFacing.Set_Current(game::Direction::kWest);
+              unit->PrimaryFacing.set_desired(game::Direction::kWest);
+              unit->PrimaryFacing.set_current(game::Direction::kWest);
               unit->Assign_Mission(MISSION_HUNT);
               unit->Commence();
               unit->Assign_Destination(Target::FromCellIndex(Cell::FromXY(
@@ -3618,7 +3618,7 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio(),
           Cell::Containing(unit->Coord).index(),
-          unit->PrimaryFacing.Current().value(), Mission_Name(unit->Mission),
+          unit->PrimaryFacing.current().value(), Mission_Name(unit->Mission),
           unit->Trigger ? unit->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
@@ -3645,7 +3645,7 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   Cell cell = Cell::Containing(Coord).Offset(
-      ExitRepair.at(game::NearestFacing(PrimaryFacing.Current())));
+      ExitRepair.at(game::NearestFacing(PrimaryFacing.current())));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
@@ -3775,7 +3775,7 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   const game::Direction faceto =
       passenger ? DirectionTo(passenger)
-                : PrimaryFacing.Current() + game::Direction::kSouth;
+                : PrimaryFacing.current() + game::Direction::kSouth;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.

@@ -118,17 +118,17 @@ void TarComClass::AI() {
       case game::FIRE_FACING:
         if (Class->IsLockTurret) {
           if (!NavCom && !IsDriving) {
-            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
-            SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
+            PrimaryFacing.set_desired(DirectionTo(TarCom));
+            SecondaryFacing.set_desired(PrimaryFacing.desired());
           }
         } else {
           if (*this == UNIT_FTANK) {
-            SecondaryFacing.Set_Desired(
+            SecondaryFacing.set_desired(
                 game::DirectionOf(game::NearestFacing(DirectionTo(TarCom))));
           } else {
-            SecondaryFacing.Set_Desired(DirectionTo(TarCom));
+            SecondaryFacing.set_desired(DirectionTo(TarCom));
           }
-          //					SecondaryFacing.Set_Desired(Direction256(Center_Coord(),
+          //					SecondaryFacing.set_desired(Direction256(Center_Coord(),
           // TarCom.AsCoordinate()));
         }
         break;
@@ -154,7 +154,7 @@ void TarComClass::AI() {
     const game::Direction dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
-      SecondaryFacing.Set_Desired(dir);
+      SecondaryFacing.set_desired(dir);
     } else {
       /*
       **	Non turret equipped vehicles will rotate their body to face the
@@ -164,12 +164,12 @@ void TarComClass::AI() {
       *aren't maneuverable enough.
       */
       if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) && !NavCom &&
-          !IsDriving && PrimaryFacing.Difference(dir)) {
+          !IsDriving && PrimaryFacing.ShortestTurnTo(dir)) {
         if (*this == UNIT_FTANK) {
-          PrimaryFacing.Set_Desired(
+          PrimaryFacing.set_desired(
               game::DirectionOf(game::NearestFacing(dir)));
         } else {
-          PrimaryFacing.Set_Desired(dir);
+          PrimaryFacing.set_desired(dir);
         }
       }
     }

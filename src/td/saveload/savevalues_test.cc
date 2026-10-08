@@ -110,8 +110,8 @@ TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
   EXPECT_FALSE(negative_reader.ok());
 }
 
-TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
-  game::Heading facing(game::Direction::kNorth);
+TEST(TdSaveValuesTest, HeadingPreservesCurrentAndDesiredSeparately) {
+  game::Heading heading(game::Direction::kNorth);
   std::array<uint8_t, 8> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes).first(8)));
   ArchiveWriter writer(sink);
@@ -120,14 +120,14 @@ TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
   writer(current, desired);
   SpanSource source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader reader(source);
-  reader(facing);
+  reader(heading);
   ASSERT_TRUE(reader.ok());
-  EXPECT_EQ(facing.Current(), current);
-  EXPECT_EQ(facing.Desired(), desired);
+  EXPECT_EQ(heading.current(), current);
+  EXPECT_EQ(heading.desired(), desired);
   game::Heading loaded(game::Direction::kNorth);
-  Restore(loaded, Save(facing));
-  EXPECT_EQ(loaded.Current(), current);
-  EXPECT_EQ(loaded.Desired(), desired);
+  Restore(loaded, Save(heading));
+  EXPECT_EQ(loaded.current(), current);
+  EXPECT_EQ(loaded.desired(), desired);
 }
 
 TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {

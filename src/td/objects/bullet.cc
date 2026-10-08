@@ -359,7 +359,7 @@ void BulletClass::AI() {
   *makes *	missiles not so deadly).
   */
   if (game::CurrentFrame() % 2 != 0 && Class->IsHoming && TarCom) {
-    PrimaryFacing.Set_Desired(Direction256(Coord, TarCom.AsCoordinate()));
+    PrimaryFacing.set_desired(Direction256(Coord, TarCom.AsCoordinate()));
   }
 
   /*
@@ -378,8 +378,8 @@ void BulletClass::AI() {
   **	Handle any body rotation at this time. This process must
   **	occur every game fame in order to achieve smooth rotation.
   */
-  if (PrimaryFacing.Is_Rotating()) {
-    PrimaryFacing.Rotation_Adjust(Class->ROT);
+  if (PrimaryFacing.IsRotating()) {
+    PrimaryFacing.Turn(Class->ROT);
   }
 
   switch (Physics(coord, PrimaryFacing)) {

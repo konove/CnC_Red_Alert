@@ -25,49 +25,48 @@
 
 namespace game {
 
-Heading::Heading()
-    : CurrentFacing(Direction::kNorth), DesiredFacing(Direction::kNorth) {}
+Heading::Heading() : current_(Direction::kNorth), desired_(Direction::kNorth) {}
 
-bool Heading::Set_Desired(Direction facing) {
-  if (DesiredFacing != facing) {
-    DesiredFacing = facing;
+bool Heading::set_desired(Direction direction) {
+  if (desired_ != direction) {
+    desired_ = direction;
     return true;
   }
   return false;
 }
 
-bool Heading::Set_Current(Direction facing) {
-  if (CurrentFacing != facing) {
-    CurrentFacing = facing;
+bool Heading::set_current(Direction direction) {
+  if (current_ != direction) {
+    current_ = direction;
     return true;
   }
   return false;
 }
 
-bool Heading::Rotation_Adjust(int rate) {
-  if (Is_Rotating()) {
-    // A turn is at most half the circle, so a faster rate adds nothing.
-    rate = std::min(rate, 127);
+bool Heading::Turn(int max_steps) {
+  if (IsRotating()) {
+    // A turn is at most half the circle, so a larger step adds nothing.
+    max_steps = std::min(max_steps, 127);
 
-    const Direction oldfacing = CurrentFacing;
-    const int diff = Difference();
+    const Direction previous = current_;
+    const int turn = RemainingTurn();
 
-    // Snap to the desired direction when the rate covers the gap, so the turn
+    // Snap to the desired direction when the step covers the gap, so the turn
     // never overshoots.
-    if (std::abs(diff) < rate) {
-      CurrentFacing = DesiredFacing;
+    if (std::abs(turn) < max_steps) {
+      current_ = desired_;
     } else {
       // Otherwise step the short way round: anticlockwise for a negative
       // difference.
-      if (diff < 0) {
-        CurrentFacing = CurrentFacing - Direction(rate);
+      if (turn < 0) {
+        current_ = current_ - Direction(max_steps);
       } else {
-        CurrentFacing = CurrentFacing + Direction(rate);
+        current_ = current_ + Direction(max_steps);
       }
     }
 
     // Only a change of body frame is visible, and so worth a redraw.
-    return BodyFrame32(CurrentFacing) != BodyFrame32(oldfacing);
+    return BodyFrame32(current_) != BodyFrame32(previous);
   }
   return false;
 }

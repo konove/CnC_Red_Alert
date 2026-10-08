@@ -1113,9 +1113,9 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = SecondaryFacing.Difference(dir);
+      diff = SecondaryFacing.ShortestTurnTo(dir);
     } else {
-      diff = PrimaryFacing.Difference(dir);
+      diff = PrimaryFacing.ShortestTurnTo(dir);
     }
     diff = std::abs(diff);
 
@@ -2070,7 +2070,7 @@ void VesselClass::Write_INI(engine::file::IniFile& ini) {
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
           vessel->House->Class->IniName, vessel->Class->IniName,
           vessel->Health_Ratio() * 256, Cell::Containing(vessel->Coord).index(),
-          vessel->PrimaryFacing.Current().value(),
+          vessel->PrimaryFacing.current().value(),
           Mission_Name(vessel->Mission),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
@@ -2160,15 +2160,14 @@ void VesselClass::Rotation_AI() {
     const game::Direction dir = DirectionTo(TarCom);
 
     if (Class->IsTurretEquipped) {
-      SecondaryFacing.Set_Desired(dir);
+      SecondaryFacing.set_desired(dir);
     }
   }
 
   IsRotating = false;
-  if (Class->IsTurretEquipped && SecondaryFacing.Is_Rotating()) {
+  if (Class->IsTurretEquipped && SecondaryFacing.IsRotating()) {
     Mark(MARK_CHANGE_REDRAW);
-    if (SecondaryFacing.Rotation_Adjust(Class->ROT * House->GroundspeedBias +
-                                        1)) {
+    if (SecondaryFacing.Turn(Class->ROT * House->GroundspeedBias + 1)) {
       Mark(MARK_CHANGE_REDRAW);
     }
 
@@ -2176,7 +2175,7 @@ void VesselClass::Rotation_AI() {
     **	If no further rotation is necessary, flag that the rotation
     **	has stopped.
     */
-    IsRotating = SecondaryFacing.Is_Rotating();
+    IsRotating = SecondaryFacing.IsRotating();
   }
 }
 
@@ -2214,10 +2213,10 @@ void VesselClass::Combat_AI() {
 
       case game::FIRE_FACING:
         if (Class->IsTurretEquipped) {
-          SecondaryFacing.Set_Desired(DirectionTo(TarCom));
+          SecondaryFacing.set_desired(DirectionTo(TarCom));
         } else {
-          if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+          if (!PrimaryFacing.IsRotating()) {
+            PrimaryFacing.set_desired(DirectionTo(TarCom));
           }
         }
         break;

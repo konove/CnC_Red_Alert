@@ -958,7 +958,7 @@ int BuildingClass::Shape_Number() const {
     */
     if (Class->IsTurretEquipped) {
       shapenum =
-          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.Current()));
+          base::At(BodyShape, game::BodyFrame32(PrimaryFacing.current()));
 
       if (*this == STRUCT_SAM) {
         /*
@@ -2018,8 +2018,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           **	Generate a random rotation effect since there is nothing else
           *that this *	building can do.
           */
-          if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(
+          if (!PrimaryFacing.IsRotating()) {
+            PrimaryFacing.set_desired(
                 RandomPick(game::Direction::kNorth, kMaxRandomDirection));
           }
         }
@@ -3050,7 +3050,7 @@ game::Direction BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && TarCom) {
     return ra::DirectionBetween(Center_Coord(), TarCom.AsCoordinate());
   }
-  return PrimaryFacing.Current();
+  return PrimaryFacing.current();
 }
 
 /***********************************************************************************************
@@ -3608,7 +3608,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
     **	temporarily postponed.
     */
     if (Class->IsTurretEquipped) {
-      int diff = PrimaryFacing.Difference(DirectionTo(TarCom));
+      int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
       diff = abs(diff);
       if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
         //			if (std::abs(diff) > 8) {
@@ -3618,7 +3618,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
       /*
       **	If the turret is rotating then firing must be delayed.
       */
-      //			if (PrimaryFacing.Is_Rotating()) {
+      //			if (PrimaryFacing.IsRotating()) {
       //				return(FIRE_ROTATING);
       //			}
     }
@@ -4391,10 +4391,10 @@ int BuildingClass::Mission_Attack() {
           Commence();
           return 1;
         }
-        if (!PrimaryFacing.Is_Rotating()) {
+        if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.Difference(facing)) {
-            PrimaryFacing.Set_Desired(facing);
+          if (PrimaryFacing.ShortestTurnTo(facing)) {
+            PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring;
           }
@@ -4456,11 +4456,11 @@ int BuildingClass::Mission_Attack() {
       break;
 
     case game::FIRE_FACING:
-      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+      PrimaryFacing.set_desired(DirectionTo(TarCom));
       return 2;
 
     case game::FIRE_REARM:
-      PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+      PrimaryFacing.set_desired(DirectionTo(TarCom));
       return static_cast<int>(Arm.Remaining());
 
     case game::FIRE_BUSY:
@@ -4479,7 +4479,7 @@ int BuildingClass::Mission_Attack() {
     default:
       break;
   }
-  PrimaryFacing.Set_Desired(DirectionTo(TarCom));
+  PrimaryFacing.set_desired(DirectionTo(TarCom));
   return 1;
   //	return(MissionControl[Mission].Normal_Delay() + RandomPick(0, 2));
 }
@@ -5171,7 +5171,7 @@ game::Direction BuildingClass::Fire_Direction() const {
   DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
-    return PrimaryFacing.Current();
+    return PrimaryFacing.current();
   }
   return game::Direction(TarCom.packed());
 }
@@ -5922,7 +5922,7 @@ void BuildingClass::Write_INI(engine::file::IniFile& ini) {
                      building->House->Class->IniName, building->Class->IniName,
                      building->Health_Ratio() * 256,
                      Cell::Containing(building->Coord).index(),
-                     building->PrimaryFacing.Current().value(),
+                     building->PrimaryFacing.current().value(),
                      building->Trigger != nullptr
                          ? building->Trigger->Class->IniName
                          : "None",
@@ -6154,7 +6154,7 @@ void BuildingClass::Rotation_AI() {
   if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
        Mission != MISSION_DECONSTRUCTION &&
        (!Class->IsPowered || House->Power_Fraction() >= 1)) &&
-      PrimaryFacing.Is_Rotating() && PrimaryFacing.Rotation_Adjust(Class->ROT))
+      PrimaryFacing.IsRotating() && PrimaryFacing.Turn(Class->ROT))
   /*
   **	Rotate turret to match desired facing.
   */

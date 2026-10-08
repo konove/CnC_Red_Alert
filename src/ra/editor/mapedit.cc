@@ -1353,13 +1353,13 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
           /*
           **	Set body's facing
           */
-          techno->PrimaryFacing.Set(FacingDial->direction());
+          techno->PrimaryFacing.SnapTo(FacingDial->direction());
 
           /*
           **	Set turret facing, if there is one
           */
           if (techno->What_Am_I() == RTTI_UNIT) {
-            dynamic_cast<UnitClass&>(*techno).SecondaryFacing.Set(
+            dynamic_cast<UnitClass&>(*techno).SecondaryFacing.SnapTo(
                 FacingDial->direction());
           }
 

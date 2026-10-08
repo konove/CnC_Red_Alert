@@ -114,8 +114,8 @@ bool TurretClass::Ok_To_Move(game::Direction dir) {
     if (IsRotating) {
       return false;
     }
-    if (SecondaryFacing.Difference(dir)) {
-      SecondaryFacing.Set_Desired(dir);
+    if (SecondaryFacing.ShortestTurnTo(dir)) {
+      SecondaryFacing.set_desired(dir);
       return false;
     }
   }
@@ -144,17 +144,17 @@ void TurretClass::AI() {
   **	A unit with a constant rotating radar dish is handled here.
   */
   if (Class->IsRadarEquipped) {
-    SecondaryFacing.Set(SecondaryFacing.Current() + 8);
+    SecondaryFacing.SnapTo(SecondaryFacing.current() + 8);
     Mark(MARK_CHANGE);
   } else {
     IsRotating = false;
     if (Class->IsTurretEquipped) {
       if (IsTurretLockedDown) {
-        SecondaryFacing.Set_Desired(PrimaryFacing.Current());
+        SecondaryFacing.set_desired(PrimaryFacing.current());
       }
 
-      if (SecondaryFacing.Is_Rotating()) {
-        if (SecondaryFacing.Rotation_Adjust(Class->ROT + 1)) {
+      if (SecondaryFacing.IsRotating()) {
+        if (SecondaryFacing.Turn(Class->ROT + 1)) {
           Mark(MARK_CHANGE);
         }
 
@@ -162,13 +162,13 @@ void TurretClass::AI() {
         **	If no further rotation is necessary, flag that the rotation
         **	has stopped.
         */
-        IsRotating = SecondaryFacing.Is_Rotating();
+        IsRotating = SecondaryFacing.IsRotating();
       } else {
         if (!IsTurretLockedDown && !TarCom) {
           if (!NavCom) {
-            SecondaryFacing.Set_Desired(PrimaryFacing.Current());
+            SecondaryFacing.set_desired(PrimaryFacing.current());
           } else {
-            SecondaryFacing.Set_Desired(DirectionTo(NavCom));
+            SecondaryFacing.set_desired(DirectionTo(NavCom));
           }
         }
       }
@@ -264,9 +264,9 @@ game::FireErrorType TurretClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = SecondaryFacing.Difference(dir);
+      diff = SecondaryFacing.ShortestTurnTo(dir);
     } else {
-      diff = PrimaryFacing.Difference(dir);
+      diff = PrimaryFacing.ShortestTurnTo(dir);
     }
     diff = std::abs(diff);
 
@@ -311,15 +311,15 @@ Coordinate TurretClass::Fire_Coord(int which) const {
   Coordinate coord = Center_Coord();
   int dist = 0;
   int lateral = 0;
-  game::Direction dir = PrimaryFacing.Current();
+  game::Direction dir = PrimaryFacing.current();
 
   if (Class->IsTurretEquipped) {
-    dir = SecondaryFacing.Current();
+    dir = SecondaryFacing.current();
   }
 
   switch (Class->Type) {
     case UNIT_GUNBOAT:
-      coord = Coord_Move(coord, PrimaryFacing.Current(),
+      coord = Coord_Move(coord, PrimaryFacing.current(),
                          base::At(Pixel2Lepton, Class->TurretOffset));
       dist = 0x0060;
       break;
@@ -441,23 +441,23 @@ bool TurretClass::Unlimbo(Coordinate coord, game::Direction dir) {
 game::Direction TurretClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_MSAM) {
-      int diff1 = SecondaryFacing.Difference(game::Direction::kEast);
-      int diff2 = SecondaryFacing.Difference(game::Direction::kWest);
+      int diff1 = SecondaryFacing.ShortestTurnTo(game::Direction::kEast);
+      int diff2 = SecondaryFacing.ShortestTurnTo(game::Direction::kWest);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
       const int adj = base::FixedToCardinal(
-          std::abs(SecondaryFacing.Difference(game::Direction::kNorth)),
+          std::abs(SecondaryFacing.ShortestTurnTo(game::Direction::kNorth)),
           64 - diff);
-      if (SecondaryFacing.Difference(game::Direction::kNorth) < 0) {
-        return SecondaryFacing.Current() - adj;
+      if (SecondaryFacing.ShortestTurnTo(game::Direction::kNorth) < 0) {
+        return SecondaryFacing.current() - adj;
       }
       return SecondaryFacing + game::Direction(adj);
     }
-    return SecondaryFacing.Current();
+    return SecondaryFacing.current();
   }
 
-  return PrimaryFacing.Current();
+  return PrimaryFacing.current();
 }
 
 }  // namespace td

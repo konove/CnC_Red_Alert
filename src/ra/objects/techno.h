@@ -318,7 +318,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual int How_Many_Survivors() const;
 
   [[nodiscard]] virtual game::Direction Turret_Facing() const {
-    return PrimaryFacing.Current();
+    return PrimaryFacing.current();
   }
   Cell Nearby_Location(const TechnoClass* techno = nullptr) const;
   [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {

@@ -119,7 +119,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] game::Direction Turret_Facing() const override {
-    return SecondaryFacing.Current();
+    return SecondaryFacing.current();
   }
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
