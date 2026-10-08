@@ -74,8 +74,15 @@ Changing items:
   answer in the user's words) and only then do the work.
 - If fixing any other item turns out to need a decision that is the user's, do not guess and do not
   change code: `todo_update` it with `toDecide` and leave the status alone.
-- A finished item is not deleted: `status: fixed` with `resolution` (a sentence or two on what was
-  done) and `fixedIn` (the commit, once there is one) so the user can review it; `wont_fix` with the
-  reason in `resolution`. A duplicate is `wont_fix` with `duplicateOf`.
+- A finished item is not deleted. Commit the fix first, then close the item in one `todo_update`:
+  `status: fixed`, `resolution` (a sentence or two on what was done), `fixedIn` (the commit) and the
+  new anchor if the code moved. Not `fixed` before the commit and `fixedIn` after it, and no "Not
+  committed" in the resolution. `wont_fix` takes the reason in `resolution`; a duplicate is
+  `wont_fix` with `duplicateOf`.
+- Put everything one item needs in one call: status, tags, resolution and anchor together. A second
+  `todo_update` on the same item right after the first is a call wasted, and each one returns the
+  whole item.
+- Never read `.todos/items.json` to see what a call did: the call's result is the item. Before
+  committing the file, `git diff --stat` is enough.
 - After moving or rewriting anchored code, `todo_list` with `lost: true` and re-attach what it
   returns with `todo_update` (`path`, `startLine`).

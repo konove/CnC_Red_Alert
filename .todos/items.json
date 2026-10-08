@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 210,
+  "nextId": 214,
   "items": [
     {
       "id": "T-2",
@@ -6142,6 +6142,109 @@
             "  }",
             "  std::optional<std::vector<uint8_t>> pixels ="
           ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-210",
+      "title": "Which other code can be migrated to Rust",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-08T19:43:24Z",
+      "updated": "2026-10-08T19:43:24Z"
+    },
+    {
+      "id": "T-211",
+      "title": "Probe: parent made to check the plugin update (delete me)",
+      "details": "",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "other",
+        "probe"
+      ],
+      "status": "wont_fix",
+      "author": "agent",
+      "created": "2026-10-08T20:56:43Z",
+      "updated": "2026-10-08T20:57:33Z",
+      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
+      "anchors": [
+        {
+          "path": "src/base/types.h",
+          "startLine": 3,
+          "endLine": 4,
+          "text": "#define CNC_RED_ALERT_BASE_TYPES_H_\n",
+          "before": [
+            "// Core type definitions for the project.",
+            "#ifndef CNC_RED_ALERT_BASE_TYPES_H_"
+          ],
+          "after": [
+            "#include <cstddef>",
+            "",
+            "namespace base {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-212",
+      "title": "Probe: part that names its parent by ref (delete me)",
+      "details": "",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "other",
+        "probe"
+      ],
+      "status": "wont_fix",
+      "author": "agent",
+      "created": "2026-10-08T20:56:43Z",
+      "updated": "2026-10-08T20:57:42Z",
+      "parent": "T-211",
+      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
+      "decisions": [
+        {
+          "question": "Probe question?",
+          "options": [
+            "a",
+            "b"
+          ],
+          "answer": "a",
+          "time": "2026-10-08T20:56:52Z"
+        }
+      ],
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-08T20:56:52Z",
+          "text": "Probe comment."
+        }
+      ]
+    },
+    {
+      "id": "T-213",
+      "title": "Probe: part blocked by a sibling ref (delete me)",
+      "details": "",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "other",
+        "probe"
+      ],
+      "status": "wont_fix",
+      "author": "agent",
+      "created": "2026-10-08T20:56:43Z",
+      "updated": "2026-10-08T20:57:33Z",
+      "parent": "T-211",
+      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
+      "anchors": [
+        {
+          "path": "src/base/fixed.h",
           "lost": false
         }
       ]
