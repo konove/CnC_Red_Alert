@@ -16,29 +16,17 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <algorithm>
-#include <array>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <memory>
 #include <optional>
 #include <span>
 #include <string_view>
-#include <vector>
 
-#include "absl/base/attributes.h"
-#include "base/numeric.h"
-#include "base/types.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/stream/byte_stream.h"
-#include "engine/stream/seek_origin.h"
 #include "engine/window/hardware_cursor.h"
-#include "ra/assets/filepcx.h"
 #include "ra/assets/graphics_loader.h"
 #include "ra/assets/theme.h"
 #include "ra/editor/mapedit.h"
@@ -76,136 +64,12 @@ void Focus_Restore() {
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        engine::gfx::Palette& palette) {
-  if (const std::optional<PcxPicture> picture = ReadPcxFile(name)) {
+  if (const std::optional<engine::gfx::PcxPicture> picture =
+          engine::gfx::ReadPcxFile(name)) {
     video_page->CopyFromBuffer(0, 0, picture->width, picture->height,
                                picture->pixels);
     palette = picture->palette;
   }
-}
-
-// Reads a stream a byte at a time through a buffer of its own, so that
-// decoding a picture does not cost a file read a byte.
-class BufferedFileReader {
- public:
-  static constexpr base::ssize kBufferSize = 2048;
-
-  explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : file_(file) {}
-
-  // Neither copied nor moved: a copy would read on from the same place in the
-  // stream with its own stale buffer.
-  ~BufferedFileReader() = default;
-  BufferedFileReader(const BufferedFileReader&) = delete;
-  BufferedFileReader& operator=(const BufferedFileReader&) = delete;
-  BufferedFileReader(BufferedFileReader&&) = delete;
-  BufferedFileReader& operator=(BufferedFileReader&&) = delete;
-
-  // Returns the next byte, or nullopt at the end of the stream.
-  std::optional<uint8_t> ReadByte() {
-    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
-      return std::nullopt;
-    }
-
-    return buffer_.at(base::ToSize(cursor_++));
-  }
-
- private:
-  // Reads the next part of the stream into the buffer. Returns false at the
-  // end of the stream.
-  bool RefillBuffer() {
-    cursor_ = 0;
-    bytes_in_buffer_ = file_.Read(std::as_writable_bytes(std::span(buffer_)));
-    return bytes_in_buffer_ > 0;
-  }
-
-  ByteStream& file_;
-
-  std::array<uint8_t, kBufferSize> buffer_{};
-
-  // The next byte of buffer_ to hand out, and how many of its bytes came from
-  // the stream; the stream is ahead of the reader by the difference.
-  base::ssize cursor_ = 0;
-  base::ssize bytes_in_buffer_ = 0;
-};
-
-std::optional<PcxPicture> ReadPcxFile(const std::string_view name) {
-  const auto file = OpenGameFile(name);
-  if (!file) {
-    return std::nullopt;
-  }
-  // Only the kind of picture the games ship and write is read: version 5,
-  // run-length encoded, 8 bits a pixel in one plane.
-  engine::gfx::PcxHeader header{};
-  if (!file->ReadObject(header) || header.id != 10 || header.version != 5 ||
-      header.bits_per_pixel != 8 || header.color_planes != 1 ||
-      header.encoding != 1) {
-    return std::nullopt;
-  }
-  const int width = header.right - header.left + 1;
-  const int height = header.bottom - header.top + 1;
-  if (width <= 0 || height <= 0 || header.bytes_per_line < width) {
-    return std::nullopt;
-  }
-  PcxPicture picture{
-      .width = width,
-      .height = height,
-      .pixels =
-          std::vector<uint8_t>(base::ToSize(width) * base::ToSize(height)),
-      .palette = {},
-  };
-  const std::span<uint8_t> pixels = picture.pixels;
-  // TODO: the pixels are not kept from running into the palette at the end
-  // of the file: a picture that is cut short takes the palette's bytes for
-  // pixels and loads as garbage instead of failing.
-  BufferedFileReader reader(*file);
-  for (int row = 0; row < height; ++row) {
-    // A scanline holds bytes_per_line pixels, of which the picture shows the
-    // first `width`; the rest is padding to decode and drop.
-    int column = 0;
-    while (column < header.bytes_per_line) {
-      const auto first = reader.ReadByte();
-      if (!first) {
-        return std::nullopt;
-      }
-      // A byte with its two top bits set is a run: its low six bits run_length
-      // the pixels and the next byte is their color. Any other byte is one
-      // pixel.
-      int run_length = 1;
-      uint8_t color = *first;
-      if ((color & 0xc0U) == 0xc0U) {
-        run_length = color & 0x3fU;
-        const auto run_color = reader.ReadByte();
-        if (!run_color || run_length == 0) {
-          return std::nullopt;
-        }
-        color = *run_color;
-      }
-      // A run ends with its scanline; one that goes on into the next is
-      // taken for a damaged file.
-      if (run_length > header.bytes_per_line - column) {
-        return std::nullopt;
-      }
-      const int visible = std::min(run_length, std::max(0, width - column));
-      if (visible > 0) {
-        std::ranges::fill(
-            pixels.subspan((base::ToSize(row) * base::ToSize(width)) +
-                               base::ToSize(column),
-                           base::ToSize(visible)),
-            color);
-      }
-      column += run_length;
-    }
-  }
-  // The palette is the last 768 bytes of the file, 8 bits a component. The
-  // reader's buffer has left the stream somewhere past the pixels, so it is
-  // found from the end.
-  std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
-  file->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
-  if (file->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {
-    return std::nullopt;
-  }
-  picture.palette = engine::gfx::Palette::FromRgb(rgb);
-  return picture;
 }
 
 }  // namespace ra

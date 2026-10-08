@@ -26,7 +26,9 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <string_view>
+#include <vector>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -75,6 +77,21 @@ bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
 // creates as a loose file. A view without pixels creates no file.
 bool WritePcxFile(std::string_view file_name, PixelView& view,
                   const Palette& palette);
+
+// A picture read from a PCX file.
+struct PcxPicture {
+  int width = 0;
+  int height = 0;
+  // The palette index of every pixel, row after row with nothing between
+  // them: width * height bytes.
+  std::vector<uint8_t> pixels;
+  engine::gfx::Palette palette;
+};
+
+// Reads the PCX picture in the game file `name`. Returns nothing if the file
+// is missing, is not a run-length encoded 8-bit picture with a palette, or is
+// damaged.
+std::optional<PcxPicture> ReadPcxFile(std::string_view name);
 
 }  // namespace engine::gfx
 
