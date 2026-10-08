@@ -21,15 +21,15 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
-#include <string>
 #include <string_view>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
@@ -76,10 +76,10 @@ void Focus_Restore() {
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        engine::gfx::Palette& palette) {
-  const auto load_buffer = Read_PCX_File(std::string(name).c_str(), &palette);
-
-  if (load_buffer) {
-    load_buffer->view().BlitTo(*video_page);
+  if (const std::optional<PcxPicture> picture = Read_PCX_File(name)) {
+    video_page->CopyFromBuffer(0, 0, picture->width, picture->height,
+                               picture->pixels);
+    palette = picture->palette;
   }
 }
 
@@ -87,7 +87,7 @@ void Load_Title_Screen(std::string_view name, PixelView* video_page,
 // decoding a picture does not cost a file read a byte.
 class BufferedFileReader {
  public:
-  static constexpr size_t kBufferSize = 2048;
+  static constexpr base::ssize kBufferSize = 2048;
 
   explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : file_(file) {}
@@ -106,7 +106,7 @@ class BufferedFileReader {
       return std::nullopt;
     }
 
-    return buffer_.at(cursor_++);
+    return buffer_.at(base::ToSize(cursor_++));
   }
 
  private:
@@ -114,8 +114,7 @@ class BufferedFileReader {
   // end of the stream.
   bool RefillBuffer() {
     cursor_ = 0;
-    bytes_in_buffer_ =
-        base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));
+    bytes_in_buffer_ = file_.Read(std::as_writable_bytes(std::span(buffer_)));
     return bytes_in_buffer_ > 0;
   }
 
@@ -125,15 +124,14 @@ class BufferedFileReader {
 
   // The next byte of buffer_ to hand out, and how many of its bytes came from
   // the stream; the stream is ahead of the reader by the difference.
-  size_t cursor_ = 0;
-  size_t bytes_in_buffer_ = 0;
+  base::ssize cursor_ = 0;
+  base::ssize bytes_in_buffer_ = 0;
 };
 
-std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette) {
+std::optional<PcxPicture> Read_PCX_File(const std::string_view name) {
   const auto file_handle = OpenGameFile(name);
   if (!file_handle) {
-    return nullptr;
+    return std::nullopt;
   }
   // Only the kind of picture the games ship and write is read: version 5,
   // run-length encoded, 8 bits a pixel in one plane.
@@ -141,80 +139,73 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   if (!file_handle->ReadObject(header) || header.id != 10 ||
       header.version != 5 || header.bits_per_pixel != 8 ||
       header.color_planes != 1 || header.encoding != 1) {
-    return nullptr;
+    return std::nullopt;
   }
   const int width = header.right - header.left + 1;
   const int height = header.bottom - header.top + 1;
   if (width <= 0 || height <= 0 || header.bytes_per_line < width) {
-    return nullptr;
+    return std::nullopt;
   }
-  // A PixelBuffer's size in bytes is an int32_t.
-  if (base::ToSize(width) * base::ToSize(height) >
-      static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
-    return nullptr;
-  }
-  auto pic = std::make_unique<PixelBuffer>(width, height);
-  // Every exit returns `pic`, emptied on failure, so the return is elided.
-  const bool decoded = [&] {
-    const auto pixels = pic->bytes();
-    // TODO: the pixels are not kept from running into the palette at the end
-    // of the file: a picture that is cut short takes the palette's bytes for
-    // pixels and loads as garbage instead of failing.
-    BufferedFileReader reader(*file_handle);
-    for (int row = 0; row < height; ++row) {
-      int column = 0;
-      // A scanline holds bytes_per_line pixels, of which the picture shows the
-      // first `width`; the rest is padding to decode and drop.
-      while (column < header.bytes_per_line) {
-        const auto code = reader.ReadByte();
-        if (!code) {
-          return false;
-        }
-        // A byte with its two top bits set is a run: its low six bits count
-        // the pixels and the next byte is their color. Any other byte is one
-        // pixel.
-        int count = 1;
-        uint8_t color = *code;
-        if ((color & 0xc0U) == 0xc0U) {
-          count = color & 0x3fU;
-          const auto value = reader.ReadByte();
-          if (!value || count == 0) {
-            return false;
-          }
-          color = *value;
-        }
-        // A run ends with its scanline; one that goes on into the next is
-        // taken for a damaged file.
-        if (count > header.bytes_per_line - column) {
-          return false;
-        }
-        const int visible = std::min(count, std::max(0, width - column));
-        if (visible > 0) {
-          std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),
-                                           base::ToSize(visible)),
-                            color);
-        }
-        column += count;
+  PcxPicture picture{
+      .width = width,
+      .height = height,
+      .pixels =
+          std::vector<uint8_t>(base::ToSize(width) * base::ToSize(height)),
+      .palette = {},
+  };
+  const std::span<uint8_t> pixels = picture.pixels;
+  // TODO: the pixels are not kept from running into the palette at the end
+  // of the file: a picture that is cut short takes the palette's bytes for
+  // pixels and loads as garbage instead of failing.
+  BufferedFileReader reader(*file_handle);
+  for (int row = 0; row < height; ++row) {
+    // A scanline holds bytes_per_line pixels, of which the picture shows the
+    // first `width`; the rest is padding to decode and drop.
+    int column = 0;
+    while (column < header.bytes_per_line) {
+      const auto code = reader.ReadByte();
+      if (!code) {
+        return std::nullopt;
       }
-    }
-    if (palette != nullptr) {
-      // The palette is the last 768 bytes of the file, 8 bits a component.
-      // The reader's buffer has left the stream somewhere past the pixels, so
-      // it is found from the end.
-      std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
-      file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
-      if (file_handle->Read(std::span(rgb)) !=
-          engine::gfx::Palette::kFileSize) {
-        return false;
+      // A byte with its two top bits set is a run: its low six bits count
+      // the pixels and the next byte is their color. Any other byte is one
+      // pixel.
+      int count = 1;
+      uint8_t color = *code;
+      if ((color & 0xc0U) == 0xc0U) {
+        count = color & 0x3fU;
+        const auto value = reader.ReadByte();
+        if (!value || count == 0) {
+          return std::nullopt;
+        }
+        color = *value;
       }
-      *palette = engine::gfx::Palette::FromRgb(rgb);
+      // A run ends with its scanline; one that goes on into the next is
+      // taken for a damaged file.
+      if (count > header.bytes_per_line - column) {
+        return std::nullopt;
+      }
+      const int visible = std::min(count, std::max(0, width - column));
+      if (visible > 0) {
+        std::ranges::fill(
+            pixels.subspan((base::ToSize(row) * base::ToSize(width)) +
+                               base::ToSize(column),
+                           base::ToSize(visible)),
+            color);
+      }
+      column += count;
     }
-    return true;
-  }();
-  if (!decoded) {
-    pic.reset();
   }
-  return pic;
+  // The palette is the last 768 bytes of the file, 8 bits a component. The
+  // reader's buffer has left the stream somewhere past the pixels, so it is
+  // found from the end.
+  std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
+  file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
+  if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {
+    return std::nullopt;
+  }
+  picture.palette = engine::gfx::Palette::FromRgb(rgb);
+  return picture;
 }
 
 }  // namespace ra

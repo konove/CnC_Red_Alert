@@ -23,18 +23,29 @@
 #ifndef CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 #define CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 
-#include <memory>
+#include <cstdint>
+#include <optional>
+#include <string_view>
+#include <vector>
 
 #include "engine/gfx/palette.h"
-#include "engine/gfx/pixel_buffer.h"
 
 namespace ra {
 
-// Reads the PCX picture `name` into a new buffer. Fills `*palette` with the
-// file's palette when `palette` is not nullptr. Returns null if the file is
-// missing or malformed.
-std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           engine::gfx::Palette* palette);
+// A picture read from a PCX file.
+struct PcxPicture {
+  int width = 0;
+  int height = 0;
+  // The palette index of every pixel, row after row with nothing between
+  // them: width * height bytes.
+  std::vector<uint8_t> pixels;
+  engine::gfx::Palette palette;
+};
+
+// Reads the PCX picture in the game file `name`. Returns nothing if the file
+// is missing, is not a run-length encoded 8-bit picture with a palette, or is
+// damaged.
+std::optional<PcxPicture> Read_PCX_File(std::string_view name);
 
 }  // namespace ra
 
