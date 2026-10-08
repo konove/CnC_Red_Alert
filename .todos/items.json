@@ -5629,13 +5629,14 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T19:36:22Z",
+      "updated": "2026-10-08T19:37:30Z",
       "blockedBy": [
         "T-195"
       ],
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
-      "resolution": "Moved `PcxHeader` into the anonymous namespace of `pcx_file.cc` (and dropped `<array>` from the header). `pcx_file_test.cc` now builds its input headers by named byte offset (`HeaderOf()` returns the 128 bytes, `SetField()` stores a 16-bit field). The magic values were already named once (`kPcxId` ...) and TD's hand check and the TD sentence went with T-195. Not committed.",
+      "fixedIn": "2da50e6b",
+      "resolution": "Moved `PcxHeader` into the anonymous namespace of `pcx_file.cc` (and dropped `<array>` from the header). `pcx_file_test.cc` now builds its input headers by named byte offset (`HeaderOf()` returns the 128 bytes, `SetField()` stores a 16-bit field). The magic values were already named once (`kPcxId` ...) and TD's hand check and the TD sentence went with T-195.",
       "comments": [
         {
           "author": "agent",
