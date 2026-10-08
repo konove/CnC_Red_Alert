@@ -1,24 +1,30 @@
-// Tests for the PCX writer: the bytes of the file it produces.
+// Tests for the PCX writer: the bytes it produces.
 
 #include "engine/gfx/pcx_file.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <ios>
 #include <iterator>
+#include <limits>
 #include <optional>
 #include <span>
 #include <utility>
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/file/game_files_test_util.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
 
 namespace engine::gfx {
@@ -27,14 +33,48 @@ namespace {
 
 constexpr std::ptrdiff_t kHeaderSize = sizeof(PcxHeader);
 
-// Writes `view` as a PCX file in the test's own directory and returns the
-// file's bytes, or nothing if no file was written.
+// A stream that keeps what is written to it, up to `capacity` bytes.
+class RecordingStream final : public ByteStream {
+ public:
+  explicit RecordingStream(
+      const base::ssize capacity = std::numeric_limits<base::ssize>::max())
+      : capacity_(capacity) {}
+
+  [[nodiscard]] const std::vector<uint8_t>& bytes() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bytes_;
+  }
+
+  using ByteStream::Read;
+  using ByteStream::Write;
+  base::ssize Read(std::span<std::byte> /*buffer*/) override { return 0; }
+  base::ssize Write(const std::span<const std::byte> buffer) override {
+    const base::ssize count =
+        std::min(std::ssize(buffer), capacity_ - std::ssize(bytes_));
+    for (const std::byte value : buffer.first(base::ToSize(count))) {
+      bytes_.push_back(std::to_integer<uint8_t>(value));
+    }
+    return count;
+  }
+  base::ssize Seek(base::ssize /*offset*/, SeekOrigin /*origin*/) override {
+    return std::ssize(bytes_);
+  }
+  base::ssize Size() override { return std::ssize(bytes_); }
+
+ private:
+  std::vector<uint8_t> bytes_;
+  base::ssize capacity_;
+};
+
+// The bytes `view` is written as, or nothing if it was not written.
 std::vector<uint8_t> WrittenFile(PixelView& view, const Palette& palette) {
-  engine::file::TestGameFiles files;
-  const std::filesystem::path path = files.Path("picture.pcx");
+  RecordingStream out;
+  WritePcx(out, view, palette);
+  return out.bytes();
+}
 
-  WritePcxFile(path.string(), view, palette);
-
+// The bytes of the file at `path`, or nothing if there is none.
+std::vector<uint8_t> FileBytes(const std::filesystem::path& path) {
   std::ifstream in(path, std::ios::binary);
   return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
 }
@@ -175,18 +215,52 @@ TEST(PcxFileTest, WritesNoScanlinesForAViewWithoutWidth) {
   EXPECT_EQ(std::ssize(file), kHeaderSize + 1 + Palette::kFileSize);
 }
 
-TEST(PcxFileTest, ReportsWhetherTheFileWasWritten) {
+TEST(PcxFileTest, ReportsWhetherThePictureWasWritten) {
+  Picture picture(1, {0});
+  RecordingStream out;
+  EXPECT_TRUE(WritePcx(out, picture.view(), {}));
+
+  // A stream that fills up inside the header, the scanlines, the palette
+  // marker and the palette.
+  const base::ssize size = std::ssize(out.bytes());
+  for (const base::ssize capacity :
+       {kHeaderSize - 1, kHeaderSize, kHeaderSize + 1, size - 1}) {
+    RecordingStream full(capacity);
+    EXPECT_FALSE(WritePcx(full, picture.view(), {})) << capacity;
+  }
+}
+
+// A picture is written where the stream stands, after what it already holds.
+TEST(PcxFileTest, AppendsToTheStream) {
+  Picture picture(1, {0});
+  RecordingStream out;
+  out.WriteObject(uint8_t{42});
+
+  EXPECT_TRUE(WritePcx(out, picture.view(), {}));
+
+  ASSERT_GT(std::ssize(out.bytes()), 1);
+  EXPECT_EQ(out.bytes().at(0), 42);
+  EXPECT_EQ(std::vector<uint8_t>(out.bytes().begin() + 1, out.bytes().end()),
+            WrittenFile(picture.view(), {}));
+}
+
+TEST(PcxFileTest, WritesTheSamePictureToAGameFile) {
+  Picture picture(3, {1, 1, 2});
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("picture.pcx");
+
+  EXPECT_TRUE(WritePcxFile(path.string(), picture.view(), {}));
+
+  EXPECT_EQ(FileBytes(path), WrittenFile(picture.view(), {}));
+}
+
+TEST(PcxFileTest, ReportsAFileThatCannotBeCreated) {
   Picture picture(1, {0});
   engine::file::TestGameFiles files;
 
-  EXPECT_TRUE(
-      WritePcxFile(files.Path("picture.pcx").string(), picture.view(), {}));
   // A file cannot be created in a directory that does not exist.
   EXPECT_FALSE(WritePcxFile(files.Path("missing/picture.pcx").string(),
                             picture.view(), {}));
-  PixelView unattached;
-  EXPECT_FALSE(
-      WritePcxFile(files.Path("unattached.pcx").string(), unattached, {}));
 }
 
 // A surface of plain memory whose rows are `pitch` bytes apart.
@@ -220,10 +294,23 @@ TEST(PcxFileTest, WritesASurfaceSkippingItsRowPadding) {
 
 // Screen's views exist before they are attached to a page; there is nothing
 // to write for one.
-TEST(PcxFileTest, WritesNoFileForAnUnattachedView) {
+TEST(PcxFileTest, WritesNothingForAnUnattachedView) {
   PixelView view;
+  RecordingStream out;
 
-  EXPECT_TRUE(WrittenFile(view, {}).empty());
+  EXPECT_FALSE(WritePcx(out, view, {}));
+
+  EXPECT_TRUE(out.bytes().empty());
+}
+
+TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
+  PixelView view;
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("unattached.pcx");
+
+  EXPECT_FALSE(WritePcxFile(path.string(), view, {}));
+
+  EXPECT_FALSE(std::filesystem::exists(path));
 }
 
 }  // namespace

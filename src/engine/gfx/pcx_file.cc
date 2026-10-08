@@ -19,6 +19,8 @@
 #include "engine/gfx/pcx_file.h"
 
 #include <cstdint>
+#include <iterator>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -81,22 +83,23 @@ std::vector<uint8_t> EncodeScanlines(PixelView& view) {
   return encoded;
 }
 
-}  // namespace
-
-bool WritePcxFile(const std::string_view file_name, PixelView& view,
-                  const Palette& palette) {
-  // A surface's page has pixels only while it is locked, and a view that was
-  // never attached has none at all.
+// Returns the scanlines of the picture in `view`, or nothing for a view without
+// pixels: a surface's page has them only while it is locked, and a view that
+// was never attached has none at all.
+std::optional<std::vector<uint8_t>> LockedScanlines(PixelView& view) {
   if (!view.Lock()) {
-    return false;
+    return std::nullopt;
   }
-  const std::vector<uint8_t> scanlines = EncodeScanlines(view);
+  std::vector<uint8_t> scanlines = EncodeScanlines(view);
   view.Unlock();
+  return scanlines;
+}
 
-  const auto file = OpenGameFile(file_name, FileAccess::kWrite);
-  if (!file) {
-    return false;
-  }
+// Writes the picture in `view`, whose encoded rows are `scanlines`, to `out`.
+// Returns whether `out` took all of it.
+bool WriteEncoded(ByteStream& out, const PixelView& view,
+                  const std::span<const uint8_t> scanlines,
+                  const Palette& palette) {
   // An 8-bit, single-plane, run-length encoded version 5 picture. The device
   // resolution is 320x200 whatever the picture's size.
   const PcxHeader header = {
@@ -117,14 +120,30 @@ bool WritePcxFile(const std::string_view file_name, PixelView& view,
       .palette_type = 1,
       .padding = {},
   };
-  file->WriteObject(header);
-  file->Write(std::span(scanlines));
-  // The 256-color palette closes the file, 8 bits a component, behind a byte
-  // of 12 that tells it from pixel data.
+  // The 256-color palette closes the picture, 8 bits a component, behind a
+  // byte of 12 that tells it from pixel data.
   constexpr uint8_t kPaletteMarker = 12;
-  file->WriteObject(kPaletteMarker);
-  file->WriteObject(palette.ToRgb());
-  return file->ok();
+  return out.WriteObject(header) &&
+         out.Write(scanlines) == std::ssize(scanlines) &&
+         out.WriteObject(kPaletteMarker) && out.WriteObject(palette.ToRgb());
+}
+
+}  // namespace
+
+bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette) {
+  const std::optional<std::vector<uint8_t>> scanlines = LockedScanlines(view);
+  return scanlines && WriteEncoded(out, view, *scanlines, palette);
+}
+
+bool WritePcxFile(const std::string_view file_name, PixelView& view,
+                  const Palette& palette) {
+  // Encoding comes first, so that a view without pixels creates no file.
+  const std::optional<std::vector<uint8_t>> scanlines = LockedScanlines(view);
+  if (!scanlines) {
+    return false;
+  }
+  const auto file = OpenGameFile(file_name, FileAccess::kWrite);
+  return file && WriteEncoded(*file, view, *scanlines, palette) && file->ok();
 }
 
 }  // namespace engine::gfx

@@ -30,6 +30,7 @@
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/stream/byte_stream.h"
 
 namespace engine::gfx {
 
@@ -64,10 +65,14 @@ struct PcxHeader {
 };
 static_assert(sizeof(PcxHeader) == 128);
 
-// Writes `view` as a PCX picture with `palette` to the game file `file_name`,
-// which OpenGameFile() creates as a loose file. Returns whether all of it was
-// written; nothing is, and no file is created, for a view without pixels
-// (unattached, or of a surface that will not lock).
+// Writes `view` as a PCX picture with `palette` to `out` at its current
+// position, and leaves `out` open. Returns whether all of it was written;
+// nothing is for a view without pixels (unattached, or of a surface that will
+// not lock).
+bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
+
+// Writes the same picture to the game file `file_name`, which OpenGameFile()
+// creates as a loose file. A view without pixels creates no file.
 bool WritePcxFile(std::string_view file_name, PixelView& view,
                   const Palette& palette);
 
