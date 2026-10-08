@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 214,
+  "nextId": 216,
   "items": [
     {
       "id": "T-2",
@@ -5532,7 +5532,7 @@
             "// Reads the PCX picture that `in` holds from its current position to its end.",
             "// Returns nothing if that is not a run-length encoded 8-bit picture ending in"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5647,8 +5647,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 46,
-          "endLine": 46,
+          "startLine": 47,
+          "endLine": 47,
           "text": "struct PcxHeader {",
           "before": [
             "// The 128 bytes a PCX file starts with, laid out as they are on disk: the",
@@ -5685,8 +5685,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 166,
-          "endLine": 166,
+          "startLine": 174,
+          "endLine": 174,
           "text": "      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .ega_palette = {},",
@@ -5723,8 +5723,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 161,
-          "endLine": 162,
+          "startLine": 169,
+          "endLine": 170,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",
@@ -5750,27 +5750,28 @@
         "bugs",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T22:02:20Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "`LockedScanlines()` now asks `FitsHeader(view)` first, so `WritePcx()` and `WritePcxFile()` return false and write nothing (no file is created) for a view wider than 32767 or taller than 32768 pixels. Four tests cover the largest size that is still written and the rejection of a wider and a taller one, through the stream and the file.",
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 159,
-          "endLine": 166,
-          "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = kColorPlanes,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
+          "startLine": 135,
+          "endLine": 140,
+          "text": "// Returns whether the header's 16-bit fields hold the size of `view`: its\n// width as it is, in bytes_per_line, and its height less one, in bottom.\nbool FitsHeader(const PixelView& view) {\n  constexpr int kMaxField = std::numeric_limits<int16_t>::max();\n  return view.width() <= kMaxField && view.height() - 1 <= kMaxField;\n}",
           "before": [
-            "      .bits_per_pixel = kBitsPerPixel,",
-            "      .left = 0,",
-            "      .top = 0,"
+            "  return encoded;",
+            "}",
+            ""
           ],
           "after": [
-            "      .palette_type = 1,",
-            "      .padding = {},",
-            "  };"
+            "",
+            "// Returns the scanlines of the picture in `view`, or nothing for a view too",
+            "// large for a header or without pixels: a surface's page has them only while"
           ],
           "lost": false
         }
@@ -6129,8 +6130,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 256,
-          "endLine": 258,
+          "startLine": 265,
+          "endLine": 267,
           "text": "  if (in.Read(std::span(encoded)) != encoded_size || !in.ReadObject(marker) ||\n      marker != kPaletteMarker ||\n      in.Read(std::span(rgb)) != Palette::kFileSize) {",
           "before": [
             "  std::vector<uint8_t> encoded(base::ToSize(encoded_size));",
@@ -6156,98 +6157,6 @@
       "author": "user",
       "created": "2026-10-08T19:43:24Z",
       "updated": "2026-10-08T19:43:24Z"
-    },
-    {
-      "id": "T-211",
-      "title": "Probe: parent made to check the plugin update (delete me)",
-      "details": "",
-      "priority": "p3",
-      "effort": "m",
-      "tags": [
-        "other",
-        "probe"
-      ],
-      "status": "wont_fix",
-      "author": "agent",
-      "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T21:51:37Z",
-      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
-      "anchors": [
-        {
-          "path": "src/base/types.h",
-          "startLine": 3,
-          "endLine": 4,
-          "text": "#define CNC_RED_ALERT_BASE_TYPES_H_\n",
-          "before": [
-            "// Core type definitions for the project.",
-            "#ifndef CNC_RED_ALERT_BASE_TYPES_H_"
-          ],
-          "after": [
-            "#include <cstddef>",
-            "",
-            "namespace base {"
-          ],
-          "lost": false
-        }
-      ]
-    },
-    {
-      "id": "T-212",
-      "title": "Probe: part that names its parent by ref (delete me)",
-      "details": "",
-      "priority": "p3",
-      "effort": "s",
-      "tags": [
-        "other",
-        "probe"
-      ],
-      "status": "wont_fix",
-      "author": "agent",
-      "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T21:51:37Z",
-      "parent": "T-211",
-      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
-      "decisions": [
-        {
-          "question": "Probe question?",
-          "options": [
-            "a",
-            "b"
-          ],
-          "answer": "a",
-          "time": "2026-10-08T20:56:52Z"
-        }
-      ],
-      "comments": [
-        {
-          "author": "agent",
-          "time": "2026-10-08T20:56:52Z",
-          "text": "Probe comment."
-        }
-      ]
-    },
-    {
-      "id": "T-213",
-      "title": "Probe: part blocked by a sibling ref (delete me)",
-      "details": "",
-      "priority": "p3",
-      "effort": "s",
-      "tags": [
-        "other",
-        "probe"
-      ],
-      "status": "wont_fix",
-      "author": "agent",
-      "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T21:51:37Z",
-      "parent": "T-211",
-      "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
-      "anchors": [
-        {
-          "path": "src/base/fixed.h",
-          "lost": false
-        }
-      ]
     }
   ]
 }

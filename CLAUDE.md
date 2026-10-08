@@ -487,22 +487,23 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 ## TODO List
 
 Open work is kept by CLion's Not My TODO plugin in `.todos/items.json`, not in a Markdown file. Read
-and change it only through the IDE's MCP tools, `mcp__clion__todo_*` (deferred: load all seven with
+and change it only through the IDE's MCP tools, `mcp__clion__todo_*` (deferred: load all eight with
 one `ToolSearch` `select:`; pass `projectPath`). Never edit or script the JSON, and do not grep it
 to search: the tools do both, keep the anchors and save in one write. `/add-todo` has the
 conventions (kind and area tags, `p2` for bugs and `p3` otherwise, effort, anchors).
 
-| To                                   | Call                                                                                                                                                                                         |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Survey or look for a duplicate       | `todo_list` with `compact: true` and filters (`text`, `path`, `tags`, `withoutTags`, `status`, `priority`, `effort`, `parent`, `blocked`); without `compact` it returns every item's details |
-| Read one item with its anchored code | `todo_get`                                                                                                                                                                                   |
-| Add one item                         | `todo_create`                                                                                                                                                                                |
-| Add or change two or more items      | one `todo_batch` (entries with an `id` change, entries without create; all or nothing)                                                                                                       |
-| Add a finding or progress note       | `todo_comment` (appends; `todo_update` with `details` replaces the whole text)                                                                                                               |
-| Make an item wait for the user       | `toDecide` on create/update (it adds the `needs-decision` tag itself)                                                                                                                        |
-| Record the user's answer             | `todo_decided`, before doing the work                                                                                                                                                        |
-| Finish an item                       | `todo_update` with `status: fixed`, `resolution` and, once committed, `fixedIn`; `wont_fix` with `resolution` to close it unchanged                                                          |
-| Re-attach after moving code          | `todo_list` with `lost: true`, then `todo_update` with `path`/`startLine`                                                                                                                    |
+| To                                   | Call                                                                                                                                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Survey or look for a duplicate       | `todo_list` with `compact: true` and filters (`text`, `anyText`, `path`, `tags`, `withoutTags`, `status`, `priority`, `effort`, `parent`, `blocked`); without `compact` it returns every item's details |
+| Read one item with its anchored code | `todo_get`                                                                                                                                                                                              |
+| Add one item                         | `todo_create`                                                                                                                                                                                           |
+| Add or change two or more items      | one `todo_batch` (entries with an `id` change, entries without create; all or nothing)                                                                                                                  |
+| Add a finding or progress note       | `todo_comment` (appends; `todo_update` with `details` replaces the whole text)                                                                                                                          |
+| Make an item wait for the user       | `toDecide` on create/update (it adds the `needs-decision` tag itself)                                                                                                                                   |
+| Record the user's answer             | `todo_decided`, before doing the work; it takes the `needs-decision` tag away                                                                                                                           |
+| Remove a probe or a mistaken item    | `todo_delete` (only an item an agent made, with no parts and no links to it)                                                                                                                            |
+| Finish an item                       | `todo_update` with `status: fixed`, `resolution` and, once committed, `fixedIn`; `wont_fix` with `resolution` to close it unchanged                                                                     |
+| Re-attach after moving code          | `todo_list` with `lost: true`, then `todo_update` with `path`/`startLine`                                                                                                                               |
 
 An item tagged `needs-decision` waits for the user: do not fix it unasked; ask with AskUserQuestion
 when it is the task at hand. If a fix turns out to need the user's call, set `toDecide` instead of

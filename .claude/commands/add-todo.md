@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read, Grep, Glob, ToolSearch, mcp__clion__todo_list, mcp__clion__todo_get, mcp__clion__todo_create, mcp__clion__todo_update, mcp__clion__todo_batch, mcp__clion__todo_comment, mcp__clion__todo_decided
+allowed-tools: Read, Grep, Glob, ToolSearch, mcp__clion__todo_list, mcp__clion__todo_get, mcp__clion__todo_create, mcp__clion__todo_update, mcp__clion__todo_batch, mcp__clion__todo_comment, mcp__clion__todo_decided, mcp__clion__todo_delete
 description: Add a new TODO item to the project's Not My TODO list (the CLion plugin, stored in .todos/items.json), rephrased for clarity, tagged by kind and anchored to the code it is about
 ---
 
@@ -7,7 +7,7 @@ Add a TODO item based on the user's input: $ARGUMENTS
 
 The project's TODO list is kept by CLion's Not My TODO plugin in `.todos/items.json` and is read and
 written only through the IDE's MCP tools. Load them in one call,
-`ToolSearch("select:mcp__clion__todo_list,mcp__clion__todo_get,mcp__clion__todo_create,mcp__clion__todo_update,mcp__clion__todo_batch,mcp__clion__todo_comment,mcp__clion__todo_decided")`,
+`ToolSearch("select:mcp__clion__todo_list,mcp__clion__todo_get,mcp__clion__todo_create,mcp__clion__todo_update,mcp__clion__todo_batch,mcp__clion__todo_comment,mcp__clion__todo_decided,mcp__clion__todo_delete")`,
 and pass `projectPath: /home/konsto/projects/CnC_Red_Alert` to each. Use the `mcp__clion__` set (the
 `mcp__idea__` one belongs to another IDE). Do not edit, script or grep the JSON: the tools search
 it, keep the anchors and save several changes in one write. There is no `TODO.md` any more.
