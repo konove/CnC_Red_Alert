@@ -4788,9 +4788,10 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T06:20:59Z",
+      "updated": "2026-10-08T06:21:06Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
+      "fixedIn": "dd06163e..9486c474",
       "resolution": "Removed `Heading::ShortestTurnTo()`; its 30 callers in `src/ra` and `src/td` and the one in `heading_test.cc` now call `game::ShortestTurn(heading, direction)`. The V2 and rocket launchers' repeated turn-to-north in `ra/objects/unit.cc` and `td/objects/turret.cc` became a local `to_north`.",
       "anchors": [
         {
