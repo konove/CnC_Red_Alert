@@ -24,16 +24,18 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 
+#include <array>
 #include <cstdint>
+#include <string_view>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
 // One color of the header's 16-color EGA palette.
 struct RGB {
-  char red;
-  char green;
-  char blue;
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
 };
 
 // The 128 bytes a PCX file starts with, laid out as they are on disk: the
@@ -41,10 +43,10 @@ struct RGB {
 // has no padding and is read and written whole. Tiberian Dawn's PCX reader
 // (td/startup/nondosstub.cc) uses it too.
 struct PCX_HEADER {
-  char id;         // 10 marks a PCX file.
-  char version;    // 5 is the first that can end in a 256-color palette.
-  char encoding;   // 1 means run-length encoded, the only encoding there is.
-  char pixelsize;  // Bits a pixel in each color plane.
+  uint8_t id;         // 10 marks a PCX file.
+  uint8_t version;    // 5 is the first that can end in a 256-color palette.
+  uint8_t encoding;   // 1 means run-length encoded, the only encoding there is.
+  uint8_t pixelsize;  // Bits a pixel in each color plane.
   // The picture's left and top edge.
   int16_t x;
   int16_t y;
@@ -55,22 +57,22 @@ struct PCX_HEADER {
   // The resolution of the device the picture was made for. Readers ignore it.
   int16_t xres;
   int16_t yres;
-  RGB ega_palette[16];  // Unused by an 8-bit picture.
-  char nothing;         // Reserved, zero.
-  char color_planes;
+  std::array<RGB, 16> ega_palette;  // Unused by an 8-bit picture.
+  uint8_t nothing;                  // Reserved, zero.
+  uint8_t color_planes;
   // Bytes in one decoded scanline of one plane, which may be more than the
   // picture is wide.
   int16_t byte_per_line;
   int16_t palette_type;  // 1 is color, 2 grayscale.
-  char filler[58];       // Pads the header to 128 bytes.
+  std::array<uint8_t, 58> filler;  // Pads the header to 128 bytes.
 };
+static_assert(sizeof(PCX_HEADER) == 128);
 
 // Writes `pic` as a PCX picture with `palette` to the game file `name`, which
-// OpenGameFile() creates as a loose file. Returns 0 whether or not that
-// worked: a view without pixels (unattached, or of a surface that will not
-// lock) and a file that cannot be created are skipped silently, and a failed
-// write is not noticed.
-int Write_PCX_File(const char* name, PixelView& pic,
-                   const engine::gfx::Palette& palette);
+// OpenGameFile() creates as a loose file. Returns whether all of it was
+// written; nothing is, and no file is created, for a view without pixels
+// (unattached, or of a surface that will not lock).
+bool Write_PCX_File(std::string_view name, PixelView& pic,
+                    const engine::gfx::Palette& palette);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_

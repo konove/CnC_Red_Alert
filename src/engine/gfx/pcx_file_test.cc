@@ -38,7 +38,7 @@ std::vector<uint8_t> WrittenFile(PixelView& view,
   std::error_code ignored;
   std::filesystem::remove(path, ignored);
 
-  Write_PCX_File(path.string().c_str(), view, palette);
+  Write_PCX_File(path.string(), view, palette);
 
   std::ifstream in(path, std::ios::binary);
   std::vector<uint8_t> bytes{std::istreambuf_iterator<char>(in),
