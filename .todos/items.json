@@ -4736,10 +4736,11 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T06:12:21Z",
+      "updated": "2026-10-08T06:12:49Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
-      "resolution": "`SnapTo()` stays and `Heading(Direction)` is now `explicit`, so `heading = dir` no longer compiles. The 22 assignments it caught (21 in `src/ra` and `src/td`, 1 in `heading_test.cc`) are `SnapTo()` calls; four of them in `td/startup/init.cc` followed a `SnapTo()` they overwrote, which was removed. Not committed.",
+      "fixedIn": "b757e715",
+      "resolution": "`SnapTo()` stays and `Heading(Direction)` is now `explicit`, so `heading = dir` no longer compiles. The 22 assignments it caught (21 in `src/ra` and `src/td`, 1 in `heading_test.cc`) are `SnapTo()` calls; four of them in `td/startup/init.cc` followed a `SnapTo()` they overwrote, which was removed.",
       "toDecide": "Which form stays?\n\n- **Assignment**: delete `SnapTo()` and rewrite its 26 callers as `x = dir`. Shortest; relies on the implicit constructor.\n- **`SnapTo()`**: rewrite the ~29 assignments; says that the turn is skipped, and is a step toward making the constructor explicit.\n- **Both**: leave as is.",
       "decisions": [
         {
