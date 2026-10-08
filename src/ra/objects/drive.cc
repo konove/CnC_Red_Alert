@@ -74,7 +74,7 @@
 #include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"

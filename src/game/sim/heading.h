@@ -21,8 +21,8 @@
 //
 // Originally FACING.H by Joe L. Bostic, started March 21, 1995.
 
-#ifndef CNC_RED_ALERT_GAME_SIM_FACING_H_
-#define CNC_RED_ALERT_GAME_SIM_FACING_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_HEADING_H_
+#define CNC_RED_ALERT_GAME_SIM_HEADING_H_
 
 #include "game/sim/direction.h"
 
@@ -108,4 +108,4 @@ class Heading {
 
 }  // namespace game
 
-#endif  // CNC_RED_ALERT_GAME_SIM_FACING_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_HEADING_H_

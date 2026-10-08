@@ -47,7 +47,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "td/core/defines.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"

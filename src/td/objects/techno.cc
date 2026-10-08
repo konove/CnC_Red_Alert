@@ -188,7 +188,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "game/sim/utracker.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"

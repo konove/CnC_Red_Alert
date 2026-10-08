@@ -50,7 +50,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "ra/core/defines.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/fly.h"

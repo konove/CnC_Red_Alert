@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 
 #include <algorithm>
 #include <cstdlib>

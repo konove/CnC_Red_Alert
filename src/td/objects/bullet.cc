@@ -68,7 +68,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "td/core/config.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"

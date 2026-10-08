@@ -154,7 +154,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "game/sim/utracker.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"

@@ -86,7 +86,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"

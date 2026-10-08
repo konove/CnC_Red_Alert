@@ -121,7 +121,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/tevent.h"

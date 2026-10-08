@@ -57,7 +57,7 @@
 
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"

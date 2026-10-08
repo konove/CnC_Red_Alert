@@ -43,7 +43,7 @@
 
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "td/core/defines.h"
 #include "td/objects/bullet.h"
 #include "td/objects/drive.h"

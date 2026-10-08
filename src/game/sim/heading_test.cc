@@ -1,4 +1,4 @@
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"

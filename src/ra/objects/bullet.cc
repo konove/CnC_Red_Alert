@@ -74,7 +74,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
-#include "game/sim/facing.h"
+#include "game/sim/heading.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
