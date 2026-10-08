@@ -1,5 +1,12 @@
 #include "game/sim/heading.h"
 
+#include <array>
+#include <cstddef>
+#include <span>
+
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
 
@@ -112,6 +119,29 @@ TEST(HeadingTest, ReportsNoRedrawInsideOneFrame) {
   // Directions 0..4 all show body frame 0 of 32.
   EXPECT_FALSE(heading.Turn(2));
   EXPECT_EQ(heading.current(), Direction(2));
+}
+
+// A heading is saved as its current direction, then its desired one, four
+// bytes each.
+TEST(HeadingTest, SavesCurrentAndDesiredSeparately) {
+  Heading heading(Direction::kEast);
+  heading.set_desired(Direction::kSouthWest);
+  std::array<std::byte, 8> bytes{};
+  SpanSink sink(bytes);
+  ArchiveWriter writer(sink);
+  writer(heading);
+  ASSERT_TRUE(writer.ok());
+  EXPECT_EQ(bytes, (std::array{std::byte{0x40}, std::byte{0}, std::byte{0},
+                               std::byte{0}, std::byte{0xA0}, std::byte{0},
+                               std::byte{0}, std::byte{0}}));
+
+  SpanSource source{std::span<const std::byte>(bytes)};
+  ArchiveReader reader(source);
+  Heading loaded;
+  reader(loaded);
+  ASSERT_TRUE(reader.ok());
+  EXPECT_EQ(loaded.current(), Direction::kEast);
+  EXPECT_EQ(loaded.desired(), Direction::kSouthWest);
 }
 
 }  // namespace

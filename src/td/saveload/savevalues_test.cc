@@ -10,10 +10,8 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
-#include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/flasher.h"
-#include "game/sim/heading.h"
 #include "gtest/gtest.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
@@ -108,26 +106,6 @@ TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
   ArchiveReader negative_reader(negative_source);
   negative_reader(timer);
   EXPECT_FALSE(negative_reader.ok());
-}
-
-TEST(TdSaveValuesTest, HeadingPreservesCurrentAndDesiredSeparately) {
-  game::Heading heading(game::Direction::kNorth);
-  std::array<uint8_t, 8> bytes{};
-  SpanSink sink(std::as_writable_bytes(std::span(bytes).first(8)));
-  ArchiveWriter writer(sink);
-  game::Direction current = game::Direction::kEast;
-  game::Direction desired = game::Direction::kSouthWest;
-  writer(current, desired);
-  SpanSource source(std::as_bytes(std::span(bytes).first(8)));
-  ArchiveReader reader(source);
-  reader(heading);
-  ASSERT_TRUE(reader.ok());
-  EXPECT_EQ(heading.current(), current);
-  EXPECT_EQ(heading.desired(), desired);
-  game::Heading loaded(game::Direction::kNorth);
-  Restore(loaded, Save(heading));
-  EXPECT_EQ(loaded.current(), current);
-  EXPECT_EQ(loaded.desired(), desired);
 }
 
 TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
