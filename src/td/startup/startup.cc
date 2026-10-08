@@ -233,17 +233,7 @@ static int Run(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  // Heap_Dump_Check( "first thing in main" );
-  //	malloc(1);
-
   CCDebugString("C&C95 - Starting up.\n");
-
-  // CD_Test();
-
-  /*
-  ** These values return 0x47 if code is working correctly
-  */
-  //	int temp = Direction256Toward (1070, 5419, 1408, 5504);
 
 #ifdef _WIN32
   ProgramInstance = instance;
@@ -355,7 +345,6 @@ static int Run(int argc, char* argv[])
       TheOptions().Adjust_Variables_For_Resolution();
 
       CCDebugString("C&C95 - Setting palette.\n");
-      /////////Set_Palette(Palette);
 
       WindowList[0][kWindowWidth] = TheScreen().visible_view().width() / 8;
       WindowList[0][kWindowHeight] = TheScreen().visible_view().height();
@@ -406,10 +395,6 @@ static int Run(int argc, char* argv[])
         Check_From_WChat(NULL);
       } else {
         CCDebugString("C&C95 - C&CSPAWN.INI packet not arrived yet.\n");
-        // Check_From_WChat("C&CSPAWN.INI");
-        // if (Special.from_wchat){
-        //	DDEServer.Disable();
-        // }
       }
 #endif
 
@@ -453,7 +438,6 @@ static int Run(int argc, char* argv[])
 #endif
 #endif
 
-    //		Remove_Keyboard_Interrupt();
     ShutDown();
     return EXIT_FAILURE;
   }
