@@ -16,25 +16,6 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : iff                                      *
- *                                                                         *
- *                    File Name : WRITEPCX.CPP                             *
- *                                                                         *
- *                   Programmer : Julio R. Jerez                           *
- *                                                                         *
- *                   Start Date : May 2, 1995                              *
- *                                                                         *
- *                  Last Update : May 2, 1995   [JRJ]                      *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * int Save_PCX_File (char* name, PixelView& pic, char* palette)*
- *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
-
 #include "engine/gfx/pcx_file.h"
 
 #include <array>
@@ -51,31 +32,16 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 
+// Appends `pixels`, one row of the picture, to `file` as a run-length encoded
+// PCX scanline. An empty row writes nothing.
 static void Write_Pcx_ScanLine(ByteStream& file,
                                std::span<const uint8_t> pixels);
 
-/***************************************************************************
- * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
- *                                                                         *
- *                                                                         *
- *                                                                         *
- * INPUT:  name is a NULL terminated string of the fromat [xxxx.pcx]
- ** pic	 is a pointer to a PixelView or to a
- ** PixelBuffer holding the picture.
- ** palette is a pointer the the memry block holding the color 		*
- ** palette of the picture.                                    *
- *                                                                         *
- * OUTPUT: FALSE  if the function fails zero otherwise *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/04/1995 JRJ : Created.                                             *
- *   08/01/1995 SKB : Copy the palette so it is not modified.              *
- *=========================================================================*/
 int Write_PCX_File(const char* name, PixelView& pic,
                    const engine::gfx::Palette& palette) {
   unsigned i = 0;
+  // An 8-bit, single-plane, run-length encoded version 5 picture. The sizes
+  // are set below; the device resolution stays 320x200 whatever the picture.
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
@@ -89,6 +55,10 @@ int Write_PCX_File(const char* name, PixelView& pic,
   header.byte_per_line = static_cast<int16_t>(pic.width());
   file->WriteObject(header);
 
+  // TODO: The row stride leaves out the buffer's pitch(), and bytes() is empty
+  // for an unlocked surface (the subspans below then run past its end), as is
+  // buffer() null for a view that was never attached. Every caller passes a
+  // view of a memory buffer, where none of that happens.
   const int VP_Scan_Line = pic.width() + pic.x_add();
   PixelBuffer* Graphic_Buffer = pic.buffer();
   const auto pixels = Graphic_Buffer->bytes().subspan(
@@ -98,6 +68,10 @@ int Write_PCX_File(const char* name, PixelView& pic,
         *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
                               static_cast<std::size_t>(header.byte_per_line)));
   }
+  // The 256-color palette closes the file, 8 bits a component, behind a byte
+  // of 12 that tells it from pixel data.
+  // TODO: Writing the first byte of an `unsigned` only gives 12 on a
+  // little-endian machine.
   const std::array<uint8_t, engine::gfx::Palette::kFileSize> palcopy =
       palette.ToRgb();
   i = 0x0c;
@@ -106,20 +80,8 @@ int Write_PCX_File(const char* name, PixelView& pic,
   return 0;
 }
 
-/***************************************************************************
- * WRITE_PCX_SCANLINE -- function to write a single pcx scanline to a file *
- *                                                                         *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/04/1995 JRJ : Created.                                             *
- *=========================================================================*/
-
+// How many encoded bytes are collected before they go to the stream, which is
+// not buffered itself.
 constexpr int kPoolSize = 2048;
 void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
   unsigned char pool[kPoolSize];
@@ -129,6 +91,10 @@ void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
     return;
   }
 
+  // A byte with its top two bits set is a run count (the low six bits, so at
+  // most 63) and the byte after it the color; any other byte is one pixel of
+  // that color. A lone pixel whose color has both bits set would read as a
+  // count, so it goes out as a run of one.
   const auto write_char = [&](unsigned char x) {
     base::At(pool, used++) = x;
     if (used >= kPoolSize) {
@@ -137,12 +103,16 @@ void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
     }
   };
   unsigned last = pixels.front();
+  // How many pixels of `last` have been seen and not written yet; 0 just after
+  // a full run went out.
   unsigned rle = 1;
 
   for (unsigned i = 1; i < pixels.size(); i++) {
     const unsigned color = base::At(pixels, i);
     if (color == last) {
       rle++;
+      // A count cannot hold more: write the full run (255 is 192 | 63) and
+      // start counting afresh.
       if (rle == 63) {
         write_char(255);
         write_char(static_cast<unsigned char>(color));

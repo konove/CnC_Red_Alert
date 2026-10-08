@@ -16,24 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
-;**   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
-;***************************************************************************
-;*                                                                         *
-;*                 Project Name : iff                                      *
-;*                                                                         *
-;*                    File Name : FILEPCX.H                                *
-;*                                                                         *
-;*                   Programmer : Julio R. Jerez                           *
-;*                                                                         *
-;*                   Start Date : May 2, 1995                              *
-;*                                                                         *
-;*                  Last Update : May 2, 1995   [JRJ]                      *
-;*                                                                         *
-;*-------------------------------------------------------------------------*
-;* Functions:                                                              *
-;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
-;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
+// Saving a picture as a .PCX file: 8 bits a pixel, run-length encoded, with a
+// 256-color palette after the pixels. The games write their screenshots this
+// way. Originally part of the Westwood IFF library (FILEPCX.H and WRITEPCX.CPP,
+// Julio R. Jerez, May 1995).
 
 #ifndef CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
@@ -43,32 +29,46 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
+// One color of the header's 16-color EGA palette.
 struct RGB {
   char red;
   char green;
   char blue;
 };
 
+// The 128 bytes a PCX file starts with, laid out as they are on disk: the
+// 16-bit fields are little-endian and all fall on even offsets, so the struct
+// has no padding and is read and written whole. Tiberian Dawn's PCX reader
+// (td/startup/nondosstub.cc) uses it too.
 struct PCX_HEADER {
-  char id;
-  char version;
-  char encoding;
-  char pixelsize;
+  char id;         // 10 marks a PCX file.
+  char version;    // 5 is the first that can end in a 256-color palette.
+  char encoding;   // 1 means run-length encoded, the only encoding there is.
+  char pixelsize;  // Bits a pixel in each color plane.
+  // The picture's left and top edge.
   int16_t x;
   int16_t y;
+  // The picture's right and bottom edge, inclusive: for a picture at 0,0 they
+  // are its width and height minus one.
   int16_t width;
   int16_t height;
+  // The resolution of the device the picture was made for. Readers ignore it.
   int16_t xres;
   int16_t yres;
-  RGB ega_palette[16];
-  char nothing;
+  RGB ega_palette[16];  // Unused by an 8-bit picture.
+  char nothing;         // Reserved, zero.
   char color_planes;
+  // Bytes in one decoded scanline of one plane, which may be more than the
+  // picture is wide.
   int16_t byte_per_line;
-  int16_t palette_type;
-  char filler[58];
+  int16_t palette_type;  // 1 is color, 2 grayscale.
+  char filler[58];       // Pads the header to 128 bytes.
 };
 
-// Writes `pic` to the file `name` as a PCX picture with `palette`. Returns 0.
+// Writes `pic` as a PCX picture with `palette` to the game file `name`, which
+// OpenGameFile() creates as a loose file. Returns 0 whether or not that
+// worked: a file that cannot be created is skipped silently, and a failed
+// write is not noticed.
 int Write_PCX_File(const char* name, PixelView& pic,
                    const engine::gfx::Palette& palette);
 
