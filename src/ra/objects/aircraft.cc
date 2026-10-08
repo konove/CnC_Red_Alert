@@ -2512,9 +2512,7 @@ int AircraftClass::Mission_Attack() {
           **	As the flight progresses, the body will rotate to face
           **	the direction of travel.
           */
-          int diff = game::ShortestTurn(SecondaryFacing, DirectionTo(NavCom));
-          diff = std::clamp(diff, -128, 128);
-          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);
+          PrimaryFacing.SnapTo(DirectionTo(NavCom));
         }
         return 1;
       }
