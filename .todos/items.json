@@ -3960,8 +3960,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 80,
+          "endLine": 80,
           "text": "class Direction {",
           "before": [
             "// Example:",
@@ -4264,8 +4264,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 37,
-          "endLine": 37,
+          "startLine": 39,
+          "endLine": 39,
           "text": "enum class Facing : int8_t {",
           "before": [
             "",
@@ -4281,8 +4281,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 80,
+          "endLine": 80,
           "text": "class Direction {",
           "before": [
             "// Example:",
@@ -4382,8 +4382,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 80,
+          "endLine": 80,
           "text": "class Direction {",
           "before": [
             "// Example:",
@@ -4449,18 +4449,20 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T23:30:39Z",
+      "updated": "2026-10-08T04:17:22Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "8812efe6",
+      "resolution": "Moved `kBodyFrame32` into `direction.h` as `inline constexpr` and made `BodyFrame32()` a `constexpr` function there; `direction.cc` now holds only the two point functions. Parsing the header alone went from 0.02 s to 0.03 s (g++ -O2 -g, best of 9), so the cost on the includers is negligible. Added a `static_assert` test.",
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 185,
-          "endLine": 185,
-          "text": "int BodyFrame32(Direction dir);",
+          "startLine": 208,
+          "endLine": 210,
+          "text": "constexpr int BodyFrame32(const Direction dir) {\n  return kBodyFrame32.at(static_cast<std::size_t>(dir.value()));\n}",
           "before": [
             "// Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The",
             "// steps are uneven to undo the distortion 3D Studio rendered into the",
@@ -4485,10 +4487,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-08T03:41:38Z",
+      "updated": "2026-10-08T03:42:22Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "4e9fa83f",
@@ -4516,8 +4518,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 155,
-          "endLine": 155,
+          "startLine": 157,
+          "endLine": 157,
           "text": "Direction Direction8Toward(Point from, Point to);",
           "before": [
             "// The diagonals take more than their share of the circle: a slope steeper than",
@@ -4533,8 +4535,8 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 163,
-          "endLine": 163,
+          "startLine": 165,
+          "endLine": 165,
           "text": "Direction Direction256Toward(Point from, Point to);",
           "before": [
             "// four steps off between them. An angle between two steps rounds toward the",
