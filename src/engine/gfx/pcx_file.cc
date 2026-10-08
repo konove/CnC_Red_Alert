@@ -42,7 +42,7 @@ constexpr int kMaxRunLength = 63;
 
 // Appends `pixels`, one row of the picture, to `encoded` as a run-length
 // encoded PCX scanline.
-void AppendScanline(std::span<const uint8_t> pixels,
+void AppendScanline(const std::span<const uint8_t> pixels,
                     std::vector<uint8_t>& encoded) {
   if (pixels.empty()) {
     return;
@@ -83,7 +83,7 @@ std::vector<uint8_t> EncodeScanlines(PixelView& view) {
 
 }  // namespace
 
-bool WritePcxFile(std::string_view file_name, PixelView& view,
+bool WritePcxFile(const std::string_view file_name, PixelView& view,
                   const Palette& palette) {
   // A surface's page has pixels only while it is locked, and a view that was
   // never attached has none at all.
@@ -121,8 +121,8 @@ bool WritePcxFile(std::string_view file_name, PixelView& view,
   file->Write(std::span(scanlines));
   // The 256-color palette closes the file, 8 bits a component, behind a byte
   // of 12 that tells it from pixel data.
-  const uint8_t palette_marker = 12;
-  file->WriteObject(palette_marker);
+  constexpr uint8_t kPaletteMarker = 12;
+  file->WriteObject(kPaletteMarker);
   file->WriteObject(palette.ToRgb());
   return file->ok();
 }

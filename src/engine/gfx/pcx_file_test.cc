@@ -50,17 +50,17 @@ std::vector<uint8_t> Header(const std::vector<uint8_t>& file) {
 // The encoded scanlines of a written file: what lies between the header and
 // the palette with its marker byte.
 std::vector<uint8_t> Scanlines(const std::vector<uint8_t>& file) {
-  const std::ptrdiff_t trailer = 1 + Palette::kFileSize;
-  if (std::ssize(file) < kHeaderSize + trailer) {
+  constexpr std::ptrdiff_t kTrailerSize = 1 + Palette::kFileSize;
+  if (std::ssize(file) < kHeaderSize + kTrailerSize) {
     return {};
   }
-  return {file.begin() + kHeaderSize, file.end() - trailer};
+  return {file.begin() + kHeaderSize, file.end() - kTrailerSize};
 }
 
 // A memory picture `width` pixels wide holding `pixels`, row after row.
 class Picture {
  public:
-  Picture(int width, std::vector<uint8_t> pixels)
+  Picture(const int width, std::vector<uint8_t> pixels)
       : pixels_(std::move(pixels)),
         buffer_(width, static_cast<int>(std::ssize(pixels_)) / width, pixels_) {
   }
@@ -192,7 +192,7 @@ TEST(PcxFileTest, ReportsWhetherTheFileWasWritten) {
 // A surface of plain memory whose rows are `pitch` bytes apart.
 class PaddedSurface final : public PixelSurface {
  public:
-  PaddedSurface(int pitch, std::vector<uint8_t> pixels)
+  PaddedSurface(const int pitch, std::vector<uint8_t> pixels)
       : pixels_(std::move(pixels)), pitch_(pitch) {}
 
   std::optional<Pixels> Lock() override {
