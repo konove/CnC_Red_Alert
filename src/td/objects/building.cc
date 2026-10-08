@@ -3694,7 +3694,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
         return game::FIRE_ROTATING;
       }
 
-      const int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
+      const int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
       if (std::abs(diff) > 8) {
         return game::FIRE_FACING;
       }
@@ -4442,7 +4442,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.ShortestTurnTo(facing)) {
+          if (game::ShortestTurn(PrimaryFacing, facing)) {
             PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring;
@@ -4487,7 +4487,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.ShortestTurnTo(facing)) {
+          if (game::ShortestTurn(PrimaryFacing, facing)) {
             PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring2;

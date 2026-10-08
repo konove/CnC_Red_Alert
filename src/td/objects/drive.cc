@@ -136,7 +136,7 @@ void DriveClass::Do_Turn(game::Direction dir) {
       // Signed difference between current and desired facing, in eighths;
       // the shift floors negative differences as the original did.
       // NOLINTNEXTLINE(bugprone-signed-bitwise)
-      int facediff = PrimaryFacing.ShortestTurnTo(dir) >> 5;
+      int facediff = game::ShortestTurn(PrimaryFacing, dir) >> 5;
       facediff = std::clamp(facediff, -2, 2);
       if (facediff) {
         const game::Facing face = game::NearestFacing(
@@ -988,7 +988,7 @@ bool DriveClass::Start_Of_Move() {
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  facediff = PrimaryFacing.ShortestTurnTo(dir);
+  facediff = game::ShortestTurn(PrimaryFacing, dir);
   if (facediff) {
     /*
     **	Request a change of facing.
@@ -1368,7 +1368,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
-  int facediff = PrimaryFacing.ShortestTurnTo(first_direction) >> 5;
+  int facediff = game::ShortestTurn(PrimaryFacing, first_direction) >> 5;
 
   if (!facediff) {
     return;

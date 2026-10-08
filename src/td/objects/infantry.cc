@@ -1903,7 +1903,7 @@ game::FireErrorType InfantryClass::Can_Fire(Target target, int which) const {
   ** If we're moving, but not facing the right direction, then exit.
   */
   if (!TheSpecialFlags().defender_advantage && IsDriving) {
-    const int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
+    const int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
     if (std::abs(diff) >= 32) {
       return game::FIRE_MOVING;
     }
