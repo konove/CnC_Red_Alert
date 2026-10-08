@@ -424,6 +424,119 @@ TEST(PcxFileTest, ReadsWhatWasWritten) {
   EXPECT_EQ(read->palette, palette);
 }
 
+TEST(PcxFileTest, ReadsThePaletteBehindThePixels) {
+  Palette palette;
+  palette.at(200) = PaletteColor(255, 80, 3);
+
+  const std::optional<PcxPicture> picture =
+      ReadBytes(FileOf(HeaderOf(2, 1, 2), {7, 8}, palette));
+
+  ASSERT_TRUE(picture.has_value());
+  EXPECT_EQ(picture->palette, palette);
+}
+
+// The size is the distance between the edges, wherever the picture says it
+// lies.
+TEST(PcxFileTest, ReadsAPictureThatIsNotAtTheOrigin) {
+  PcxHeader header = HeaderOf(2, 2, 2);
+  header.left = 100;
+  header.right = 101;
+  header.top = -5;
+  header.bottom = -4;
+
+  const std::optional<PcxPicture> picture =
+      ReadBytes(FileOf(header, {1, 2, 3, 4}));
+
+  ASSERT_TRUE(picture.has_value());
+  EXPECT_EQ(picture->width, 2);
+  EXPECT_EQ(picture->height, 2);
+  EXPECT_EQ(picture->pixels, (std::vector<uint8_t>{1, 2, 3, 4}));
+}
+
+TEST(PcxFileTest, DropsThePaddingOfEveryRow) {
+  const std::optional<PcxPicture> picture =
+      ReadBytes(FileOf(HeaderOf(1, 2, 3), {1, 99, 99,  //
+                                           0xC3, 2}));
+
+  ASSERT_TRUE(picture.has_value());
+  EXPECT_EQ(picture->pixels, (std::vector<uint8_t>{1, 2}));
+}
+
+TEST(PcxFileTest, ReadsFromWhereTheStreamStands) {
+  std::vector<uint8_t> bytes = FileOf(HeaderOf(2, 1, 2), {7, 8});
+  bytes.insert(bytes.begin(), 42);
+  MemoryStream in(std::as_bytes(std::span(bytes)));
+  in.Seek(1, SeekOrigin::kBegin);
+
+  const std::optional<PcxPicture> picture = ReadPcx(in);
+
+  ASSERT_TRUE(picture.has_value());
+  EXPECT_EQ(picture->pixels, (std::vector<uint8_t>{7, 8}));
+}
+
+TEST(PcxFileTest, RejectsAnotherKindOfPicture) {
+  const std::vector<uint8_t> scanline = {7, 8};
+  PcxHeader header = HeaderOf(2, 1, 2);
+  header.id = 11;
+  EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
+
+  header = HeaderOf(2, 1, 2);
+  header.version = 3;  // Has no 256-color palette.
+  EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
+
+  header = HeaderOf(2, 1, 2);
+  header.encoding = 0;
+  EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
+
+  header = HeaderOf(2, 1, 2);
+  header.bits_per_pixel = 1;
+  EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
+
+  header = HeaderOf(2, 1, 2);
+  header.color_planes = 3;  // 24-bit color.
+  EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
+}
+
+TEST(PcxFileTest, RejectsAPictureWithoutASize) {
+  const std::vector<uint8_t> scanline = {7, 8};
+  // The right edge is left of the left one, and the bottom above the top.
+  EXPECT_FALSE(ReadBytes(FileOf(HeaderOf(0, 1, 2), scanline)).has_value());
+  EXPECT_FALSE(ReadBytes(FileOf(HeaderOf(2, 0, 2), scanline)).has_value());
+}
+
+TEST(PcxFileTest, RejectsScanlinesNarrowerThanThePicture) {
+  EXPECT_FALSE(ReadBytes(FileOf(HeaderOf(2, 1, 1), {7, 8})).has_value());
+}
+
+TEST(PcxFileTest, RejectsAStreamTooShortForAPicture) {
+  const std::vector<uint8_t> file = FileOf(HeaderOf(2, 1, 2), {7, 8});
+
+  // Part of a header, and a header with less than a palette behind it.
+  EXPECT_FALSE(ReadBytes({file.begin(), file.begin() + 100}).has_value());
+  EXPECT_FALSE(
+      ReadBytes({file.begin(), file.begin() + kHeaderSize + 700}).has_value());
+}
+
+TEST(PcxFileTest, ReadsAGameFile) {
+  Picture picture(3, {1, 1, 2});
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("picture.pcx");
+  ASSERT_TRUE(WritePcxFile(path.string(), picture.view(), {}));
+
+  const std::optional<PcxPicture> read = ReadPcxFile(path.string());
+
+  ASSERT_TRUE(read.has_value());
+  EXPECT_EQ(read->width, 3);
+  EXPECT_EQ(read->height, 1);
+  EXPECT_EQ(read->pixels, (std::vector<uint8_t>{1, 1, 2}));
+}
+
+TEST(PcxFileTest, ReadsNothingFromAMissingGameFile) {
+  engine::file::TestGameFiles files;
+
+  EXPECT_FALSE(ReadPcxFile(files.Path("missing.pcx").string()).has_value());
+}
+
 // The palette's bytes behind a picture that is cut short are not pixels.
 TEST(PcxFileTest, RejectsScanlinesThatAreCutShort) {
   const std::vector<std::vector<uint8_t>> cut_short = {
