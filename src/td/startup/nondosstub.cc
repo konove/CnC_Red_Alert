@@ -187,7 +187,7 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   if (!file_handle) {
     return nullptr;
   }
-  PcxHeader header{};
+  engine::gfx::PcxHeader header{};
   if (!file_handle->ReadObject(header) || header.id != 10 ||
       header.version != 5 || header.bits_per_pixel != 8 ||
       header.color_planes != 1 || header.encoding != 1) {

@@ -30,6 +30,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 
+namespace engine::gfx {
+
 namespace {
 
 // A byte of the pixel data from this value up is a run count, in the six bits
@@ -82,7 +84,7 @@ std::vector<uint8_t> EncodeScanlines(PixelView& view) {
 }  // namespace
 
 bool WritePcxFile(std::string_view file_name, PixelView& view,
-                  const engine::gfx::Palette& palette) {
+                  const Palette& palette) {
   // A surface's page has pixels only while it is locked, and a view that was
   // never attached has none at all.
   if (!view.Lock()) {
@@ -124,3 +126,5 @@ bool WritePcxFile(std::string_view file_name, PixelView& view,
   file->WriteObject(palette.ToRgb());
   return file->ok();
 }
+
+}  // namespace engine::gfx

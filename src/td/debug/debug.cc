@@ -145,7 +145,7 @@ void Debug_Key(unsigned input) {
             }
           }
 
-          WritePcxFile(filename, temp_page.view(), CurrentPalette);
+          engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);
           // Map.Place_Random_Crate();
         }
         break;

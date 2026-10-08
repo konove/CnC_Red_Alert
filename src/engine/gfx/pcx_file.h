@@ -31,6 +31,8 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
+namespace engine::gfx {
+
 // The 128 bytes a PCX file starts with, laid out as they are on disk: the
 // 16-bit fields are little-endian and all fall on even offsets, so the struct
 // has no padding and is read and written whole. Tiberian Dawn's PCX reader
@@ -67,6 +69,8 @@ static_assert(sizeof(PcxHeader) == 128);
 // written; nothing is, and no file is created, for a view without pixels
 // (unattached, or of a surface that will not lock).
 bool WritePcxFile(std::string_view file_name, PixelView& view,
-                  const engine::gfx::Palette& palette);
+                  const Palette& palette);
+
+}  // namespace engine::gfx
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_

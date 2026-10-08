@@ -433,7 +433,8 @@ static void Add_Current_Screen() {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
-        WritePcxFile(filename, base::At(ScreenList, i)->view(), CurrentPalette);
+        engine::gfx::WritePcxFile(filename, base::At(ScreenList, i)->view(),
+                                  CurrentPalette);
         base::At(ScreenList, i).reset();
       }
 

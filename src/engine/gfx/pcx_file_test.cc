@@ -21,14 +21,15 @@
 #include "engine/gfx/pixel_surface.h"
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
+
 namespace {
 
 constexpr std::ptrdiff_t kHeaderSize = sizeof(PcxHeader);
 
 // Writes `view` as a PCX file in the test's own directory and returns the
 // file's bytes, or nothing if no file was written.
-std::vector<uint8_t> WrittenFile(PixelView& view,
-                                 const engine::gfx::Palette& palette) {
+std::vector<uint8_t> WrittenFile(PixelView& view, const Palette& palette) {
   engine::file::TestGameFiles files;
   const std::filesystem::path path = files.Path("picture.pcx");
 
@@ -49,7 +50,7 @@ std::vector<uint8_t> Header(const std::vector<uint8_t>& file) {
 // The encoded scanlines of a written file: what lies between the header and
 // the palette with its marker byte.
 std::vector<uint8_t> Scanlines(const std::vector<uint8_t>& file) {
-  const std::ptrdiff_t trailer = 1 + engine::gfx::Palette::kFileSize;
+  const std::ptrdiff_t trailer = 1 + Palette::kFileSize;
   if (std::ssize(file) < kHeaderSize + trailer) {
     return {};
   }
@@ -148,9 +149,9 @@ TEST(PcxFileTest, WritesOnlyThePartOfThePageAViewCovers) {
 // The palette closes the file, 8 bits a component, behind a byte of 12.
 TEST(PcxFileTest, EndsWithThePalette) {
   Picture picture(1, {0});
-  engine::gfx::Palette palette;
-  palette.at(1) = engine::gfx::PaletteColor(255, 80, 3);
-  palette.at(255) = engine::gfx::PaletteColor(1, 2, 3);
+  Palette palette;
+  palette.at(1) = PaletteColor(255, 80, 3);
+  palette.at(255) = PaletteColor(1, 2, 3);
 
   const std::vector<uint8_t> file = WrittenFile(picture.view(), palette);
 
@@ -200,3 +201,5 @@ TEST(PcxFileTest, WritesNoFileForAnUnattachedView) {
 }
 
 }  // namespace
+
+}  // namespace engine::gfx

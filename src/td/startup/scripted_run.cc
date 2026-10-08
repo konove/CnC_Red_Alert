@@ -35,7 +35,7 @@ void SaveShot(const std::filesystem::path& path) {
     return;
   }
   PixelBuffer page(picture.width, picture.height, picture.pixels);
-  WritePcxFile(path.string(), page.view(), CurrentPalette);
+  engine::gfx::WritePcxFile(path.string(), page.view(), CurrentPalette);
 }
 
 }  // namespace
