@@ -3987,10 +3987,10 @@
         "game",
         "cleanup"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:42:46Z",
-      "updated": "2026-10-07T07:42:46Z",
+      "updated": "2026-10-08T05:27:37Z",
       "source": "2b13f371..929cac0e",
       "anchors": [
         {
@@ -4588,10 +4588,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-08T04:48:56Z",
+      "updated": "2026-10-08T05:27:26Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "1f244fe5",
