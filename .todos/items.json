@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 207,
+  "nextId": 208,
   "items": [
     {
       "id": "T-2",
@@ -5441,8 +5441,8 @@
         },
         {
           "path": "src/ra/startup/nondosstub.cc",
-          "startLine": 113,
-          "endLine": 113,
+          "startLine": 115,
+          "endLine": 115,
           "text": "class BufferedFileReader {",
           "before": [
             " *   04/30/1996 ST : Tidied up and modified to use GameFile             *",
@@ -5485,10 +5485,10 @@
         "refactoring",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T08:17:54Z",
+      "updated": "2026-10-08T17:25:09Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "02c5d9e8",
@@ -5537,15 +5537,17 @@
         "ra",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:46Z",
+      "updated": "2026-10-08T17:28:10Z",
       "blockedBy": [
         "T-196"
       ],
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "fixedIn": "da65cc01",
+      "resolution": "Deleted `ra/assets/writepcx.cc` and its test, plus `PCX_HEADER`, `RGB` and `Write_PCX_File()` from `filepcx.h`; the four callers call `engine::gfx::WritePcx()` on the stream they opened and `Read_PCX_File()` reads `engine::gfx::PcxHeader`. The ten RA `ui_check` hash files are re-recorded: all 47 screenshots decode to the same pixels and palette as before, only the file bytes differ.",
       "anchors": [
         {
           "path": "src/ra/assets/writepcx.cc",
@@ -5562,7 +5564,7 @@
             "  // A surface's buffer has pixels only while it is locked.",
             "  PixelView& view = pic.view();"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5576,10 +5578,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:24:39Z",
+      "updated": "2026-10-08T17:25:06Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "e9e5a80f",
@@ -5600,7 +5602,7 @@
             "  /*",
             "  **\tSpecial marker for end of RLE data."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5996,6 +5998,36 @@
             "  std::string out(static_cast<size_t>(count), '\\0');",
             "  out.resize(",
             "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-207",
+      "title": "Should this move to engine too?",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-08T17:27:04Z",
+      "updated": "2026-10-08T17:27:04Z",
+      "anchors": [
+        {
+          "path": "src/ra/assets/filepcx.h",
+          "startLine": 50,
+          "endLine": 57,
+          "text": "// Reads the PCX picture `name` into a new buffer, backed by `backing` when it\n// is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`\n// with the file's palette when `palette` is not nullptr. Returns null if the\n// file is missing, malformed or does not fit.\nstd::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,\n                                           engine::gfx::Palette* palette,\n                                           std::span<uint8_t> backing,\n                                           int32_t size);",
+          "before": [
+            "",
+            "namespace ra {",
+            ""
+          ],
+          "after": [
+            "",
+            "}  // namespace ra",
+            ""
           ],
           "lost": false
         }
