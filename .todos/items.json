@@ -4619,12 +4619,14 @@
         "tools",
         "coverage"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T07:43:36Z",
+      "updated": "2026-10-08T04:25:05Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
+      "fixedIn": "db1495a1",
+      "resolution": "Cause: `LLVM_PROFILE_FILE` was unset during the build, so every test executable that `gtest_discover_tests` ran wrote `./default.profraw` in its binary directory; under `-fprofile-continuous` two executables of one directory (`engine_window_test` and `engine_window_keyboard_test`) mapped the same file and one truncating it killed the other with SIGBUS. Reproduced by running the two with `--gtest_list_tests` concurrently: 14 of 300 rounds died with exit 135, 0 of 300 with separate profile files. `tools/coverage.py` now runs the build with `LLVM_PROFILE_FILE=<build-dir>/discovery-profiles/%c%m.profraw` (new `profile_env()`, shared with `run_test`), so each binary has its own file.",
       "anchors": [
         {
           "path": "tools/coverage.py",
