@@ -4823,12 +4823,13 @@
         "bugs",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T06:32:17Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
+      "resolution": "`Heading::Turn()` now clamps `max_steps` to 0..127 (`std::clamp`), so a negative step does not turn at all instead of stepping away from the desired direction. A clamp rather than a `DCHECK` because the value comes from the rules file, which is input, not a programmer error. Documented in `heading.h` and covered by `HeadingTest.ANegativeStepDoesNotTurn`.",
       "anchors": [
         {
           "path": "src/game/sim/heading.cc",

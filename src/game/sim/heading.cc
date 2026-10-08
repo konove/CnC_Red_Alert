@@ -30,8 +30,10 @@ bool Heading::Turn(int max_steps) {
     return false;
   }
 
-  // A turn is at most half the circle, so a larger step adds nothing.
-  max_steps = std::min(max_steps, 127);
+  // A turn is at most half the circle, so a larger step adds nothing. A
+  // negative one, which only a bad rules file produces, would step away from
+  // the desired direction.
+  max_steps = std::clamp(max_steps, 0, 127);
 
   const Direction previous = current_;
   const int turn = RemainingTurn();

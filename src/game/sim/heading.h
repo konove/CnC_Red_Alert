@@ -93,9 +93,9 @@ class Heading {
   // Turns the current direction toward the desired one by up to `max_steps`
   // direction steps, the short way round, stopping at the desired direction.
   // More than 127 steps count as 127, which reaches any direction but the
-  // exact opposite in one call. Returns whether the turn crossed into another
-  // of the 32 body frames, in which case the owner most likely needs to be
-  // redrawn.
+  // exact opposite in one call, and a negative count does not turn at all.
+  // Returns whether the turn crossed into another of the 32 body frames, in
+  // which case the owner most likely needs to be redrawn.
   bool Turn(int max_steps);
 
  private:

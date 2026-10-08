@@ -96,6 +96,16 @@ TEST(HeadingTest, TheFastestTurnNeedsTwoCallsToFaceAbout) {
   EXPECT_EQ(heading.current(), Direction::kSouth);
 }
 
+TEST(HeadingTest, ANegativeStepDoesNotTurn) {
+  // A negative rate can only come from a bad rules file; it must not turn the
+  // heading away from where it is going.
+  Heading heading(Direction::kNorth);
+  heading.set_desired(Direction::kEast);
+  EXPECT_FALSE(heading.Turn(-16));
+  EXPECT_EQ(heading.current(), Direction::kNorth);
+  EXPECT_TRUE(heading.IsRotating());
+}
+
 TEST(HeadingTest, ReportsNoRedrawInsideOneFrame) {
   Heading heading(Direction::kNorth);
   heading.set_desired(Direction::kEast);
