@@ -1345,7 +1345,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       if (base::At(TheWorld().current_object(), 0)->Is_Techno()) {
         auto* techno = dynamic_cast<TechnoClass*>(
             base::At(TheWorld().current_object(), 0));
-        if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
+        if (FacingDial->Get_Direction() != techno->PrimaryFacing.current()) {
           /*
           ..................... Set body's facing ......................
           */

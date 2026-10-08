@@ -43,17 +43,18 @@ namespace game {
 class Heading {
  public:
   // Points north and is not turning.
-  Heading();
+  constexpr Heading() = default;
 
   // Points in `direction` and is not turning. Implicit: a heading reads and
   // assigns as its direction.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  Heading(Direction direction) : current_(direction), desired_(direction) {}
+  constexpr Heading(Direction direction)
+      : current_(direction), desired_(direction) {}
 
   // The current direction. Implicit, so a heading compares with a direction
   // and passes where one is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator Direction() const { return current_; }
+  constexpr operator Direction() const { return current_; }
 
   // The direction pointed in now, and the one being turned toward. They are
   // equal when not turning.
@@ -67,22 +68,18 @@ class Heading {
   }
 
   // Sets the direction to turn toward and leaves the current one alone; the
-  // following Turn() calls close the gap. Returns whether the desired
-  // direction changed.
-  bool set_desired(Direction direction);
+  // following Turn() calls close the gap.
+  void set_desired(const Direction direction) { desired_ = direction; }
 
   // Sets the current direction and leaves the desired one alone, so it turns
-  // back if they now differ. Returns whether the current direction changed.
-  bool set_current(Direction direction);
+  // back if they now differ.
+  void set_current(const Direction direction) { current_ = direction; }
 
   // Points in `direction` at once, with nothing left to turn.
-  void SnapTo(Direction direction) {
-    set_current(direction);
-    set_desired(direction);
+  void SnapTo(const Direction direction) {
+    current_ = direction;
+    desired_ = direction;
   }
-
-  // The current direction, like current().
-  [[nodiscard]] Direction Get() const { return current_; }
 
   // Whether the current direction has yet to reach the desired one.
   [[nodiscard]] bool IsRotating() const { return desired_ != current_; }

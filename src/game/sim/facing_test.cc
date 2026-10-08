@@ -13,12 +13,22 @@ TEST(HeadingTest, StartsAtNorthAndStill) {
   EXPECT_FALSE(heading.IsRotating());
 }
 
-TEST(HeadingTest, SettersReportWhetherTheValueChanged) {
+TEST(HeadingTest, EachSetterLeavesTheOtherDirectionAlone) {
   Heading heading(Direction::kEast);
-  EXPECT_FALSE(heading.set_desired(Direction::kEast));
-  EXPECT_TRUE(heading.set_desired(Direction::kSouth));
-  EXPECT_FALSE(heading.set_current(Direction::kEast));
-  EXPECT_TRUE(heading.set_current(Direction::kWest));
+  heading.set_desired(Direction::kSouth);
+  EXPECT_EQ(heading.current(), Direction::kEast);
+  EXPECT_EQ(heading.desired(), Direction::kSouth);
+  heading.set_current(Direction::kWest);
+  EXPECT_EQ(heading.current(), Direction::kWest);
+  EXPECT_EQ(heading.desired(), Direction::kSouth);
+}
+
+TEST(HeadingTest, SnapToLeavesNothingToTurn) {
+  Heading heading(Direction::kEast);
+  heading.set_desired(Direction::kSouth);
+  heading.SnapTo(Direction::kWest);
+  EXPECT_EQ(heading.current(), Direction::kWest);
+  EXPECT_FALSE(heading.IsRotating());
 }
 
 TEST(HeadingTest, TurnsAreMeasuredTheShortWayRound) {
