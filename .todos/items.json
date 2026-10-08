@@ -5483,31 +5483,44 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T08:17:54Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "fixedIn": "02c5d9e8",
+      "resolution": "Added `engine::gfx::WritePcx(ByteStream&, PixelView&, const Palette&)`, which does the work and reports short writes; `WritePcxFile(name, ...)` stays as a wrapper that encodes first and then opens with `OpenGameFile`, so a view without pixels still creates no file and TD's callers are unchanged. The tests write to a recording stream, with three file tests left for the wrapper.",
       "toDecide": "`ByteStream&` (RA's shape, caller opens the file), keep the file name, or the stream form plus a small name-taking overload?",
+      "decisions": [
+        {
+          "question": "What should engine::gfx's PCX writer take: a stream, a file name, or both?",
+          "options": [
+            "Stream + name overload (Recommended)",
+            "ByteStream& only",
+            "Keep the file name"
+          ],
+          "answer": "Stream + name overload (Recommended)",
+          "time": "2026-10-08T07:56:18Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 71,
-          "endLine": 71,
-          "text": "bool WritePcxFile(std::string_view file_name, PixelView& view,",
+          "startLine": 72,
+          "endLine": 77,
+          "text": "bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);\n\n// Writes the same picture to the game file `file_name`, which OpenGameFile()\n// creates as a loose file. A view without pixels creates no file.\nbool WritePcxFile(std::string_view file_name, PixelView& view,\n                  const Palette& palette);",
           "before": [
-            "// which OpenGameFile() creates as a loose file. Returns whether all of it was",
-            "// written; nothing is, and no file is created, for a view without pixels",
-            "// (unattached, or of a surface that will not lock)."
+            "// position, and leaves `out` open. Returns whether all of it was written;",
+            "// nothing is for a view without pixels (unattached, or of a surface that will",
+            "// not lock)."
           ],
           "after": [
-            "                  const Palette& palette);",
             "",
-            "}  // namespace engine::gfx"
+            "}  // namespace engine::gfx",
+            ""
           ],
           "lost": false
         }
@@ -5611,8 +5624,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 40,
-          "endLine": 40,
+          "startLine": 41,
+          "endLine": 41,
           "text": "struct PcxHeader {",
           "before": [
             "// 16-bit fields are little-endian and all fall on even offsets, so the struct",
@@ -5649,8 +5662,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 116,
-          "endLine": 116,
+          "startLine": 119,
+          "endLine": 119,
           "text": "      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .ega_palette = {},",
@@ -5687,8 +5700,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 111,
-          "endLine": 112,
+          "startLine": 114,
+          "endLine": 115,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",
@@ -5723,8 +5736,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 109,
-          "endLine": 116,
+          "startLine": 112,
+          "endLine": 119,
           "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = 1,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .bits_per_pixel = 8,",
@@ -5899,8 +5912,8 @@
         },
         {
           "path": "src/engine/gfx/pcx_file_test.cc",
-          "startLine": 193,
-          "endLine": 193,
+          "startLine": 267,
+          "endLine": 267,
           "text": "class PaddedSurface final : public PixelSurface {",
           "before": [
             "}",
