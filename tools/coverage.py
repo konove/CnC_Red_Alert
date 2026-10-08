@@ -111,14 +111,19 @@ def test_binaries(build_dir: Path) -> list[TestBinary]:
     return list(binaries.values())
 
 
+def profile_env(profile_dir: Path) -> dict[str, str]:
+    """Returns the environment that makes an instrumented binary write into profile_dir."""
+    # %c is continuous mode (see COVERAGE_FLAGS); %m names the file after the
+    # binary, so the processes of one binary pool into one file (a death test's
+    # children do not leave one each) and two binaries never share one.
+    return os.environ | {"LLVM_PROFILE_FILE": str(profile_dir / "%c%m.profraw")}
+
+
 def run_test(binary: TestBinary, profile_dir: Path) -> tuple[TestBinary, int, str]:
-    # %c is continuous mode (see COVERAGE_FLAGS); %m pools the processes of one
-    # binary into one file, so a death test's children do not leave one each.
-    env = os.environ | {"LLVM_PROFILE_FILE": str(profile_dir / "%c%m.profraw")}
     result = subprocess.run(
         [binary.path, "--gtest_brief=1"],
         cwd=binary.working_dir,
-        env=env,
+        env=profile_env(profile_dir),
         capture_output=True,
         text=True,
         errors="replace",
@@ -298,8 +303,13 @@ def main() -> int:
         sys.exit(f"{build_dir} was not configured by this script; delete it or pass another")
 
     if not args.no_build:
+        # gtest_discover_tests runs each test executable as it is linked. Left
+        # to the default, the executables of one directory all map
+        # ./default.profraw, and one that truncates it while another has it
+        # mapped kills that one with a bus error, which fails the build.
         build = subprocess.run(
             ["cmake", "--build", str(build_dir), "--parallel", str(args.parallel)],
+            env=profile_env(build_dir / "discovery-profiles"),
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
