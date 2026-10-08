@@ -31,13 +31,6 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
-// One color of the header's 16-color EGA palette.
-struct RGB {
-  uint8_t red;
-  uint8_t green;
-  uint8_t blue;
-};
-
 // The 128 bytes a PCX file starts with, laid out as they are on disk: the
 // 16-bit fields are little-endian and all fall on even offsets, so the struct
 // has no padding and is read and written whole. Tiberian Dawn's PCX reader
@@ -57,7 +50,8 @@ struct PcxHeader {
   // The resolution of the device the picture was made for. Readers ignore it.
   int16_t horizontal_dpi;
   int16_t vertical_dpi;
-  std::array<RGB, 16> ega_palette;  // Unused by an 8-bit picture.
+  // Sixteen colors of three bytes each, unused by an 8-bit picture.
+  std::array<uint8_t, 48> ega_palette;
   uint8_t reserved;                 // Reserved, zero.
   uint8_t color_planes;
   // Bytes in one decoded scanline of one plane, which may be more than the
