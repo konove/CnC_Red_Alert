@@ -1002,9 +1002,7 @@ bool DriveClass::Start_Of_Move() {
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  // Difference between current and desired facing.
-  const int facediff = game::ShortestTurn(PrimaryFacing, dir);
-  if (facediff) {
+  if (PrimaryFacing.current() != dir) {
     /*
     **	Request a change of facing.
     */

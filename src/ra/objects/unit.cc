@@ -510,7 +510,7 @@ void UnitClass::Rotation_AI() {
       *aren't maneuverable enough.
       */
       if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ && !NavCom &&
-          !IsDriving && game::ShortestTurn(PrimaryFacing, dir)) {
+          !IsDriving && PrimaryFacing.current() != dir) {
         PrimaryFacing.set_desired(dir);
       }
     }
@@ -4216,7 +4216,7 @@ bool UnitClass::Ok_To_Move(game::Direction dir) {
     if (IsRotating) {
       return false;
     }
-    if (game::ShortestTurn(SecondaryFacing, dir)) {
+    if (SecondaryFacing.current() != dir) {
       SecondaryFacing.set_desired(dir);
       return false;
     }
