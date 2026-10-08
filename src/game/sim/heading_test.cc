@@ -49,7 +49,7 @@ TEST(HeadingTest, TurnsAreMeasuredTheShortWayRound) {
   EXPECT_EQ(heading.RemainingTurn(), 64);
   heading.set_desired(Direction::kWest);
   EXPECT_EQ(heading.RemainingTurn(), -64);
-  EXPECT_EQ(heading.ShortestTurnTo(Direction(200)), -56);
+  EXPECT_EQ(ShortestTurn(heading, Direction(200)), -56);
 }
 
 TEST(HeadingTest, RotatesClockwiseByTheRate) {

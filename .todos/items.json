@@ -4785,12 +4785,13 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T06:20:59Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
+      "resolution": "Removed `Heading::ShortestTurnTo()`; its 30 callers in `src/ra` and `src/td` and the one in `heading_test.cc` now call `game::ShortestTurn(heading, direction)`. The V2 and rocket launchers' repeated turn-to-north in `ra/objects/unit.cc` and `td/objects/turret.cc` became a local `to_north`.",
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
@@ -4807,7 +4808,7 @@
             "  // Turns the current direction toward the desired one by up to `max_steps`",
             "  // direction steps, the short way round, stopping at the desired direction."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4880,13 +4881,13 @@
       "status": "open",
       "author": "user",
       "created": "2026-10-08T06:10:42Z",
-      "updated": "2026-10-08T06:10:42Z",
+      "updated": "2026-10-08T06:20:59Z",
       "anchors": [
         {
           "path": "src/ra/objects/aircraft.cc",
           "startLine": 2515,
           "endLine": 2517,
-          "text": "          int diff = SecondaryFacing.ShortestTurnTo(DirectionTo(NavCom));\n          diff = std::clamp(diff, -128, 128);\n          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);",
+          "text": "          int diff = game::ShortestTurn(SecondaryFacing, DirectionTo(NavCom));\n          diff = std::clamp(diff, -128, 128);\n          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);",
           "before": [
             "          **\tAs the flight progresses, the body will rotate to face",
             "          **\tthe direction of travel.",

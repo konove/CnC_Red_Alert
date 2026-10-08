@@ -83,13 +83,11 @@ class Heading {
   // Whether the current direction has yet to reach the desired one.
   [[nodiscard]] bool IsRotating() const { return desired_ != current_; }
 
-  // The shortest turn from the current direction to the desired one, or to
-  // `direction`: -128..127 direction steps, positive clockwise.
+  // The shortest turn from the current direction to the desired one: -128..127
+  // direction steps, positive clockwise. For the turn to any other direction,
+  // pass the heading to game::ShortestTurn().
   [[nodiscard]] int RemainingTurn() const {
     return ShortestTurn(current_, desired_);
-  }
-  [[nodiscard]] int ShortestTurnTo(Direction direction) const {
-    return ShortestTurn(current_, direction);
   }
 
   // Turns the current direction toward the desired one by up to `max_steps`
