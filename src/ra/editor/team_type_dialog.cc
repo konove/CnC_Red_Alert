@@ -439,7 +439,7 @@ bool TeamType::Edit() {
   PixelView& view = TheScreen().visible_view();
 
   const auto caption = [&](const char* const text, const int x, const int y) {
-    Fancy_Text_Print(view, text, x, y, scheme, kTransparentBlack,
+    Fancy_Text_Print(view, text, x, y, scheme, game::kTransparentBlack,
                      FontType::kEditor, TPF_NOSHADOW);
   };
 
@@ -519,7 +519,7 @@ bool TeamType::Edit() {
       caption("Loc:", origin_edit.X, origin_edit.Y - 7);
       caption("#  Team Mission", script_list.X, script_list.Y - 7);
       Fancy_Text_Print(view, "Trigger:", trigger_drop.X - 4, trigger_drop.Y + 1,
-                       scheme, kTransparentBlack, FontType::kEditor,
+                       scheme, game::kTransparentBlack, FontType::kEditor,
                        TPF_RIGHT | TPF_NOSHADOW);
 
       caption(MemberDescription().c_str(),

@@ -268,8 +268,8 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(view, 0, 0, 0, kTransparentBlack, kTransparentBlack,
-                   FontType::k8Point, TPF_DROPSHADOW);
+  Fancy_Text_Print(view, 0, 0, 0, game::kTransparentBlack,
+                   game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
   const int font_height =
       FontMaxHeight(TextFontStyle(FontType::k8Point, TPF_DROPSHADOW));
   game::TheMouse().Hide();
@@ -280,7 +280,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
         view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
         text_index == selected_entry && MenuUpdate ? menu.highlight_color
                                                    : menu.normal_color,
-        kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
+        game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   game::TheMouse().Show();
@@ -426,12 +426,12 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, kTransparentBlack, FontType::k8Point,
+                     normcol, game::kTransparentBlack, FontType::k8Point,
                      TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, kTransparentBlack, FontType::k8Point,
+                     litcol, game::kTransparentBlack, FontType::k8Point,
                      TPF_DROPSHADOW);
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
@@ -441,7 +441,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     game::TheMouse().Hide(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
-               litcol, kTransparentBlack);
+               litcol, game::kTransparentBlack);
     game::TheMouse().Show();
     select = idx;
   }
@@ -868,15 +868,16 @@ int Main_Menu(int timeout) {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
-                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
+                         kDialogY + kDialogH - 20, game::kGrey,
+                         game::kTransparentBlack, FontType::k6Point,
+                         TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
-                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), TheGameState().version_text(),
-                         FOREIGN_VERSION_NUMBER);
+                         kDialogY + kDialogH - 20, game::kGrey,
+                         game::kTransparentBlack, FontType::k6Point,
+                         TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+                         TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
 #endif
         //			Fancy_Text_Print("V.%d%s%02d",
         // D_DIALOG_X+D_DIALOG_W-5,
@@ -887,14 +888,16 @@ int Main_Menu(int timeout) {
 #ifdef DEMO
         Version_Number();
         Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
-                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
+                         kDialogY + kDialogH - 20, game::kGrey,
+                         game::kTransparentBlack, FontType::k6Point,
+                         TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
         Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTransparentBlack,
-                         FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), TheGameState().version_text());
+                         kDialogY + kDialogH - 20, game::kGrey,
+                         game::kTransparentBlack, FontType::k6Point,
+                         TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+                         TheGameState().version_text());
 #endif
       }
 

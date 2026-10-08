@@ -126,17 +126,18 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
   game::TheMouse().Hide();
   Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
   Fancy_Text_Print(view, prompt.c_str(), kPromptX, kPromptY, Get_Color_Scheme(),
-                   kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW);
+                   game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_NOSHADOW);
 
   // Label the slider's ends and its middle.
   Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, kSliderLabelY,
-                   Get_Color_Scheme(), kTransparentBlack,
+                   Get_Color_Scheme(), game::kTransparentBlack,
                    FontType::k6PointGradient, TPF_RIGHT | TPF_DROPSHADOW);
   Fancy_Text_Print(view, TXT_EASY, slider.X, kSliderLabelY, Get_Color_Scheme(),
-                   kTransparentBlack, FontType::k6PointGradient,
+                   game::kTransparentBlack, FontType::k6PointGradient,
                    TPF_DROPSHADOW);
   Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
-                   kSliderLabelY, Get_Color_Scheme(), kTransparentBlack,
+                   kSliderLabelY, Get_Color_Scheme(), game::kTransparentBlack,
                    FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
   ok_button.Draw_All(view);
   game::TheMouse().Show();

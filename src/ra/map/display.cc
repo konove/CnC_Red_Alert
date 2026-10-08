@@ -364,11 +364,11 @@ static MixArchive* theater_data = nullptr;
  *=============================================================================================*/
 void DisplayClass::Init_Theater(TheaterType theater) {
   char fullname[16];
-  static constexpr auto MouseCols =
-      std::to_array<TranslucentColor>({{kBlack, kBlack, 110},
-                                       {kWhite, kWhite, 110},
-                                       {kLightGrey, kLightGrey, 110},
-                                       {DKGREY, DKGREY, 110}});
+  static constexpr auto MouseCols = std::to_array<TranslucentColor>(
+      {{game::kBlack, game::kBlack, 110},
+       {game::kWhite, game::kWhite, 110},
+       {game::kLightGrey, game::kLightGrey, 110},
+       {DKGREY, DKGREY, 110}});
   static constexpr auto MagicCols =
       std::to_array<TranslucentColor>({{32, 32, 110},
                                        {33, 33, 110},
@@ -378,25 +378,25 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                                        {37, 37, 110},
                                        {38, 38, 110},
                                        {39, 39, 110},
-                                       {kBlack, kBlack, 200},
-                                       {kWhite, kBlack, 40},
-                                       {kLightGrey, kBlack, 80},
-                                       {DKGREY, kBlack, 140},
-                                       {kLightGreen, kBlack, 130}});
+                                       {game::kBlack, game::kBlack, 200},
+                                       {game::kWhite, game::kBlack, 40},
+                                       {game::kLightGrey, game::kBlack, 80},
+                                       {DKGREY, game::kBlack, 140},
+                                       {game::kLightGreen, game::kBlack, 130}});
   static constexpr auto WhiteCols =
-      std::to_array<TranslucentColor>({{1, kWhite, 80}});
+      std::to_array<TranslucentColor>({{1, game::kWhite, 80}});
   static constexpr auto ShadowCols =
-      std::to_array<TranslucentColor>({{kWhite + 1, kBlack, 130},
-                                       {kWhite, kBlack, 170},
-                                       {LTGRAY, kBlack, 250},
-                                       {DKGRAY, kBlack, 250}});
+      std::to_array<TranslucentColor>({{game::kWhite + 1, game::kBlack, 130},
+                                       {game::kWhite, game::kBlack, 170},
+                                       {LTGRAY, game::kBlack, 250},
+                                       {DKGRAY, game::kBlack, 250}});
   static constexpr auto UShadowCols =
-      std::to_array<TranslucentColor>({{kLightGreen, kBlack, 130}});
+      std::to_array<TranslucentColor>({{game::kLightGreen, game::kBlack, 130}});
   // Only the source color matters; the fade is the gold remap table.
   static constexpr auto UShadowColsAir =
-      std::to_array<TranslucentColor>({{kLightGreen, kWhite, 0}});
+      std::to_array<TranslucentColor>({{game::kLightGreen, game::kWhite, 0}});
   static constexpr auto UShadowColsSnow =
-      std::to_array<TranslucentColor>({{kLightGreen, kBlack, 75}});
+      std::to_array<TranslucentColor>({{game::kLightGreen, game::kBlack, 75}});
 
   /*
   **	Invoke parent's init routine.
@@ -450,9 +450,9 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   ThePalettes().original_palette() = ThePalettes().game_palette();
 
   const PaletteClass& palette = ThePalettes().game_palette();
-  FadingGreen = BuildFadingTable(palette, kGreen, 110);
-  FadingYellow = BuildFadingTable(palette, kYellow, 140);
-  FadingRed = BuildFadingTable(palette, kRed, 140);
+  FadingGreen = BuildFadingTable(palette, game::kGreen, 110);
+  FadingYellow = BuildFadingTable(palette, game::kYellow, 140);
+  FadingRed = BuildFadingTable(palette, game::kRed, 140);
   MouseTranslucentTable = BuildTranslucencyTable(palette, MouseCols);
   TranslucentTable = BuildTranslucencyTable(palette, MagicCols);
   WhiteTranslucentTable = BuildTranslucencyTable(palette, WhiteCols);
@@ -466,16 +466,16 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   UnitShadow = BuildShadowTranslucencyTable(
       palette, theater == THEATER_SNOW ? UShadowColsSnow : UShadowCols);
 
-  FadingShade = BuildShadowFadingTable(palette, kBlack,
+  FadingShade = BuildShadowFadingTable(palette, game::kBlack,
                                        theater == THEATER_SNOW ? 75 : 130);
-  FadingLight = BuildShadowFadingTable(palette, kWhite, 85);
+  FadingLight = BuildShadowFadingTable(palette, game::kWhite, 85);
 
   // The aircraft shadow draws every color through one shadow fade.
   SpecialGhost = {};
-  std::ranges::copy(BuildShadowFadingTable(palette, kBlack, 100),
+  std::ranges::copy(BuildShadowFadingTable(palette, game::kBlack, 100),
                     std::span(SpecialGhost).subspan(256).begin());
 
-  FadingBrighten = BuildClosestColorFadingTable(palette, kWhite, 25);
+  FadingBrighten = BuildClosestColorFadingTable(palette, game::kWhite, 25);
   FadingWayDark = BuildClosestColorFadingTable(palette, DKGRAY, 192);
 
   /*
@@ -1731,9 +1731,9 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   CellRedraw.set();
 
   if (view.Lock()) {
-    view.FillRect(TacPixelX, TacPixelY,
-                  TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
-                  TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, kBlack);
+    view.FillRect(
+        TacPixelX, TacPixelY, TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
+        TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, game::kBlack);
     Redraw_Icons(view);
     TheWorld().chronal_vortex().Render(view);
     RenderObjects(view);
@@ -1741,7 +1741,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
 
     if (IsRubberBand) {
       view.DrawRect(BandX + TacPixelX, BandY + TacPixelY, NewX + TacPixelX,
-                    NewY + TacPixelY, kWhite);
+                    NewY + TacPixelY, game::kWhite);
     }
     view.Unlock();
   }
@@ -1931,7 +1931,7 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
                              Lepton_To_Pixel(TacLeptonHeight))) {
                   view.FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
                                 TacPixelX + xpixel + ww - 1,
-                                TacPixelY + ypixel + hh - 1, kBlack);
+                                TacPixelY + ypixel + hh - 1, game::kBlack);
                 }
               }
             }
@@ -3028,18 +3028,18 @@ void DisplayClass::Mouse_Left_Up(Cell cell, bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object != nullptr) {
-      int color = kLightGrey;
+      int color = game::kLightGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
       */
       if (ThePlayer()->Is_Ally(object)) {
-        color = kGreen;
+        color = game::kGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = kLightGrey;
+          color = game::kLightGrey;
         } else {
-          color = kPink;
+          color = game::kPink;
         }
       }
 

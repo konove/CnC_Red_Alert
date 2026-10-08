@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 185,
+  "nextId": 186,
   "items": [
     {
       "id": "T-2",
@@ -33,8 +33,8 @@
       "anchors": [
         {
           "path": "src/td/map/display.cc",
-          "startLine": 2349,
-          "endLine": 2349,
+          "startLine": 2350,
+          "endLine": 2350,
           "text": "  return Cell::FromIndex(cell.index());",
           "before": [
             "    }",
@@ -751,8 +751,8 @@
       "anchors": [
         {
           "path": "src/td/net/netdlg.cc",
-          "startLine": 2629,
-          "endLine": 2629,
+          "startLine": 2631,
+          "endLine": 2631,
           "text": "      if (TheNetwork().winsock().Get_Connected()) {",
           "before": [
             "        TheSpecialFlags().tiberium_spreads = 0;",
@@ -1683,8 +1683,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/trigger.cc",
-          "startLine": 209,
-          "endLine": 209,
+          "startLine": 210,
+          "endLine": 210,
           "text": "    if (HouseClass::As_Pointer(Class->house)->Blockage) {",
           "before": [
             "  if (TheGameState().active() && Class != nullptr &&",
@@ -2095,8 +2095,8 @@
       "anchors": [
         {
           "path": "src/ra/wol/wol_logn.cc",
-          "startLine": 438,
-          "endLine": 439,
+          "startLine": 440,
+          "endLine": 441,
           "text": "        /*\n                                case( kEditboxPass | KN_BUTTON ):",
           "before": [
             "        break;",
@@ -3114,8 +3114,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/scenario.cc",
-          "startLine": 2010,
-          "endLine": 2010,
+          "startLine": 2011,
+          "endLine": 2011,
           "text": "      ini.LoadVerified(*file) == engine::file::IniLoadResult::kFailed) {",
           "before": [
             "",
@@ -3387,8 +3387,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 306,
-          "endLine": 307,
+          "startLine": 307,
+          "endLine": 308,
           "text": "  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));\n  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));",
           "before": [
             "  }",
@@ -3592,8 +3592,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 427,
-          "endLine": 427,
+          "startLine": 428,
+          "endLine": 428,
           "text": "  TeamType* choices[20];",
           "before": [
             "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
@@ -3794,8 +3794,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 339,
-          "endLine": 341,
+          "startLine": 340,
+          "endLine": 342,
           "text": "      base::At(members_, member_count_++) = {\n          .quantity = base::ParseIntegerOr<int>(quantity_text, 0),\n          .type = member_type};",
           "before": [
             "    // next member takes its place in Members.",
@@ -4906,6 +4906,36 @@
             "        }",
             "        return 1;",
             "      }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-185",
+      "title": "That's just too much arguments",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-08T07:09:47Z",
+      "updated": "2026-10-08T07:09:47Z",
+      "anchors": [
+        {
+          "path": "src/ra/ui/dialog.h",
+          "startLine": 65,
+          "endLine": 67,
+          "text": "void Fancy_Text_Print(PixelView& view, const char* text, int x, int y,\n                      RemapControlType* fore, int back, FontType font,\n                      TextPrintType flag, const Args&... args) {",
+          "before": [
+            "                      absl::Span<const absl::FormatArg> args = {});",
+            "template <typename... Args>",
+            "  requires(sizeof...(Args) > 0)"
+          ],
+          "after": [
+            "  const auto packed = base::MakeFormatArgs(args...);",
+            "  Fancy_Text_Print(view, text, x, y, fore, back, font, flag,",
+            "                   absl::MakeConstSpan(packed));"
           ],
           "lost": false
         }

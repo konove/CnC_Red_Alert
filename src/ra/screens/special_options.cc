@@ -107,7 +107,7 @@ void RunSpecialOptionsDialog() {
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kDialogX, kDialogY, kDialogWidth);
 
       Fancy_Text_Print(view, TXT_SPEED_BUILD, kCheckBoxX + kLabelOffsetX,
-                       kCheckBoxY, Get_Color_Scheme(), kTransparentBlack,
+                       kCheckBoxY, Get_Color_Scheme(), game::kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       ok_button.Draw_All(view);

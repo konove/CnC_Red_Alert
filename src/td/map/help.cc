@@ -281,8 +281,8 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
 
   if ((Text != TXT_NONE && (forced || !CountDownTimer.Remaining())) &&
       view.Lock()) {
-    Fancy_Text_Print(view, Text, DrawX, DrawY, Color, kBlack, FontType::kMap,
-                     TPF_NOSHADOW);
+    Fancy_Text_Print(view, Text, DrawX, DrawY, Color, game::kBlack,
+                     FontType::kMap, TPF_NOSHADOW);
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int text_height = FontMaxHeight(font);
     view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + text_height,
@@ -292,14 +292,14 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       char buffer[15];
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = StringPixelWidth(font, buffer);
-      Fancy_Text_Print(view, buffer, DrawX, DrawY + text_height, Color, kBlack,
-                       FontType::kMap, TPF_NOSHADOW);
+      Fancy_Text_Print(view, buffer, DrawX, DrawY + text_height, Color,
+                       game::kBlack, FontType::kMap, TPF_NOSHADOW);
       view.DrawRect(DrawX - 1, DrawY + text_height, DrawX + width + 1,
                     DrawY + text_height + text_height - 1,
                     static_cast<unsigned char>(Color));
       view.DrawLine(DrawX, DrawY + text_height,
                     DrawX + std::min(width + 1, Width) - 1, DrawY + text_height,
-                    kBlack);
+                    game::kBlack);
     }
 
     view.Unlock();

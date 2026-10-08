@@ -939,7 +939,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       */
       draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
                         MouseClass::FadingShade);
-      draw_window.DrawRect(xx, yy, xx + width - 1, yy + 3, kBlack);
+      draw_window.DrawRect(xx, yy, xx + width - 1, yy + 3, game::kBlack);
 
       /*
       **	Determine the width of the interior strength
@@ -951,12 +951,12 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       pwidth = std::clamp(pwidth, 1, width - 2);
 
       int color =
-          kLightGreen;  // The color to give the interior of the bargraph.
+          game::kLightGreen;  // The color to give the interior of the bargraph.
       if (ratio < 0x7F) {
-        color = kYellow;
+        color = game::kYellow;
       }
       if (ratio < 0x3F) {
-        color = kRed;
+        color = game::kRed;
       }
       draw_window.FillRect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
                            static_cast<unsigned char>(color));
@@ -977,23 +977,23 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
 
       // Upper left corner.
       draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
-                           kWhite);
+                           game::kWhite);
       draw_window.DrawLine(x - lx, fudge + y - ly, x - lx, fudge + y - ly + dy,
-                           kWhite);
+                           game::kWhite);
 
       // Upper right corner.
       draw_window.DrawLine(x + lx, fudge + y - ly, x + lx - dx, fudge + y - ly,
-                           kWhite);
+                           game::kWhite);
       draw_window.DrawLine(x + lx, fudge + y - ly, x + lx, fudge + y - ly + dy,
-                           kWhite);
+                           game::kWhite);
 
       // Lower right corner.
-      draw_window.DrawLine(x + lx, y + ly, x + lx - dx, y + ly, kWhite);
-      draw_window.DrawLine(x + lx, y + ly, x + lx, y + ly - dy, kWhite);
+      draw_window.DrawLine(x + lx, y + ly, x + lx - dx, y + ly, game::kWhite);
+      draw_window.DrawLine(x + lx, y + ly, x + lx, y + ly - dy, game::kWhite);
 
       // Lower left corner.
-      draw_window.DrawLine(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
-      draw_window.DrawLine(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
+      draw_window.DrawLine(x - lx, y + ly, x - lx + dx, y + ly, game::kWhite);
+      draw_window.DrawLine(x - lx, y + ly, x - lx, y + ly - dy, game::kWhite);
 
       if (House->Is_Ally(ThePlayer())) {
         Draw_Pips(view, x - lx + 5, y + ly - 3, window);

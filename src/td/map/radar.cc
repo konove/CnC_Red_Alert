@@ -472,11 +472,11 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         if (BaseX || BaseY) {
           view.FillRect(RadX + RadOffX, RadY + RadOffY,
                         RadX + RadOffX + RadIWidth - 1,
-                        RadY + RadOffY + RadIHeight - 1, kGrey);
+                        RadY + RadOffY + RadIHeight - 1, game::kGrey);
         } else {
           view.FillRect(RadX + RadOffX, RadY + RadOffY,
                         RadX + RadOffX + RadIWidth - 1,
-                        RadY + RadOffY + RadIHeight - 1, kBlack);
+                        RadY + RadOffY + RadIHeight - 1, game::kBlack);
         }
 
         /*
@@ -853,11 +853,11 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = kTransparentBlack;  // Color of the pixel to plot.
+    int color = game::kTransparentBlack;  // Color of the pixel to plot.
     if ((*this).at(cell).IsVisible || TheDebugState().unshroud()) {
       color = cellptr->Cell_Color(true);
     } else {
-      color = kBlack;
+      color = game::kBlack;
     }
 
     // ST 8/13/96 2:24PM
@@ -869,7 +869,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     **	If no color override occurs for this cell, then render the underlying
     **	terrain.
     */
-    if (color == kTransparentBlack) {
+    if (color == game::kTransparentBlack) {
       if (ZoomFactor > 1) {
         const auto data = TemplateTypeClass::As_Reference(
                               cellptr->TType != TEMPLATE_NONE ? cellptr->TType
@@ -911,7 +911,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     } else {
       Fat_Put_Pixel(view, x, y, static_cast<uint8_t>(color), ZoomFactor);
     }
-    if (color != kBlack) {
+    if (color != game::kBlack) {
       Render_Overlay(view, cell, x, y, ZoomFactor);
       Render_Terrain(view, cell, x, y, ZoomFactor);
       Render_Infantry(view, cell, x, y, ZoomFactor);
@@ -1257,20 +1257,20 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
                         RadY + RadOffY + BaseY + view.y_pos(), RadarWidth,
                         RadarHeight);
 
-  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLightGreen);
-  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLightGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, game::kLightGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, game::kLightGreen);
 
   // Draw upper right hand corner
-  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLightGreen);
-  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, game::kLightGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, game::kLightGreen);
 
   // Draw lower left hand corner
-  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLightGreen);
-  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLightGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, game::kLightGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, game::kLightGreen);
 
   // Draw lower right hand corner
-  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLightGreen);
-  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLightGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, game::kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, game::kLightGreen);
 
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
@@ -1856,22 +1856,23 @@ void RadarClass::Draw_Names(PixelView& view) const {
   CC_Draw_Shape(view, RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                 WINDOW_MAIN, ShapeFlags::kNone);
   view.FillRect(RadX + RadOffX, RadY + RadOffY, RadX + RadOffX + RadIWidth - 1,
-                RadY + RadOffY + RadIHeight - 1, kBlack);
+                RadY + RadOffY + RadIHeight - 1, game::kBlack);
 
   int y = RadY + RadOffY;
 
-  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, kLightGrey,
-                   kTransparentBlack, FontType::k6PointGradient,
+  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, game::kLightGrey,
+                   game::kTransparentBlack, FontType::k6PointGradient,
                    TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   kLightGrey, kTransparentBlack, FontType::k6PointGradient,
+                   game::kLightGrey, game::kTransparentBlack,
+                   FontType::k6PointGradient,
                    TPF_RIGHT | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
 
   y += (6 * factor) + 1;
 
   view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
-                kLightGrey);
+                game::kLightGrey);
 
   y += 2 * factor;
 
@@ -1891,7 +1892,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
     const int c_idx = static_cast<int>(ptr->RemapColor);
 
     if (ptr->IsDefeated) {
-      color = kGrey;
+      color = game::kGrey;
     } else {
       color = base::At(TheSession().text_colors(), c_idx);
     }
@@ -1932,7 +1933,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
         base::At(txt, 9) = '.';
         base::At(txt, 10) = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kBlack,
+      Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, game::kBlack,
                        FontType::k6PointGradient, style);
 
       int kills = 0;
@@ -1942,7 +1943,8 @@ void RadarClass::Draw_Names(PixelView& view) const {
       }
       absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
       Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                       kBlack, FontType::k6PointGradient, style | TPF_RIGHT);
+                       game::kBlack, FontType::k6PointGradient,
+                       style | TPF_RIGHT);
 
       y += (6 * factor) + 1;
     }

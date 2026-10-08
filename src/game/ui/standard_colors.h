@@ -28,6 +28,8 @@
 #ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 #define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 
+namespace game {
+
 // Palette indices, `int` because that is what the drawing functions take.
 
 // Index 0 shows as black, but a transparent blit or a text background skips it:
@@ -48,5 +50,7 @@ inline constexpr int kBlack = 12;
 inline constexpr int kGrey = 13;
 inline constexpr int kLightGrey = 14;
 inline constexpr int kWhite = 15;
+
+}  // namespace game
 
 #endif  // CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_

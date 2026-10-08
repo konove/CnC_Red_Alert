@@ -180,7 +180,7 @@ void RunSpecialOptionsDialog() {
         const CheckBoxClass& check_box = *check_boxes.at(base::ToSize(index));
         Fancy_Text_Print(view, kOptions.at(base::ToSize(index)).label,
                          check_box.X + kLabelOffsetX, check_box.Y, kCcGreen,
-                         kTransparentBlack, FontType::k6PointGradient,
+                         game::kTransparentBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       ok_button.Draw_All(view);

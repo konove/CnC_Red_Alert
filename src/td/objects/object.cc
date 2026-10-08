@@ -867,7 +867,7 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
               }
               cell = Adjacent_Cell(cell, index);
               if (TheMap().Coord_To_Pixel(cell.Center(), x, y)) {
-                view.DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
+                view.DrawLine(oldx, 8 + oldy, x, 8 + y, game::kBlack);
               }
               oldx = x;
               oldy = y;
@@ -894,7 +894,7 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
               x + (base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
                             kWindowX) *
                    8),
-              y, kPink, kTransparentBlack, FontType::k6Point,
+              y, game::kPink, game::kTransparentBlack, FontType::k6Point,
               TPF_CENTER | TPF_NOSHADOW);
         }
       }

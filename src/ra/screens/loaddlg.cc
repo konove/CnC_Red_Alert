@@ -310,7 +310,8 @@ bool LoadOptionsClass::Process() {
       if (Style == SAVE) {
         Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
                          d_edit_y - d_txt8_h, Get_Color_Scheme(),
-                         kTransparentBlack, kTextFont, kTextFlags | TPF_CENTER);
+                         game::kTransparentBlack, kTextFont,
+                         kTextFlags | TPF_CENTER);
       }
 
       /*

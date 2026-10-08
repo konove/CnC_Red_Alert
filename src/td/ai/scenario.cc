@@ -380,11 +380,11 @@ void Do_Win() {
   */
   PixelView& view = TheScreen().visible_view();
 #if !(defined(GERMAN) || defined(FRENCH))
-  Fancy_Text_Print(view, TXT_MISSION, x, y, kWhite, kTransparentBlack,
-                   FontType::kVcr, TPF_CENTER);
+  Fancy_Text_Print(view, TXT_MISSION, x, y, game::kWhite,
+                   game::kTransparentBlack, FontType::kVcr, TPF_CENTER);
 #endif
-  Fancy_Text_Print(view, TXT_SCENARIO_WON, x, y + 30, kWhite, kTransparentBlack,
-                   FontType::kVcr, TPF_CENTER);
+  Fancy_Text_Print(view, TXT_SCENARIO_WON, x, y + 30, game::kWhite,
+                   game::kTransparentBlack, FontType::kVcr, TPF_CENTER);
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_ACCOMPLISHED);
@@ -601,10 +601,10 @@ void Do_Lose() {
   **	Announce win to player.
   */
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_MISSION, x, y, kWhite, kTransparentBlack,
-                   FontType::kVcr, TPF_CENTER);
-  Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, y + 30, kWhite,
-                   kTransparentBlack, FontType::kVcr, TPF_CENTER);
+  Fancy_Text_Print(view, TXT_MISSION, x, y, game::kWhite,
+                   game::kTransparentBlack, FontType::kVcr, TPF_CENTER);
+  Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, y + 30, game::kWhite,
+                   game::kTransparentBlack, FontType::kVcr, TPF_CENTER);
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_FAIL);

@@ -182,7 +182,8 @@ void CreditLine::Render(PixelView& view) const {
   // all of it is on the page.
   if (y_ < view.height() && y_ > -kMarginRows) {
     Fancy_Text_Print(view, text_.c_str(), x_, y_, Get_Color_Scheme(),
-                     kTransparentBlack, kCreditFont, PrintFlags(alignment_));
+                     game::kTransparentBlack, kCreditFont,
+                     PrintFlags(alignment_));
   }
 }
 

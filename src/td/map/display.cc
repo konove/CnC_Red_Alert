@@ -477,10 +477,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   SpecialGhost = {};
   std::ranges::copy(
-      ConquerBuildFadingTable(ThePalettes().game_palette(), kBlack, 100),
+      ConquerBuildFadingTable(ThePalettes().game_palette(), game::kBlack, 100),
       std::span(SpecialGhost).subspan(256).begin());
 
-  FadingBrighten = BuildFadingTable(ThePalettes().game_palette(), kWhite, 25);
+  FadingBrighten =
+      BuildFadingTable(ThePalettes().game_palette(), game::kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.
@@ -1724,9 +1725,9 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   CellRedraw.set();
 
   if (view.Lock()) {
-    view.FillRect(TacPixelX, TacPixelY,
-                  TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
-                  TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, kBlack);
+    view.FillRect(
+        TacPixelX, TacPixelY, TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
+        TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, game::kBlack);
     Redraw_Icons(view, 0);
     RenderObjects(view);
     Redraw_Shadow(view);
@@ -1734,7 +1735,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
 
     if (IsRubberBand) {
       view.DrawRect(BandX + TacPixelX, BandY + TacPixelY, NewX + TacPixelX,
-                    NewY + TacPixelY, kWhite);
+                    NewY + TacPixelY, game::kWhite);
     }
     view.Unlock();
   }
@@ -1947,7 +1948,7 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
                            Lepton_To_Pixel(TacLeptonHeight))) {
                 view.FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
                               TacPixelX + xpixel + ww - 1,
-                              TacPixelY + ypixel + hh - 1, kBlack);
+                              TacPixelY + ypixel + hh - 1, game::kBlack);
               }
             }
           }
@@ -2918,7 +2919,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object) {
-      int color = kLightGrey;
+      int color = game::kLightGrey;
 
       /*
       **	Fetch the appropriate background color for help text.
@@ -2927,9 +2928,9 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
         color = kCcGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
-          color = kLightGrey;
+          color = game::kLightGrey;
         } else {
-          color = kPink;
+          color = game::kPink;
         }
       }
 

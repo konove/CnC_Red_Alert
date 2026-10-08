@@ -135,8 +135,9 @@ void DrawListEntry(PixelView& view, const std::string& text,
     scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
                                                        : PCOLOR_GREY);
   }
-  Conquer_Clip_Text_Print(view, text.c_str(), x, y, scheme, kTransparentBlack,
-                          font, flags, width, tab_stops);
+  Conquer_Clip_Text_Print(view, text.c_str(), x, y, scheme,
+                          game::kTransparentBlack, font, flags, width,
+                          tab_stops);
 }
 
 }  // namespace

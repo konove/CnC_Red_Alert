@@ -88,12 +88,12 @@ inline constexpr int kHilite = 6;
 inline constexpr int kMenupadding = 0x1000;
 
 /* These defines handle the various names given to the same color. */
-#define DKGREEN kGreen
-#define DKBLUE kBlue
-#define GRAY kGrey
-#define DKGREY kGrey
-#define DKGRAY kGrey
-#define LTGRAY kLightGrey
+#define DKGREEN game::kGreen
+#define DKBLUE game::kBlue
+#define GRAY game::kGrey
+#define DKGREY game::kGrey
+#define DKGRAY game::kGrey
+#define LTGRAY game::kLightGrey
 
 // A view retains the archive extent rather than treating a file header as an
 // object.

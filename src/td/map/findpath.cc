@@ -132,20 +132,22 @@ static inline void Draw_Cell_Point(Cell cell, bool passable, int threat_stage,
 
       if (TheMap().Coord_To_Pixel(cell.Center(), x, y)) {
         if (threat_stage > 2) {
-          TheScreen().visible_view().PutPixel(x, y,
-                                              passable ? kLightGreen : kRed);
+          TheScreen().visible_view().PutPixel(
+              x, y, passable ? game::kLightGreen : game::kRed);
         } else {
           TheScreen().visible_view().PutPixel(
               x, y,
-              static_cast<unsigned char>(passable ? 9 + threat_stage : kRed));
+              static_cast<unsigned char>(passable ? 9 + threat_stage
+                                                  : game::kRed));
         }
       }
     } else {
       const int x = cell.index() % 64;
       const int y = cell.index() / 64;
       if (!overide) {
-        TheScreen().visible_view().PutPixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
-                                            passable ? kWhite : kBlack);
+        TheScreen().visible_view().PutPixel(
+            64 + (x * 3) + 1, 8 + (y * 3) + 1,
+            passable ? game::kWhite : game::kBlack);
       } else {
         TheScreen().visible_view().PutPixel(
             64 + (x * 3) + 1, 8 + (y * 3) + 1,
@@ -308,7 +310,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::Facing& dir,
         dir = base::At(path->Command, base::ToSize(list - 1));
         path->Length = idx;
         path->LastFixup = curr_pos;
-        Draw_Cell_Point(curr_pos, true, -1, kCyan);
+        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);
         return true;
       }
 
@@ -329,7 +331,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::Facing& dir,
     /*
     ** Mark cell on the map
     */
-    Draw_Cell_Point(curr_pos, true, -1, kLightCyan);
+    Draw_Cell_Point(curr_pos, true, -1, game::kLightCyan);
 
     /*
     ** Adjust to the next list position and direction.
@@ -385,7 +387,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
       const Cell pos = Adjacent_Cell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
-      Draw_Cell_Point(pos, true, -1, kBlue);
+      Draw_Cell_Point(pos, true, -1, game::kBlue);
     } else {
       /*
       ** If this overlap is in the same place as we had our last overlap
@@ -436,7 +438,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         path->Cost -=
             Passable_Cell(pos, base::At(path->Command, list), -1, threshhold);
         Clear_Overlap(path, pos);
-        Draw_Cell_Point(pos, true, -1, kLightBlue);
+        Draw_Cell_Point(pos, true, -1, game::kLightBlue);
         idx++;
         list++;
       }
@@ -482,7 +484,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
       Cell pos = Adjacent_Cell(cell, Opposite(dir));
       path->Overlap[pos.index() >> 5] &= ~(1 << ((pos.index() & 31) - 1));
       path->Length--;
-      Draw_Cell_Point(pos, true, -1, kBlue);
+      Draw_Cell_Point(pos, true, -1, game::kBlue);
     } else {
       /*
       ** If this overlap is in the same place as we had our last overlap
@@ -522,7 +524,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         pos = Adjacent_Cell(pos, path->Command[list]);
         path->Cost -= Passable_Cell(pos, path->Command[list], -1, threshhold);
         path->Overlap[pos.index() >> 5] &= ~(1 << ((pos.index() & 31) - 1));
-        Draw_Cell_Point(pos, true, -1, kLightBlue);
+        Draw_Cell_Point(pos, true, -1, game::kLightBlue);
         idx++;
         list++;
       }
@@ -791,16 +793,16 @@ PathType* FootClass::Find_Path(Cell dest, std::span<game::Facing> final_moves,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "   Left", 0, 92, kWhite, kBlack,
+          Fancy_Text_Print(view, "   Left", 0, 92, game::kWhite, game::kBlack,
                            FontType::k6Point, TPF_NONE);
-          Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
-                           FontType::k6Point, TPF_NONE);
+          Fancy_Text_Print(view, "Total Steps", 0, 100, game::kWhite,
+                           game::kBlack, FontType::k6Point, TPF_NONE);
           if (left) {
-            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack,
+            Fancy_Text_Print(view, "    %d", 0, 108, game::kWhite, game::kBlack,
                              FontType::k6Point, TPF_NONE, pleft.Length);
           } else {
-            Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
-                             FontType::k6Point, TPF_NONE);
+            Fancy_Text_Print(view, "   FAIL", 0, 108, game::kWhite,
+                             game::kBlack, FontType::k6Point, TPF_NONE);
           }
         }
 
@@ -824,16 +826,16 @@ PathType* FootClass::Find_Path(Cell dest, std::span<game::Facing> final_moves,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "  Right", 0, 92, kWhite, kBlack,
+          Fancy_Text_Print(view, "  Right", 0, 92, game::kWhite, game::kBlack,
                            FontType::k6Point, TPF_NONE);
-          Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
-                           FontType::k6Point, TPF_NONE);
+          Fancy_Text_Print(view, "Total Steps", 0, 100, game::kWhite,
+                           game::kBlack, FontType::k6Point, TPF_NONE);
           if (right) {
-            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack,
+            Fancy_Text_Print(view, "    %d", 0, 108, game::kWhite, game::kBlack,
                              FontType::k6Point, TPF_NONE, pright.Length);
           } else {
-            Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
-                             FontType::k6Point, TPF_NONE);
+            Fancy_Text_Print(view, "   FAIL", 0, 108, game::kWhite,
+                             game::kBlack, FontType::k6Point, TPF_NONE);
           }
         }
 
@@ -1145,7 +1147,8 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
           break;
         }
       }
-      Draw_Cell_Point(newcell, false, threat_stage, forcefail ? kBrown : 0);
+      Draw_Cell_Point(newcell, false, threat_stage,
+                      forcefail ? game::kBrown : 0);
       if (newcell == target) {
         forceout = true;
         break;
@@ -1592,37 +1595,37 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
   PixelView& view = TheScreen().visible_view();
 
   TheScreen().visible_page().view().Clear();
-  Fancy_Text_Print(view, txt, 160, 0, kWhite, kBlack, FontType::k8Point,
-                   TPF_CENTER);
+  Fancy_Text_Print(view, txt, 160, 0, game::kWhite, game::kBlack,
+                   FontType::k8Point, TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;
 
       switch (Can_Enter_Cell(Cell::FromXY(x, y))) {
         case game::MOVE_OK:
-          color = kGreen;
+          color = game::kGreen;
           break;
         case game::MOVE_MOVING_BLOCK:
-          color = kLightGreen;
+          color = game::kLightGreen;
           break;
 
         case game::MOVE_DESTROYABLE:
-          color = kYellow;
+          color = game::kYellow;
           break;
         case game::MOVE_TEMP:
-          color = kBrown;
+          color = game::kBrown;
           break;
         case game::MoveType::MOVE_CLOAK:
         case game::MoveType::MOVE_NO:
         default:
-          color = kRed;
+          color = game::kRed;
           break;
       }
       if (Cell::FromXY(x, y) == start) {
-        color = kLightBlue;
+        color = game::kLightBlue;
       }
       if (Cell::FromXY(x, y) == dest) {
-        color = kBlue;
+        color = game::kBlue;
       }
       Fat_Put_Pixel(view, 64 + (x * 3), 8 + (y * 3),
                     static_cast<uint8_t>(color), 3);

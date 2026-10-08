@@ -66,18 +66,18 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
       return pressed || on ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
                            : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
-    Fancy_Text_Print(view, text, x, y, kCcGreen, kTransparentBlack, font,
+    Fancy_Text_Print(view, text, x, y, kCcGreen, game::kTransparentBlack, font,
                      flags | state | TPF_CENTER);
     return;
   }
-  int color = kWhite;
+  int color = game::kWhite;
   if (disabled) {
-    color = kLightGrey;
+    color = game::kLightGrey;
   } else if (pressed) {
-    color = base::Any(flags & TPF_NOSHADOW) ? kGrey : kLightGrey;
+    color = base::Any(flags & TPF_NOSHADOW) ? game::kGrey : game::kLightGrey;
   }
-  Fancy_Text_Print(view, text, x, y, on ? kRed : color, kTransparentBlack, font,
-                   flags | TPF_CENTER);
+  Fancy_Text_Print(view, text, x, y, on ? game::kRed : color,
+                   game::kTransparentBlack, font, flags | TPF_CENTER);
 }
 
 int UiSkin::Scale(const int amount, const int numerator,
@@ -119,25 +119,28 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
     const TextPrintType state =
         focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTransparentBlack,
-                            font, flags | state, width - 2);
+    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color,
+                            game::kTransparentBlack, font, flags | state,
+                            width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
             width - 2) {
       Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
-                              y + 1, color, kTransparentBlack, font,
+                              y + 1, color, game::kTransparentBlack, font,
                               flags | state);
     }
   } else {
-    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, focused ? kBlue : kWhite,
-                            kTransparentBlack, font, flags, width - 2);
+    Conquer_Clip_Text_Print(view, text, x + 1, y + 1,
+                            focused ? game::kBlue : game::kWhite,
+                            game::kTransparentBlack, font, flags, width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
             width - 2) {
       Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
-                              y + 1, kBlue, kTransparentBlack, font, flags);
+                              y + 1, game::kBlue, game::kTransparentBlack, font,
+                              flags);
     }
   }
 }
@@ -160,35 +163,36 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
     } else if (!base::Any(state & TPF_USE_GRAD_PAL)) {
       state = state | TPF_MEDIUM_COLOR;
     }
-    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, kTransparentBlack, font,
-                            state, width, tabs);
+    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, game::kTransparentBlack,
+                            font, state, width, tabs);
   } else {
-    Conquer_Clip_Text_Print(view, text, x, y, selected ? kBlue : kWhite,
-                            kTransparentBlack, font, flags, width, tabs);
+    Conquer_Clip_Text_Print(view, text, x, y,
+                            selected ? game::kBlue : game::kWhite,
+                            game::kTransparentBlack, font, flags, width, tabs);
   }
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const Font font,
                          const PrintFlags style) {
-  Fancy_Text_Print(view, "%s", x, y, color, kTransparentBlack, font, style,
-                   text);
+  Fancy_Text_Print(view, "%s", x, y, color, game::kTransparentBlack, font,
+                   style, text);
 }
 
 void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
                            const int y, TextColor color, const Font font,
                            const PrintFlags style, const int width) {
-  Conquer_Clip_Text_Print(view, text, x, y, color, kTransparentBlack, font,
-                          style, width);
+  Conquer_Clip_Text_Print(view, text, x, y, color, game::kTransparentBlack,
+                          font, style, width);
 }
 
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,
                             const int width, const int height, const bool on) {
   Draw_Box(view, x, y, width, height, BOXSTYLE_GREEN_DOWN, false);
-  view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, kGrey);
+  view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, game::kGrey);
   if (on) {
-    view.DrawLine(x + 1, y + 1, x + width - 2, y + height - 2, kBlack);
-    view.DrawLine(x + width - 2, y + 1, x + 1, y + height - 2, kBlack);
+    view.DrawLine(x + 1, y + 1, x + width - 2, y + height - 2, game::kBlack);
+    view.DrawLine(x + width - 2, y + 1, x + 1, y + height - 2, game::kBlack);
   }
 }
 

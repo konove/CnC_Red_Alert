@@ -15,8 +15,8 @@ struct MenuConfig {
   int item_width = 12;
   int item_count = 3;
   int selected = 0;
-  int normal_color = kWhite;
-  int highlight_color = kPink;
+  int normal_color = game::kWhite;
+  int highlight_color = game::kPink;
 };
 
 void Setup_Menu(PixelView& view, const MenuConfig& menu,

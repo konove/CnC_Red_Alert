@@ -119,7 +119,7 @@ static void PulseHotspots(PaletteClass& palette) {
 
   if (pulse.Update()) {
     palette.at(kHotspotPaletteIndex) =
-        pulse.Apply(ThePalettes().game_palette().at(kWhite));
+        pulse.Apply(ThePalettes().game_palette().at(game::kWhite));
     palette.Set();
   }
 }
@@ -257,7 +257,7 @@ ScenarioVarType ChooseMissionVariant() {
 
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_STAND_BY, 320, 380, Get_Color_Scheme(),
-                   kTransparentBlack, FontType::k6PointGradient,
+                   game::kTransparentBlack, FontType::k6PointGradient,
                    TPF_CENTER | TPF_DROPSHADOW);
   TheTheme().Fade_Out();
 

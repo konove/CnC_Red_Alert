@@ -237,8 +237,8 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTransparentBlack,
-                     TextFont, PrintFlags);
+    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(),
+                     game::kTransparentBlack, TextFont, PrintFlags);
   }
 }
 

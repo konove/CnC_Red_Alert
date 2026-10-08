@@ -312,7 +312,7 @@ void HelpClass::ResetTransientUiState() {
   IsRight = false;
   Cost = X = Y = DrawX = DrawY = Width = 0;
   Text = TXT_NONE;
-  Color = kLightGrey;
+  Color = game::kLightGrey;
   CountDownTimer.Set(0);
   OverlapList[0] = kRefreshEol;
 }

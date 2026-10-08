@@ -2425,13 +2425,13 @@ enum class SpecialDialogType {
 };
 using enum SpecialDialogType;
 
-inline constexpr int kCcGdiColor = kYellow;
-inline constexpr int kCcNodColor = kRed;
-inline constexpr int kCcBlueGreen = kCyan;
-inline constexpr int kCcBlueGrey = kLightBlue;
-inline constexpr int kCcOrange = kPurple;
-inline constexpr int kCcGreen = kGreen;
-inline constexpr int kCcTan = kBrown;
+inline constexpr int kCcGdiColor = game::kYellow;
+inline constexpr int kCcNodColor = game::kRed;
+inline constexpr int kCcBlueGreen = game::kCyan;
+inline constexpr int kCcBlueGrey = game::kLightBlue;
+inline constexpr int kCcOrange = game::kPurple;
+inline constexpr int kCcGreen = game::kGreen;
+inline constexpr int kCcTan = game::kBrown;
 inline constexpr int kCcGreenShadow = 140;
 inline constexpr int kCcGreenBkgd = 141;
 inline constexpr int kCcGreenCorners = kCcGreenBkgd;

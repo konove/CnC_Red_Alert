@@ -146,7 +146,7 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTransparentBlack,
+  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, game::kTransparentBlack,
                           TextFont, flags, width, Tabs);
 }
 

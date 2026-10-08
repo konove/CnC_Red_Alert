@@ -290,13 +290,14 @@ void TriggerType::Draw_It(PixelView& view, int /*unused*/, const int x,
     }
 
     Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
-                            kTransparentBlack, font, flags, width, kTabStops);
+                            game::kTransparentBlack, font, flags, width,
+                            kTabStops);
   } else {
     Conquer_Clip_Text_Print(
         view, Description().c_str(), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-        kTransparentBlack, font, flags, width, kTabStops);
+        game::kTransparentBlack, font, flags, width, kTabStops);
   }
 }
 

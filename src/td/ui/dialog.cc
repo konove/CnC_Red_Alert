@@ -127,26 +127,34 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
 
           // Filler, Shadow, Hilite, Corner colors
 
-          {kLightGrey, kWhite, kGrey, kLightGrey},  // 0 Button is down.
-          {kLightGrey, kGrey, kWhite, kLightGrey},  // 1 Button is up w/border.
-          {kLightBlue, kBlue, kLightCyan, kLightBlue},  // 2 Raised blue.
-          {kGrey, kWhite, kBlack, kGrey},       // 3 Button is disabled down.
-          {kGrey, kBlack, kWhite, kLightGrey},  // 4 Button is disabled up.
-          {kLightGrey, kGrey, kWhite, kLightGrey},  // 5 Button is up w/arrows.
+          {game::kLightGrey, game::kWhite, game::kGrey,
+           game::kLightGrey},  // 0 Button is down.
+          {game::kLightGrey, game::kGrey, game::kWhite,
+           game::kLightGrey},  // 1 Button is up w/border.
+          {game::kLightBlue, game::kBlue, game::kLightCyan,
+           game::kLightBlue},  // 2 Raised blue.
+          {game::kGrey, game::kWhite, game::kBlack,
+           game::kGrey},  // 3 Button is disabled down.
+          {game::kGrey, game::kBlack, game::kWhite,
+           game::kLightGrey},  // 4 Button is disabled up.
+          {game::kLightGrey, game::kGrey, game::kWhite,
+           game::kLightGrey},  // 5 Button is up w/arrows.
           //{ CC_GREEN_BKGD, CC_LIGHT_GREEN, CC_GREEN_SHADOW,  CC_GREEN_CORNERS
           //},
           //// 6 Button is down.
           //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS
           //},
           //// 7 Button is up w/border.
-          {kCcGreenBkgd, 14, 12, 13},          // 6 Button is down.
-          {kCcGreenBkgd, 12, 14, 13},          // 7 Button is up w/border.
-          {kGrey, kWhite, kBlack, kGrey},      // 8 Button is disabled down.
-          {kGrey, kBlack, kLightGrey, kGrey},  // 9 Button is disabled up.
+          {kCcGreenBkgd, 14, 12, 13},  // 6 Button is down.
+          {kCcGreenBkgd, 12, 14, 13},  // 7 Button is up w/border.
+          {game::kGrey, game::kWhite, game::kBlack,
+           game::kGrey},  // 8 Button is disabled down.
+          {game::kGrey, game::kBlack, game::kLightGrey,
+           game::kGrey},  // 9 Button is disabled up.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
-          {kBlack, 14, 14, kBlack},  // 10 List box.
-          {kBlack, 14, 14, kBlack},  // 11 Menu box.
+          {game::kBlack, 14, 14, game::kBlack},  // 10 List box.
+          {game::kBlack, 14, 14, game::kBlack},  // 11 Menu box.
       }};
 
   w--;
@@ -530,7 +538,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      base::At(fontpalette, 2) = kBlack;
+      base::At(fontpalette, 2) = game::kBlack;
       base::At(fontpalette, 3) = static_cast<unsigned char>(back);
       break;
 
@@ -548,8 +556,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      base::At(fontpalette, 2) = kBlack;
-      base::At(fontpalette, 3) = kBlack;
+      base::At(fontpalette, 2) = game::kBlack;
+      base::At(fontpalette, 3) = game::kBlack;
       break;
 
     case TextPrintType::TPF_NONE:

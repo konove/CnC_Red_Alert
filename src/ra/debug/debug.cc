@@ -302,7 +302,7 @@ void Debug_Key(unsigned input) {
                     y)) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
-              view.DrawLine(x, y + 8, x1, y1 + 8, kWhite);
+              view.DrawLine(x, y + 8, x1, y1 + 8, game::kWhite);
             }
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
@@ -310,7 +310,7 @@ void Debug_Key(unsigned input) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
-              view.DrawLine(x, y + 8, x1, y1 + 8, kRed);
+              view.DrawLine(x, y + 8, x1, y1 + 8, game::kRed);
             }
           }
         }

@@ -1196,7 +1196,8 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
               x + base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
                            kWindowX),
               y, &ThePalettes().color_remaps().at(PCOLOR_RED),
-              kTransparentBlack, FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
+              game::kTransparentBlack, FontType::k6Point,
+              TPF_CENTER | TPF_NOSHADOW);
         }
       }
 

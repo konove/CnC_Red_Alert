@@ -193,7 +193,7 @@ int CellClass::Cell_Color(bool override) const {
   }
 
   if (override) {
-    return kTransparentBlack;
+    return game::kTransparentBlack;
   }
   return Ground.at(Land_Type()).Color;
 }
@@ -694,7 +694,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
 #ifdef NEVER
       int x, y;
       if (TheMap().Coord_To_Pixel(Center_Coord(), x, y)) {
-        TheScreen().visible_view().PutPixel(x, y, kBlue);
+        TheScreen().visible_view().PutPixel(x, y, game::kBlue);
       }
 #endif
       break;
@@ -946,10 +946,10 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
     Fancy_Text_Print(view, "%d\r%2X%c\r%02X.%02X",
                      TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                     TheMap().TacPixelY + y, kWhite, kTransparentBlack,
-                     FontType::k6Point, TPF_NOSHADOW | TPF_CENTER, cell.index(),
-                     Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay,
-                     OverlayData);
+                     TheMap().TacPixelY + y, game::kWhite,
+                     game::kTransparentBlack, FontType::k6Point,
+                     TPF_NOSHADOW | TPF_CENTER, cell.index(), Flag.Composite,
+                     Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -1000,7 +1000,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
           view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                         TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
                         TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
-                        kYellow);
+                        game::kYellow);
         }
       }
 
@@ -1064,8 +1064,9 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
           if (IsTrigger) {
             trig = Get_Trigger();
             Fancy_Text_Print(view, trig->Get_Name(), x + TheMap().TacPixelX,
-                             y + TheMap().TacPixelY, kPink, kTransparentBlack,
-                             FontType::k6Point, TPF_NOSHADOW);
+                             y + TheMap().TacPixelY, game::kPink,
+                             game::kTransparentBlack, FontType::k6Point,
+                             TPF_NOSHADOW);
           }
 
           /*
@@ -1080,7 +1081,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                     view, waypt,
                     TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
                     TheMap().TacPixelY + y + (game::kCellHeightPixels / 2) - 3,
-                    kYellow, kTransparentBlack, FontType::k6Point,
+                    game::kYellow, game::kTransparentBlack, FontType::k6Point,
                     TPF_NOSHADOW | TPF_CENTER);
                 break;
               }
@@ -1088,14 +1089,16 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
             if (base::At(TheWorld().waypoint(), kWayptHome) == Cell_Number()) {
               Fancy_Text_Print(
                   view, "Home", TheMap().TacPixelX + x,
-                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7, kWhite,
-                  kTransparentBlack, FontType::k6Point, TPF_NOSHADOW);
+                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
+                  game::kWhite, game::kTransparentBlack, FontType::k6Point,
+                  TPF_NOSHADOW);
             }
             if (base::At(TheWorld().waypoint(), kWayptReinf) == Cell_Number()) {
               Fancy_Text_Print(
                   view, "Reinf", TheMap().TacPixelX + x,
-                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7, kWhite,
-                  kTransparentBlack, FontType::k6Point, TPF_NOSHADOW);
+                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
+                  game::kWhite, game::kTransparentBlack, FontType::k6Point,
+                  TPF_NOSHADOW);
             }
           }
         }

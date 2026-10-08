@@ -407,7 +407,7 @@ int MapEditClass::Placement_Dialog() {
       */
       view.FillRect(kGridX - (kGridblockW * 2), kGridY,
                     kGridX + (kGridsize * kGridblockW),
-                    kGridY + (kGridsize * kGridblockH), kBlack);
+                    kGridY + (kGridsize * kGridblockH), game::kBlack);
 
       /*
       **	Draw a box for every cell occupied
@@ -443,7 +443,7 @@ int MapEditClass::Placement_Dialog() {
       **	functions won't work!
       */
       Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,
-                       kPictureY + kMargin, scheme, kTransparentBlack,
+                       kPictureY + kMargin, scheme, game::kTransparentBlack,
                        FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
 
       /*

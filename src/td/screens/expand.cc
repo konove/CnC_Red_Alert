@@ -155,12 +155,13 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
     }
 
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen,
-                            kTransparentBlack, TextFont, flags, width, Tabs);
+                            game::kTransparentBlack, TextFont, flags, width,
+                            Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            selected ? kBlue : kWhite, kTransparentBlack,
-                            TextFont, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(
+        view, Get_Item(index), x, y, selected ? game::kBlue : game::kWhite,
+        game::kTransparentBlack, TextFont, TextFlags, width, Tabs);
   }
 }
 

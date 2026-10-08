@@ -236,11 +236,11 @@ const char* SimpleEditDlgClass::Show() {
       **	Redraw the buttons.
       */
       Fancy_Text_Print(view, szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       Get_Color_Scheme(), kTransparentBlack, kTextFont,
+                       Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
                        kTextFlags);
       if (!szPrompt2.empty()) {
         Fancy_Text_Print(view, szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         Get_Color_Scheme(), kTransparentBlack, kTextFont,
+                         Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
                          kTextFlags);
       }
       commands->Flag_List_To_Redraw();

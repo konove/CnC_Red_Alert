@@ -118,18 +118,18 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
 
   if (complete || IsTabToRedraw) {
     if (view.Lock()) {
-      view.FillRect(0, 0, rightx, Tab_Height - 2, kBlack);
+      view.FillRect(0, 0, rightx, Tab_Height - 2, game::kBlack);
       CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
       CC_Draw_Shape(view, TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
                     ShapeFlags::kNone);
       Draw_Credits_Tab(view);
-      view.DrawLine(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
+      view.DrawLine(0, Tab_Height - 1, rightx, Tab_Height - 1, game::kBlack);
 
       Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11,
-                       kTransparentBlack, FontType::kGreen12Gradient,
+                       game::kTransparentBlack, FontType::kGreen12Gradient,
                        TPF_CENTER | TPF_USE_GRAD_PAL);
       Fancy_Text_Print(view, TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11,
-                       kTransparentBlack, FontType::kGreen12Gradient,
+                       game::kTransparentBlack, FontType::kGreen12Gradient,
                        TPF_CENTER | TPF_USE_GRAD_PAL);
     }
     view.Unlock();
@@ -159,8 +159,9 @@ void TabClass::Draw_Credits_Tab(PixelView& view) {
 
 void TabClass::Hilite_Tab(PixelView& view, int /*tab*/) {
   CC_Draw_Shape(view, TabShape, 1, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
-  Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, 80, 0, 11, kTransparentBlack,
-                   FontType::kGreen12, TPF_CENTER | TPF_USE_GRAD_PAL);
+  Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, 80, 0, 11,
+                   game::kTransparentBlack, FontType::kGreen12,
+                   TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 
 /***********************************************************************************************

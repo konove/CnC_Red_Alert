@@ -451,10 +451,12 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap,
-                              kTransparentBlack, TextFont, flags, width, tab);
+                              game::kTransparentBlack, TextFont, flags, width,
+                              tab);
     } else {
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap,
-                              kTransparentBlack, TextFont, flags, width, {});
+                              game::kTransparentBlack, TextFont, flags, width,
+                              {});
     }
   }
 

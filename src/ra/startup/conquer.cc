@@ -135,7 +135,7 @@ static void CyclePalette() {
   bool palette_changed = false;
   if (pulse.Update()) {
     ThePalettes().game_palette().at(kPulseColor) =
-        pulse.Apply(ThePalettes().game_palette().at(kWhite));
+        pulse.Apply(ThePalettes().game_palette().at(game::kWhite));
     ThePalettes().game_palette().at(kEmberColor) = pulse.Apply(kEmberBase);
     palette_changed = true;
   }

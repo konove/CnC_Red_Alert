@@ -257,7 +257,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Draw the caption.
     */
     Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                     kCcGreen, kTransparentBlack, FontType::k6PointGradient,
+                     kCcGreen, game::kTransparentBlack,
+                     FontType::k6PointGradient,
                      TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
@@ -301,7 +302,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           **	Draw the caption.
           */
           Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                           kCcGreen, kTransparentBlack,
+                           kCcGreen, game::kTransparentBlack,
                            FontType::k6PointGradient,
                            TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE

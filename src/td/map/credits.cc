@@ -119,7 +119,7 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab(view);
-    Fancy_Text_Print(view, "%ld", xx, 0, 11, kTransparentBlack,
+    Fancy_Text_Print(view, "%ld", xx, 0, 11, game::kTransparentBlack,
                      FontType::kGreen12Gradient, TPF_CENTER | TPF_USE_GRAD_PAL,
                      Current);
 

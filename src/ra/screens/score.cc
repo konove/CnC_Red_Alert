@@ -259,8 +259,8 @@ void ScorePrintClass::Update() {
     if (Stage) {
       localstr[0] = Text().at(base::ToSize(Stage - 1));
       TheScreen().hidden_view().Print(ScoreFontStyle(PrimaryPalette), localstr,
-                                      pos - 12, YPos, kTransparentBlack,
-                                      kTransparentBlack);
+                                      pos - 12, YPos, game::kTransparentBlack,
+                                      game::kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), pos - 12,
                                        YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
@@ -270,11 +270,14 @@ void ScorePrintClass::Update() {
       localstr[0] = Text().at(base::ToSize(Stage));
       const FontStyle white = ScoreFontStyle(_whitepal);
       TheScreen().visible_view().Print(white, localstr, pos, YPos - 1,
-                                       kTransparentBlack, kTransparentBlack);
+                                       game::kTransparentBlack,
+                                       game::kTransparentBlack);
       TheScreen().visible_view().Print(white, localstr, pos, YPos + 1,
-                                       kTransparentBlack, kTransparentBlack);
+                                       game::kTransparentBlack,
+                                       game::kTransparentBlack);
       TheScreen().visible_view().Print(white, localstr, pos + 1, YPos,
-                                       kTransparentBlack, kTransparentBlack);
+                                       game::kTransparentBlack,
+                                       game::kTransparentBlack);
     }
     Stage++;
   }
@@ -296,10 +299,10 @@ void ScoreScaleClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
     if (Stage) {
-      TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTransparentBlack);
-      TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
-                                      std::string(Text()).c_str(), 0, 0,
-                                      kTransparentBlack, kTransparentBlack);
+      TheScreen().hidden_view().FillRect(0, 0, 14, 14, game::kTransparentBlack);
+      TheScreen().hidden_view().Print(
+          ScoreFontStyle(Palette), std::string(Text()).c_str(), 0, 0,
+          game::kTransparentBlack, game::kTransparentBlack);
       TheScreen().hidden_view().Scale(TheScreen().visible_view(), 0, 0,
                                       base::At(_destx, Stage) * 2, YPos, 10, 12,
                                       base::At(_destw, Stage) * 2,
@@ -308,9 +311,9 @@ void ScoreScaleClass::Update() {
     } else {
       // Zoom finished: print the letter at its final size, free the slot (which
       // Input_Name() is waiting on) and self-destruct.
-      TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
-                                      std::string(Text()).c_str(), XPos, YPos,
-                                      kTransparentBlack, kTransparentBlack);
+      TheScreen().hidden_view().Print(
+          ScoreFontStyle(Palette), std::string(Text()).c_str(), XPos, YPos,
+          game::kTransparentBlack, game::kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), XPos, YPos,
                                        XPos, YPos, 12, 12);
       Release_Slot(this);
@@ -535,9 +538,9 @@ void ScoreClass::Presentation() {
   Alloc_Object(std::make_unique<ScorePrintClass>(buffer, 274, 38, greenpal));
   TickScoreScreen(8);
   // Rule off the sum: flash the line white for a tick, then settle on green.
-  TheScreen().visible_view().DrawLine(548, 96, 626, 96, kWhite);
+  TheScreen().visible_view().DrawLine(548, 96, 626, 96, game::kWhite);
   TickScoreScreen(1);
-  TheScreen().visible_view().DrawLine(548, 96, 626, 96, kGreen);
+  TheScreen().visible_view().DrawLine(548, 96, 626, 96, game::kGreen);
 
   absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(std::make_unique<ScorePrintClass>(buffer, 286, 50, greenpal));
@@ -801,7 +804,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // then replaced by the final coloured frame.
   PixelView& hidden = TheScreen().hidden_view();
   PixelView& view = TheScreen().visible_view();
-  hidden.FillRect(0, 0, 248, 18, kTransparentBlack);
+  hidden.FillRect(0, 0, 248, 18, game::kTransparentBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, ShapeFlags::kNone, {},
                 {});
   const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
@@ -920,7 +923,8 @@ void ScoreClass::Print_Minutes(int minutes,
     text = base::FormatRuntime(TextString(TXT_SCORE_TIMEFORMAT2), minutes);
   }
   TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(), 550,
-                                   18, kTransparentBlack, kTransparentBlack);
+                                   18, game::kTransparentBlack,
+                                   game::kTransparentBlack);
 }
 
 void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
@@ -929,8 +933,8 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
   const std::string text =
       base::FormatRuntime(str, percent <= maxval ? percent : maxval);
   TheScreen().visible_view().Print(ScoreFontStyle(palette), text.c_str(),
-                                   xpos * 2, ypos * 2, kTransparentBlack,
-                                   kBlack);
+                                   xpos * 2, ypos * 2, game::kTransparentBlack,
+                                   game::kBlack);
 }
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
@@ -1045,9 +1049,9 @@ void Animate_Cursor(int pos, int ypos) {
     _lastpos = pos;
     _state = 0;
   }
-  TheScreen().visible_view().DrawLine((HALLFAME_X + (pos * 6)) * 2, ypos,
-                                      (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                                      _state ? kLightBlue : kTransparentBlack);
+  TheScreen().visible_view().DrawLine(
+      (HALLFAME_X + (pos * 6)) * 2, ypos, (HALLFAME_X + (pos * 6) + 5) * 2,
+      ypos, _state ? game::kLightBlue : game::kTransparentBlack);
   // Toggle the color of the cursor, blue or hidden, if it's time to do so:
   // every 5 ticks.
   if (_timer.IsFinished()) {

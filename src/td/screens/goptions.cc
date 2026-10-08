@@ -317,8 +317,9 @@ void GameOptionsClass::Process() {
               WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
               ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
                                                     : (24 * resfactor)),
-          kGrey, kTransparentBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
-          ScenarioName, TheGameState().version_text());
+          game::kGrey, game::kTransparentBlack, FontType::k6Point,
+          TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
+          TheGameState().version_text());
 #else
       Fancy_Text_Print(
           view, "%s\rV.%d%s",
@@ -334,9 +335,9 @@ void GameOptionsClass::Process() {
                        kWindowHeight) -
               (TheSession().type() == GAME_NORMAL ? 32 * resfactor
                                                   : 24 * resfactor),
-          kGrey, kTransparentBlack, FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT,
-          TheWorld().scenario_name(), Version_Number(),
-          TheGameState().version_text());
+          game::kGrey, game::kTransparentBlack, FontType::k6Point,
+          TPF_NOSHADOW | TPF_RIGHT, TheWorld().scenario_name(),
+          Version_Number(), TheGameState().version_text());
 #endif
 
       buttons->Draw_All(view);
@@ -674,7 +675,7 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   */
   if (text != TXT_NONE) {
     Fancy_Text_Print(view, text, (w / 2) + x, (5 * factor) + y, kCcGreen,
-                     kTransparentBlack, FontType::k6PointGradient,
+                     game::kTransparentBlack, FontType::k6PointGradient,
                      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     const FontStyle font =

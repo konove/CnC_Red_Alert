@@ -73,7 +73,7 @@ class HelpClass : public TabClass {
   bool Scroll_Map(game::Direction facing, int& distance, bool really) override;
   void Set_Tactical_Position(Coordinate coord) override;
 
-  void Help_Text(int text, int x = -1, int y = -1, int color = kLightGrey,
+  void Help_Text(int text, int x = -1, int y = -1, int color = game::kLightGrey,
                  bool quick = false) override;
   void Set_Cost(int cost);
   [[nodiscard]] std::span<const int16_t> Overlap_List() const;
@@ -127,7 +127,7 @@ class HelpClass : public TabClass {
   **	This is the background color to use for the help text. It can change
   *according *	to the message displayed.
   */
-  int Color{kLightGrey};
+  int Color{game::kLightGrey};
 
   /*
   **	This countdown timer controls when the help text will pop up. If the

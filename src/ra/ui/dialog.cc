@@ -216,7 +216,7 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
     // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
       if (filled) {
-        view.FillRect(x, y, right, bottom, kBlack);
+        view.FillRect(x, y, right, bottom, game::kBlack);
       }
       view.DrawRect(x, y, right, bottom, scheme->Box);
       break;
@@ -225,7 +225,7 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
     // frame of a dialog.
     case BOXSTYLE_BORDER:
       if (filled) {
-        view.FillRect(x, y, right, bottom, kBlack);
+        view.FillRect(x, y, right, bottom, game::kBlack);
       }
       view.DrawRect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
       break;
@@ -244,20 +244,20 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
     case BOXSTYLE_DIS_DOWN:
       Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
-                           .Filler = kGrey,
-                           .Shadow = kWhite,
-                           .Highlight = kBlack,
-                           .Corner = kGrey,
+                           .Filler = game::kGrey,
+                           .Shadow = game::kWhite,
+                           .Highlight = game::kBlack,
+                           .Corner = game::kGrey,
                        });
       break;
 
     case BOXSTYLE_DIS_RAISED:
       Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
-                           .Filler = kGrey,
-                           .Shadow = kBlack,
-                           .Highlight = kLightGrey,
-                           .Corner = kGrey,
+                           .Filler = game::kGrey,
+                           .Shadow = game::kBlack,
+                           .Highlight = game::kLightGrey,
+                           .Corner = game::kGrey,
                        });
       break;
 
@@ -577,7 +577,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      base::At(fontpalette, 2) = kBlack;
+      base::At(fontpalette, 2) = game::kBlack;
       base::At(fontpalette, 3) = static_cast<unsigned char>(back);
       break;
 
@@ -595,8 +595,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      base::At(fontpalette, 2) = kBlack;
-      base::At(fontpalette, 3) = kBlack;
+      base::At(fontpalette, 2) = game::kBlack;
+      base::At(fontpalette, 3) = game::kBlack;
       break;
 
     case TextPrintType::TPF_NONE:
@@ -922,11 +922,12 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
       Fancy_Text_Print(view, text, (w / 2) + x, 4 + y, Get_Color_Scheme(),
-                       kTransparentBlack, FontType::kEditor,
+                       game::kTransparentBlack, FontType::kEditor,
                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
       Fancy_Text_Print(view, text, (w / 2) + x, 16 + y, Get_Color_Scheme(),
-                       kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
+                       game::kTransparentBlack, kTextFont,
+                       TPF_CENTER | kTextFlags);
       const FontStyle font = TextFontStyle(kTextFont, TPF_CENTER | kTextFlags);
       const int length = StringPixelWidth(font, text);
       view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,

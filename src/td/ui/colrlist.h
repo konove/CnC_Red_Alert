@@ -78,8 +78,10 @@ class ColorListClass : public ListClass {
   ColorListClass(ColorListClass&&) = delete;
   ColorListClass& operator=(ColorListClass&&) = delete;
 
-  int Add_Item(const char* text) override { return Add_Item(text, kWhite); }
-  int Add_Item(int text) override { return Add_Item(text, kWhite); }
+  int Add_Item(const char* text) override {
+    return Add_Item(text, game::kWhite);
+  }
+  int Add_Item(int text) override { return Add_Item(text, game::kWhite); }
   virtual int Add_Item(const char* text, char color);
   virtual int Add_Item(int text, char color);
   void Remove_Item(const char* text) override { ListClass::Remove_Item(text); }

@@ -278,10 +278,11 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   if (lines == 1) {
     Fancy_Text_Print(view, buffer, x + (width / 2), y + 25, Get_Color_Scheme(),
-                     kTransparentBlack, kTextFont, kTextFlags | TPF_CENTER);
+                     game::kTransparentBlack, kTextFont,
+                     kTextFlags | TPF_CENTER);
   } else {
     Fancy_Text_Print(view, buffer, x + 40, y + 25, Get_Color_Scheme(),
-                     kTransparentBlack, kTextFont, kTextFlags);
+                     game::kTransparentBlack, kTextFont, kTextFlags);
   }
 
   game::TheMouse().Show();
@@ -521,8 +522,8 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   Fancy_Text_Print(view, buffer.c_str(), (view.width() / 2) - (text_width / 2),
-                   y + 50, Get_Color_Scheme(), kTransparentBlack, kTextFont,
-                   kTextFlags);
+                   y + 50, Get_Color_Scheme(), game::kTransparentBlack,
+                   kTextFont, kTextFlags);
 
   Commands->Draw_All(view);
   game::TheMouse().Show();
@@ -739,7 +740,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Fancy_Text_Print(
             view, text_buffer, (view.width() / 2) - (text_width / 2), y + 50,
-            Get_Color_Scheme(), kTransparentBlack, kTextFont, kTextFlags);
+            Get_Color_Scheme(), game::kTransparentBlack, kTextFont, kTextFlags);
 
         Commands->Draw_All(view);
       }

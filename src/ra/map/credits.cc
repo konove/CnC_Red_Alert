@@ -125,7 +125,7 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     */
     TabClass::Draw_Credits_Tab(view);
     Fancy_Text_Print(view, "%ld", xx, 0, &ThePalettes().metal_scheme(),
-                     kTransparentBlack, FontType::kMetal12,
+                     game::kTransparentBlack, FontType::kMetal12,
                      TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (TheScenario().MissionTimer.IsRunning()) {
@@ -173,12 +173,12 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
 
       if (hours) {
         Fancy_Text_Print(view, TXT_TIME_FORMAT_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), kTransparentBlack,
+                         &ThePalettes().metal_scheme(), game::kTransparentBlack,
                          FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
                          hours, mins, secs);
       } else {
         Fancy_Text_Print(view, TXT_TIME_FORMAT_NO_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), kTransparentBlack,
+                         &ThePalettes().metal_scheme(), game::kTransparentBlack,
                          FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
                          mins, secs);
       }

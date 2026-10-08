@@ -48,15 +48,17 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(view, text, X + 1, Y + 1, Color, kTransparentBlack,
-                          TextFont, TextFlags | flags, Width - 2);
+  Conquer_Clip_Text_Print(view, text, X + 1, Y + 1, Color,
+                          game::kTransparentBlack, TextFont, TextFlags | flags,
+                          Width - 2);
 
   const FontStyle font = TextFontStyle(TextFont, TextFlags | flags);
   const int text_width = StringPixelWidth(font, text);
   if (Has_Focus() &&  //	strlen(text) < MaxLength &&
       text_width + StringPixelWidth(font, "_") < Width - 2) {
     Conquer_Clip_Text_Print(view, "_", X + 1 + text_width, Y + 1, Color,
-                            kTransparentBlack, TextFont, TextFlags | flags);
+                            game::kTransparentBlack, TextFont,
+                            TextFlags | flags);
   }
 }
 

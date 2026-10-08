@@ -505,12 +505,12 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
                 RadY + RadOffY + BaseY + RadarHeight,
                 //													RadY
                 //+ RadOffY + BaseY + RadarHeight +1,
-                kWhite);
+                game::kWhite);
           }
         } else {
           view.FillRect(RadX + RadOffX, RadY + RadOffY,
                         RadX + RadOffX + RadIWidth - 1,
-                        RadY + RadOffY + RadIHeight - 1, kBlack);
+                        RadY + RadOffY + RadIHeight - 1, game::kBlack);
         }
 
         /*
@@ -568,7 +568,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
             &ThePalettes().color_remaps().at(ThePlayer()->RemapColor),
-            kTransparentBlack, kTextFont,
+            game::kTransparentBlack, kTextFont,
             TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
       }
 
@@ -975,7 +975,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = kTransparentBlack;  // Color of the pixel to plot.
+    int color = game::kTransparentBlack;  // Color of the pixel to plot.
     const auto housebit = base::Bit<uint16_t>(ThePlayer()->Class->House);
     const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
@@ -984,19 +984,19 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
       // TheDebugState().unshroud())) {
       color = cellptr->Cell_Color(true);
-      if (celljammed & housebit && color == kTransparentBlack) {
-        color = kBlack;  // FadingWayDark[color];
+      if (celljammed & housebit && color == game::kTransparentBlack) {
+        color = game::kBlack;  // FadingWayDark[color];
         usjamming = true;
       }
     } else {
-      color = kBlack;
+      color = game::kBlack;
     }
 
     /*
     **	If no color override occurs for this cell, then render the underlying
     **	terrain.
     */
-    if (color == kTransparentBlack) {
+    if (color == game::kTransparentBlack) {
       if (ZoomFactor > 1) {
         std::span<const std::byte> ptr;
         int icon = 0;
@@ -1054,7 +1054,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
       view.FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
                     static_cast<unsigned char>(color));
     }
-    if (color != kBlack) {
+    if (color != game::kBlack) {
       Render_Overlay(view, cell, x, y, ZoomFactor);
       Render_Terrain(view, cell, x, y, ZoomFactor);
       Render_Infantry(view, cell, x, y, ZoomFactor);
@@ -1460,20 +1460,20 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
                         RadY + RadOffY + BaseY + view.y_pos(), RadarWidth,
                         RadarHeight);
 
-  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLightGreen);
-  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLightGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, game::kLightGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, game::kLightGreen);
 
   // Draw upper right hand corner
-  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLightGreen);
-  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, game::kLightGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, game::kLightGreen);
 
   // Draw lower left hand corner
-  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLightGreen);
-  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLightGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, game::kLightGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, game::kLightGreen);
 
   // Draw lower right hand corner
-  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLightGreen);
-  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLightGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, game::kLightGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, game::kLightGreen);
 
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
@@ -2172,7 +2172,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
 
   Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW);
+                   game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_NOSHADOW);
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
@@ -2195,8 +2196,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
-                       style);
+      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
+                       font, style);
     } else {
       base::SafeCopy(txt, "________");
     }
@@ -2204,36 +2205,36 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
 
     Fancy_Text_Print(view, TXT_BUILDNGS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     kTransparentBlack, FontType::k6PointGradient,
+                     game::kTransparentBlack, FontType::k6PointGradient,
                      TPF_NOSHADOW);
     y += 12 + 1;
 
     // count & print buildings
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
+                     font, style);
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_UNITS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     kTransparentBlack, FontType::k6PointGradient,
+                     game::kTransparentBlack, FontType::k6PointGradient,
                      TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
+                     font, style);
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_INFANTRY, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     kTransparentBlack, FontType::k6PointGradient,
+                     game::kTransparentBlack, FontType::k6PointGradient,
                      TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
+                     font, style);
     return true;
   }
   return false;
@@ -2269,15 +2270,16 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW);
+                   game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_NOSHADOW);
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   kTransparentBlack, FontType::k6PointGradient,
+                   game::kTransparentBlack, FontType::k6PointGradient,
                    TPF_RIGHT | TPF_NOSHADOW);
   y += 12 + 1;
 
   view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
-                kLightGrey);
+                game::kLightGrey);
   y += 4;
 
   for (HousesType house = HOUSE_MULTI1;
@@ -2322,8 +2324,8 @@ void RadarClass::Draw_Names(PixelView& view) const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTransparentBlack,
-                     FontType::k6PointGradient, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color,
+                     game::kTransparentBlack, FontType::k6PointGradient, style);
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2332,7 +2334,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
     Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                     kTransparentBlack, FontType::k6PointGradient,
+                     game::kTransparentBlack, FontType::k6PointGradient,
                      style | TPF_RIGHT);
 
     y += 12 + 1;

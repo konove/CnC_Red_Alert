@@ -257,13 +257,13 @@ const base::EnumArray<LandType, GroundType, kLandCount> Ground = {{
     // Hover
     //						|		| | | | |
     // float  build
-    {66, {S3, S3, S3, S4, S6, S5, S1}, true},      // LAND_CLEAR
-    {68, {S5, S4, S4, S4, S6, S5, S1}, true},      // LAND_ROAD
-    {kBlue, {S1, S1, S1, S1, S6, S5, S6}, false},  // LAND_WATER
-    {kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_ROCK
-    {kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_WALL
-    {143, {S3, S3, S3, S4, S6, S5, S1}, false},    // LAND_TIBERIUM
-    {66, {S3, S3, S3, S4, S6, S5, S1}, false},     // LAND_BEACH
+    {66, {S3, S3, S3, S4, S6, S5, S1}, true},            // LAND_CLEAR
+    {68, {S5, S4, S4, S4, S6, S5, S1}, true},            // LAND_ROAD
+    {game::kBlue, {S1, S1, S1, S1, S6, S5, S6}, false},  // LAND_WATER
+    {game::kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_ROCK
+    {game::kGrey, {S1, S1, S1, S1, S6, S1, S1}, false},  // LAND_WALL
+    {143, {S3, S3, S3, S4, S6, S5, S1}, false},          // LAND_TIBERIUM
+    {66, {S3, S3, S3, S4, S6, S5, S1}, false},           // LAND_BEACH
 }};
 
 /***************************************************************************

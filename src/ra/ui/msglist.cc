@@ -1140,7 +1140,7 @@ void MessageListClass::Draw(PixelView& view) {
           EditLabel->X + StringPixelWidth(TextFontStyle(EditLabel->TextFont,
                                                         EditLabel->Style),
                                           EditLabel->Text),
-          EditLabel->Y, EditLabel->Color, kTransparentBlack,
+          EditLabel->Y, EditLabel->Color, game::kTransparentBlack,
           EditLabel->TextFont, EditLabel->Style);
     }
 

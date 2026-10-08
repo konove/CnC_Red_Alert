@@ -1421,12 +1421,12 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   //
   // Erase scrags at top of screen
   //
-  view.FillRect(0, 0, 640, 16, kBlack);
+  view.FillRect(0, 0, 640, 16, game::kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
+  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, kCcGreen, game::kBlack,
                    FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                    TotalValue);
 
@@ -1460,7 +1460,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     /*
     ......................... print the label ..........................
     */
-    Fancy_Text_Print(view, buf, 320, 0, kCcTan, kTransparentBlack,
+    Fancy_Text_Print(view, buf, 320, 0, kCcTan, game::kTransparentBlack,
                      FontType::k6PointGradient,
                      TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
   }

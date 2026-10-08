@@ -28,8 +28,10 @@ namespace td {
 //   Presentation show;
 //   show.page().view().Clear();
 //   show.ShowPage();
-//   show.text_page().view().Print("MISSION ACCOMPLISHED", 0, 0, kWhite,
-//   kBlack); show.AddTextRect(0, 0, 0, 0, 320, 16); show.DrawTextRects();
+//   show.text_page().view().Print("MISSION ACCOMPLISHED", 0, 0, game::kWhite,
+//                                 game::kBlack);
+//   show.AddTextRect(0, 0, 0, 0, 320, 16);
+//   show.DrawTextRects();
 class Presentation {
  public:
   // The screen must already have its video mode: the text page is sized to it.

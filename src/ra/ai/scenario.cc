@@ -851,7 +851,7 @@ void Do_Win() {
     TheMap().Render();
     Fancy_Text_Print(view, TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED),
-                     kTransparentBlack, FontType::kVcr,
+                     game::kTransparentBlack, FontType::kVcr,
                      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     speech_timer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
@@ -1026,7 +1026,7 @@ void Do_Lose() {
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED),
-                   kTransparentBlack, FontType::kVcr,
+                   game::kTransparentBlack, FontType::kVcr,
                    TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
@@ -1118,7 +1118,7 @@ void Do_Draw() {
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_WOL_DRAW, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED),
-                   kTransparentBlack, FontType::kVcr,
+                   game::kTransparentBlack, FontType::kVcr,
                    TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
@@ -1450,7 +1450,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     } else {
       if (base::At(bufprint, 0) != 20) {
         TheScreen().visible_view().Print(typed, bufprint, xprint, yprint,
-                                         kTransparentBlack, kTransparentBlack);
+                                         game::kTransparentBlack,
+                                         game::kTransparentBlack);
         xprint += CharPixelWidth(typed, base::At(bufprint, 0));
       }
     }

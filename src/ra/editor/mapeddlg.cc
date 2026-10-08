@@ -808,7 +808,7 @@ int MapEditClass::Load_Scenario() {
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(view, caption, kDDialogX, kDDialogY, kDDialogW);
         Fancy_Text_Print(view, "Scenario", kDDialogCx - 5, kDScenY,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_RIGHT | TPF_NOSHADOW);
         commands->Draw_All(view);
         game::TheMouse().Show();
@@ -1172,37 +1172,37 @@ int MapEditClass::Load_Scenario() {
             */
             txt_x = kDBordX2 + 15;
             txt_y = kDBordY1;
-            Plain_Text_Print(view, "Clear Terrain", txt_x, txt_y,
-                             GroundColor.at(LAND_CLEAR), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "Clear Terrain", txt_x, txt_y, GroundColor.at(LAND_CLEAR),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "Water", txt_x, txt_y,
-                             GroundColor.at(LAND_WATER), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "Water", txt_x, txt_y, GroundColor.at(LAND_WATER),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "Tiberium", txt_x, txt_y,
-                             GroundColor.at(LAND_TIBERIUM), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "Tiberium", txt_x, txt_y, GroundColor.at(LAND_TIBERIUM),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
             Plain_Text_Print(view, "Rock", txt_x, txt_y,
-                             GroundColor.at(LAND_ROCK), kTransparentBlack,
+                             GroundColor.at(LAND_ROCK), game::kTransparentBlack,
                              FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
             Plain_Text_Print(view, "Wall", txt_x, txt_y,
-                             GroundColor.at(LAND_WALL), kTransparentBlack,
+                             GroundColor.at(LAND_WALL), game::kTransparentBlack,
                              FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "Beach", txt_x, txt_y,
-                             GroundColor.at(LAND_BEACH), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "Beach", txt_x, txt_y, GroundColor.at(LAND_BEACH),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "Rough", txt_x, txt_y,
-                             GroundColor.at(LAND_ROUGH), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "Rough", txt_x, txt_y, GroundColor.at(LAND_ROUGH),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "River", txt_x, txt_y,
-                             GroundColor.at(LAND_RIVER), kTransparentBlack,
-                             FontType::kEditor, TPF_DROPSHADOW);
+            Plain_Text_Print(
+                view, "River", txt_x, txt_y, GroundColor.at(LAND_RIVER),
+                game::kTransparentBlack, FontType::kEditor, TPF_DROPSHADOW);
             //					txt_y += 8;
             //					Plain_Text_Print("GDI Unit",
             // txt_x, txt_y, YELLOW, TBLACK, TPF_DROPSHADOW | TPF_EFNT);
@@ -1214,11 +1214,11 @@ int MapEditClass::Load_Scenario() {
             // TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
             Plain_Text_Print(view, "Terrain Object", txt_x, txt_y, DKGREEN,
-                             kTransparentBlack, FontType::kEditor,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_DROPSHADOW);
             txt_y += 8;
-            Plain_Text_Print(view, "Starting Cell", txt_x, txt_y, kWhite,
-                             kTransparentBlack, FontType::kEditor,
+            Plain_Text_Print(view, "Starting Cell", txt_x, txt_y, game::kWhite,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_DROPSHADOW);
 
             /*
@@ -1227,22 +1227,22 @@ int MapEditClass::Load_Scenario() {
             txt_x = kDDialogX + (kDDialogW / 8);
             txt_y = kDDialogY + kDDialogH - kDOkH - 43;
             Fancy_Text_Print(view, "  X", txt_x, txt_y, Get_Color_Scheme(),
-                             kTransparentBlack, FontType::kEditor,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_CENTER | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
             Fancy_Text_Print(view, "  Y", txt_x, txt_y, Get_Color_Scheme(),
-                             kTransparentBlack, FontType::kEditor,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_CENTER | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
             Fancy_Text_Print(view, " Width", txt_x, txt_y, Get_Color_Scheme(),
-                             kTransparentBlack, FontType::kEditor,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_CENTER | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
             Fancy_Text_Print(view, " Height", txt_x, txt_y, Get_Color_Scheme(),
-                             kTransparentBlack, FontType::kEditor,
+                             game::kTransparentBlack, FontType::kEditor,
                              TPF_CENTER | TPF_NOSHADOW);
 
             view.Unlock();
@@ -1262,7 +1262,7 @@ int MapEditClass::Load_Scenario() {
           **	Erase the map interior
           */
           view.FillRect(kDBordX1 + 1, kDBordY1 + 1, kDBordX2 - 1, kDBordY2 - 1,
-                        kBlack);
+                        game::kBlack);
 
           /*
           **	Draw Land map symbols (use color according to Ground[] array).
@@ -1280,30 +1280,30 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw the actual map location
           */
-          view.DrawRect(map_x1, map_y1, map_x2, map_y2, kWhite);
+          view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kWhite);
           switch (grabbed) {
             case 1:
-              view.DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
-              view.DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
+              view.DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, game::kBlue);
+              view.DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, game::kBlue);
               break;
 
             case 2:
-              view.DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
-              view.DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
+              view.DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, game::kBlue);
+              view.DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, game::kBlue);
               break;
 
             case 3:
-              view.DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
-              view.DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
+              view.DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, game::kBlue);
+              view.DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, game::kBlue);
               break;
 
             case 4:
-              view.DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
-              view.DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
+              view.DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, game::kBlue);
+              view.DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, game::kBlue);
               break;
 
             case 5:
-              view.DrawRect(map_x1, map_y1, map_x2, map_y2, kBlue);
+              view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kBlue);
               break;
 
             default:
@@ -1344,7 +1344,7 @@ int MapEditClass::Load_Scenario() {
                   base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
                       .y() +
                   1,
-              kWhite);
+              game::kWhite);
 
           /*
           **	Draw the coordinates
@@ -1352,23 +1352,23 @@ int MapEditClass::Load_Scenario() {
           txt_x = kDDialogX + (kDDialogW / 8);
           txt_y = kDDialogY + kDDialogH - kDOkH - 32;
           Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
-                           kBlack, FontType::kEditor, TPF_CENTER | TPF_NOSHADOW,
-                           map_x1 - kDBordX1 - 1);
+                           game::kBlack, FontType::kEditor,
+                           TPF_CENTER | TPF_NOSHADOW, map_x1 - kDBordX1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
           Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
-                           kBlack, FontType::kEditor, TPF_CENTER | TPF_NOSHADOW,
-                           map_y1 - kDBordY1 - 1);
+                           game::kBlack, FontType::kEditor,
+                           TPF_CENTER | TPF_NOSHADOW, map_y1 - kDBordY1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
           Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
-                           kBlack, FontType::kEditor, TPF_CENTER | TPF_NOSHADOW,
-                           map_x2 - map_x1 + 1);
+                           game::kBlack, FontType::kEditor,
+                           TPF_CENTER | TPF_NOSHADOW, map_x2 - map_x1 + 1);
 
           txt_x += (kDDialogW - 20) / 4;
           Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
-                           kBlack, FontType::kEditor, TPF_CENTER | TPF_NOSHADOW,
-                           map_y2 - map_y1 + 1);
+                           game::kBlack, FontType::kEditor,
+                           TPF_CENTER | TPF_NOSHADOW, map_y2 - map_y1 + 1);
 
           view.Unlock();
         }
@@ -2153,87 +2153,97 @@ int MapEditClass::Load_Scenario() {
         *entire dialog *	needs to be redrawn.
         */
         Fancy_Text_Print(view, "Tech Level =", techlevel.X, techlevel.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Credits =", creditbtn.X, creditbtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Unit Max =", maxunit.X, maxunit.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "IQ =", smarties.X, smarties.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Prebuild Base:", basebtn.X, basebtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Theater:", theaterbtn.X, theaterbtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Scenario Name:", desc.X, desc.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Country:", housebtn.X, housebtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Home Edge:", sourcebtn.X, sourcebtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Allies:", allies.X, allies.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Plyr Control:", control.X, control.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Theme:", themebtn.X, themebtn.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Intro:", intro.X, intro.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Briefing:", briefing.X, briefing.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Action:", action.X, action.Y - 7,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Win:", win.X, win.Y - 7, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Lose:", lose.X, lose.Y - 7, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Store scenario?", record.X + 10, record.Y,
-                         Get_Color_Scheme(), kTransparentBlack,
+                         Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Inherit stored scenario?", inherit.X + 10,
-                         inherit.Y, Get_Color_Scheme(), kTransparentBlack,
+                         inherit.Y, Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Auto evac. Tanya (civilian)?", tanya.X + 10,
-                         tanya.Y, Get_Color_Scheme(), kTransparentBlack,
+                         tanya.Y, Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_NOSHADOW);
         Fancy_Text_Print(view, "Last mission of game?", endofgame.X + 10,
-                         endofgame.Y, Get_Color_Scheme(), kTransparentBlack,
-                         FontType::kEditor, TPF_NOSHADOW);
+                         endofgame.Y, Get_Color_Scheme(),
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Inherit mission timer from last scenario?",
                          timercarry.X + 10, timercarry.Y, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Disable spy plane?", nospyplane.X + 10,
-                         nospyplane.Y, Get_Color_Scheme(), kTransparentBlack,
-                         FontType::kEditor, TPF_NOSHADOW);
+                         nospyplane.Y, Get_Color_Scheme(),
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Skip the score screen?", skipscore.X + 10,
-                         skipscore.Y, Get_Color_Scheme(), kTransparentBlack,
-                         FontType::kEditor, TPF_NOSHADOW);
+                         skipscore.Y, Get_Color_Scheme(),
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "No map selection (force var 'B')?",
                          nomapsel.X + 10, nomapsel.Y, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Return to main menu after scenario finishes?",
                          onetime.X + 10, onetime.Y, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Truck carries wood crate?", truckcrate.X + 10,
-                         truckcrate.Y, Get_Color_Scheme(), kTransparentBlack,
-                         FontType::kEditor, TPF_NOSHADOW);
+                         truckcrate.Y, Get_Color_Scheme(),
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
         Fancy_Text_Print(view, "Initial money is transferred to silos?",
                          moneytib.X + 10, moneytib.Y, Get_Color_Scheme(),
-                         kTransparentBlack, FontType::kEditor, TPF_NOSHADOW);
+                         game::kTransparentBlack, FontType::kEditor,
+                         TPF_NOSHADOW);
 
         theaterbtn.Collapse();
         themebtn.Collapse();

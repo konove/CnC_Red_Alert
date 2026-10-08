@@ -1186,8 +1186,8 @@ int Surrender_Dialog() {
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(view, Text_String(TXT_SURRENDER), d_dialog_cx,
-                         d_dialog_y + d_topmargin, kCcGreen, kTransparentBlack,
-                         FontType::k6PointGradient,
+                         d_dialog_y + d_topmargin, kCcGreen,
+                         game::kTransparentBlack, FontType::k6PointGradient,
                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 

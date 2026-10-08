@@ -125,16 +125,16 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
-    view.FillRect(0, 0, rightx, tab_height - 1, kBlack);
+    view.FillRect(0, 0, rightx, tab_height - 1, game::kBlack);
 
     /*
     ** Use the new sidebar art for 640x400
     */
     CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
     Draw_Credits_Tab(view);
-    view.DrawLine(0, tab_height - 2, rightx, tab_height - 2, kBlack);
+    view.DrawLine(0, tab_height - 2, rightx, tab_height - 2, game::kBlack);
     Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                     &ThePalettes().metal_scheme(), kTransparentBlack,
+                     &ThePalettes().metal_scheme(), game::kTransparentBlack,
                      FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
@@ -142,7 +142,7 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
                     ShapeFlags::kNone);
       Fancy_Text_Print(view, TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
                        &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                       kTransparentBlack, FontType::kMetal12,
+                       game::kTransparentBlack, FontType::kMetal12,
                        TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
 
@@ -182,7 +182,7 @@ void TabClass::Hilite_Tab(PixelView& view, int tab) {
   CC_Draw_Shape(view, TabShape, 1, xpos, 0, WINDOW_MAIN, ShapeFlags::kNone);
   ThePalettes().metal_scheme().Color = 128 + 6;
   Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                   &ThePalettes().metal_scheme(), kTransparentBlack,
+                   &ThePalettes().metal_scheme(), game::kTransparentBlack,
                    FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL);
   ThePalettes().metal_scheme().Color = 128;
 }

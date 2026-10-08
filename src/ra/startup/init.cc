@@ -372,7 +372,7 @@ bool Init_Game() {
     game::TheMouse().Hide();
     Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
-                     kTransparentBlack, kTextFont,
+                     game::kTransparentBlack, kTextFont,
                      TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
     game::TheMouse().Show();
 
@@ -1740,7 +1740,7 @@ static void Init_Color_Remaps() {
       base::At(ThePalettes().color_remaps().at(pcolor).FontRemap, 10 + index) =
           pixel(2 + index, row);
     }
-    ThePalettes().color_remaps().at(pcolor).BrightColor = kWhite;
+    ThePalettes().color_remaps().at(pcolor).BrightColor = game::kWhite;
     //		ColorRemaps[pcolor].BrightColor = hidden_view.GetPixel(1,
     // static_cast<int>(pcolor));
     ThePalettes().color_remaps().at(pcolor).Color = pixel(4, row);
@@ -2316,14 +2316,14 @@ static void Bootstrap() {
   */
   Init_Expansion_Files();
 
-  SidebarScheme.Background = kBlack;
-  SidebarScheme.Corners = kLightGrey;
+  SidebarScheme.Background = game::kBlack;
+  SidebarScheme.Corners = game::kLightGrey;
   SidebarScheme.Shadow = DKGREY;
-  SidebarScheme.Highlight = kWhite;
-  SidebarScheme.Color = kLightGrey;
-  SidebarScheme.Bright = kWhite;
-  SidebarScheme.BrightColor = kWhite;
-  SidebarScheme.Box = kLightGrey;
+  SidebarScheme.Highlight = game::kWhite;
+  SidebarScheme.Color = game::kLightGrey;
+  SidebarScheme.Bright = game::kWhite;
+  SidebarScheme.BrightColor = game::kWhite;
+  SidebarScheme.Box = game::kLightGrey;
   Set_Color_Scheme(&SidebarScheme);
 }
 
