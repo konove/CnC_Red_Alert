@@ -72,7 +72,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
-#include "engine/gfx/wwstd.h"
+#include "game/ui/standard_colors.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"

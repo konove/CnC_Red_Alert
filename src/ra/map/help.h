@@ -44,10 +44,10 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"

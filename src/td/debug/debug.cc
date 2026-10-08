@@ -52,12 +52,12 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/ui/input.h"
+#include "game/ui/standard_colors.h"
 #include "td/ai/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"

@@ -50,8 +50,8 @@
 #include "absl/base/attributes.h"
 #include "base/buffer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "game/ui/standard_colors.h"
 #include "td/assets/presentation.h"
 
 class ArchiveReader;

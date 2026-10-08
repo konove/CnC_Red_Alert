@@ -48,9 +48,9 @@
 
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"

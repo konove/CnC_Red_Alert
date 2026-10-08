@@ -20,8 +20,8 @@
 #include <cstdint>
 
 #include "base/array.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/stream/archive.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/map/credits.h"

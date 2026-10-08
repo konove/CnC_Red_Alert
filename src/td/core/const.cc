@@ -41,8 +41,8 @@
 #include "td/core/const.h"
 
 #include "base/enum_array.h"
-#include "engine/gfx/wwstd.h"
 #include "game/sim/direction.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/objects/type.h"
 

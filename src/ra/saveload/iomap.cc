@@ -25,10 +25,10 @@
 #include <vector>
 
 #include "base/array.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "game/core/heap_slot_ptr.h"
+#include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"

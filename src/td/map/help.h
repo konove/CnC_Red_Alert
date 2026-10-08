@@ -45,9 +45,9 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/map/tab.h"
 #include "td/startup/conquer.h"

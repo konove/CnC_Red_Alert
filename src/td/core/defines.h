@@ -50,13 +50,13 @@
 #include "base/enum_step.h"  // IWYU pragma: export
 #include "base/flags.h"      // IWYU pragma: export
 #include "base/numeric.h"
-#include "engine/gfx/wwstd.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/cell.h"        // IWYU pragma: export
 #include "td/core/coordinate.h"  // IWYU pragma: export
 #include "td/core/special_flags.h"
-#include "td/core/target.h"      // IWYU pragma: export
+#include "td/core/target.h"  // IWYU pragma: export
 
 namespace td {
 

@@ -27,11 +27,11 @@
 
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
+#include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/dialog.h"

@@ -42,8 +42,8 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "game/ui/control.h"
+#include "game/ui/standard_colors.h"
 #include "game/ui/toggle.h"
 #include "game/ui/widget_skin.h"
 

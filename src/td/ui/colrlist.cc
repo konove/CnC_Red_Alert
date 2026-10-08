@@ -69,7 +69,7 @@
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/data/text.h"
 #include "td/startup/conquer.h"

@@ -25,8 +25,8 @@
 // and only approximate: Tiberian Dawn's palette has orange at kPurple and tan at
 // kBrown, and aliases them in td/core/defines.h (kCcOrange, kCcTan).
 
-#ifndef CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
-#define CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
+#ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
+#define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 
 // Palette indices, `int` because that is what the drawing functions take.
 
@@ -49,4 +49,4 @@ inline constexpr int kGrey = 13;
 inline constexpr int kLightGrey = 14;
 inline constexpr int kWhite = 15;
 
-#endif  // CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
+#endif  // CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_

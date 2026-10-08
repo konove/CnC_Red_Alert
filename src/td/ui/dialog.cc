@@ -72,7 +72,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
-#include "engine/gfx/wwstd.h"
+#include "game/ui/standard_colors.h"
 #include "td/assets/assets.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"

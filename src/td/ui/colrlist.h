@@ -46,7 +46,7 @@
 #include <vector>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
+#include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/ui/list.h"
 

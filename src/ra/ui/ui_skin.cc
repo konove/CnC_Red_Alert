@@ -10,7 +10,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/gfx/wwstd.h"
+#include "game/ui/standard_colors.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/config.h"

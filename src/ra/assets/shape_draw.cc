@@ -36,9 +36,9 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/shape_blitter.h"
 #include "engine/gfx/text_window.h"
-#include "engine/gfx/wwstd.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
+#include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 #include "ra/map/display.h"
 

@@ -47,12 +47,12 @@
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
+#include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
