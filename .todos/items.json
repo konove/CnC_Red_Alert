@@ -4711,11 +4711,13 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:48:56Z",
-      "updated": "2026-10-08T04:48:56Z",
+      "updated": "2026-10-08T06:46:52Z",
       "source": "8a04d474..1f244fe5",
+      "fixedIn": "b757e715..b75d64f5",
+      "resolution": "Nothing of its own to change: all four parts are done. T-180 made `Heading(Direction)` explicit and kept `SnapTo()`, T-181 removed `ShortestTurnTo()` in favour of `game::ShortestTurn()`, T-182 clamps a negative step in `Turn()`, and T-183 moved the save test to `heading_test.cc`.",
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
@@ -4823,10 +4825,10 @@
         "bugs",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T06:33:09Z",
+      "updated": "2026-10-08T06:33:22Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
       "fixedIn": "51dd5e76",
@@ -4849,12 +4851,14 @@
         "ra",
         "game"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T06:45:42Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
+      "fixedIn": "b75d64f5",
+      "resolution": "Moved the test from `src/td/saveload/savevalues_test.cc` to `src/game/sim/heading_test.cc` as `HeadingTest.SavesCurrentAndDesiredSeparately`, so both games share it and `game_sim_test` instantiates `Heading::Serialize()`. It also pins the saved bytes: current then desired, four bytes each.",
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
