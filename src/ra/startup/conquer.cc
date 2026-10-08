@@ -49,6 +49,7 @@
 #include "engine/file/file_access.h"
 #include "engine/gfx/glow_pulse.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
@@ -61,7 +62,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
-#include "ra/assets/filepcx.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -617,7 +617,8 @@ static void CaptureMotionFrame() {
                     frame_bytes);
     const std::string name = absl::StrFormat("cap%04d.pcx", index);
     if (const auto file = OpenDiskFile(name, FileAccess::kWrite)) {
-      Write_PCX_File(*file, frame_page, ThePalettes().game_palette());
+      engine::gfx::WritePcx(*file, frame_page.view(),
+                            ThePalettes().game_palette());
     }
   }
 

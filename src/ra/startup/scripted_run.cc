@@ -15,12 +15,12 @@
 #include "absl/strings/str_format.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 #include "engine/window/player_script.h"
 #include "engine/window/scripted_run.h"
 #include "game/ui/input.h"
-#include "ra/assets/filepcx.h"
 #include "ra/assets/palette.h"
 #include "ra/startup/startup.h"
 
@@ -42,7 +42,7 @@ void SaveShot(const std::filesystem::path& path) {
     absl::FPrintF(stderr, "-SCRIPT: cannot write %s\n", path.string());
     return;
   }
-  Write_PCX_File(*file, page, PaletteClass::CurrentPalette);
+  engine::gfx::WritePcx(*file, page.view(), PaletteClass::CurrentPalette);
 }
 
 }  // namespace

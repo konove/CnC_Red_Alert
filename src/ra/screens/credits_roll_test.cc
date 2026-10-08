@@ -13,10 +13,10 @@
 #include "engine/file/file_access.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
-#include "ra/assets/filepcx.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -57,7 +57,7 @@ class CreditsRollTest : public UiFixture {
     const auto file =
         OpenDiskFile(GameFilePath(name).string(), FileAccess::kWrite);
     ASSERT_NE(file, nullptr);
-    Write_PCX_File(*file, picture, palette);
+    ASSERT_TRUE(engine::gfx::WritePcx(*file, picture.view(), palette));
   }
 
   // Writes the palette of the text, EGOPAL.PAL, with the text colour white.

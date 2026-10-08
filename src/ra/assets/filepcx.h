@@ -34,45 +34,18 @@
 ;* Functions:                                                              *
 ;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
 size);
-;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 #ifndef CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 #define CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 
 #include <cstdint>
 #include <memory>
+#include <span>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
-class ByteStream;
-
 namespace ra {
-
-struct RGB {
-  unsigned char red;
-  unsigned char green;
-  unsigned char blue;
-};
-
-struct PCX_HEADER {
-  char id;
-  char version;
-  char encoding;
-  char pixelsize;
-  int16_t x;
-  int16_t y;
-  int16_t width;
-  int16_t height;
-  int16_t xres;
-  int16_t yres;
-  RGB ega_palette[16];
-  char nothing;
-  char color_planes;
-  int16_t byte_per_line;
-  int16_t palette_type;
-  char filler[58];
-};
 
 // Reads the PCX picture `name` into a new buffer, backed by `backing` when it
 // is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`
@@ -82,13 +55,6 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
                                            engine::gfx::Palette* palette,
                                            std::span<uint8_t> backing,
                                            int32_t size);
-
-// Writes pic as a PCX picture with palette to file, which the caller has
-// opened for writing; the picture starts at the stream's current position and
-// the stream is left open. Writes nothing for a buffer without pixels (a
-// surface that will not lock). Returns 0.
-int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
-                   const engine::gfx::Palette& palette);
 
 }  // namespace ra
 

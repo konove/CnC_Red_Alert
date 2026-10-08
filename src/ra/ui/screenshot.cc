@@ -5,10 +5,10 @@
 #include "absl/strings/str_format.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/assets/audio.h"
-#include "ra/assets/filepcx.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -38,7 +38,8 @@ void Screenshot_Key(const engine::window::KeyNumber key) {
       }
 
       if (const auto file = OpenDiskFile(filename, FileAccess::kWrite)) {
-        Write_PCX_File(*file, temp_page, ThePalettes().game_palette());
+        engine::gfx::WritePcx(*file, temp_page.view(),
+                              ThePalettes().game_palette());
       }
       PlaySoundEffect(VOC_BEEP);
     }
