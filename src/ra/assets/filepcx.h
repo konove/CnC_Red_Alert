@@ -16,25 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
-;**   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
-;***************************************************************************
-;*                                                                         *
-;*                 Project Name : iff                                      *
-;*                                                                         *
-;*                    File Name : FILEPCX.H                                *
-;*                                                                         *
-;*                   Programmer : Julio R. Jerez                           *
-;*                                                                         *
-;*                   Start Date : May 2, 1995                              *
-;*                                                                         *
-;*                  Last Update : May 2, 1995   [JRJ]                      *
-;*                                                                         *
-;*-------------------------------------------------------------------------*
-;* Functions:                                                              *
-;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
-size);
-;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
+// Loading a .PCX picture, which is how the title screens and the pictures
+// behind the score and the credits are stored. Originally part of the Westwood
+// IFF library (FILEPCX.H, Julio R. Jerez, May 1995).
+
 #ifndef CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 #define CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_
 

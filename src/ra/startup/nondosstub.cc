@@ -84,34 +84,8 @@ void Load_Title_Screen(std::string_view name, PixelView* video_page,
   }
 }
 
-/***************************************************************************
- * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *
- *                                                                         *
- *	PixelBuffer* Read_PCX_File (char* name, char* palette ,void
- **Buff, long size );	*
- *  																								*
- *                                                                         *
- * INPUT: name is a NULL terminated string of the format [xxxx.pcx]        *
- *        palette is optional, if palette != NULL the the color palette of *
- *					 the pcx file will be place in the
- *memory block pointed	   * by palette.
- ** Buff is optional, if Buff == NULL a new memory Buffer
- ** will be allocated, otherwise the file will be placed 		* at
- *location pointed by Buffer;
- ** Size is the size in bytes of the memory block pointed by Buff * is also
- *optional;
- **                                                                         *
- * OUTPUT: on success a pointer to a PixelBuffer containing the     *
- *         pcx file, NULL otherwise.                                       *
- *																									*
- * WARNINGS:                                                               *
- *         Appears to be a comment-free zone                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/03/1995 JRJ : Created.                                             *
- *   04/30/1996 ST : Tidied up and modified to use GameFile             *
- *=========================================================================*/
-
+// Reads a stream a byte at a time through a buffer of its own, so that
+// decoding a picture does not cost a file read a byte.
 class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
@@ -119,14 +93,15 @@ class BufferedFileReader {
   explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : file_(file) {}
 
-  // Delete copy/move to prevent accidental state duplication.
+  // Neither copied nor moved: a copy would read on from the same place in the
+  // stream with its own stale buffer.
   ~BufferedFileReader() = default;
   BufferedFileReader(const BufferedFileReader&) = delete;
   BufferedFileReader& operator=(const BufferedFileReader&) = delete;
   BufferedFileReader(BufferedFileReader&&) = delete;
   BufferedFileReader& operator=(BufferedFileReader&&) = delete;
 
-  // Returns the next byte, or nullopt at end of file.
+  // Returns the next byte, or nullopt at the end of the stream.
   std::optional<uint8_t> ReadByte() {
     if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {
       return std::nullopt;
@@ -136,10 +111,10 @@ class BufferedFileReader {
   }
 
  private:
-  // Returns true if data was successfully read, false on EOF.
+  // Reads the next part of the stream into the buffer. Returns false at the
+  // end of the stream.
   bool RefillBuffer() {
     cursor_ = 0;
-    // Track exactly how many bytes were read.
     bytes_in_buffer_ =
         base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));
     return bytes_in_buffer_ > 0;
@@ -147,10 +122,10 @@ class BufferedFileReader {
 
   ByteStream& file_;
 
-  // Use std::array for standard compliance and bounds awareness.
   std::array<uint8_t, kBufferSize> buffer_{};
 
-  // cursor_ tracks current position; bytes_in_buffer_ tracks valid data range.
+  // The next byte of buffer_ to hand out, and how many of its bytes came from
+  // the stream; the stream is ahead of the reader by the difference.
   size_t cursor_ = 0;
   size_t bytes_in_buffer_ = 0;
 };
@@ -163,6 +138,8 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   if (!file_handle) {
     return nullptr;
   }
+  // Only the kind of picture the games ship and write is read: version 5,
+  // run-length encoded, 8 bits a pixel in one plane.
   engine::gfx::PcxHeader header{};
   if (!file_handle->ReadObject(header) || header.id != 10 ||
       header.version != 5 || header.bits_per_pixel != 8 ||
@@ -174,10 +151,12 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0) {
     return nullptr;
   }
+  // A PixelBuffer's size in bytes is an int32_t.
   if (base::ToSize(width) * base::ToSize(height) >
       static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
     return nullptr;
   }
+  // A picture taller than the caller's memory loses its bottom rows.
   if (!backing.empty()) {
     const auto available = size == 0
                                ? backing.size()
@@ -192,14 +171,22 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   // Every exit returns `pic`, emptied on failure, so the return is elided.
   const bool decoded = [&] {
     const auto pixels = pic->bytes();
+    // TODO: the pixels are not kept from running into the palette at the end
+    // of the file: a picture that is cut short takes the palette's bytes for
+    // pixels and loads as garbage instead of failing.
     BufferedFileReader reader(*file_handle);
     for (int row = 0; row < height; ++row) {
       int column = 0;
+      // A scanline holds bytes_per_line pixels, of which the picture shows the
+      // first `width`; the rest is padding to decode and drop.
       while (column < header.bytes_per_line) {
         const auto code = reader.ReadByte();
         if (!code) {
           return false;
         }
+        // A byte with its two top bits set is a run: its low six bits count
+        // the pixels and the next byte is their color. Any other byte is one
+        // pixel.
         int count = 1;
         uint8_t color = *code;
         if ((color & 0xc0U) == 0xc0U) {
@@ -210,6 +197,8 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
           }
           color = *value;
         }
+        // A run ends with its scanline; one that goes on into the next is
+        // taken for a damaged file.
         if (count > header.bytes_per_line - column) {
           return false;
         }
@@ -223,7 +212,9 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
       }
     }
     if (palette != nullptr) {
-      // The file's palette is 8 bits a component.
+      // The palette is the last 768 bytes of the file, 8 bits a component.
+      // The reader's buffer has left the stream somewhere past the pixels, so
+      // it is found from the end.
       std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
       file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
       if (file_handle->Read(std::span(rgb)) !=
