@@ -25,7 +25,6 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 
-#include <array>
 #include <cstdint>
 #include <optional>
 #include <string_view>
@@ -36,36 +35,6 @@
 #include "engine/stream/byte_stream.h"
 
 namespace engine::gfx {
-
-// The 128 bytes a PCX file starts with, laid out as they are on disk: the
-// 16-bit fields are little-endian and all fall on even offsets, so the struct
-// has no padding and is read and written whole.
-struct PcxHeader {
-  uint8_t id;         // 10 marks a PCX file.
-  uint8_t version;    // 5 is the first that can end in a 256-color palette.
-  uint8_t encoding;   // 1 means run-length encoded, the only encoding there is.
-  uint8_t bits_per_pixel;  // Bits a pixel in each color plane.
-  // The picture's left and top edge.
-  int16_t left;
-  int16_t top;
-  // The picture's right and bottom edge, inclusive: for a picture at 0,0 they
-  // are its width and height minus one.
-  int16_t right;
-  int16_t bottom;
-  // The resolution of the device the picture was made for. Readers ignore it.
-  int16_t horizontal_dpi;
-  int16_t vertical_dpi;
-  // Sixteen colors of three bytes each, unused by an 8-bit picture.
-  std::array<uint8_t, 48> ega_palette;
-  uint8_t reserved;                 // Reserved, zero.
-  uint8_t color_planes;
-  // Bytes in one decoded scanline of one plane, which may be more than the
-  // picture is wide.
-  int16_t bytes_per_line;
-  int16_t palette_type;  // 1 is color, 2 grayscale.
-  std::array<uint8_t, 58> padding;  // Pads the header to 128 bytes.
-};
-static_assert(sizeof(PcxHeader) == 128);
 
 // A picture read from a PCX file.
 struct PcxPicture {

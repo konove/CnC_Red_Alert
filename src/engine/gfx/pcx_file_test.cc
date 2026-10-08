@@ -32,7 +32,22 @@ namespace engine::gfx {
 
 namespace {
 
-constexpr std::ptrdiff_t kHeaderSize = sizeof(PcxHeader);
+// The 128 bytes a PCX file starts with, and where their fields are. The 16-bit
+// ones are little-endian.
+constexpr std::ptrdiff_t kHeaderSize = 128;
+constexpr std::size_t kIdOffset = 0;
+constexpr std::size_t kVersionOffset = 1;
+constexpr std::size_t kEncodingOffset = 2;
+constexpr std::size_t kBitsPerPixelOffset = 3;
+constexpr std::size_t kLeftOffset = 4;
+constexpr std::size_t kTopOffset = 6;
+constexpr std::size_t kRightOffset = 8;
+constexpr std::size_t kBottomOffset = 10;
+constexpr std::size_t kHorizontalDpiOffset = 12;
+constexpr std::size_t kVerticalDpiOffset = 14;
+constexpr std::size_t kColorPlanesOffset = 65;
+constexpr std::size_t kBytesPerLineOffset = 66;
+constexpr std::size_t kPaletteTypeOffset = 68;
 
 // A stream that keeps what is written to it, up to `capacity` bytes.
 class RecordingStream final : public ByteStream {
@@ -126,18 +141,18 @@ TEST(PcxFileTest, WritesTheHeaderOfAnEightBitPicture) {
   const std::vector<uint8_t> file = WrittenFile(picture.view(), {});
 
   std::vector<uint8_t> expected(kHeaderSize);
-  expected.at(0) = 10;     // PCX identifier.
-  expected.at(1) = 5;      // Version.
-  expected.at(2) = 1;      // Run-length encoded.
-  expected.at(3) = 8;      // Bits a pixel.
-  expected.at(8) = 4;      // Right edge, inclusive.
-  expected.at(10) = 2;     // Bottom edge, inclusive.
-  expected.at(12) = 0x40;  // Device resolution: 320 ...
-  expected.at(13) = 0x01;
-  expected.at(14) = 200;  // ... by 200.
-  expected.at(65) = 1;    // Color planes.
-  expected.at(66) = 5;    // Bytes a scanline.
-  expected.at(68) = 1;    // Color palette.
+  expected.at(kIdOffset) = 10;
+  expected.at(kVersionOffset) = 5;
+  expected.at(kEncodingOffset) = 1;  // Run-length encoded.
+  expected.at(kBitsPerPixelOffset) = 8;
+  expected.at(kRightOffset) = 4;             // Inclusive.
+  expected.at(kBottomOffset) = 2;            // Inclusive.
+  expected.at(kHorizontalDpiOffset) = 0x40;  // Device resolution: 320 ...
+  expected.at(kHorizontalDpiOffset + 1) = 0x01;
+  expected.at(kVerticalDpiOffset) = 200;  // ... by 200.
+  expected.at(kColorPlanesOffset) = 1;
+  expected.at(kBytesPerLineOffset) = 5;
+  expected.at(kPaletteTypeOffset) = 1;  // Color.
   EXPECT_EQ(Header(file), expected);
 }
 
@@ -182,9 +197,9 @@ TEST(PcxFileTest, WritesOnlyThePartOfThePageAViewCovers) {
   EXPECT_EQ(Scanlines(file), (std::vector<uint8_t>{6, 7, 10, 11}));
   const std::vector<uint8_t> header = Header(file);
   ASSERT_FALSE(header.empty());
-  EXPECT_EQ(header.at(8), 1);   // Right edge.
-  EXPECT_EQ(header.at(10), 1);  // Bottom edge.
-  EXPECT_EQ(header.at(66), 2);  // Bytes a scanline.
+  EXPECT_EQ(header.at(kRightOffset), 1);
+  EXPECT_EQ(header.at(kBottomOffset), 1);
+  EXPECT_EQ(header.at(kBytesPerLineOffset), 2);
 }
 
 // The palette closes the file, 8 bits a component, behind a byte of 12.
@@ -314,38 +329,37 @@ TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
   EXPECT_FALSE(std::filesystem::exists(path));
 }
 
+// Stores `value` in the 16-bit field of `header` at `offset`.
+void SetField(std::vector<uint8_t>& header, const std::size_t offset,
+              const int value) {
+  const auto bits = static_cast<uint16_t>(value);
+  header.at(offset) = static_cast<uint8_t>(bits & 0xFFU);
+  header.at(offset + 1) = static_cast<uint8_t>(bits >> 8U);
+}
+
 // The header of a `width` by `height` picture at 0,0 whose scanlines decode
 // to `bytes_per_line` pixels.
-PcxHeader HeaderOf(const int width, const int height,
-                   const int bytes_per_line) {
-  return {
-      .id = 10,
-      .version = 5,
-      .encoding = 1,
-      .bits_per_pixel = 8,
-      .left = 0,
-      .top = 0,
-      .right = static_cast<int16_t>(width - 1),
-      .bottom = static_cast<int16_t>(height - 1),
-      .horizontal_dpi = 0,
-      .vertical_dpi = 0,
-      .ega_palette = {},
-      .reserved = 0,
-      .color_planes = 1,
-      .bytes_per_line = static_cast<int16_t>(bytes_per_line),
-      .palette_type = 1,
-      .padding = {},
-  };
+std::vector<uint8_t> HeaderOf(const int width, const int height,
+                              const int bytes_per_line) {
+  std::vector<uint8_t> header(kHeaderSize);
+  header.at(kIdOffset) = 10;
+  header.at(kVersionOffset) = 5;
+  header.at(kEncodingOffset) = 1;
+  header.at(kBitsPerPixelOffset) = 8;
+  SetField(header, kRightOffset, width - 1);
+  SetField(header, kBottomOffset, height - 1);
+  header.at(kColorPlanesOffset) = 1;
+  SetField(header, kBytesPerLineOffset, bytes_per_line);
+  SetField(header, kPaletteTypeOffset, 1);
+  return header;
 }
 
 // The bytes of a PCX file: `header`, `scanlines` as they are, and `palette`
 // behind its marker.
-std::vector<uint8_t> FileOf(const PcxHeader& header,
+std::vector<uint8_t> FileOf(std::vector<uint8_t> header,
                             const std::vector<uint8_t>& scanlines,
                             const Palette& palette = {}) {
-  std::vector<uint8_t> file(kHeaderSize);
-  std::ranges::copy(std::as_bytes(std::span(&header, 1)),
-                    std::as_writable_bytes(std::span(file)).begin());
+  std::vector<uint8_t> file = std::move(header);
   file.insert(file.end(), scanlines.begin(), scanlines.end());
   file.push_back(12);
   const auto rgb = palette.ToRgb();
@@ -438,11 +452,11 @@ TEST(PcxFileTest, ReadsThePaletteBehindThePixels) {
 // The size is the distance between the edges, wherever the picture says it
 // lies.
 TEST(PcxFileTest, ReadsAPictureThatIsNotAtTheOrigin) {
-  PcxHeader header = HeaderOf(2, 2, 2);
-  header.left = 100;
-  header.right = 101;
-  header.top = -5;
-  header.bottom = -4;
+  std::vector<uint8_t> header = HeaderOf(2, 2, 2);
+  SetField(header, kLeftOffset, 100);
+  SetField(header, kRightOffset, 101);
+  SetField(header, kTopOffset, -5);
+  SetField(header, kBottomOffset, -4);
 
   const std::optional<PcxPicture> picture =
       ReadBytes(FileOf(header, {1, 2, 3, 4}));
@@ -476,24 +490,24 @@ TEST(PcxFileTest, ReadsFromWhereTheStreamStands) {
 
 TEST(PcxFileTest, RejectsAnotherKindOfPicture) {
   const std::vector<uint8_t> scanline = {7, 8};
-  PcxHeader header = HeaderOf(2, 1, 2);
-  header.id = 11;
+  std::vector<uint8_t> header = HeaderOf(2, 1, 2);
+  header.at(kIdOffset) = 11;
   EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
 
   header = HeaderOf(2, 1, 2);
-  header.version = 3;  // Has no 256-color palette.
+  header.at(kVersionOffset) = 3;  // Has no 256-color palette.
   EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
 
   header = HeaderOf(2, 1, 2);
-  header.encoding = 0;
+  header.at(kEncodingOffset) = 0;
   EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
 
   header = HeaderOf(2, 1, 2);
-  header.bits_per_pixel = 1;
+  header.at(kBitsPerPixelOffset) = 1;
   EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
 
   header = HeaderOf(2, 1, 2);
-  header.color_planes = 3;  // 24-bit color.
+  header.at(kColorPlanesOffset) = 3;  // 24-bit color.
   EXPECT_FALSE(ReadBytes(FileOf(header, scanline)).has_value());
 }
 

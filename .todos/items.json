@@ -5415,10 +5415,10 @@
         "ra",
         "needs-decision"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T19:33:26Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "8b1945aa..66912554",
@@ -5519,8 +5519,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 84,
-          "endLine": 89,
+          "startLine": 53,
+          "endLine": 58,
           "text": "bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);\n\n// Writes the same picture to the game file `file_name`, which OpenGameFile()\n// creates as a loose file. A view without pixels creates no file.\nbool WritePcxFile(std::string_view file_name, PixelView& view,\n                  const Palette& palette);",
           "before": [
             "// position, and leaves `out` open. Returns whether all of it was written;",
@@ -5547,10 +5547,10 @@
         "ra",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:28:10Z",
+      "updated": "2026-10-08T19:33:30Z",
       "blockedBy": [
         "T-196"
       ],
@@ -5626,15 +5626,16 @@
         "refactoring",
         "engine"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T19:36:22Z",
       "blockedBy": [
         "T-195"
       ],
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "Moved `PcxHeader` into the anonymous namespace of `pcx_file.cc` (and dropped `<array>` from the header). `pcx_file_test.cc` now builds its input headers by named byte offset (`HeaderOf()` returns the 128 bytes, `SetField()` stores a 16-bit field). The magic values were already named once (`kPcxId` ...) and TD's hand check and the TD sentence went with T-195. Not committed.",
       "comments": [
         {
           "author": "agent",
@@ -5644,9 +5645,9 @@
       ],
       "anchors": [
         {
-          "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 43,
-          "endLine": 43,
+          "path": "src/engine/gfx/pcx_file.cc",
+          "startLine": 46,
+          "endLine": 46,
           "text": "struct PcxHeader {",
           "before": [
             "// The 128 bytes a PCX file starts with, laid out as they are on disk: the",
@@ -5654,9 +5655,9 @@
             "// has no padding and is read and written whole."
           ],
           "after": [
-            "  uint8_t id;         // 10 marks a PCX file.",
-            "  uint8_t version;    // 5 is the first that can end in a 256-color palette.",
-            "  uint8_t encoding;   // 1 means run-length encoded, the only encoding there is."
+            "  uint8_t id;        // 10 marks a PCX file.",
+            "  uint8_t version;   // 5 is the first that can end in a 256-color palette.",
+            "  uint8_t encoding;  // 1 means run-length encoded, the only encoding there is."
           ],
           "lost": false
         }
@@ -5683,8 +5684,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 136,
-          "endLine": 136,
+          "startLine": 166,
+          "endLine": 166,
           "text": "      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .ega_palette = {},",
@@ -5721,8 +5722,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 131,
-          "endLine": 132,
+          "startLine": 161,
+          "endLine": 162,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",
@@ -5757,8 +5758,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 129,
-          "endLine": 136,
+          "startLine": 159,
+          "endLine": 166,
           "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = kColorPlanes,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .bits_per_pixel = kBitsPerPixel,",
@@ -5933,8 +5934,8 @@
         },
         {
           "path": "src/engine/gfx/pcx_file_test.cc",
-          "startLine": 268,
-          "endLine": 268,
+          "startLine": 283,
+          "endLine": 283,
           "text": "class PaddedSurface final : public PixelSurface {",
           "before": [
             "}",
@@ -6026,10 +6027,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-08T17:27:04Z",
-      "updated": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T19:33:21Z",
       "duplicateOf": "T-195",
       "fixedIn": "8b1945aa..66912554",
       "resolution": "Yes: moved through `/modernize-file` as `engine::gfx::ReadPcxFile()`; see T-195.",
@@ -6127,8 +6128,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 226,
-          "endLine": 228,
+          "startLine": 256,
+          "endLine": 258,
           "text": "  if (in.Read(std::span(encoded)) != encoded_size || !in.ReadObject(marker) ||\n      marker != kPaletteMarker ||\n      in.Read(std::span(rgb)) != Palette::kFileSize) {",
           "before": [
             "  std::vector<uint8_t> encoded(base::ToSize(encoded_size));",
