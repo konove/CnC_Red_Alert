@@ -37,8 +37,6 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
 #define CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
 
-inline constexpr int kInvalidHandle = -1;
-
 // The sixteen standard palette colors, as `int` palette indices.
 inline constexpr int kTBlack = 0;
 inline constexpr int kPurple = 1;
