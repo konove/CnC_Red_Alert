@@ -26,6 +26,8 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_DIRECTION_H_
 #define CNC_RED_ALERT_GAME_SIM_DIRECTION_H_
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
 
 #include "base/enum_step.h"  // IWYU pragma: export
@@ -179,10 +181,33 @@ constexpr int BodyFrame16(const Direction dir) {
   return (dir + 8).value() / 16;
 }
 
+// The body frame for each of the 256 directions. A simple shift won't do:
+// a direction converts to the CLOSEST frame, not the one below it, so each
+// frame's entries straddle its exact direction and the last few wrap to 0.
+// The frames are uneven, between six and eleven directions each, to match the
+// angles the vehicle shapes were actually rendered at.
+inline constexpr std::array<uint8_t, 256> kBodyFrame32 = {
+    0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,
+    2,  2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,
+    4,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  6,  6,  6,  7,  7,  7,  7,
+    7,  7,  7,  8,  8,  8,  8,  8,  8,  8,  9,  9,  9,  9,  9,  9,  9,  10, 10,
+    10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12,
+    12, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21,
+    21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+    24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26,
+    27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 29,
+    29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31,
+    31, 31, 31, 0,  0,  0,  0,  0,  0};
+
 // Returns `dir` as one of 32 body frames, 0 north and rising clockwise. The
 // steps are uneven to undo the distortion 3D Studio rendered into the
 // vehicle shapes.
-int BodyFrame32(Direction dir);
+constexpr int BodyFrame32(const Direction dir) {
+  return kBodyFrame32.at(static_cast<std::size_t>(dir.value()));
+}
 
 // Returns the shortest turn from `from` to `to`, -128..127: positive is
 // clockwise, and the two opposite directions are -128 apart.

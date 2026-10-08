@@ -118,6 +118,11 @@ TEST(BodyFrameTest, ThirtyTwoStepsAreSkewedTowardTheDiagonals) {
   EXPECT_EQ(BodyFrame32(Direction::kSouthEast), 13);
 }
 
+TEST(BodyFrameTest, ThirtyTwoStepsWorkInConstantExpressions) {
+  static_assert(BodyFrame32(Direction::kEast) == 8);
+  static_assert(BodyFrame32(Direction(255)) == 0);
+}
+
 TEST(ShortestTurnTest, IsSignedAndClockwisePositive) {
   EXPECT_EQ(ShortestTurn(Direction::kNorth, Direction::kEast), 64);
   EXPECT_EQ(ShortestTurn(Direction::kEast, Direction::kNorth), -64);
