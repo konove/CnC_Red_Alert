@@ -4882,7 +4882,8 @@
       "status": "done",
       "author": "user",
       "created": "2026-10-08T06:10:42Z",
-      "updated": "2026-10-08T06:26:43Z",
+      "updated": "2026-10-08T06:26:48Z",
+      "fixedIn": "1842aa24..ce749720",
       "resolution": "The three lines are now `PrimaryFacing.SnapTo(DirectionTo(NavCom))`, in Red Alert and in the same code in `td/objects/aircraft.cc`. `ShortestTurn()` already returns -128..127, so the clamp did nothing, and adding the turn back to `SecondaryFacing` wraps to the target direction itself.",
       "anchors": [
         {
