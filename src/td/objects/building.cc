@@ -4442,7 +4442,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (game::ShortestTurn(PrimaryFacing, facing)) {
+          if (PrimaryFacing.current() != facing) {
             PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring;
@@ -4487,7 +4487,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (game::ShortestTurn(PrimaryFacing, facing)) {
+          if (PrimaryFacing.current() != facing) {
             PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring2;

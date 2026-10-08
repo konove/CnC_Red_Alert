@@ -114,7 +114,7 @@ bool TurretClass::Ok_To_Move(game::Direction dir) {
     if (IsRotating) {
       return false;
     }
-    if (game::ShortestTurn(SecondaryFacing, dir)) {
+    if (SecondaryFacing.current() != dir) {
       SecondaryFacing.set_desired(dir);
       return false;
     }

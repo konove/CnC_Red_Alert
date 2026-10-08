@@ -838,7 +838,6 @@ void DriveClass::Per_Cell_Process(bool center) {
  *bumping into cloaked objects.                                    *
  *=============================================================================================*/
 bool DriveClass::Start_Of_Move() {
-  int facediff = 0;     // Difference between current and desired facing.
   int speed = 0;        // Speed of unit.
   Cell destcell{};      // Cell of destination.
   Coordinate dest{};    // Destination coordinate.
@@ -988,8 +987,7 @@ bool DriveClass::Start_Of_Move() {
   **	Set the facing correctly if it isn't already correct. This
   **	means starting a rotation track if necessary.
   */
-  facediff = game::ShortestTurn(PrimaryFacing, dir);
-  if (facediff) {
+  if (PrimaryFacing.current() != dir) {
     /*
     **	Request a change of facing.
     */

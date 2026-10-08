@@ -164,7 +164,7 @@ void TarComClass::AI() {
       *aren't maneuverable enough.
       */
       if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) && !NavCom &&
-          !IsDriving && game::ShortestTurn(PrimaryFacing, dir)) {
+          !IsDriving && PrimaryFacing.current() != dir) {
         if (*this == UNIT_FTANK) {
           PrimaryFacing.set_desired(
               game::DirectionOf(game::NearestFacing(dir)));
