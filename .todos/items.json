@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 208,
+  "nextId": 210,
   "items": [
     {
       "id": "T-2",
@@ -5415,13 +5415,23 @@
         "ra",
         "needs-decision"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T17:44:41Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "fixedIn": "8b1945aa..66912554",
+      "resolution": "The reader is `engine::gfx::ReadPcx(ByteStream&)` and `ReadPcxFile(file_name)` in `engine/gfx/pcx_file`, returning an optional `PcxPicture` (size, pixels, palette); both games' copies, `ra/assets/filepcx.h` and `td/assets/pcx_test.cc` are gone and the tests live in `pcx_file_test.cc`. The stream-or-name question was answered as for the writer (T-196): both. Found on the way and fixed in `640a4097`: a picture cut short read the palette as pixels.",
       "toDecide": "Go ahead with moving `Read_PCX_File()` out of both games into `engine/gfx/pcx_file`? And should it keep taking a file name, or read from a `ByteStream&` the caller opened (see the writer's item)? About 80 lines per game, 6-8 files.",
+      "decisions": [
+        {
+          "question": "Go ahead with moving `Read_PCX_File()` out of both games into `engine/gfx/pcx_file`?",
+          "options": [],
+          "answer": "move Read_PCX_File to the engine too, but do it as part of /modernize-file, otherwise the code will look ugly",
+          "time": "2026-10-08T17:44:41Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/td/startup/nondosstub.cc",
@@ -5437,24 +5447,24 @@
             "}  // namespace td",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/startup/nondosstub.cc",
-          "startLine": 115,
-          "endLine": 115,
+          "startLine": 88,
+          "endLine": 88,
           "text": "class BufferedFileReader {",
           "before": [
-            " *   04/30/1996 ST : Tidied up and modified to use GameFile             *",
-            " *=========================================================================*/",
-            ""
+            "",
+            "// Reads a stream a byte at a time through a buffer of its own, so that",
+            "// decoding a picture does not cost a file read a byte."
           ],
           "after": [
             " public:",
-            "  static constexpr size_t kBufferSize = 2048;",
+            "  static constexpr base::ssize kBufferSize = 2048;",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/startup/winstub.h",
@@ -5471,7 +5481,7 @@
             "                                           std::span<uint8_t> buff,",
             "                                           int32_t size);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5509,8 +5519,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 72,
-          "endLine": 77,
+          "startLine": 84,
+          "endLine": 89,
           "text": "bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);\n\n// Writes the same picture to the game file `file_name`, which OpenGameFile()\n// creates as a loose file. A view without pixels creates no file.\nbool WritePcxFile(std::string_view file_name, PixelView& view,\n                  const Palette& palette);",
           "before": [
             "// position, and leaves `out` open. Returns whether all of it was written;",
@@ -5519,8 +5529,8 @@
           ],
           "after": [
             "",
-            "}  // namespace engine::gfx",
-            ""
+            "// Reads the PCX picture that `in` holds from its current position to its end.",
+            "// Returns nothing if that is not a run-length encoded 8-bit picture ending in"
           ],
           "lost": false
         }
@@ -5619,22 +5629,29 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:46Z",
+      "updated": "2026-10-08T17:44:41Z",
       "blockedBy": [
         "T-195"
       ],
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-08T17:44:41Z",
+          "text": "Unblocked by T-195, but `pcx_file_test.cc` now builds its input files from `PcxHeader` (`HeaderOf()`), besides taking its size. Hiding the struct means the test writes the header by byte offset, as `WritesTheHeaderOfAnEightBitPicture` already does for the expected bytes."
+        }
+      ],
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 41,
-          "endLine": 41,
+          "startLine": 43,
+          "endLine": 43,
           "text": "struct PcxHeader {",
           "before": [
+            "// The 128 bytes a PCX file starts with, laid out as they are on disk: the",
             "// 16-bit fields are little-endian and all fall on even offsets, so the struct",
-            "// has no padding and is read and written whole. Tiberian Dawn's PCX reader",
-            "// (td/startup/nondosstub.cc) uses it too."
+            "// has no padding and is read and written whole."
           ],
           "after": [
             "  uint8_t id;         // 10 marks a PCX file.",
@@ -5666,13 +5683,13 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 119,
-          "endLine": 119,
+          "startLine": 136,
+          "endLine": 136,
           "text": "      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
             "      .ega_palette = {},",
             "      .reserved = 0,",
-            "      .color_planes = 1,"
+            "      .color_planes = kColorPlanes,"
           ],
           "after": [
             "      .palette_type = 1,",
@@ -5704,8 +5721,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 114,
-          "endLine": 115,
+          "startLine": 131,
+          "endLine": 132,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",
@@ -5715,7 +5732,7 @@
           "after": [
             "      .ega_palette = {},",
             "      .reserved = 0,",
-            "      .color_planes = 1,"
+            "      .color_planes = kColorPlanes,"
           ],
           "lost": false
         }
@@ -5734,17 +5751,17 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T17:44:41Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 112,
-          "endLine": 119,
-          "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = 1,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
+          "startLine": 129,
+          "endLine": 136,
+          "text": "      .right = static_cast<int16_t>(view.width() - 1),\n      .bottom = static_cast<int16_t>(view.height() - 1),\n      .horizontal_dpi = 320,\n      .vertical_dpi = 200,\n      .ega_palette = {},\n      .reserved = 0,\n      .color_planes = kColorPlanes,\n      .bytes_per_line = static_cast<int16_t>(view.width()),",
           "before": [
-            "      .bits_per_pixel = 8,",
+            "      .bits_per_pixel = kBitsPerPixel,",
             "      .left = 0,",
             "      .top = 0,"
           ],
@@ -5916,8 +5933,8 @@
         },
         {
           "path": "src/engine/gfx/pcx_file_test.cc",
-          "startLine": 267,
-          "endLine": 267,
+          "startLine": 268,
+          "endLine": 268,
           "text": "class PaddedSurface final : public PixelSurface {",
           "before": [
             "}",
@@ -6009,15 +6026,18 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-08T17:27:04Z",
-      "updated": "2026-10-08T17:27:04Z",
+      "updated": "2026-10-08T17:44:41Z",
+      "duplicateOf": "T-195",
+      "fixedIn": "8b1945aa..66912554",
+      "resolution": "Yes: moved through `/modernize-file` as `engine::gfx::ReadPcxFile()`; see T-195.",
       "anchors": [
         {
           "path": "src/ra/assets/filepcx.h",
-          "startLine": 50,
-          "endLine": 57,
+          "startLine": 35,
+          "endLine": 42,
           "text": "// Reads the PCX picture `name` into a new buffer, backed by `backing` when it\n// is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`\n// with the file's palette when `palette` is not nullptr. Returns null if the\n// file is missing, malformed or does not fit.\nstd::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,\n                                           engine::gfx::Palette* palette,\n                                           std::span<uint8_t> backing,\n                                           int32_t size);",
           "before": [
             "",
@@ -6028,6 +6048,97 @@
             "",
             "}  // namespace ra",
             ""
+          ],
+          "lost": true
+        }
+      ]
+    },
+    {
+      "id": "T-208",
+      "title": "Merge the two games' Load_Title_Screen()",
+      "details": "`Load_Title_Screen()` in `src/ra/startup/nondosstub.cc` and `src/td/startup/nondosstub.cc` is the same five lines since both call `engine::gfx::ReadPcxFile()`: read the picture, `CopyFromBuffer()` it to the page, assign the palette. They differ only in the name's type (`std::string_view` in RA, `const char*` in TD) and both take a `PixelView*` that no caller passes null.\n\nOptions: one free function in `engine/gfx` (for example `bool DrawPcxFile(std::string_view, PixelView&, Palette&)`, returning whether the file was read, which no caller can tell today), or keep one per game and only fix the signatures. 12 callers: RA `scenario.cc`, `credits_roll.cc`, `score.cc`, `init.cc` (2); TD `ending.cc`, `conquer.cc`, `init.cc` (3). RA declares it in `ra/assets/graphics_loader.h`, TD in `td/startup/winstub.h`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T17:44:41Z",
+      "parent": "T-194",
+      "source": "8b1945aa..66912554",
+      "anchors": [
+        {
+          "path": "src/ra/startup/nondosstub.cc",
+          "startLine": 65,
+          "endLine": 65,
+          "text": "void Load_Title_Screen(std::string_view name, PixelView* video_page,",
+          "before": [
+            "  engine::window::HardwareCursor::GrabMouse();",
+            "}",
+            ""
+          ],
+          "after": [
+            "                       engine::gfx::Palette& palette) {",
+            "  if (const std::optional<engine::gfx::PcxPicture> picture =",
+            "          engine::gfx::ReadPcxFile(name)) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/nondosstub.cc",
+          "startLine": 92,
+          "endLine": 92,
+          "text": "void Load_Title_Screen(const char* name, PixelView* video_page,",
+          "before": [
+            " * HISTORY: * 7/5/96 11:30AM ST : Created *",
+            " *=============================================================================================*/",
+            ""
+          ],
+          "after": [
+            "                       engine::gfx::Palette& palette) {",
+            "  if (const std::optional<engine::gfx::PcxPicture> picture =",
+            "          engine::gfx::ReadPcxFile(name)) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-209",
+      "title": "Test the PCX reader and writer on a stream that fails mid-way",
+      "details": "`tools/coverage.py src/engine/gfx/pcx_file.cc --branches` shows all 148 lines covered and five branch sides never taken: in `ReadPcx()` a `Read()` that returns fewer bytes than `Size()` promised and a missing marker byte after a full read (lines 226-228), and in `WritePcxFile()` a file that opens but then fails to take the picture or reports `!ok()` (line 200). A `ByteStream` test double whose `Size()` overstates what `Read()` delivers covers the reader's; the writer's needs a game file that fails after opening (a full disk), which `TestGameFiles` cannot make.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-08T17:44:41Z",
+      "parent": "T-194",
+      "source": "8b1945aa..66912554",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pcx_file.cc",
+          "startLine": 226,
+          "endLine": 228,
+          "text": "  if (in.Read(std::span(encoded)) != encoded_size || !in.ReadObject(marker) ||\n      marker != kPaletteMarker ||\n      in.Read(std::span(rgb)) != Palette::kFileSize) {",
+          "before": [
+            "  std::vector<uint8_t> encoded(base::ToSize(encoded_size));",
+            "  uint8_t marker = 0;",
+            "  std::array<uint8_t, Palette::kFileSize> rgb{};"
+          ],
+          "after": [
+            "    return std::nullopt;",
+            "  }",
+            "  std::optional<std::vector<uint8_t>> pixels ="
           ],
           "lost": false
         }
