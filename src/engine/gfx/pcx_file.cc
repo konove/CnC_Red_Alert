@@ -25,7 +25,6 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/numeric.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
@@ -45,8 +44,14 @@ int Write_PCX_File(const char* name, PixelView& pic,
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
+  // A surface's page has pixels only while it is locked, and a view that was
+  // never attached has none at all.
+  if (!pic.Lock()) {
+    return 0;
+  }
   const auto file = OpenGameFile(name, FileAccess::kWrite);
   if (!file) {
+    pic.Unlock();
     return 0;
   }
 
@@ -55,14 +60,8 @@ int Write_PCX_File(const char* name, PixelView& pic,
   header.byte_per_line = static_cast<int16_t>(pic.width());
   file->WriteObject(header);
 
-  // TODO: The row stride leaves out the buffer's pitch(), and bytes() is empty
-  // for an unlocked surface (the subspans below then run past its end), as is
-  // buffer() null for a view that was never attached. Every caller passes a
-  // view of a memory buffer, where none of that happens.
-  const int VP_Scan_Line = pic.width() + pic.x_add();
-  PixelBuffer* Graphic_Buffer = pic.buffer();
-  const auto pixels = Graphic_Buffer->bytes().subspan(
-      base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
+  const int VP_Scan_Line = pic.stride();
+  const auto pixels = pic.pixels();
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(
         *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
@@ -77,6 +76,7 @@ int Write_PCX_File(const char* name, PixelView& pic,
   i = 0x0c;
   file->Write(base::ObjectBytes(i).first(1));
   file->Write(std::as_bytes(std::span(palcopy)));
+  pic.Unlock();
   return 0;
 }
 

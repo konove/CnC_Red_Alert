@@ -67,7 +67,8 @@ struct PCX_HEADER {
 
 // Writes `pic` as a PCX picture with `palette` to the game file `name`, which
 // OpenGameFile() creates as a loose file. Returns 0 whether or not that
-// worked: a file that cannot be created is skipped silently, and a failed
+// worked: a view without pixels (unattached, or of a surface that will not
+// lock) and a file that cannot be created are skipped silently, and a failed
 // write is not noticed.
 int Write_PCX_File(const char* name, PixelView& pic,
                    const engine::gfx::Palette& palette);
