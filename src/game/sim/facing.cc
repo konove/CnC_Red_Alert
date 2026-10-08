@@ -25,10 +25,10 @@
 
 namespace game {
 
-FacingClass::FacingClass()
+Heading::Heading()
     : CurrentFacing(Direction::kNorth), DesiredFacing(Direction::kNorth) {}
 
-bool FacingClass::Set_Desired(Direction facing) {
+bool Heading::Set_Desired(Direction facing) {
   if (DesiredFacing != facing) {
     DesiredFacing = facing;
     return true;
@@ -36,7 +36,7 @@ bool FacingClass::Set_Desired(Direction facing) {
   return false;
 }
 
-bool FacingClass::Set_Current(Direction facing) {
+bool Heading::Set_Current(Direction facing) {
   if (CurrentFacing != facing) {
     CurrentFacing = facing;
     return true;
@@ -44,7 +44,7 @@ bool FacingClass::Set_Current(Direction facing) {
   return false;
 }
 
-bool FacingClass::Rotation_Adjust(int rate) {
+bool Heading::Rotation_Adjust(int rate) {
   if (Is_Rotating()) {
     // A turn is at most half the circle, so a faster rate adds nothing.
     rate = std::min(rate, 127);

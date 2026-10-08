@@ -198,7 +198,7 @@ game/        → The code both games share, in namespace game::, above the engin
   core/      → OwnedVector, the object pools (ObjectHeapBase/ObjectHeap), QueueClass,
                the frame clock, path-overlap bits, cell/pixel sizes (target `game_core`)
                [depends: base, engine_stream]
-  sim/       → Simulation helpers: the direction types (Facing, Direction), FacingClass, the shared
+  sim/       → Simulation helpers: the direction types (Facing, Direction), Heading, the shared
                simulation enums (ArmorType, MoveType, BStateType, ...),
                UnitTrackerClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
                [depends: game_core]

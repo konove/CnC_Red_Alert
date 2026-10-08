@@ -79,7 +79,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	This is the facing that the projectile is traveling.
   */
-  game::FacingClass PrimaryFacing;
+  game::Heading PrimaryFacing;
 
  public:
   /*---------------------------------------------------------------------

@@ -69,7 +69,7 @@ class TurretClass : public DriveClass {
   **	This is the facing of the turret. It can be, and usually is,
   **	rotated independently of the body it is attached to.
   */
-  game::FacingClass SecondaryFacing;
+  game::Heading SecondaryFacing;
 
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::Direction dir = game::Direction::kNorth) override;

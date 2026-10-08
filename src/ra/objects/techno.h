@@ -233,7 +233,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This is the visible facing for the unit or building.
   */
-  game::FacingClass PrimaryFacing;
+  game::Heading PrimaryFacing;
 
   /*
   **	This is the arming countdown. It represents the time necessary

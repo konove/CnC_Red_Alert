@@ -111,7 +111,7 @@ TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
 }
 
 TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
-  game::FacingClass facing(game::Direction::kNorth);
+  game::Heading facing(game::Direction::kNorth);
   std::array<uint8_t, 8> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes).first(8)));
   ArchiveWriter writer(sink);
@@ -124,7 +124,7 @@ TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
   ASSERT_TRUE(reader.ok());
   EXPECT_EQ(facing.Current(), current);
   EXPECT_EQ(facing.Desired(), desired);
-  game::FacingClass loaded(game::Direction::kNorth);
+  game::Heading loaded(game::Direction::kNorth);
   Restore(loaded, Save(facing));
   EXPECT_EQ(loaded.Current(), current);
   EXPECT_EQ(loaded.Desired(), desired);

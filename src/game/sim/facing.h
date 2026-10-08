@@ -35,22 +35,22 @@ namespace game {
 // direction, so the turning stays out of the code that only draws or aims.
 //
 // Example:
-//   FacingClass turret(Direction::kNorth);
+//   Heading turret(Direction::kNorth);
 //   turret.Set_Desired(Direction::kEast);
 //   if (turret.Rotation_Adjust(rate)) {
 //     // The turret shows another frame: redraw.
 //   }
-class FacingClass {
+class Heading {
  public:
   // Points north and is not turning.
-  FacingClass();
+  Heading();
 
-  // Points in `dir` and is not turning. Implicit: a facing reads and assigns
+  // Points in `dir` and is not turning. Implicit: a heading reads and assigns
   // as its direction.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  FacingClass(Direction dir) : CurrentFacing(dir), DesiredFacing(dir) {}
+  Heading(Direction dir) : CurrentFacing(dir), DesiredFacing(dir) {}
 
-  // The current direction. Implicit, so a facing compares with a direction
+  // The current direction. Implicit, so a heading compares with a direction
   // and passes where one is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator Direction() const { return CurrentFacing; }

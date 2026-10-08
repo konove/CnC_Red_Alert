@@ -221,7 +221,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
   *different.
   */
-  game::FacingClass SecondaryFacing;
+  game::Heading SecondaryFacing;
 
   /*
   **	If this is a passenger carrying aircraft then this flag will be set.

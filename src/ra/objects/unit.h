@@ -131,7 +131,7 @@ class UnitClass final : public DriveClass {
   **	This is the facing of the turret. It can be, and usually is,
   **	rotated independently of the body it is attached to.
   */
-  game::FacingClass SecondaryFacing;
+  game::Heading SecondaryFacing;
 
  protected:
   // Shell for ObjectHeap::Load; Serialize() supplies every value.

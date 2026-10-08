@@ -173,7 +173,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
   *different.
   */
-  game::FacingClass SecondaryFacing;
+  game::Heading SecondaryFacing;
 
   /*
   **	This is the altitude of the aircraft. It is expressed in pixels that
