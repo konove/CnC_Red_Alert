@@ -67,6 +67,16 @@ struct PcxHeader {
 };
 static_assert(sizeof(PcxHeader) == 128);
 
+// A picture read from a PCX file.
+struct PcxPicture {
+  int width = 0;
+  int height = 0;
+  // The palette index of every pixel, row after row with nothing between
+  // them: width * height bytes.
+  std::vector<uint8_t> pixels;
+  Palette palette;
+};
+
 // Writes `view` as a PCX picture with `palette` to `out` at its current
 // position, and leaves `out` open. Returns whether all of it was written;
 // nothing is for a view without pixels (unattached, or of a surface that will
@@ -77,16 +87,6 @@ bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
 // creates as a loose file. A view without pixels creates no file.
 bool WritePcxFile(std::string_view file_name, PixelView& view,
                   const Palette& palette);
-
-// A picture read from a PCX file.
-struct PcxPicture {
-  int width = 0;
-  int height = 0;
-  // The palette index of every pixel, row after row with nothing between
-  // them: width * height bytes.
-  std::vector<uint8_t> pixels;
-  Palette palette;
-};
 
 // Reads the PCX picture that `in` holds from its current position to its end.
 // Returns nothing if that is not a run-length encoded 8-bit picture ending in
