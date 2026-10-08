@@ -25,10 +25,11 @@ Run `git status --short` and read `git diff` (and the untracked files) before st
   one `mcp__clion__todo_batch`, never by editing the file), and `CLAUDE.md` when a statement in it
   stops being true.
 - A TODO item the change finishes is closed **after** the commit, in one `mcp__clion__todo_update`
-  with `status: fixed`, `resolution` and `fixedIn` (the new commit). Do not commit that update on
-  its own ("Record the commit that fixed T-n"): `.todos/items.json` rides in the next commit, and
-  when one is being made now, include the file as it is. It also carries the user's own edits from
-  the IDE; they go along without a line in the message, and `git diff --stat` on it is enough.
+  with `status: fixed`, `resolution` and `fixedIn: "HEAD"` (the new commit). Do not commit that
+  update on its own ("Record the commit that fixed T-n"): `.todos/items.json` rides in the next
+  commit, and when one is being made now, include the file as it is. It also carries the user's own
+  edits from the IDE; they go along without a line in the message, and `git diff --stat` on it is
+  enough.
 - If the user named a scope ("commit the mapsel.cc change", "commit stage 1"), commit only that and
   leave the rest in the tree.
 - Changes you cannot account for and that are clearly unrelated stay uncommitted; say so in the

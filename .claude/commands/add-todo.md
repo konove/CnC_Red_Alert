@@ -75,10 +75,10 @@ Changing items:
 - If fixing any other item turns out to need a decision that is the user's, do not guess and do not
   change code: `todo_update` it with `toDecide` and leave the status alone.
 - A finished item is not deleted. Commit the fix first, then close the item in one `todo_update`:
-  `status: fixed`, `resolution` (a sentence or two on what was done), `fixedIn` (the commit) and the
-  new anchor if the code moved. Not `fixed` before the commit and `fixedIn` after it, and no "Not
-  committed" in the resolution. `wont_fix` takes the reason in `resolution`; a duplicate is
-  `wont_fix` with `duplicateOf`.
+  `status: fixed`, `resolution` (a sentence or two on what was done), `fixedIn` (`"HEAD"` right
+  after the commit; the tool stores the id it names) and the new anchor if the code moved. Not
+  `fixed` before the commit and `fixedIn` after it, and no "Not committed" in the resolution.
+  `wont_fix` takes the reason in `resolution`; a duplicate is `wont_fix` with `duplicateOf`.
 - Put everything one item needs in one call: status, tags, resolution and anchor together. A second
   `todo_update` on the same item right after the first is a call wasted, and each one returns the
   whole item.

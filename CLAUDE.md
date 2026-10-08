@@ -512,12 +512,13 @@ commit or commit range) goes in `source`, not in the details. To pick what to wo
 effort within it.
 
 **Closing an item costs one call and no commit of its own.** Commit the code first, then make one
-`todo_update` with `status: fixed`, `resolution`, `fixedIn` and, if the code moved, the new anchor.
-Do not set `fixed` before the commit and `fixedIn` after it, and do not write "Not committed" in a
-resolution: a missing `fixedIn` already says so. The change this leaves in `.todos/items.json` goes
-into the next commit that is made anyway, not into a "Record the commit that fixed T-n" commit. That
-file also holds what the user did in the IDE meanwhile (items set to `done`, new items, shifted
-anchor lines); it goes along, so `git diff --stat` is enough before committing it, not the diff.
+`todo_update` with `status: fixed`, `resolution`, `fixedIn: "HEAD"` (stored as that commit's id)
+and, if the code moved, the new anchor. Do not set `fixed` before the commit and `fixedIn` after it,
+and do not write "Not committed" in a resolution: a missing `fixedIn` already says so. The change
+this leaves in `.todos/items.json` goes into the next commit that is made anyway, not into a "Record
+the commit that fixed T-n" commit. That file also holds what the user did in the IDE meanwhile
+(items set to `done`, new items, shifted anchor lines); it goes along, so `git diff --stat` is
+enough before committing it, not the diff.
 
 **Record what you notice, in every session, not only in `/modernize-file`.** Something seen while
 doing another task and not fixed as part of it (a bug, a suspicious unchecked value, duplicated

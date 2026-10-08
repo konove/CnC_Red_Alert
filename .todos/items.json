@@ -6170,7 +6170,7 @@
       "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T20:57:33Z",
+      "updated": "2026-10-08T21:51:37Z",
       "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
       "anchors": [
         {
@@ -6204,7 +6204,7 @@
       "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T20:57:42Z",
+      "updated": "2026-10-08T21:51:37Z",
       "parent": "T-211",
       "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
       "decisions": [
@@ -6239,7 +6239,7 @@
       "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-08T20:56:43Z",
-      "updated": "2026-10-08T20:57:33Z",
+      "updated": "2026-10-08T21:51:37Z",
       "parent": "T-211",
       "resolution": "Probe for the plugin update check on 2026-10-08; safe to delete.",
       "anchors": [
