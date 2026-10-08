@@ -5559,8 +5559,8 @@
           ],
           "after": [
             "                   const engine::gfx::Palette& palette) {",
-            "  const PCX_HEADER header = {10,",
-            "                             5,"
+            "  // A surface's buffer has pixels only while it is locked.",
+            "  PixelView& view = pic.view();"
           ],
           "lost": false
         }
@@ -5576,21 +5576,23 @@
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-08T17:24:39Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "fixedIn": "e9e5a80f",
+      "resolution": "`ra::Write_PCX_File()` now locks the buffer's view for the duration (writing nothing if it will not lock) and steps rows by `stride()`. New `ra_writepcx_test` (`src/ra/assets/writepcx_test.cc`) covers a memory buffer, a padded surface and a surface that refuses to lock; the surface test crashes against the old code.",
       "anchors": [
         {
           "path": "src/ra/assets/writepcx.cc",
-          "startLine": 130,
-          "endLine": 136,
-          "text": "  const int VP_Scan_Line = pic.width() + pic.view().x_add();\n  const auto pixels = pic.view().pixels();\n  for (int line = 0; line < header.height + 1; line++) {\n    Write_Pcx_ScanLine(file, header.byte_per_line,\n                       pixels.subspan(static_cast<size_t>(line) *\n                                      static_cast<size_t>(VP_Scan_Line)));\n  }",
+          "startLine": 137,
+          "endLine": 144,
+          "text": "  const int stride = view.stride();\n  const auto pixels = view.pixels();\n  for (int line = 0; line < header.height + 1; line++) {\n    Write_Pcx_ScanLine(file, header.byte_per_line,\n                       pixels.subspan(static_cast<size_t>(line) *\n                                      static_cast<size_t>(stride)));\n  }\n  view.Unlock();",
           "before": [
-            "  /*",
-            "  **\tWrite out the picture, line by line.",
+            "  **\tWrite out the picture, line by line. A surface's rows can be further",
+            "  **\tapart than the picture is wide.",
             "  */"
           ],
           "after": [
