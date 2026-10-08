@@ -16,10 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Saving a picture as a .PCX file: 8 bits a pixel, run-length encoded, with a
-// 256-color palette after the pixels. The games write their screenshots this
-// way. Originally part of the Westwood IFF library (FILEPCX.H and WRITEPCX.CPP,
-// Julio R. Jerez, May 1995).
+// Saving and loading a picture as a .PCX file: 8 bits a pixel, run-length
+// encoded, with a 256-color palette after the pixels. The games write their
+// screenshots this way, and their title screens and the pictures behind the
+// score and the credits are stored so. Originally part of the Westwood IFF
+// library (FILEPCX.H and WRITEPCX.CPP, Julio R. Jerez, May 1995).
 
 #ifndef CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
@@ -38,8 +39,7 @@ namespace engine::gfx {
 
 // The 128 bytes a PCX file starts with, laid out as they are on disk: the
 // 16-bit fields are little-endian and all fall on even offsets, so the struct
-// has no padding and is read and written whole. Tiberian Dawn's PCX reader
-// (td/startup/nondosstub.cc) uses it too.
+// has no padding and is read and written whole.
 struct PcxHeader {
   uint8_t id;         // 10 marks a PCX file.
   uint8_t version;    // 5 is the first that can end in a 256-color palette.
@@ -85,13 +85,17 @@ struct PcxPicture {
   // The palette index of every pixel, row after row with nothing between
   // them: width * height bytes.
   std::vector<uint8_t> pixels;
-  engine::gfx::Palette palette;
+  Palette palette;
 };
 
-// Reads the PCX picture in the game file `name`. Returns nothing if the file
-// is missing, is not a run-length encoded 8-bit picture with a palette, or is
-// damaged.
-std::optional<PcxPicture> ReadPcxFile(std::string_view name);
+// Reads the PCX picture that `in` holds from its current position to its end.
+// Returns nothing if that is not a run-length encoded 8-bit picture with a
+// palette, or if it is damaged.
+std::optional<PcxPicture> ReadPcx(ByteStream& in);
+
+// Reads the PCX picture in the game file `file_name`. Returns nothing if the
+// file is missing or ReadPcx() makes nothing of it.
+std::optional<PcxPicture> ReadPcxFile(std::string_view file_name);
 
 }  // namespace engine::gfx
 

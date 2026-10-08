@@ -47,6 +47,15 @@ namespace {
 constexpr int kRunMarker = 0xC0;
 constexpr int kMaxRunLength = 63;
 
+// The header of the one kind of picture written and read here: version 5, the
+// first that can end in a 256-color palette, run-length encoded, 8 bits a
+// pixel in one plane.
+constexpr uint8_t kPcxId = 10;
+constexpr uint8_t kVersion = 5;
+constexpr uint8_t kRunLengthEncoding = 1;
+constexpr uint8_t kBitsPerPixel = 8;
+constexpr uint8_t kColorPlanes = 1;
+
 // Appends `pixels`, one row of the picture, to `encoded` as a run-length
 // encoded PCX scanline.
 void AppendScanline(const std::span<const uint8_t> pixels,
@@ -105,13 +114,12 @@ std::optional<std::vector<uint8_t>> LockedScanlines(PixelView& view) {
 bool WriteEncoded(ByteStream& out, const PixelView& view,
                   const std::span<const uint8_t> scanlines,
                   const Palette& palette) {
-  // An 8-bit, single-plane, run-length encoded version 5 picture. The device
-  // resolution is 320x200 whatever the picture's size.
+  // The device resolution is 320x200 whatever the picture's size.
   const PcxHeader header = {
-      .id = 10,
-      .version = 5,
-      .encoding = 1,
-      .bits_per_pixel = 8,
+      .id = kPcxId,
+      .version = kVersion,
+      .encoding = kRunLengthEncoding,
+      .bits_per_pixel = kBitsPerPixel,
       .left = 0,
       .top = 0,
       .right = static_cast<int16_t>(view.width() - 1),
@@ -120,7 +128,7 @@ bool WriteEncoded(ByteStream& out, const PixelView& view,
       .vertical_dpi = 200,
       .ega_palette = {},
       .reserved = 0,
-      .color_planes = 1,
+      .color_planes = kColorPlanes,
       .bytes_per_line = static_cast<int16_t>(view.width()),
       .palette_type = 1,
       .padding = {},
@@ -188,17 +196,12 @@ bool WritePcxFile(const std::string_view file_name, PixelView& view,
   return file && WriteEncoded(*file, view, *scanlines, palette) && file->ok();
 }
 
-std::optional<PcxPicture> ReadPcxFile(const std::string_view name) {
-  const auto file = OpenGameFile(name);
-  if (!file) {
-    return std::nullopt;
-  }
-  // Only the kind of picture the games ship and write is read: version 5,
-  // run-length encoded, 8 bits a pixel in one plane.
-  engine::gfx::PcxHeader header{};
-  if (!file->ReadObject(header) || header.id != 10 || header.version != 5 ||
-      header.bits_per_pixel != 8 || header.color_planes != 1 ||
-      header.encoding != 1) {
+std::optional<PcxPicture> ReadPcx(ByteStream& in) {
+  PcxHeader header{};
+  if (!in.ReadObject(header) || header.id != kPcxId ||
+      header.version != kVersion || header.encoding != kRunLengthEncoding ||
+      header.bits_per_pixel != kBitsPerPixel ||
+      header.color_planes != kColorPlanes) {
     return std::nullopt;
   }
   const int width = header.right - header.left + 1;
@@ -217,7 +220,7 @@ std::optional<PcxPicture> ReadPcxFile(const std::string_view name) {
   // TODO: the pixels are not kept from running into the palette at the end
   // of the file: a picture that is cut short takes the palette's bytes for
   // pixels and loads as garbage instead of failing.
-  BufferedFileReader reader(*file);
+  BufferedFileReader reader(in);
   for (int row = 0; row < height; ++row) {
     // A scanline holds bytes_per_line pixels, of which the picture shows the
     // first `width`; the rest is padding to decode and drop.
@@ -227,13 +230,10 @@ std::optional<PcxPicture> ReadPcxFile(const std::string_view name) {
       if (!first) {
         return std::nullopt;
       }
-      // A byte with its two top bits set is a run: its low six bits run_length
-      // the pixels and the next byte is their color. Any other byte is one
-      // pixel.
       int run_length = 1;
       uint8_t color = *first;
-      if ((color & 0xc0U) == 0xc0U) {
-        run_length = color & 0x3fU;
+      if (color >= kRunMarker) {
+        run_length = color - kRunMarker;
         const auto run_color = reader.ReadByte();
         if (!run_color || run_length == 0) {
           return std::nullopt;
@@ -256,16 +256,24 @@ std::optional<PcxPicture> ReadPcxFile(const std::string_view name) {
       column += run_length;
     }
   }
-  // The palette is the last 768 bytes of the file, 8 bits a component. The
+  // The palette is the last 768 bytes of the picture, 8 bits a component. The
   // reader's buffer has left the stream somewhere past the pixels, so it is
   // found from the end.
-  std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
-  file->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
-  if (file->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {
+  std::array<uint8_t, Palette::kFileSize> rgb{};
+  in.Seek(-Palette::kFileSize, SeekOrigin::kEnd);
+  if (in.Read(std::span(rgb)) != Palette::kFileSize) {
     return std::nullopt;
   }
-  picture.palette = engine::gfx::Palette::FromRgb(rgb);
+  picture.palette = Palette::FromRgb(rgb);
   return picture;
+}
+
+std::optional<PcxPicture> ReadPcxFile(const std::string_view file_name) {
+  const auto file = OpenGameFile(file_name);
+  if (!file) {
+    return std::nullopt;
+  }
+  return ReadPcx(*file);
 }
 
 }  // namespace engine::gfx
