@@ -45,7 +45,7 @@ struct PcxPicture {
 // Reads the PCX picture in the game file `name`. Returns nothing if the file
 // is missing, is not a run-length encoded 8-bit picture with a palette, or is
 // damaged.
-std::optional<PcxPicture> Read_PCX_File(std::string_view name);
+std::optional<PcxPicture> ReadPcxFile(std::string_view name);
 
 }  // namespace ra
 
