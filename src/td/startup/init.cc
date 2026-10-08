@@ -1666,8 +1666,7 @@ bool Select_Game(bool fade) {
       vehicle->IsReturning = true;
       vehicle->IsTurretLockedDown = true;
       vehicle->Reload.Set(173);
-      vehicle->SecondaryFacing.SnapTo(game::Direction::kNorthEast);
-      vehicle->SecondaryFacing = game::Direction::kSouthWest;
+      vehicle->SecondaryFacing.SnapTo(game::Direction::kSouthWest);
       base::At(vehicle->Path, 0) = game::Facing::kNorthEast;
       base::At(vehicle->Path, 1) = game::Facing::kEast;
       base::At(vehicle->Path, 2) = game::Facing::kNone;
@@ -1692,8 +1691,7 @@ bool Select_Game(bool fade) {
       passenger->IsProne = true;
       passenger->IsBoxing = true;
       passenger->Fear = 81;
-      plane->SecondaryFacing.SnapTo(game::Direction::kSouthEast);
-      plane->SecondaryFacing = game::Direction::kNorth;
+      plane->SecondaryFacing.SnapTo(game::Direction::kNorth);
       bool launched = false;
       if (TheObjectHeaps().unit().Count() != 0) {
         const Cell start =
@@ -1769,8 +1767,7 @@ bool Select_Game(bool fade) {
       building->CloakingDevice.Set_Rate(9);
       building->TarCom = peer->As_Target();
       building->SuspendedTarCom = passenger->As_Target();
-      building->PrimaryFacing.SnapTo(game::Direction::kNorthEast);
-      building->PrimaryFacing = game::Direction::kSouthWest;
+      building->PrimaryFacing.SnapTo(game::Direction::kSouthWest);
       building->Arm = 19;
       building->Ammo = 11;
       building->FlashCount = 23;
@@ -1810,8 +1807,7 @@ bool Select_Game(bool fade) {
       terrain->Set_Rate(7);
       bullet->Next = ground;
       bullet->Payback = owner;
-      bullet->PrimaryFacing.SnapTo(game::Direction::kNorthEast);
-      bullet->PrimaryFacing = game::Direction::kSouthEast;
+      bullet->PrimaryFacing.SnapTo(game::Direction::kSouthEast);
       bullet->Fly_Speed(127, game::MPH_FAST);
       bullet->Arm_Fuse(owner->Coord,
                        Coordinate::FromPacked(owner->Coord.packed() + 0x200),

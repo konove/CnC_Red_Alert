@@ -45,10 +45,9 @@ class Heading {
   // Points north and is not turning.
   constexpr Heading() = default;
 
-  // Points in `direction` and is not turning. Implicit: a heading reads and
-  // assigns as its direction.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  constexpr Heading(Direction direction)
+  // Points in `direction` and is not turning. Explicit: to point an existing
+  // heading somewhere at once, call SnapTo().
+  constexpr explicit Heading(Direction direction)
       : current_(direction), desired_(direction) {}
 
   // The current direction. Implicit, so a heading compares with a direction

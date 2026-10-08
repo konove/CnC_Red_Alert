@@ -2528,7 +2528,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             if (unit->Unlimbo(
                     unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
                     DriveClass::kRefineryDock)) {
-              unit->PrimaryFacing = DriveClass::kRefineryDock;
+              unit->PrimaryFacing.SnapTo(DriveClass::kRefineryDock);
               Transmit_Message(RADIO_HELLO, unit);
               Transmit_Message(RADIO_TETHER);
               unit->Assign_Mission(MISSION_HARVEST);
@@ -4181,7 +4181,7 @@ int BuildingClass::Mission_Construction() {
         Begin_Mode(game::BSTATE_IDLE);
         Grand_Opening();
         Assign_Mission(MISSION_GUARD);
-        PrimaryFacing = Class->StartFace;
+        PrimaryFacing.SnapTo(Class->StartFace);
       }
       break;
     default:
@@ -4420,7 +4420,7 @@ int BuildingClass::Mission_Attack() {
       case kSamRising:
         if (Fetch_Stage() == 15) {
           Set_Rate(0);
-          PrimaryFacing = game::Direction::kNorth;
+          PrimaryFacing.SnapTo(game::Direction::kNorth);
           if (!TarCom) {
             Status = kSamLowering;
           } else {

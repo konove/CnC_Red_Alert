@@ -942,7 +942,7 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
   */
   dir = game::DirectionOf(game::NearestFacing(dir));
   if (DriveClass::Unlimbo(coord, dir)) {
-    SecondaryFacing = dir;
+    SecondaryFacing.SnapTo(dir);
     /*
     **	Ensure that the owning house knows about the
     **	new object.

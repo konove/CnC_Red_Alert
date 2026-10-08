@@ -1316,7 +1316,7 @@ bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK(IsActive);
 
   if (RadioClass::Unlimbo(coord, dir)) {
-    PrimaryFacing = dir;
+    PrimaryFacing.SnapTo(dir);
     Enter_Idle_Mode(true);
     Commence();
 

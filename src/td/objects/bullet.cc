@@ -778,7 +778,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
       Riser = 0;
     }
 
-    PrimaryFacing = dir;
+    PrimaryFacing.SnapTo(dir);
     return true;
   }
   return false;

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 184,
+  "nextId": 185,
   "items": [
     {
       "id": "T-2",
@@ -4731,21 +4731,34 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T04:49:09Z",
+      "updated": "2026-10-08T06:12:21Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
+      "resolution": "`SnapTo()` stays and `Heading(Direction)` is now `explicit`, so `heading = dir` no longer compiles. The 22 assignments it caught (21 in `src/ra` and `src/td`, 1 in `heading_test.cc`) are `SnapTo()` calls; four of them in `td/startup/init.cc` followed a `SnapTo()` they overwrote, which was removed. Not committed.",
       "toDecide": "Which form stays?\n\n- **Assignment**: delete `SnapTo()` and rewrite its 26 callers as `x = dir`. Shortest; relies on the implicit constructor.\n- **`SnapTo()`**: rewrite the ~29 assignments; says that the turn is skipped, and is a step toward making the constructor explicit.\n- **Both**: leave as is.",
+      "decisions": [
+        {
+          "question": "T-180: which way of pointing a Heading somewhere at once should stay — SnapTo(dir) or assigning a Direction?",
+          "options": [
+            "SnapTo() (Recommended)",
+            "SnapTo() + explicit ctor",
+            "Assignment",
+            "Both"
+          ],
+          "answer": "SnapTo() + explicit ctor",
+          "time": "2026-10-08T05:29:35Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
-          "startLine": 78,
-          "endLine": 82,
+          "startLine": 77,
+          "endLine": 81,
           "text": "  // Points in `direction` at once, with nothing left to turn.\n  void SnapTo(const Direction direction) {\n    current_ = direction;\n    desired_ = direction;\n  }",
           "before": [
             "  // back if they now differ.",
@@ -4780,8 +4793,8 @@
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
-          "startLine": 92,
-          "endLine": 94,
+          "startLine": 91,
+          "endLine": 93,
           "text": "  [[nodiscard]] int ShortestTurnTo(Direction direction) const {\n    return ShortestTurn(current_, direction);\n  }",
           "before": [
             "  [[nodiscard]] int RemainingTurn() const {",
@@ -4840,8 +4853,8 @@
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
-          "startLine": 64,
-          "endLine": 68,
+          "startLine": 63,
+          "endLine": 67,
           "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(current_, desired_);\n  }",
           "before": [
             "  [[nodiscard]] Direction current() const { return current_; }",
@@ -4852,6 +4865,36 @@
             "",
             "  // Sets the direction to turn toward and leaves the current one alone; the",
             "  // following Turn() calls close the gap."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-184",
+      "title": "I feel like this could be a single operation",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-08T06:10:42Z",
+      "updated": "2026-10-08T06:10:42Z",
+      "anchors": [
+        {
+          "path": "src/ra/objects/aircraft.cc",
+          "startLine": 2515,
+          "endLine": 2517,
+          "text": "          int diff = SecondaryFacing.ShortestTurnTo(DirectionTo(NavCom));\n          diff = std::clamp(diff, -128, 128);\n          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);",
+          "before": [
+            "          **\tAs the flight progresses, the body will rotate to face",
+            "          **\tthe direction of travel.",
+            "          */"
+          ],
+          "after": [
+            "        }",
+            "        return 1;",
+            "      }"
           ],
           "lost": false
         }

@@ -831,7 +831,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
     }
     MapEditClass::Submit(this, In_Which_Layer());
 
-    PrimaryFacing = dir;
+    PrimaryFacing.SnapTo(dir);
     return true;
   }
   return false;

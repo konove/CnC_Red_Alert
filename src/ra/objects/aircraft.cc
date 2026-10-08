@@ -386,7 +386,7 @@ bool AircraftClass::Unlimbo(Coordinate coord, game::Direction dir) {
     /*
     **	Forces the body of the helicopter to face the correct direction.
     */
-    SecondaryFacing = dir;
+    SecondaryFacing.SnapTo(dir);
 
     /*
     **	Start rotor animation.
@@ -2514,7 +2514,7 @@ int AircraftClass::Mission_Attack() {
           */
           int diff = SecondaryFacing.ShortestTurnTo(DirectionTo(NavCom));
           diff = std::clamp(diff, -128, 128);
-          PrimaryFacing = SecondaryFacing.current() + diff;
+          PrimaryFacing.SnapTo(SecondaryFacing.current() + diff);
         }
         return 1;
       }

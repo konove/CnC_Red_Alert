@@ -1020,7 +1020,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   if (RadioClass::Unlimbo(coord, dir)) {
-    PrimaryFacing = dir;
+    PrimaryFacing.SnapTo(dir);
     Enter_Idle_Mode(true);
     Commence();
 

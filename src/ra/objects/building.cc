@@ -2577,7 +2577,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             if (unit->Unlimbo(
                     AdjacentCell(cell, game::Direction::kSouth).Center(),
                     DriveClass::kRefineryDock)) {
-              unit->PrimaryFacing = game::Direction::kSouth;
+              unit->PrimaryFacing.SnapTo(game::Direction::kSouth);
               unit->Assign_Mission(MISSION_HARVEST);
             }
             TheWorld().scenario_init()--;
@@ -4112,7 +4112,7 @@ int BuildingClass::Mission_Construction() {
         Begin_Mode(game::BSTATE_IDLE);
         Grand_Opening();
         Assign_Mission(MISSION_GUARD);
-        PrimaryFacing = Class->StartFace;
+        PrimaryFacing.SnapTo(Class->StartFace);
       }
       break;
 

@@ -416,7 +416,7 @@ Coordinate TurretClass::Fire_Coord(int which) const {
  *=============================================================================================*/
 bool TurretClass::Unlimbo(Coordinate coord, game::Direction dir) {
   if (DriveClass::Unlimbo(coord, dir)) {
-    SecondaryFacing = dir;
+    SecondaryFacing.SnapTo(dir);
     return true;
   }
   return false;

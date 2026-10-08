@@ -1771,13 +1771,13 @@ void UnitClass::Per_Cell_Process(bool center) {
           Assign_Destination(Target::FromCellIndex(Cell::FromXY(
               TheMap().MapCellX + TheMap().MapCellWidth, current_cell.y())));
           Set_Speed(255);
-          PrimaryFacing = game::Direction::kEast;
+          PrimaryFacing.SnapTo(game::Direction::kEast);
         } else {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(Target::FromCellIndex(
               Cell::FromXY(TheMap().MapCellX - 1, current_cell.y())));
           Set_Speed(255);
-          PrimaryFacing = game::Direction::kWest;
+          PrimaryFacing.SnapTo(game::Direction::kWest);
         }
         Mark(MARK_DOWN);
       } else {

@@ -13,14 +13,14 @@ TEST(HeadingTest, StartsAtNorthAndStill) {
   EXPECT_FALSE(heading.IsRotating());
 }
 
-TEST(HeadingTest, ReadsAndAssignsAsItsCurrentDirection) {
-  Heading heading = Direction::kEast;
+TEST(HeadingTest, ReadsAsItsCurrentDirection) {
+  Heading heading(Direction::kEast);
   heading.set_desired(Direction::kSouth);
   const Direction direction = heading;
   EXPECT_EQ(direction, Direction::kEast);
   EXPECT_TRUE(heading == Direction::kEast);
 
-  heading = Direction::kWest;
+  heading.SnapTo(Direction::kWest);
   EXPECT_EQ(heading.current(), Direction::kWest);
   EXPECT_EQ(heading.desired(), Direction::kWest);
 }
