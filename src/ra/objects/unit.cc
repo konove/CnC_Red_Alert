@@ -510,7 +510,7 @@ void UnitClass::Rotation_AI() {
       *aren't maneuverable enough.
       */
       if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ && !NavCom &&
-          !IsDriving && PrimaryFacing.ShortestTurnTo(dir)) {
+          !IsDriving && game::ShortestTurn(PrimaryFacing, dir)) {
         PrimaryFacing.set_desired(dir);
       }
     }
@@ -4171,15 +4171,15 @@ game::Direction UnitClass::Fire_Direction() const {
 
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_V2_LAUNCHER) {
-      int diff1 = SecondaryFacing.ShortestTurnTo(game::Direction::kEast);
-      int diff2 = SecondaryFacing.ShortestTurnTo(game::Direction::kWest);
+      int diff1 = game::ShortestTurn(SecondaryFacing, game::Direction::kEast);
+      int diff2 = game::ShortestTurn(SecondaryFacing, game::Direction::kWest);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
-      const int adj = base::FixedToCardinal(
-          std::abs(SecondaryFacing.ShortestTurnTo(game::Direction::kNorth)),
-          64 - diff);
-      if (SecondaryFacing.ShortestTurnTo(game::Direction::kNorth) < 0) {
+      const int to_north =
+          game::ShortestTurn(SecondaryFacing, game::Direction::kNorth);
+      const int adj = base::FixedToCardinal(std::abs(to_north), 64 - diff);
+      if (to_north < 0) {
         return SecondaryFacing - game::Direction(adj);
       }
       return SecondaryFacing + game::Direction(adj);
@@ -4216,7 +4216,7 @@ bool UnitClass::Ok_To_Move(game::Direction dir) {
     if (IsRotating) {
       return false;
     }
-    if (SecondaryFacing.ShortestTurnTo(dir)) {
+    if (game::ShortestTurn(SecondaryFacing, dir)) {
       SecondaryFacing.set_desired(dir);
       return false;
     }
@@ -4276,9 +4276,9 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = SecondaryFacing.ShortestTurnTo(dir);
+      diff = game::ShortestTurn(SecondaryFacing, dir);
     } else {
-      diff = PrimaryFacing.ShortestTurnTo(dir);
+      diff = game::ShortestTurn(PrimaryFacing, dir);
     }
     diff = std::abs(diff);
 

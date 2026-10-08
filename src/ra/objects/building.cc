@@ -3608,7 +3608,7 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
     **	temporarily postponed.
     */
     if (Class->IsTurretEquipped) {
-      int diff = PrimaryFacing.ShortestTurnTo(DirectionTo(TarCom));
+      int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
       diff = abs(diff);
       if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
         //			if (std::abs(diff) > 8) {
@@ -4393,7 +4393,7 @@ int BuildingClass::Mission_Attack() {
         }
         if (!PrimaryFacing.IsRotating()) {
           const game::Direction facing = DirectionTo(TarCom);
-          if (PrimaryFacing.ShortestTurnTo(facing)) {
+          if (game::ShortestTurn(PrimaryFacing, facing)) {
             PrimaryFacing.set_desired(facing);
           } else {
             Status = kSamFiring;

@@ -1113,9 +1113,9 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = SecondaryFacing.ShortestTurnTo(dir);
+      diff = game::ShortestTurn(SecondaryFacing, dir);
     } else {
-      diff = PrimaryFacing.ShortestTurnTo(dir);
+      diff = game::ShortestTurn(PrimaryFacing, dir);
     }
     diff = std::abs(diff);
 
