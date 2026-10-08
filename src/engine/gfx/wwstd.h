@@ -16,28 +16,22 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **     C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S       **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : wwstd.h                                  *
- *                                                                         *
- *                    File Name : WWLIB.H                                  *
- *                                                                         *
- *                   Programmer : Jeff Wilson                              *
- *                                                                         *
- *                   Start Date : March 1, 1994                            *
- *                                                                         *
- *                  Last Update : March 1, 1994   []                       *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// Names for the first sixteen palette indices. Originally part of the Westwood
+// standard header (WWSTD.H, Jeff Wilson, March 1994).
+//
+// The games' palettes reserve slots 0-15 for a fixed set of colors, so text,
+// dialog frames and debug overlays can name a color without looking it up in
+// the palette that happens to be current. The names are the Westwood library's
+// and only approximate: Tiberian Dawn's palette has orange at kPurple and tan at
+// kBrown, and aliases them in td/core/defines.h (kCcOrange, kCcTan).
 
 #ifndef CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
 #define CNC_RED_ALERT_ENGINE_GFX_WWSTD_H_
 
-// The sixteen standard palette colors, as `int` palette indices.
+// Palette indices, `int` because that is what the drawing functions take.
+
+// Index 0 shows as black, but a transparent blit or a text background skips it:
+// "transparent black". kBlack is the black that is always drawn.
 inline constexpr int kTBlack = 0;
 inline constexpr int kPurple = 1;
 inline constexpr int kCyan = 2;
