@@ -156,6 +156,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/palette.h"
@@ -962,7 +963,7 @@ static int Net_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -1121,39 +1122,31 @@ static int Net_Join_Dialog() {
         /*
         .................... Rebuild the button list ....................
         */
-        cancelbtn.ForgetNeighbors();
-        gamelist.ForgetNeighbors();
-        playerlist.ForgetNeighbors();
-        gdibtn.ForgetNeighbors();
-        nodbtn.ForgetNeighbors();
-        name_edt.ForgetNeighbors();
-        joinbtn.ForgetNeighbors();
-        newbtn.ForgetNeighbors();
-        sendbtn.ForgetNeighbors();
+        commands.Clear();
 
-        commands = &cancelbtn;
-        gamelist.AppendTo(*commands);
-        playerlist.AppendTo(*commands);
+        commands.Add(cancelbtn);
+        commands.Add(gamelist);
+        commands.Add(playerlist);
         /*...............................................................
         Only add the name edit field, the House, Join & New buttons if
         we're doing nothing, or we've just been rejected.
         ...............................................................*/
         if (joinstate <= JOIN_NOTHING) {
-          gdibtn.AppendTo(*commands);
-          nodbtn.AppendTo(*commands);
-          name_edt.AppendTo(*commands);
-          joinbtn.AppendTo(*commands);
-          newbtn.AppendTo(*commands);
+          commands.Add(gdibtn);
+          commands.Add(nodbtn);
+          commands.Add(name_edt);
+          commands.Add(joinbtn);
+          commands.Add(newbtn);
         }
         if (joinstate == JOIN_CONFIRMED) {
-          sendbtn.AppendTo(*commands);
+          commands.Add(sendbtn);
         }
       }
       /*
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       /*..................................................................
@@ -1343,7 +1336,7 @@ static int Net_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     input = input_event.key;
 
     /*
@@ -3073,19 +3066,20 @@ static int Net_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  game::GadgetClass* commands = &playerlist;  // button list
-  scenariolist.AppendTo(*commands);
-  credit_edt.AppendTo(*commands);
-  rejectbtn.AppendTo(*commands);
-  countgauge.AppendTo(*commands);
-  levelgauge.AppendTo(*commands);
-  basesbtn.AppendTo(*commands);
-  tiberiumbtn.AppendTo(*commands);
-  goodiesbtn.AppendTo(*commands);
-  ghostsbtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
-  sendbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(playerlist);  // button list
+  commands.Add(scenariolist);
+  commands.Add(credit_edt);
+  commands.Add(rejectbtn);
+  commands.Add(countgauge);
+  commands.Add(levelgauge);
+  commands.Add(basesbtn);
+  commands.Add(tiberiumbtn);
+  commands.Add(goodiesbtn);
+  commands.Add(ghostsbtn);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
+  commands.Add(sendbtn);
 
   playerlist.Set_Tabs(tabs);
 
@@ -3301,7 +3295,7 @@ static int Net_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       /*..................................................................
@@ -3324,7 +3318,7 @@ static int Net_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -4547,8 +4541,9 @@ static int Net_Fake_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  game::GadgetClass* commands = &playerlist;  // button list
-  cancelbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(playerlist);  // button list
+  commands.Add(cancelbtn);
 
   playerlist.Set_Tabs(tabs);
 
@@ -4648,7 +4643,7 @@ static int Net_Fake_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       game::TheMouse().Show();
@@ -4658,7 +4653,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -5130,7 +5125,7 @@ static int Net_Fake_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
 
   ColorListClass playerlist(
       kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
@@ -5213,19 +5208,17 @@ static int Net_Fake_Join_Dialog() {
         /*
         .................... Rebuild the button list ....................
         */
-        cancelbtn.ForgetNeighbors();
-        gamelist.ForgetNeighbors();
-        playerlist.ForgetNeighbors();
+        commands.Clear();
 
-        commands = &cancelbtn;
-        gamelist.AppendTo(*commands);
-        playerlist.AppendTo(*commands);
+        commands.Add(cancelbtn);
+        commands.Add(gamelist);
+        commands.Add(playerlist);
       }
       /*
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       game::TheMouse().Show();
@@ -5235,7 +5228,7 @@ static int Net_Fake_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------

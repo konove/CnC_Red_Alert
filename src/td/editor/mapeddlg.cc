@@ -77,7 +77,7 @@
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
-#include "game/ui/control.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/prebuilt_base.h"
@@ -543,7 +543,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   EditClass editbtn(kButtonScenario, scen_buf, 5, FontType::k6PointGradient,
                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kScenX, kScenY, kScenW,
@@ -642,28 +642,28 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ......................... Create the button list .........................
   */
-  commands = &editbtn;
-  varabtn.AppendTo(*commands);
-  varbbtn.AppendTo(*commands);
-  varcbtn.AppendTo(*commands);
-  vardbtn.AppendTo(*commands);
-  varlbtn.AppendTo(*commands);
+  commands.Add(editbtn);
+  commands.Add(varabtn);
+  commands.Add(varbbtn);
+  commands.Add(varcbtn);
+  commands.Add(vardbtn);
+  commands.Add(varlbtn);
   if (multi) {
-    gdibtn.AppendTo(*commands);
-    nodbtn.AppendTo(*commands);
-    playermbtn.AppendTo(*commands);
+    commands.Add(gdibtn);
+    commands.Add(nodbtn);
+    commands.Add(playermbtn);
   } else {
     if ((*playerp) == SCEN_PLAYER_MPLAYER) {
-      playermbtn.AppendTo(*commands);
+      commands.Add(playermbtn);
     } else {
-      gdibtn.AppendTo(*commands);
-      nodbtn.AppendTo(*commands);
+      commands.Add(gdibtn);
+      commands.Add(nodbtn);
     }
   }
-  eastbtn.AppendTo(*commands);
-  westbtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  commands.Add(eastbtn);
+  commands.Add(westbtn);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
   /*
   ......................... Init the button states .........................
   */
@@ -731,7 +731,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -740,7 +740,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -965,7 +965,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;
+  game::GadgetList commands;
 
   TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
@@ -999,8 +999,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &okbtn;
-  cancelbtn.AppendTo(*commands);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   /*------------------------------------------------------------------------
   Main processing loop
@@ -1114,7 +1114,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ...................... Redraw the buttons .......................
         */
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
 
       /*------------------------------------------------------------------
@@ -1246,7 +1246,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     const engine::window::KeyNumber input = input_event.key;
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
@@ -1603,7 +1603,7 @@ int MapEditClass::Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
   ListClass theaterbtn(
       kListTheater, kTheaterX, kTheaterY, kTheaterW, kTheaterH,
       FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -1697,21 +1697,21 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ............................ Create the list .............................
   */
-  commands = &theaterbtn;
-  leveledt.AppendTo(*commands);
-  gdicred.AppendTo(*commands);
-  nodcred.AppendTo(*commands);
-  neutcred.AppendTo(*commands);
-  gdinbtn.AppendTo(*commands);
-  gdiebtn.AppendTo(*commands);
-  gdisbtn.AppendTo(*commands);
-  gdiwbtn.AppendTo(*commands);
-  nodnbtn.AppendTo(*commands);
-  nodebtn.AppendTo(*commands);
-  nodsbtn.AppendTo(*commands);
-  nodwbtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  commands.Add(theaterbtn);
+  commands.Add(leveledt);
+  commands.Add(gdicred);
+  commands.Add(nodcred);
+  commands.Add(neutcred);
+  commands.Add(gdinbtn);
+  commands.Add(gdiebtn);
+  commands.Add(gdisbtn);
+  commands.Add(gdiwbtn);
+  commands.Add(nodnbtn);
+  commands.Add(nodebtn);
+  commands.Add(nodsbtn);
+  commands.Add(nodwbtn);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   /*
   ...................... Init GDI Edge button states .......................
@@ -1839,7 +1839,7 @@ int MapEditClass::Scenario_Dialog() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // input from user
+        commands.Input(view).key;  // input from user
 
     /*
     ............................ Process input ............................
@@ -2237,7 +2237,7 @@ int MapEditClass::Select_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   ListClass triggerlist(
       kTriggerList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
@@ -2346,11 +2346,11 @@ int MapEditClass::Select_Trigger() {
   /*
   ............................ Create the list .............................
   */
-  commands = &triggerlist;
-  editbtn.AppendTo(*commands);
-  newbtn.AppendTo(*commands);
-  deletebtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
+  commands.Add(triggerlist);
+  commands.Add(editbtn);
+  commands.Add(newbtn);
+  commands.Add(deletebtn);
+  commands.Add(okbtn);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -2394,7 +2394,7 @@ int MapEditClass::Select_Trigger() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -2404,7 +2404,7 @@ int MapEditClass::Select_Trigger() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -2635,7 +2635,7 @@ int MapEditClass::Edit_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   ListClass eventlist(
       kEventList, kEventX, kEventY, kEventW, kEventH, FontType::k6PointGradient,
@@ -2858,48 +2858,36 @@ int MapEditClass::Edit_Trigger() {
       /*
       ..................... Rebuild the button list ......................
       */
-      eventlist.ForgetNeighbors();
-      actionlist.ForgetNeighbors();
-      name_edt.ForgetNeighbors();
-      data_edt.ForgetNeighbors();
-      teambtn.ForgetNeighbors();
-      gdibtn.ForgetNeighbors();
-      nodbtn.ForgetNeighbors();
-      neutralbtn.ForgetNeighbors();
-      volatilebtn.ForgetNeighbors();
-      persistbtn.ForgetNeighbors();
-      semipersistbtn.ForgetNeighbors();
-      okbtn.ForgetNeighbors();
-      cancelbtn.ForgetNeighbors();
+      commands.Clear();
 
-      commands = &okbtn;
-      cancelbtn.AppendTo(*commands);
-      eventlist.AppendTo(*commands);
-      actionlist.AppendTo(*commands);
-      name_edt.AppendTo(*commands);
-      volatilebtn.AppendTo(*commands);
-      persistbtn.AppendTo(*commands);
-      semipersistbtn.AppendTo(*commands);
+      commands.Add(okbtn);
+      commands.Add(cancelbtn);
+      commands.Add(eventlist);
+      commands.Add(actionlist);
+      commands.Add(name_edt);
+      commands.Add(volatilebtn);
+      commands.Add(persistbtn);
+      commands.Add(semipersistbtn);
       if (TriggerClass::Event_Need_Data(event_idx)) {
-        data_edt.AppendTo(*commands);
+        commands.Add(data_edt);
         absl::SNPrintF(databuf, sizeof(databuf), "%ld", CurTrigger->Data);
         data_edt.Set_Text(databuf, 8);
       }
       if (TriggerClass::Event_Need_House(event_idx)) {
-        gdibtn.AppendTo(*commands);
-        nodbtn.AppendTo(*commands);
-        neutralbtn.AppendTo(*commands);
+        commands.Add(gdibtn);
+        commands.Add(nodbtn);
+        commands.Add(neutralbtn);
         Set_House_Buttons(house, commands, kButtonGdi);
       }
       if (TriggerClass::Action_Need_Team(action_idx)) {
-        teambtn.AppendTo(*commands);
+        commands.Add(teambtn);
       }
 
       /*
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -2909,7 +2897,7 @@ int MapEditClass::Edit_Trigger() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -3140,7 +3128,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   CheckListClass triggerlist(
       kTriggerList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
@@ -3221,9 +3209,9 @@ int MapEditClass::Import_Triggers() {
   /*
   ............................ Create the list .............................
   */
-  commands = &triggerlist;
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  commands.Add(triggerlist);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -3264,7 +3252,7 @@ int MapEditClass::Import_Triggers() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -3274,7 +3262,7 @@ int MapEditClass::Import_Triggers() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -3422,7 +3410,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   CheckListClass teamlist(
       kTeamList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
@@ -3504,9 +3492,9 @@ int MapEditClass::Import_Teams() {
   /*
   ............................ Create the list .............................
   */
-  commands = &teamlist;
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  commands.Add(teamlist);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -3547,7 +3535,7 @@ int MapEditClass::Import_Teams() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -3557,7 +3545,7 @@ int MapEditClass::Import_Teams() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ............................ Process input ............................

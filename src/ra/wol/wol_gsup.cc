@@ -52,6 +52,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1118,7 +1119,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       //..................................................................
@@ -1278,13 +1279,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       }
     }
 
-    engine::window::InputEvent input_event = commands->Input(view);
+    engine::window::InputEvent input_event = commands.Input(view);
     input = input_event.key;
 
     if (bHackFocus) {
       pEditSend->Set_Focus();
       pEditSend->Flag_To_Redraw();
-      input_event = commands->Input(view);
+      input_event = commands.Input(view);
       input = input_event.key;
       bHackFocus = false;
     }
@@ -1794,17 +1795,18 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
 //***********************************************************************************************
 void WOL_GameSetupDialog::BindControls(bool bBind) {
   if (bBind) {
-    commands = pWO->pShpBtnDiscon.get();
-    pWO->pShpBtnLeave->AppendTo(*commands);
-    pWO->pShpBtnRefresh->AppendTo(*commands);
-    pWO->pShpBtnSquelch->AppendTo(*commands);
-    pWO->pShpBtnBan->AppendTo(*commands);
-    pWO->pShpBtnKick->AppendTo(*commands);
-    pWO->pShpBtnFindpage->AppendTo(*commands);
-    pWO->pShpBtnOptions->AppendTo(*commands);
-    pWO->pShpBtnLadder->AppendTo(*commands);
-    pWO->pShpBtnHelp->AppendTo(*commands);
-    pILPlayers->AppendTo(*commands);
+    commands.Clear();
+    commands.Add(*pWO->pShpBtnDiscon);
+    commands.Add(*pWO->pShpBtnLeave);
+    commands.Add(*pWO->pShpBtnRefresh);
+    commands.Add(*pWO->pShpBtnSquelch);
+    commands.Add(*pWO->pShpBtnBan);
+    commands.Add(*pWO->pShpBtnKick);
+    commands.Add(*pWO->pShpBtnFindpage);
+    commands.Add(*pWO->pShpBtnOptions);
+    commands.Add(*pWO->pShpBtnLadder);
+    commands.Add(*pWO->pShpBtnHelp);
+    commands.Add(*pILPlayers);
     if (bHost) {
       //	Draw order of tabs depends on which one is selected, as we want
       // them to overlap appropriately. 	Also, the selected tab must
@@ -1819,63 +1821,63 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
       switch (ScenKindCurrent) {
         case SCENARIO_RA:
           if (!pWO->GameInfoCurrent.bTournament) {
-            pShpBtnScenarioUser->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioUser);
             pShpBtnScenarioUser->DRAWTABDOWN;
           }
           if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME) {
-            pShpBtnScenarioCS->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioCS);
             pShpBtnScenarioCS->DRAWTABDOWN;
           } else if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                      (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
                       Is_Aftermath_Installed() &&
                       !pWO->GameInfoCurrent.bTournament)) {
-            pShpBtnScenarioAM->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioAM);
             pShpBtnScenarioAM->DRAWTABDOWN;
           }
-          pILScens->AppendTo(*commands);
-          pShpBtnScenarioRA->AppendTo(*commands);
+          commands.Add(*pILScens);
+          commands.Add(*pShpBtnScenarioRA);
           pShpBtnScenarioRA->DRAWTABUP;
           break;
         case SCENARIO_CS:  //	pWO->GameInfoCurrent.GameKind must be
                            // CREATEGAMEINFO::CSGAME.
           if (!pWO->GameInfoCurrent.bTournament) {
-            pShpBtnScenarioUser->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioUser);
             pShpBtnScenarioUser->DRAWTABDOWN;
           }
-          pShpBtnScenarioRA->AppendTo(*commands);
+          commands.Add(*pShpBtnScenarioRA);
           pShpBtnScenarioRA->DRAWTABDOWN;
-          pILScens->AppendTo(*commands);
-          pShpBtnScenarioCS->AppendTo(*commands);
+          commands.Add(*pILScens);
+          commands.Add(*pShpBtnScenarioCS);
           pShpBtnScenarioCS->DRAWTABUP;
           break;
         case SCENARIO_AM:  //	pWO->GameInfoCurrent.GameKind must be
                            // CREATEGAMEINFO::AMGAME, or RAGAME with AM
                            // installed.
           if (!pWO->GameInfoCurrent.bTournament) {
-            pShpBtnScenarioUser->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioUser);
             pShpBtnScenarioUser->DRAWTABDOWN;
           }
-          pShpBtnScenarioRA->AppendTo(*commands);
+          commands.Add(*pShpBtnScenarioRA);
           pShpBtnScenarioRA->DRAWTABDOWN;
-          pILScens->AppendTo(*commands);
-          pShpBtnScenarioAM->AppendTo(*commands);
+          commands.Add(*pILScens);
+          commands.Add(*pShpBtnScenarioAM);
           pShpBtnScenarioAM->DRAWTABUP;
           break;
         case SCENARIO_USER:  //	pWO->GameInfoCurrent.bTournament must be false.
-          pShpBtnScenarioRA->AppendTo(*commands);
+          commands.Add(*pShpBtnScenarioRA);
           pShpBtnScenarioRA->DRAWTABDOWN;
           if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME) {
-            pShpBtnScenarioCS->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioCS);
             pShpBtnScenarioCS->DRAWTABDOWN;
           } else if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                      (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
                       Is_Aftermath_Installed() &&
                       !pWO->GameInfoCurrent.bTournament)) {
-            pShpBtnScenarioAM->AppendTo(*commands);
+            commands.Add(*pShpBtnScenarioAM);
             pShpBtnScenarioAM->DRAWTABDOWN;
           }
-          pILScens->AppendTo(*commands);
-          pShpBtnScenarioUser->AppendTo(*commands);
+          commands.Add(*pILScens);
+          commands.Add(*pShpBtnScenarioUser);
           pShpBtnScenarioUser->DRAWTABUP;
           break;
         case SCENARIO_GAMEKIND::SCENARIO_UNINITIALIZED:
@@ -1884,66 +1886,24 @@ void WOL_GameSetupDialog::BindControls(bool bBind) {
       }
     }
     //		pStaticDescrip->AppendTo(*commands);
-    pEditSend->AppendTo(*commands);
-    pStaticUnit->AppendTo(*commands);
-    pStaticLevel->AppendTo(*commands);
-    pStaticCredits->AppendTo(*commands);
-    pStaticAIPlayers->AppendTo(*commands);
-    pGaugeCount->AppendTo(*commands);
-    pGaugeCredits->AppendTo(*commands);
-    pGaugeAIPlayers->AppendTo(*commands);
-    pGaugeLevel->AppendTo(*commands);
-    pCheckListOptions->AppendTo(*commands);
-    pTextBtnCancel->AppendTo(*commands);
-    pTextBtnAcceptStart->AppendTo(*commands);
-    pTextBtnAction->AppendTo(*commands);
-    pILDisc->AppendTo(*commands);
-    pDropListHouse->AppendTo(*commands);
+    commands.Add(*pEditSend);
+    commands.Add(*pStaticUnit);
+    commands.Add(*pStaticLevel);
+    commands.Add(*pStaticCredits);
+    commands.Add(*pStaticAIPlayers);
+    commands.Add(*pGaugeCount);
+    commands.Add(*pGaugeCredits);
+    commands.Add(*pGaugeAIPlayers);
+    commands.Add(*pGaugeLevel);
+    commands.Add(*pCheckListOptions);
+    commands.Add(*pTextBtnCancel);
+    commands.Add(*pTextBtnAcceptStart);
+    commands.Add(*pTextBtnAction);
+    commands.Add(*pILDisc);
+    commands.Add(*pDropListHouse);
     //		pCheckAftermathUnits->AppendTo(*commands);
   } else {
-    pWO->pShpBtnDiscon->ForgetNeighbors();
-    pWO->pShpBtnLeave->ForgetNeighbors();
-    pWO->pShpBtnRefresh->ForgetNeighbors();
-    pWO->pShpBtnSquelch->ForgetNeighbors();
-    pWO->pShpBtnBan->ForgetNeighbors();
-    pWO->pShpBtnKick->ForgetNeighbors();
-    pWO->pShpBtnFindpage->ForgetNeighbors();
-    pWO->pShpBtnOptions->ForgetNeighbors();
-    pWO->pShpBtnLadder->ForgetNeighbors();
-    pWO->pShpBtnHelp->ForgetNeighbors();
-    pILPlayers->ForgetNeighbors();
-    if (bHost) {
-      pShpBtnScenarioRA->ForgetNeighbors();
-      if (!pWO->GameInfoCurrent.bTournament) {
-        pShpBtnScenarioUser->ForgetNeighbors();
-      }
-      if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::CSGAME) {
-        pShpBtnScenarioCS->ForgetNeighbors();
-      } else if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
-                 (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::RAGAME &&
-                  Is_Aftermath_Installed() &&
-                  !pWO->GameInfoCurrent.bTournament)) {
-        pShpBtnScenarioAM->ForgetNeighbors();
-      }
-      pILScens->ForgetNeighbors();
-    }
-    //		pStaticDescrip->ForgetNeighbors();
-    pEditSend->ForgetNeighbors();
-    pStaticUnit->ForgetNeighbors();
-    pStaticLevel->ForgetNeighbors();
-    pStaticCredits->ForgetNeighbors();
-    pStaticAIPlayers->ForgetNeighbors();
-    pGaugeCount->ForgetNeighbors();
-    pGaugeCredits->ForgetNeighbors();
-    pGaugeAIPlayers->ForgetNeighbors();
-    pGaugeLevel->ForgetNeighbors();
-    pCheckListOptions->ForgetNeighbors();
-    pTextBtnCancel->ForgetNeighbors();
-    pTextBtnAcceptStart->ForgetNeighbors();
-    pTextBtnAction->ForgetNeighbors();
-    pILDisc->ForgetNeighbors();
-    pDropListHouse->ForgetNeighbors();
-    //		pCheckAftermathUnits->ForgetNeighbors();
+    commands.Clear();
   }
 }
 

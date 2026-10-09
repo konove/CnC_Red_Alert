@@ -28,6 +28,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/palette.h"
@@ -109,7 +110,7 @@ bool Get_Broadcast_Addresses() {
   Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
                        title, view.height(), width, height);
 
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
   ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,
                                  d_ip_address_list_y, d_ip_address_list_w,
                                  d_ip_address_list_h, kTextFont, kTextFlags,
@@ -179,20 +180,18 @@ bool Get_Broadcast_Addresses() {
         //...............................................................
         //	Rebuild the button list
         //...............................................................
-        okbtn.ForgetNeighbors();
-        cancelbtn.ForgetNeighbors();
-        ip_address_list.ForgetNeighbors();
+        commands.Clear();
 
-        commands = &okbtn;
-        cancelbtn.AppendTo(*commands);
-        ip_address_list.AppendTo(*commands);
+        commands.Add(okbtn);
+        commands.Add(cancelbtn);
+        commands.Add(ip_address_list);
       }
 
       //..................................................................
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       game::TheMouse().Show();
@@ -202,7 +201,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     //.....................................................................
     //	Process input

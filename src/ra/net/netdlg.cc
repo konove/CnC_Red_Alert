@@ -164,6 +164,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1549,7 +1550,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTextFont,
                      kTextFlags, d_name_x, d_name_y, d_name_w, d_name_h,
@@ -1831,30 +1832,11 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Rebuild the button list
         //...............................................................
-        cancelbtn.ForgetNeighbors();
-        gamelist.ForgetNeighbors();
-        playerlist.ForgetNeighbors();
-#ifdef OLDWAY
-        gdibtn.ForgetNeighbors();
-        nodbtn.ForgetNeighbors();
-#else
-        housebtn.ForgetNeighbors();
-#endif
-        name_edt.ForgetNeighbors();
-        joinbtn.ForgetNeighbors();
-        newbtn.ForgetNeighbors();
-        countgauge.ForgetNeighbors();
-        levelgauge.ForgetNeighbors();
-        creditsgauge.ForgetNeighbors();
-        aiplayersgauge.ForgetNeighbors();
-        staticcount.ForgetNeighbors();
-        staticlevel.ForgetNeighbors();
-        staticcredits.ForgetNeighbors();
-        staticaiplayers.ForgetNeighbors();
+        commands.Clear();
 
-        commands = &cancelbtn;
-        gamelist.AppendTo(*commands);
-        playerlist.AppendTo(*commands);
+        commands.Add(cancelbtn);
+        commands.Add(gamelist);
+        commands.Add(playerlist);
 
         //...............................................................
         //	Only add the name edit field, the House, Join & New buttons if
@@ -1862,25 +1844,25 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
 #ifdef OLDWAY
-          gdibtn.AppendTo(*commands);
-          nodbtn.AppendTo(*commands);
+          commands.Add(gdibtn);
+          commands.Add(nodbtn);
 #else
-          housebtn.AppendTo(*commands);
+          commands.Add(housebtn);
 #endif
-          name_edt.AppendTo(*commands);
-          joinbtn.AppendTo(*commands);
-          newbtn.AppendTo(*commands);
+          commands.Add(name_edt);
+          commands.Add(joinbtn);
+          commands.Add(newbtn);
         } else {
-          countgauge.AppendTo(*commands);
-          levelgauge.AppendTo(*commands);
-          creditsgauge.AppendTo(*commands);
-          aiplayersgauge.AppendTo(*commands);
-          staticcount.AppendTo(*commands);
-          staticlevel.AppendTo(*commands);
-          staticcredits.AppendTo(*commands);
-          staticaiplayers.AppendTo(*commands);
-          optionlist.AppendTo(*commands);
-          descrip.AppendTo(*commands);
+          commands.Add(countgauge);
+          commands.Add(levelgauge);
+          commands.Add(creditsgauge);
+          commands.Add(aiplayersgauge);
+          commands.Add(staticcount);
+          commands.Add(staticlevel);
+          commands.Add(staticcredits);
+          commands.Add(staticaiplayers);
+          commands.Add(optionlist);
+          commands.Add(descrip);
         }
       }
 
@@ -1897,7 +1879,7 @@ static int Net_Join_Dialog() {
               TheRules().MaxPlayers -
               static_cast<int>(TheSession().Players.Count()));
         }
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       //..................................................................
@@ -2038,7 +2020,7 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     input = input_event.key;
 
     if (input & KN_BUTTON) {
@@ -4257,20 +4239,21 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Build the button list
   //------------------------------------------------------------------------
-  game::GadgetClass* commands = &playerlist;  // button list
-  scenariolist.AppendTo(*commands);
-  rejectbtn.AppendTo(*commands);
-  staticunit.AppendTo(*commands);
-  staticlevel.AppendTo(*commands);
-  staticcredits.AppendTo(*commands);
-  staticaiplayers.AppendTo(*commands);
-  countgauge.AppendTo(*commands);
-  creditsgauge.AppendTo(*commands);
-  aiplayersgauge.AppendTo(*commands);
-  levelgauge.AppendTo(*commands);
-  optionlist.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(playerlist);  // button list
+  commands.Add(scenariolist);
+  commands.Add(rejectbtn);
+  commands.Add(staticunit);
+  commands.Add(staticlevel);
+  commands.Add(staticcredits);
+  commands.Add(staticaiplayers);
+  commands.Add(countgauge);
+  commands.Add(creditsgauge);
+  commands.Add(aiplayersgauge);
+  commands.Add(levelgauge);
+  commands.Add(optionlist);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
   if (GameFileExists("SAVEGAME.NET")) {
     // loadbtn.AppendTo(*commands);
   } else {
@@ -4497,46 +4480,26 @@ static int Net_New_Dialog() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        /*
-        ** ForgetNeighbors, ForgetNeighbors, ForgetNeighbors
-        */
-        playerlist.ForgetNeighbors();
-        scenariolist.ForgetNeighbors();
-        rejectbtn.ForgetNeighbors();
-        staticunit.ForgetNeighbors();
-        staticlevel.ForgetNeighbors();
-        staticcredits.ForgetNeighbors();
-        staticaiplayers.ForgetNeighbors();
-        countgauge.ForgetNeighbors();
-        creditsgauge.ForgetNeighbors();
-        aiplayersgauge.ForgetNeighbors();
-        levelgauge.ForgetNeighbors();
-        optionlist.ForgetNeighbors();
-        okbtn.ForgetNeighbors();
-        cancelbtn.ForgetNeighbors();
-        loadbtn.ForgetNeighbors();
-
-        /*
-        ** Hack hack, hack
-        */
-        commands = &playerlist;
-        scenariolist.AppendTo(*commands);
-        rejectbtn.AppendTo(*commands);
-        staticunit.AppendTo(*commands);
-        staticlevel.AppendTo(*commands);
-        staticcredits.AppendTo(*commands);
-        staticaiplayers.AppendTo(*commands);
-        countgauge.AppendTo(*commands);
-        creditsgauge.AppendTo(*commands);
-        aiplayersgauge.AppendTo(*commands);
-        levelgauge.AppendTo(*commands);
-        optionlist.AppendTo(*commands);
-        okbtn.AppendTo(*commands);
-        cancelbtn.AppendTo(*commands);
+        // Rebuild the button list.
+        commands.Clear();
+        commands.Add(playerlist);
+        commands.Add(scenariolist);
+        commands.Add(rejectbtn);
+        commands.Add(staticunit);
+        commands.Add(staticlevel);
+        commands.Add(staticcredits);
+        commands.Add(staticaiplayers);
+        commands.Add(countgauge);
+        commands.Add(creditsgauge);
+        commands.Add(aiplayersgauge);
+        commands.Add(levelgauge);
+        commands.Add(optionlist);
+        commands.Add(okbtn);
+        commands.Add(cancelbtn);
         if (GameFileExists("SAVEGAME.NET")) {
-          loadbtn.AppendTo(*commands);
+          commands.Add(loadbtn);
         }
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       //..................................................................
@@ -4595,7 +4558,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
 
     //.....................................................................
     //	Process input

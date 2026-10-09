@@ -34,8 +34,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
-#include "game/ui/link.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palettes.h"
@@ -93,9 +93,6 @@ static bool OnExpandChannelList(IconListClass& chanlist,
 static bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
 static void ResizeChannelList(IconListClass& chanlist, bool bExpand);
 static void ResizeUserList(IconListClass& userlist, bool bExpand);
-
-static bool bLinkInList(const game::Link* pListHead,
-                        const game::Link* pLinkToFind);
 
 static int d_chanlist_w;
 static int d_chanlist_h;
@@ -293,31 +290,32 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   RankAMBtn.ReflectButtonState = true;
 
   //	Build the button list.
-  game::GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
-  pWO->pShpBtnLeave->AppendTo(*commands);
-  pWO->pShpBtnRefresh->AppendTo(*commands);
-  pWO->pShpBtnSquelch->AppendTo(*commands);
-  pWO->pShpBtnBan->AppendTo(*commands);
-  pWO->pShpBtnKick->AppendTo(*commands);
-  pWO->pShpBtnFindpage->AppendTo(*commands);
-  pWO->pShpBtnOptions->AppendTo(*commands);
-  pWO->pShpBtnLadder->AppendTo(*commands);
-  pWO->pShpBtnHelp->AppendTo(*commands);
-  chatlist.AppendTo(*commands);
-  ExpandChanBtn.AppendTo(*commands);
-  chanlist.AppendTo(*commands);
-  ExpandUserBtn.AppendTo(*commands);
-  userlist.AppendTo(*commands);
-  ActionBtn.AppendTo(*commands);
-  CreateBtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(*pWO->pShpBtnDiscon);  // button list
+  commands.Add(*pWO->pShpBtnLeave);
+  commands.Add(*pWO->pShpBtnRefresh);
+  commands.Add(*pWO->pShpBtnSquelch);
+  commands.Add(*pWO->pShpBtnBan);
+  commands.Add(*pWO->pShpBtnKick);
+  commands.Add(*pWO->pShpBtnFindpage);
+  commands.Add(*pWO->pShpBtnOptions);
+  commands.Add(*pWO->pShpBtnLadder);
+  commands.Add(*pWO->pShpBtnHelp);
+  commands.Add(chatlist);
+  commands.Add(ExpandChanBtn);
+  commands.Add(chanlist);
+  commands.Add(ExpandUserBtn);
+  commands.Add(userlist);
+  commands.Add(ActionBtn);
+  commands.Add(CreateBtn);
   //	CreatePrivBtn.AppendTo(*commands);
-  JoinBtn.AppendTo(*commands);
-  BackBtn.AppendTo(*commands);
+  commands.Add(JoinBtn);
+  commands.Add(BackBtn);
   //	CGameBtn.AppendTo(*commands);
-  chatlistTitle.AppendTo(*commands);
-  chanlistTitle.AppendTo(*commands);
-  userlistTitle.AppendTo(*commands);
-  sendedit.AppendTo(*commands);
+  commands.Add(chatlistTitle);
+  commands.Add(chanlistTitle);
+  commands.Add(userlistTitle);
+  commands.Add(sendedit);
 
   //	Tooltips...
   int64_t timeToolTipAppear = 0;  //	When the pending tooltip is due.
@@ -506,11 +504,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     }
 
     //	Synch rank toggle buttons state.
-    if (BackBtn.Previous() == &RankAMBtn) {
+    if (RankAMBtn.list() == &commands) {
       if (pWO->CurrentLevel != WOL_LEVEL_INLOBBY) {
         //	Rank buttons are there and shouldn't be.
-        RankRABtn.Remove();
-        RankAMBtn.Remove();
+        commands.Remove(RankRABtn);
+        commands.Remove(RankAMBtn);
         display = REDRAW_ALL;
       } else {
         if (pWO->bShowRankUpdated) {
@@ -532,8 +530,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     } else {
       if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
         //	Rank buttons aren't there and should be.
-        RankRABtn.InsertAfter(JoinBtn);
-        RankAMBtn.InsertAfter(RankRABtn);
+        commands.AddAfter(RankRABtn, JoinBtn);
+        commands.AddAfter(RankAMBtn, RankRABtn);
         RankRABtn.Flag_To_Redraw();
         RankAMBtn.Flag_To_Redraw();
         if (pWO->bShowRankRA) {
@@ -629,7 +627,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //	Dialog & Field labels
         //...............................................................
 
-        commands->Draw_All(view);
+        commands.DrawAll(view);
 
         //	Draw title bar above channel list.
         Draw_Box(view, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
@@ -678,12 +676,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
     //	If anything currently on the controls list is set to redraw, hide
     // tooltip.
-    if (pToolTipHitLast && pToolTipHitLast->bShowing &&
-        commands->Is_List_To_Redraw()) {
+    if (pToolTipHitLast && pToolTipHitLast->bShowing && commands.IsToRedraw()) {
       pToolTipHitLast->Unshow(view);
     }
 
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
     // around GadgetClass::Input's 	tendency to remove any focus the first
@@ -694,7 +691,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bHackFocus) {
       sendedit.Set_Focus();
       sendedit.Flag_To_Redraw();
-      input = commands->Input(view).key;
+      input = commands.Input(view).key;
       bHackFocus = false;
     }
 
@@ -702,7 +699,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (pToolTipHead) {
       ToolTipClass* pToolTipHit = pToolTipHead->GetToolTipHit();
       if (pToolTipHit == pToolTipHitLast) {
-        if (pToolTipHit && bLinkInList(commands, pToolTipHit->pGadget)) {
+        if (pToolTipHit && pToolTipHit->pGadget->list() == &commands) {
           //	(Gadget must be
           // in controls list.)
           if (!pToolTipHit->bShowing &&
@@ -753,12 +750,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case engine::window::ButtonKey(kButtonExpandchannels):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
-          if (ExpandUserBtn.Next() == &userlist) {
-            userlist.Remove();
-          }
+          commands.Remove(userlist);
           //	Ensure chanlist is visible.
-          if (ExpandChanBtn.Next() != &chanlist) {
-            chanlist.InsertAfter(ExpandChanBtn);
+          if (chanlist.list() == nullptr) {
+            commands.AddAfter(chanlist, ExpandChanBtn);
           }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X,
@@ -771,8 +766,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         } else {
           //	Show userlist.
-          if (ExpandUserBtn.Next() != &userlist) {
-            userlist.InsertAfter(ExpandUserBtn);
+          if (userlist.list() == nullptr) {
+            commands.AddAfter(userlist, ExpandUserBtn);
           }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
@@ -793,20 +788,18 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case engine::window::ButtonKey(kButtonExpandusers):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
-          if (ExpandChanBtn.Next() == &chanlist) {
-            chanlist.Remove();
-          }
+          commands.Remove(chanlist);
           //	Ensure userlist is visible.
-          if (ExpandUserBtn.Next() != &userlist) {
-            userlist.InsertAfter(ExpandUserBtn);
+          if (userlist.list() == nullptr) {
+            commands.AddAfter(userlist, ExpandUserBtn);
           }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpUnexpand);
         } else {
           //	Show chanlist.
-          if (ExpandChanBtn.Next() != &chanlist) {
-            chanlist.InsertAfter(ExpandChanBtn);
+          if (chanlist.list() == nullptr) {
+            commands.AddAfter(chanlist, ExpandChanBtn);
           }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
@@ -1587,18 +1580,6 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
       pWO->bSelfDestruct = true;
       return false;
     }
-  }
-  return false;
-}
-
-//***********************************************************************************************
-bool bLinkInList(const game::Link* pListHead, const game::Link* pLinkToFind) {
-  const game::Link* pLink = pListHead;
-  while (pLink) {
-    if (pLink == pLinkToFind) {
-      return true;
-    }
-    pLink = pLink->Next();
   }
   return false;
 }

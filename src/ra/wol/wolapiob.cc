@@ -37,6 +37,7 @@
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "ra/assets/dib.h"
 #include "ra/assets/installation.h"
@@ -2589,16 +2590,7 @@ bool WolapiObject::OnEnteringGameChannel(const char* szChannelName,
   base::SafeCopy(GameInfoCurrent.szPassword, CreateGameInfo.szPassword);
 
   //	Remove shared buttons from wolchat's command list.
-  pShpBtnDiscon->ForgetNeighbors();
-  pShpBtnLeave->ForgetNeighbors();
-  pShpBtnRefresh->ForgetNeighbors();
-  pShpBtnSquelch->ForgetNeighbors();
-  pShpBtnBan->ForgetNeighbors();
-  pShpBtnKick->ForgetNeighbors();
-  pShpBtnFindpage->ForgetNeighbors();
-  pShpBtnOptions->ForgetNeighbors();
-  pShpBtnLadder->ForgetNeighbors();
-  pShpBtnHelp->ForgetNeighbors();
+  RemoveSharedButtons();
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Enable();
@@ -2698,21 +2690,27 @@ void WolapiObject::OnFailedToEnterGameChannel() {
 }
 
 //***********************************************************************************************
+// Not const: changes a dialog's gadget list.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void WolapiObject::RemoveSharedButtons() {
+  for (ShapeButtonClass* button :
+       {pShpBtnDiscon.get(), pShpBtnLeave.get(), pShpBtnRefresh.get(),
+        pShpBtnSquelch.get(), pShpBtnBan.get(), pShpBtnKick.get(),
+        pShpBtnFindpage.get(), pShpBtnOptions.get(), pShpBtnLadder.get(),
+        pShpBtnHelp.get()}) {
+    if (game::GadgetList* const list = button->list()) {
+      list->Remove(*button);
+    }
+  }
+}
+
+//***********************************************************************************************
 void WolapiObject::OnExitingGameChannel() {
   //	This is called after we leave a game channel, while still in the game
   // setup dialog.
 
   //	Remove shared buttons from wolgsup's command list.
-  pShpBtnDiscon->ForgetNeighbors();
-  pShpBtnLeave->ForgetNeighbors();
-  pShpBtnRefresh->ForgetNeighbors();
-  pShpBtnSquelch->ForgetNeighbors();
-  pShpBtnBan->ForgetNeighbors();
-  pShpBtnKick->ForgetNeighbors();
-  pShpBtnFindpage->ForgetNeighbors();
-  pShpBtnOptions->ForgetNeighbors();
-  pShpBtnLadder->ForgetNeighbors();
-  pShpBtnHelp->ForgetNeighbors();
+  RemoveSharedButtons();
 
   CurrentLevel = WOL_LEVEL_INVALID;
   *szChannelNameCurrent = 0;

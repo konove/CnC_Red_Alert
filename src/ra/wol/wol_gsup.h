@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "game/ui/gadget_list.h"
 #include "ra/net/session.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gauge.h"
@@ -254,7 +255,7 @@ class WOL_GameSetupDialog {
   int d_action_y = 0;
 
  protected:
-  game::GadgetClass* commands = nullptr;  //	The controls list.
+  game::GadgetList commands;  //	The controls list.
 
   std::unique_ptr<IconListClass> pILPlayers;
   std::unique_ptr<IconListClass> pILScens;

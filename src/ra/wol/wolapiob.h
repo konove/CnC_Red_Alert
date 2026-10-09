@@ -467,6 +467,9 @@ class WolapiObject {
   bool OnEnteringGameSetup();
   void OnFailedToEnterGameChannel();
   void OnExitingGameChannel();
+  // Takes the buttons the chat dialog and the game setup dialog share out of
+  // the gadget list of the dialog that is being left.
+  void RemoveSharedButtons();
   void RejoinLobbyAfterGame();
 
   bool RequestLadders(const char* szName);
