@@ -6122,10 +6122,18 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-08T19:43:24Z",
-      "updated": "2026-10-08T19:43:24Z"
+      "updated": "2026-10-09T16:27:03Z",
+      "resolution": "Surveyed `src/engine`, `src/base` and `src/game` against what made LCW a good first kernel (pure bytes-in/bytes-out, no engine types in the signature, few callers, existing tests). The ranked candidates are in the comment; no code changed, and no migration was started because which one to do is the user's call.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-09T16:27:03Z",
+          "text": "## Survey (2026-10-09)\n\nCriteria, from the LCW migration (`docs/RUST_LCW_PLAN.md`): a leaf function over byte/int slices, no engine classes in its signature, a handful of callers, tests that can run old against new, and ideally a hot inner loop where the C++ bounds checks cost something. Line counts are the `.cc` without tests.\n\n### Tier 1: same shape as LCW, drop-in behind the existing C++ signature\n\n| Code | Lines | Callers | Notes |\n| --- | --- | --- | --- |\n| `engine/codec/xor_delta.cc` (`ApplyXorDelta`, `ApplyXorDeltaToView`) | 135 | `gfx/keyframe.cc`, `gfx/wsa_animation.cc` | Format 40 delta; always runs right after an LCW decode, so both halves of a shape/WSA frame decode would be Rust. Smallest step. |\n| `engine/codec/aud_decoder.cc` (`DecodeAdpcmBlock`, `DecodeWestwoodBlock`) + `engine/video/vqa/adpcm_decoders.cc` | 132 + 74 | audio mixer, VQA loader | IMA ADPCM and Westwood 8-bit; state is one small POD (`AdpcmState`) that maps to a cxx shared struct. |\n| `engine/video/vqa/vq_decoder.cc` (`DecodeVqFrame`) | 85 | `movie_drawer.cc` only | Codebook block copy per movie frame; with LCW it is the whole VQA video path. |\n| `engine/crypto/sha1_compress.cc` | 226 | `sha.cc` only | Portable + SHA-NI paths; Rust has `is_x86_feature_detected!` and the same intrinsics. `SHAEngine` stays C++. |\n| `engine/crypto/blowfish.cc` | 656 (mostly tables) | pk sink/source, MIX, RA saves | Needs an opaque Rust type (`Box<Blowfish>`) behind `BlowfishEngine`, or a key-schedule struct C++ owns. |\n| `engine/codec/lzw.cc` | 290 | `compressed_block.cc` only | Self-contained engine with internal tables; low value (only LZW12/14 blocks use it). |\n| `engine/codec/base64.cc` | 445 | INI, WOL, tools | Easy, cold. |\n| `engine/crypto/key_phrase_hash.cc`, `base/random.cc` | 117, 105 | few | Trivial; `RandomClass` must stay bit-identical for multiplayer sync and is cheaper left alone. |\n\n### Tier 2: worth it, larger\n\n- `engine/crypto/mp.cc` (3,014 lines) + `pk.cc` (389): the RSA-style bignum. Only user is `int.h`/`pk.cc`, the interface is digit slices, and it was 24% of Debug load CPU. The biggest single win in unsafe-pointer-arithmetic removed, but it is 60-odd `XMP_*` functions; the sane cut is to move the whole `PKey` encrypt/decrypt behind 2-3 bridge functions and delete `mp.cc`, not bridge each `XMP_*`.\n- `third_party/lzo` (711 lines, `lzo1x_c/d`): used by RA save games through `block_backends.cc`. Must stay byte-compatible on decode; encode only has to round-trip. A pure-Rust LZO1X crate could replace the vendored C.\n- `engine/gfx/fading_table.cc` (79): pure palette math, 15% of Debug load CPU; needs the 256-entry palette passed as a `&[u8]` rather than `Palette`.\n- `engine/gfx/shape_blitter.cc` (258) and the `BlitToLocked`/`ScaleLocked`/glyph loops in `pixel_buffer.cc`: hot per-frame pixel loops, but the signatures take `PixelView`; migrating means first splitting each into a clip step in C++ and a slice+stride kernel.\n- Format parsers on a byte span: `gfx/pcx_file.cc` (319), `gfx/cps_image.cc`, `gfx/ico_image.cc`, MIX header parsing in `file/mix_archive.cc`, and a `cargo fuzz` target comes almost free for each.\n\n### Not worth migrating\n\n- `engine/stream` and the sink/source adapters, `engine/file` (GameFile, SearchPaths, `ini_file.cc` with 77 includers), `engine/net`, `engine/window`, `engine/audio/audio_mixer.cc`: virtual C++ interfaces, SDL or sockets, or wide caller fan-out. cxx would bridge every call and nothing gets simpler.\n- `game/`, `ra/`, `td/`: the object hierarchy is virtual inheritance with pooled raw pointers and globals; no boundary to cut at.\n- `base/fixed.h`, `base/strings`: header-level vocabulary inlined into 64+ TUs; an FFI call per operation would be slower.\n\n### Suggested order\n\n1. `xor_delta` (finishes the shape/WSA decode path, a day at most).\n2. `aud_decoder` + `adpcm_decoders` + `vq_decoder` (finishes the VQA/audio decode path; frame-dump and golden tests already exist).\n3. `sha1_compress` and `blowfish` (the MIX-open path, with `mix_archive_test` as the guard).\n4. `mp.cc`/`pk.cc` as its own plan."
+        }
+      ]
     },
     {
       "id": "T-219",
@@ -6346,10 +6354,10 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T01:50:35Z",
-      "updated": "2026-10-09T07:29:00Z",
+      "updated": "2026-10-09T16:25:42Z",
       "source": "26da3baa..97e3f608",
       "anchors": [
         {
@@ -6749,10 +6757,10 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T16:21:37Z",
+      "updated": "2026-10-09T16:25:39Z",
       "parent": "T-222",
       "source": "4f1ad716..cfc8a308",
       "resolution": "Reworded the stale comments (`nullmgr.cc` and `control.cc`) and deleted the commented-out `Is_List_To_Redraw()` in both `gscreen.cc`. `DropListClass::Expand()` and `TDropListClass::Expand()` now do nothing outside a gadget list (two new tests). `gadget_list.h` and `docs/GADGET_LIST_PLAN.md` say that a composite's parts lose focus and the mouse hold on a re-add and that dropping `StuckOn` in `Remove()` is new. `mapedsel.cc` unchanged: by reading, `GScreenClass::Render()` draws every button forced while the map editor is active and `Remove()`/`Add_A_Button()` drop the focus of the buttons that move, so the old head-change redraw is covered; not run, the editor being an internal build.",
