@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 222,
+  "nextId": 228,
   "items": [
     {
       "id": "T-2",
@@ -5271,9 +5271,16 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-09T01:50:57Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-09T01:50:57Z",
+          "text": "Seen again in the game/ui/link run (26da3baa..97e3f608): `tools/strict_tu.py` over the 60 files of a rename printed 2,222 `-Wnullability-extension` lines from `engine/crypto/digit_cursor.h` alone, plus `-Wlifetime-safety-*` from `base/array.h`, `engine/gfx/palette.h`, `engine/stream/span_sink.h` and `game/ui/txtlabel.h:62`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/base/array.h",
@@ -5975,10 +5982,10 @@
         "testing",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-09T01:22:18Z",
+      "updated": "2026-10-09T01:26:52Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "`ReadAll()` now lives once in the new header `src/engine/stream/byte_stream_test_util.h`, as a template over the result (a `std::string` by default). The three stream tests include it in place of their own copies, and `FileBytes()` in `src/engine/gfx/pcx_file_test.cc` reads the written file back through `DiskStream` and `ReadAll<std::vector<uint8_t>>()` instead of a `std::ifstream`.",
@@ -6325,6 +6332,313 @@
             "  return std::as_bytes(std::span(text));",
             "}",
             ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-222",
+      "title": "Leftovers from the game/ui/link modernization",
+      "details": "What the `/modernize-file` run on `src/game/ui/link.h` and `link.cc` (`LinkClass`, now `game::Link`) noticed and did not change. Each part stands alone.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:35Z",
+      "updated": "2026-10-09T01:50:35Z",
+      "source": "26da3baa..97e3f608",
+      "anchors": [
+        {
+          "path": "src/game/ui/link.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-223",
+      "title": "Decide whether Link's add functions unlink a node that is still in a list",
+      "details": "`Link::InsertAfter()`, `AppendTo()` and `PrependTo()` overwrite the node's `next_`/`previous_` without unlinking it. A node that is still linked elsewhere leaves its old neighbours pointing at it: the old list is cut short or closed into a ring (the ring guards in `HeadOf()`/`TailOf()` in `link.h` exist only for this; `link_test.cc`'s two ring tests show it). Commit 60609cee made only the three already-in-place cases no-ops. No caller was found doing this; the dialogs call `ForgetNeighbors()` (was `Zap()`) on every gadget before rebuilding a list.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bug",
+        "game-ui",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T01:50:57Z",
+      "parent": "T-222",
+      "source": "26da3baa..97e3f608",
+      "toDecide": "Should the three add functions call `Link::Remove()` on the node first?\n\n- **Yes**: adding a linked node moves it cleanly, and the ring guards in `HeadOf()`/`TailOf()` can go. Risk: after `ForgetNeighbors()` a node's old neighbours still point at it, so a later `Remove()` on such a neighbour writes through stale pointers into a list that has already been rebuilt. Needs the ~150 `ForgetNeighbors()` callers looked at (see the sibling item) and a UI check of the sidebar and the network dialogs.\n- **No, CHECK instead**: `DCHECK(next_ == nullptr && previous_ == nullptr)` in the three functions finds a misusing caller in debug runs; small.\n- **Leave it**: documented in the class comment as it is now.",
+      "anchors": [
+        {
+          "path": "src/game/ui/link.cc",
+          "startLine": 31,
+          "endLine": 85,
+          "text": "Link& Link::InsertAfter(Link& predecessor) {\n  // A node cannot follow itself: linking it would make previous_ point at this\n  // node and cut the list off in front of it.\n  if (&predecessor == this) {\n    return HeadOfList();\n  }\n\n  Link* old_next = predecessor.next_;\n\n  // Link this node in after `predecessor`.\n  predecessor.next_ = this;\n  previous_ = &predecessor;\n\n  // Link it to the node that used to follow `predecessor`, if there was one.\n  next_ = old_next;\n  if (old_next) {\n    old_next->previous_ = this;\n  }\n\n  return HeadOfList();\n}\n\nLink& Link::AppendTo(Link& list) {\n  Link* old_tail = &list.TailOfList();\n\n  // Already the tail. Linking it behind itself would make previous_ point at\n  // this node and lose every node in front of it.\n  if (old_tail == this) {\n    return HeadOfList();\n  }\n\n  // Link this node in behind the old tail.\n  old_tail->next_ = this;\n  previous_ = old_tail;\n  next_ = nullptr;\n\n  return HeadOfList();\n}\n\nLink& Link::PrependTo(Link& list) {\n  Link* old_head = &list.HeadOfList();\n\n  // Already the head. Linking it in front of itself would make next_ point at\n  // this node, and a walk down the list would never end.\n  if (old_head == this) {\n    return *this;\n  }\n\n  // Link this node in front of the old head.\n  old_head->previous_ = this;\n  next_ = old_head;\n  previous_ = nullptr;\n\n  return *this;\n}",
+          "before": [
+            "",
+            "Link* Link::Previous() const { return previous_; }",
+            ""
+          ],
+          "after": [
+            "",
+            "const Link& Link::HeadOfList() const { return HeadOf(*this); }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-224",
+      "title": "Replace Link::ForgetNeighbors() with something that cannot leave stale pointers",
+      "details": "`ForgetNeighbors()` (the legacy `Zap()`) clears a node's two pointers and leaves the neighbours pointing at it. It was written for nodes whose pointers started out uninitialized; they are initialized to nullptr now. About 150 callers in both games (sidebar, `netdlg.cc`, `wol_gsup.cc`, `wolapiob.cc`, `mapeddlg.cc`) call it on every gadget of a list before rebuilding the list, which only works when none is missed: a missed gadget keeps pointers to nodes that are now in another list, or destroyed. Options: replace each call by `Remove()` (safe one node at a time, O(n) walk each); or give the list head one function that unlinks the whole chain and call that once per rebuild. Either changes how UI lists are torn down, so check with `tools/ui_check.py` and a network lobby.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T01:50:57Z",
+      "parent": "T-222",
+      "source": "26da3baa..97e3f608",
+      "anchors": [
+        {
+          "path": "src/game/ui/link.h",
+          "startLine": 87,
+          "endLine": 91,
+          "text": "  // Forgets both neighbours without telling them, so they go on pointing at\n  // this node. Remove() is the way to take one node out; this is for dropping\n  // a whole list at once, by calling this on every node of it before the list\n  // is built again (the sidebar's buttons, a dialog's gadgets on a redraw).\n  virtual void ForgetNeighbors();",
+          "before": [
+            "  [[nodiscard]] const Link& TailOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;",
+            "  Link& TailOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return TailOf(*this); }",
+            ""
+          ],
+          "after": [
+            "",
+            "  // Takes this node out of its list and closes the gap. Returns the head of",
+            "  // what is left, or nullptr if this was the only node."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-225",
+      "title": "Decide the names the Link rename was unsure of",
+      "details": "Commits 3d6cbcd5 and df1eb425 renamed `LinkClass` and its members. Each rename is a scripted tree-wide replace (the largest, `AppendTo`, has ~580 uses in 50 files).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "naming",
+        "game-ui",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T01:50:57Z",
+      "parent": "T-222",
+      "source": "26da3baa..97e3f608",
+      "toDecide": "Keep or change:\n\n- `Link` (alternative `ListNode`; rejected because `ListClass` is the list box widget)\n- `ForgetNeighbors()` for `Zap()` (alternatives `ResetLinks()`, `DropLinks()`)\n- `AppendTo(list)` / `PrependTo(list)` for `Add_Tail()` / `Add_Head()` (alternatives `AddToTail()` / `AddToHead()`)\n- `InsertAfter(predecessor)` for `Add()`\n- `Previous()` for `Get_Prev()` (alternative `Prev()`)",
+      "anchors": [
+        {
+          "path": "src/game/ui/link.h",
+          "startLine": 48,
+          "endLine": 48,
+          "text": "class Link {",
+          "before": [
+            "//   b.AppendTo(a);  // a b",
+            "//   c.AppendTo(a);  // a b c",
+            "//   b.Remove();     // a c"
+          ],
+          "after": [
+            " public:",
+            "  Link() noexcept = default;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-226",
+      "title": "Rename the parameter of the InsertAfter() overrides to predecessor",
+      "details": "`Link::InsertAfter(Link& predecessor)` inserts the node right after its argument. The overrides in `ListClass`, `DropListClass`, `TDropListClass` and `TListClass` still call the parameter `list` or `object`, from when the function was `Add()`. Rename it in each override and its body; they belong to those files' own modernization passes, so it was left out of the link run.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "naming",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T01:50:57Z",
+      "parent": "T-222",
+      "source": "26da3baa..97e3f608",
+      "anchors": [
+        {
+          "path": "src/game/ui/list.h",
+          "startLine": 395,
+          "endLine": 395,
+          "text": "  Link& InsertAfter(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {",
+          "before": [
+            "  ** These overloaded list routines handle adding/removing the scroll bar",
+            "  ** automatically when the list box is added or removed.",
+            "  */"
+          ],
+          "after": [
+            "    if (IsScrollActive) {",
+            "      ScrollGadget.InsertAfter(list);",
+            "      DownGadget.InsertAfter(list);"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.h",
+          "startLine": 74,
+          "endLine": 74,
+          "text": "  game::Link& InsertAfter(game::Link& object)",
+          "before": [
+            "",
+            "  // Link the list and its drop button into the chain `object` is in, and",
+            "  // return the head of that chain, which may be any gadget."
+          ],
+          "after": [
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
+            "  game::Link& AppendTo(game::Link& object)",
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.h",
+          "startLine": 154,
+          "endLine": 154,
+          "text": "  game::Link& InsertAfter(game::Link& object)",
+          "before": [
+            "  }",
+            "",
+            "  // As DropListClass's: each returns the head of the chain."
+          ],
+          "after": [
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
+            "  game::Link& AppendTo(game::Link& object)",
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.h",
+          "startLine": 229,
+          "endLine": 229,
+          "text": "game::Link& TDropListClass<T>::InsertAfter(game::Link& object) {",
+          "before": [
+            "}",
+            "",
+            "template <class T>"
+          ],
+          "after": [
+            "  DropButton.InsertAfter(object);",
+            "  return EditClass::InsertAfter(object);",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.cc",
+          "startLine": 82,
+          "endLine": 82,
+          "text": "game::Link& DropListClass::InsertAfter(game::Link& object) {",
+          "before": [
+            "  EditClass::ForgetNeighbors();",
+            "}",
+            ""
+          ],
+          "after": [
+            "  DropButton.InsertAfter(object);",
+            "  return EditClass::InsertAfter(object);",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/tlist.h",
+          "startLine": 90,
+          "endLine": 90,
+          "text": "  game::Link& InsertAfter(game::Link& list)",
+          "before": [
+            "  ** These overloaded list routines handle adding/removing the scroll bar",
+            "  ** automatically when the list box is added or removed.",
+            "  */"
+          ],
+          "after": [
+            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
+            "  game::Link& AppendTo(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
+            "  game::Link& PrependTo(game::Link& list)"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/tlist.h",
+          "startLine": 486,
+          "endLine": 486,
+          "text": "game::Link& TListClass<T>::InsertAfter(game::Link& list) {",
+          "before": [
+            "}",
+            "",
+            "template <class T>"
+          ],
+          "after": [
+            "  /*",
+            "  **\tAdd the scroll bar gadgets if they're active.",
+            "  */"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-227",
+      "title": "Take the virtual functions off Link",
+      "details": "All seven of `Link`'s list functions are virtual. `Next()` and `Previous()` are virtual only so that `GadgetClass` can return `GadgetClass*` through a `dynamic_cast` (`gadget.cc`); `InsertAfter()`, `AppendTo()`, `PrependTo()`, `ForgetNeighbors()` and `Remove()` so that composite widgets (`ListClass`, `DropListClass`, `TListClass`) can link their scroll bar and buttons along with themselves. `GadgetClass` is the only direct subclass, so `Link` could be a template over the node type (`Link<GadgetClass>`, no casts, non-virtual walks), or be folded into `GadgetClass`, leaving the composite hooks as `GadgetClass` virtuals. A design change over `gadget.h`, `list.h` and `ra/ui/drop.h`, `tlist.h`.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T01:50:57Z",
+      "parent": "T-222",
+      "source": "26da3baa..97e3f608",
+      "anchors": [
+        {
+          "path": "src/game/ui/link.h",
+          "startLine": 64,
+          "endLine": 95,
+          "text": "  [[nodiscard]] virtual Link* Next() const;\n  [[nodiscard]] virtual Link* Previous() const;\n\n  // Inserts this node right after `predecessor`, which may be in the middle of\n  // a chain; that is how a list that depends on its order, like the gadgets',\n  // is put together. Returns the head of the list.\n  virtual Link& InsertAfter(Link& predecessor) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Appends this node to the list `list` is in, whichever of its nodes `list`\n  // is. Returns the head of the list.\n  virtual Link& AppendTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Puts this node in front of the list `list` is in, whichever of its nodes\n  // `list` is. Returns the new head, which is this node.\n  virtual Link& PrependTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Return the first or last node of the list this one is in: this node itself\n  // when it is in none.\n  [[nodiscard]] const Link& HeadOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;\n  Link& HeadOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return HeadOf(*this); }\n  [[nodiscard]] const Link& TailOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;\n  Link& TailOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return TailOf(*this); }\n\n  // Forgets both neighbours without telling them, so they go on pointing at\n  // this node. Remove() is the way to take one node out; this is for dropping\n  // a whole list at once, by calling this on every node of it before the list\n  // is built again (the sidebar's buttons, a dialog's gadgets on a redraw).\n  virtual void ForgetNeighbors();\n\n  // Takes this node out of its list and closes the gap. Returns the head of\n  // what is left, or nullptr if this was the only node.\n  virtual Link* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;",
+          "before": [
+            "",
+            "  // Return the node after or before this one, or nullptr at that end of the",
+            "  // list."
+          ],
+          "after": [
+            "",
+            " private:",
+            "  // The walks behind the HeadOfList() and TailOfList() overloads. Self is"
           ],
           "lost": false
         }
