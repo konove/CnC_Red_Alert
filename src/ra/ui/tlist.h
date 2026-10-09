@@ -98,6 +98,18 @@ class TListClass final : public game::ControlClass {
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
+  // Takes the scroll gadgets out of whatever chain they are in, without
+  // touching the focus. Add_Scroll_Bar() chains them behind the list box, also
+  // when it is in no list yet, and the functions that add the list box to one
+  // then add them again: Link's add functions want nodes that are in no list.
+  void UnlinkScrollGadgets() {
+    if (IsScrollActive) {
+      ScrollGadget.game::Link::Remove();
+      DownGadget.game::Link::Remove();
+      UpGadget.game::Link::Remove();
+    }
+  }
+
   // The font and the print flags the lines render with, as
   // Fancy_Text_Print() takes them.
   FontType TextFont;
@@ -484,6 +496,8 @@ void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
 
 template <class T>
 game::Link& TListClass<T>::InsertAfter(game::Link& list) {
+  UnlinkScrollGadgets();
+
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -501,6 +515,8 @@ game::Link& TListClass<T>::InsertAfter(game::Link& list) {
 
 template <class T>
 game::Link& TListClass<T>::PrependTo(game::Link& list) {
+  UnlinkScrollGadgets();
+
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -518,6 +534,8 @@ game::Link& TListClass<T>::PrependTo(game::Link& list) {
 
 template <class T>
 game::Link& TListClass<T>::AppendTo(game::Link& list) {
+  UnlinkScrollGadgets();
+
   /*
   **	Add myself to the list.
   */

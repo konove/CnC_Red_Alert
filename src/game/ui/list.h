@@ -393,6 +393,7 @@ class ListClass : public ControlClass {
   ** automatically when the list box is added or removed.
   */
   Link& InsertAfter(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    UnlinkScrollGadgets();
     if (IsScrollActive) {
       ScrollGadget.InsertAfter(list);
       DownGadget.InsertAfter(list);
@@ -401,6 +402,7 @@ class ListClass : public ControlClass {
     return ControlClass::InsertAfter(list);
   }
   Link& AppendTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    UnlinkScrollGadgets();
     ControlClass::AppendTo(list);
     if (IsScrollActive) {
       UpGadget.AppendTo(list);
@@ -410,6 +412,7 @@ class ListClass : public ControlClass {
     return HeadOfList();
   }
   Link& PrependTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    UnlinkScrollGadgets();
     if (IsScrollActive) {
       ScrollGadget.PrependTo(list);
       DownGadget.PrependTo(list);
@@ -469,6 +472,18 @@ class ListClass : public ControlClass {
     Skin::Draw_List_Entry(view, List.at(base::ToSize(index)).c_str(), x, y,
                           width, LineHeight, TextFont, TextFlags, selected,
                           Tabs);
+  }
+
+  // Takes the scroll gadgets out of whatever chain they are in, without
+  // touching the focus. Add_Scroll_Bar() chains them behind the list box, also
+  // when it is in no list yet, and the functions that add the list box to one
+  // then add them again: Link's add functions want nodes that are in no list.
+  void UnlinkScrollGadgets() {
+    if (IsScrollActive) {
+      ScrollGadget.Link::Remove();
+      DownGadget.Link::Remove();
+      UpGadget.Link::Remove();
+    }
   }
 
   // The font and the print flags the lines render with, as
