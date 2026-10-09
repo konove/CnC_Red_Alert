@@ -35,7 +35,9 @@ namespace game {
 //
 // The Add functions expect this node to be in no list: they overwrite its
 // pointers without unlinking it, so a node that is still linked has to be
-// taken out with Remove() first.
+// taken out with Remove() first. The one case they allow for is a node that is
+// already where it is asked to go (the head for Add_Head(), the tail for
+// Add_Tail(), `list` itself for Add()), which they leave alone.
 //
 // Example:
 //   LinkClass a, b, c;

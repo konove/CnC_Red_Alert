@@ -38,6 +38,12 @@ const LinkClass& LinkClass::Head_Of_List() const { return Head_Of(*this); }
 const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
 
 LinkClass& LinkClass::Add(LinkClass& list) {
+  // A node cannot follow itself: linking it would make Prev point at this node
+  // and cut the list off in front of it.
+  if (&list == this) {
+    return Head_Of_List();
+  }
+
   LinkClass* ptr = list.Next;
 
   // Link this node in after `list`.
@@ -56,6 +62,12 @@ LinkClass& LinkClass::Add(LinkClass& list) {
 LinkClass& LinkClass::Add_Head(LinkClass& list) {
   LinkClass* ptr = &list.Head_Of_List();
 
+  // Already the head. Linking it in front of itself would make Next point at
+  // this node, and a walk down the list would never end.
+  if (ptr == this) {
+    return *this;
+  }
+
   // Link this node in front of the old head.
   ptr->Prev = this;
   Next = ptr;
@@ -66,6 +78,12 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
 
 LinkClass& LinkClass::Add_Tail(LinkClass& list) {
   LinkClass* ptr = &list.Tail_Of_List();
+
+  // Already the tail. Linking it behind itself would make Prev point at this
+  // node and lose every node in front of it.
+  if (ptr == this) {
+    return Head_Of_List();
+  }
 
   // Link this node in behind the old tail.
   ptr->Next = this;
