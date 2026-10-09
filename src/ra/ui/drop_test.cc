@@ -2,8 +2,10 @@
 
 #include "ra/ui/drop.h"
 
+#include "base/array.h"
 #include "base/installed.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "gtest/gtest.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
@@ -39,6 +41,59 @@ TEST_F(DropListClassTest, AddingToAChainReturnsItsHead) {
 
 TEST_F(DropListClassTest, AddingTailToAChainReturnsItsHead) {
   EXPECT_EQ(&drop_.AppendTo(button_), &button_);
+}
+
+TEST_F(DropListClassTest, TheDropButtonFollowsTheFieldIntoAGadgetList) {
+  game::GadgetList gadgets;
+  gadgets.Add(button_);
+  gadgets.Add(drop_);
+  ASSERT_EQ(gadgets.gadgets().size(), 3U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 1), &drop_);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 2), &drop_.DropButton);
+
+  gadgets.Remove(drop_);
+  ASSERT_EQ(gadgets.gadgets().size(), 1U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &button_);
+}
+
+// The dropped list is offered input second, as it was in the chain: behind
+// the first gadget and in front of whatever it covers.
+TEST_F(DropListClassTest, ExpandingPutsTheListSecondInTheGadgetList) {
+  game::GadgetList gadgets;
+  gadgets.Add(button_);
+  gadgets.Add(drop_);
+  drop_.Expand();
+  ASSERT_EQ(gadgets.gadgets().size(), 4U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &button_);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 1), &drop_.List);
+
+  drop_.Collapse();
+  EXPECT_EQ(gadgets.gadgets().size(), 3U);
+  EXPECT_EQ(drop_.List.list(), nullptr);
+}
+
+TEST_F(DropListClassTest, LeavingAGadgetListClosesTheDroppedList) {
+  game::GadgetList gadgets;
+  gadgets.Add(drop_);
+  drop_.Expand();
+  gadgets.Remove(drop_);
+  EXPECT_TRUE(gadgets.empty());
+  EXPECT_FALSE(drop_.IsDropped);
+}
+
+TEST_F(DropListClassTest, ClearingTheGadgetListClosesTheDroppedList) {
+  game::GadgetList gadgets;
+  gadgets.Add(drop_);
+  drop_.Expand();
+  gadgets.Clear();
+  EXPECT_TRUE(gadgets.empty());
+  EXPECT_FALSE(drop_.IsDropped);
+  EXPECT_EQ(drop_.List.list(), nullptr);
+
+  // And it opens again in the list it is added to next.
+  gadgets.Add(drop_);
+  drop_.Expand();
+  EXPECT_EQ(gadgets.gadgets().size(), 3U);
 }
 
 }  // namespace

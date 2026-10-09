@@ -51,6 +51,7 @@
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/edit.h"
@@ -102,6 +103,13 @@ class DropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
+ protected:
+  // The drop button follows the edit field into a list and out of it, and
+  // leaving a list closes the dropped list.
+  void OnAdded(game::GadgetList& list) override;
+  void OnRemoved(game::GadgetList& list) override;
+
+ public:
   // Not copyable -- see Link.
   DropListClass(const DropListClass&) = delete;
   DropListClass& operator=(const DropListClass&) = delete;
@@ -178,6 +186,13 @@ class TDropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
+ protected:
+  // The drop button follows the edit field into a list and out of it, and
+  // leaving a list closes the dropped list.
+  void OnAdded(game::GadgetList& list) override;
+  void OnRemoved(game::GadgetList& list) override;
+
+ public:
   TDropListClass& operator=(const TDropListClass<T>&) = delete;
 
   /*
@@ -313,10 +328,26 @@ void TDropListClass<T>::Expand() {
     List.Y = Y + 9;
     List.Width = Width;
     List.Height = ListHeight;
-    List.InsertAfter(HeadOfList());
+    if (list() != nullptr) {
+      // Second in the list, where the chain had it.
+      list()->AddAfter(List, *list()->gadgets().front());
+    } else {
+      List.InsertAfter(HeadOfList());
+    }
     List.Flag_To_Redraw();
     IsDropped = true;
   }
+}
+
+template <class T>
+void TDropListClass<T>::OnAdded(game::GadgetList& list) {
+  list.AddAfter(DropButton, *this);
+}
+
+template <class T>
+void TDropListClass<T>::OnRemoved(game::GadgetList& list) {
+  Collapse();
+  list.Remove(DropButton);
 }
 
 template <class T>

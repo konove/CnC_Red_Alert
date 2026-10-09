@@ -22,6 +22,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "game/ui/standard_colors.h"
@@ -97,6 +98,28 @@ class TListClass final : public game::ControlClass {
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
+
+  // The scroll bar follows the list box into a list and out of it.
+  void OnAdded(game::GadgetList& list) override {
+    if (IsScrollActive) {
+      AddScrollGadgets(list);
+    }
+  }
+  void OnRemoved(game::GadgetList& list) override {
+    if (IsScrollActive) {
+      list.Remove(ScrollGadget);
+      list.Remove(DownGadget);
+      list.Remove(UpGadget);
+    }
+  }
+
+  // Puts the scroll gadgets behind the list box in `list`.
+  void AddScrollGadgets(game::GadgetList& list) {
+    UnlinkScrollGadgets();
+    list.AddAfter(UpGadget, *this);
+    list.AddAfter(DownGadget, UpGadget);
+    list.AddAfter(ScrollGadget, DownGadget);
+  }
 
   // Takes the scroll gadgets out of whatever chain they are in, without
   // touching the focus. Add_Scroll_Bar() chains them behind the list box, also
@@ -448,9 +471,13 @@ bool TListClass<T>::Add_Scroll_Bar() {
     **	Add these newly created gadgets to the same gadget list that the
     **	list box is part of.
     */
-    UpGadget.InsertAfter(*this);
-    DownGadget.InsertAfter(*this);
-    ScrollGadget.InsertAfter(*this);
+    if (list() != nullptr) {
+      AddScrollGadgets(*list());
+    } else {
+      UpGadget.InsertAfter(*this);
+      DownGadget.InsertAfter(*this);
+      ScrollGadget.InsertAfter(*this);
+    }
 
     /*
     **	Make sure these added gadgets get redrawn at the next opportunity.

@@ -2,8 +2,11 @@
 
 #include "ra/ui/tlist.h"
 
+#include "base/array.h"
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "gtest/gtest.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
@@ -35,6 +38,30 @@ class TListClassTest : public testing::Test {
   Item b_{2};
   Item c_{3};
 };
+
+// The scroll bar is three gadgets of its own, which go where the list box goes.
+TEST_F(TListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
+  game::GadgetClass button(0, 0, 10, 10, 0);
+  game::GadgetList gadgets;
+  gadgets.Add(list_);
+  gadgets.Add(button);
+  list_.Add_Scroll_Bar();
+  ASSERT_EQ(gadgets.gadgets().size(), 5U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &list_);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 4), &button);
+
+  // Moving it to another list takes the scroll bar along.
+  game::GadgetList other;
+  other.Add(list_);
+  EXPECT_EQ(gadgets.gadgets().size(), 1U);
+  EXPECT_EQ(other.gadgets().size(), 4U);
+
+  other.Clear();
+  other.Add(list_);
+  EXPECT_EQ(other.gadgets().size(), 4U);
+  other.Remove(list_);
+  EXPECT_TRUE(other.empty());
+}
 
 // The team-type editor's Insert key puts a mission before the selected one.
 TEST_F(TListClassTest, InsertItemPutsTheItemAtTheSelectedRow) {

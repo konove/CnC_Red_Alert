@@ -50,6 +50,7 @@
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
@@ -149,10 +150,24 @@ void DropListClass::Expand() {
     List.Y = Y + 18;
     List.Width = Width;
     List.Height = ListHeight;
-    List.InsertAfter(HeadOfList());
+    if (list() != nullptr) {
+      // Second in the list, where the chain had it.
+      list()->AddAfter(List, *list()->gadgets().front());
+    } else {
+      List.InsertAfter(HeadOfList());
+    }
     List.Flag_To_Redraw();
     IsDropped = true;
   }
+}
+
+void DropListClass::OnAdded(game::GadgetList& list) {
+  list.AddAfter(DropButton, *this);
+}
+
+void DropListClass::OnRemoved(game::GadgetList& list) {
+  Collapse();
+  list.Remove(DropButton);
 }
 
 void DropListClass::Collapse() {

@@ -64,6 +64,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 
@@ -158,6 +159,12 @@ GadgetClass::~GadgetClass() {
 
   if (this == StuckOn) {
     StuckOn = nullptr;
+  }
+
+  // Not through Remove(): its hook is a virtual call this destructor cannot
+  // make any more.
+  if (list_ != nullptr) {
+    list_->Erase(*this);
   }
 
   if (this == LastList) {
@@ -264,6 +271,10 @@ void GadgetClass::Disable() {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Remove() {
+  if (list_ != nullptr) {
+    list_->Remove(*this);
+    return nullptr;
+  }
   Clear_Focus();
   return dynamic_cast<GadgetClass*>(game::Link::Remove());
 }
@@ -398,163 +409,173 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
 engine::window::InputEvent GadgetClass::Input(PixelView& view) {
-  int mousex = 0;
-  int mousey = 0;
   bool forced = false;
 
   /*
   **	Record this list so that a forced redraw only occurs the FIRST time the
   **	gadget list is passed to this routine.
   */
-  if (LastList != this) {
+  if (LastList != this || GadgetList::last_input_ != nullptr) {
     LastList = this;
+    GadgetList::last_input_ = nullptr;
     forced = true;
     StuckOn = nullptr;
     Focused = nullptr;
   }
 
+  PendingInput input = ReadInput();
+  if (!OfferToStuckOrFocused(view, input)) {
+    /*
+    **	Sweep through all the buttons in the chain and pass the current button
+    **	state and keyboard input data to them, until one acts on it.
+    */
+    for (GadgetClass* gadget = this; gadget != nullptr;
+         gadget = gadget->Next()) {
+      if (gadget->Offer(view, forced, input)) {
+        break;
+      }
+    }
+  }
+  return FinishInput(input);
+}
+
+GadgetClass::PendingInput GadgetClass::ReadInput() {
+  PendingInput input;
+
   /*
   **	Fetch any pending keyboard input.
   */
-  engine::window::InputEvent event;
   if (TheKeyboard().Peek()) {
-    event = TheKeyboard().Read();
+    input.event = TheKeyboard().Read();
   }
-  // A gadget that acts on the event replaces its key with the gadget's ID.
-  engine::window::KeyNumber key = event.key;
+  const engine::window::InputEvent& event = input.event;
+  input.key = event.key;
 
   if (KeyHook != nullptr) {
-    KeyHook(key);
+    KeyHook(input.key);
   }
 
   /*
-  **	For mouse button clicks, the mouse position is actually held in the
-  *MouseQ... *	globals rather than their normal Mouse... globals. This is
-  *because we need to *	know the position of the mouse at the exact instant when
-  *the click occurred *	rather the the mouse position at the time we get around
-  *to this function.
+  **	For mouse button clicks, the position is the one the event recorded at
+  **	the instant of the click rather than where the mouse is by the time we
+  **	get around to this function.
   */
   if (event.IsClick()) {
-    mousex = event.x;
-    mousey = event.y;
+    input.x = event.x;
+    input.y = event.y;
   } else {
-    mousex = TheMouse().x();
-    mousey = TheMouse().y();
+    input.x = TheMouse().x();
+    input.y = TheMouse().y();
   }
 
   /*
   **	Set the mouse button state flags. These will be passed to the individual
   **	buttons so that they can determine what action to perform (if any).
   */
-  unsigned flags = 0;
   using engine::window::MouseButton;
   if (event.IsPress(MouseButton::kLeft)) {
-    flags |= kLeftPress;
+    input.flags |= kLeftPress;
   }
   if (event.IsPress(MouseButton::kRight)) {
-    flags |= kRightPress;
+    input.flags |= kRightPress;
   }
   if (event.IsRelease(MouseButton::kLeft)) {
-    flags |= kLeftRelease;
+    input.flags |= kLeftRelease;
   }
   if (event.IsRelease(MouseButton::kRight)) {
-    flags |= kRightRelease;
+    input.flags |= kRightRelease;
   }
 
   /*
   **	If the mouse wasn't responsible for this key code, then it must be from
   **	the keyboard. Flag this fact.
   */
-  if (key && !flags) {
-    flags |= kKeyboard;
+  if (input.key && !input.flags) {
+    input.flags |= kKeyboard;
   }
 
   /*
   **	Mouse button up or down action is ignored if there is a keyboard event.
-  *This *	allows keyboard events to fall through normally even if the
-  *mouse is over a *	gadget that is flagged for kLeftUp or kRightUp.
+  **	This allows keyboard events to fall through normally even if the mouse
+  * is *	over a gadget that is flagged for kLeftUp or kRightUp.
   */
   if (!event) {
     /*
     **	Check for the mouse being held down. We can't use the normal input
-    *system *	for this, so we must examine the actual current state of the
-    *mouse *	buttons. As a side note, if we determine that the mouse button
-    *isn't being *	held down, then we automatically know that it must be up
-    *-- set the flag *	accordingly.
+    **	system for this, so we must examine the actual current state of the
+    **	mouse buttons. If a button isn't being held down, then it must be up.
     */
     if (engine::window::IsLeftButtonDown()) {
-      flags |= kLeftHeld;
+      input.flags |= kLeftHeld;
     } else {
-      flags |= kLeftUp;
+      input.flags |= kLeftUp;
     }
     if (engine::window::IsRightButtonDown()) {
-      flags |= kRightHeld;
+      input.flags |= kRightHeld;
     } else {
-      flags |= kRightUp;
+      input.flags |= kRightUp;
     }
   }
+  return input;
+}
 
+bool GadgetClass::OfferToStuckOrFocused(PixelView& view, PendingInput& input) {
   /*
   **	If "sticky" processing is active, then only process the stuck gadget.
   */
   if (StuckOn) {
     StuckOn->Draw_Me(view, false);
     GadgetClass* oldstuck = StuckOn;
-    StuckOn->Clicked_On(key, flags, mousex, mousey);
+    StuckOn->Clicked_On(input.key, input.flags, input.x, input.y);
     if (StuckOn) {
       StuckOn->Draw_Me(view, false);
     } else {
       oldstuck->Draw_Me(view, false);
     }
-  } else {
-    /*
-    **	If there is a gadget that has the keyboard focus, then route all
-    *keyboard *	events to it.
-    */
-    if (Focused && flags & kKeyboard) {
-      Focused->Draw_Me(view, false);
-      Focused->Clicked_On(key, flags, mousex, mousey);
-      if (Focused) {
-        Focused->Draw_Me(view, false);
-      }
-    } else {
-      /*
-      **	Sweep through all the buttons in the chain and pass the current
-      *button state *	and keyboard input data to them. These routines will
-      *detect whether they should *	perform some action and return a flag to
-      *this effect. They also have the option *	of changing the key value so
-      *that an appropriate return value is use for this *	processing
-      *routine.
-      */
-      GadgetClass* next_button = this;
-      while (next_button != nullptr) {
-        /*
-        **	Maybe redraw the button if it needs to or is being forced to
-        *redraw.
-        */
-        next_button->Draw_Me(view, forced);
-
-        /*
-        **	Process this button. If the button was recognized and action was
-        **	performed, then bail from further processing (speed reasons?).
-        */
-        if ((!next_button->IsDisabled) &&
-            next_button->Clicked_On(key, flags, mousex, mousey)) {
-          /*
-          **	Some buttons will require repainting when they perform some
-          *action. *	Do so at this time.
-          */
-          next_button->Draw_Me(view, false);
-          break;
-        }
-
-        next_button = next_button->Next();
-      }
-    }
+    return true;
   }
+
+  /*
+  **	If there is a gadget that has the keyboard focus, then route all
+  **	keyboard events to it.
+  */
+  if (Focused && input.flags & kKeyboard) {
+    Focused->Draw_Me(view, false);
+    Focused->Clicked_On(input.key, input.flags, input.x, input.y);
+    if (Focused) {
+      Focused->Draw_Me(view, false);
+    }
+    return true;
+  }
+  return false;
+}
+
+bool GadgetClass::Offer(PixelView& view, bool forced, PendingInput& input) {
+  /*
+  **	Maybe redraw the button if it needs to or is being forced to redraw.
+  */
+  Draw_Me(view, forced);
+
+  /*
+  **	Process this button. If the button was recognized and action was
+  **	performed, then bail from further processing (speed reasons?).
+  */
+  if (!IsDisabled && Clicked_On(input.key, input.flags, input.x, input.y)) {
+    /*
+    **	Some buttons will require repainting when they perform some action.
+    **	Do so at this time.
+    */
+    Draw_Me(view, false);
+    return true;
+  }
+  return false;
+}
+
+engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
+  engine::window::InputEvent event = input.event;
   // A gadget that acted replaced the key, and used up the click with it.
-  if (key != event.key) {
-    event.key = key;
+  if (input.key != event.key) {
+    event.key = input.key;
     event.button = engine::window::MouseButton::kNone;
   }
   return event;

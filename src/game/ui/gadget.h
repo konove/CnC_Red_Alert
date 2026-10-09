@@ -92,6 +92,7 @@
 namespace game {
 
 class ControlClass;
+class GadgetList;
 
 class GadgetClass : public game::Link {
  public:
@@ -138,6 +139,10 @@ class GadgetClass : public game::Link {
   GadgetClass* Remove() override;
   [[nodiscard]] GadgetClass* Next() const override;
   [[nodiscard]] GadgetClass* Previous() const override;
+
+  // Returns the list this gadget is in, or nullptr when it is in none. A
+  // gadget still chained through Link is in none.
+  [[nodiscard]] GadgetList* list() const { return list_; }
 
   /*
   **	Manages individual gadget states and actions.
@@ -193,6 +198,13 @@ class GadgetClass : public game::Link {
   // key replaces `key` with its ButtonKey(). Returns whether it acted.
   virtual bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
                       int y);
+
+  // Called by a GadgetList after it added this gadget or took it out. A gadget
+  // made of several (a list box and its scroll bar) adds and removes its
+  // parts here. OnRemoved() is not called for a gadget that leaves its list by
+  // being destroyed.
+  virtual void OnAdded(GadgetList& /*list*/) {}
+  virtual void OnRemoved(GadgetList& /*list*/) {}
 
   /*
   **	This is a record of the last list passed to the Input() function. If a
@@ -253,7 +265,35 @@ class GadgetClass : public game::Link {
   unsigned Flags = 0;
 
  private:
+  // GadgetList::Input() is the list's form of Input() and shares its steps.
+  friend class GadgetList;
+
+  // One Input() call's event on its way through the gadgets.
+  struct PendingInput {
+    engine::window::InputEvent event;
+    // Starts as the event's key; a gadget that acts replaces it.
+    engine::window::KeyNumber key = engine::window::KeyNumber::KN_NONE;
+    unsigned flags = 0;  // The k... event bits above.
+    int x = 0;
+    int y = 0;
+  };
+
+  // The steps of Input(), which the chain's and GadgetList's sweeps share.
+  // ReadInput() takes one event, if any, from the keyboard and describes it.
+  static PendingInput ReadInput();
+  // Gives `input` to the gadget holding the mouse or, for a key, the one with
+  // the focus. Returns whether there was one, which leaves the others out.
+  static bool OfferToStuckOrFocused(PixelView& view, PendingInput& input);
+  // Draws this gadget if it has to be (always when `forced`) and offers it
+  // `input`. Returns whether it acted, which ends the sweep.
+  bool Offer(PixelView& view, bool forced, PendingInput& input);
+  // Returns the event as Input() reports it.
+  static engine::window::InputEvent FinishInput(const PendingInput& input);
+
   static void (*KeyHook)(engine::window::KeyNumber key);
+
+  // The list this gadget is in; nullptr when in none.
+  GadgetList* list_ = nullptr;
 
   virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
                           int y);

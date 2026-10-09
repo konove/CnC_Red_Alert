@@ -54,6 +54,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "game/ui/shapebtn.h"
@@ -145,9 +146,13 @@ class ListClass : public ControlClass {
     ScrollGadget.Make_Peer(*this);
 
     // Add these gadgets to the same gadget list that the list box is part of.
-    UpGadget.InsertAfter(*this);
-    DownGadget.InsertAfter(*this);
-    ScrollGadget.InsertAfter(*this);
+    if (this->list() != nullptr) {
+      AddScrollGadgets(*this->list());
+    } else {
+      UpGadget.InsertAfter(*this);
+      DownGadget.InsertAfter(*this);
+      ScrollGadget.InsertAfter(*this);
+    }
 
     // Make sure these added gadgets get redrawn at the next opportunity.
     UpGadget.Flag_To_Redraw();
@@ -472,6 +477,28 @@ class ListClass : public ControlClass {
     Skin::Draw_List_Entry(view, List.at(base::ToSize(index)).c_str(), x, y,
                           width, LineHeight, TextFont, TextFlags, selected,
                           Tabs);
+  }
+
+  // The scroll bar follows the list box into a list and out of it.
+  void OnAdded(GadgetList& list) override {
+    if (IsScrollActive) {
+      AddScrollGadgets(list);
+    }
+  }
+  void OnRemoved(GadgetList& list) override {
+    if (IsScrollActive) {
+      list.Remove(ScrollGadget);
+      list.Remove(DownGadget);
+      list.Remove(UpGadget);
+    }
+  }
+
+  // Puts the scroll gadgets behind the list box in `list`.
+  void AddScrollGadgets(GadgetList& list) {
+    UnlinkScrollGadgets();
+    list.AddAfter(UpGadget, *this);
+    list.AddAfter(DownGadget, UpGadget);
+    list.AddAfter(ScrollGadget, DownGadget);
   }
 
   // Takes the scroll gadgets out of whatever chain they are in, without

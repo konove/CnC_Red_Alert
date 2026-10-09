@@ -4,7 +4,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/array.h"
 #include "base/installed.h"
+#include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "gtest/gtest.h"
 #include "td/assets/assets.h"
 #include "td/core/defines.h"
@@ -29,6 +32,59 @@ class TdListClassTest : public InstalledAssets, public testing::Test {
   // No scroll arrow shapes: the tests never draw.
   ListClass list_{0, 0, 0, 100, 60, FontType::k6Point, TPF_NONE, {}, {}};
 };
+
+// The scroll bar is three gadgets of its own, which go where the list box goes.
+TEST_F(TdListClassTest, TheScrollBarFollowsTheListBoxIntoAGadgetList) {
+  game::GadgetClass button(0, 0, 10, 10, 0);
+  game::GadgetList gadgets;
+  list_.Add_Scroll_Bar();
+  gadgets.Add(list_);
+  gadgets.Add(button);
+
+  ASSERT_EQ(gadgets.gadgets().size(), 5U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &list_);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 4), &button);
+
+  gadgets.Remove(list_);
+  ASSERT_EQ(gadgets.gadgets().size(), 1U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &button);
+}
+
+TEST_F(TdListClassTest, AScrollBarAddedLaterJoinsTheListBoxesGadgetList) {
+  game::GadgetClass button(0, 0, 10, 10, 0);
+  game::GadgetList gadgets;
+  gadgets.Add(list_);
+  gadgets.Add(button);
+  list_.Add_Scroll_Bar();
+
+  ASSERT_EQ(gadgets.gadgets().size(), 5U);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 0), &list_);
+  EXPECT_EQ(base::At(gadgets.gadgets(), 4), &button);
+
+  list_.Remove_Scroll_Bar();
+  EXPECT_EQ(gadgets.gadgets().size(), 2U);
+}
+
+TEST_F(TdListClassTest, ClearingTheGadgetListReleasesTheScrollBar) {
+  game::GadgetList gadgets;
+  list_.Add_Scroll_Bar();
+  gadgets.Add(list_);
+  gadgets.Clear();
+  EXPECT_TRUE(gadgets.empty());
+
+  // Nothing is left behind that a second add would trip over.
+  gadgets.Add(list_);
+  EXPECT_EQ(gadgets.gadgets().size(), 4U);
+}
+
+// The legacy call still works on a list box that is in a GadgetList.
+TEST_F(TdListClassTest, RemoveTakesTheListBoxAndItsScrollBarOut) {
+  game::GadgetList gadgets;
+  list_.Add_Scroll_Bar();
+  gadgets.Add(list_);
+  list_.Remove();
+  EXPECT_TRUE(gadgets.empty());
+}
 
 TEST_F(TdListClassTest, AddItemCopiesTheText) {
   char buffer[] = "first";
