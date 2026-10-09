@@ -73,11 +73,12 @@ class SliderClass final : public GaugeClass<Skin> {
       MinusGadget = std::make_unique<ShapeButtonClass<Skin>>(
           id, MixArchive::RetrieveData("BTN-MINS.SHP"), this->X - 6, this->Y);
 
+      // The buttons are not chained behind the slider. They were, but every
+      // dialog then appends the slider to its gadgets, which cut them off
+      // again: no dialog has ever shown them.
       PlusGadget->Make_Peer(*this);
-      PlusGadget->InsertAfter(*this);
       PlusGadget->Flag_To_Redraw();
       MinusGadget->Make_Peer(*this);
-      MinusGadget->InsertAfter(*this);
       MinusGadget->Flag_To_Redraw();
     }
     Set_Thumb_Size(1);
