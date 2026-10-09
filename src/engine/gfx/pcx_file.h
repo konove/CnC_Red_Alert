@@ -57,8 +57,8 @@ bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
 // Writes the same picture to the game file `file_name`, which OpenGameFile()
 // creates as a loose file. A view that WritePcx() writes nothing for creates
 // no file.
-bool WritePcxFile(std::string_view file_name, PixelView& view,
-                  const Palette& palette);
+[[nodiscard]] bool WritePcxFile(std::string_view file_name, PixelView& view,
+                                const Palette& palette);
 
 // Reads the PCX picture that `in` holds from its current position to its end.
 // Returns nothing if that is not a run-length encoded 8-bit picture ending in

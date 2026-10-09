@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -31,7 +32,10 @@ void Screenshot_Key(const engine::window::KeyNumber key) {
         }
       }
 
-      engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);
+      if (!engine::gfx::WritePcxFile(filename, temp_page.view(),
+                                     CurrentPalette)) {
+        DLOG(WARNING) << "Cannot write screenshot " << filename;
+      }
     }
   }
 }

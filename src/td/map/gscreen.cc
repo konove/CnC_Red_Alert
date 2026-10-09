@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <memory>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "engine/gfx/pcx_file.h"
@@ -433,8 +434,10 @@ static void Add_Current_Screen() {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
-        engine::gfx::WritePcxFile(filename, base::At(ScreenList, i)->view(),
-                                  CurrentPalette);
+        if (!engine::gfx::WritePcxFile(
+                filename, base::At(ScreenList, i)->view(), CurrentPalette)) {
+          DLOG(WARNING) << "Cannot write recorded screen " << filename;
+        }
         base::At(ScreenList, i).reset();
       }
 

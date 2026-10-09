@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 219,
+  "nextId": 220,
   "items": [
     {
       "id": "T-2",
@@ -5723,10 +5723,10 @@
         "refactoring",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-09T00:39:38Z",
+      "updated": "2026-10-09T00:42:16Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "Decided to keep 320x200. Both games already share the one writer, so no code changed; the comment in `WriteEncoded()` now says why the value stays (no reader uses it, and the `tools/ui_check.py` hashes cover the header bytes).",
@@ -5746,8 +5746,8 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 184,
-          "endLine": 185,
+          "startLine": 186,
+          "endLine": 187,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",
@@ -5810,18 +5810,19 @@
         "refactoring",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-09T00:43:41Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "All four callers check the result: the scripted run prints `-SCRIPT: cannot write <path>` on stderr, the screenshot key, the debug key and the screen recorder `DLOG(WARNING)`. `WritePcxFile()` is `[[nodiscard]]`. Red Alert's `WritePcx()` callers are T-219.",
       "anchors": [
         {
           "path": "src/td/startup/scripted_run.cc",
           "startLine": 38,
-          "endLine": 38,
-          "text": "  engine::gfx::WritePcxFile(path.string(), page.view(), CurrentPalette);",
+          "endLine": 40,
+          "text": "  if (!engine::gfx::WritePcxFile(path.string(), page.view(), CurrentPalette)) {\n    absl::FPrintF(stderr, \"-SCRIPT: cannot write %s\\n\", path.string());\n  }",
           "before": [
             "    return;",
             "  }",
@@ -5836,9 +5837,9 @@
         },
         {
           "path": "src/td/ui/screenshot.cc",
-          "startLine": 34,
-          "endLine": 34,
-          "text": "      engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);",
+          "startLine": 35,
+          "endLine": 38,
+          "text": "      if (!engine::gfx::WritePcxFile(filename, temp_page.view(),\n                                     CurrentPalette)) {\n        DLOG(WARNING) << \"Cannot write screenshot \" << filename;\n      }",
           "before": [
             "        }",
             "      }",
@@ -5853,9 +5854,9 @@
         },
         {
           "path": "src/td/debug/debug.cc",
-          "startLine": 148,
-          "endLine": 148,
-          "text": "          engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);",
+          "startLine": 149,
+          "endLine": 152,
+          "text": "          if (!engine::gfx::WritePcxFile(filename, temp_page.view(),\n                                         CurrentPalette)) {\n            DLOG(WARNING) << \"Cannot write screenshot \" << filename;\n          }",
           "before": [
             "            }",
             "          }",
@@ -5870,18 +5871,18 @@
         },
         {
           "path": "src/td/map/gscreen.cc",
-          "startLine": 436,
-          "endLine": 436,
-          "text": "        engine::gfx::WritePcxFile(filename, base::At(ScreenList, i)->view(),",
+          "startLine": 437,
+          "endLine": 440,
+          "text": "        if (!engine::gfx::WritePcxFile(\n                filename, base::At(ScreenList, i)->view(), CurrentPalette)) {\n          DLOG(WARNING) << \"Cannot write recorded screen \" << filename;\n        }",
           "before": [
             "      char filename[20];",
             "      for (int i = 0; i < MAX_SCREENS_SAVED; i++) {",
             "        absl::SNPrintF(filename, sizeof(filename), \"SCRN%04d.PCX\", i);"
           ],
           "after": [
-            "                                  CurrentPalette);",
             "        base::At(ScreenList, i).reset();",
-            "      }"
+            "      }",
+            ""
           ],
           "lost": false
         }
@@ -6180,6 +6181,75 @@
       "author": "user",
       "created": "2026-10-08T19:43:24Z",
       "updated": "2026-10-08T19:43:24Z"
+    },
+    {
+      "id": "T-219",
+      "title": "Check the result of WritePcx in Red Alert's screenshot code",
+      "details": "The three Red Alert callers of `engine::gfx::WritePcx()` drop its result, and two of them also say nothing when `OpenDiskFile()` fails: the screenshot key (`ra/ui/screenshot.cc`, which beeps either way) and the motion capture dump (`ra/startup/conquer.cc`). The scripted run (`ra/startup/scripted_run.cc`) reports a file it cannot open but not a write that fails. Tiberian Dawn's callers of `WritePcxFile()` check since T-203: `-SCRIPT` reports on stderr, the others `DLOG(WARNING)`. Do the same here, then mark `WritePcx()` `[[nodiscard]]` as `WritePcxFile()` is.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T00:43:36Z",
+      "updated": "2026-10-09T00:43:36Z",
+      "parent": "T-194",
+      "anchors": [
+        {
+          "path": "src/ra/startup/scripted_run.cc",
+          "startLine": 45,
+          "endLine": 45,
+          "text": "  engine::gfx::WritePcx(*file, page.view(), PaletteClass::CurrentPalette);",
+          "before": [
+            "    absl::FPrintF(stderr, \"-SCRIPT: cannot write %s\\n\", path.string());",
+            "    return;",
+            "  }"
+          ],
+          "after": [
+            "}",
+            "",
+            "}  // namespace"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/screenshot.cc",
+          "startLine": 40,
+          "endLine": 43,
+          "text": "      if (const auto file = OpenDiskFile(filename, FileAccess::kWrite)) {\n        engine::gfx::WritePcx(*file, temp_page.view(),\n                              ThePalettes().game_palette());\n      }",
+          "before": [
+            "        }",
+            "      }",
+            ""
+          ],
+          "after": [
+            "      PlaySoundEffect(VOC_BEEP);",
+            "    }",
+            "  }"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/startup/conquer.cc",
+          "startLine": 619,
+          "endLine": 622,
+          "text": "    if (const auto file = OpenDiskFile(name, FileAccess::kWrite)) {\n      engine::gfx::WritePcx(*file, frame_page.view(),\n                            ThePalettes().game_palette());\n    }",
+          "before": [
+            "                    std::as_bytes(std::span(frames.at(base::ToSize(index)))),",
+            "                    frame_bytes);",
+            "    const std::string name = absl::StrFormat(\"cap%04d.pcx\", index);"
+          ],
+          "after": [
+            "  }",
+            "",
+            "  // Release the run's buffers so that the next run re-reads MovieTime."
+          ],
+          "lost": false
+        }
+      ]
     }
   ]
 }

@@ -46,6 +46,7 @@
 #include <filesystem>
 #include <iterator>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/pooled.h"
@@ -145,7 +146,10 @@ void Debug_Key(unsigned input) {
             }
           }
 
-          engine::gfx::WritePcxFile(filename, temp_page.view(), CurrentPalette);
+          if (!engine::gfx::WritePcxFile(filename, temp_page.view(),
+                                         CurrentPalette)) {
+            DLOG(WARNING) << "Cannot write screenshot " << filename;
+          }
           // Map.Place_Random_Crate();
         }
         break;
