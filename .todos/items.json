@@ -6752,7 +6752,7 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T16:21:30Z",
+      "updated": "2026-10-09T16:21:37Z",
       "parent": "T-222",
       "source": "4f1ad716..cfc8a308",
       "resolution": "Reworded the stale comments (`nullmgr.cc` and `control.cc`) and deleted the commented-out `Is_List_To_Redraw()` in both `gscreen.cc`. `DropListClass::Expand()` and `TDropListClass::Expand()` now do nothing outside a gadget list (two new tests). `gadget_list.h` and `docs/GADGET_LIST_PLAN.md` say that a composite's parts lose focus and the mouse hold on a re-add and that dropping `StuckOn` in `Remove()` is new. `mapedsel.cc` unchanged: by reading, `GScreenClass::Render()` draws every button forced while the map editor is active and `Remove()`/`Add_A_Button()` drop the focus of the buttons that move, so the old head-change redraw is covered; not run, the editor being an internal build.",
@@ -6765,7 +6765,7 @@
           "path": "src/ra/net/nullmgr.cc",
           "startLine": 601,
           "endLine": 602,
-          "text": "  // cancelbtn is a local of this function; drop the pointer with it so the\n  // static does not outlive the button it names.",
+          "text": "  // cancelbtn is a local of this function: empty the static list before the\n  // button goes.",
           "before": [
             "  }",
             "",
@@ -6776,7 +6776,7 @@
             "",
             "  return dialstatus;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/net/nullmgr.cc",
@@ -6786,7 +6786,7 @@
           "path": "src/game/ui/control.cc",
           "startLine": 154,
           "endLine": 154,
-          "text": " *is primarily  * used by the Extract_Gadget() function. *",
+          "text": " *is primarily  * used by GadgetList::Extract(). *",
           "before": [
             " * ControlClass::Get_ID -- Gets the ID number for this gadget. *",
             " *                                                                                             *",
@@ -6797,24 +6797,24 @@
             " * INPUT:   none *",
             " *                                                                                             *"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/ui/drop.cc",
-          "startLine": 120,
-          "endLine": 132,
-          "text": "  if (!IsDropped) {\n    List.X = X;\n    List.Y = Y + 18;\n    List.Width = Width;\n    List.Height = ListHeight;\n    if (list() != nullptr) {\n      // Second in the list: ahead of what it covers, whatever was added\n      // first aside.\n      list()->AddAfter(List, *list()->gadgets().front());\n    }\n    List.Flag_To_Redraw();\n    IsDropped = true;\n  }",
+          "startLine": 119,
+          "endLine": 134,
+          "text": "void DropListClass::Expand() {\n  // In no gadget list there is nowhere to put the list, and OnAdded() would\n  // not add a dropped one later.\n  if (IsDropped || list() == nullptr) {\n    return;\n  }\n  List.X = X;\n  List.Y = Y + 18;\n  List.Width = Width;\n  List.Height = ListHeight;\n  // Second in the list: ahead of what it covers, whatever was added first\n  // aside.\n  list()->AddAfter(List, *list()->gadgets().front());\n  List.Flag_To_Redraw();\n  IsDropped = true;\n}",
           "before": [
+            "  }",
             "}",
-            "",
-            "void DropListClass::Expand() {"
+            ""
           ],
           "after": [
-            "}",
             "",
-            "void DropListClass::OnAdded(game::GadgetList& list) {"
+            "void DropListClass::OnAdded(game::GadgetList& list) {",
+            "  list.AddAfter(DropButton, *this);"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     }
