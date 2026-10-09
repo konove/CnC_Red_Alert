@@ -70,6 +70,29 @@ TEST_F(DropListClassTest, ExpandingPutsTheListSecondInTheGadgetList) {
   EXPECT_EQ(drop_.List.list(), nullptr);
 }
 
+TEST_F(DropListClassTest, ExpandingOutsideAGadgetListDoesNothing) {
+  drop_.Expand();
+  EXPECT_FALSE(drop_.IsDropped);
+
+  // So the list is not left out when the field is added afterwards.
+  game::GadgetList gadgets;
+  gadgets.Add(drop_);
+  EXPECT_EQ(gadgets.gadgets().size(), 2U);
+  drop_.Expand();
+  EXPECT_TRUE(drop_.IsDropped);
+  EXPECT_EQ(drop_.List.list(), &gadgets);
+}
+
+TEST_F(DropListClassTest, ExpandingATypedListOutsideAGadgetListDoesNothing) {
+  char text[16] = {};
+  TDropListClass<Item*> typed{
+      2,  text, sizeof(text), FontType::k6Point, TPF_NONE, 0, 0, 100, 40,
+      {}, {}};
+  typed.Expand();
+  EXPECT_FALSE(typed.IsDropped);
+  EXPECT_EQ(typed.List.list(), nullptr);
+}
+
 TEST_F(DropListClassTest, LeavingAGadgetListClosesTheDroppedList) {
   game::GadgetList gadgets;
   gadgets.Add(drop_);

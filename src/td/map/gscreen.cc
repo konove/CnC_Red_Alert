@@ -352,10 +352,6 @@ void GScreenClass::Remove_A_Button(game::GadgetClass& gadget) {
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Render() {
-  // if (Buttons && Buttons->Is_List_To_Redraw()) {
-  //	IsToRedraw = true;
-  // }
-
   if (IsToUpdate || IsScreenToRedraw) {
     PixelView& view = TheScreen().hidden_view();
 

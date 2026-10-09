@@ -6512,10 +6512,10 @@
         "dead-code",
         "game-ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T05:42:27Z",
-      "updated": "2026-10-09T16:15:46Z",
+      "updated": "2026-10-09T16:18:04Z",
       "parent": "T-222",
       "resolution": "Deleted `PlusGadget`, `MinusGadget`, the `Peer_To_Peer()` override and the hand-written destructor from `SliderClass`; `BTN-PLUS.SHP`/`BTN-MINS.SHP` are in neither game's data. The `belong_to_list` bool became a required `game::SliderStyle` (`kGauge`/`kSunkenBar`) at all 22 construction sites. No change on screen: `ui_check` hashes unchanged, strict build and ctest pass.",
       "toDecide": "- **Delete them**: remove both members, the `belong_to_list` parameter and the `Peer_To_Peer()` override; no change on screen.\n- **Show them**: have `SliderClass` add the buttons with itself (overrides of the add functions and `Remove()`, like `ListClass`'s scroll gadgets). Changes the TD options dialogs and RA's editor house dialog; needs the two shapes to exist in the game data and new `ui_check` hashes.",
@@ -6749,12 +6749,13 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T07:36:41Z",
+      "updated": "2026-10-09T16:21:30Z",
       "parent": "T-222",
       "source": "4f1ad716..cfc8a308",
+      "resolution": "Reworded the stale comments (`nullmgr.cc` and `control.cc`) and deleted the commented-out `Is_List_To_Redraw()` in both `gscreen.cc`. `DropListClass::Expand()` and `TDropListClass::Expand()` now do nothing outside a gadget list (two new tests). `gadget_list.h` and `docs/GADGET_LIST_PLAN.md` say that a composite's parts lose focus and the mouse hold on a re-add and that dropping `StuckOn` in `Remove()` is new. `mapedsel.cc` unchanged: by reading, `GScreenClass::Render()` draws every button forced while the map editor is active and `Remove()`/`Add_A_Button()` drop the focus of the buttons that move, so the old head-change redraw is covered; not run, the editor being an internal build.",
       "anchors": [
         {
           "path": "src/game/ui/gadget_list.h",
@@ -6775,7 +6776,7 @@
             "",
             "  return dialstatus;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/nullmgr.cc",
@@ -6796,12 +6797,12 @@
             " * INPUT:   none *",
             " *                                                                                             *"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/ui/drop.cc",
-          "startLine": 117,
-          "endLine": 129,
+          "startLine": 120,
+          "endLine": 132,
           "text": "  if (!IsDropped) {\n    List.X = X;\n    List.Y = Y + 18;\n    List.Width = Width;\n    List.Height = ListHeight;\n    if (list() != nullptr) {\n      // Second in the list: ahead of what it covers, whatever was added\n      // first aside.\n      list()->AddAfter(List, *list()->gadgets().front());\n    }\n    List.Flag_To_Redraw();\n    IsDropped = true;\n  }",
           "before": [
             "}",
@@ -6813,7 +6814,7 @@
             "",
             "void DropListClass::OnAdded(game::GadgetList& list) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

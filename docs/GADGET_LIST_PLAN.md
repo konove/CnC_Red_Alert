@@ -72,9 +72,11 @@ class GadgetList {
   how the WOL dialogs hand their ten shared buttons from one dialog's list to the other's.
 - **Destruction.** `~GadgetClass()` removes the gadget from `list_`; `~GadgetList()` clears, which
   resets every member's `list_`. Either may die first.
-- **Focus.** `Remove()` clears the gadget's focus and stuck state, as `GadgetClass::Remove()` does
-  today. `Clear()` keeps them, as `ForgetNeighbors()` does today, so a rebuild on every redraw does
-  not take the focus from an edit field.
+- **Focus.** `Remove()` clears the gadget's focus, as `GadgetClass::Remove()` does today, and its
+  stuck state (`StuckOn`), which is new: `GadgetClass::Remove()` left a removed gadget holding the
+  mouse. `Clear()` keeps both, as `ForgetNeighbors()` does today, so a rebuild on every redraw does
+  not take the focus from an edit field. A composite gadget takes its parts out with `Remove()`, so
+  adding it again keeps its own focus but drops its parts' (a scroll thumb being dragged is let go).
 - **Composite gadgets.** `GadgetClass` gets two protected virtual hooks, `OnAdded(GadgetList&)` and
   `OnRemoved(GadgetList&)`, called by the list after it added or removed the gadget (and `OnRemoved`
   for every member on `Clear()`). `ListClass`/`TListClass` add and remove their scroll gadgets

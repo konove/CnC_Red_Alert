@@ -755,8 +755,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   }
 
   Remove_Abort_Modem();
-  // cancelbtn is a local of this function; drop the pointer with it so the
-  // static does not outlive the button it names.
+  // cancelbtn is a local of this function: empty the static list before the
+  // button goes.
   Commands.Clear();
 
   return dialstatus;
@@ -994,8 +994,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   }
 
   Remove_Abort_Modem();
-  // cancelbtn is a local of this function; drop the pointer with it so the
-  // static does not outlive the button it names.
+  // cancelbtn is a local of this function: empty the static list before the
+  // button goes.
   Commands.Clear();
 
   return dialstatus;

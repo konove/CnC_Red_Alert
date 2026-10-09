@@ -151,7 +151,7 @@ void ControlClass::Make_Peer(GadgetClass& gadget) { Peer = &gadget; }
  * ControlClass::Get_ID -- Gets the ID number for this gadget. *
  *                                                                                             *
  *    This function will query and return with the ID number for this gadget. It
- *is primarily  * used by the Extract_Gadget() function. *
+ *is primarily  * used by GadgetList::Extract(). *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *

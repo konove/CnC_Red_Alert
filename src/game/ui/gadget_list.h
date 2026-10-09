@@ -21,7 +21,11 @@ class GadgetClass;
 // either may be destroyed first.
 //
 // A gadget is in one list at most. Adding it to a list takes it out of the one
-// it was in, so a gadget two dialogs share is handed over by adding it.
+// it was in, so a gadget two dialogs share is handed over by adding it. The
+// gadget keeps its keyboard focus on the way. The parts of a composite gadget
+// (a list box's scroll gadgets, a drop list's button and dropped list) do not:
+// their owner takes them out with Remove(), so adding a list box again lets go
+// of a scroll thumb that is being dragged.
 //
 // Input() gives an event to the first gadget that takes it, so the order is
 // part of a dialog's behavior where gadgets overlap.
@@ -54,7 +58,8 @@ class GadgetList {
   void AddAfter(GadgetClass& gadget, const GadgetClass& predecessor);
 
   // Takes `gadget` out and drops its keyboard focus and its hold on the mouse
-  // (a sticky gadget being pressed). Does nothing when it is not in this list.
+  // (a sticky gadget being pressed), and those of its parts. Does nothing when
+  // it is not in this list.
   void Remove(GadgetClass& gadget);
 
   // Takes every gadget out. Unlike Remove() this keeps the focus where it is,

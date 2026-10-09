@@ -86,7 +86,10 @@ class DropListClass : public EditClass {
 
   void Flag_To_Redraw() override;
 
+  // Opens the list under the field, in the gadget list the field is in. Does
+  // nothing when it is open already or the field is in no gadget list.
   void Expand();
+  // Closes the list and takes it out of its gadget list.
   void Collapse();
 
   void Set_Position(int x, int y) override;
@@ -159,7 +162,10 @@ class TDropListClass : public EditClass {
     return List.Get_Item(index);
   }
 
+  // Opens the list under the field, in the gadget list the field is in. Does
+  // nothing when it is open already or the field is in no gadget list.
   void Expand();
+  // Closes the list and takes it out of its gadget list.
   void Collapse();
 
   void Set_Position(int x, int y) override;
@@ -267,19 +273,20 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags,
 
 template <class T>
 void TDropListClass<T>::Expand() {
-  if (!IsDropped) {
-    List.X = X;
-    List.Y = Y + 9;
-    List.Width = Width;
-    List.Height = ListHeight;
-    if (list() != nullptr) {
-      // Second in the list: ahead of what it covers, whatever was added
-      // first aside.
-      list()->AddAfter(List, *list()->gadgets().front());
-    }
-    List.Flag_To_Redraw();
-    IsDropped = true;
+  // In no gadget list there is nowhere to put the list, and OnAdded() would
+  // not add a dropped one later.
+  if (IsDropped || list() == nullptr) {
+    return;
   }
+  List.X = X;
+  List.Y = Y + 9;
+  List.Width = Width;
+  List.Height = ListHeight;
+  // Second in the list: ahead of what it covers, whatever was added first
+  // aside.
+  list()->AddAfter(List, *list()->gadgets().front());
+  List.Flag_To_Redraw();
+  IsDropped = true;
 }
 
 template <class T>

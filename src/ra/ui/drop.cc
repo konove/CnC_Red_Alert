@@ -117,19 +117,20 @@ void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
 }
 
 void DropListClass::Expand() {
-  if (!IsDropped) {
-    List.X = X;
-    List.Y = Y + 18;
-    List.Width = Width;
-    List.Height = ListHeight;
-    if (list() != nullptr) {
-      // Second in the list: ahead of what it covers, whatever was added
-      // first aside.
-      list()->AddAfter(List, *list()->gadgets().front());
-    }
-    List.Flag_To_Redraw();
-    IsDropped = true;
+  // In no gadget list there is nowhere to put the list, and OnAdded() would
+  // not add a dropped one later.
+  if (IsDropped || list() == nullptr) {
+    return;
   }
+  List.X = X;
+  List.Y = Y + 18;
+  List.Width = Width;
+  List.Height = ListHeight;
+  // Second in the list: ahead of what it covers, whatever was added first
+  // aside.
+  list()->AddAfter(List, *list()->gadgets().front());
+  List.Flag_To_Redraw();
+  IsDropped = true;
 }
 
 void DropListClass::OnAdded(game::GadgetList& list) {
