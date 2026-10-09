@@ -280,15 +280,15 @@ void SoundControlsClass::Process() {
   **	Create Buttons.
   */
   game::GadgetClass* optionsbtn = &returnto;
-  listbox.Add_Tail(*optionsbtn);
-  stopbtn.Add_Tail(*optionsbtn);
-  playbtn.Add_Tail(*optionsbtn);
-  shufflebtn.Add_Tail(*optionsbtn);
-  repeatbtn.Add_Tail(*optionsbtn);
-  music.Add_Tail(*optionsbtn);
-  sound.Add_Tail(*optionsbtn);
-  area.Add_Tail(*optionsbtn);
-  ctrl.Add_Tail(*optionsbtn);
+  listbox.AppendTo(*optionsbtn);
+  stopbtn.AppendTo(*optionsbtn);
+  playbtn.AppendTo(*optionsbtn);
+  shufflebtn.AppendTo(*optionsbtn);
+  repeatbtn.AppendTo(*optionsbtn);
+  music.AppendTo(*optionsbtn);
+  sound.AppendTo(*optionsbtn);
+  area.AppendTo(*optionsbtn);
+  ctrl.AppendTo(*optionsbtn);
 
   /*
   **	Add all the themes to the list box. The list box entries are constructed

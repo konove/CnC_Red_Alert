@@ -43,8 +43,8 @@
  *   GadgetClass::Flag_To_Redraw -- Flags this gadget to be redrawn. *
  *   GadgetClass::GadgetClass -- Constructor for gadget object. *
  *   GadgetClass::GadgetClass -- Default constructor for a gadget class object.
- ** GadgetClass::Get_Next -- Returns a pointer to the next gadget in the chain.
- ** GadgetClass::Get_Prev -- Fetches a pointer to the previous gadget. *
+ ** GadgetClass::Next -- Returns a pointer to the next gadget in the chain.
+ ** GadgetClass::Previous -- Fetches a pointer to the previous gadget. *
  *   GadgetClass::Has_Focus -- Checks if this object currently has the keyboard
  *focus.         * GadgetClass::Remove -- Removes the specified gadget from the
  *list.                        * GadgetClass::Set_Focus -- Sets focus to this
@@ -269,10 +269,10 @@ GadgetClass* GadgetClass::Remove() {
 }
 
 /***********************************************************************************************
- * GadgetClass::Get_Next -- Returns a pointer to the next gadget in the chain. *
+ * GadgetClass::Next -- Returns a pointer to the next gadget in the chain. *
  *                                                                                             *
  *    This returns with the next gadget's pointer. It is identical to the base
- *Get_Next()      * function, but returns a pointer to a GadgetClass object. *
+ *Next()      * function, but returns a pointer to a GadgetClass object. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -282,15 +282,15 @@ GadgetClass* GadgetClass::Remove() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* GadgetClass::Get_Next() const {
-  return dynamic_cast<GadgetClass*>(game::Link::Get_Next());
+GadgetClass* GadgetClass::Next() const {
+  return dynamic_cast<GadgetClass*>(game::Link::Next());
 }
 
 /***********************************************************************************************
- * GadgetClass::Get_Prev -- Fetches a pointer to the previous gadget. *
+ * GadgetClass::Previous -- Fetches a pointer to the previous gadget. *
  *                                                                                             *
  *    This routine will return the previous gadget in the list. It is identical
- *to the base    * function Get_Prev, but returns a pointer to a GadgetClass
+ *to the base    * function Previous, but returns a pointer to a GadgetClass
  *object.                        *
  *                                                                                             *
  * INPUT:   none *
@@ -301,8 +301,8 @@ GadgetClass* GadgetClass::Get_Next() const {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* GadgetClass::Get_Prev() const {
-  return dynamic_cast<GadgetClass*>(game::Link::Get_Prev());
+GadgetClass* GadgetClass::Previous() const {
+  return dynamic_cast<GadgetClass*>(game::Link::Previous());
 }
 
 /***********************************************************************************************
@@ -382,7 +382,7 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
 
   while (gadget != nullptr) {
     gadget->Draw_Me(view, forced);
-    gadget = gadget->Get_Next();
+    gadget = gadget->Next();
   }
 }
 
@@ -548,7 +548,7 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
           break;
         }
 
-        next_button = next_button->Get_Next();
+        next_button = next_button->Next();
       }
     }
   }
@@ -590,7 +590,7 @@ ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
       if (g->Get_ID() == id) {
         return dynamic_cast<ControlClass*>(g);
       }
-      g = g->Get_Next();
+      g = g->Next();
     }
   }
   return nullptr;
@@ -727,7 +727,7 @@ bool GadgetClass::Is_List_To_Redraw() {
     if (gadget->IsToRepaint) {
       return true;
     }
-    gadget = gadget->Get_Next();
+    gadget = gadget->Next();
   }
   return false;
 }

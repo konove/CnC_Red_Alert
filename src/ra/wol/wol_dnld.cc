@@ -141,11 +141,11 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   RedrawType display = REDRAW_ALL;  // redraw level
 
   game::GadgetClass* commands = &cancelbtn;  // button list
-  progress_meter.Add_Tail(*commands);
-  StatTitle.Add_Tail(*commands);
-  StatBytes.Add_Tail(*commands);
-  StatTime.Add_Tail(*commands);
-  StatStatus.Add_Tail(*commands);
+  progress_meter.AppendTo(*commands);
+  StatTitle.AppendTo(*commands);
+  StatBytes.AppendTo(*commands);
+  StatTime.AppendTo(*commands);
+  StatStatus.AppendTo(*commands);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%

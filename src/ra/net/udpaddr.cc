@@ -179,13 +179,13 @@ bool Get_Broadcast_Addresses() {
         //...............................................................
         //	Rebuild the button list
         //...............................................................
-        okbtn.Zap();
-        cancelbtn.Zap();
-        ip_address_list.Zap();
+        okbtn.ForgetNeighbors();
+        cancelbtn.ForgetNeighbors();
+        ip_address_list.ForgetNeighbors();
 
         commands = &okbtn;
-        cancelbtn.Add_Tail(*commands);
-        ip_address_list.Add_Tail(*commands);
+        cancelbtn.AppendTo(*commands);
+        ip_address_list.AppendTo(*commands);
       }
 
       //..................................................................

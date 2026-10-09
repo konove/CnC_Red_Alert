@@ -233,7 +233,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
         return txtlabel;
       }
 
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
   }
 
@@ -297,7 +297,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
           }
         }
       }
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
   }
 
@@ -310,7 +310,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     gadg = MessageList;
     while (gadg) {
       num_msg++;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
     }
   }
   /*........................................................................
@@ -323,7 +323,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     no next one, just return.
     .....................................................................*/
     if (txtlabel == EditLabel) {
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
     if (txtlabel == nullptr) {
       return nullptr;
@@ -348,7 +348,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       gadg = MessageList;
       while (gadg) {
         gadg->Y = y;
-        gadg = gadg->Get_Next();
+        gadg = gadg->Next();
         y += Height;
       }
     }
@@ -362,7 +362,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   if (MessageList) {
     gadg = MessageList;
     while (gadg) {
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
       y += Height;
     }
   }
@@ -441,7 +441,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   Attach the message to our list
   ------------------------------------------------------------------------*/
   if (MessageList) {
-    txtlabel->Add_Tail(*MessageList);
+    txtlabel->AppendTo(*MessageList);
   } else {
     MessageList = txtlabel;
   }
@@ -562,7 +562,7 @@ int MessageListClass::Manage() {
       /*..................................................................
       Save the next ptr in the list; remove this entry
       ..................................................................*/
-      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel->Text == base::At(MessageBuffers, i)) {
@@ -573,7 +573,7 @@ int MessageListClass::Manage() {
       changed = 1;
       txtlabel = next;
     } else {
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
   }
 
@@ -586,7 +586,7 @@ int MessageListClass::Manage() {
       game::GadgetClass* gadg = MessageList;
       while (gadg) {
         gadg->Y = y;
-        gadg = gadg->Get_Next();
+        gadg = gadg->Next();
         y += Height;
       }
     }
@@ -749,7 +749,7 @@ int MessageListClass::Num_Messages() {
     game::GadgetClass* gadg = MessageList;
     while (gadg) {
       num++;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
     }
   }
 
@@ -777,7 +777,7 @@ void MessageListClass::Set_Width(int width) {
     game::GadgetClass* gadg = MessageList;
     while (gadg) {
       dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
     }
   }
 }

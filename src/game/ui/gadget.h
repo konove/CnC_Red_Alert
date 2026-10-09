@@ -136,8 +136,8 @@ class GadgetClass : public game::Link {
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
   GadgetClass* Remove() override;
-  [[nodiscard]] GadgetClass* Get_Next() const override;
-  [[nodiscard]] GadgetClass* Get_Prev() const override;
+  [[nodiscard]] GadgetClass* Next() const override;
+  [[nodiscard]] GadgetClass* Previous() const override;
 
   /*
   **	Manages individual gadget states and actions.

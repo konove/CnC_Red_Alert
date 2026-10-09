@@ -1121,32 +1121,32 @@ static int Net_Join_Dialog() {
         /*
         .................... Rebuild the button list ....................
         */
-        cancelbtn.Zap();
-        gamelist.Zap();
-        playerlist.Zap();
-        gdibtn.Zap();
-        nodbtn.Zap();
-        name_edt.Zap();
-        joinbtn.Zap();
-        newbtn.Zap();
-        sendbtn.Zap();
+        cancelbtn.ForgetNeighbors();
+        gamelist.ForgetNeighbors();
+        playerlist.ForgetNeighbors();
+        gdibtn.ForgetNeighbors();
+        nodbtn.ForgetNeighbors();
+        name_edt.ForgetNeighbors();
+        joinbtn.ForgetNeighbors();
+        newbtn.ForgetNeighbors();
+        sendbtn.ForgetNeighbors();
 
         commands = &cancelbtn;
-        gamelist.Add_Tail(*commands);
-        playerlist.Add_Tail(*commands);
+        gamelist.AppendTo(*commands);
+        playerlist.AppendTo(*commands);
         /*...............................................................
         Only add the name edit field, the House, Join & New buttons if
         we're doing nothing, or we've just been rejected.
         ...............................................................*/
         if (joinstate <= JOIN_NOTHING) {
-          gdibtn.Add_Tail(*commands);
-          nodbtn.Add_Tail(*commands);
-          name_edt.Add_Tail(*commands);
-          joinbtn.Add_Tail(*commands);
-          newbtn.Add_Tail(*commands);
+          gdibtn.AppendTo(*commands);
+          nodbtn.AppendTo(*commands);
+          name_edt.AppendTo(*commands);
+          joinbtn.AppendTo(*commands);
+          newbtn.AppendTo(*commands);
         }
         if (joinstate == JOIN_CONFIRMED) {
-          sendbtn.Add_Tail(*commands);
+          sendbtn.AppendTo(*commands);
         }
       }
       /*
@@ -3074,18 +3074,18 @@ static int Net_New_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &playerlist;  // button list
-  scenariolist.Add_Tail(*commands);
-  credit_edt.Add_Tail(*commands);
-  rejectbtn.Add_Tail(*commands);
-  countgauge.Add_Tail(*commands);
-  levelgauge.Add_Tail(*commands);
-  basesbtn.Add_Tail(*commands);
-  tiberiumbtn.Add_Tail(*commands);
-  goodiesbtn.Add_Tail(*commands);
-  ghostsbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  sendbtn.Add_Tail(*commands);
+  scenariolist.AppendTo(*commands);
+  credit_edt.AppendTo(*commands);
+  rejectbtn.AppendTo(*commands);
+  countgauge.AppendTo(*commands);
+  levelgauge.AppendTo(*commands);
+  basesbtn.AppendTo(*commands);
+  tiberiumbtn.AppendTo(*commands);
+  goodiesbtn.AppendTo(*commands);
+  ghostsbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  sendbtn.AppendTo(*commands);
 
   playerlist.Set_Tabs(tabs);
 
@@ -4548,7 +4548,7 @@ static int Net_Fake_New_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &playerlist;  // button list
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   playerlist.Set_Tabs(tabs);
 
@@ -5213,13 +5213,13 @@ static int Net_Fake_Join_Dialog() {
         /*
         .................... Rebuild the button list ....................
         */
-        cancelbtn.Zap();
-        gamelist.Zap();
-        playerlist.Zap();
+        cancelbtn.ForgetNeighbors();
+        gamelist.ForgetNeighbors();
+        playerlist.ForgetNeighbors();
 
         commands = &cancelbtn;
-        gamelist.Add_Tail(*commands);
-        playerlist.Add_Tail(*commands);
+        gamelist.AppendTo(*commands);
+        playerlist.AppendTo(*commands);
       }
       /*
       .......................... Redraw buttons ..........................

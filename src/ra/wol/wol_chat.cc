@@ -294,30 +294,30 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
 
   //	Build the button list.
   game::GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
-  pWO->pShpBtnLeave->Add_Tail(*commands);
-  pWO->pShpBtnRefresh->Add_Tail(*commands);
-  pWO->pShpBtnSquelch->Add_Tail(*commands);
-  pWO->pShpBtnBan->Add_Tail(*commands);
-  pWO->pShpBtnKick->Add_Tail(*commands);
-  pWO->pShpBtnFindpage->Add_Tail(*commands);
-  pWO->pShpBtnOptions->Add_Tail(*commands);
-  pWO->pShpBtnLadder->Add_Tail(*commands);
-  pWO->pShpBtnHelp->Add_Tail(*commands);
-  chatlist.Add_Tail(*commands);
-  ExpandChanBtn.Add_Tail(*commands);
-  chanlist.Add_Tail(*commands);
-  ExpandUserBtn.Add_Tail(*commands);
-  userlist.Add_Tail(*commands);
-  ActionBtn.Add_Tail(*commands);
-  CreateBtn.Add_Tail(*commands);
-  //	CreatePrivBtn.Add_Tail(*commands);
-  JoinBtn.Add_Tail(*commands);
-  BackBtn.Add_Tail(*commands);
-  //	CGameBtn.Add_Tail(*commands);
-  chatlistTitle.Add_Tail(*commands);
-  chanlistTitle.Add_Tail(*commands);
-  userlistTitle.Add_Tail(*commands);
-  sendedit.Add_Tail(*commands);
+  pWO->pShpBtnLeave->AppendTo(*commands);
+  pWO->pShpBtnRefresh->AppendTo(*commands);
+  pWO->pShpBtnSquelch->AppendTo(*commands);
+  pWO->pShpBtnBan->AppendTo(*commands);
+  pWO->pShpBtnKick->AppendTo(*commands);
+  pWO->pShpBtnFindpage->AppendTo(*commands);
+  pWO->pShpBtnOptions->AppendTo(*commands);
+  pWO->pShpBtnLadder->AppendTo(*commands);
+  pWO->pShpBtnHelp->AppendTo(*commands);
+  chatlist.AppendTo(*commands);
+  ExpandChanBtn.AppendTo(*commands);
+  chanlist.AppendTo(*commands);
+  ExpandUserBtn.AppendTo(*commands);
+  userlist.AppendTo(*commands);
+  ActionBtn.AppendTo(*commands);
+  CreateBtn.AppendTo(*commands);
+  //	CreatePrivBtn.AppendTo(*commands);
+  JoinBtn.AppendTo(*commands);
+  BackBtn.AppendTo(*commands);
+  //	CGameBtn.AppendTo(*commands);
+  chatlistTitle.AppendTo(*commands);
+  chanlistTitle.AppendTo(*commands);
+  userlistTitle.AppendTo(*commands);
+  sendedit.AppendTo(*commands);
 
   //	Tooltips...
   int64_t timeToolTipAppear = 0;  //	When the pending tooltip is due.
@@ -506,7 +506,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     }
 
     //	Synch rank toggle buttons state.
-    if (BackBtn.Get_Prev() == &RankAMBtn) {
+    if (BackBtn.Previous() == &RankAMBtn) {
       if (pWO->CurrentLevel != WOL_LEVEL_INLOBBY) {
         //	Rank buttons are there and shouldn't be.
         RankRABtn.Remove();
@@ -532,8 +532,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     } else {
       if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
         //	Rank buttons aren't there and should be.
-        RankRABtn.Add(JoinBtn);
-        RankAMBtn.Add(RankRABtn);
+        RankRABtn.InsertAfter(JoinBtn);
+        RankAMBtn.InsertAfter(RankRABtn);
         RankRABtn.Flag_To_Redraw();
         RankAMBtn.Flag_To_Redraw();
         if (pWO->bShowRankRA) {
@@ -753,12 +753,12 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case engine::window::ButtonKey(kButtonExpandchannels):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
-          if (ExpandUserBtn.Get_Next() == &userlist) {
+          if (ExpandUserBtn.Next() == &userlist) {
             userlist.Remove();
           }
           //	Ensure chanlist is visible.
-          if (ExpandChanBtn.Get_Next() != &chanlist) {
-            chanlist.Add(ExpandChanBtn);
+          if (ExpandChanBtn.Next() != &chanlist) {
+            chanlist.InsertAfter(ExpandChanBtn);
           }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X,
@@ -771,8 +771,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           ExpandUserBtn.Set_Shape(pShpExpand);
         } else {
           //	Show userlist.
-          if (ExpandUserBtn.Get_Next() != &userlist) {
-            userlist.Add(ExpandUserBtn);
+          if (ExpandUserBtn.Next() != &userlist) {
+            userlist.InsertAfter(ExpandUserBtn);
           }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
@@ -793,20 +793,20 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case engine::window::ButtonKey(kButtonExpandusers):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
-          if (ExpandChanBtn.Get_Next() == &chanlist) {
+          if (ExpandChanBtn.Next() == &chanlist) {
             chanlist.Remove();
           }
           //	Ensure userlist is visible.
-          if (ExpandUserBtn.Get_Next() != &userlist) {
-            userlist.Add(ExpandUserBtn);
+          if (ExpandUserBtn.Next() != &userlist) {
+            userlist.InsertAfter(ExpandUserBtn);
           }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
           ExpandUserBtn.Set_Shape(pShpUnexpand);
         } else {
           //	Show chanlist.
-          if (ExpandChanBtn.Get_Next() != &chanlist) {
-            chanlist.Add(ExpandChanBtn);
+          if (ExpandChanBtn.Next() != &chanlist) {
+            chanlist.InsertAfter(ExpandChanBtn);
           }
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
@@ -1598,7 +1598,7 @@ bool bLinkInList(const game::Link* pListHead, const game::Link* pLinkToFind) {
     if (pLink == pLinkToFind) {
       return true;
     }
-    pLink = pLink->Get_Next();
+    pLink = pLink->Next();
   }
   return false;
 }

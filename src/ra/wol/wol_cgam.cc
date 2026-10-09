@@ -190,14 +190,14 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   **	Create the button list.
   */
   commands = &OkBtn;
-  CancelBtn.Add_Tail(*commands);
-  PlayerCountStatic.Add_Tail(*commands);
-  PlayerCountGauge.Add_Tail(*commands);
-  TournamentCheck.Add_Tail(*commands);
-  PrivacyCheck.Add_Tail(*commands);
-  RA_Check.Add_Tail(*commands);
-  CS_Check.Add_Tail(*commands);
-  AM_Check.Add_Tail(*commands);
+  CancelBtn.AppendTo(*commands);
+  PlayerCountStatic.AppendTo(*commands);
+  PlayerCountGauge.AppendTo(*commands);
+  TournamentCheck.AppendTo(*commands);
+  PrivacyCheck.AppendTo(*commands);
+  RA_Check.AppendTo(*commands);
+  CS_Check.AppendTo(*commands);
+  AM_Check.AppendTo(*commands);
 
   PlayerCountStatic.Set_Text(
       base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax).c_str());

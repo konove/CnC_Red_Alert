@@ -121,7 +121,7 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
                      true);
   slider.Set_Maximum(stops);
   slider.Set_Value(stops / 2);
-  slider.Add(ok_button);
+  slider.InsertAfter(ok_button);
 
   game::TheMouse().Hide();
   Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);

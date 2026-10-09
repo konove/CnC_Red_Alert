@@ -71,13 +71,14 @@ class DropListClass : public EditClass {
 
   // Link the list and its drop button into the chain `object` is in, and
   // return the head of that chain, which may be any gadget.
-  game::Link& Add(game::Link& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Tail(game::Link& object)
+  game::Link& InsertAfter(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Head(game::Link& object)
+  game::Link& AppendTo(game::Link& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& PrependTo(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   DropListClass* Remove() override;
-  void Zap() override;
+  void ForgetNeighbors() override;
 
   virtual int Add_Item(const char* text);
   virtual const char* Current_Item() ABSL_ATTRIBUTE_LIFETIME_BOUND;
@@ -150,13 +151,14 @@ class TDropListClass : public EditClass {
   }
 
   // As DropListClass's: each returns the head of the chain.
-  game::Link& Add(game::Link& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Tail(game::Link& object)
+  game::Link& InsertAfter(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Head(game::Link& object)
+  game::Link& AppendTo(game::Link& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& PrependTo(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   TDropListClass* Remove() override;
-  void Zap() override;
+  void ForgetNeighbors() override;
 
   virtual int Add_Item(T item);
   virtual T Current_Item();
@@ -216,29 +218,29 @@ TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
 }
 
 template <class T>
-void TDropListClass<T>::Zap() {
+void TDropListClass<T>::ForgetNeighbors() {
   Collapse();
-  List.Zap();
-  DropButton.Zap();
-  EditClass::Zap();
+  List.ForgetNeighbors();
+  DropButton.ForgetNeighbors();
+  EditClass::ForgetNeighbors();
 }
 
 template <class T>
-game::Link& TDropListClass<T>::Add(game::Link& object) {
-  DropButton.Add(object);
-  return EditClass::Add(object);
+game::Link& TDropListClass<T>::InsertAfter(game::Link& object) {
+  DropButton.InsertAfter(object);
+  return EditClass::InsertAfter(object);
 }
 
 template <class T>
-game::Link& TDropListClass<T>::Add_Tail(game::Link& object) {
-  DropButton.Add_Tail(object);
-  return EditClass::Add_Tail(object);
+game::Link& TDropListClass<T>::AppendTo(game::Link& object) {
+  DropButton.AppendTo(object);
+  return EditClass::AppendTo(object);
 }
 
 template <class T>
-game::Link& TDropListClass<T>::Add_Head(game::Link& object) {
-  DropButton.Add_Head(object);
-  return EditClass::Add_Head(object);
+game::Link& TDropListClass<T>::PrependTo(game::Link& object) {
+  DropButton.PrependTo(object);
+  return EditClass::PrependTo(object);
 }
 
 template <class T>
@@ -311,7 +313,7 @@ void TDropListClass<T>::Expand() {
     List.Y = Y + 9;
     List.Width = Width;
     List.Height = ListHeight;
-    List.Add(Head_Of_List());
+    List.InsertAfter(HeadOfList());
     List.Flag_To_Redraw();
     IsDropped = true;
   }

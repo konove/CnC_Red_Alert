@@ -215,14 +215,14 @@ GameType Select_MPlayer_Game() {
   //	Create the list
   //------------------------------------------------------------------------
   commands = &modemserialbtn;
-  skirmishbtn.Add_Tail(*commands);
+  skirmishbtn.AppendTo(*commands);
   if (has_ipx) {
-    ipxbtn.Add_Tail(*commands);
+    ipxbtn.AppendTo(*commands);
   }
   if constexpr (config::kWolapiEnabled) {
-    wolbtn.Add_Tail(*commands);  //	ajw
+    wolbtn.AppendTo(*commands);  //	ajw
   }
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   //------------------------------------------------------------------------
   //	Fill array of button ptrs
@@ -539,7 +539,7 @@ int Surrender_Dialog(const char* text) {
   //	Create the button list
   //------------------------------------------------------------------------
   commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   base::At(buttons, 0) = &okbtn;
   base::At(buttons, 1) = &cancelbtn;
@@ -722,7 +722,7 @@ int Abort_Dialog() {
   //	Create the button list
   //------------------------------------------------------------------------
   commands = &yesbtn;
-  nobtn.Add_Tail(*commands);
+  nobtn.AppendTo(*commands);
 
   base::At(buttons, 0) = &yesbtn;
   base::At(buttons, 1) = &nobtn;

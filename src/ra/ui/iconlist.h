@@ -183,8 +183,8 @@ class IconListClass : public ListClass {
   ** automatically when the list box is added or removed.
   */
   //		virtual Link & Add(Link & object);
-  //		virtual Link & Add_Tail(Link & object);
-  //		virtual Link & Add_Head(Link & object);
+  //		virtual Link & AppendTo(Link & object);
+  //		virtual Link & PrependTo(Link & object);
   //		virtual GadgetClass * Remove();
 
   virtual void Show_Last_Item();

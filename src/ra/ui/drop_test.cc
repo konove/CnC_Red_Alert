@@ -34,11 +34,11 @@ class DropListClassTest : public testing::Test {
 // starts with some other gadget. The skirmish dialog adds its house list to
 // a chain headed by a button, and this used to throw std::bad_cast.
 TEST_F(DropListClassTest, AddingToAChainReturnsItsHead) {
-  EXPECT_EQ(&drop_.Add(button_), &button_);
+  EXPECT_EQ(&drop_.InsertAfter(button_), &button_);
 }
 
 TEST_F(DropListClassTest, AddingTailToAChainReturnsItsHead) {
-  EXPECT_EQ(&drop_.Add_Tail(button_), &button_);
+  EXPECT_EQ(&drop_.AppendTo(button_), &button_);
 }
 
 }  // namespace

@@ -1983,8 +1983,8 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   **	Create the button list.
   */
   commands = &button;
-  cancelbtn.Add_Tail(*commands);
-  editbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
+  editbtn.AppendTo(*commands);
   editbtn.Set_Focus();
 
   /*

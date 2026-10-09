@@ -136,7 +136,7 @@ void RunSpecialOptionsDialog() {
   TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL,
                                 FontType::k6PointGradient, TPF_NOSHADOW,
                                 kCancelButtonX, kButtonY);
-  cancel_button.Add(ok_button);
+  cancel_button.InsertAfter(ok_button);
 
   // One check box per option, in kOptions order. A box toggles itself when
   // clicked, so the flags are only read back from the boxes on OK.
@@ -146,7 +146,7 @@ void RunSpecialOptionsDialog() {
         *check_boxes.emplace_back(std::make_unique<CheckBoxClass>(
             static_cast<unsigned>(kFirstCheckBoxId + index), kCheckBoxX,
             kFirstCheckBoxY + (index * kCheckBoxSpacing)));
-    check_box.Add(ok_button);
+    check_box.InsertAfter(ok_button);
     if (kOptions.at(base::ToSize(index)).get(edited_flags)) {
       check_box.Turn_On();
     }

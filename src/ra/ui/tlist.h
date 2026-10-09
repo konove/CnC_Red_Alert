@@ -87,9 +87,11 @@ class TListClass final : public game::ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  game::Link& Add(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Tail(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& Add_Head(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& InsertAfter(game::Link& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& AppendTo(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& PrependTo(game::Link& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   game::GadgetClass* Remove() override;
 
  protected:
@@ -434,9 +436,9 @@ bool TListClass<T>::Add_Scroll_Bar() {
     **	Add these newly created gadgets to the same gadget list that the
     **	list box is part of.
     */
-    UpGadget.Add(*this);
-    DownGadget.Add(*this);
-    ScrollGadget.Add(*this);
+    UpGadget.InsertAfter(*this);
+    DownGadget.InsertAfter(*this);
+    ScrollGadget.InsertAfter(*this);
 
     /*
     **	Make sure these added gadgets get redrawn at the next opportunity.
@@ -481,56 +483,56 @@ void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
 }
 
 template <class T>
-game::Link& TListClass<T>::Add(game::Link& list) {
+game::Link& TListClass<T>::InsertAfter(game::Link& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
   if (IsScrollActive) {
-    ScrollGadget.Add(list);
-    DownGadget.Add(list);
-    UpGadget.Add(list);
+    ScrollGadget.InsertAfter(list);
+    DownGadget.InsertAfter(list);
+    UpGadget.InsertAfter(list);
   }
 
   /*
   **	Add myself to the list, then return.
   */
-  return game::ControlClass::Add(list);
+  return game::ControlClass::InsertAfter(list);
 }
 
 template <class T>
-game::Link& TListClass<T>::Add_Head(game::Link& list) {
+game::Link& TListClass<T>::PrependTo(game::Link& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
   if (IsScrollActive) {
-    ScrollGadget.Add_Head(list);
-    DownGadget.Add_Head(list);
-    UpGadget.Add_Head(list);
+    ScrollGadget.PrependTo(list);
+    DownGadget.PrependTo(list);
+    UpGadget.PrependTo(list);
   }
 
   /*
   **	Add myself to the list, then return.
   */
-  return game::ControlClass::Add_Head(list);
+  return game::ControlClass::PrependTo(list);
 }
 
 template <class T>
-game::Link& TListClass<T>::Add_Tail(game::Link& list) {
+game::Link& TListClass<T>::AppendTo(game::Link& list) {
   /*
   **	Add myself to the list.
   */
-  game::ControlClass::Add_Tail(list);
+  game::ControlClass::AppendTo(list);
 
   /*
   **	Add the scroll bar gadgets if they're active.
   */
   if (IsScrollActive) {
-    UpGadget.Add_Tail(list);
-    DownGadget.Add_Tail(list);
-    ScrollGadget.Add_Tail(list);
+    UpGadget.AppendTo(list);
+    DownGadget.AppendTo(list);
+    ScrollGadget.AppendTo(list);
   }
 
-  return Head_Of_List();
+  return HeadOfList();
 }
 
 template <class T>

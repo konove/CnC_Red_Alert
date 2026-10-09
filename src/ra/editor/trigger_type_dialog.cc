@@ -938,14 +938,14 @@ bool TriggerType::Edit() {
   // Link in the gadgets that are always shown. The second event and action
   // lists and all the data fields are added by the redraw pass.
   gadgets = &ok_button;
-  cancel_button.Add_Tail(*gadgets);
-  event1_list.Add_Tail(*gadgets);
-  action1_list.Add_Tail(*gadgets);
-  event_control_button.Add_Tail(*gadgets);
-  action_control_button.Add_Tail(*gadgets);
-  name_edit.Add_Tail(*gadgets);
-  persistence_list.Add_Tail(*gadgets);
-  owner_list.Add_Tail(*gadgets);
+  cancel_button.AppendTo(*gadgets);
+  event1_list.AppendTo(*gadgets);
+  action1_list.AppendTo(*gadgets);
+  event_control_button.AppendTo(*gadgets);
+  action_control_button.AppendTo(*gadgets);
+  name_edit.AppendTo(*gadgets);
+  persistence_list.AppendTo(*gadgets);
+  owner_list.AppendTo(*gadgets);
 
   // Main Processing Loop
   bool redraw = true;
@@ -1005,17 +1005,17 @@ bool TriggerType::Edit() {
 
         case MULTI_AND:
           event_control_button.Set_Text(TXT_TRIGGER_AND);
-          event2_list.Add(*gadgets);
+          event2_list.InsertAfter(*gadgets);
           break;
 
         case MULTI_OR:
           event_control_button.Set_Text(TXT_TRIGGER_OR);
-          event2_list.Add(*gadgets);
+          event2_list.InsertAfter(*gadgets);
           break;
 
         case MULTI_LINKED:
           event_control_button.Set_Text(TXT_TRIGGER_LINKED);
-          event2_list.Add(*gadgets);
+          event2_list.InsertAfter(*gadgets);
           break;
         default:
           break;
@@ -1031,32 +1031,32 @@ bool TriggerType::Edit() {
       event1_team_list.Remove();
       switch (Event_Needs(*event1_list.Current_Item())) {
         case NEED_HOUSE:
-          event1_house_list.Add(*gadgets);
+          event1_house_list.InsertAfter(*gadgets);
           break;
 
         case NEED_TEAM:
-          event1_team_list.Add(*gadgets);
+          event1_team_list.InsertAfter(*gadgets);
           break;
 
 
         case NEED_NUMBER:
-          event1_number_edit.Add(*gadgets);
+          event1_number_edit.InsertAfter(*gadgets);
           break;
 
         case NEED_STRUCTURE:
-          event1_building_list.Add(*gadgets);
+          event1_building_list.InsertAfter(*gadgets);
           break;
 
         case NEED_INFANTRY:
-          event1_infantry_list.Add(*gadgets);
+          event1_infantry_list.InsertAfter(*gadgets);
           break;
 
         case NEED_AIRCRAFT:
-          event1_aircraft_list.Add(*gadgets);
+          event1_aircraft_list.InsertAfter(*gadgets);
           break;
 
         case NEED_UNIT:
-          event1_unit_list.Add(*gadgets);
+          event1_unit_list.InsertAfter(*gadgets);
           break;
 
         case NeedType::NEED_NONE:
@@ -1088,32 +1088,32 @@ bool TriggerType::Edit() {
       if (gadgets->Extract_Gadget(kEvent2List)) {
         switch (Event_Needs(*event2_list.Current_Item())) {
           case NEED_HOUSE:
-            event2_house_list.Add(*gadgets);
+            event2_house_list.InsertAfter(*gadgets);
             break;
 
           case NEED_TEAM:
-            event2_team_list.Add(*gadgets);
+            event2_team_list.InsertAfter(*gadgets);
             break;
 
 
           case NEED_NUMBER:
-            event2_number_edit.Add(*gadgets);
+            event2_number_edit.InsertAfter(*gadgets);
             break;
 
           case NEED_STRUCTURE:
-            event2_building_list.Add(*gadgets);
+            event2_building_list.InsertAfter(*gadgets);
             break;
 
           case NEED_INFANTRY:
-            event2_infantry_list.Add(*gadgets);
+            event2_infantry_list.InsertAfter(*gadgets);
             break;
 
           case NEED_AIRCRAFT:
-            event2_aircraft_list.Add(*gadgets);
+            event2_aircraft_list.InsertAfter(*gadgets);
             break;
 
           case NEED_UNIT:
-            event2_unit_list.Add(*gadgets);
+            event2_unit_list.InsertAfter(*gadgets);
             break;
 
           case NeedType::NEED_NONE:
@@ -1140,12 +1140,12 @@ bool TriggerType::Edit() {
       action_control_button.Remove();
       action2_list.Remove();
       if (event_style == MULTI_LINKED) {
-        action2_list.Add(*gadgets);
+        action2_list.InsertAfter(*gadgets);
       } else {
-        action_control_button.Add(*gadgets);
+        action_control_button.InsertAfter(*gadgets);
         if (has_second_action) {
           action_control_button.Set_Text(TXT_TRIGGER_AND);
-          action2_list.Add(*gadgets);
+          action2_list.InsertAfter(*gadgets);
         } else {
           action_control_button.Set_Text(TXT_TRIGGER_JUST_ACTION);
         }
@@ -1166,51 +1166,51 @@ bool TriggerType::Edit() {
       action1_speech_list.Remove();
       switch (ActionNeed(*action1_list.Current_Item())) {
         case NEED_MOVIE:
-          action1_movie_list.Add(*gadgets);
+          action1_movie_list.InsertAfter(*gadgets);
           break;
 
         case NEED_SPECIAL:
-          action1_special_list.Add(*gadgets);
+          action1_special_list.InsertAfter(*gadgets);
           break;
 
         case NEED_HOUSE:
-          action1_house_list.Add(*gadgets);
+          action1_house_list.InsertAfter(*gadgets);
           break;
 
         case NEED_BOOL:
-          action1_bool_list.Add(*gadgets);
+          action1_bool_list.InsertAfter(*gadgets);
           break;
 
         case NEED_TRIGGER:
-          action1_trigger_list.Add(*gadgets);
+          action1_trigger_list.InsertAfter(*gadgets);
           break;
 
         case NEED_TEAM:
-          action1_team_list.Add(*gadgets);
+          action1_team_list.InsertAfter(*gadgets);
           break;
 
         case NEED_NUMBER:
-          action1_number_edit.Add(*gadgets);
+          action1_number_edit.InsertAfter(*gadgets);
           break;
 
         case NEED_WAYPOINT:
-          action1_waypoint_edit.Add(*gadgets);
+          action1_waypoint_edit.InsertAfter(*gadgets);
           break;
 
         case NEED_THEME:
-          action1_theme_list.Add(*gadgets);
+          action1_theme_list.InsertAfter(*gadgets);
           break;
 
         case NEED_SOUND:
-          action1_sound_list.Add(*gadgets);
+          action1_sound_list.InsertAfter(*gadgets);
           break;
 
         case NEED_SPEECH:
-          action1_speech_list.Add(*gadgets);
+          action1_speech_list.InsertAfter(*gadgets);
           break;
 
         case NEED_QUARRY:
-          action1_quarry_list.Add(*gadgets);
+          action1_quarry_list.InsertAfter(*gadgets);
           break;
         case NeedType::NEED_NONE:
         case NeedType::NEED_INFANTRY:
@@ -1241,51 +1241,51 @@ bool TriggerType::Edit() {
       if (gadgets->Extract_Gadget(kAction2List)) {
         switch (ActionNeed(*action2_list.Current_Item())) {
           case NEED_MOVIE:
-            action2_movie_list.Add(*gadgets);
+            action2_movie_list.InsertAfter(*gadgets);
             break;
 
           case NEED_SPECIAL:
-            action2_special_list.Add(*gadgets);
+            action2_special_list.InsertAfter(*gadgets);
             break;
 
           case NEED_HOUSE:
-            action2_house_list.Add(*gadgets);
+            action2_house_list.InsertAfter(*gadgets);
             break;
 
           case NEED_BOOL:
-            action2_bool_list.Add(*gadgets);
+            action2_bool_list.InsertAfter(*gadgets);
             break;
 
           case NEED_TRIGGER:
-            action2_trigger_list.Add(*gadgets);
+            action2_trigger_list.InsertAfter(*gadgets);
             break;
 
           case NEED_TEAM:
-            action2_team_list.Add(*gadgets);
+            action2_team_list.InsertAfter(*gadgets);
             break;
 
           case NEED_NUMBER:
-            action2_number_edit.Add(*gadgets);
+            action2_number_edit.InsertAfter(*gadgets);
             break;
 
           case NEED_WAYPOINT:
-            action2_waypoint_edit.Add(*gadgets);
+            action2_waypoint_edit.InsertAfter(*gadgets);
             break;
 
           case NEED_THEME:
-            action2_theme_list.Add(*gadgets);
+            action2_theme_list.InsertAfter(*gadgets);
             break;
 
           case NEED_SOUND:
-            action2_sound_list.Add(*gadgets);
+            action2_sound_list.InsertAfter(*gadgets);
             break;
 
           case NEED_SPEECH:
-            action2_speech_list.Add(*gadgets);
+            action2_speech_list.InsertAfter(*gadgets);
             break;
 
           case NEED_QUARRY:
-            action2_quarry_list.Add(*gadgets);
+            action2_quarry_list.InsertAfter(*gadgets);
             break;
           case NeedType::NEED_NONE:
           case NeedType::NEED_INFANTRY:

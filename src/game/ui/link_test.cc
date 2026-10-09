@@ -8,37 +8,37 @@ namespace {
 TEST(LinkClassTest, AddAfterItselfLeavesTheListAlone) {
   Link head;
   Link node;
-  node.Add_Tail(head);
+  node.AppendTo(head);
 
-  EXPECT_EQ(&node.Add(node), &head);
+  EXPECT_EQ(&node.InsertAfter(node), &head);
 
-  EXPECT_EQ(node.Get_Prev(), &head);
-  EXPECT_EQ(node.Get_Next(), nullptr);
-  EXPECT_EQ(head.Get_Next(), &node);
+  EXPECT_EQ(node.Previous(), &head);
+  EXPECT_EQ(node.Next(), nullptr);
+  EXPECT_EQ(head.Next(), &node);
 }
 
 TEST(LinkClassTest, AddHeadOfTheHeadLeavesTheListAlone) {
   Link head;
   Link node;
-  node.Add_Tail(head);
+  node.AppendTo(head);
 
-  EXPECT_EQ(&head.Add_Head(node), &head);
+  EXPECT_EQ(&head.PrependTo(node), &head);
 
-  EXPECT_EQ(head.Get_Prev(), nullptr);
-  EXPECT_EQ(head.Get_Next(), &node);
-  EXPECT_EQ(node.Get_Next(), nullptr);
+  EXPECT_EQ(head.Previous(), nullptr);
+  EXPECT_EQ(head.Next(), &node);
+  EXPECT_EQ(node.Next(), nullptr);
 }
 
 TEST(LinkClassTest, AddTailOfTheTailLeavesTheListAlone) {
   Link head;
   Link node;
-  node.Add_Tail(head);
+  node.AppendTo(head);
 
-  EXPECT_EQ(&node.Add_Tail(head), &head);
+  EXPECT_EQ(&node.AppendTo(head), &head);
 
-  EXPECT_EQ(node.Get_Prev(), &head);
-  EXPECT_EQ(node.Get_Next(), nullptr);
-  EXPECT_EQ(head.Get_Prev(), nullptr);
+  EXPECT_EQ(node.Previous(), &head);
+  EXPECT_EQ(node.Next(), nullptr);
+  EXPECT_EQ(head.Previous(), nullptr);
 }
 
 }  // namespace

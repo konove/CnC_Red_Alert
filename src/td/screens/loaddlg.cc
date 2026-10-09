@@ -279,10 +279,10 @@ bool LoadOptionsClass::Process() {
   **	Create the button list.
   */
   commands = &button;
-  cancelbtn.Add_Tail(*commands);
-  listbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
+  listbtn.AppendTo(*commands);
   if (Style == SAVE) {
-    editbtn.Add_Tail(*commands);
+    editbtn.AppendTo(*commands);
     editbtn.Set_Focus();
   }
 

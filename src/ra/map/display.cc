@@ -341,7 +341,7 @@ void DisplayClass::Init_IO() {
   ** Re-attach our buttons to the main map button list, only in non-edit mode.
   */
   if (!TheDebugState().map_editor_active()) {
-    TacButton.Zap();
+    TacButton.ForgetNeighbors();
     Add_A_Button(TacButton);
   }
 }

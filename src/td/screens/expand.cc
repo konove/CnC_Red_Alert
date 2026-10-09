@@ -198,8 +198,8 @@ bool Expansion_Dialog() {
                   down_button);
 
   buttons = &ok;
-  cancel.Add(*buttons);
-  list.Add(*buttons);
+  cancel.InsertAfter(*buttons);
+  list.InsertAfter(*buttons);
 
   /*
   **	Add in all the expansion scenarios.
@@ -332,8 +332,8 @@ bool Bonus_Dialog() {
                   down_button);
 
   buttons = &ok;
-  cancel.Add(*buttons);
-  list.Add(*buttons);
+  cancel.InsertAfter(*buttons);
+  list.InsertAfter(*buttons);
 
   /*
   **	Add in all the expansion scenarios.

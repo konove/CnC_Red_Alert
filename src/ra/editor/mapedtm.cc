@@ -309,10 +309,10 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   **	Create the list
   */
   commands = &teamlist;
-  editbtn.Add_Tail(*commands);
-  newbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
+  editbtn.AppendTo(*commands);
+  newbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
 
   /*
   **	Init tab stops for list
@@ -634,7 +634,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Create the list.
   */
   game::ControlClass* commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   **	Main Processing Loop.

@@ -2589,16 +2589,16 @@ bool WolapiObject::OnEnteringGameChannel(const char* szChannelName,
   base::SafeCopy(GameInfoCurrent.szPassword, CreateGameInfo.szPassword);
 
   //	Remove shared buttons from wolchat's command list.
-  pShpBtnDiscon->Zap();
-  pShpBtnLeave->Zap();
-  pShpBtnRefresh->Zap();
-  pShpBtnSquelch->Zap();
-  pShpBtnBan->Zap();
-  pShpBtnKick->Zap();
-  pShpBtnFindpage->Zap();
-  pShpBtnOptions->Zap();
-  pShpBtnLadder->Zap();
-  pShpBtnHelp->Zap();
+  pShpBtnDiscon->ForgetNeighbors();
+  pShpBtnLeave->ForgetNeighbors();
+  pShpBtnRefresh->ForgetNeighbors();
+  pShpBtnSquelch->ForgetNeighbors();
+  pShpBtnBan->ForgetNeighbors();
+  pShpBtnKick->ForgetNeighbors();
+  pShpBtnFindpage->ForgetNeighbors();
+  pShpBtnOptions->ForgetNeighbors();
+  pShpBtnLadder->ForgetNeighbors();
+  pShpBtnHelp->ForgetNeighbors();
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Enable();
@@ -2703,16 +2703,16 @@ void WolapiObject::OnExitingGameChannel() {
   // setup dialog.
 
   //	Remove shared buttons from wolgsup's command list.
-  pShpBtnDiscon->Zap();
-  pShpBtnLeave->Zap();
-  pShpBtnRefresh->Zap();
-  pShpBtnSquelch->Zap();
-  pShpBtnBan->Zap();
-  pShpBtnKick->Zap();
-  pShpBtnFindpage->Zap();
-  pShpBtnOptions->Zap();
-  pShpBtnLadder->Zap();
-  pShpBtnHelp->Zap();
+  pShpBtnDiscon->ForgetNeighbors();
+  pShpBtnLeave->ForgetNeighbors();
+  pShpBtnRefresh->ForgetNeighbors();
+  pShpBtnSquelch->ForgetNeighbors();
+  pShpBtnBan->ForgetNeighbors();
+  pShpBtnKick->ForgetNeighbors();
+  pShpBtnFindpage->ForgetNeighbors();
+  pShpBtnOptions->ForgetNeighbors();
+  pShpBtnLadder->ForgetNeighbors();
+  pShpBtnHelp->ForgetNeighbors();
 
   CurrentLevel = WOL_LEVEL_INVALID;
   *szChannelNameCurrent = 0;

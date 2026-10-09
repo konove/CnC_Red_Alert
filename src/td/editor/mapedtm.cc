@@ -392,10 +392,10 @@ int MapEditClass::Select_Team(const char* caption) {
   ............................ Create the list .............................
   */
   commands = &teamlist;
-  editbtn.Add_Tail(*commands);
-  newbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
+  editbtn.AppendTo(*commands);
+  newbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -973,33 +973,33 @@ int MapEditClass::Edit_Team() {
   ............................ Create the list .............................
   */
   game::ControlClass* commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
-  membersbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
+  membersbtn.AppendTo(*commands);
 
-  name_edt.Add_Tail(*commands);
-  recr_edt.Add_Tail(*commands);
-  maxnum_edt.Add_Tail(*commands);
-  initnum_edt.Add_Tail(*commands);
-  fear_edt.Add_Tail(*commands);
+  name_edt.AppendTo(*commands);
+  recr_edt.AppendTo(*commands);
+  maxnum_edt.AppendTo(*commands);
+  initnum_edt.AppendTo(*commands);
+  fear_edt.AppendTo(*commands);
 
-  gdibtn.Add_Tail(*commands);
-  nodbtn.Add_Tail(*commands);
-  neubtn.Add_Tail(*commands);
+  gdibtn.AppendTo(*commands);
+  nodbtn.AppendTo(*commands);
+  neubtn.AppendTo(*commands);
 
-  roundbtn.Add_Tail(*commands);
-  learnbtn.Add_Tail(*commands);
-  suicidebtn.Add_Tail(*commands);
-  autocreatebtn.Add_Tail(*commands);
-  mercbtn.Add_Tail(*commands);
-  prebuiltbtn.Add_Tail(*commands);
-  reinforcebtn.Add_Tail(*commands);
+  roundbtn.AppendTo(*commands);
+  learnbtn.AppendTo(*commands);
+  suicidebtn.AppendTo(*commands);
+  autocreatebtn.AppendTo(*commands);
+  mercbtn.AppendTo(*commands);
+  prebuiltbtn.AppendTo(*commands);
+  reinforcebtn.AppendTo(*commands);
 
-  missionlist1.Add_Tail(*commands);
-  missionlist2.Add_Tail(*commands);
-  addbtn.Add_Tail(*commands);
-  insertbtn.Add_Tail(*commands);
-  delbtn.Add_Tail(*commands);
-  arg_edt.Add_Tail(*commands);
+  missionlist1.AppendTo(*commands);
+  missionlist2.AppendTo(*commands);
+  addbtn.AppendTo(*commands);
+  insertbtn.AppendTo(*commands);
+  delbtn.AppendTo(*commands);
+  arg_edt.AppendTo(*commands);
 
   Set_House_Buttons(house, commands, kButtonGdi);
 
@@ -1662,7 +1662,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Create the list.
   */
   game::ControlClass* commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   **	Main Processing Loop.

@@ -24,88 +24,88 @@ namespace game {
 // part of the object, and with it a derived Remove(), is already gone.
 Link::~Link() { Link::Remove(); }
 
-void Link::Zap() {
-  Next = nullptr;
-  Prev = nullptr;
+void Link::ForgetNeighbors() {
+  next_ = nullptr;
+  previous_ = nullptr;
 }
 
-Link* Link::Get_Next() const { return Next; }
+Link* Link::Next() const { return next_; }
 
-Link* Link::Get_Prev() const { return Prev; }
+Link* Link::Previous() const { return previous_; }
 
-const Link& Link::Head_Of_List() const { return Head_Of(*this); }
+const Link& Link::HeadOfList() const { return HeadOf(*this); }
 
-const Link& Link::Tail_Of_List() const { return Tail_Of(*this); }
+const Link& Link::TailOfList() const { return TailOf(*this); }
 
-Link& Link::Add(Link& list) {
-  // A node cannot follow itself: linking it would make Prev point at this node
-  // and cut the list off in front of it.
-  if (&list == this) {
-    return Head_Of_List();
+Link& Link::InsertAfter(Link& predecessor) {
+  // A node cannot follow itself: linking it would make previous_ point at this
+  // node and cut the list off in front of it.
+  if (&predecessor == this) {
+    return HeadOfList();
   }
 
-  Link* ptr = list.Next;
+  Link* old_next = predecessor.next_;
 
-  // Link this node in after `list`.
-  list.Next = this;
-  Prev = &list;
+  // Link this node in after `predecessor`.
+  predecessor.next_ = this;
+  previous_ = &predecessor;
 
-  // Link it to the node that used to follow `list`, if there was one.
-  Next = ptr;
-  if (ptr) {
-    ptr->Prev = this;
+  // Link it to the node that used to follow `predecessor`, if there was one.
+  next_ = old_next;
+  if (old_next) {
+    old_next->previous_ = this;
   }
 
-  return Head_Of_List();
+  return HeadOfList();
 }
 
-Link& Link::Add_Head(Link& list) {
-  Link* ptr = &list.Head_Of_List();
+Link& Link::PrependTo(Link& list) {
+  Link* old_head = &list.HeadOfList();
 
-  // Already the head. Linking it in front of itself would make Next point at
+  // Already the head. Linking it in front of itself would make next_ point at
   // this node, and a walk down the list would never end.
-  if (ptr == this) {
+  if (old_head == this) {
     return *this;
   }
 
   // Link this node in front of the old head.
-  ptr->Prev = this;
-  Next = ptr;
-  Prev = nullptr;
+  old_head->previous_ = this;
+  next_ = old_head;
+  previous_ = nullptr;
 
   return *this;
 }
 
-Link& Link::Add_Tail(Link& list) {
-  Link* ptr = &list.Tail_Of_List();
+Link& Link::AppendTo(Link& list) {
+  Link* old_tail = &list.TailOfList();
 
-  // Already the tail. Linking it behind itself would make Prev point at this
-  // node and lose every node in front of it.
-  if (ptr == this) {
-    return Head_Of_List();
+  // Already the tail. Linking it behind itself would make previous_ point at
+  // this node and lose every node in front of it.
+  if (old_tail == this) {
+    return HeadOfList();
   }
 
   // Link this node in behind the old tail.
-  ptr->Next = this;
-  Prev = ptr;
-  Next = nullptr;
+  old_tail->next_ = this;
+  previous_ = old_tail;
+  next_ = nullptr;
 
-  return Head_Of_List();
+  return HeadOfList();
 }
 
 Link* Link::Remove() {
   // Found before unlinking: afterwards this node leads nowhere.
-  Link* head = &Head_Of_List();
-  Link* tail = &Tail_Of_List();
+  Link* head = &HeadOfList();
+  Link* tail = &TailOfList();
 
-  if (Prev) {
-    Prev->Next = Next;
+  if (previous_) {
+    previous_->next_ = next_;
   }
-  if (Next) {
-    Next->Prev = Prev;
+  if (next_) {
+    next_->previous_ = previous_;
   }
-  Prev = nullptr;
-  Next = nullptr;
+  previous_ = nullptr;
+  next_ = nullptr;
 
   // The head is unchanged unless this node was it. Then the new head is found
   // from the tail, the one other node known to be still in the list.
@@ -113,7 +113,7 @@ Link* Link::Remove() {
     if (tail == this) {
       return nullptr;
     }
-    return &tail->Head_Of_List();
+    return &tail->HeadOfList();
   }
   return head;
 }

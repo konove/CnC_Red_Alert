@@ -130,11 +130,11 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   **	Create the button list.
   */
   commands = &OkBtn;
-  FindCheck.Add_Tail(*commands);
-  PageCheck.Add_Tail(*commands);
-  LanguageCheck.Add_Tail(*commands);
-  GamescopeCheck.Add_Tail(*commands);
-  RankAMCheck.Add_Tail(*commands);
+  FindCheck.AppendTo(*commands);
+  PageCheck.AppendTo(*commands);
+  LanguageCheck.AppendTo(*commands);
+  GamescopeCheck.AppendTo(*commands);
+  RankAMCheck.AppendTo(*commands);
 
   /*
   **	Main Processing Loop.

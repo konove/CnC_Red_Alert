@@ -207,12 +207,12 @@ void GameControlsClass::Process() {
   **	Build button list
   */
   game::GadgetClass* commands = &okbtn;  // button list
-  gspeed_btn.Add_Tail(*commands);
-  scrate_btn.Add_Tail(*commands);
-  visual_btn.Add_Tail(*commands);
-  sound_btn.Add_Tail(*commands);
+  gspeed_btn.AppendTo(*commands);
+  scrate_btn.AppendTo(*commands);
+  visual_btn.AppendTo(*commands);
+  sound_btn.AppendTo(*commands);
   if (bShowWolapi) {
-    wol_btn.Add_Tail(*commands);
+    wol_btn.AppendTo(*commands);
   }
   /*
   **	Init button states

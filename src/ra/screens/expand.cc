@@ -380,8 +380,8 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                   MixArchive::RetrieveData("BTN-UP.SHP"),
                   MixArchive::RetrieveData("BTN-DN.SHP"));
   buttons = &ok;
-  cancel.Add(*buttons);
-  list.Add(*buttons);
+  cancel.InsertAfter(*buttons);
+  list.InsertAfter(*buttons);
 
   /*
   **	Add in all the expansion scenarios.

@@ -705,18 +705,18 @@ int MapEditClass::Load_Scenario() {
     **	Create the button list
     */
     commands = &editbtn;
-    varabtn.Add_Tail(*commands);
-    varbbtn.Add_Tail(*commands);
-    varcbtn.Add_Tail(*commands);
-    vardbtn.Add_Tail(*commands);
-    gdibtn.Add_Tail(*commands);
-    nodbtn.Add_Tail(*commands);
-    neubtn.Add_Tail(*commands);
-    playermbtn.Add_Tail(*commands);
-    eastbtn.Add_Tail(*commands);
-    westbtn.Add_Tail(*commands);
-    okbtn.Add_Tail(*commands);
-    cancelbtn.Add_Tail(*commands);
+    varabtn.AppendTo(*commands);
+    varbbtn.AppendTo(*commands);
+    varcbtn.AppendTo(*commands);
+    vardbtn.AppendTo(*commands);
+    gdibtn.AppendTo(*commands);
+    nodbtn.AppendTo(*commands);
+    neubtn.AppendTo(*commands);
+    playermbtn.AppendTo(*commands);
+    eastbtn.AppendTo(*commands);
+    westbtn.AppendTo(*commands);
+    okbtn.AppendTo(*commands);
+    cancelbtn.AppendTo(*commands);
 
     /*
     **	Init the button states
@@ -1131,7 +1131,7 @@ int MapEditClass::Load_Scenario() {
     **	Build the button list
     */
     commands = &okbtn;
-    cancelbtn.Add_Tail(*commands);
+    cancelbtn.AppendTo(*commands);
 
     /*
     **	Main processing loop
@@ -2064,39 +2064,39 @@ int MapEditClass::Load_Scenario() {
     **	Create the list
     */
     commands = &okbtn;
-    cancelbtn.Add_Tail(*commands);
-    theaterbtn.Add_Tail(*commands);
-    themebtn.Add_Tail(*commands);
-    housebtn.Add_Tail(*commands);
-    techlevel.Add_Tail(*commands);
-    techstatic.Add_Tail(*commands);
-    sourcebtn.Add_Tail(*commands);
-    creditbtn.Add_Tail(*commands);
-    creditstatic.Add_Tail(*commands);
-    maxunitstatic.Add_Tail(*commands);
-    moneytib.Add_Tail(*commands);
-    smartiesstatic.Add_Tail(*commands);
-    allies.Add_Tail(*commands);
-    control.Add_Tail(*commands);
-    maxunit.Add_Tail(*commands);
-    nospyplane.Add_Tail(*commands);
-    skipscore.Add_Tail(*commands);
-    nomapsel.Add_Tail(*commands);
-    onetime.Add_Tail(*commands);
-    inherit.Add_Tail(*commands);
-    timercarry.Add_Tail(*commands);
-    tanya.Add_Tail(*commands);
-    record.Add_Tail(*commands);
-    truckcrate.Add_Tail(*commands);
-    endofgame.Add_Tail(*commands);
-    briefing.Add_Tail(*commands);
-    intro.Add_Tail(*commands);
-    action.Add_Tail(*commands);
-    win.Add_Tail(*commands);
-    lose.Add_Tail(*commands);
-    basebtn.Add_Tail(*commands);
-    smarties.Add_Tail(*commands);
-    desc.Add_Tail(*commands);
+    cancelbtn.AppendTo(*commands);
+    theaterbtn.AppendTo(*commands);
+    themebtn.AppendTo(*commands);
+    housebtn.AppendTo(*commands);
+    techlevel.AppendTo(*commands);
+    techstatic.AppendTo(*commands);
+    sourcebtn.AppendTo(*commands);
+    creditbtn.AppendTo(*commands);
+    creditstatic.AppendTo(*commands);
+    maxunitstatic.AppendTo(*commands);
+    moneytib.AppendTo(*commands);
+    smartiesstatic.AppendTo(*commands);
+    allies.AppendTo(*commands);
+    control.AppendTo(*commands);
+    maxunit.AppendTo(*commands);
+    nospyplane.AppendTo(*commands);
+    skipscore.AppendTo(*commands);
+    nomapsel.AppendTo(*commands);
+    onetime.AppendTo(*commands);
+    inherit.AppendTo(*commands);
+    timercarry.AppendTo(*commands);
+    tanya.AppendTo(*commands);
+    record.AppendTo(*commands);
+    truckcrate.AppendTo(*commands);
+    endofgame.AppendTo(*commands);
+    briefing.AppendTo(*commands);
+    intro.AppendTo(*commands);
+    action.AppendTo(*commands);
+    win.AppendTo(*commands);
+    lose.AppendTo(*commands);
+    basebtn.AppendTo(*commands);
+    smarties.AppendTo(*commands);
+    desc.AppendTo(*commands);
 
     /*
     **	Main Processing Loop
@@ -2758,10 +2758,10 @@ int MapEditClass::Load_Scenario() {
     **	Create the list
     */
     commands = &triggerlist;
-    editbtn.Add_Tail(*commands);
-    newbtn.Add_Tail(*commands);
-    deletebtn.Add_Tail(*commands);
-    okbtn.Add_Tail(*commands);
+    editbtn.AppendTo(*commands);
+    newbtn.AppendTo(*commands);
+    deletebtn.AppendTo(*commands);
+    okbtn.AppendTo(*commands);
 
     /*
     **	Main Processing Loop

@@ -650,15 +650,15 @@ int Main_Menu(int32_t /*unused*/) {
   */
   commands = &startbtn;
   if (bExpansionCS) {
-    expandbtnCS.Add_Tail(*commands);
+    expandbtnCS.AppendTo(*commands);
   }
   if (bExpansionAM) {
-    expandbtnAM.Add_Tail(*commands);
+    expandbtnAM.AppendTo(*commands);
   }
-  loadbtn.Add_Tail(*commands);
-  multibtn.Add_Tail(*commands);
-  introbtn.Add_Tail(*commands);
-  exitbtn.Add_Tail(*commands);
+  loadbtn.AppendTo(*commands);
+  multibtn.AppendTo(*commands);
+  introbtn.AppendTo(*commands);
+  exitbtn.AppendTo(*commands);
 
   /*
   **	Fill array of button ptrs

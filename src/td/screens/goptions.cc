@@ -199,7 +199,7 @@ void GameOptionsClass::Process() {
     if (!buttons) {
       buttons = g;
     } else {
-      g->Add_Tail(*buttons);
+      g->AppendTo(*buttons);
     }
 
     base::At(buttonsel, index) = g;
@@ -215,7 +215,7 @@ void GameOptionsClass::Process() {
   while (g) {
     g->Width = std::max(maxwidth, 90 * resfactor);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
-    g = g->Get_Next();
+    g = g->Next();
   }
 #ifdef FRENCH
   buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
@@ -239,7 +239,7 @@ void GameOptionsClass::Process() {
       .emplace_back(std::make_unique<game::GadgetClass>(
           OptionX, OptionY, OptionWidth, OptionHeight,
           game::GadgetClass::kLeftPress))
-      ->Add_Tail(*buttons);
+      ->AppendTo(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
@@ -250,7 +250,7 @@ void GameOptionsClass::Process() {
           kButtonResume, 0, 0, TheScreen().visible_view().width(),
           TheScreen().visible_view().height(),
           game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress))
-      ->Add_Tail(*buttons);
+      ->AppendTo(*buttons);
 
   game::TheKeyboard().Clear();
 

@@ -118,7 +118,7 @@ bool ConfirmationClass::Process(const char* string) {
                         x + width - (bwidth + (10 * factor)),
                         y + height - (bheight + (5 * factor)), bwidth);
 
-  nobtn.Add_Tail(yesbtn);
+  nobtn.AppendTo(yesbtn);
 
   int curbutton = 1;
   base::At(buttons, 0) = &yesbtn;
@@ -130,7 +130,7 @@ bool ConfirmationClass::Process(const char* string) {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   game::GadgetClass dialog(x, y, width, height, game::GadgetClass::kLeftPress);
-  dialog.Add_Tail(yesbtn);
+  dialog.AppendTo(yesbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
@@ -140,7 +140,7 @@ bool ConfirmationClass::Process(const char* string) {
       kButtonNo, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  background.Add_Tail(yesbtn);
+  background.AppendTo(yesbtn);
 
   /*
   **	Main Processing Loop.

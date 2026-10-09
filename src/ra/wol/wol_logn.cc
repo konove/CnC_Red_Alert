@@ -202,12 +202,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   **	Create the button list.
   */
   commands = &ConnectBtn;
-  CancelBtn.Add_Tail(*commands);
-  NickList.Add_Tail(*commands);
-  NameEdit.Add_Tail(*commands);
-  PassEdit.Add_Tail(*commands);
-  SaveCheckBox.Add_Tail(*commands);
-  DeleteBtn.Add_Tail(*commands);
+  CancelBtn.AppendTo(*commands);
+  NickList.AppendTo(*commands);
+  NameEdit.AppendTo(*commands);
+  PassEdit.AppendTo(*commands);
+  SaveCheckBox.AppendTo(*commands);
+  DeleteBtn.AppendTo(*commands);
   NameEdit.Set_Focus();
 
   if (NickList.Count() == 0) {

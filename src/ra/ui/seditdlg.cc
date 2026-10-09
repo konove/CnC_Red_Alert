@@ -196,13 +196,13 @@ const char* SimpleEditDlgClass::Show() {
   **	Create the button list.
   */
   commands = &OkBtn;
-  CancelBtn.Add_Tail(*commands);
+  CancelBtn.AppendTo(*commands);
   if (szMiddleButton) {
-    MiddleBtn.Add_Tail(*commands);
+    MiddleBtn.AppendTo(*commands);
   }
-  EditBox.Add_Tail(*commands);
+  EditBox.AppendTo(*commands);
   if (!szPrompt2.empty()) {
-    EditBox2.Add_Tail(*commands);
+    EditBox2.AppendTo(*commands);
   }
   EditBox.Set_Focus();
 

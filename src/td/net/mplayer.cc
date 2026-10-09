@@ -226,9 +226,9 @@ GameType Select_MPlayer_Game() {
   */
   commands = &modemserialbtn;
   if (ipx_avail) {
-    ipxbtn.Add_Tail(*commands);
+    ipxbtn.AppendTo(*commands);
   }
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ......................... Fill array of button ptrs ......................
@@ -1153,7 +1153,7 @@ int Surrender_Dialog() {
   ......................... Create the button list .........................
   */
   commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   -------------------------- Main Processing Loop --------------------------

@@ -643,27 +643,27 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   ......................... Create the button list .........................
   */
   commands = &editbtn;
-  varabtn.Add_Tail(*commands);
-  varbbtn.Add_Tail(*commands);
-  varcbtn.Add_Tail(*commands);
-  vardbtn.Add_Tail(*commands);
-  varlbtn.Add_Tail(*commands);
+  varabtn.AppendTo(*commands);
+  varbbtn.AppendTo(*commands);
+  varcbtn.AppendTo(*commands);
+  vardbtn.AppendTo(*commands);
+  varlbtn.AppendTo(*commands);
   if (multi) {
-    gdibtn.Add_Tail(*commands);
-    nodbtn.Add_Tail(*commands);
-    playermbtn.Add_Tail(*commands);
+    gdibtn.AppendTo(*commands);
+    nodbtn.AppendTo(*commands);
+    playermbtn.AppendTo(*commands);
   } else {
     if ((*playerp) == SCEN_PLAYER_MPLAYER) {
-      playermbtn.Add_Tail(*commands);
+      playermbtn.AppendTo(*commands);
     } else {
-      gdibtn.Add_Tail(*commands);
-      nodbtn.Add_Tail(*commands);
+      gdibtn.AppendTo(*commands);
+      nodbtn.AppendTo(*commands);
     }
   }
-  eastbtn.Add_Tail(*commands);
-  westbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  eastbtn.AppendTo(*commands);
+  westbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
   /*
   ......................... Init the button states .........................
   */
@@ -1000,7 +1000,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   ------------------------- Build the button list --------------------------
   */
   commands = &okbtn;
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*------------------------------------------------------------------------
   Main processing loop
@@ -1698,20 +1698,20 @@ int MapEditClass::Scenario_Dialog() {
   ............................ Create the list .............................
   */
   commands = &theaterbtn;
-  leveledt.Add_Tail(*commands);
-  gdicred.Add_Tail(*commands);
-  nodcred.Add_Tail(*commands);
-  neutcred.Add_Tail(*commands);
-  gdinbtn.Add_Tail(*commands);
-  gdiebtn.Add_Tail(*commands);
-  gdisbtn.Add_Tail(*commands);
-  gdiwbtn.Add_Tail(*commands);
-  nodnbtn.Add_Tail(*commands);
-  nodebtn.Add_Tail(*commands);
-  nodsbtn.Add_Tail(*commands);
-  nodwbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  leveledt.AppendTo(*commands);
+  gdicred.AppendTo(*commands);
+  nodcred.AppendTo(*commands);
+  neutcred.AppendTo(*commands);
+  gdinbtn.AppendTo(*commands);
+  gdiebtn.AppendTo(*commands);
+  gdisbtn.AppendTo(*commands);
+  gdiwbtn.AppendTo(*commands);
+  nodnbtn.AppendTo(*commands);
+  nodebtn.AppendTo(*commands);
+  nodsbtn.AppendTo(*commands);
+  nodwbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ...................... Init GDI Edge button states .......................
@@ -2347,10 +2347,10 @@ int MapEditClass::Select_Trigger() {
   ............................ Create the list .............................
   */
   commands = &triggerlist;
-  editbtn.Add_Tail(*commands);
-  newbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
+  editbtn.AppendTo(*commands);
+  newbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -2858,41 +2858,41 @@ int MapEditClass::Edit_Trigger() {
       /*
       ..................... Rebuild the button list ......................
       */
-      eventlist.Zap();
-      actionlist.Zap();
-      name_edt.Zap();
-      data_edt.Zap();
-      teambtn.Zap();
-      gdibtn.Zap();
-      nodbtn.Zap();
-      neutralbtn.Zap();
-      volatilebtn.Zap();
-      persistbtn.Zap();
-      semipersistbtn.Zap();
-      okbtn.Zap();
-      cancelbtn.Zap();
+      eventlist.ForgetNeighbors();
+      actionlist.ForgetNeighbors();
+      name_edt.ForgetNeighbors();
+      data_edt.ForgetNeighbors();
+      teambtn.ForgetNeighbors();
+      gdibtn.ForgetNeighbors();
+      nodbtn.ForgetNeighbors();
+      neutralbtn.ForgetNeighbors();
+      volatilebtn.ForgetNeighbors();
+      persistbtn.ForgetNeighbors();
+      semipersistbtn.ForgetNeighbors();
+      okbtn.ForgetNeighbors();
+      cancelbtn.ForgetNeighbors();
 
       commands = &okbtn;
-      cancelbtn.Add_Tail(*commands);
-      eventlist.Add_Tail(*commands);
-      actionlist.Add_Tail(*commands);
-      name_edt.Add_Tail(*commands);
-      volatilebtn.Add_Tail(*commands);
-      persistbtn.Add_Tail(*commands);
-      semipersistbtn.Add_Tail(*commands);
+      cancelbtn.AppendTo(*commands);
+      eventlist.AppendTo(*commands);
+      actionlist.AppendTo(*commands);
+      name_edt.AppendTo(*commands);
+      volatilebtn.AppendTo(*commands);
+      persistbtn.AppendTo(*commands);
+      semipersistbtn.AppendTo(*commands);
       if (TriggerClass::Event_Need_Data(event_idx)) {
-        data_edt.Add_Tail(*commands);
+        data_edt.AppendTo(*commands);
         absl::SNPrintF(databuf, sizeof(databuf), "%ld", CurTrigger->Data);
         data_edt.Set_Text(databuf, 8);
       }
       if (TriggerClass::Event_Need_House(event_idx)) {
-        gdibtn.Add_Tail(*commands);
-        nodbtn.Add_Tail(*commands);
-        neutralbtn.Add_Tail(*commands);
+        gdibtn.AppendTo(*commands);
+        nodbtn.AppendTo(*commands);
+        neutralbtn.AppendTo(*commands);
         Set_House_Buttons(house, commands, kButtonGdi);
       }
       if (TriggerClass::Action_Need_Team(action_idx)) {
-        teambtn.Add_Tail(*commands);
+        teambtn.AppendTo(*commands);
       }
 
       /*
@@ -3222,8 +3222,8 @@ int MapEditClass::Import_Triggers() {
   ............................ Create the list .............................
   */
   commands = &triggerlist;
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -3505,8 +3505,8 @@ int MapEditClass::Import_Teams() {
   ............................ Create the list .............................
   */
   commands = &teamlist;
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ------------------------ Init tab stops for list -------------------------

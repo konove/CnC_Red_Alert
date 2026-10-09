@@ -779,20 +779,20 @@ int Main_Menu(int timeout) {
   commands = &startbtn;
 #ifdef NEWMENU
   if (expansions) {
-    expandbtn.Add_Tail(*commands);
+    expandbtn.AppendTo(*commands);
   }
 #endif
 #ifdef BONUS_MISSIONS
-  bonusbtn.Add_Tail(*commands);
+  bonusbtn.AppendTo(*commands);
 #endif  // BONUS_MISSIONS
 
 #ifndef DEMO
-  internetbutton.Add_Tail(*commands);
+  internetbutton.AppendTo(*commands);
 #endif  // DEMO
-  loadbtn.Add_Tail(*commands);
-  multibtn.Add_Tail(*commands);
-  introbtn.Add_Tail(*commands);
-  exitbtn.Add_Tail(*commands);
+  loadbtn.AppendTo(*commands);
+  multibtn.AppendTo(*commands);
+  introbtn.AppendTo(*commands);
+  exitbtn.AppendTo(*commands);
 
   /*
   **	Fill array of button ptrs

@@ -340,19 +340,19 @@ int MapEditClass::Placement_Dialog() {
                                       // object to choose
 
   game::ControlClass* commands = &nextbtn;
-  housebtn.Add_Tail(*commands);
-  prevbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  templatebtn.Add_Tail(*commands);
-  overlaybtn.Add_Tail(*commands);
-  smudgebtn.Add_Tail(*commands);
-  terrainbtn.Add_Tail(*commands);
-  unitbtn.Add_Tail(*commands);
-  infantrybtn.Add_Tail(*commands);
-  aircraftbtn.Add_Tail(*commands);
-  buildingbtn.Add_Tail(*commands);
-  airbtn.Add_Tail(*commands);
+  housebtn.AppendTo(*commands);
+  prevbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  templatebtn.AppendTo(*commands);
+  overlaybtn.AppendTo(*commands);
+  smudgebtn.AppendTo(*commands);
+  terrainbtn.AppendTo(*commands);
+  unitbtn.AppendTo(*commands);
+  infantrybtn.AppendTo(*commands);
+  aircraftbtn.AppendTo(*commands);
+  buildingbtn.AppendTo(*commands);
+  airbtn.AppendTo(*commands);
 
   /*
   **	Make sure the recorded house selection matches the house list

@@ -205,16 +205,16 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     buttons[0] = &button1;
     realval[0] = BUTTON_1;
     if (numbuttons > 2) {
-      button3.Add(*buttonlist);
+      button3.InsertAfter(*buttonlist);
       buttons[1] = &button3;
       realval[1] = BUTTON_3;
-      button2.Add(*buttonlist);
+      button2.InsertAfter(*buttonlist);
       buttons[2] = &button2;
       realval[2] = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     } else {
       if (numbuttons == 2) {
-        button2.Add(*buttonlist);
+        button2.InsertAfter(*buttonlist);
         buttons[1] = &button2;
         realval[1] = BUTTON_2;
         base::At(buttons, curbutton)->Turn_On();

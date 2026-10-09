@@ -1831,30 +1831,30 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Rebuild the button list
         //...............................................................
-        cancelbtn.Zap();
-        gamelist.Zap();
-        playerlist.Zap();
+        cancelbtn.ForgetNeighbors();
+        gamelist.ForgetNeighbors();
+        playerlist.ForgetNeighbors();
 #ifdef OLDWAY
-        gdibtn.Zap();
-        nodbtn.Zap();
+        gdibtn.ForgetNeighbors();
+        nodbtn.ForgetNeighbors();
 #else
-        housebtn.Zap();
+        housebtn.ForgetNeighbors();
 #endif
-        name_edt.Zap();
-        joinbtn.Zap();
-        newbtn.Zap();
-        countgauge.Zap();
-        levelgauge.Zap();
-        creditsgauge.Zap();
-        aiplayersgauge.Zap();
-        staticcount.Zap();
-        staticlevel.Zap();
-        staticcredits.Zap();
-        staticaiplayers.Zap();
+        name_edt.ForgetNeighbors();
+        joinbtn.ForgetNeighbors();
+        newbtn.ForgetNeighbors();
+        countgauge.ForgetNeighbors();
+        levelgauge.ForgetNeighbors();
+        creditsgauge.ForgetNeighbors();
+        aiplayersgauge.ForgetNeighbors();
+        staticcount.ForgetNeighbors();
+        staticlevel.ForgetNeighbors();
+        staticcredits.ForgetNeighbors();
+        staticaiplayers.ForgetNeighbors();
 
         commands = &cancelbtn;
-        gamelist.Add_Tail(*commands);
-        playerlist.Add_Tail(*commands);
+        gamelist.AppendTo(*commands);
+        playerlist.AppendTo(*commands);
 
         //...............................................................
         //	Only add the name edit field, the House, Join & New buttons if
@@ -1862,25 +1862,25 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
 #ifdef OLDWAY
-          gdibtn.Add_Tail(*commands);
-          nodbtn.Add_Tail(*commands);
+          gdibtn.AppendTo(*commands);
+          nodbtn.AppendTo(*commands);
 #else
-          housebtn.Add_Tail(*commands);
+          housebtn.AppendTo(*commands);
 #endif
-          name_edt.Add_Tail(*commands);
-          joinbtn.Add_Tail(*commands);
-          newbtn.Add_Tail(*commands);
+          name_edt.AppendTo(*commands);
+          joinbtn.AppendTo(*commands);
+          newbtn.AppendTo(*commands);
         } else {
-          countgauge.Add_Tail(*commands);
-          levelgauge.Add_Tail(*commands);
-          creditsgauge.Add_Tail(*commands);
-          aiplayersgauge.Add_Tail(*commands);
-          staticcount.Add_Tail(*commands);
-          staticlevel.Add_Tail(*commands);
-          staticcredits.Add_Tail(*commands);
-          staticaiplayers.Add_Tail(*commands);
-          optionlist.Add_Tail(*commands);
-          descrip.Add_Tail(*commands);
+          countgauge.AppendTo(*commands);
+          levelgauge.AppendTo(*commands);
+          creditsgauge.AppendTo(*commands);
+          aiplayersgauge.AppendTo(*commands);
+          staticcount.AppendTo(*commands);
+          staticlevel.AppendTo(*commands);
+          staticcredits.AppendTo(*commands);
+          staticaiplayers.AppendTo(*commands);
+          optionlist.AppendTo(*commands);
+          descrip.AppendTo(*commands);
         }
       }
 
@@ -4258,21 +4258,21 @@ static int Net_New_Dialog() {
   //	Build the button list
   //------------------------------------------------------------------------
   game::GadgetClass* commands = &playerlist;  // button list
-  scenariolist.Add_Tail(*commands);
-  rejectbtn.Add_Tail(*commands);
-  staticunit.Add_Tail(*commands);
-  staticlevel.Add_Tail(*commands);
-  staticcredits.Add_Tail(*commands);
-  staticaiplayers.Add_Tail(*commands);
-  countgauge.Add_Tail(*commands);
-  creditsgauge.Add_Tail(*commands);
-  aiplayersgauge.Add_Tail(*commands);
-  levelgauge.Add_Tail(*commands);
-  optionlist.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  scenariolist.AppendTo(*commands);
+  rejectbtn.AppendTo(*commands);
+  staticunit.AppendTo(*commands);
+  staticlevel.AppendTo(*commands);
+  staticcredits.AppendTo(*commands);
+  staticaiplayers.AppendTo(*commands);
+  countgauge.AppendTo(*commands);
+  creditsgauge.AppendTo(*commands);
+  aiplayersgauge.AppendTo(*commands);
+  levelgauge.AppendTo(*commands);
+  optionlist.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
   if (GameFileExists("SAVEGAME.NET")) {
-    // loadbtn.Add_Tail(*commands);
+    // loadbtn.AppendTo(*commands);
   } else {
     cancelbtn.X = loadbtn.X;
   }
@@ -4498,43 +4498,43 @@ static int Net_New_Dialog() {
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
         /*
-        ** Zap, Zap, Zap
+        ** ForgetNeighbors, ForgetNeighbors, ForgetNeighbors
         */
-        playerlist.Zap();
-        scenariolist.Zap();
-        rejectbtn.Zap();
-        staticunit.Zap();
-        staticlevel.Zap();
-        staticcredits.Zap();
-        staticaiplayers.Zap();
-        countgauge.Zap();
-        creditsgauge.Zap();
-        aiplayersgauge.Zap();
-        levelgauge.Zap();
-        optionlist.Zap();
-        okbtn.Zap();
-        cancelbtn.Zap();
-        loadbtn.Zap();
+        playerlist.ForgetNeighbors();
+        scenariolist.ForgetNeighbors();
+        rejectbtn.ForgetNeighbors();
+        staticunit.ForgetNeighbors();
+        staticlevel.ForgetNeighbors();
+        staticcredits.ForgetNeighbors();
+        staticaiplayers.ForgetNeighbors();
+        countgauge.ForgetNeighbors();
+        creditsgauge.ForgetNeighbors();
+        aiplayersgauge.ForgetNeighbors();
+        levelgauge.ForgetNeighbors();
+        optionlist.ForgetNeighbors();
+        okbtn.ForgetNeighbors();
+        cancelbtn.ForgetNeighbors();
+        loadbtn.ForgetNeighbors();
 
         /*
         ** Hack hack, hack
         */
         commands = &playerlist;
-        scenariolist.Add_Tail(*commands);
-        rejectbtn.Add_Tail(*commands);
-        staticunit.Add_Tail(*commands);
-        staticlevel.Add_Tail(*commands);
-        staticcredits.Add_Tail(*commands);
-        staticaiplayers.Add_Tail(*commands);
-        countgauge.Add_Tail(*commands);
-        creditsgauge.Add_Tail(*commands);
-        aiplayersgauge.Add_Tail(*commands);
-        levelgauge.Add_Tail(*commands);
-        optionlist.Add_Tail(*commands);
-        okbtn.Add_Tail(*commands);
-        cancelbtn.Add_Tail(*commands);
+        scenariolist.AppendTo(*commands);
+        rejectbtn.AppendTo(*commands);
+        staticunit.AppendTo(*commands);
+        staticlevel.AppendTo(*commands);
+        staticcredits.AppendTo(*commands);
+        staticaiplayers.AppendTo(*commands);
+        countgauge.AppendTo(*commands);
+        creditsgauge.AppendTo(*commands);
+        aiplayersgauge.AppendTo(*commands);
+        levelgauge.AppendTo(*commands);
+        optionlist.AppendTo(*commands);
+        okbtn.AppendTo(*commands);
+        cancelbtn.AppendTo(*commands);
         if (GameFileExists("SAVEGAME.NET")) {
-          loadbtn.Add_Tail(*commands);
+          loadbtn.AppendTo(*commands);
         }
         commands->Draw_All(view);
       }

@@ -214,15 +214,15 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     base::At(buttons, 0) = &button1;
     base::At(realval, 0) = BUTTON_1;
     if (numbuttons > 2) {
-      button3.Add(*buttonlist);
+      button3.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button3;
       base::At(realval, 1) = BUTTON_3;
-      button2.Add(*buttonlist);
+      button2.InsertAfter(*buttonlist);
       base::At(buttons, 2) = &button2;
       base::At(realval, 2) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
-      button2.Add(*buttonlist);
+      button2.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button2;
       base::At(realval, 1) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();

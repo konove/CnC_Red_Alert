@@ -354,7 +354,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   }
 
   game::GadgetClass* commands = &cancelbtn;  // button list
-  commands->Add_Tail(progress_meter);
+  commands->AppendTo(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%
@@ -657,7 +657,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   }
 
   game::GadgetClass* commands = &cancelbtn;  // button list
-  commands->Add_Tail(progress_meter);
+  commands->AppendTo(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%

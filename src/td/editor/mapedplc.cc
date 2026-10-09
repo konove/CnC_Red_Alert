@@ -430,26 +430,26 @@ int MapEditClass::Placement_Dialog() {
 
   game::ControlClass* commands = &neutbtn;
   if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
-    multi1btn.Add_Tail(*commands);
-    multi2btn.Add_Tail(*commands);
-    multi3btn.Add_Tail(*commands);
-    multi4btn.Add_Tail(*commands);
+    multi1btn.AppendTo(*commands);
+    multi2btn.AppendTo(*commands);
+    multi3btn.AppendTo(*commands);
+    multi4btn.AppendTo(*commands);
   } else {
-    gdibtn.Add_Tail(*commands);
-    nodbtn.Add_Tail(*commands);
+    gdibtn.AppendTo(*commands);
+    nodbtn.AppendTo(*commands);
   }
-  nextbtn.Add_Tail(*commands);
-  prevbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  templatebtn.Add_Tail(*commands);
-  overlaybtn.Add_Tail(*commands);
-  smudgebtn.Add_Tail(*commands);
-  terrainbtn.Add_Tail(*commands);
-  unitbtn.Add_Tail(*commands);
-  infantrybtn.Add_Tail(*commands);
-  aircraftbtn.Add_Tail(*commands);
-  buildingbtn.Add_Tail(*commands);
+  nextbtn.AppendTo(*commands);
+  prevbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  templatebtn.AppendTo(*commands);
+  overlaybtn.AppendTo(*commands);
+  smudgebtn.AppendTo(*commands);
+  terrainbtn.AppendTo(*commands);
+  unitbtn.AppendTo(*commands);
+  infantrybtn.AppendTo(*commands);
+  aircraftbtn.AppendTo(*commands);
+  buildingbtn.AppendTo(*commands);
 
   /*........................................................................
   If the current house isn't valid for the current object type, cycle to

@@ -72,26 +72,26 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
   DropButton.Make_Peer(*this);
 }
 
-void DropListClass::Zap() {
+void DropListClass::ForgetNeighbors() {
   Collapse();
-  List.Zap();
-  DropButton.Zap();
-  EditClass::Zap();
+  List.ForgetNeighbors();
+  DropButton.ForgetNeighbors();
+  EditClass::ForgetNeighbors();
 }
 
-game::Link& DropListClass::Add(game::Link& object) {
-  DropButton.Add(object);
-  return EditClass::Add(object);
+game::Link& DropListClass::InsertAfter(game::Link& object) {
+  DropButton.InsertAfter(object);
+  return EditClass::InsertAfter(object);
 }
 
-game::Link& DropListClass::Add_Tail(game::Link& object) {
-  DropButton.Add_Tail(object);
-  return EditClass::Add_Tail(object);
+game::Link& DropListClass::AppendTo(game::Link& object) {
+  DropButton.AppendTo(object);
+  return EditClass::AppendTo(object);
 }
 
-game::Link& DropListClass::Add_Head(game::Link& object) {
-  DropButton.Add_Head(object);
-  return EditClass::Add_Head(object);
+game::Link& DropListClass::PrependTo(game::Link& object) {
+  DropButton.PrependTo(object);
+  return EditClass::PrependTo(object);
 }
 
 DropListClass* DropListClass::Remove() {
@@ -149,7 +149,7 @@ void DropListClass::Expand() {
     List.Y = Y + 18;
     List.Width = Width;
     List.Height = ListHeight;
-    List.Add(Head_Of_List());
+    List.InsertAfter(HeadOfList());
     List.Flag_To_Redraw();
     IsDropped = true;
   }

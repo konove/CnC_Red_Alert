@@ -142,7 +142,7 @@ void VisualControlsClass::Process() {
   optionsbtn.X = option_x + (option_width - optionsbtn.Width - 34);
   resetbtn.X = option_x + 34;
 
-  resetbtn.Add_Tail(optionsbtn);
+  resetbtn.AppendTo(optionsbtn);
 
   /*
   **	Brightness (value) control.
@@ -152,7 +152,7 @@ void VisualControlsClass::Process() {
                          slider_height, true);
   brightness.Set_Thumb_Size(40);
   brightness.Set_Value(TheOptions().Get_Brightness() * 256);
-  brightness.Add_Tail(optionsbtn);
+  brightness.AppendTo(optionsbtn);
 
   /*
   **	Color (saturation) control.
@@ -161,7 +161,7 @@ void VisualControlsClass::Process() {
                     slider_width, slider_height, true);
   color.Set_Thumb_Size(40);
   color.Set_Value(TheOptions().Get_Saturation() * 256);
-  color.Add_Tail(optionsbtn);
+  color.AppendTo(optionsbtn);
 
   /*
   **	Contrast control.
@@ -171,7 +171,7 @@ void VisualControlsClass::Process() {
                        slider_height, true);
   contrast.Set_Thumb_Size(40);
   contrast.Set_Value(TheOptions().Get_Contrast() * 256);
-  contrast.Add_Tail(optionsbtn);
+  contrast.AppendTo(optionsbtn);
 
   /*
   **	Tint (hue) control.
@@ -180,7 +180,7 @@ void VisualControlsClass::Process() {
                    slider_width, slider_height, true);
   tint.Set_Thumb_Size(40);
   tint.Set_Value(TheOptions().Get_Tint() * 256);
-  tint.Add_Tail(optionsbtn);
+  tint.AppendTo(optionsbtn);
 
   /*
   **	This causes left mouse button clicking within the confines of the dialog
@@ -188,7 +188,7 @@ void VisualControlsClass::Process() {
   */
   game::GadgetClass dialog(option_x, option_y, option_width, option_height,
                            game::GadgetClass::kLeftPress);
-  dialog.Add_Tail(optionsbtn);
+  dialog.AppendTo(optionsbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
@@ -198,7 +198,7 @@ void VisualControlsClass::Process() {
       kButtonOptions, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  background.Add_Tail(optionsbtn);
+  background.AppendTo(optionsbtn);
 
   int curbutton = 0;
   buttons[0] = nullptr;

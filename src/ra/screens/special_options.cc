@@ -73,12 +73,12 @@ void RunSpecialOptionsDialog() {
                             kOkButtonX, kButtonY);
   TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL, kButtonFont,
                                 kButtonFlags, kCancelButtonX, kButtonY);
-  cancel_button.Add(ok_button);
+  cancel_button.InsertAfter(ok_button);
 
   // Speed build is the one flag the dialog offers. The box toggles itself
   // when clicked, so the flag is only read back from it on OK.
   CheckBoxClass speed_build_box(kSpeedBuildBoxId, kCheckBoxX, kCheckBoxY);
-  speed_build_box.Add(ok_button);
+  speed_build_box.InsertAfter(ok_button);
   if (edited_flags.speed_build) {
     speed_build_box.Turn_On();
   }

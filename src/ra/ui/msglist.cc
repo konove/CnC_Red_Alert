@@ -446,7 +446,7 @@ TextLabelClass* MessageListClass::Add_Message(
   //	Attach the message to our list
   //------------------------------------------------------------------------
   if (MessageList) {
-    txtlabel->Add_Tail(*MessageList);
+    txtlabel->AppendTo(*MessageList);
   } else {
     MessageList = txtlabel;
   }
@@ -499,7 +499,7 @@ char* MessageListClass::Get_Message(int id) {
       if (gadg->UserData2 == id) {
         return gadg->Text;
       }
-      gadg = dynamic_cast<TextLabelClass*>(gadg->Get_Next());
+      gadg = dynamic_cast<TextLabelClass*>(gadg->Next());
     }
   }
 
@@ -537,7 +537,7 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
       if (gadg->UserData2 == id) {
         return gadg;
       }
-      gadg = dynamic_cast<TextLabelClass*>(gadg->Get_Next());
+      gadg = dynamic_cast<TextLabelClass*>(gadg->Next());
     }
   }
 
@@ -593,7 +593,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
         found = 1;
         break;
       }
-      tlabel = dynamic_cast<TextLabelClass*>(tlabel->Get_Next());
+      tlabel = dynamic_cast<TextLabelClass*>(tlabel->Next());
     }
   }
 
@@ -934,7 +934,7 @@ int MessageListClass::Manage() {
       //..................................................................
       //	Save the next ptr in the list; remove this entry
       //..................................................................
-      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Next());
       MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
         if (txtlabel->Text == base::At(MessageBuffers, i)) {
@@ -945,7 +945,7 @@ int MessageListClass::Manage() {
       changed = 1;
       txtlabel = next;
     } else {
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Get_Next());
+      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
   }
 
@@ -1183,7 +1183,7 @@ int MessageListClass::Num_Messages() {
     game::GadgetClass* gadg = MessageList;
     while (gadg) {
       num++;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
     }
   }
 
@@ -1216,7 +1216,7 @@ void MessageListClass::Set_Width(int width) {
     game::GadgetClass* gadg = MessageList;
     while (gadg) {
       dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
     }
   }
 
@@ -1354,7 +1354,7 @@ void MessageListClass::Compute_Y() {
     game::GadgetClass* gadg = MessageList;
     while (gadg) {
       gadg->Y = y;
-      gadg = gadg->Get_Next();
+      gadg = gadg->Next();
       y += Height;
     }
   }

@@ -319,7 +319,7 @@ void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
   **	- Otherwise, add it to the tail of the existing list
   */
   if (Buttons) {
-    gadget.Add_Tail(*Buttons);
+    gadget.AppendTo(*Buttons);
   } else {
     Buttons = &gadget;
   }

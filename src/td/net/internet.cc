@@ -520,7 +520,7 @@ bool Do_The_Internet_Menu_Thang() {
                        game::kTransparentBlack, FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-      // cancelbtn.Zap();
+      // cancelbtn.ForgetNeighbors();
       // buttons = &cancelbtn;
 
       /*

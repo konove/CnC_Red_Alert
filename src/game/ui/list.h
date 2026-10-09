@@ -145,9 +145,9 @@ class ListClass : public ControlClass {
     ScrollGadget.Make_Peer(*this);
 
     // Add these gadgets to the same gadget list that the list box is part of.
-    UpGadget.Add(*this);
-    DownGadget.Add(*this);
-    ScrollGadget.Add(*this);
+    UpGadget.InsertAfter(*this);
+    DownGadget.InsertAfter(*this);
+    ScrollGadget.InsertAfter(*this);
 
     // Make sure these added gadgets get redrawn at the next opportunity.
     UpGadget.Flag_To_Redraw();
@@ -392,30 +392,30 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  Link& Add(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+  Link& InsertAfter(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
     if (IsScrollActive) {
-      ScrollGadget.Add(list);
-      DownGadget.Add(list);
-      UpGadget.Add(list);
+      ScrollGadget.InsertAfter(list);
+      DownGadget.InsertAfter(list);
+      UpGadget.InsertAfter(list);
     }
-    return ControlClass::Add(list);
+    return ControlClass::InsertAfter(list);
   }
-  Link& Add_Tail(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
-    ControlClass::Add_Tail(list);
+  Link& AppendTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    ControlClass::AppendTo(list);
     if (IsScrollActive) {
-      UpGadget.Add_Tail(list);
-      DownGadget.Add_Tail(list);
-      ScrollGadget.Add_Tail(list);
+      UpGadget.AppendTo(list);
+      DownGadget.AppendTo(list);
+      ScrollGadget.AppendTo(list);
     }
-    return Head_Of_List();
+    return HeadOfList();
   }
-  Link& Add_Head(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+  Link& PrependTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
     if (IsScrollActive) {
-      ScrollGadget.Add_Head(list);
-      DownGadget.Add_Head(list);
-      UpGadget.Add_Head(list);
+      ScrollGadget.PrependTo(list);
+      DownGadget.PrependTo(list);
+      UpGadget.PrependTo(list);
     }
-    return ControlClass::Add_Head(list);
+    return ControlClass::PrependTo(list);
   }
   GadgetClass* Remove() override {
     if (IsScrollActive) {

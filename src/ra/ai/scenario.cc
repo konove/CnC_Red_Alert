@@ -1393,15 +1393,15 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     base::At(buttons, 0) = &button1;
     base::At(realval, 0) = kButton1;
     if (numbuttons > 2) {
-      button3.Add(*buttonlist);
+      button3.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button3;
       base::At(realval, 1) = kButton3;
-      button2.Add(*buttonlist);
+      button2.InsertAfter(*buttonlist);
       base::At(buttons, 2) = &button2;
       base::At(realval, 2) = kButton2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
-      button2.Add(*buttonlist);
+      button2.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button2;
       base::At(realval, 1) = kButton2;
       base::At(buttons, curbutton)->Turn_On();

@@ -74,10 +74,10 @@ class SliderClass final : public GaugeClass<Skin> {
           id, MixArchive::RetrieveData("BTN-MINS.SHP"), this->X - 6, this->Y);
 
       PlusGadget->Make_Peer(*this);
-      PlusGadget->Add(*this);
+      PlusGadget->InsertAfter(*this);
       PlusGadget->Flag_To_Redraw();
       MinusGadget->Make_Peer(*this);
-      MinusGadget->Add(*this);
+      MinusGadget->InsertAfter(*this);
       MinusGadget->Flag_To_Redraw();
     }
     Set_Thumb_Size(1);

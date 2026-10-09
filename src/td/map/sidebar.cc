@@ -979,19 +979,19 @@ bool SidebarClass::Activate(int control) {
                           TheScreen().visible_view().width() - sidewidth);
       IsSidebarToRedraw = true;
       Help_Text(TXT_NONE);
-      Repair.Zap();
+      Repair.ForgetNeighbors();
       Add_A_Button(Repair);
-      Upgrade.Zap();
+      Upgrade.ForgetNeighbors();
       Add_A_Button(Upgrade);
-      Zoom.Zap();
+      Zoom.ForgetNeighbors();
       Add_A_Button(Zoom);
       base::At(Column, 0).Activate();
       base::At(Column, 1).Activate();
-      Background.Zap();
+      Background.ForgetNeighbors();
       Add_A_Button(Background);
-      RadarButton.Zap();
+      RadarButton.ForgetNeighbors();
       Add_A_Button(RadarButton);
-      PowerButton.Zap();
+      PowerButton.ForgetNeighbors();
       Add_A_Button(PowerButton);
     } else {
       Help_Text(TXT_NONE);
@@ -1235,14 +1235,14 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
 // Not const: adds the strip's buttons to the map's gadget list.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Activate() {
-  base::At(UpButton, ID).Zap();
+  base::At(UpButton, ID).ForgetNeighbors();
   TheMap().Add_A_Button(base::At(UpButton, ID));
 
-  base::At(DownButton, ID).Zap();
+  base::At(DownButton, ID).ForgetNeighbors();
   TheMap().Add_A_Button(base::At(DownButton, ID));
 
   for (int index = 0; index < kMaxVisible; index++) {
-    base::At(base::At(SelectButton, ID), index).Zap();
+    base::At(base::At(SelectButton, ID), index).ForgetNeighbors();
     TheMap().Add_A_Button(base::At(base::At(SelectButton, ID), index));
   }
 }

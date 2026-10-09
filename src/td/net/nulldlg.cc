@@ -1068,10 +1068,10 @@ GameType Select_Serial_Dialog() {
   ............................ Create the list .............................
   */
   game::GadgetClass* commands = &dialbtn;  // button list
-  answerbtn.Add_Tail(*commands);
-  nullmodembtn.Add_Tail(*commands);
-  settingsbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  answerbtn.AppendTo(*commands);
+  nullmodembtn.AppendTo(*commands);
+  settingsbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ......................... Fill array of button ptrs ......................
@@ -1519,10 +1519,10 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   bool process = true;              // process while true
 
   game::GadgetClass* commands = &okbutton;  // button list
-  defaultbutton.Add_Tail(*commands);
-  compressionbutton.Add_Tail(*commands);
-  errorcorrectionbutton.Add_Tail(*commands);
-  hardwareflowcontrolbutton.Add_Tail(*commands);
+  defaultbutton.AppendTo(*commands);
+  compressionbutton.AppendTo(*commands);
+  errorcorrectionbutton.AppendTo(*commands);
+  hardwareflowcontrolbutton.AppendTo(*commands);
 
   /*
   ** Main process loop
@@ -2307,25 +2307,25 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   Build the button list
   ........................................................................*/
   commands = &cancelbtn;
-  port_edt.Add_Tail(*commands);
-  portlist.Add_Tail(*commands);
+  port_edt.AppendTo(*commands);
+  portlist.AppendTo(*commands);
 #ifdef EDIT_IRQ
-  irq_edt.Add_Tail(*commands);
-  irqlist.Add_Tail(*commands);
+  irq_edt.AppendTo(*commands);
+  irqlist.AppendTo(*commands);
 #endif  // EDIT_IRQ
-  baud_edt.Add_Tail(*commands);
-  baudlist.Add_Tail(*commands);
-  // inittypebutton.Add_Tail(*commands);
-  initstr_edt.Add_Tail(*commands);
-  initstrlist.Add_Tail(*commands);
-  addbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  cwaitstr_edt.Add_Tail(*commands);
-  cwaitstrlist.Add_Tail(*commands);
-  tonebtn.Add_Tail(*commands);
-  pulsebtn.Add_Tail(*commands);
-  savebtn.Add_Tail(*commands);
-  advancedbutton.Add_Tail(*commands);
+  baud_edt.AppendTo(*commands);
+  baudlist.AppendTo(*commands);
+  // inittypebutton.AppendTo(*commands);
+  initstr_edt.AppendTo(*commands);
+  initstrlist.AppendTo(*commands);
+  addbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  cwaitstr_edt.AppendTo(*commands);
+  cwaitstrlist.AppendTo(*commands);
+  tonebtn.AppendTo(*commands);
+  pulsebtn.AppendTo(*commands);
+  savebtn.AppendTo(*commands);
+  advancedbutton.AppendTo(*commands);
 
   if (tempsettings.DialMethod == DIAL_TOUCH_TONE) {
     tonebtn.Turn_On();
@@ -3373,19 +3373,19 @@ int Com_Scenario_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &name_edt;  // button list
-  gdibtn.Add_Tail(*commands);
-  nodbtn.Add_Tail(*commands);
-  credit_edt.Add_Tail(*commands);
-  scenariolist.Add_Tail(*commands);
-  countgauge.Add_Tail(*commands);
-  levelgauge.Add_Tail(*commands);
-  basesbtn.Add_Tail(*commands);
-  tiberiumbtn.Add_Tail(*commands);
-  goodiesbtn.Add_Tail(*commands);
-  ghostsbtn.Add_Tail(*commands);
-  okbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  sendbtn.Add_Tail(*commands);
+  gdibtn.AppendTo(*commands);
+  nodbtn.AppendTo(*commands);
+  credit_edt.AppendTo(*commands);
+  scenariolist.AppendTo(*commands);
+  countgauge.AppendTo(*commands);
+  levelgauge.AppendTo(*commands);
+  basesbtn.AppendTo(*commands);
+  tiberiumbtn.AppendTo(*commands);
+  goodiesbtn.AppendTo(*commands);
+  ghostsbtn.AppendTo(*commands);
+  okbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  sendbtn.AppendTo(*commands);
 
   /*
   ----------------------------- Various Inits ------------------------------
@@ -4791,10 +4791,10 @@ int Com_Show_Scenario_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &name_edt;  // button list
-  gdibtn.Add_Tail(*commands);
-  nodbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  sendbtn.Add_Tail(*commands);
+  gdibtn.AppendTo(*commands);
+  nodbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  sendbtn.AppendTo(*commands);
 
   /*
   ----------------------------- Various Inits ------------------------------
@@ -5983,12 +5983,12 @@ static int Phone_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &phonelist;  // button list
-  addbtn.Add_Tail(*commands);
-  editbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  dialbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  numedit.Add_Tail(*commands);
+  addbtn.AppendTo(*commands);
+  editbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  dialbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  numedit.AppendTo(*commands);
   dialbtn.Turn_On();
 
   /*
@@ -6581,11 +6581,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &nameedit;  // button list
-  numedit.Add_Tail(*commands);
-  defaultbtn.Add_Tail(*commands);
-  custombtn.Add_Tail(*commands);
-  savebtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  numedit.AppendTo(*commands);
+  defaultbtn.AppendTo(*commands);
+  custombtn.AppendTo(*commands);
+  savebtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ----------------------------- Various Inits ------------------------------

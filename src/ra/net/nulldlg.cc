@@ -996,10 +996,10 @@ GameType Select_Serial_Dialog() {
   ** Create the list
   */
   game::GadgetClass* commands = &dialbtn;  // button list
-  answerbtn.Add_Tail(*commands);
-  nullmodembtn.Add_Tail(*commands);
-  settingsbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  answerbtn.AppendTo(*commands);
+  nullmodembtn.AppendTo(*commands);
+  settingsbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ** Fill array of button ptrs
@@ -1424,10 +1424,10 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   bool process = true;              // process while true
 
   game::GadgetClass* commands = &okbutton;  // button list
-  defaultbutton.Add_Tail(*commands);
-  compressionbutton.Add_Tail(*commands);
-  errorcorrectionbutton.Add_Tail(*commands);
-  hardwareflowcontrolbutton.Add_Tail(*commands);
+  defaultbutton.AppendTo(*commands);
+  compressionbutton.AppendTo(*commands);
+  errorcorrectionbutton.AppendTo(*commands);
+  hardwareflowcontrolbutton.AppendTo(*commands);
 
   /*
   ** Main process loop
@@ -1997,20 +1997,20 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ** Build the button list
   */
   game::GadgetClass* commands = &cancelbtn;  // button list
-  port_edt.Add_Tail(*commands);
-  portlist.Add_Tail(*commands);
-  baud_edt.Add_Tail(*commands);
-  baudlist.Add_Tail(*commands);
-  initstr_edt.Add_Tail(*commands);
-  initstrlist.Add_Tail(*commands);
-  addbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  cwaitstr_edt.Add_Tail(*commands);
-  cwaitstrlist.Add_Tail(*commands);
-  tonebtn.Add_Tail(*commands);
-  pulsebtn.Add_Tail(*commands);
-  savebtn.Add_Tail(*commands);
-  advancedbutton.Add_Tail(*commands);
+  port_edt.AppendTo(*commands);
+  portlist.AppendTo(*commands);
+  baud_edt.AppendTo(*commands);
+  baudlist.AppendTo(*commands);
+  initstr_edt.AppendTo(*commands);
+  initstrlist.AppendTo(*commands);
+  addbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  cwaitstr_edt.AppendTo(*commands);
+  cwaitstrlist.AppendTo(*commands);
+  tonebtn.AppendTo(*commands);
+  pulsebtn.AppendTo(*commands);
+  savebtn.AppendTo(*commands);
+  advancedbutton.AppendTo(*commands);
 
   if (tempsettings.DialMethod == DIAL_TOUCH_TONE) {
     tonebtn.Turn_On();
@@ -2850,34 +2850,34 @@ int Com_Scenario_Dialog(bool skirmish) {
   ------------------------- Build the button list --------------------------
   */
   commands = &name_edt;
-  staticcount.Add_Tail(*commands);
-  staticcredits.Add_Tail(*commands);
-  staticai.Add_Tail(*commands);
-  staticlevel.Add_Tail(*commands);
+  staticcount.AppendTo(*commands);
+  staticcredits.AppendTo(*commands);
+  staticai.AppendTo(*commands);
+  staticlevel.AppendTo(*commands);
   if (!skirmish) {
-    playerlist.Add_Tail(*commands);
+    playerlist.AppendTo(*commands);
   } else {
-    difficulty.Add_Tail(*commands);
+    difficulty.AppendTo(*commands);
   }
-  scenariolist.Add_Tail(*commands);
-  countgauge.Add_Tail(*commands);
-  levelgauge.Add_Tail(*commands);
-  creditsgauge.Add_Tail(*commands);
-  aiplayersgauge.Add_Tail(*commands);
-  optionlist.Add_Tail(*commands);
+  scenariolist.AppendTo(*commands);
+  countgauge.AppendTo(*commands);
+  levelgauge.AppendTo(*commands);
+  creditsgauge.AppendTo(*commands);
+  aiplayersgauge.AppendTo(*commands);
+  optionlist.AppendTo(*commands);
   if (TheSession().Type == GAME_SKIRMISH) {
-    okbtn.Add_Tail(*commands);
+    okbtn.AppendTo(*commands);
   }
-  cancelbtn.Add_Tail(*commands);
+  cancelbtn.AppendTo(*commands);
   if (!skirmish && GameFileExists("SAVEGAME.NET")) {
   } else {
     cancelbtn.X = loadbtn.X;
   }
 #ifdef OLDWAY
-  gdibtn.Add_Tail(*commands);
-  nodbtn.Add_Tail(*commands);
+  gdibtn.AppendTo(*commands);
+  nodbtn.AppendTo(*commands);
 #else
-  housebtn.Add_Tail(*commands);
+  housebtn.AppendTo(*commands);
 #endif
 
   /*
@@ -3089,10 +3089,10 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       if ((!skirmish) &&
           (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
-        okbtn.Add_Tail(*commands);
+        okbtn.AppendTo(*commands);
         ok_button_added = true;
         if (GameFileExists("SAVEGAME.NET")) {
-          loadbtn.Add_Tail(*commands);
+          loadbtn.AppendTo(*commands);
         }
         display = std::max(display, REDRAW_BUTTONS);
       }
@@ -4726,23 +4726,23 @@ int Com_Show_Scenario_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   commands = &name_edt;
-  staticcount.Add_Tail(*commands);
-  staticcredits.Add_Tail(*commands);
-  staticai.Add_Tail(*commands);
-  staticlevel.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  gamelist.Add_Tail(*commands);
-  playerlist.Add_Tail(*commands);
-  countgauge.Add_Tail(*commands);
-  levelgauge.Add_Tail(*commands);
-  creditsgauge.Add_Tail(*commands);
-  aiplayersgauge.Add_Tail(*commands);
-  optionlist.Add_Tail(*commands);
+  staticcount.AppendTo(*commands);
+  staticcredits.AppendTo(*commands);
+  staticai.AppendTo(*commands);
+  staticlevel.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  gamelist.AppendTo(*commands);
+  playerlist.AppendTo(*commands);
+  countgauge.AppendTo(*commands);
+  levelgauge.AppendTo(*commands);
+  creditsgauge.AppendTo(*commands);
+  aiplayersgauge.AppendTo(*commands);
+  optionlist.AppendTo(*commands);
 #ifdef OLDWAY
-  gdibtn.Add_Tail(*commands);
-  nodbtn.Add_Tail(*commands);
+  gdibtn.AppendTo(*commands);
+  nodbtn.AppendTo(*commands);
 #else   // OLDWAY
-  housebtn.Add_Tail(*commands);
+  housebtn.AppendTo(*commands);
 #endif  // OLDWAY
 
   //------------------------------------------------------------------------
@@ -6172,12 +6172,12 @@ static int Phone_Dialog() {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &phonelist;  // button list
-  addbtn.Add_Tail(*commands);
-  editbtn.Add_Tail(*commands);
-  deletebtn.Add_Tail(*commands);
-  dialbtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
-  numedit.Add_Tail(*commands);
+  addbtn.AppendTo(*commands);
+  editbtn.AppendTo(*commands);
+  deletebtn.AppendTo(*commands);
+  dialbtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
+  numedit.AppendTo(*commands);
   dialbtn.Turn_On();
 
   /*
@@ -6699,11 +6699,11 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ------------------------- Build the button list --------------------------
   */
   game::GadgetClass* commands = &nameedit;  // button list
-  numedit.Add_Tail(*commands);
-  defaultbtn.Add_Tail(*commands);
-  custombtn.Add_Tail(*commands);
-  savebtn.Add_Tail(*commands);
-  cancelbtn.Add_Tail(*commands);
+  numedit.AppendTo(*commands);
+  defaultbtn.AppendTo(*commands);
+  custombtn.AppendTo(*commands);
+  savebtn.AppendTo(*commands);
+  cancelbtn.AppendTo(*commands);
 
   /*
   ----------------------------- Various Inits ------------------------------

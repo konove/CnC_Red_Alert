@@ -230,7 +230,7 @@ void GameOptionsClass::Process() {
     if (buttons == nullptr) {
       buttons = g;
     } else {
-      g->Add_Tail(*buttons);
+      g->AppendTo(*buttons);
     }
 
     base::At(buttonsel, index) = g;
@@ -254,7 +254,7 @@ void GameOptionsClass::Process() {
   while (g != nullptr) {
     g->Width = std::max(maxwidth, 180);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
-    g = g->Get_Next();
+    g = g->Next();
   }
   buttonsel[kButtonResume - 1]->Width = 180;
   buttonsel[kButtonResume - 1]->X = OptionX + 34;
@@ -272,7 +272,7 @@ void GameOptionsClass::Process() {
   const auto dialog_area = std::make_unique<game::GadgetClass>(
       OptionX, OptionY, OptionWidth, OptionHeight,
       game::GadgetClass::kLeftPress);
-  dialog_area->Add_Tail(*buttons);
+  dialog_area->AppendTo(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
@@ -282,7 +282,7 @@ void GameOptionsClass::Process() {
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  outside_click->Add_Tail(*buttons);
+  outside_click->AppendTo(*buttons);
 
   game::TheKeyboard().Clear();
 
