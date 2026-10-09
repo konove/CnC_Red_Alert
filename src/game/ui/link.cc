@@ -94,9 +94,9 @@ Link& Link::AppendTo(Link& list) {
 }
 
 Link* Link::Remove() {
-  // Found before unlinking: afterwards this node leads nowhere.
-  Link* head = &HeadOfList();
-  Link* tail = &TailOfList();
+  // Found before unlinking: afterwards this node leads nowhere. A node with
+  // nothing in front of it is the head, and the node behind it takes over.
+  Link* head = previous_ ? &HeadOfList() : next_;
 
   if (previous_) {
     previous_->next_ = next_;
@@ -107,14 +107,6 @@ Link* Link::Remove() {
   previous_ = nullptr;
   next_ = nullptr;
 
-  // The head is unchanged unless this node was it. Then the new head is found
-  // from the tail, the one other node known to be still in the list.
-  if (head == this) {
-    if (tail == this) {
-      return nullptr;
-    }
-    return &tail->HeadOfList();
-  }
   return head;
 }
 
