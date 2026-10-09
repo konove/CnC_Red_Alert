@@ -43,6 +43,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "ra/core/defines.h"
 
 namespace ra {
@@ -120,7 +121,7 @@ class GScreenClass {
   **	This points to the buttons that are used for input. All of the derived
   *classes will *	attached their specific buttons to this list.
   */
-  static game::GadgetClass* Buttons;
+  static game::GadgetList Buttons;
 
  private:
   /*

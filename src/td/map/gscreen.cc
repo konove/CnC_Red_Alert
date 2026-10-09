@@ -66,6 +66,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
@@ -80,7 +81,7 @@
 
 namespace td {
 
-game::GadgetClass* GScreenClass::Buttons = nullptr;
+game::GadgetList GScreenClass::Buttons;
 
 std::unique_ptr<PixelBuffer> GScreenClass::ShadowPage;
 
@@ -132,7 +133,7 @@ void GScreenClass::One_Time() {
   *the *	actual screen memory. It contains a duplicate of what the
   *SEENPAGE is.
   */
-  Buttons = nullptr;
+  Buttons.Clear();
   ShadowPage = std::make_unique<PixelBuffer>(320, 200);
   ShadowPage->view().Clear();
   TheScreen().hidden_page().view().Clear();
@@ -224,7 +225,7 @@ void GScreenClass::Init_IO() {
   *need
   ** buttons must attach them after this routine is called!
   */
-  Buttons = nullptr;
+  Buttons.Clear();
 }
 
 /***********************************************************************************************
@@ -277,13 +278,13 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
   y = game::TheMouse().y();
 
   engine::window::InputEvent event;
-  if (Buttons != nullptr) {
+  if (!Buttons.empty()) {
     // The buttons draw themselves to the hidden page, so a redraw needs a
     // blit to show.
-    if (Buttons->Is_List_To_Redraw()) {
+    if (Buttons.IsToRedraw()) {
       Flag_To_Redraw(false);
     }
-    event = Buttons->Input(TheScreen().hidden_view());
+    event = Buttons.Input(TheScreen().hidden_view());
   } else if (game::TheKeyboard().Peek()) {
     event = game::TheKeyboard().Read();
   }
@@ -308,29 +309,10 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
-  /*------------------------------------------------------------------------
-  If this gadget is already in the list, remove it before adding it in:
-  - If 1st gadget in list, use Remove_A_Button to remove it, to reset the
-    value of 'Buttons' appropriately
-  - Otherwise, just call the Remove function for that gadget to remove it
-    from any list it may be in
-  ------------------------------------------------------------------------*/
-  if (Buttons == &gadget) {
-    Remove_A_Button(gadget);
-  } else {
-    gadget.Remove();
-  }
-
-  /*------------------------------------------------------------------------
-  Now add the gadget to our list:
-  - If there are not buttons, start the list with this one
-  - Otherwise, add it to the tail of the existing list
-  ------------------------------------------------------------------------*/
-  if (Buttons) {
-    gadget.AppendTo(*Buttons);
-  } else {
-    Buttons = &gadget;
-  }
+  // Out first, also when it is in the list already: that drops its focus, and
+  // puts it at the end.
+  Buttons.Remove(gadget);
+  Buttons.Add(gadget);
 }
 
 /***********************************************************************************************
@@ -342,13 +324,12 @@ void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   'gadget' MUST be already a part of 'Buttons', or the new value of
- *'Buttons'     * will be invalid! *
+ * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Remove_A_Button(game::GadgetClass& gadget) {
-  Buttons = gadget.Remove();
+  Buttons.Remove(gadget);
 }
 
 /***********************************************************************************************
@@ -385,16 +366,14 @@ void GScreenClass::Render() {
     // }
     Draw_It(view, IsScreenToRedraw);
 
-    if (Buttons) {
-      Buttons->Draw_All(view, false);
-    }
+    Buttons.DrawAll(view, false);
 
     if constexpr (config::kScenarioEditorEnabled) {
       /*
       ** Draw the Editor's buttons
       */
-      if (TheDebugState().map_editor_active() && Buttons) {
-        Buttons->Draw_All(view);
+      if (TheDebugState().map_editor_active()) {
+        Buttons.DrawAll(view);
       }
     }
     /*

@@ -56,6 +56,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/assets/screen.h"
@@ -401,7 +402,7 @@ void MapEditClass::Popup_Controls() {
   /*
   ........................ Set house button states .........................
   */
-  if (Buttons) {
+  if (!Buttons.empty()) {
     Set_House_Buttons(owner, Buttons, kPopupGdi);
   }
 

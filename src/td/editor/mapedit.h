@@ -63,6 +63,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
@@ -251,6 +252,8 @@ class MapEditClass : public MouseClass {
   void Toggle_House();
   static void Set_House_Buttons(HousesType house, game::GadgetClass* btnlist,
                                 int base_id);
+  static void Set_House_Buttons(HousesType house,
+                                const game::GadgetList& buttons, int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
   // Places the current trigger on what was clicked at `x`, `y`.

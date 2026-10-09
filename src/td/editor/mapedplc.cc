@@ -70,6 +70,7 @@
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/prebuilt_base.h"
@@ -1755,6 +1756,23 @@ void MapEditClass::Set_House_Buttons(HousesType house,
       **	If this house value is the desired one, turn the button on;
       **	otherwise, turn it off.
       */
+      if (h == house) {
+        btn->Turn_On();
+      } else {
+        btn->Turn_Off();
+      }
+    }
+  }
+}
+
+void MapEditClass::Set_House_Buttons(HousesType house,
+                                     const game::GadgetList& buttons,
+                                     int base_id) {
+  for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
+    const int id = static_cast<int>(h) + base_id;
+    auto* btn = dynamic_cast<TextButtonClass*>(
+        buttons.Extract(static_cast<unsigned>(id)));
+    if (btn) {
       if (h == house) {
         btn->Turn_On();
       } else {

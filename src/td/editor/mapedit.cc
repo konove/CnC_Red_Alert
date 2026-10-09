@@ -85,6 +85,7 @@
 #include "game/sim/heading.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/prebuilt_base.h"
@@ -304,7 +305,7 @@ void MapEditClass::Init_IO() {
     /*------------------------------------------------------------------------
     For editor mode, add the map area to the button input list
     ------------------------------------------------------------------------*/
-    Buttons = nullptr;
+    Buttons.Clear();
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
@@ -1434,7 +1435,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   If there are no object controls displayed, just invoke parent's Redraw
   and return.
   ------------------------------------------------------------------------*/
-  if (!Buttons) {
+  if (Buttons.empty()) {
     return;
   }
 

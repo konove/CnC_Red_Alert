@@ -88,6 +88,7 @@
 #include "game/sim/heading.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -293,7 +294,7 @@ void MapEditClass::Init_IO() {
     /*
     **	For editor mode, add the map area to the button input list
     */
-    Buttons = nullptr;
+    Buttons.Clear();
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
@@ -1191,9 +1192,9 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       **	Determine the house desired by examining the currently
       **	selected index in the house list gadget.
       */
-      house = HousesType(dynamic_cast<const ListClass*>(
-                             Buttons->Extract_Gadget(kPopupHouselist))
-                             ->Current_Index());
+      house = HousesType(
+          dynamic_cast<const ListClass*>(Buttons.Extract(kPopupHouselist))
+              ->Current_Index());
 
       /*
       **	If that house doesn't own this object, try to transfer it
@@ -1206,7 +1207,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       //			Set_House_Buttons(CurrentObject[0]->Owner(),
       // Buttons, kPopupFirst);
       TheScreen().hidden_view().Clear();
-      Buttons->Flag_List_To_Redraw();
+      Buttons.FlagToRedraw();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -1294,7 +1295,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
           dynamic_cast<TechnoClass*>(base::At(TheWorld().current_object(), 0))
               ->Set_Mission(mission);
           Changed = true;
-          Buttons->Flag_List_To_Redraw();
+          Buttons.FlagToRedraw();
           Flag_To_Redraw(true);
         }
       }
@@ -1426,7 +1427,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   **	If there are no object controls displayed, just invoke parent's Redraw
   **	and return.
   */
-  if (!Buttons) {
+  if (Buttons.empty()) {
     return;
   }
 
