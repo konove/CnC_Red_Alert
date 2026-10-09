@@ -24,18 +24,9 @@ namespace game {
 // part of the object, and with it a derived Remove(), is already gone.
 Link::~Link() { Link::Remove(); }
 
-void Link::ForgetNeighbors() {
-  next_ = nullptr;
-  previous_ = nullptr;
-}
-
 Link* Link::Next() const { return next_; }
 
 Link* Link::Previous() const { return previous_; }
-
-const Link& Link::HeadOfList() const { return HeadOf(*this); }
-
-const Link& Link::TailOfList() const { return TailOf(*this); }
 
 Link& Link::InsertAfter(Link& predecessor) {
   // A node cannot follow itself: linking it would make previous_ point at this
@@ -59,6 +50,23 @@ Link& Link::InsertAfter(Link& predecessor) {
   return HeadOfList();
 }
 
+Link& Link::AppendTo(Link& list) {
+  Link* old_tail = &list.TailOfList();
+
+  // Already the tail. Linking it behind itself would make previous_ point at
+  // this node and lose every node in front of it.
+  if (old_tail == this) {
+    return HeadOfList();
+  }
+
+  // Link this node in behind the old tail.
+  old_tail->next_ = this;
+  previous_ = old_tail;
+  next_ = nullptr;
+
+  return HeadOfList();
+}
+
 Link& Link::PrependTo(Link& list) {
   Link* old_head = &list.HeadOfList();
 
@@ -76,21 +84,13 @@ Link& Link::PrependTo(Link& list) {
   return *this;
 }
 
-Link& Link::AppendTo(Link& list) {
-  Link* old_tail = &list.TailOfList();
+const Link& Link::HeadOfList() const { return HeadOf(*this); }
 
-  // Already the tail. Linking it behind itself would make previous_ point at
-  // this node and lose every node in front of it.
-  if (old_tail == this) {
-    return HeadOfList();
-  }
+const Link& Link::TailOfList() const { return TailOf(*this); }
 
-  // Link this node in behind the old tail.
-  old_tail->next_ = this;
-  previous_ = old_tail;
+void Link::ForgetNeighbors() {
   next_ = nullptr;
-
-  return HeadOfList();
+  previous_ = nullptr;
 }
 
 Link* Link::Remove() {

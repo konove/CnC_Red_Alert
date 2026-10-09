@@ -48,9 +48,16 @@ namespace game {
 class Link {
  public:
   Link() noexcept = default;
-  virtual ~Link();
+
+  // Not copyable. The original copy operations did not copy: they spliced the
+  // destination into the source object's list, which mutates the source. Use
+  // AppendTo() to put an object into a list.
+  Link(const Link&) = delete;
+  Link& operator=(const Link&) = delete;
   Link(Link&&) = delete;
   Link& operator=(Link&&) = delete;
+
+  virtual ~Link();
 
   // Return the node after or before this one, or nullptr at that end of the
   // list.
@@ -86,12 +93,6 @@ class Link {
   // Takes this node out of its list and closes the gap. Returns the head of
   // what is left, or nullptr if this was the only node.
   virtual Link* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
-
-  // Not copyable. The original copy operations did not copy: they spliced the
-  // destination into the source object's list, which mutates the source. Use
-  // AppendTo() to put an object into a list.
-  Link(const Link&) = delete;
-  Link& operator=(const Link&) = delete;
 
  private:
   // The walks behind the HeadOfList() and TailOfList() overloads. Self is
