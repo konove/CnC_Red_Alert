@@ -6419,17 +6419,24 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T06:35:27Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-09T06:35:27Z",
+          "text": "Decided with the user 2026-10-08: neither option in the details. Introduce a list object, `game::GadgetList`, over a `std::vector<GadgetClass*>`, convert every gadget list in both games under this item, and delete `Link` at the end. Plan: `docs/GADGET_LIST_PLAN.md` (written, waiting for the user's review; no code changed yet).\n\nFindings behind it: the ~21 `ForgetNeighbors()` calls in front of `Add_A_Button()` (sidebar, display) are redundant, since `Add_A_Button()` already removes the gadget; `GadgetClass::Remove()` clears keyboard focus and `ForgetNeighbors()` does not, so replacing call by call would take the focus from an edit field on every dialog rebuild; `wolapiob.cc` drops ten shared buttons out of a list that lives on."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/ui/link.h",
-          "startLine": 87,
-          "endLine": 91,
+          "startLine": 88,
+          "endLine": 92,
           "text": "  // Forgets both neighbours without telling them, so they go on pointing at\n  // this node. Remove() is the way to take one node out; this is for dropping\n  // a whole list at once, by calling this on every node of it before the list\n  // is built again (the sidebar's buttons, a dialog's gadgets on a redraw).\n  virtual void ForgetNeighbors();",
           "before": [
             "  [[nodiscard]] const Link& TailOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;",
