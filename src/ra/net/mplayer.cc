@@ -52,8 +52,8 @@
 #include "engine/net/ipxmgr.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/installation.h"
@@ -174,7 +174,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
@@ -214,15 +214,15 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Create the list
   //------------------------------------------------------------------------
-  commands = &modemserialbtn;
-  skirmishbtn.AppendTo(*commands);
+  commands.Add(modemserialbtn);
+  commands.Add(skirmishbtn);
   if (has_ipx) {
-    ipxbtn.AppendTo(*commands);
+    commands.Add(ipxbtn);
   }
   if constexpr (config::kWolapiEnabled) {
-    wolbtn.AppendTo(*commands);  //	ajw
+    commands.Add(wolbtn);  //	ajw
   }
-  cancelbtn.AppendTo(*commands);
+  commands.Add(cancelbtn);
 
   //------------------------------------------------------------------------
   //	Fill array of button ptrs
@@ -278,7 +278,7 @@ GameType Select_MPlayer_Game() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -288,7 +288,7 @@ GameType Select_MPlayer_Game() {
     //	Get user input
     //.....................................................................
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // input from user
+        commands.Input(view).key;  // input from user
 
     //.....................................................................
     //	Process input
@@ -518,7 +518,7 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass okbtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, kDOkX,
                         kDOkY, kDOkW, kDOkH);
@@ -538,8 +538,8 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Create the button list
   //------------------------------------------------------------------------
-  commands = &okbtn;
-  cancelbtn.AppendTo(*commands);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   base::At(buttons, 0) = &okbtn;
   base::At(buttons, 1) = &cancelbtn;
@@ -584,14 +584,14 @@ int Surrender_Dialog(const char* text) {
       //..................................................................
       //	Redraw the buttons
       //..................................................................
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
     }
 
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     //.....................................................................
     //	Process input
@@ -702,7 +702,7 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass yesbtn(kButtonYes, TXT_YES, kButtonFont, kButtonFlags, kDYesX,
                          kDYesY, kDYesW, kDYesH);
@@ -721,8 +721,8 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Create the button list
   //------------------------------------------------------------------------
-  commands = &yesbtn;
-  nobtn.AppendTo(*commands);
+  commands.Add(yesbtn);
+  commands.Add(nobtn);
 
   base::At(buttons, 0) = &yesbtn;
   base::At(buttons, 1) = &nobtn;
@@ -767,14 +767,14 @@ int Abort_Dialog() {
       //..................................................................
       //	Redraw the buttons
       //..................................................................
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
     }
 
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     //.....................................................................
     //	Process input

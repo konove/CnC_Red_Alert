@@ -39,8 +39,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -149,7 +149,7 @@ bool TeamType::Edit() {
   const auto down_shape = MixArchive::RetrieveData("EBTN-DN.SHP");
 
   // Head of the dialog's control list.
-  game::ControlClass* commands = nullptr;
+  game::GadgetList commands;
   RemapControlType* scheme = Get_Color_Scheme();
 
   // Team name edit field.
@@ -158,7 +158,7 @@ bool TeamType::Edit() {
                       FontType::kEditor, TPF_NOSHADOW, kNameX, kNameY,
                       kEditWidth, 9, EditClass::kAlphanumeric);
   base::SafeCopy(name_text, IniName);
-  commands = &name_edit;
+  commands.Add(name_edit);
 
   // House ownership of this team.
   char house_text[25] = "";
@@ -173,7 +173,7 @@ bool TeamType::Edit() {
     house_ = HOUSE_GOOD;
   }
   house_drop.Set_Selected_Index(static_cast<int>(house_));
-  house_drop.InsertAfter(*commands);
+  commands.AddAfter(house_drop, name_edit);
 
   // Recruit priority for this team.
   char priority_text[4];
@@ -182,7 +182,7 @@ bool TeamType::Edit() {
                           house_drop.X + house_drop.Width + 5 + kFieldSpacingX,
                           house_drop.Y, kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(priority_text, sizeof(priority_text), "%d", recruit_priority_);
-  priority_edit.InsertAfter(*commands);
+  commands.AddAfter(priority_edit, name_edit);
 
   // Maximum allowed for this team type.
   char max_text[4];
@@ -191,7 +191,7 @@ bool TeamType::Edit() {
                      priority_edit.X + priority_edit.Width + kFieldSpacingX,
                      priority_edit.Y, kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(max_text, sizeof(max_text), "%d", max_teams_);
-  max_edit.InsertAfter(*commands);
+  commands.AddAfter(max_edit, name_edit);
 
   // Initial number for this team type.
   char initial_text[4];
@@ -200,7 +200,7 @@ bool TeamType::Edit() {
                          max_edit.X + max_edit.Width + kFieldSpacingX,
                          max_edit.Y, kEditWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(initial_text, sizeof(initial_text), "%d", initial_count_);
-  initial_edit.InsertAfter(*commands);
+  commands.AddAfter(initial_edit, name_edit);
 
   // Waypoint to create or reinforce this team at, as the editor's letters;
   // empty for none.
@@ -210,13 +210,13 @@ bool TeamType::Edit() {
                         initial_edit.X + initial_edit.Width + kFieldSpacingX,
                         initial_edit.Y, 20, 9, EditClass::kAlpha);
   base::SafeCopy(origin_text, origin_ != -1 ? WaypointLetters(origin_) : "");
-  origin_edit.InsertAfter(*commands);
+  commands.AddAfter(origin_edit, name_edit);
 
   // Button that opens the members dialog.
   TextButtonClass members_button(kButtonMembers, "Members", kEButtonFont,
                                  kEButtonFlags, name_edit.X, name_edit.Y + 12,
                                  50);
-  members_button.InsertAfter(*commands);
+  commands.AddAfter(members_button, name_edit);
 
   // Trigger to assign to each member of this team (when object joins team).
   // Entry 0 is "<NONE>", so a trigger type's entry is its heap position + 1.
@@ -236,7 +236,7 @@ bool TeamType::Edit() {
   } else {
     trigger_drop.Set_Selected_Index(0);
   }
-  trigger_drop.InsertAfter(*commands);
+  commands.AddAfter(trigger_drop, name_edit);
 
   const auto set_check = [](CheckBoxClass& box, const bool on) {
     if (on) {
@@ -249,31 +249,31 @@ bool TeamType::Edit() {
   // Roundabout travel logic attribute for this team.
   CheckBoxClass roundabout_check(kButtonRoundabout, kCheckX, kCheckY);
   set_check(roundabout_check, is_roundabout_);
-  roundabout_check.InsertAfter(*commands);
+  commands.AddAfter(roundabout_check, name_edit);
 
   // Suicide travel to target attribute.
   CheckBoxClass suicide_check(kButtonSuicide, kCheckX,
                               roundabout_check.Y + kCheckSpacingY);
   set_check(suicide_check, is_suicide_);
-  suicide_check.InsertAfter(*commands);
+  commands.AddAfter(suicide_check, name_edit);
 
   // Autocreate attribute for this team.
   CheckBoxClass autocreate_check(kButtonAuto, kCheckX,
                                  suicide_check.Y + kCheckSpacingY);
   set_check(autocreate_check, is_autocreate_);
-  autocreate_check.InsertAfter(*commands);
+  commands.AddAfter(autocreate_check, name_edit);
 
   // Prebuild team members attribute for this team.
   CheckBoxClass prebuilt_check(kButtonPrebuilt, kCheckX,
                                autocreate_check.Y + kCheckSpacingY);
   set_check(prebuilt_check, is_prebuilt_);
-  prebuilt_check.InsertAfter(*commands);
+  commands.AddAfter(prebuilt_check, name_edit);
 
   // Reinforce this team in progress attribute.
   CheckBoxClass reinforce_check(kButtonReinforce, kCheckX,
                                 prebuilt_check.Y + kCheckSpacingY);
   set_check(reinforce_check, is_reinforceable_);
-  reinforce_check.InsertAfter(*commands);
+  commands.AddAfter(reinforce_check, name_edit);
 
   // Drop list of the possible team missions, in TeamMissionType order so an
   // entry's index is its mission. It and the argument control beside it hold
@@ -288,7 +288,7 @@ bool TeamType::Edit() {
     mission_drop.Add_Item(MissionName(mission));
   }
   mission_drop.Set_Selected_Index(0);
-  mission_drop.AppendTo(*commands);
+  commands.Add(mission_drop);
 
   // The mission's argument. Four controls share the spot beside the mission
   // list and the redraw links in the one the selected mission needs: a text
@@ -309,7 +309,7 @@ bool TeamType::Edit() {
     quarry_drop.Add_Item(QuarryName.at(q));
   }
   quarry_drop.Set_Selected_Index(0);
-  quarry_drop.AppendTo(*commands);
+  commands.Add(quarry_drop);
 
   char formation_text[55];
   DropListClass formation_drop(
@@ -320,7 +320,7 @@ bool TeamType::Edit() {
     formation_drop.Add_Item(FormationName.at(f));
   }
   formation_drop.Set_Selected_Index(0);
-  formation_drop.AppendTo(*commands);
+  commands.Add(formation_drop);
 
   char unit_mission_text[55];
   DropListClass unit_mission_drop(
@@ -331,7 +331,7 @@ bool TeamType::Edit() {
     unit_mission_drop.Add_Item(MissionClass::Mission_Name(m));
   }
   unit_mission_drop.Set_Selected_Index(0);
-  unit_mission_drop.AppendTo(*commands);
+  commands.Add(unit_mission_drop);
 
   // Owns the missions script_list shows: copies of the team type's own, and
   // the ones the dialog adds.
@@ -345,28 +345,28 @@ bool TeamType::Edit() {
                                  base::At(missions_, index)))
                              .get());
   }
-  script_list.AppendTo(*commands);
+  commands.Add(script_list);
 
   // Mission editing command buttons.
   TextButtonClass append_button(kButtonAdd, "Append", kEButtonFont,
                                 kEButtonFlags, kNameX,
                                 mission_drop.Y + mission_drop.Height + 1, 50);
-  append_button.InsertAfter(*commands);
+  commands.AddAfter(append_button, name_edit);
 
   TextButtonClass insert_button(kButtonInsert, "Insert", kEButtonFont,
                                 kEButtonFlags, append_button.X,
                                 append_button.Y + 10, 50);
-  insert_button.InsertAfter(*commands);
+  commands.AddAfter(insert_button, name_edit);
 
   TextButtonClass delete_button(kButtonDelete, "Delete", kEButtonFont,
                                 kEButtonFlags, insert_button.X,
                                 insert_button.Y + 10, 50);
-  delete_button.InsertAfter(*commands);
+  commands.AddAfter(delete_button, name_edit);
 
   TextButtonClass replace_button(kButtonReplace, "Replace", kEButtonFont,
                                  kEButtonFlags, delete_button.X,
                                  delete_button.Y + 10, 50);
-  replace_button.InsertAfter(*commands);
+  commands.AddAfter(replace_button, name_edit);
 
   TextButtonClass ok_button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
                             kOkX, kOkY, kOkW, kOkH);
@@ -443,8 +443,8 @@ bool TeamType::Edit() {
                      FontType::kEditor, TPF_NOSHADOW);
   };
 
-  ok_button.InsertAfter(*commands);
-  cancel_button.AppendTo(*commands);
+  commands.AddAfter(ok_button, name_edit);
+  commands.Add(cancel_button);
 
   // Main processing loop. The last* values are the script list's selection,
   // its length and the control used on the previous event (-1 before any):
@@ -461,10 +461,10 @@ bool TeamType::Edit() {
     // Refresh display if needed
     if (redraw) {
       // Link in only the argument control the work mission needs.
-      argument_edit.Remove();
-      quarry_drop.Remove();
-      formation_drop.Remove();
-      unit_mission_drop.Remove();
+      commands.Remove(argument_edit);
+      commands.Remove(quarry_drop);
+      commands.Remove(formation_drop);
+      commands.Remove(unit_mission_drop);
       switch (TeamMissionNeeds(
           static_cast<TeamMissionType>(mission_drop.Current_Index()))) {
         case NEED_NONE:
@@ -486,21 +486,21 @@ bool TeamType::Edit() {
           break;
 
         case NEED_MISSION:
-          unit_mission_drop.InsertAfter(*commands);
+          commands.AddAfter(unit_mission_drop, name_edit);
           break;
 
         case NEED_FORMATION:
-          formation_drop.InsertAfter(*commands);
+          commands.AddAfter(formation_drop, name_edit);
           break;
 
         case NEED_WAYPOINT:
         case NEED_NUMBER:
         case NEED_HEX_NUMBER:
-          argument_edit.InsertAfter(*commands);
+          commands.AddAfter(argument_edit, name_edit);
           break;
 
         case NEED_QUARRY:
-          quarry_drop.InsertAfter(*commands);
+          commands.AddAfter(quarry_drop, name_edit);
           break;
       }
 
@@ -540,14 +540,14 @@ bool TeamType::Edit() {
               reinforce_check.X + kCheckTextOffsetX, reinforce_check.Y);
 
       // Redraw the buttons
-      commands->Draw_All(view);
+      commands.DrawAll(view);
       game::TheMouse().Show();
 
       redraw = false;
     }
 
     // Get user input
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     // Process input
     switch (static_cast<int>(input)) {

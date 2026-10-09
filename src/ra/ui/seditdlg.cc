@@ -31,6 +31,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -167,7 +168,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, szOkButton, kButtonFont, kButtonFlags,
                         d_ok_x, d_ok_y, d_ok_w);
@@ -195,14 +196,14 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Create the button list.
   */
-  commands = &OkBtn;
-  CancelBtn.AppendTo(*commands);
+  commands.Add(OkBtn);
+  commands.Add(CancelBtn);
   if (szMiddleButton) {
-    MiddleBtn.AppendTo(*commands);
+    commands.Add(MiddleBtn);
   }
-  EditBox.AppendTo(*commands);
+  commands.Add(EditBox);
   if (!szPrompt2.empty()) {
-    EditBox2.AppendTo(*commands);
+    commands.Add(EditBox2);
   }
   EditBox.Set_Focus();
 
@@ -243,7 +244,7 @@ const char* SimpleEditDlgClass::Show() {
                          Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
                          kTextFlags);
       }
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -251,7 +252,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

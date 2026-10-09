@@ -59,6 +59,7 @@
 #include "engine/window/keyboard.h"
 #include "game/sim/enums.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -173,7 +174,7 @@ bool Expansion_Dialog() {
   const int option_x = ((320 * factor) - option_width) / 2;
   const int option_y = ((200 * factor) - option_height) / 2;
 
-  game::GadgetClass* buttons = nullptr;
+  game::GadgetList buttons;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -197,9 +198,9 @@ bool Expansion_Dialog() {
                   FontType::k6PointGradient, TPF_NOSHADOW, up_button,
                   down_button);
 
-  buttons = &ok;
-  cancel.InsertAfter(*buttons);
-  list.InsertAfter(*buttons);
+  buttons.Add(ok);
+  buttons.AddAfter(cancel, ok);
+  buttons.AddAfter(list, ok);
 
   /*
   **	Add in all the expansion scenarios.
@@ -248,11 +249,11 @@ bool Expansion_Dialog() {
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_MISSION_DESCRIPTION, option_x, option_y,
                    option_width);
-      buttons->Draw_All(view);
+      buttons.DrawAll(view);
       game::TheMouse().Show();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view).key;
+    const engine::window::KeyNumber input = buttons.Input(view).key;
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case engine::window::ButtonKey(200):
@@ -307,7 +308,7 @@ bool Bonus_Dialog() {
   const int option_x = ((320 * factor) - option_width) / 2;
   const int option_y = ((200 * factor) - option_height) / 2;
 
-  game::GadgetClass* buttons = nullptr;
+  game::GadgetList buttons;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -331,9 +332,9 @@ bool Bonus_Dialog() {
                   FontType::k6PointGradient, TPF_NOSHADOW, up_button,
                   down_button);
 
-  buttons = &ok;
-  cancel.InsertAfter(*buttons);
-  list.InsertAfter(*buttons);
+  buttons.Add(ok);
+  buttons.AddAfter(cancel, ok);
+  buttons.AddAfter(list, ok);
 
   /*
   **	Add in all the expansion scenarios.
@@ -388,11 +389,11 @@ bool Bonus_Dialog() {
 
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_BONUS_MISSIONS, option_x, option_y, option_width);
-      buttons->Draw_All(view);
+      buttons.DrawAll(view);
       game::TheMouse().Show();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view).key;
+    const engine::window::KeyNumber input = buttons.Input(view).key;
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case engine::window::ButtonKey(200):

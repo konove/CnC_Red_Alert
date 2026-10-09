@@ -51,6 +51,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -118,7 +119,9 @@ bool ConfirmationClass::Process(const char* string) {
                         x + width - (bwidth + (10 * factor)),
                         y + height - (bheight + (5 * factor)), bwidth);
 
-  nobtn.AppendTo(yesbtn);
+  game::GadgetList gadgets;
+  gadgets.Add(yesbtn);
+  gadgets.Add(nobtn);
 
   int curbutton = 1;
   base::At(buttons, 0) = &yesbtn;
@@ -130,7 +133,7 @@ bool ConfirmationClass::Process(const char* string) {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   game::GadgetClass dialog(x, y, width, height, game::GadgetClass::kLeftPress);
-  dialog.AppendTo(yesbtn);
+  gadgets.Add(dialog);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
@@ -140,7 +143,7 @@ bool ConfirmationClass::Process(const char* string) {
       kButtonNo, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  background.AppendTo(yesbtn);
+  gadgets.Add(background);
 
   /*
   **	Main Processing Loop.
@@ -180,7 +183,7 @@ bool ConfirmationClass::Process(const char* string) {
       /*
       **	Draw the titles.
       */
-      yesbtn.Draw_All(view);
+      gadgets.DrawAll(view);
       game::TheMouse().Show();
       display = false;
     }
@@ -188,7 +191,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = yesbtn.Input(view).key;
+    const engine::window::KeyNumber input = gadgets.Input(view).key;
 
     /*
     **	Process Input.

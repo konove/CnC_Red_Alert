@@ -105,6 +105,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1382,26 +1383,26 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) / 2);
 
-  TextButtonClass* buttonlist = nullptr;
+  game::GadgetList buttonlist;
   int curbutton = 0;
 
   /*
   **	Add and initialize the buttons to the button list.
   */
   if (numbuttons) {
-    buttonlist = &button1;
+    buttonlist.Add(button1);
     base::At(buttons, 0) = &button1;
     base::At(realval, 0) = kButton1;
     if (numbuttons > 2) {
-      button3.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button3;
       base::At(realval, 1) = kButton3;
-      button2.InsertAfter(*buttonlist);
+      buttonlist.Add(button2);
+      buttonlist.Add(button3);
       base::At(buttons, 2) = &button2;
       base::At(realval, 2) = kButton2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
-      button2.InsertAfter(*buttonlist);
+      buttonlist.Add(button2);
       base::At(buttons, 1) = &button2;
       base::At(realval, 1) = kButton2;
       base::At(buttons, curbutton)->Turn_On();
@@ -1469,7 +1470,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   game::TheMouse().Show();
   game::TheKeyboard().Clear();
 
-  if (buttonlist) {
+  if (!buttonlist.empty()) {
     bool process = true;  // loop while true
     bool pressed = false;
     while (process) {
@@ -1478,7 +1479,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         game::TheMouse().Hide();
         // Redraw the buttons.
-        buttonlist->Draw_All(view);
+        buttonlist.DrawAll(view);
         game::TheMouse().Show();
       }
 
@@ -1487,7 +1488,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
       // Fetch and process input.
       const engine::window::KeyNumber input =
-          buttonlist->Input(view).key;  // user input
+          buttonlist.Input(view).key;  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = base::At(realval, 0);

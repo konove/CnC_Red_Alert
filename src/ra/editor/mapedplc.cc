@@ -69,8 +69,8 @@
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -339,20 +339,21 @@ int MapEditClass::Placement_Dialog() {
       base::At(Objects, LastChoice);  // Working object pointer.  // current
                                       // object to choose
 
-  game::ControlClass* commands = &nextbtn;
-  housebtn.AppendTo(*commands);
-  prevbtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
-  templatebtn.AppendTo(*commands);
-  overlaybtn.AppendTo(*commands);
-  smudgebtn.AppendTo(*commands);
-  terrainbtn.AppendTo(*commands);
-  unitbtn.AppendTo(*commands);
-  infantrybtn.AppendTo(*commands);
-  aircraftbtn.AppendTo(*commands);
-  buildingbtn.AppendTo(*commands);
-  airbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(nextbtn);
+  commands.Add(housebtn);
+  commands.Add(prevbtn);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
+  commands.Add(templatebtn);
+  commands.Add(overlaybtn);
+  commands.Add(smudgebtn);
+  commands.Add(terrainbtn);
+  commands.Add(unitbtn);
+  commands.Add(infantrybtn);
+  commands.Add(aircraftbtn);
+  commands.Add(buildingbtn);
+  commands.Add(airbtn);
 
   /*
   **	Make sure the recorded house selection matches the house list
@@ -511,7 +512,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Redraw buttons
       */
-      commands->Draw_All(view);
+      commands.DrawAll(view);
       game::TheMouse().Show();
       display = false;
     }
@@ -520,7 +521,7 @@ int MapEditClass::Placement_Dialog() {
     **	Get user input
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     **	Process user input

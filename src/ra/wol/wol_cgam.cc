@@ -29,6 +29,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/screen.h"
@@ -129,7 +130,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
                         d_ok_y, d_ok_w);
@@ -189,15 +190,15 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Create the button list.
   */
-  commands = &OkBtn;
-  CancelBtn.AppendTo(*commands);
-  PlayerCountStatic.AppendTo(*commands);
-  PlayerCountGauge.AppendTo(*commands);
-  TournamentCheck.AppendTo(*commands);
-  PrivacyCheck.AppendTo(*commands);
-  RA_Check.AppendTo(*commands);
-  CS_Check.AppendTo(*commands);
-  AM_Check.AppendTo(*commands);
+  commands.Add(OkBtn);
+  commands.Add(CancelBtn);
+  commands.Add(PlayerCountStatic);
+  commands.Add(PlayerCountGauge);
+  commands.Add(TournamentCheck);
+  commands.Add(PrivacyCheck);
+  commands.Add(RA_Check);
+  commands.Add(CS_Check);
+  commands.Add(AM_Check);
 
   PlayerCountStatic.Set_Text(
       base::FormatRuntime(TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax).c_str());
@@ -228,7 +229,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
       //								Get_Color_Scheme(),
       // TBLACK, kTpfText | TPF_RIGHT );
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -242,7 +243,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on

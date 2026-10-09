@@ -92,6 +92,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -356,9 +357,10 @@ int Test_Null_Modem() {
   /*
   ** Create the list
   */
-  game::GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
 
-  commands->Flag_List_To_Redraw();
+  commands.FlagToRedraw();
 
   /*
   ** Draw the dialog
@@ -372,7 +374,7 @@ int Test_Null_Modem() {
   Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme,
                    game::kTransparentBlack, kTextFont, kTextFlags);
 
-  commands->Draw_All(view);
+  commands.DrawAll(view);
   game::TheMouse().ForceShow();
 
   /*
@@ -465,7 +467,7 @@ int Test_Null_Modem() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ** Process input
@@ -658,9 +660,10 @@ static int Reconnect_Null_Modem() {
   /*
   ** Create the list
   */
-  game::GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
 
-  commands->Flag_List_To_Redraw();
+  commands.FlagToRedraw();
 
   /*
   ** Draw the dialog
@@ -673,7 +676,7 @@ static int Reconnect_Null_Modem() {
   Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme,
                    game::kTransparentBlack, kTextFont, kTextFlags);
 
-  commands->Draw_All(view);
+  commands.DrawAll(view);
   game::TheMouse().Show();
 
   /*
@@ -689,7 +692,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ** Process input
@@ -995,11 +998,12 @@ GameType Select_Serial_Dialog() {
   /*
   ** Create the list
   */
-  game::GadgetClass* commands = &dialbtn;  // button list
-  answerbtn.AppendTo(*commands);
-  nullmodembtn.AppendTo(*commands);
-  settingsbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(dialbtn);  // button list
+  commands.Add(answerbtn);
+  commands.Add(nullmodembtn);
+  commands.Add(settingsbtn);
+  commands.Add(cancelbtn);
 
   /*
   ** Fill array of button ptrs
@@ -1047,7 +1051,7 @@ GameType Select_Serial_Dialog() {
         Draw_Caption(view, TXT_SELECT_SERIAL_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
       }
-      commands->Draw_All(view);
+      commands.DrawAll(view);
       game::TheMouse().Show();
       display = REDRAW_NONE;
     }
@@ -1055,7 +1059,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ** Process input
@@ -1423,11 +1427,12 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
 
-  game::GadgetClass* commands = &okbutton;  // button list
-  defaultbutton.AppendTo(*commands);
-  compressionbutton.AppendTo(*commands);
-  errorcorrectionbutton.AppendTo(*commands);
-  hardwareflowcontrolbutton.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(okbutton);  // button list
+  commands.Add(defaultbutton);
+  commands.Add(compressionbutton);
+  commands.Add(errorcorrectionbutton);
+  commands.Add(hardwareflowcontrolbutton);
 
   /*
   ** Main process loop
@@ -1490,7 +1495,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1996,21 +2001,22 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Build the button list
   */
-  game::GadgetClass* commands = &cancelbtn;  // button list
-  port_edt.AppendTo(*commands);
-  portlist.AppendTo(*commands);
-  baud_edt.AppendTo(*commands);
-  baudlist.AppendTo(*commands);
-  initstr_edt.AppendTo(*commands);
-  initstrlist.AppendTo(*commands);
-  addbtn.AppendTo(*commands);
-  deletebtn.AppendTo(*commands);
-  cwaitstr_edt.AppendTo(*commands);
-  cwaitstrlist.AppendTo(*commands);
-  tonebtn.AppendTo(*commands);
-  pulsebtn.AppendTo(*commands);
-  savebtn.AppendTo(*commands);
-  advancedbutton.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
+  commands.Add(port_edt);
+  commands.Add(portlist);
+  commands.Add(baud_edt);
+  commands.Add(baudlist);
+  commands.Add(initstr_edt);
+  commands.Add(initstrlist);
+  commands.Add(addbtn);
+  commands.Add(deletebtn);
+  commands.Add(cwaitstr_edt);
+  commands.Add(cwaitstrlist);
+  commands.Add(tonebtn);
+  commands.Add(pulsebtn);
+  commands.Add(savebtn);
+  commands.Add(advancedbutton);
 
   if (tempsettings.DialMethod == DIAL_TOUCH_TONE) {
     tonebtn.Turn_On();
@@ -2101,12 +2107,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Get user input
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     if (firsttime) {
       //			port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input(view).key;
+      input = commands.Input(view).key;
       firsttime = false;
     }
 
@@ -2767,7 +2773,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTextFont,
                      kTextFlags, d_name_x, d_name_y, d_name_w, d_name_h,
@@ -2849,35 +2855,35 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &name_edt;
-  staticcount.AppendTo(*commands);
-  staticcredits.AppendTo(*commands);
-  staticai.AppendTo(*commands);
-  staticlevel.AppendTo(*commands);
+  commands.Add(name_edt);
+  commands.Add(staticcount);
+  commands.Add(staticcredits);
+  commands.Add(staticai);
+  commands.Add(staticlevel);
   if (!skirmish) {
-    playerlist.AppendTo(*commands);
+    commands.Add(playerlist);
   } else {
-    difficulty.AppendTo(*commands);
+    commands.Add(difficulty);
   }
-  scenariolist.AppendTo(*commands);
-  countgauge.AppendTo(*commands);
-  levelgauge.AppendTo(*commands);
-  creditsgauge.AppendTo(*commands);
-  aiplayersgauge.AppendTo(*commands);
-  optionlist.AppendTo(*commands);
+  commands.Add(scenariolist);
+  commands.Add(countgauge);
+  commands.Add(levelgauge);
+  commands.Add(creditsgauge);
+  commands.Add(aiplayersgauge);
+  commands.Add(optionlist);
   if (TheSession().Type == GAME_SKIRMISH) {
-    okbtn.AppendTo(*commands);
+    commands.Add(okbtn);
   }
-  cancelbtn.AppendTo(*commands);
+  commands.Add(cancelbtn);
   if (!skirmish && GameFileExists("SAVEGAME.NET")) {
   } else {
     cancelbtn.X = loadbtn.X;
   }
 #ifdef OLDWAY
-  gdibtn.AppendTo(*commands);
-  nodbtn.AppendTo(*commands);
+  commands.Add(gdibtn);
+  commands.Add(nodbtn);
 #else
-  housebtn.AppendTo(*commands);
+  commands.Add(housebtn);
 #endif
 
   /*
@@ -3089,10 +3095,10 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       if ((!skirmish) &&
           (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
-        okbtn.AppendTo(*commands);
+        commands.Add(okbtn);
         ok_button_added = true;
         if (GameFileExists("SAVEGAME.NET")) {
-          loadbtn.AppendTo(*commands);
+          commands.Add(loadbtn);
         }
         display = std::max(display, REDRAW_BUTTONS);
       }
@@ -3272,8 +3278,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         .......................... Redraw buttons ..........................
         */
         if (display >= REDRAW_BUTTONS) {
-          commands->Flag_List_To_Redraw();
-          commands->Draw_All(view);
+          commands.FlagToRedraw();
+          commands.DrawAll(view);
         }
 
         game::TheMouse().Show();
@@ -3285,7 +3291,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
-      const engine::window::InputEvent input_event = commands->Input(view);
+      const engine::window::InputEvent input_event = commands.Input(view);
       input = input_event.key;
 
       /*
@@ -4665,7 +4671,7 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::GadgetClass* commands = nullptr;  // button list
+  game::GadgetList commands;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTextFont,
                      kTextFlags, d_name_x, d_name_y, d_name_w, d_name_h,
@@ -4725,24 +4731,24 @@ int Com_Show_Scenario_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  commands = &name_edt;
-  staticcount.AppendTo(*commands);
-  staticcredits.AppendTo(*commands);
-  staticai.AppendTo(*commands);
-  staticlevel.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
-  gamelist.AppendTo(*commands);
-  playerlist.AppendTo(*commands);
-  countgauge.AppendTo(*commands);
-  levelgauge.AppendTo(*commands);
-  creditsgauge.AppendTo(*commands);
-  aiplayersgauge.AppendTo(*commands);
-  optionlist.AppendTo(*commands);
+  commands.Add(name_edt);
+  commands.Add(staticcount);
+  commands.Add(staticcredits);
+  commands.Add(staticai);
+  commands.Add(staticlevel);
+  commands.Add(cancelbtn);
+  commands.Add(gamelist);
+  commands.Add(playerlist);
+  commands.Add(countgauge);
+  commands.Add(levelgauge);
+  commands.Add(creditsgauge);
+  commands.Add(aiplayersgauge);
+  commands.Add(optionlist);
 #ifdef OLDWAY
-  gdibtn.AppendTo(*commands);
-  nodbtn.AppendTo(*commands);
+  commands.Add(gdibtn);
+  commands.Add(nodbtn);
 #else   // OLDWAY
-  housebtn.AppendTo(*commands);
+  commands.Add(housebtn);
 #endif  // OLDWAY
 
   //------------------------------------------------------------------------
@@ -5069,7 +5075,7 @@ int Com_Show_Scenario_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -5080,7 +5086,7 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     engine::window::KeyNumber input = input_event.key;
 
     /*
@@ -6171,13 +6177,14 @@ static int Phone_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  game::GadgetClass* commands = &phonelist;  // button list
-  addbtn.AppendTo(*commands);
-  editbtn.AppendTo(*commands);
-  deletebtn.AppendTo(*commands);
-  dialbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
-  numedit.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(phonelist);  // button list
+  commands.Add(addbtn);
+  commands.Add(editbtn);
+  commands.Add(deletebtn);
+  commands.Add(dialbtn);
+  commands.Add(cancelbtn);
+  commands.Add(numedit);
   dialbtn.Turn_On();
 
   /*
@@ -6240,12 +6247,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input(view).key;
+      input = commands.Input(view).key;
       firsttime = false;
     }
 
@@ -6698,12 +6705,13 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  game::GadgetClass* commands = &nameedit;  // button list
-  numedit.AppendTo(*commands);
-  defaultbtn.AppendTo(*commands);
-  custombtn.AppendTo(*commands);
-  savebtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(nameedit);  // button list
+  commands.Add(numedit);
+  commands.Add(defaultbtn);
+  commands.Add(custombtn);
+  commands.Add(savebtn);
+  commands.Add(cancelbtn);
 
   /*
   ----------------------------- Various Inits ------------------------------
@@ -6770,7 +6778,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -6779,12 +6787,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input(view).key;
+      input = commands.Input(view).key;
       firsttime = false;
     }
 

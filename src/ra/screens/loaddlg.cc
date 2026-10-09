@@ -71,8 +71,8 @@
 #include "engine/stream/readline.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "game/ui/toggle.h"
@@ -209,7 +209,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   switch (Style) {
     case LOAD:
@@ -267,11 +267,11 @@ bool LoadOptionsClass::Process() {
   /*
   **	Create the button list.
   */
-  commands = &button;
-  cancelbtn.AppendTo(*commands);
-  listbtn.AppendTo(*commands);
+  commands.Add(button);
+  commands.Add(cancelbtn);
+  commands.Add(listbtn);
   if (Style == SAVE) {
-    editbtn.AppendTo(*commands);
+    commands.Add(editbtn);
     editbtn.Set_Focus();
   }
 
@@ -317,7 +317,7 @@ bool LoadOptionsClass::Process() {
       /*
       **	Redraw the buttons.
       */
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -325,7 +325,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit
@@ -352,8 +352,8 @@ bool LoadOptionsClass::Process() {
           input = engine::window::ButtonKey(kButtonSave);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
-          toggle = dynamic_cast<game::ToggleClass*>(
-              commands->Extract_Gadget(kButtonSave));
+          toggle =
+              dynamic_cast<game::ToggleClass*>(commands.Extract(kButtonSave));
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -365,8 +365,8 @@ bool LoadOptionsClass::Process() {
           input = engine::window::ButtonKey(kButtonLoad);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = dynamic_cast<game::ToggleClass*>(
-              commands->Extract_Gadget(kButtonLoad));
+          toggle =
+              dynamic_cast<game::ToggleClass*>(commands.Extract(kButtonLoad));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -377,8 +377,8 @@ bool LoadOptionsClass::Process() {
           input = engine::window::ButtonKey(kButtonDelete);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = dynamic_cast<game::ToggleClass*>(
-              commands->Extract_Gadget(kButtonDelete));
+          toggle =
+              dynamic_cast<game::ToggleClass*>(commands.Extract(kButtonDelete));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -389,7 +389,7 @@ bool LoadOptionsClass::Process() {
           break;
       }
       game::TheMouse().Hide();
-      commands->Draw_All(view, true);
+      commands.DrawAll(view, true);
       game::TheMouse().Show();
     }
 
@@ -503,7 +503,7 @@ bool LoadOptionsClass::Process() {
             process = false;
           } else {
             auto* toggle = dynamic_cast<game::ToggleClass*>(
-                commands->Extract_Gadget(kButtonDelete));
+                commands.Extract(kButtonDelete));
             if (toggle != nullptr) {
               //							toggle->IsOn
               //= false;

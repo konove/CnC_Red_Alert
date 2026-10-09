@@ -68,7 +68,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
 #include "game/sim/enums.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
@@ -429,28 +428,29 @@ int MapEditClass::Placement_Dialog() {
       base::At(Objects, LastChoice);  // Working object pointer.  // current
                                       // object to choose
 
-  game::ControlClass* commands = &neutbtn;
+  game::GadgetList commands;
+  commands.Add(neutbtn);
   if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
-    multi1btn.AppendTo(*commands);
-    multi2btn.AppendTo(*commands);
-    multi3btn.AppendTo(*commands);
-    multi4btn.AppendTo(*commands);
+    commands.Add(multi1btn);
+    commands.Add(multi2btn);
+    commands.Add(multi3btn);
+    commands.Add(multi4btn);
   } else {
-    gdibtn.AppendTo(*commands);
-    nodbtn.AppendTo(*commands);
+    commands.Add(gdibtn);
+    commands.Add(nodbtn);
   }
-  nextbtn.AppendTo(*commands);
-  prevbtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
-  cancelbtn.AppendTo(*commands);
-  templatebtn.AppendTo(*commands);
-  overlaybtn.AppendTo(*commands);
-  smudgebtn.AppendTo(*commands);
-  terrainbtn.AppendTo(*commands);
-  unitbtn.AppendTo(*commands);
-  infantrybtn.AppendTo(*commands);
-  aircraftbtn.AppendTo(*commands);
-  buildingbtn.AppendTo(*commands);
+  commands.Add(nextbtn);
+  commands.Add(prevbtn);
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
+  commands.Add(templatebtn);
+  commands.Add(overlaybtn);
+  commands.Add(smudgebtn);
+  commands.Add(terrainbtn);
+  commands.Add(unitbtn);
+  commands.Add(infantrybtn);
+  commands.Add(aircraftbtn);
+  commands.Add(buildingbtn);
 
   /*........................................................................
   If the current house isn't valid for the current object type, cycle to
@@ -620,7 +620,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       .......................... Redraw buttons ..........................
       */
-      commands->Draw_All(view);
+      commands.DrawAll(view);
       game::TheMouse().Show();
       display = REDRAW_NONE;
     }
@@ -629,7 +629,7 @@ int MapEditClass::Placement_Dialog() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ------------------------- Process user input --------------------------
@@ -1740,7 +1740,8 @@ void MapEditClass::Toggle_House() {
  *   11/23/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Set_House_Buttons(HousesType house,
-                                     game::GadgetClass* btnlist, int base_id) {
+                                     const game::GadgetList& buttons,
+                                     int base_id) {
   /*
   **	Loop through all houses, searching the button list for each one.
   */
@@ -1750,29 +1751,12 @@ void MapEditClass::Set_House_Buttons(HousesType house,
     */
     const int id = static_cast<int>(h) + base_id;
     auto* btn = dynamic_cast<TextButtonClass*>(
-        btnlist->Extract_Gadget(static_cast<unsigned>(id)));
+        buttons.Extract(static_cast<unsigned>(id)));
     if (btn) {
       /*
       **	If this house value is the desired one, turn the button on;
       **	otherwise, turn it off.
       */
-      if (h == house) {
-        btn->Turn_On();
-      } else {
-        btn->Turn_Off();
-      }
-    }
-  }
-}
-
-void MapEditClass::Set_House_Buttons(HousesType house,
-                                     const game::GadgetList& buttons,
-                                     int base_id) {
-  for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-    const int id = static_cast<int>(h) + base_id;
-    auto* btn = dynamic_cast<TextButtonClass*>(
-        buttons.Extract(static_cast<unsigned>(id)));
-    if (btn) {
       if (h == house) {
         btn->Turn_On();
       } else {

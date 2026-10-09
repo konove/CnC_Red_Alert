@@ -62,6 +62,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/scenario.h"
@@ -146,7 +147,7 @@ void GameOptionsClass::Process() {
   /*
   **	Variables.
   */
-  TextButtonClass* buttons = nullptr;
+  game::GadgetList buttons;
   // Own every gadget linked into `buttons`: the dialog's text buttons, then
   // the two catch-all click regions behind them.
   std::vector<std::unique_ptr<TextButtonClass>> text_buttons;
@@ -196,11 +197,7 @@ void GameOptionsClass::Process() {
             .get();
 
     maxwidth = std::max(g->Width, maxwidth);
-    if (!buttons) {
-      buttons = g;
-    } else {
-      g->AppendTo(*buttons);
-    }
+    buttons.Add(*g);
 
     base::At(buttonsel, index) = g;
   }
@@ -211,11 +208,9 @@ void GameOptionsClass::Process() {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  game::GadgetClass* g = buttons;
-  while (g) {
+  for (game::GadgetClass* const g : buttons.gadgets()) {
     g->Width = std::max(maxwidth, 90 * resfactor);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
-    g = g->Next();
   }
 #ifdef FRENCH
   buttonsel[kButtonResume - 1]->Width = 104 * resfactor;
@@ -235,22 +230,18 @@ void GameOptionsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  gadgets
-      .emplace_back(std::make_unique<game::GadgetClass>(
-          OptionX, OptionY, OptionWidth, OptionHeight,
-          game::GadgetClass::kLeftPress))
-      ->AppendTo(*buttons);
+  buttons.Add(*gadgets.emplace_back(std::make_unique<game::GadgetClass>(
+      OptionX, OptionY, OptionWidth, OptionHeight,
+      game::GadgetClass::kLeftPress)));
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  gadgets
-      .emplace_back(std::make_unique<game::ControlClass>(
-          kButtonResume, 0, 0, TheScreen().visible_view().width(),
-          TheScreen().visible_view().height(),
-          game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress))
-      ->AppendTo(*buttons);
+  buttons.Add(*gadgets.emplace_back(std::make_unique<game::ControlClass>(
+      kButtonResume, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress)));
 
   game::TheKeyboard().Clear();
 
@@ -340,7 +331,7 @@ void GameOptionsClass::Process() {
           Version_Number(), TheGameState().version_text());
 #endif
 
-      buttons->Draw_All(view);
+      buttons.DrawAll(view);
       TabClass::Hilite_Tab(view, 0);
       game::TheMouse().Show();
       display = false;
@@ -349,7 +340,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = buttons->Input(view).key;
+    const engine::window::KeyNumber input = buttons.Input(view).key;
 
     /*
     **	Process Input.

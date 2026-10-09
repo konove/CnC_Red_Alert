@@ -26,6 +26,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -136,7 +137,9 @@ void RunSpecialOptionsDialog() {
   TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL,
                                 FontType::k6PointGradient, TPF_NOSHADOW,
                                 kCancelButtonX, kButtonY);
-  cancel_button.InsertAfter(ok_button);
+  game::GadgetList gadgets;
+  gadgets.Add(ok_button);
+  gadgets.AddAfter(cancel_button, ok_button);
 
   // One check box per option, in kOptions order. A box toggles itself when
   // clicked, so the flags are only read back from the boxes on OK.
@@ -146,7 +149,7 @@ void RunSpecialOptionsDialog() {
         *check_boxes.emplace_back(std::make_unique<CheckBoxClass>(
             static_cast<unsigned>(kFirstCheckBoxId + index), kCheckBoxX,
             kFirstCheckBoxY + (index * kCheckBoxSpacing)));
-    check_box.InsertAfter(ok_button);
+    gadgets.AddAfter(check_box, ok_button);
     if (kOptions.at(base::ToSize(index)).get(edited_flags)) {
       check_box.Turn_On();
     }
@@ -183,11 +186,11 @@ void RunSpecialOptionsDialog() {
                          game::kTransparentBlack, FontType::k6PointGradient,
                          TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      ok_button.Draw_All(view);
+      gadgets.DrawAll(view);
       game::TheMouse().Show();
     }
 
-    switch (static_cast<int>(ok_button.Input(view).key)) {
+    switch (static_cast<int>(gadgets.Input(view).key)) {
       case engine::window::ButtonKey(kOkButtonId):
         process = false;
         for (int index = 0; index < std::ssize(kOptions); ++index) {

@@ -50,6 +50,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -142,7 +143,9 @@ void VisualControlsClass::Process() {
   optionsbtn.X = option_x + (option_width - optionsbtn.Width - 34);
   resetbtn.X = option_x + 34;
 
-  resetbtn.AppendTo(optionsbtn);
+  game::GadgetList gadgets;
+  gadgets.Add(optionsbtn);
+  gadgets.Add(resetbtn);
 
   /*
   **	Brightness (value) control.
@@ -152,7 +155,7 @@ void VisualControlsClass::Process() {
                          slider_height, true);
   brightness.Set_Thumb_Size(40);
   brightness.Set_Value(TheOptions().Get_Brightness() * 256);
-  brightness.AppendTo(optionsbtn);
+  gadgets.Add(brightness);
 
   /*
   **	Color (saturation) control.
@@ -161,7 +164,7 @@ void VisualControlsClass::Process() {
                     slider_width, slider_height, true);
   color.Set_Thumb_Size(40);
   color.Set_Value(TheOptions().Get_Saturation() * 256);
-  color.AppendTo(optionsbtn);
+  gadgets.Add(color);
 
   /*
   **	Contrast control.
@@ -171,7 +174,7 @@ void VisualControlsClass::Process() {
                        slider_height, true);
   contrast.Set_Thumb_Size(40);
   contrast.Set_Value(TheOptions().Get_Contrast() * 256);
-  contrast.AppendTo(optionsbtn);
+  gadgets.Add(contrast);
 
   /*
   **	Tint (hue) control.
@@ -180,7 +183,7 @@ void VisualControlsClass::Process() {
                    slider_width, slider_height, true);
   tint.Set_Thumb_Size(40);
   tint.Set_Value(TheOptions().Get_Tint() * 256);
-  tint.AppendTo(optionsbtn);
+  gadgets.Add(tint);
 
   /*
   **	This causes left mouse button clicking within the confines of the dialog
@@ -188,7 +191,7 @@ void VisualControlsClass::Process() {
   */
   game::GadgetClass dialog(option_x, option_y, option_width, option_height,
                            game::GadgetClass::kLeftPress);
-  dialog.AppendTo(optionsbtn);
+  gadgets.Add(dialog);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
@@ -198,7 +201,7 @@ void VisualControlsClass::Process() {
       kButtonOptions, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  background.AppendTo(optionsbtn);
+  gadgets.Add(background);
 
   int curbutton = 0;
   buttons[0] = nullptr;
@@ -263,7 +266,7 @@ void VisualControlsClass::Process() {
                          kTextFlags | TPF_RIGHT |
                              (curbutton == i ? TPF_BRIGHT_COLOR : kTextFlags));
       }
-      optionsbtn.Draw_All(view);
+      gadgets.DrawAll(view);
       game::TheMouse().Show();
       partial = false;
     }
@@ -271,7 +274,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const engine::window::KeyNumber input = optionsbtn.Input(view).key;
+    const engine::window::KeyNumber input = gadgets.Input(view).key;
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(Fixed(brightness.Get_Value(), 256));

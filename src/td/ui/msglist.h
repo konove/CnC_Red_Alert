@@ -63,6 +63,7 @@
 #include <vector>
 
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "td/core/defines.h"
 #include "td/ui/txtlabel.h"
 
@@ -111,7 +112,7 @@ class MessageListClass {
   // Destroys `label`, which the caller has already unlinked from MessageList.
   void Destroy_Label(const TextLabelClass* label);
 
-  TextLabelClass* MessageList{nullptr};  // list of messages
+  game::GadgetList MessageList;  // list of messages
   // Owns every label linked into MessageList.
   std::vector<std::unique_ptr<TextLabelClass>> Labels;
   int MessageX{0};                       // x-coord of upper-left

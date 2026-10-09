@@ -184,11 +184,11 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //------------------------------------------------------------------------
   //	Remove every entry in the list
   //------------------------------------------------------------------------
-  TextLabelClass* txtlabel = MessageList;
-  while (txtlabel) {
-    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    Delete_Label(txtlabel);
-    txtlabel = MessageList;
+  while (!MessageList.empty()) {
+    auto& txtlabel =
+        dynamic_cast<TextLabelClass&>(*MessageList.gadgets().front());
+    MessageList.Remove(txtlabel);
+    Delete_Label(&txtlabel);
   }
 
   //------------------------------------------------------------------------
@@ -208,7 +208,6 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
-  MessageList = nullptr;
   MessageX = x;
   MessageY = y;
 
@@ -272,11 +271,11 @@ void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   //	Remove every entry in the list
   //------------------------------------------------------------------------
-  TextLabelClass* txtlabel = MessageList;
-  while (txtlabel) {
-    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    Delete_Label(txtlabel);
-    txtlabel = MessageList;
+  while (!MessageList.empty()) {
+    auto& txtlabel =
+        dynamic_cast<TextLabelClass&>(*MessageList.gadgets().front());
+    MessageList.Remove(txtlabel);
+    Delete_Label(&txtlabel);
   }
 
   //------------------------------------------------------------------------
@@ -296,7 +295,6 @@ void MessageListClass::Reset() {
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
-  MessageList = nullptr;
   EditLabel.reset();
   IsEdit = false;
 }
@@ -386,16 +384,16 @@ TextLabelClass* MessageListClass::Add_Message(
   //	Remove the top-most message if we're about to exceed the max allowed
   //------------------------------------------------------------------------
   if (MaxMessages > 0 && Num_Messages() + 1 > MaxMessages) {
-    txtlabel = MessageList;
-
-    if (txtlabel == nullptr) {
+    if (MessageList.empty()) {
       return nullptr;
     }
+    auto& top = dynamic_cast<TextLabelClass&>(*MessageList.gadgets().front());
+    txtlabel = &top;
 
     //.....................................................................
     //	Remove this message from the list; mark its buffer as being available.
     //.....................................................................
-    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
+    MessageList.Remove(*txtlabel);
     for (i = 0; i < MAX_NUM_MESSAGES; i++) {
       if (txtlabel->Text == base::At(MessageBuffers, i)) {
         base::At(BufferAvail, i) = 1;
@@ -445,11 +443,7 @@ TextLabelClass* MessageListClass::Add_Message(
   //------------------------------------------------------------------------
   //	Attach the message to our list
   //------------------------------------------------------------------------
-  if (MessageList) {
-    txtlabel->AppendTo(*MessageList);
-  } else {
-    MessageList = txtlabel;
-  }
+  MessageList.Add(*txtlabel);
 
   //------------------------------------------------------------------------
   //	Recompute all messages' y-coordinate values
@@ -493,13 +487,10 @@ char* MessageListClass::Get_Message(int id) {
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
   //------------------------------------------------------------------------
-  if (MessageList) {
-    TextLabelClass* gadg = MessageList;
-    while (gadg) {
-      if (gadg->UserData2 == id) {
-        return gadg->Text;
-      }
-      gadg = dynamic_cast<TextLabelClass*>(gadg->Next());
+  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+    const auto& label = dynamic_cast<TextLabelClass&>(*gadg);
+    if (label.UserData2 == id) {
+      return label.Text;
     }
   }
 
@@ -531,13 +522,10 @@ TextLabelClass* MessageListClass::Get_Label(int id) {
   //------------------------------------------------------------------------
   // Scan the message list, searching for the given ID
   //------------------------------------------------------------------------
-  if (MessageList) {
-    TextLabelClass* gadg = MessageList;
-    while (gadg) {
-      if (gadg->UserData2 == id) {
-        return gadg;
-      }
-      gadg = dynamic_cast<TextLabelClass*>(gadg->Next());
+  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+    auto& label = dynamic_cast<TextLabelClass&>(*gadg);
+    if (label.UserData2 == id) {
+      return &label;
     }
   }
 
@@ -584,23 +572,19 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   // Scan through all active messages, searching for one with a matching
   // name & ID
   //------------------------------------------------------------------------
-  int found = 0;
-  if (MessageList) {
-    tlabel = MessageList;
-    while (tlabel) {
-      if (tlabel->UserData2 == id &&
-          std::string_view(tlabel->Text).starts_with(name)) {
-        found = 1;
-        break;
-      }
-      tlabel = dynamic_cast<TextLabelClass*>(tlabel->Next());
+  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+    auto& label = dynamic_cast<TextLabelClass&>(*gadg);
+    if (label.UserData2 == id &&
+        std::string_view(label.Text).starts_with(name)) {
+      tlabel = &label;
+      break;
     }
   }
 
   //------------------------------------------------------------------------
   // name and ID not found; return
   //------------------------------------------------------------------------
-  if (!found) {
+  if (tlabel == nullptr) {
     return 0;
   }
 
@@ -760,15 +744,16 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color, FontType font,
   //------------------------------------------------------------------------
   //	Remove the top-most message if we're about to exceed the max allowed
   //------------------------------------------------------------------------
-  if (AdjustEdit && Num_Messages() + 1 > MaxMessages) {
-    TextLabelClass* txtlabel = MessageList;
-    MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
+  if (AdjustEdit && Num_Messages() + 1 > MaxMessages && !MessageList.empty()) {
+    auto& txtlabel =
+        dynamic_cast<TextLabelClass&>(*MessageList.gadgets().front());
+    MessageList.Remove(txtlabel);
     for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-      if (txtlabel->Text == base::At(MessageBuffers, i)) {
+      if (txtlabel.Text == base::At(MessageBuffers, i)) {
         base::At(BufferAvail, i) = 1;
       }
     }
-    Delete_Label(txtlabel);
+    Delete_Label(&txtlabel);
   }
 
   //------------------------------------------------------------------------
@@ -924,28 +909,24 @@ int MessageListClass::Manage() {
   //------------------------------------------------------------------------
   //	Loop through all messages
   //------------------------------------------------------------------------
-  TextLabelClass* txtlabel = MessageList;
-  while (txtlabel) {
+  // Walks a copy: removing a label changes the list's own span.
+  const std::span<game::GadgetClass* const> current = MessageList.gadgets();
+  const std::vector<game::GadgetClass*> gadgets(current.begin(), current.end());
+  for (game::GadgetClass* const gadg : gadgets) {
+    auto& txtlabel = dynamic_cast<TextLabelClass&>(*gadg);
     //.....................................................................
     //	If this message's time is up, remove it from the list
     //.....................................................................
-    if (txtlabel->UserData1 != 0 &&
-        engine::platform::SystemTicks() > txtlabel->UserData1) {
-      //..................................................................
-      //	Save the next ptr in the list; remove this entry
-      //..................................................................
-      auto* next = dynamic_cast<TextLabelClass*>(txtlabel->Next());
-      MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
+    if (txtlabel.UserData1 != 0 &&
+        engine::platform::SystemTicks() > txtlabel.UserData1) {
+      MessageList.Remove(txtlabel);
       for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
-        if (txtlabel->Text == base::At(MessageBuffers, i)) {
+        if (txtlabel.Text == base::At(MessageBuffers, i)) {
           base::At(BufferAvail, i) = 1;
         }
       }
-      Delete_Label(txtlabel);
+      Delete_Label(&txtlabel);
       changed = 1;
-      txtlabel = next;
-    } else {
-      txtlabel = dynamic_cast<TextLabelClass*>(txtlabel->Next());
     }
   }
 
@@ -1148,11 +1129,11 @@ void MessageListClass::Draw(PixelView& view) {
       game::TheMouse().Show();
     }
   }
-  if (MessageList) {
+  if (!MessageList.empty()) {
     if (TheScreen().IsVisible(&view)) {
       game::TheMouse().Hide();
     }
-    MessageList->Draw_All(view);
+    MessageList.DrawAll(view);
     if (TheScreen().IsVisible(&view)) {
       game::TheMouse().Show();
     }
@@ -1177,15 +1158,7 @@ void MessageListClass::Draw(PixelView& view) {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 int MessageListClass::Num_Messages() {
-  int num = 0;
-
-  if (MessageList) {
-    game::GadgetClass* gadg = MessageList;
-    while (gadg) {
-      num++;
-      gadg = gadg->Next();
-    }
-  }
+  int num = static_cast<int>(MessageList.gadgets().size());
 
   if (IsEdit && AdjustEdit) {
     num++;
@@ -1211,13 +1184,8 @@ int MessageListClass::Num_Messages() {
  *   06/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void MessageListClass::Set_Width(int width) {
-
-  if (MessageList) {
-    game::GadgetClass* gadg = MessageList;
-    while (gadg) {
-      dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
-      gadg = gadg->Next();
-    }
+  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+    dynamic_cast<TextLabelClass&>(*gadg).PixWidth = width;
   }
 
   if (IsEdit) {
@@ -1350,13 +1318,9 @@ void MessageListClass::Compute_Y() {
   } else {
     y = MessageY;
   }
-  if (MessageList) {
-    game::GadgetClass* gadg = MessageList;
-    while (gadg) {
-      gadg->Y = y;
-      gadg = gadg->Next();
-      y += Height;
-    }
+  for (game::GadgetClass* const gadg : MessageList.gadgets()) {
+    gadg->Y = y;
+    y += Height;
   }
 
 }  // end of Compute_Y

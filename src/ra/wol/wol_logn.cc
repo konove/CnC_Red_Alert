@@ -33,6 +33,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -152,7 +153,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass ConnectBtn(kButtonConnect, TXT_WOL_CONNECT, kButtonFont,
                              kButtonFlags, d_connect_x, d_connect_y,
@@ -201,13 +202,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Create the button list.
   */
-  commands = &ConnectBtn;
-  CancelBtn.AppendTo(*commands);
-  NickList.AppendTo(*commands);
-  NameEdit.AppendTo(*commands);
-  PassEdit.AppendTo(*commands);
-  SaveCheckBox.AppendTo(*commands);
-  DeleteBtn.AppendTo(*commands);
+  commands.Add(ConnectBtn);
+  commands.Add(CancelBtn);
+  commands.Add(NickList);
+  commands.Add(NameEdit);
+  commands.Add(PassEdit);
+  commands.Add(SaveCheckBox);
+  commands.Add(DeleteBtn);
   NameEdit.Set_Focus();
 
   if (NickList.Count() == 0) {
@@ -259,7 +260,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                          d_pass_y - 14, Get_Color_Scheme(),
                          game::kTransparentBlack, kTextFont,
                          kTextFlags | TPF_CENTER);
-        commands->Flag_List_To_Redraw();
+        commands.FlagToRedraw();
       }
       game::TheMouse().Show();
       display = false;
@@ -275,7 +276,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     TheGameState().tab_key_pressed() = false;
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit
@@ -300,12 +301,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                             input = (KeyNumber)(kButtonConnect|KN_BUTTON);
                             CancelBtn.Turn_Off();
                             toggle =
-       (ToggleClass*)commands->Extract_Gadget(kButtonConnect); if (toggle !=
+       (ToggleClass*)commands.Extract(kButtonConnect); if (toggle !=
        NULL) { toggle->Turn_On(); toggle->IsPressed = true;
                             }
 
                             HideMouse();
-                            commands->Draw_All(true);
+                            commands.DrawAll(true);
                             ShowMouse();
                     }
     */

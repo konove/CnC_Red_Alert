@@ -103,6 +103,7 @@
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "ra/core/defines.h"
 #include "ra/ui/txtlabel.h"
 
@@ -208,7 +209,7 @@ class MessageListClass {
   //.....................................................................
   // Private Data
   //.....................................................................
-  TextLabelClass* MessageList{nullptr};  // list of messages
+  game::GadgetList MessageList;  // list of messages
   // Owns every label in MessageList, in no particular order.
   std::vector<std::unique_ptr<TextLabelClass>> Labels;
   int MessageX{0};                       // x-coord of upper-left

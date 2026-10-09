@@ -28,6 +28,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -140,12 +141,13 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
 
-  game::GadgetClass* commands = &cancelbtn;  // button list
-  progress_meter.AppendTo(*commands);
-  StatTitle.AppendTo(*commands);
-  StatBytes.AppendTo(*commands);
-  StatTime.AppendTo(*commands);
-  StatStatus.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
+  commands.Add(progress_meter);
+  commands.Add(StatTitle);
+  commands.Add(StatBytes);
+  commands.Add(StatTime);
+  commands.Add(StatStatus);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%
@@ -183,7 +185,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       if (display >= REDRAW_PROGRESS) {

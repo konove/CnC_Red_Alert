@@ -60,6 +60,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
@@ -367,7 +368,7 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                                             // was called for Aftermath.
 {
-  game::GadgetClass* buttons = nullptr;
+  game::GadgetList buttons;
 
   TextButtonClass ok(200, TXT_OK, kButtonFont, kButtonFlags, kOptionX + 40,
                      kOptionY + kOptionHeight - 50);
@@ -379,9 +380,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                   kOptionHeight - 85, kButtonFont, kButtonFlags,
                   MixArchive::RetrieveData("BTN-UP.SHP"),
                   MixArchive::RetrieveData("BTN-DN.SHP"));
-  buttons = &ok;
-  cancel.InsertAfter(*buttons);
-  list.InsertAfter(*buttons);
+  buttons.Add(ok);
+  buttons.AddAfter(cancel, ok);
+  buttons.AddAfter(list, ok);
 
   /*
   **	Add in all the expansion scenarios.
@@ -481,11 +482,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         Draw_Caption(view, TXT_WOL_AM_MISSIONS, kOptionX, kOptionY,
                      kOptionWidth);
       }
-      buttons->Draw_All(view);
+      buttons.DrawAll(view);
       game::TheMouse().Show();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view).key;
+    const engine::window::KeyNumber input = buttons.Input(view).key;
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;

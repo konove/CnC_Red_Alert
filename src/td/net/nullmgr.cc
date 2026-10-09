@@ -83,6 +83,7 @@
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -121,7 +122,7 @@ using enum engine::window::KeyNumber;
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
 engine::window::KeyNumber NullModemClass::Input;
-game::GadgetClass* NullModemClass::Commands;  // button list
+game::GadgetList NullModemClass::Commands;  // button list
 
 namespace {
 
@@ -620,11 +621,12 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   /*
   ............................ Create the list .............................
   */
-  Commands = &cancelbtn;
+  Commands.Clear();
+  Commands.Add(cancelbtn);
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Commands->Flag_List_To_Redraw();
+  Commands.FlagToRedraw();
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -650,7 +652,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   // Timer_Test(__LINE__, __FILE__);
 
   CCDebugString("C&C95 - About to draw buttons.\n");
-  Commands->Draw_All(view);
+  Commands.DrawAll(view);
   CCDebugString("C&C95 - About to show mouse.\n");
   game::TheMouse().Show();
 
@@ -711,7 +713,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     */
     CCDebugString("C&C95 - About to check for keyboard input.\n");
     if (!Input) {
-      Input = Commands->Input(view).key;
+      Input = Commands.Input(view).key;
     }
 
     switch (static_cast<int>(Input)) {
@@ -755,7 +757,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   Remove_Abort_Modem();
   // cancelbtn is a local of this function; drop the pointer with it so the
   // static does not outlive the button it names.
-  Commands = nullptr;
+  Commands.Clear();
 
   return dialstatus;
 
@@ -852,9 +854,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*
   ............................ Create the list .............................
   */
-  Commands = &cancelbtn;
+  Commands.Clear();
+  Commands.Add(cancelbtn);
 
-  Commands->Flag_List_To_Redraw();
+  Commands.FlagToRedraw();
 
   // start waiting
 
@@ -900,7 +903,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
             y + (25 * factor), kCcGreen, game::kTransparentBlack,
             FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Commands->Draw_All(view);
+        Commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -913,7 +916,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ............................ Process input ............................
     */
     if (!Input) {
-      Input = Commands->Input(view).key;
+      Input = Commands.Input(view).key;
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -993,7 +996,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   Remove_Abort_Modem();
   // cancelbtn is a local of this function; drop the pointer with it so the
   // static does not outlive the button it names.
-  Commands = nullptr;
+  Commands.Clear();
 
   return dialstatus;
 
@@ -1211,7 +1214,7 @@ int NullModemClass::Abort_Modem()
   */
   // Installed only by Setup_Abort_Modem(), which Dial_Modem() and
   // Answer_Modem() call while their dialog is up on the visible page.
-  Input = Commands->Input(TheScreen().visible_view()).key;
+  Input = Commands.Input(TheScreen().visible_view()).key;
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

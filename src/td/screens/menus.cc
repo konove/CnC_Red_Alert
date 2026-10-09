@@ -57,7 +57,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
-#include "game/ui/control.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -640,7 +640,7 @@ int Main_Menu(int timeout) {
 #endif
   int64_t starttime = 0;
 
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS
@@ -776,23 +776,23 @@ int Main_Menu(int timeout) {
   /*
   **	Create the list
   */
-  commands = &startbtn;
+  commands.Add(startbtn);
 #ifdef NEWMENU
   if (expansions) {
-    expandbtn.AppendTo(*commands);
+    commands.Add(expandbtn);
   }
 #endif
 #ifdef BONUS_MISSIONS
-  bonusbtn.AppendTo(*commands);
+  commands.Add(bonusbtn);
 #endif  // BONUS_MISSIONS
 
 #ifndef DEMO
-  internetbutton.AppendTo(*commands);
+  commands.Add(internetbutton);
 #endif  // DEMO
-  loadbtn.AppendTo(*commands);
-  multibtn.AppendTo(*commands);
-  introbtn.AppendTo(*commands);
-  exitbtn.AppendTo(*commands);
+  commands.Add(loadbtn);
+  commands.Add(multibtn);
+  commands.Add(introbtn);
+  commands.Add(exitbtn);
 
   /*
   **	Fill array of button ptrs
@@ -908,14 +908,14 @@ int Main_Menu(int timeout) {
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
       game::TheMouse().Show();
 
-      startbtn.Draw_All(view);
+      commands.DrawAll(view);
       display = false;
     }
 
     /*
     **	Get and process player input.
     */
-    input = commands->Input(view).key;
+    input = commands.Input(view).key;
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
       case engine::window::ButtonKey(kButtonExpand):

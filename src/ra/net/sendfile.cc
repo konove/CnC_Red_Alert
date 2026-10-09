@@ -65,6 +65,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/palette.h"
@@ -353,8 +354,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     return false;
   }
 
-  game::GadgetClass* commands = &cancelbtn;  // button list
-  commands->AppendTo(progress_meter);
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%
@@ -392,7 +393,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       if (display >= REDRAW_PROGRESS) {
@@ -656,8 +657,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     return false;
   }
 
-  game::GadgetClass* commands = &cancelbtn;  // button list
-  commands->AppendTo(progress_meter);
+  game::GadgetList commands;
+  commands.Add(cancelbtn);  // button list
 
   progress_meter.Set_Maximum(100);  // Max is 100%
   progress_meter.Set_Value(0);      // Current is 0%
@@ -693,7 +694,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
 
       if (display >= REDRAW_PROGRESS) {

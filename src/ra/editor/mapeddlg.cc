@@ -69,8 +69,8 @@
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -621,7 +621,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    game::ControlClass* commands = nullptr;  // the button list
+    game::GadgetList commands;  // the button list
     EditClass editbtn(kButtonScenario, scen_buf, 5, FontType::kEditor,
                       TPF_NOSHADOW, kDScenX, kDScenY, kDScenW, kDScenH,
                       EditClass::kAlphanumeric);
@@ -704,19 +704,19 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Create the button list
     */
-    commands = &editbtn;
-    varabtn.AppendTo(*commands);
-    varbbtn.AppendTo(*commands);
-    varcbtn.AppendTo(*commands);
-    vardbtn.AppendTo(*commands);
-    gdibtn.AppendTo(*commands);
-    nodbtn.AppendTo(*commands);
-    neubtn.AppendTo(*commands);
-    playermbtn.AppendTo(*commands);
-    eastbtn.AppendTo(*commands);
-    westbtn.AppendTo(*commands);
-    okbtn.AppendTo(*commands);
-    cancelbtn.AppendTo(*commands);
+    commands.Add(editbtn);
+    commands.Add(varabtn);
+    commands.Add(varbbtn);
+    commands.Add(varcbtn);
+    commands.Add(vardbtn);
+    commands.Add(gdibtn);
+    commands.Add(nodbtn);
+    commands.Add(neubtn);
+    commands.Add(playermbtn);
+    commands.Add(eastbtn);
+    commands.Add(westbtn);
+    commands.Add(okbtn);
+    commands.Add(cancelbtn);
 
     /*
     **	Init the button states
@@ -810,7 +810,7 @@ int MapEditClass::Load_Scenario() {
         Fancy_Text_Print(view, "Scenario", kDDialogCx - 5, kDScenY,
                          Get_Color_Scheme(), game::kTransparentBlack,
                          FontType::kEditor, TPF_RIGHT | TPF_NOSHADOW);
-        commands->Draw_All(view);
+        commands.DrawAll(view);
         game::TheMouse().Show();
 
         display = false;
@@ -819,7 +819,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const engine::window::KeyNumber input = commands->Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
 
       /*
       **	Process input
@@ -1098,7 +1098,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    game::ControlClass* commands = nullptr;
+    game::GadgetList commands;
 
     TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
                           kDOkY, kDOkW, kDOkH);
@@ -1130,8 +1130,8 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Build the button list
     */
-    commands = &okbtn;
-    cancelbtn.AppendTo(*commands);
+    commands.Add(okbtn);
+    commands.Add(cancelbtn);
 
     /*
     **	Main processing loop
@@ -1251,7 +1251,7 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Redraw the buttons
           */
-          commands->Flag_List_To_Redraw();
+          commands.FlagToRedraw();
         }
 
         /*
@@ -1380,7 +1380,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process user input
       */
-      const engine::window::InputEvent input_event = commands->Input(view);
+      const engine::window::InputEvent input_event = commands.Input(view);
       const engine::window::KeyNumber input = input_event.key;
 
       /*
@@ -1709,7 +1709,7 @@ int MapEditClass::Load_Scenario() {
 
     PixelView& view = TheScreen().visible_view();
 
-    game::ControlClass* commands = nullptr;  // the button list
+    game::GadgetList commands;  // the button list
 
     /*
     **	Theater choice drop down list.
@@ -2063,40 +2063,40 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Create the list
     */
-    commands = &okbtn;
-    cancelbtn.AppendTo(*commands);
-    theaterbtn.AppendTo(*commands);
-    themebtn.AppendTo(*commands);
-    housebtn.AppendTo(*commands);
-    techlevel.AppendTo(*commands);
-    techstatic.AppendTo(*commands);
-    sourcebtn.AppendTo(*commands);
-    creditbtn.AppendTo(*commands);
-    creditstatic.AppendTo(*commands);
-    maxunitstatic.AppendTo(*commands);
-    moneytib.AppendTo(*commands);
-    smartiesstatic.AppendTo(*commands);
-    allies.AppendTo(*commands);
-    control.AppendTo(*commands);
-    maxunit.AppendTo(*commands);
-    nospyplane.AppendTo(*commands);
-    skipscore.AppendTo(*commands);
-    nomapsel.AppendTo(*commands);
-    onetime.AppendTo(*commands);
-    inherit.AppendTo(*commands);
-    timercarry.AppendTo(*commands);
-    tanya.AppendTo(*commands);
-    record.AppendTo(*commands);
-    truckcrate.AppendTo(*commands);
-    endofgame.AppendTo(*commands);
-    briefing.AppendTo(*commands);
-    intro.AppendTo(*commands);
-    action.AppendTo(*commands);
-    win.AppendTo(*commands);
-    lose.AppendTo(*commands);
-    basebtn.AppendTo(*commands);
-    smarties.AppendTo(*commands);
-    desc.AppendTo(*commands);
+    commands.Add(okbtn);
+    commands.Add(cancelbtn);
+    commands.Add(theaterbtn);
+    commands.Add(themebtn);
+    commands.Add(housebtn);
+    commands.Add(techlevel);
+    commands.Add(techstatic);
+    commands.Add(sourcebtn);
+    commands.Add(creditbtn);
+    commands.Add(creditstatic);
+    commands.Add(maxunitstatic);
+    commands.Add(moneytib);
+    commands.Add(smartiesstatic);
+    commands.Add(allies);
+    commands.Add(control);
+    commands.Add(maxunit);
+    commands.Add(nospyplane);
+    commands.Add(skipscore);
+    commands.Add(nomapsel);
+    commands.Add(onetime);
+    commands.Add(inherit);
+    commands.Add(timercarry);
+    commands.Add(tanya);
+    commands.Add(record);
+    commands.Add(truckcrate);
+    commands.Add(endofgame);
+    commands.Add(briefing);
+    commands.Add(intro);
+    commands.Add(action);
+    commands.Add(win);
+    commands.Add(lose);
+    commands.Add(basebtn);
+    commands.Add(smarties);
+    commands.Add(desc);
 
     /*
     **	Main Processing Loop
@@ -2253,7 +2253,7 @@ int MapEditClass::Load_Scenario() {
         win.Collapse();
         lose.Collapse();
         basebtn.Collapse();
-        commands->Draw_All(view, true);
+        commands.DrawAll(view, true);
         game::TheMouse().Show();
         display = false;
         dotext = true;
@@ -2293,7 +2293,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const engine::window::KeyNumber input = commands->Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
 
       /*
       **	Process input
@@ -2706,7 +2706,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    game::ControlClass* commands = nullptr;  // the button list
+    game::GadgetList commands;  // the button list
 
     TListClass<TriggerType*> triggerlist(
         kTriggerList, kDListX, kDListY, kDListW, kDListH, FontType::kEditor,
@@ -2757,11 +2757,11 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Create the list
     */
-    commands = &triggerlist;
-    editbtn.AppendTo(*commands);
-    newbtn.AppendTo(*commands);
-    deletebtn.AppendTo(*commands);
-    okbtn.AppendTo(*commands);
+    commands.Add(triggerlist);
+    commands.Add(editbtn);
+    commands.Add(newbtn);
+    commands.Add(deletebtn);
+    commands.Add(okbtn);
 
     /*
     **	Main Processing Loop
@@ -2781,8 +2781,8 @@ int MapEditClass::Load_Scenario() {
         game::TheMouse().Hide();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(view, TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY, kDDialogW);
-        commands->Flag_List_To_Redraw();
-        commands->Draw_All(view);
+        commands.FlagToRedraw();
+        commands.DrawAll(view);
         game::TheMouse().Show();
         display = false;
       }
@@ -2790,7 +2790,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const engine::window::KeyNumber input = commands->Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
 
       /*
       **	Process input

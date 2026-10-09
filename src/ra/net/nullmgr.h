@@ -50,6 +50,7 @@
 #include "engine/net/nullmgr.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "ra/net/session.h"
 
 namespace ra {
@@ -84,7 +85,7 @@ class NullModemClass : public engine::net::NullModemClass {
 
   static void (*OrigAbortModemFunc)(int);
   static engine::window::KeyNumber Input;
-  static game::GadgetClass* Commands;  // button list
+  static game::GadgetList Commands;  // button list
 
   /*
   **	Constructor/destructor.

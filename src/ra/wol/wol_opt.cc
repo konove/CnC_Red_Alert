@@ -24,6 +24,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -96,7 +97,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
                         d_ok_y, d_ok_w);
@@ -129,12 +130,12 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Create the button list.
   */
-  commands = &OkBtn;
-  FindCheck.AppendTo(*commands);
-  PageCheck.AppendTo(*commands);
-  LanguageCheck.AppendTo(*commands);
-  GamescopeCheck.AppendTo(*commands);
-  RankAMCheck.AppendTo(*commands);
+  commands.Add(OkBtn);
+  commands.Add(FindCheck);
+  commands.Add(PageCheck);
+  commands.Add(LanguageCheck);
+  commands.Add(GamescopeCheck);
+  commands.Add(RankAMCheck);
 
   /*
   **	Main Processing Loop.
@@ -166,7 +167,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       game::TheMouse().Hide();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y, d_dialog_w);
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -180,7 +181,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on

@@ -250,8 +250,6 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category();
   void Place_Home();
   void Toggle_House();
-  static void Set_House_Buttons(HousesType house, game::GadgetClass* btnlist,
-                                int base_id);
   static void Set_House_Buttons(HousesType house,
                                 const game::GadgetList& buttons, int base_id);
   void Start_Trigger_Placement();

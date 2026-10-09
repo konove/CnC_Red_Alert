@@ -21,6 +21,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -73,12 +74,14 @@ void RunSpecialOptionsDialog() {
                             kOkButtonX, kButtonY);
   TextButtonClass cancel_button(kCancelButtonId, TXT_CANCEL, kButtonFont,
                                 kButtonFlags, kCancelButtonX, kButtonY);
-  cancel_button.InsertAfter(ok_button);
+  game::GadgetList gadgets;
+  gadgets.Add(ok_button);
+  gadgets.AddAfter(cancel_button, ok_button);
 
   // Speed build is the one flag the dialog offers. The box toggles itself
   // when clicked, so the flag is only read back from it on OK.
   CheckBoxClass speed_build_box(kSpeedBuildBoxId, kCheckBoxX, kCheckBoxY);
-  speed_build_box.InsertAfter(ok_button);
+  gadgets.AddAfter(speed_build_box, ok_button);
   if (edited_flags.speed_build) {
     speed_build_box.Turn_On();
   }
@@ -110,11 +113,11 @@ void RunSpecialOptionsDialog() {
                        kCheckBoxY, Get_Color_Scheme(), game::kTransparentBlack,
                        FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-      ok_button.Draw_All(view);
+      gadgets.DrawAll(view);
       game::TheMouse().Show();
     }
 
-    switch (static_cast<int>(ok_button.Input(view).key)) {
+    switch (static_cast<int>(gadgets.Input(view).key)) {
       case engine::window::ButtonKey(kOkButtonId):
         process = false;
         edited_flags.speed_build = speed_build_box.IsOn;

@@ -54,8 +54,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/compat.h"
@@ -588,7 +588,7 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   int ystep = 28;
   if (bExpansionCS) {
@@ -648,17 +648,17 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Create the list
   */
-  commands = &startbtn;
+  commands.Add(startbtn);
   if (bExpansionCS) {
-    expandbtnCS.AppendTo(*commands);
+    commands.Add(expandbtnCS);
   }
   if (bExpansionAM) {
-    expandbtnAM.AppendTo(*commands);
+    commands.Add(expandbtnAM);
   }
-  loadbtn.AppendTo(*commands);
-  multibtn.AppendTo(*commands);
-  introbtn.AppendTo(*commands);
-  exitbtn.AppendTo(*commands);
+  commands.Add(loadbtn);
+  commands.Add(multibtn);
+  commands.Add(introbtn);
+  commands.Add(exitbtn);
 
   /*
   **	Fill array of button ptrs
@@ -726,7 +726,7 @@ int Main_Menu(int32_t /*unused*/) {
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
-      commands->Draw_All(hidden);
+      commands.DrawAll(hidden);
       Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10, Get_Color_Scheme(),
                        game::kTransparentBlack, FontType::kEditor,
@@ -745,7 +745,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     const engine::window::KeyNumber input = input_event.key;
 
     // A click on the logo shows who made the game; a Shift-click in the top

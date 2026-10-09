@@ -56,6 +56,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -203,26 +204,26 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
                           y + height - (bheight + (5 * factor)));
   button3.X = x + ((width - button3.Width) / 2);
 
-  TextButtonClass* buttonlist = nullptr;
+  game::GadgetList buttonlist;
   curbutton = 0;
 
   /*
   **	Add and inialize the buttons to the button list.
   */
   if (numbuttons) {
-    buttonlist = &button1;
+    buttonlist.Add(button1);
     base::At(buttons, 0) = &button1;
     base::At(realval, 0) = BUTTON_1;
     if (numbuttons > 2) {
-      button3.InsertAfter(*buttonlist);
       base::At(buttons, 1) = &button3;
       base::At(realval, 1) = BUTTON_3;
-      button2.InsertAfter(*buttonlist);
+      buttonlist.Add(button2);
+      buttonlist.Add(button3);
       base::At(buttons, 2) = &button2;
       base::At(realval, 2) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     } else if (numbuttons == 2) {
-      button2.InsertAfter(*buttonlist);
+      buttonlist.Add(button2);
       base::At(buttons, 1) = &button2;
       base::At(realval, 1) = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
@@ -266,15 +267,15 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Redraw the buttons.
   */
-  if (buttonlist) {
-    buttonlist->Draw_All(view);
+  if (!buttonlist.empty()) {
+    buttonlist.DrawAll(view);
   }
   game::TheMouse().Show();
 
   /*
   **	Main Processing Loop.
   */
-  if (buttonlist) {
+  if (!buttonlist.empty()) {
     process = true;
     pressed = false;
     while (process) {
@@ -311,8 +312,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Redraw the buttons.
         */
-        if (buttonlist) {
-          buttonlist->Draw_All(view);
+        if (!buttonlist.empty()) {
+          buttonlist.DrawAll(view);
         }
         game::TheMouse().Show();
       }
@@ -325,7 +326,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      input = buttonlist->Input(view).key;
+      input = buttonlist.Input(view).key;
       switch (static_cast<int>(input)) {
         case BUTTON_1 | BUTTON_FLAG:
           selection = base::At(realval, 0);

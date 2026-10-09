@@ -67,8 +67,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/teamtype.h"
@@ -286,7 +286,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  game::GadgetClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   ListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
                      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -391,11 +391,11 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   ............................ Create the list .............................
   */
-  commands = &teamlist;
-  editbtn.AppendTo(*commands);
-  newbtn.AppendTo(*commands);
-  deletebtn.AppendTo(*commands);
-  okbtn.AppendTo(*commands);
+  commands.Add(teamlist);
+  commands.Add(editbtn);
+  commands.Add(newbtn);
+  commands.Add(deletebtn);
+  commands.Add(okbtn);
 
   /*
   ------------------------ Init tab stops for list -------------------------
@@ -437,7 +437,7 @@ int MapEditClass::Select_Team(const char* caption) {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -447,7 +447,7 @@ int MapEditClass::Select_Team(const char* caption) {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+        commands.Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -972,34 +972,35 @@ int MapEditClass::Edit_Team() {
   /*
   ............................ Create the list .............................
   */
-  game::ControlClass* commands = &okbtn;
-  cancelbtn.AppendTo(*commands);
-  membersbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
+  commands.Add(membersbtn);
 
-  name_edt.AppendTo(*commands);
-  recr_edt.AppendTo(*commands);
-  maxnum_edt.AppendTo(*commands);
-  initnum_edt.AppendTo(*commands);
-  fear_edt.AppendTo(*commands);
+  commands.Add(name_edt);
+  commands.Add(recr_edt);
+  commands.Add(maxnum_edt);
+  commands.Add(initnum_edt);
+  commands.Add(fear_edt);
 
-  gdibtn.AppendTo(*commands);
-  nodbtn.AppendTo(*commands);
-  neubtn.AppendTo(*commands);
+  commands.Add(gdibtn);
+  commands.Add(nodbtn);
+  commands.Add(neubtn);
 
-  roundbtn.AppendTo(*commands);
-  learnbtn.AppendTo(*commands);
-  suicidebtn.AppendTo(*commands);
-  autocreatebtn.AppendTo(*commands);
-  mercbtn.AppendTo(*commands);
-  prebuiltbtn.AppendTo(*commands);
-  reinforcebtn.AppendTo(*commands);
+  commands.Add(roundbtn);
+  commands.Add(learnbtn);
+  commands.Add(suicidebtn);
+  commands.Add(autocreatebtn);
+  commands.Add(mercbtn);
+  commands.Add(prebuiltbtn);
+  commands.Add(reinforcebtn);
 
-  missionlist1.AppendTo(*commands);
-  missionlist2.AppendTo(*commands);
-  addbtn.AppendTo(*commands);
-  insertbtn.AppendTo(*commands);
-  delbtn.AppendTo(*commands);
-  arg_edt.AppendTo(*commands);
+  commands.Add(missionlist1);
+  commands.Add(missionlist2);
+  commands.Add(addbtn);
+  commands.Add(insertbtn);
+  commands.Add(delbtn);
+  commands.Add(arg_edt);
 
   Set_House_Buttons(house, commands, kButtonGdi);
 
@@ -1059,7 +1060,7 @@ int MapEditClass::Edit_Team() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -1068,7 +1069,7 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -1661,8 +1662,9 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Create the list.
   */
-  game::ControlClass* commands = &okbtn;
-  cancelbtn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(okbtn);
+  commands.Add(cancelbtn);
 
   /*
   **	Main Processing Loop.
@@ -1720,7 +1722,7 @@ int MapEditClass::Team_Members(HousesType house) {
       **	Redraw the buttons.
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(view);
+        commands.DrawAll(view);
       }
       game::TheMouse().Show();
       display = REDRAW_NONE;
@@ -1729,7 +1731,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::InputEvent input_event = commands.Input(view);
     const engine::window::KeyNumber input = input_event.key;
 
     // The mouse buttons set or clear the 'held' values that step the member

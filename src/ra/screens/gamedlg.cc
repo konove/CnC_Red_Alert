@@ -46,6 +46,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -206,13 +207,14 @@ void GameControlsClass::Process() {
   /*
   **	Build button list
   */
-  game::GadgetClass* commands = &okbtn;  // button list
-  gspeed_btn.AppendTo(*commands);
-  scrate_btn.AppendTo(*commands);
-  visual_btn.AppendTo(*commands);
-  sound_btn.AppendTo(*commands);
+  game::GadgetList commands;
+  commands.Add(okbtn);  // button list
+  commands.Add(gspeed_btn);
+  commands.Add(scrate_btn);
+  commands.Add(visual_btn);
+  commands.Add(sound_btn);
   if (bShowWolapi) {
-    wol_btn.AppendTo(*commands);
+    commands.Add(wol_btn);
   }
   /*
   **	Init button states
@@ -311,7 +313,7 @@ void GameControlsClass::Process() {
                        game::kTransparentBlack, kTextFont,
                        kTextFlags | TPF_RIGHT);
 
-      commands->Draw_All(view);
+      commands.DrawAll(view);
 
       game::TheMouse().Show();
       refresh = false;
@@ -320,7 +322,7 @@ void GameControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	Process input.

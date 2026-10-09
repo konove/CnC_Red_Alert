@@ -51,6 +51,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
@@ -121,7 +122,7 @@ void GameOptionsClass::Process() {
   /*
   **	Variables.
   */
-  TextButtonClass* buttons = nullptr;
+  game::GadgetList buttons;
   // Owns every gadget linked into `buttons`.
   std::vector<std::unique_ptr<TextButtonClass>> owned_buttons;
   int selection = 0;
@@ -227,11 +228,7 @@ void GameOptionsClass::Process() {
     }
 
     maxwidth = std::max(g->Width, maxwidth);
-    if (buttons == nullptr) {
-      buttons = g;
-    } else {
-      g->AppendTo(*buttons);
-    }
+    buttons.Add(*g);
 
     base::At(buttonsel, index) = g;
   }
@@ -250,11 +247,9 @@ void GameOptionsClass::Process() {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  game::GadgetClass* g = buttons;
-  while (g != nullptr) {
+  for (game::GadgetClass* const g : buttons.gadgets()) {
     g->Width = std::max(maxwidth, 180);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
-    g = g->Next();
   }
   buttonsel[kButtonResume - 1]->Width = 180;
   buttonsel[kButtonResume - 1]->X = OptionX + 34;
@@ -272,7 +267,7 @@ void GameOptionsClass::Process() {
   const auto dialog_area = std::make_unique<game::GadgetClass>(
       OptionX, OptionY, OptionWidth, OptionHeight,
       game::GadgetClass::kLeftPress);
-  dialog_area->AppendTo(*buttons);
+  buttons.Add(*dialog_area);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
@@ -282,7 +277,7 @@ void GameOptionsClass::Process() {
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
       game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
-  outside_click->AppendTo(*buttons);
+  buttons.Add(*outside_click);
 
   game::TheKeyboard().Clear();
 
@@ -337,7 +332,7 @@ void GameOptionsClass::Process() {
           Get_Color_Scheme(), game::kTransparentBlack, FontType::kEditor,
           TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName, Version_Name());
 
-      buttons->Draw_All(view);
+      buttons.DrawAll(view);
       TabClass::Hilite_Tab(view, 0);
       game::TheMouse().Show();
       display = false;
@@ -347,7 +342,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = buttons->Input(view).key;
+    const engine::window::KeyNumber input = buttons.Input(view).key;
 
     /*
     **	Process Input.

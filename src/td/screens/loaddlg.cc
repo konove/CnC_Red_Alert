@@ -70,7 +70,7 @@
 #include "engine/platform/file_system.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/ui/control.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/palette.h"
@@ -223,7 +223,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   if (Style == LOAD) {
     btn_txt = TXT_LOAD_BUTTON;
@@ -278,11 +278,11 @@ bool LoadOptionsClass::Process() {
   /*
   **	Create the button list.
   */
-  commands = &button;
-  cancelbtn.AppendTo(*commands);
-  listbtn.AppendTo(*commands);
+  commands.Add(button);
+  commands.Add(cancelbtn);
+  commands.Add(listbtn);
   if (Style == SAVE) {
-    editbtn.AppendTo(*commands);
+    commands.Add(editbtn);
     editbtn.Set_Focus();
   }
 
@@ -338,7 +338,7 @@ bool LoadOptionsClass::Process() {
       /*
       **	Redraw the buttons.
       */
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -346,7 +346,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

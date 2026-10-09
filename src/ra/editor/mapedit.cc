@@ -1966,7 +1966,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Buttons
   */
-  game::ControlClass* commands = nullptr;  // the button list
+  game::GadgetList commands;  // the button list
 
   TextButtonClass button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
                          kButtonX, kButtonY, kButtonW);
@@ -1983,9 +1983,9 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Create the button list.
   */
-  commands = &button;
-  cancelbtn.AppendTo(*commands);
-  editbtn.AppendTo(*commands);
+  commands.Add(button);
+  commands.Add(cancelbtn);
+  commands.Add(editbtn);
   editbtn.Set_Focus();
 
   /*
@@ -2020,7 +2020,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       /*
       **	Redraw the buttons.
       */
-      commands->Flag_List_To_Redraw();
+      commands.FlagToRedraw();
       game::TheMouse().Show();
       display = false;
     }
@@ -2028,7 +2028,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view).key;
+    engine::window::KeyNumber input = commands.Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

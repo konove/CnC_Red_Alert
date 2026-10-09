@@ -26,6 +26,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -121,7 +122,9 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
                      true);
   slider.Set_Maximum(stops);
   slider.Set_Value(stops / 2);
-  slider.InsertAfter(ok_button);
+  game::GadgetList gadgets;
+  gadgets.Add(ok_button);
+  gadgets.Add(slider);
 
   game::TheMouse().Hide();
   Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
@@ -139,7 +142,7 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
   Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
                    kSliderLabelY, Get_Color_Scheme(), game::kTransparentBlack,
                    FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
-  ok_button.Draw_All(view);
+  gadgets.DrawAll(view);
   game::TheMouse().Show();
 
   engine::window::KeyNumber input = KN_NONE;
@@ -147,7 +150,7 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
          input != engine::window::ButtonKey(kOkButtonId)) {
     // Keeps the music, the timers and the window serviced while waiting.
     ServiceRealTime();
-    input = ok_button.Input(view).key;
+    input = gadgets.Input(view).key;
   }
 
   // The coarse slider's stops are spread over the whole scale.

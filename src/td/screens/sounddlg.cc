@@ -55,6 +55,7 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
@@ -298,16 +299,17 @@ void SoundControlsClass::Process() {
   /*
   **	Create Buttons.
   */
-  game::GadgetClass* optionsbtn = &returnto;
-  listbox.AppendTo(*optionsbtn);
-  stopbtn.AppendTo(*optionsbtn);
-  playbtn.AppendTo(*optionsbtn);
-  shufflebtn.AppendTo(*optionsbtn);
-  repeatbtn.AppendTo(*optionsbtn);
-  music.AppendTo(*optionsbtn);
-  sound.AppendTo(*optionsbtn);
-  area.AppendTo(*optionsbtn);
-  ctrl.AppendTo(*optionsbtn);
+  game::GadgetList gadgets;
+  gadgets.Add(returnto);
+  gadgets.Add(listbox);
+  gadgets.Add(stopbtn);
+  gadgets.Add(playbtn);
+  gadgets.Add(shufflebtn);
+  gadgets.Add(repeatbtn);
+  gadgets.Add(music);
+  gadgets.Add(sound);
+  gadgets.Add(area);
+  gadgets.Add(ctrl);
 
   /*
   **	Add all the themes to the list box. The list box entries are constructed
@@ -384,7 +386,7 @@ void SoundControlsClass::Process() {
                        game::kTransparentBlack, FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
-      optionsbtn->Draw_All(view);
+      gadgets.DrawAll(view);
       game::TheMouse().Show();
       display = false;
     }
@@ -392,7 +394,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = optionsbtn->Input(view).key;
+    const engine::window::KeyNumber input = gadgets.Input(view).key;
 
     /*
     **	Process Input.

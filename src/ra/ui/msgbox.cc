@@ -52,6 +52,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/screen.h"
@@ -194,27 +195,27 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
                           y + height - (bheight + 30));
   button3.X = x + ((width - button3.Width) / 2);
 
-  TextButtonClass* buttonlist = nullptr;
+  game::GadgetList buttonlist;
   int curbutton = 0;
 
   /*
   **	Add and initialize the buttons to the button list.
   */
   if (numbuttons > 0) {
-    buttonlist = &button1;
+    buttonlist.Add(button1);
     buttons[0] = &button1;
     realval[0] = BUTTON_1;
     if (numbuttons > 2) {
-      button3.InsertAfter(*buttonlist);
       buttons[1] = &button3;
       realval[1] = BUTTON_3;
-      button2.InsertAfter(*buttonlist);
+      buttonlist.Add(button2);
+      buttonlist.Add(button3);
       buttons[2] = &button2;
       realval[2] = BUTTON_2;
       base::At(buttons, curbutton)->Turn_On();
     } else {
       if (numbuttons == 2) {
-        button2.InsertAfter(*buttonlist);
+        buttonlist.Add(button2);
         buttons[1] = &button2;
         realval[1] = BUTTON_2;
         base::At(buttons, curbutton)->Turn_On();
@@ -242,15 +243,15 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Redraw the buttons.
   */
-  if (buttonlist) {
-    buttonlist->Draw_All(view);
+  if (!buttonlist.empty()) {
+    buttonlist.DrawAll(view);
   }
   game::TheMouse().Show();
 
   /*
   **	Main Processing Loop.
   */
-  if (buttonlist) {
+  if (!buttonlist.empty()) {
     bool process = true;  // loop while true
     bool pressed = false;
     while (process) {
@@ -271,8 +272,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Redraw the buttons.
         */
-        if (buttonlist) {
-          buttonlist->Draw_All(view);
+        if (!buttonlist.empty()) {
+          buttonlist.DrawAll(view);
         }
         game::TheMouse().Show();
       }
@@ -285,7 +286,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      engine::window::KeyNumber input = buttonlist->Input(view).key;
+      engine::window::KeyNumber input = buttonlist.Input(view).key;
       //	I really hate to do this, but...      ajw
       if (TheGameState().cancel_msgbox()) {
         TheGameState().cancel_msgbox() = false;
@@ -363,20 +364,18 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Turn all the buttons off.
         */
-        auto* toggle = dynamic_cast<TextButtonClass*>(
-            buttonlist->Extract_Gadget(BUTTON_1));
+        auto* toggle =
+            dynamic_cast<TextButtonClass*>(buttonlist.Extract(BUTTON_1));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = dynamic_cast<TextButtonClass*>(
-            buttonlist->Extract_Gadget(BUTTON_2));
+        toggle = dynamic_cast<TextButtonClass*>(buttonlist.Extract(BUTTON_2));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
         }
-        toggle = dynamic_cast<TextButtonClass*>(
-            buttonlist->Extract_Gadget(BUTTON_3));
+        toggle = dynamic_cast<TextButtonClass*>(buttonlist.Extract(BUTTON_3));
         if (toggle != nullptr) {
           toggle->Turn_Off();
           toggle->IsPressed = false;
@@ -388,7 +387,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (selection == BUTTON_1 || selection == BUTTON_2 ||
             selection == BUTTON_3) {
           auto* button = dynamic_cast<TextButtonClass*>(
-              buttonlist->Extract_Gadget(static_cast<unsigned>(selection)));
+              buttonlist.Extract(static_cast<unsigned>(selection)));
           if (button != nullptr) {
             button->Turn_On();
             //						toggle->IsOn = true;
@@ -396,7 +395,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
         }
         game::TheMouse().Hide();
-        buttonlist->Draw_All(view, true);
+        buttonlist.DrawAll(view, true);
         game::TheMouse().Show();
 
         switch (selection) {
