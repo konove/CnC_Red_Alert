@@ -49,8 +49,9 @@ struct PcxPicture {
 // Writes `view` as a PCX picture with `palette` to `out` at its current
 // position, and leaves `out` open. Returns whether all of it was written;
 // nothing is for a view without pixels (unattached, or of a surface that will
-// not lock) or one larger than a PCX header can say: wider than 32767 pixels
-// or taller than 32768.
+// not lock) or one larger than a PCX header can say: wider than 32766 pixels
+// or taller than 32768. A row of odd width is written one byte longer, as the
+// format wants an even number of bytes a scanline; ReadPcx() drops that byte.
 bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);
 
 // Writes the same picture to the game file `file_name`, which OpenGameFile()

@@ -151,14 +151,39 @@ TEST(PcxFileTest, WritesTheHeaderOfAnEightBitPicture) {
   expected.at(kHorizontalDpiOffset + 1) = 0x01;
   expected.at(kVerticalDpiOffset) = 200;  // ... by 200.
   expected.at(kColorPlanesOffset) = 1;
-  expected.at(kBytesPerLineOffset) = 5;
+  expected.at(kBytesPerLineOffset) = 6;  // The width, made even.
   expected.at(kPaletteTypeOffset) = 1;  // Color.
   EXPECT_EQ(Header(file), expected);
 }
 
 TEST(PcxFileTest, WritesRunsAndLonePixels) {
-  EXPECT_EQ(EncodedRow({9, 9, 9, 7, 1, 2, 2}),
-            (std::vector<uint8_t>{0xC3, 9, 7, 1, 0xC2, 2}));
+  EXPECT_EQ(EncodedRow({9, 9, 9, 7, 1, 2, 2, 3}),
+            (std::vector<uint8_t>{0xC3, 9, 7, 1, 0xC2, 2, 3}));
+}
+
+// The format wants an even number of bytes a scanline: a row of odd width
+// ends in one more pixel of its last color.
+TEST(PcxFileTest, PadsARowOfOddWidthWithItsLastPixel) {
+  EXPECT_EQ(EncodedRow({1, 2, 2}), (std::vector<uint8_t>{1, 0xC3, 2}));
+  EXPECT_EQ(EncodedRow({1, 2, 3}), (std::vector<uint8_t>{1, 2, 0xC2, 3}));
+  EXPECT_EQ(EncodedRow({0xC5}), (std::vector<uint8_t>{0xC2, 0xC5}));
+  // The padding starts a run of its own behind one that is full.
+  EXPECT_EQ(EncodedRow(std::vector<uint8_t>(63, 4)),
+            (std::vector<uint8_t>{0xFF, 4, 4}));
+}
+
+TEST(PcxFileTest, PadsEveryRowOfAPictureOfOddWidth) {
+  Picture picture(3, {1, 2, 3,  //
+                      4, 5, 6});
+
+  const std::vector<uint8_t> file = WrittenFile(picture.view(), {});
+
+  EXPECT_EQ(Scanlines(file), (std::vector<uint8_t>{1, 2, 0xC2, 3,  //
+                                                   4, 5, 0xC2, 6}));
+  const std::vector<uint8_t> header = Header(file);
+  ASSERT_FALSE(header.empty());
+  EXPECT_EQ(header.at(kRightOffset), 2);
+  EXPECT_EQ(header.at(kBytesPerLineOffset), 4);
 }
 
 // A byte with both top bits set would be read as a run count.
@@ -169,8 +194,8 @@ TEST(PcxFileTest, WritesALonePixelOfAHighColorAsARunOfOne) {
 
 // A count holds six bits, so a run stops at 63 pixels.
 TEST(PcxFileTest, SplitsRunsLongerThanACountHolds) {
-  EXPECT_EQ(EncodedRow(std::vector<uint8_t>(63, 4)),
-            (std::vector<uint8_t>{0xFF, 4}));
+  EXPECT_EQ(EncodedRow(std::vector<uint8_t>(126, 4)),
+            (std::vector<uint8_t>{0xFF, 4, 0xFF, 4}));
   EXPECT_EQ(EncodedRow(std::vector<uint8_t>(64, 4)),
             (std::vector<uint8_t>{0xFF, 4, 4}));
   EXPECT_EQ(EncodedRow(std::vector<uint8_t>(130, 0xC4)),
@@ -204,7 +229,7 @@ TEST(PcxFileTest, WritesOnlyThePartOfThePageAViewCovers) {
 
 // The palette closes the file, 8 bits a component, behind a byte of 12.
 TEST(PcxFileTest, EndsWithThePalette) {
-  Picture picture(1, {0});
+  Picture picture(2, {0, 0});
   Palette palette;
   palette.at(1) = PaletteColor(255, 80, 3);
   palette.at(255) = PaletteColor(1, 2, 3);
@@ -212,7 +237,7 @@ TEST(PcxFileTest, EndsWithThePalette) {
   const std::vector<uint8_t> file = WrittenFile(picture.view(), palette);
 
   const auto rgb = palette.ToRgb();
-  std::vector<uint8_t> expected{0, 12};
+  std::vector<uint8_t> expected{0xC2, 0, 12};
   expected.insert(expected.end(), rgb.begin(), rgb.end());
   ASSERT_GE(std::ssize(file), kHeaderSize);
   EXPECT_EQ(std::vector<uint8_t>(file.begin() + kHeaderSize, file.end()),
@@ -298,14 +323,14 @@ class PaddedSurface final : public PixelSurface {
 // The window's page has pixels only while it is locked, and its rows can be
 // wider than the page: the writer locks it and steps over the padding.
 TEST(PcxFileTest, WritesASurfaceSkippingItsRowPadding) {
-  PaddedSurface surface(4, {1, 2, 3, 99,  //
-                            4, 5, 6, 99});
+  PaddedSurface surface(5, {1, 2, 3, 4, 99,  //
+                            5, 6, 7, 8, 99});
   PixelBuffer page;
-  page.Init(3, 2, surface);
+  page.Init(4, 2, surface);
 
   const std::vector<uint8_t> file = WrittenFile(page.view(), {});
 
-  EXPECT_EQ(Scanlines(file), (std::vector<uint8_t>{1, 2, 3, 4, 5, 6}));
+  EXPECT_EQ(Scanlines(file), (std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8}));
 }
 
 // Screen's views exist before they are attached to a page; there is nothing
@@ -329,10 +354,10 @@ TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
   EXPECT_FALSE(std::filesystem::exists(path));
 }
 
-// The header's fields are 16 bits and signed: the width goes into one as it
-// is, the height less one.
+// The header's fields are 16 bits and signed: the width goes into one made
+// even, the height less one.
 TEST(PcxFileTest, WritesThePictureOfTheLargestSizeAHeaderHolds) {
-  Picture wide(32767, std::vector<uint8_t>(32767));
+  Picture wide(32766, std::vector<uint8_t>(32766));
   Picture tall(1, std::vector<uint8_t>(32768));
   RecordingStream out;
 
@@ -341,7 +366,8 @@ TEST(PcxFileTest, WritesThePictureOfTheLargestSizeAHeaderHolds) {
 }
 
 TEST(PcxFileTest, WritesNothingForAPictureTooWideForTheHeader) {
-  Picture picture(32768, std::vector<uint8_t>(32768));
+  // Made even, this width is one more than the field holds.
+  Picture picture(32767, std::vector<uint8_t>(32767));
   RecordingStream out;
 
   EXPECT_FALSE(WritePcx(out, picture.view(), {}));
@@ -475,6 +501,21 @@ TEST(PcxFileTest, ReadsWhatWasWritten) {
   EXPECT_EQ(read->height, 2);
   EXPECT_EQ(read->pixels, pixels);
   EXPECT_EQ(read->palette, palette);
+}
+
+// The byte that makes a row of odd width even is not part of the picture.
+TEST(PcxFileTest, ReadsAPictureOfOddWidthWithoutItsPadding) {
+  const std::vector<uint8_t> pixels{1, 2, 3,  //
+                                    4, 5, 5};
+  Picture picture(3, pixels);
+
+  const std::optional<PcxPicture> read =
+      ReadBytes(WrittenFile(picture.view(), {}));
+
+  ASSERT_TRUE(read.has_value());
+  EXPECT_EQ(read->width, 3);
+  EXPECT_EQ(read->height, 2);
+  EXPECT_EQ(read->pixels, pixels);
 }
 
 TEST(PcxFileTest, ReadsThePaletteBehindThePixels) {

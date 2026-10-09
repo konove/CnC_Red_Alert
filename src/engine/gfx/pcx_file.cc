@@ -91,8 +91,13 @@ constexpr uint8_t kColorPlanes = 1;
 constexpr uint8_t kPaletteMarker = 12;
 constexpr base::ssize kTrailerSize = 1 + Palette::kFileSize;
 
+// Returns the bytes a scanline of a picture `width` pixels wide decodes to.
+// The format wants an even number, so a row of odd width is one byte longer
+// than the picture is wide.
+int BytesPerLine(const int width) { return width + (width % 2); }
+
 // Appends `pixels`, one row of the picture, to `encoded` as a run-length
-// encoded PCX scanline.
+// encoded PCX scanline, padded to BytesPerLine().
 void AppendScanline(const std::span<const uint8_t> pixels,
                     std::vector<uint8_t>& encoded) {
   if (pixels.empty()) {
@@ -108,13 +113,21 @@ void AppendScanline(const std::span<const uint8_t> pixels,
     }
     encoded.push_back(run_color);
   };
-  for (const uint8_t color : pixels) {
+  const auto append_pixel = [&](const uint8_t color) {
     if (color != run_color || run_length == kMaxRunLength) {
       append_run();
       run_color = color;
       run_length = 0;
     }
     ++run_length;
+  };
+  for (const uint8_t color : pixels) {
+    append_pixel(color);
+  }
+  // The padding repeats the row's last pixel, which as a rule only makes the
+  // last run one longer.
+  if (std::ssize(pixels) % 2 != 0) {
+    append_pixel(pixels.back());
   }
   append_run();
 }
@@ -133,10 +146,12 @@ std::vector<uint8_t> EncodeScanlines(PixelView& view) {
 }
 
 // Returns whether the header's 16-bit fields hold the size of `view`: its
-// width as it is, in bytes_per_line, and its height less one, in bottom.
+// width padded to an even number, in bytes_per_line, and its height less one,
+// in bottom.
 bool FitsHeader(const PixelView& view) {
   constexpr int kMaxField = std::numeric_limits<int16_t>::max();
-  return view.width() <= kMaxField && view.height() - 1 <= kMaxField;
+  return BytesPerLine(view.width()) <= kMaxField &&
+         view.height() - 1 <= kMaxField;
 }
 
 // Returns the scanlines of the picture in `view`, or nothing for a view too
@@ -171,7 +186,7 @@ bool WriteEncoded(ByteStream& out, const PixelView& view,
       .ega_palette = {},
       .reserved = 0,
       .color_planes = kColorPlanes,
-      .bytes_per_line = static_cast<int16_t>(view.width()),
+      .bytes_per_line = static_cast<int16_t>(BytesPerLine(view.width())),
       .palette_type = 1,
       .padding = {},
   };
