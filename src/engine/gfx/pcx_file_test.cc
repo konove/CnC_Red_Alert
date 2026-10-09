@@ -22,7 +22,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/pixel_surface.h"
+#include "engine/gfx/pixel_surface_test_util.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/memory_stream.h"
 #include "engine/stream/seek_origin.h"
@@ -304,27 +304,11 @@ TEST(PcxFileTest, ReportsAFileThatCannotBeCreated) {
                             picture.view(), {}));
 }
 
-// A surface of plain memory whose rows are `pitch` bytes apart.
-class PaddedSurface final : public PixelSurface {
- public:
-  PaddedSurface(const int pitch, std::vector<uint8_t> pixels)
-      : pixels_(std::move(pixels)), pitch_(pitch) {}
-
-  std::optional<Pixels> Lock() override {
-    return Pixels{.bytes = pixels_, .pitch = pitch_};
-  }
-  void Unlock() override {}
-
- private:
-  std::vector<uint8_t> pixels_;
-  int pitch_;
-};
-
 // The window's page has pixels only while it is locked, and its rows can be
 // wider than the page: the writer locks it and steps over the padding.
 TEST(PcxFileTest, WritesASurfaceSkippingItsRowPadding) {
-  PaddedSurface surface(5, {1, 2, 3, 4, 99,  //
-                            5, 6, 7, 8, 99});
+  FakeSurface surface(5, {1, 2, 3, 4, 99,  //
+                          5, 6, 7, 8, 99});
   PixelBuffer page;
   page.Init(4, 2, surface);
 
@@ -352,6 +336,35 @@ TEST(PcxFileTest, CreatesNoFileForAnUnattachedView) {
   EXPECT_FALSE(WritePcxFile(path.string(), view, {}));
 
   EXPECT_FALSE(std::filesystem::exists(path));
+}
+
+// The window can refuse the lock, as it does while it has no pixels; the
+// page then has nothing to write.
+TEST(PcxFileTest, WritesNothingForASurfaceThatRefusesItsLock) {
+  FakeSurface surface(2, {1, 2});
+  surface.set_refuse_lock(true);
+  PixelBuffer page;
+  page.Init(2, 1, surface);
+  RecordingStream out;
+
+  EXPECT_FALSE(WritePcx(out, page.view(), {}));
+
+  EXPECT_TRUE(out.bytes().empty());
+  EXPECT_EQ(surface.unlock_calls(), 0);
+}
+
+TEST(PcxFileTest, CreatesNoFileForASurfaceThatRefusesItsLock) {
+  FakeSurface surface(2, {1, 2});
+  surface.set_refuse_lock(true);
+  PixelBuffer page;
+  page.Init(2, 1, surface);
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("refused.pcx");
+
+  EXPECT_FALSE(WritePcxFile(path.string(), page.view(), {}));
+
+  EXPECT_FALSE(std::filesystem::exists(path));
+  EXPECT_EQ(surface.unlock_calls(), 0);
 }
 
 // The header's fields are 16 bits and signed: the width goes into one made

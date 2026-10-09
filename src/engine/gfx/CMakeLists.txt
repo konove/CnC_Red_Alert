@@ -35,7 +35,7 @@ include(Testing)
 add_gtest(
         NAME engine_gfx_test
         SOURCES cps_image_test.cc fading_table_test.cc font_test.cc font_test_util.cc glow_pulse_test.cc hsv_color_test.cc ico_image_test.cc
-            keyframe_test.cc palette_color_test.cc palette_test.cc pcx_file_test.cc pixel_buffer_test.cc shape_blitter_test.cc shape_test.cc
+            keyframe_test.cc palette_color_test.cc palette_test.cc pcx_file_test.cc pixel_buffer_test.cc pixel_surface_test_util.cc shape_blitter_test.cc shape_test.cc
             stamp_test.cc wsa_animation_test.cc
             ${CMAKE_SOURCE_DIR}/src/engine/file/game_files_test_util.cc
         LIBS engine_gfx

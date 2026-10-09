@@ -5810,10 +5810,10 @@
         "refactoring",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-09T00:43:41Z",
+      "updated": "2026-10-09T00:45:09Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "All four callers check the result: the scripted run prints `-SCRIPT: cannot write <path>` on stderr, the screenshot key, the debug key and the screen recorder `DLOG(WARNING)`. `WritePcxFile()` is `[[nodiscard]]`. Red Alert's `WritePcx()` callers are T-219.",
@@ -5934,45 +5934,33 @@
         "testing",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-09T00:47:21Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "Moved one `FakeSurface` (pitch, lock counting, refusable lock, zeroed or given initial pixels) to `engine/gfx/pixel_surface_test_util.{h,cc}` and used it in `pixel_buffer_test.cc` and `pcx_file_test.cc`, replacing `PaddedSurface`. Added `WritesNothingForASurfaceThatRefusesItsLock` and `CreatesNoFileForASurfaceThatRefusesItsLock`, which also check that the refused lock is never unlocked.",
       "anchors": [
         {
-          "path": "src/engine/gfx/pixel_buffer_test.cc",
-          "startLine": 81,
-          "endLine": 81,
+          "path": "src/engine/gfx/pixel_surface_test_util.h",
+          "startLine": 26,
+          "endLine": 26,
           "text": "class FakeSurface final : public PixelSurface {",
           "before": [
-            "",
-            "// A surface of plain memory that counts the locks it sees and can be told to",
-            "// refuse them, standing in for the window."
+            "//   page.view().Clear(7);",
+            "//   EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{7, 7, 7, 0,  //",
+            "//                                                     7, 7, 7, 0}));"
           ],
           "after": [
             " public:",
-            "  // `pitch` bytes to a row, so a pitch wider than the page leaves padding",
-            "  // that drawing must skip."
+            "  // A surface of `height` rows, every pixel 0.",
+            "  FakeSurface(int pitch, int height);"
           ],
           "lost": false
         },
         {
           "path": "src/engine/gfx/pcx_file_test.cc",
-          "startLine": 283,
-          "endLine": 283,
-          "text": "class PaddedSurface final : public PixelSurface {",
-          "before": [
-            "}",
-            "",
-            "// A surface of plain memory whose rows are `pitch` bytes apart."
-          ],
-          "after": [
-            " public:",
-            "  PaddedSurface(const int pitch, std::vector<uint8_t> pixels)",
-            "      : pixels_(std::move(pixels)), pitch_(pitch) {}"
-          ],
           "lost": false
         }
       ]

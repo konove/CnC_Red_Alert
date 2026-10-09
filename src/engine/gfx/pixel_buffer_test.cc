@@ -7,15 +7,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <numeric>
-#include <optional>
 #include <span>
 #include <utility>
 #include <vector>
 
-#include "absl/base/attributes.h"
 #include "base/unaligned.h"
 #include "engine/gfx/font.h"
-#include "engine/gfx/pixel_surface.h"
+#include "engine/gfx/pixel_surface_test_util.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -75,41 +73,6 @@ TEST(GraphicViewPortLockTest, MemoryBufferLocksWithoutCounting) {
   view.Unlock();
   EXPECT_EQ(view.lock_count(), 0);
 }
-
-// A surface of plain memory that counts the locks it sees and can be told to
-// refuse them, standing in for the window.
-class FakeSurface final : public PixelSurface {
- public:
-  // `pitch` bytes to a row, so a pitch wider than the page leaves padding
-  // that drawing must skip.
-  FakeSurface(int pitch, int height)
-      : pixels_(static_cast<size_t>(pitch) * static_cast<size_t>(height)),
-        pitch_(pitch) {}
-
-  std::optional<Pixels> Lock() override {
-    ++lock_calls_;
-    if (refuse_lock_) {
-      return std::nullopt;
-    }
-    return Pixels{.bytes = pixels_, .pitch = pitch_};
-  }
-  void Unlock() override { ++unlock_calls_; }
-
-  void set_refuse_lock(bool refuse) { refuse_lock_ = refuse; }
-  [[nodiscard]] const std::vector<uint8_t>& pixels() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return pixels_;
-  }
-  [[nodiscard]] int lock_calls() const { return lock_calls_; }
-  [[nodiscard]] int unlock_calls() const { return unlock_calls_; }
-
- private:
-  std::vector<uint8_t> pixels_;
-  int pitch_;
-  bool refuse_lock_ = false;
-  int lock_calls_ = 0;
-  int unlock_calls_ = 0;
-};
 
 // The window page has no pixels of its own: they exist only while the
 // surface is locked.
