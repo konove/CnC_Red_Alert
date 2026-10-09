@@ -74,7 +74,6 @@ engine::window::InputEvent GadgetList::Input(PixelView& view) {
   bool forced = false;
   if (last_input_ != this) {
     last_input_ = this;
-    GadgetClass::LastList = nullptr;
     forced = true;
     GadgetClass::StuckOn = nullptr;
     GadgetClass::Focused = nullptr;

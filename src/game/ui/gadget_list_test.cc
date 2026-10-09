@@ -172,13 +172,6 @@ TEST_F(GadgetListTest, RemoveIgnoresAGadgetOfAnotherList) {
   EXPECT_EQ(a_.removed, 0);
 }
 
-TEST_F(GadgetListTest, TheLegacyRemoveTakesAGadgetOutOfItsList) {
-  list_.Add(a_);
-  a_.Remove();
-  EXPECT_TRUE(list_.empty());
-  EXPECT_EQ(a_.list(), nullptr);
-}
-
 TEST_F(GadgetListTest, ClearEmptiesTheListAndKeepsTheFocus) {
   list_.Add(a_);
   list_.Add(b_);
@@ -317,15 +310,6 @@ TEST_F(GadgetListTest, AnotherListsTurnDrawsEverythingAndDropsTheFocus) {
   a_.Set_Focus();
   other.Input(view_);
   EXPECT_FALSE(a_.Has_Focus());
-  list_.Input(view_);
-  EXPECT_EQ(a_.draws, 2);
-}
-
-TEST_F(GadgetListTest, AChainsTurnMakesTheListDrawEverythingAgain) {
-  GadgetClass chain_head(0, 0, 10, 10, 0);
-  list_.Add(a_);
-  list_.Input(view_);
-  chain_head.Input(view_);
   list_.Input(view_);
   EXPECT_EQ(a_.draws, 2);
 }

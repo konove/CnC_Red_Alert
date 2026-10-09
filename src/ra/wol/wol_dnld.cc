@@ -196,7 +196,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     }
 
     if (process) {
-      const engine::window::KeyNumber input = cancelbtn.Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu

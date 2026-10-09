@@ -152,13 +152,13 @@ constexpr uint32_t kChunkCplz = MakeChunkId('C', 'P', 'L', 'Z');
 constexpr uint32_t kChunkSnd0 =
     MakeChunkId('S', 'N', 'D', '0');  // Uncompressed.
 constexpr uint32_t kChunkSnd1 =
-    MakeChunkId('S', 'N', 'D', '1');  // ForgetNeighbors compressed.
+    MakeChunkId('S', 'N', 'D', '1');  // Zap compressed.
 constexpr uint32_t kChunkSnd2 =
     MakeChunkId('S', 'N', 'D', '2');  // ADPCM compressed.
 constexpr uint32_t kChunkSna0 =
     MakeChunkId('S', 'N', 'A', '0');  // Uncompressed.
 constexpr uint32_t kChunkSna1 =
-    MakeChunkId('S', 'N', 'A', '1');  // ForgetNeighbors compressed.
+    MakeChunkId('S', 'N', 'A', '1');  // Zap compressed.
 constexpr uint32_t kChunkSna2 =
     MakeChunkId('S', 'N', 'A', '2');  // ADPCM compressed.
 

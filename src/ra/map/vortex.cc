@@ -704,7 +704,7 @@ void ChronalVortexClass::Zap_Target() {
       TheMap().Flag_To_Redraw(true);
 
       /*
-      ** ForgetNeighbors the target 3 times but only do damage on the last
+      ** Zap the target 3 times but only do damage on the last
       * frame.
       */
       ZapFrame++;

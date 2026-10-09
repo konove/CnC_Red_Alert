@@ -87,14 +87,13 @@
 #include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "game/ui/link.h"
 
 namespace game {
 
 class ControlClass;
 class GadgetList;
 
-class GadgetClass : public game::Link {
+class GadgetClass {
  public:
   // Input events a gadget listens for, stored OR'd in Flags.
   static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.
@@ -117,31 +116,14 @@ class GadgetClass : public game::Link {
   GadgetClass(int x, int y, int w, int h, unsigned flags,
               bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
-  // Not copyable -- see Link.
+  // Not copyable or movable: the list it is in points at it.
   GadgetClass(const GadgetClass&) = delete;
-  ~GadgetClass() override;
+  virtual ~GadgetClass();
   GadgetClass& operator=(const GadgetClass&) = delete;
   GadgetClass(GadgetClass&&) = delete;
   GadgetClass& operator=(GadgetClass&&) = delete;
 
-  /*
-  **	Gadget list management functions.
-  */
-  // Reads one input event, if any, offers it to the gadgets in this list and
-  // redraws them on `view`. Returns the event. When a gadget acted on it, its
-  // key is what the gadget left there (its ButtonKey(), or KN_NONE) and it is
-  // no longer a click, so a click still in the event is one no gadget took.
-  // The event keeps the click's position either way.
-  virtual engine::window::InputEvent Input(PixelView& view);
-  virtual void Draw_All(PixelView& view, bool forced = true);
-  virtual ControlClass* Extract_Gadget(unsigned id);
-  virtual void Flag_List_To_Redraw() { LastList = nullptr; }
-  GadgetClass* Remove() override;
-  [[nodiscard]] GadgetClass* Next() const override;
-  [[nodiscard]] GadgetClass* Previous() const override;
-
-  // Returns the list this gadget is in, or nullptr when it is in none. A
-  // gadget still chained through Link is in none.
+  // Returns the list this gadget is in, or nullptr when it is in none.
   [[nodiscard]] GadgetList* list() const { return list_; }
 
   /*
@@ -157,7 +139,6 @@ class GadgetClass : public game::Link {
   virtual void Set_Focus();
   virtual void Clear_Focus();
   virtual bool Has_Focus();
-  virtual bool Is_List_To_Redraw();
   virtual bool Is_To_Redraw() { return IsToRepaint; }
   virtual void Set_Position(int x, int y);
 
@@ -166,9 +147,9 @@ class GadgetClass : public game::Link {
   */
   virtual bool Draw_Me(PixelView& view, bool forced = false);
 
-  // Sets the function Input() hands every key it reads, before any gadget
-  // sees it (the games save a screenshot on K this way). Null, the default,
-  // does nothing.
+  // Sets the function GadgetList::Input() hands every key it reads, before any
+  // gadget sees it (the games save a screenshot on K this way). Null, the
+  // default, does nothing.
   static void Set_Key_Hook(void (*hook)(engine::window::KeyNumber key)) {
     KeyHook = hook;
   }
@@ -205,15 +186,6 @@ class GadgetClass : public game::Link {
   // being destroyed.
   virtual void OnAdded(GadgetList& /*list*/) {}
   virtual void OnRemoved(GadgetList& /*list*/) {}
-
-  /*
-  **	This is a record of the last list passed to the Input() function. If a
-  *list *	different than the last recorded one is detected, then the draw
-  *function is *	called for every gadget in the list. This causes all
-  *buttons to be redrawn the *	fire time Input() is called without forced a
-  *manual call to Draw_All().
-  */
-  static GadgetClass* LastList;
 
   /*
   **	This points to the gadget that has the keyboard focus. All keyboard only
@@ -265,10 +237,10 @@ class GadgetClass : public game::Link {
   unsigned Flags = 0;
 
  private:
-  // GadgetList::Input() is the list's form of Input() and shares its steps.
+  // GadgetList::Input() runs the steps below over its gadgets.
   friend class GadgetList;
 
-  // One Input() call's event on its way through the gadgets.
+  // One GadgetList::Input() call's event on its way through the gadgets.
   struct PendingInput {
     engine::window::InputEvent event;
     // Starts as the event's key; a gadget that acts replaces it.
@@ -278,8 +250,8 @@ class GadgetClass : public game::Link {
     int y = 0;
   };
 
-  // The steps of Input(), which the chain's and GadgetList's sweeps share.
-  // ReadInput() takes one event, if any, from the keyboard and describes it.
+  // The steps of GadgetList::Input(). ReadInput() takes one event, if any, from
+  // the keyboard and describes it.
   static PendingInput ReadInput();
   // Gives `input` to the gadget holding the mouse or, for a key, the one with
   // the focus. Returns whether there was one, which leaves the others out.
@@ -287,7 +259,7 @@ class GadgetClass : public game::Link {
   // Draws this gadget if it has to be (always when `forced`) and offers it
   // `input`. Returns whether it acted, which ends the sweep.
   bool Offer(PixelView& view, bool forced, PendingInput& input);
-  // Returns the event as Input() reports it.
+  // Returns the event as GadgetList::Input() reports it.
   static engine::window::InputEvent FinishInput(const PendingInput& input);
 
   static void (*KeyHook)(engine::window::KeyNumber key);

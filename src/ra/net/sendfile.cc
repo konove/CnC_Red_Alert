@@ -460,7 +460,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     }
 
     if (process) {
-      const engine::window::KeyNumber input = cancelbtn.Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
 
       /*
       ---------------------------- Process input ----------------------------
@@ -783,7 +783,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
 
     if (process) {
-      const engine::window::KeyNumber input = cancelbtn.Input(view).key;
+      const engine::window::KeyNumber input = commands.Input(view).key;
 
       /*
       ---------------------------- Process input ----------------------------

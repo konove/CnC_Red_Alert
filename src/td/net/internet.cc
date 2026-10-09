@@ -68,6 +68,7 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/palette.h"
@@ -443,7 +444,6 @@ bool Do_The_Internet_Menu_Thang() {
   /*
   ** Buttons
   */
-  // TextButtonClass *buttons;
   // // button list
 
   TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
@@ -455,7 +455,8 @@ bool Do_The_Internet_Menu_Thang() {
                             d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
-  // buttons = &cancelbtn;
+  game::GadgetList buttons;
+  buttons.Add(cancelbtn);
 
   char users_name[256];
   const int buffer_len = sizeof(users_name);
@@ -520,7 +521,6 @@ bool Do_The_Internet_Menu_Thang() {
                        game::kTransparentBlack, FontType::k6PointGradient,
                        TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-      // cancelbtn.ForgetNeighbors();
       // buttons = &cancelbtn;
 
       /*
@@ -545,8 +545,7 @@ bool Do_The_Internet_Menu_Thang() {
     }
 #endif
 
-    // input = buttons->Input();
-    input = cancelbtn.Input(view).key;
+    input = buttons.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------

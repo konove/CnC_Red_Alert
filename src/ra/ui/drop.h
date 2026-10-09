@@ -52,7 +52,6 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget_list.h"
-#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/list.h"
@@ -69,17 +68,6 @@ class DropListClass : public EditClass {
   ~DropListClass() override = default;
   DropListClass(DropListClass&&) = delete;
   DropListClass& operator=(DropListClass&&) = delete;
-
-  // Link the list and its drop button into the chain `object` is in, and
-  // return the head of that chain, which may be any gadget.
-  game::Link& InsertAfter(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& AppendTo(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& PrependTo(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  DropListClass* Remove() override;
-  void ForgetNeighbors() override;
 
   virtual int Add_Item(const char* text);
   virtual const char* Current_Item() ABSL_ATTRIBUTE_LIFETIME_BOUND;
@@ -110,7 +98,7 @@ class DropListClass : public EditClass {
   void OnRemoved(game::GadgetList& list) override;
 
  public:
-  // Not copyable -- see Link.
+  // Not copyable -- see GadgetClass.
   DropListClass(const DropListClass&) = delete;
   DropListClass& operator=(const DropListClass&) = delete;
 
@@ -157,16 +145,6 @@ class TDropListClass : public EditClass {
   void Sort(Compare less) {
     List.Sort(less);
   }
-
-  // As DropListClass's: each returns the head of the chain.
-  game::Link& InsertAfter(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& AppendTo(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& PrependTo(game::Link& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  TDropListClass* Remove() override;
-  void ForgetNeighbors() override;
 
   virtual int Add_Item(T item);
   virtual T Current_Item();
@@ -233,41 +211,6 @@ TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
 }
 
 template <class T>
-void TDropListClass<T>::ForgetNeighbors() {
-  Collapse();
-  List.ForgetNeighbors();
-  DropButton.ForgetNeighbors();
-  EditClass::ForgetNeighbors();
-}
-
-template <class T>
-game::Link& TDropListClass<T>::InsertAfter(game::Link& object) {
-  DropButton.InsertAfter(object);
-  return EditClass::InsertAfter(object);
-}
-
-template <class T>
-game::Link& TDropListClass<T>::AppendTo(game::Link& object) {
-  DropButton.AppendTo(object);
-  return EditClass::AppendTo(object);
-}
-
-template <class T>
-game::Link& TDropListClass<T>::PrependTo(game::Link& object) {
-  DropButton.PrependTo(object);
-  return EditClass::PrependTo(object);
-}
-
-template <class T>
-TDropListClass<T>* TDropListClass<T>::Remove() {
-  if (IsDropped) {
-    Collapse();
-  }
-  DropButton.Remove();
-  return dynamic_cast<TDropListClass*>(EditClass::Remove());
-}
-
-template <class T>
 int TDropListClass<T>::Add_Item(T item) {
   base::SafeCopy(String.first(base::ToSize(MaxLength)), item->Description());
   Flag_To_Redraw();
@@ -329,10 +272,9 @@ void TDropListClass<T>::Expand() {
     List.Width = Width;
     List.Height = ListHeight;
     if (list() != nullptr) {
-      // Second in the list, where the chain had it.
+      // Second in the list: ahead of what it covers, whatever was added
+      // first aside.
       list()->AddAfter(List, *list()->gadgets().front());
-    } else {
-      List.InsertAfter(HeadOfList());
     }
     List.Flag_To_Redraw();
     IsDropped = true;
@@ -353,7 +295,9 @@ void TDropListClass<T>::OnRemoved(game::GadgetList& list) {
 template <class T>
 void TDropListClass<T>::Collapse() {
   if (IsDropped) {
-    List.Remove();
+    if (List.list() != nullptr) {
+      List.list()->Remove(List);
+    }
     IsDropped = false;
   }
 }

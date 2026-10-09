@@ -51,7 +51,6 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
-#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
@@ -71,36 +70,6 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
   Height = FontMaxHeight(TextFontStyle(font, flags)) + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
-}
-
-void DropListClass::ForgetNeighbors() {
-  Collapse();
-  List.ForgetNeighbors();
-  DropButton.ForgetNeighbors();
-  EditClass::ForgetNeighbors();
-}
-
-game::Link& DropListClass::InsertAfter(game::Link& object) {
-  DropButton.InsertAfter(object);
-  return EditClass::InsertAfter(object);
-}
-
-game::Link& DropListClass::AppendTo(game::Link& object) {
-  DropButton.AppendTo(object);
-  return EditClass::AppendTo(object);
-}
-
-game::Link& DropListClass::PrependTo(game::Link& object) {
-  DropButton.PrependTo(object);
-  return EditClass::PrependTo(object);
-}
-
-DropListClass* DropListClass::Remove() {
-  if (IsDropped) {
-    Collapse();
-  }
-  DropButton.Remove();
-  return dynamic_cast<DropListClass*>(EditClass::Remove());
 }
 
 int DropListClass::Add_Item(const char* text) {
@@ -151,10 +120,9 @@ void DropListClass::Expand() {
     List.Width = Width;
     List.Height = ListHeight;
     if (list() != nullptr) {
-      // Second in the list, where the chain had it.
+      // Second in the list: ahead of what it covers, whatever was added
+      // first aside.
       list()->AddAfter(List, *list()->gadgets().front());
-    } else {
-      List.InsertAfter(HeadOfList());
     }
     List.Flag_To_Redraw();
     IsDropped = true;
@@ -172,7 +140,9 @@ void DropListClass::OnRemoved(game::GadgetList& list) {
 
 void DropListClass::Collapse() {
   if (IsDropped) {
-    List.Remove();
+    if (List.list() != nullptr) {
+      List.list()->Remove(List);
+    }
     IsDropped = false;
   }
 }

@@ -77,15 +77,6 @@ TEST_F(TdListClassTest, ClearingTheGadgetListReleasesTheScrollBar) {
   EXPECT_EQ(gadgets.gadgets().size(), 4U);
 }
 
-// The legacy call still works on a list box that is in a GadgetList.
-TEST_F(TdListClassTest, RemoveTakesTheListBoxAndItsScrollBarOut) {
-  game::GadgetList gadgets;
-  list_.Add_Scroll_Bar();
-  gadgets.Add(list_);
-  list_.Remove();
-  EXPECT_TRUE(gadgets.empty());
-}
-
 TEST_F(TdListClassTest, AddItemCopiesTheText) {
   char buffer[] = "first";
   EXPECT_EQ(list_.Add_Item(buffer), 0);

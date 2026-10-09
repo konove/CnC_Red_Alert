@@ -94,8 +94,7 @@ class GadgetList {
   }
 
  private:
-  // GadgetClass's destructor takes the gadget out without the hooks, and its
-  // chain Input() shares last_input_ until the chains are gone.
+  // GadgetClass's destructor takes the gadget out without the hooks.
   friend class GadgetClass;
 
   // Takes `gadget` out of the list it is in, if any, and tells it so. Keeps

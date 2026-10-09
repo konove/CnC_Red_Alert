@@ -1,4 +1,4 @@
-// Tests for linking a drop-down list into a dialog's gadget chain.
+// Tests for a drop-down list in a dialog's gadget list.
 
 #include "ra/ui/drop.h"
 
@@ -31,17 +31,6 @@ class DropListClassTest : public testing::Test {
       {}, {}};
   game::GadgetClass button_{0, 0, 10, 10, 0};
 };
-
-// Adding to a list returns the head of the chain, which a dialog's chain
-// starts with some other gadget. The skirmish dialog adds its house list to
-// a chain headed by a button, and this used to throw std::bad_cast.
-TEST_F(DropListClassTest, AddingToAChainReturnsItsHead) {
-  EXPECT_EQ(&drop_.InsertAfter(button_), &button_);
-}
-
-TEST_F(DropListClassTest, AddingTailToAChainReturnsItsHead) {
-  EXPECT_EQ(&drop_.AppendTo(button_), &button_);
-}
 
 TEST_F(DropListClassTest, TheDropButtonFollowsTheFieldIntoAGadgetList) {
   game::GadgetList gadgets;

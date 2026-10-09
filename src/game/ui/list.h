@@ -56,7 +56,6 @@
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
-#include "game/ui/link.h"
 #include "game/ui/shapebtn.h"
 #include "game/ui/slider.h"
 #include "game/ui/widget_skin.h"
@@ -92,7 +91,7 @@ class ListClass : public ControlClass {
     ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
     ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
   }
-  // Not copyable -- see Link.
+  // Not copyable -- see GadgetClass.
   ListClass(const ListClass&) = delete;
   ~ListClass() override { ListClass::Remove_Scroll_Bar(); }
   ListClass& operator=(const ListClass&) = delete;
@@ -148,10 +147,6 @@ class ListClass : public ControlClass {
     // Add these gadgets to the same gadget list that the list box is part of.
     if (this->list() != nullptr) {
       AddScrollGadgets(*this->list());
-    } else {
-      UpGadget.InsertAfter(*this);
-      DownGadget.InsertAfter(*this);
-      ScrollGadget.InsertAfter(*this);
     }
 
     // Make sure these added gadgets get redrawn at the next opportunity.
@@ -324,9 +319,9 @@ class ListClass : public ControlClass {
     }
     IsScrollActive = false;
     Width += ScrollGadget.Width;
-    ScrollGadget.Remove();
-    UpGadget.Remove();
-    DownGadget.Remove();
+    if (this->list() != nullptr) {
+      RemoveScrollGadgets(*this->list());
+    }
     Flag_To_Redraw();
     return true;
   }
@@ -393,47 +388,6 @@ class ListClass : public ControlClass {
     ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
   }
 
-  /*
-  ** These overloaded list routines handle adding/removing the scroll bar
-  ** automatically when the list box is added or removed.
-  */
-  Link& InsertAfter(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
-    UnlinkScrollGadgets();
-    if (IsScrollActive) {
-      ScrollGadget.InsertAfter(list);
-      DownGadget.InsertAfter(list);
-      UpGadget.InsertAfter(list);
-    }
-    return ControlClass::InsertAfter(list);
-  }
-  Link& AppendTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
-    UnlinkScrollGadgets();
-    ControlClass::AppendTo(list);
-    if (IsScrollActive) {
-      UpGadget.AppendTo(list);
-      DownGadget.AppendTo(list);
-      ScrollGadget.AppendTo(list);
-    }
-    return HeadOfList();
-  }
-  Link& PrependTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
-    UnlinkScrollGadgets();
-    if (IsScrollActive) {
-      ScrollGadget.PrependTo(list);
-      DownGadget.PrependTo(list);
-      UpGadget.PrependTo(list);
-    }
-    return ControlClass::PrependTo(list);
-  }
-  GadgetClass* Remove() override {
-    if (IsScrollActive) {
-      ScrollGadget.Remove();
-      DownGadget.Remove();
-      UpGadget.Remove();
-    }
-    return ControlClass::Remove();
-  }
-
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override {
@@ -487,30 +441,21 @@ class ListClass : public ControlClass {
   }
   void OnRemoved(GadgetList& list) override {
     if (IsScrollActive) {
-      list.Remove(ScrollGadget);
-      list.Remove(DownGadget);
-      list.Remove(UpGadget);
+      RemoveScrollGadgets(list);
     }
   }
 
   // Puts the scroll gadgets behind the list box in `list`.
   void AddScrollGadgets(GadgetList& list) {
-    UnlinkScrollGadgets();
     list.AddAfter(UpGadget, *this);
     list.AddAfter(DownGadget, UpGadget);
     list.AddAfter(ScrollGadget, DownGadget);
   }
 
-  // Takes the scroll gadgets out of whatever chain they are in, without
-  // touching the focus. Add_Scroll_Bar() chains them behind the list box, also
-  // when it is in no list yet, and the functions that add the list box to one
-  // then add them again: Link's add functions want nodes that are in no list.
-  void UnlinkScrollGadgets() {
-    if (IsScrollActive) {
-      ScrollGadget.Link::Remove();
-      DownGadget.Link::Remove();
-      UpGadget.Link::Remove();
-    }
+  void RemoveScrollGadgets(GadgetList& list) {
+    list.Remove(ScrollGadget);
+    list.Remove(DownGadget);
+    list.Remove(UpGadget);
   }
 
   // The font and the print flags the lines render with, as

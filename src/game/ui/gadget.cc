@@ -33,28 +33,6 @@
  *                  Last Update : August 1, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * GadgetClass::Action -- Base action for gadget. *
- *   GadgetClass::Clear_Focus -- Clears the focus if this gadget has it. *
- *   GadgetClass::Disable -- Disables the gadget from input processing. *
- *   GadgetClass::Draw_All -- Forces all gadgets in list to be redrawn. *
- *   GadgetClass::Draw_Me -- Gadget redraw action (flag control). *
- *   GadgetClass::Enable -- Enables the gadget. * GadgetClass::Extract_Gadget --
- *Sweeps through the gadget chain to find gadget specified.  *
- *   GadgetClass::Flag_To_Redraw -- Flags this gadget to be redrawn. *
- *   GadgetClass::GadgetClass -- Constructor for gadget object. *
- *   GadgetClass::GadgetClass -- Default constructor for a gadget class object.
- ** GadgetClass::Next -- Returns a pointer to the next gadget in the chain.
- ** GadgetClass::Previous -- Fetches a pointer to the previous gadget. *
- *   GadgetClass::Has_Focus -- Checks if this object currently has the keyboard
- *focus.         * GadgetClass::Remove -- Removes the specified gadget from the
- *list.                        * GadgetClass::Set_Focus -- Sets focus to this
- *gadget.                                      * GadgetClass::Sticky_Process --
- *Handles the sticky flag processing.                        *
- *   GadgetClass::~GadgetClass -- Destructor for gadget object. *
- *   GadgetClass::Is_List_To_Redraw -- tells if any gadget in the list needs
- *redrawing         * GadgetClass::GadgetClass -- Constructor for the gadget
- *object.                            * GadgetClass::Set_Position -- Set the
- *coordinate position of this gadget.                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -63,10 +41,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/ui/control.h"
 #include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
-#include "game/ui/link.h"
 
 namespace game {
 
@@ -78,13 +54,6 @@ using enum engine::window::KeyNumber;
 *the mouse button *	is no longer pressed.
 */
 GadgetClass* GadgetClass::StuckOn = nullptr;
-
-/*
-**	This is a copy of a pointer to the last list used by the gadget input
-*system. *	If a change of list is detected, then all gadgets are forced to
-*be redrawn.
-*/
-GadgetClass* GadgetClass::LastList = nullptr;
 
 /*
 **	This points to the gadget that is intercepting all keyboard events.
@@ -165,10 +134,6 @@ GadgetClass::~GadgetClass() {
   // make any more.
   if (list_ != nullptr) {
     list_->Erase(*this);
-  }
-
-  if (this == LastList) {
-    LastList = nullptr;
   }
 
   if (this == Focused) {
@@ -256,67 +221,6 @@ void GadgetClass::Disable() {
 }
 
 /***********************************************************************************************
- * GadgetClass::Remove -- Removes the specified gadget from the list. *
- *                                                                                             *
- *    Use this routine if an individual gadget needs to be removed from the list
- *of gadgets.   *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Was the specified gadget found and removed? A false indicates
- *that the       * gadget wasn't in the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
-GadgetClass* GadgetClass::Remove() {
-  if (list_ != nullptr) {
-    list_->Remove(*this);
-    return nullptr;
-  }
-  Clear_Focus();
-  return dynamic_cast<GadgetClass*>(game::Link::Remove());
-}
-
-/***********************************************************************************************
- * GadgetClass::Next -- Returns a pointer to the next gadget in the chain. *
- *                                                                                             *
- *    This returns with the next gadget's pointer. It is identical to the base
- *Next()      * function, but returns a pointer to a GadgetClass object. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the next gadget in the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
-GadgetClass* GadgetClass::Next() const {
-  return dynamic_cast<GadgetClass*>(game::Link::Next());
-}
-
-/***********************************************************************************************
- * GadgetClass::Previous -- Fetches a pointer to the previous gadget. *
- *                                                                                             *
- *    This routine will return the previous gadget in the list. It is identical
- *to the base    * function Previous, but returns a pointer to a GadgetClass
- *object.                        *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the previous gadget in the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
-GadgetClass* GadgetClass::Previous() const {
-  return dynamic_cast<GadgetClass*>(game::Link::Previous());
-}
-
-/***********************************************************************************************
  * GadgetClass::Action -- Base action for gadget. *
  *                                                                                             *
  *    This handles the base level action that a gadget performs when a
@@ -372,71 +276,6 @@ bool GadgetClass::Draw_Me(PixelView& /*view*/, bool forced) {
     return true;
   }
   return false;
-}
-
-/***********************************************************************************************
- * GadgetClass::Draw_All -- Forces all gadgets in list to be redrawn. *
- *                                                                                             *
- *    Use this function to cause all gadget in the list to be redrawn regardless
- *of the state  * of the IsToRepaint flag. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/03/1995 MML : Created. *
- *=============================================================================================*/
-void GadgetClass::Draw_All(PixelView& view, bool forced) {
-  GadgetClass* gadget = this;
-
-  while (gadget != nullptr) {
-    gadget->Draw_Me(view, forced);
-    gadget = gadget->Next();
-  }
-}
-
-/***************************************************************************
- * GADGETCLASS::PROCESSLIST -- Check list for a mouse click within a gadget*
- *                                                                         *
- * INPUT:      none.                                                       *
- *                                                                         *
- * OUTPUT:     key pressed.                                                *
- *                                                                         *
- * WARNINGS:   none.                                                       *
- *                                                                         *
- * HISTORY:    01/03/1995 MML : Created.                                   *
- *=========================================================================*/
-engine::window::InputEvent GadgetClass::Input(PixelView& view) {
-  bool forced = false;
-
-  /*
-  **	Record this list so that a forced redraw only occurs the FIRST time the
-  **	gadget list is passed to this routine.
-  */
-  if (LastList != this || GadgetList::last_input_ != nullptr) {
-    LastList = this;
-    GadgetList::last_input_ = nullptr;
-    forced = true;
-    StuckOn = nullptr;
-    Focused = nullptr;
-  }
-
-  PendingInput input = ReadInput();
-  if (!OfferToStuckOrFocused(view, input)) {
-    /*
-    **	Sweep through all the buttons in the chain and pass the current button
-    **	state and keyboard input data to them, until one acts on it.
-    */
-    for (GadgetClass* gadget = this; gadget != nullptr;
-         gadget = gadget->Next()) {
-      if (gadget->Offer(view, forced, input)) {
-        break;
-      }
-    }
-  }
-  return FinishInput(input);
 }
 
 GadgetClass::PendingInput GadgetClass::ReadInput() {
@@ -582,42 +421,6 @@ engine::window::InputEvent GadgetClass::FinishInput(const PendingInput& input) {
 }
 
 /***********************************************************************************************
- * GadgetClass::Extract_Gadget -- Sweeps through the gadget chain to find gadget
- *specified.    *
- *                                                                                             *
- *    This examines the gadget list looking for on that has the same ID as
- *specified. If that  * gadget was found, then a pointer to it is returned.
- *Since only ControlClass gadgets      * or ones derived from it can have an ID
- *value, we know that the returned pointer is at    * least of the ControlClass
- *type.                                                          *
- *                                                                                             *
- * INPUT:   id -- The ID number to scan for. Zero is not a legal ID number and
- *if passed in,   * a NULL will always be returned. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the ControlClass gadget that has the
- *matching ID number. * If no matching gadget was found, then NULL is returned.
- **
- *                                                                                             *
- * WARNINGS:   If there happens to be more than one gadget with a matching ID,
- *this routine    * will return a pointer to the first one only. *
- *                                                                                             *
- * HISTORY: * 01/16/1995 JLB : Created. *
- *=============================================================================================*/
-ControlClass* GadgetClass::Extract_Gadget(unsigned id) {
-  GadgetClass* g = this;
-
-  if (id != 0) {
-    while (g != nullptr) {
-      if (g->Get_ID() == id) {
-        return dynamic_cast<ControlClass*>(g);
-      }
-      g = g->Next();
-    }
-  }
-  return nullptr;
-}
-
-/***********************************************************************************************
  * GadgetClass::Flag_To_Redraw -- Flags this gadget to be redrawn. *
  *                                                                                             *
  *    Use this routine to flag the gadget to be redrawn. A gadget so flagged
@@ -724,34 +527,6 @@ void GadgetClass::Clear_Focus() {
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 bool GadgetClass::Has_Focus() { return this == Focused; }
-
-/***********************************************************************************************
- * GadgetClass::Is_List_To_Redraw -- tells if any gadget in the list needs
- *redrawing           *
- *                                                                                             *
- * This function is mostly for supporting hidden_view drawing.  If it returns
- * true, it means       * the application needs to re-blit the hidden_view
- * forward, after calling the list's Input().     *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  true = an item needs redrawing, false = no items need redrawing *
- *                                                                                             *
- * WARNINGS:   It is assumed 'this' is the head of the list. *
- *                                                                                             *
- * HISTORY: * 01/03/1995 MML : Created. *
- *=============================================================================================*/
-bool GadgetClass::Is_List_To_Redraw() {
-  const GadgetClass* gadget = this;
-
-  while (gadget != nullptr) {
-    if (gadget->IsToRepaint) {
-      return true;
-    }
-    gadget = gadget->Next();
-  }
-  return false;
-}
 
 /***********************************************************************************************
  * GadgetClass::Set_Position -- Set the coordinate position of this gadget. *

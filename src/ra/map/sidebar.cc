@@ -372,7 +372,6 @@ void SidebarClass::Init_IO() {
     if (IsSidebarActive) {
       IsSidebarActive = false;
       Activate(1);
-      //			Background.ForgetNeighbors();
       //			Add_A_Button(Background);
     }
   }

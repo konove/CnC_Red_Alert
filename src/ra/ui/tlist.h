@@ -24,7 +24,6 @@
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
-#include "game/ui/link.h"
 #include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 #include "ra/data/text_ids.h"
@@ -84,17 +83,6 @@ class TListClass final : public game::ControlClass {
   void Step(bool up);
   void Set_Position(int x, int y) override;
 
-  /*
-  ** These overloaded list routines handle adding/removing the scroll bar
-  ** automatically when the list box is added or removed.
-  */
-  game::Link& InsertAfter(game::Link& list)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& AppendTo(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::Link& PrependTo(game::Link& list)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::GadgetClass* Remove() override;
-
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
@@ -107,30 +95,21 @@ class TListClass final : public game::ControlClass {
   }
   void OnRemoved(game::GadgetList& list) override {
     if (IsScrollActive) {
-      list.Remove(ScrollGadget);
-      list.Remove(DownGadget);
-      list.Remove(UpGadget);
+      RemoveScrollGadgets(list);
     }
   }
 
   // Puts the scroll gadgets behind the list box in `list`.
   void AddScrollGadgets(game::GadgetList& list) {
-    UnlinkScrollGadgets();
     list.AddAfter(UpGadget, *this);
     list.AddAfter(DownGadget, UpGadget);
     list.AddAfter(ScrollGadget, DownGadget);
   }
 
-  // Takes the scroll gadgets out of whatever chain they are in, without
-  // touching the focus. Add_Scroll_Bar() chains them behind the list box, also
-  // when it is in no list yet, and the functions that add the list box to one
-  // then add them again: Link's add functions want nodes that are in no list.
-  void UnlinkScrollGadgets() {
-    if (IsScrollActive) {
-      ScrollGadget.game::Link::Remove();
-      DownGadget.game::Link::Remove();
-      UpGadget.game::Link::Remove();
-    }
+  void RemoveScrollGadgets(game::GadgetList& list) {
+    list.Remove(ScrollGadget);
+    list.Remove(DownGadget);
+    list.Remove(UpGadget);
   }
 
   // The font and the print flags the lines render with, as
@@ -473,10 +452,6 @@ bool TListClass<T>::Add_Scroll_Bar() {
     */
     if (list() != nullptr) {
       AddScrollGadgets(*list());
-    } else {
-      UpGadget.InsertAfter(*this);
-      DownGadget.InsertAfter(*this);
-      ScrollGadget.InsertAfter(*this);
     }
 
     /*
@@ -507,9 +482,9 @@ bool TListClass<T>::Remove_Scroll_Bar() {
   if (IsScrollActive) {
     IsScrollActive = false;
     Width += ScrollGadget.Width;
-    ScrollGadget.Remove();
-    UpGadget.Remove();
-    DownGadget.Remove();
+    if (list() != nullptr) {
+      RemoveScrollGadgets(*list());
+    }
     Flag_To_Redraw();
     return true;
   }
@@ -519,82 +494,6 @@ bool TListClass<T>::Remove_Scroll_Bar() {
 template <class T>
 void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
   Tabs = tabs;
-}
-
-template <class T>
-game::Link& TListClass<T>::InsertAfter(game::Link& list) {
-  UnlinkScrollGadgets();
-
-  /*
-  **	Add the scroll bar gadgets if they're active.
-  */
-  if (IsScrollActive) {
-    ScrollGadget.InsertAfter(list);
-    DownGadget.InsertAfter(list);
-    UpGadget.InsertAfter(list);
-  }
-
-  /*
-  **	Add myself to the list, then return.
-  */
-  return game::ControlClass::InsertAfter(list);
-}
-
-template <class T>
-game::Link& TListClass<T>::PrependTo(game::Link& list) {
-  UnlinkScrollGadgets();
-
-  /*
-  **	Add the scroll bar gadgets if they're active.
-  */
-  if (IsScrollActive) {
-    ScrollGadget.PrependTo(list);
-    DownGadget.PrependTo(list);
-    UpGadget.PrependTo(list);
-  }
-
-  /*
-  **	Add myself to the list, then return.
-  */
-  return game::ControlClass::PrependTo(list);
-}
-
-template <class T>
-game::Link& TListClass<T>::AppendTo(game::Link& list) {
-  UnlinkScrollGadgets();
-
-  /*
-  **	Add myself to the list.
-  */
-  game::ControlClass::AppendTo(list);
-
-  /*
-  **	Add the scroll bar gadgets if they're active.
-  */
-  if (IsScrollActive) {
-    UpGadget.AppendTo(list);
-    DownGadget.AppendTo(list);
-    ScrollGadget.AppendTo(list);
-  }
-
-  return HeadOfList();
-}
-
-template <class T>
-game::GadgetClass* TListClass<T>::Remove() {
-  /*
-  **	Remove the scroll bar if it's active
-  */
-  if (IsScrollActive) {
-    ScrollGadget.Remove();
-    DownGadget.Remove();
-    UpGadget.Remove();
-  }
-
-  /*
-  **	Remove myself & return
-  */
-  return game::ControlClass::Remove();
 }
 
 template <class T>
