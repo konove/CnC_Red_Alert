@@ -53,6 +53,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette.h"
+#include "engine/gfx/pcx_file.h"  // IWYU pragma: keep (the DEMO build)
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
@@ -70,15 +71,14 @@
 #include "td/screens/score.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
-#include "td/startup/winstub.h"
 
 namespace td {
 
 void GDI_Ending() {
 #ifdef DEMO
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
-  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
-                    ThePalettes().title_palette());
+  engine::gfx::DrawPcxFile("DEMOPIC.PCX", TheScreen().hidden_view(),
+                           ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   game::TheKeyboard().Clear();

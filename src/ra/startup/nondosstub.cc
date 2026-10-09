@@ -18,16 +18,9 @@
 */
 #include <cstdio>
 #include <cstring>
-#include <optional>
-#include <span>
-#include <string_view>
 
 #include "engine/audio/audio_mixer.h"
-#include "engine/gfx/palette.h"
-#include "engine/gfx/pcx_file.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
-#include "ra/assets/graphics_loader.h"
 #include "ra/assets/theme.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -60,16 +53,6 @@ void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
   engine::window::HardwareCursor::GrabMouse();
-}
-
-void Load_Title_Screen(std::string_view name, PixelView* video_page,
-                       engine::gfx::Palette& palette) {
-  if (const std::optional<engine::gfx::PcxPicture> picture =
-          engine::gfx::ReadPcxFile(name)) {
-    video_page->CopyFromBuffer(0, 0, picture->width, picture->height,
-                               picture->pixels);
-    palette = picture->palette;
-  }
 }
 
 }  // namespace ra

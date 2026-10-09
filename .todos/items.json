@@ -5934,10 +5934,10 @@
         "testing",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-09T00:47:21Z",
+      "updated": "2026-10-09T01:06:03Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "Moved one `FakeSurface` (pitch, lock counting, refusable lock, zeroed or given initial pixels) to `engine/gfx/pixel_surface_test_util.{h,cc}` and used it in `pixel_buffer_test.cc` and `pcx_file_test.cc`, replacing `PaddedSurface`. Added `WritesNothingForASurfaceThatRefusesItsLock` and `CreatesNoFileForASurfaceThatRefusesItsLock`, which also check that the refused lock is never unlocked.",
@@ -6080,44 +6080,28 @@
         "td",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T17:44:41Z",
-      "updated": "2026-10-08T17:44:41Z",
+      "updated": "2026-10-09T01:10:22Z",
       "parent": "T-194",
       "source": "8b1945aa..66912554",
+      "resolution": "Both copies are replaced by `bool engine::gfx::DrawPcxFile(std::string_view, PixelView&, Palette&)` in `engine/gfx/pcx_file.h`, which returns whether the picture was read and leaves the view and palette alone if not; two tests cover it. All 12 callers use it, `ra/assets/graphics_loader.h` is deleted and the declaration is gone from `td/startup/winstub.h`.",
       "anchors": [
         {
-          "path": "src/ra/startup/nondosstub.cc",
-          "startLine": 65,
-          "endLine": 65,
-          "text": "void Load_Title_Screen(std::string_view name, PixelView* video_page,",
+          "path": "src/engine/gfx/pcx_file.h",
+          "startLine": 72,
+          "endLine": 76,
+          "text": "// Reads the PCX picture in the game file `file_name`, copies it to the top left\n// corner of `view` and sets `palette` to its palette. Returns whether the\n// picture was read; if it was not, `view` and `palette` are left as they were.\nbool DrawPcxFile(std::string_view file_name, PixelView& view, Palette& palette);\n",
           "before": [
-            "  engine::window::HardwareCursor::GrabMouse();",
-            "}",
+            "// file is missing or ReadPcx() makes nothing of it.",
+            "std::optional<PcxPicture> ReadPcxFile(std::string_view file_name);",
             ""
           ],
           "after": [
-            "                       engine::gfx::Palette& palette) {",
-            "  if (const std::optional<engine::gfx::PcxPicture> picture =",
-            "          engine::gfx::ReadPcxFile(name)) {"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/td/startup/nondosstub.cc",
-          "startLine": 92,
-          "endLine": 92,
-          "text": "void Load_Title_Screen(const char* name, PixelView* video_page,",
-          "before": [
-            " * HISTORY: * 7/5/96 11:30AM ST : Created *",
-            " *=============================================================================================*/",
-            ""
-          ],
-          "after": [
-            "                       engine::gfx::Palette& palette) {",
-            "  if (const std::optional<engine::gfx::PcxPicture> picture =",
-            "          engine::gfx::ReadPcxFile(name)) {"
+            "}  // namespace engine::gfx",
+            "",
+            "#endif  // CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_"
           ],
           "lost": false
         }

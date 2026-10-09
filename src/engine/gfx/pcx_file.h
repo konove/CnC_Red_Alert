@@ -69,6 +69,11 @@ std::optional<PcxPicture> ReadPcx(ByteStream& in);
 // file is missing or ReadPcx() makes nothing of it.
 std::optional<PcxPicture> ReadPcxFile(std::string_view file_name);
 
+// Reads the PCX picture in the game file `file_name`, copies it to the top left
+// corner of `view` and sets `palette` to its palette. Returns whether the
+// picture was read; if it was not, `view` and `palette` are left as they were.
+bool DrawPcxFile(std::string_view file_name, PixelView& view, Palette& palette);
+
 }  // namespace engine::gfx
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_

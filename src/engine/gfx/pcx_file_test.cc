@@ -644,6 +644,40 @@ TEST(PcxFileTest, ReadsNothingFromAMissingGameFile) {
   EXPECT_FALSE(ReadPcxFile(files.Path("missing.pcx").string()).has_value());
 }
 
+TEST(PcxFileTest, DrawsAGameFileAndGivesItsPalette) {
+  Picture picture(2, {1, 2, 3, 4});
+  Palette written;
+  written.at(1) = PaletteColor(255, 80, 3);
+  engine::file::TestGameFiles files;
+  const std::filesystem::path path = files.Path("picture.pcx");
+  ASSERT_TRUE(WritePcxFile(path.string(), picture.view(), written));
+  // A page larger than the picture, which lands in its top left corner.
+  Picture page(3, {9, 9, 9, 9, 9, 9, 9, 9, 9});
+  Palette palette;
+
+  EXPECT_TRUE(DrawPcxFile(path.string(), page.view(), palette));
+
+  EXPECT_EQ(Scanlines(WrittenFile(page.view(), {})),
+            Scanlines(WrittenFile(
+                Picture(3, {1, 2, 9, 3, 4, 9, 9, 9, 9}).view(), {})));
+  EXPECT_EQ(palette, written);
+}
+
+TEST(PcxFileTest, DrawsNothingFromAMissingGameFile) {
+  engine::file::TestGameFiles files;
+  Picture page(2, {9, 9});
+  Palette palette;
+  palette.at(1) = PaletteColor(255, 80, 3);
+  const Palette before = palette;
+
+  EXPECT_FALSE(
+      DrawPcxFile(files.Path("missing.pcx").string(), page.view(), palette));
+
+  EXPECT_EQ(Scanlines(WrittenFile(page.view(), {})),
+            Scanlines(WrittenFile(Picture(2, {9, 9}).view(), {})));
+  EXPECT_EQ(palette, before);
+}
+
 // The palette's bytes behind a picture that is cut short are not pixels.
 TEST(PcxFileTest, RejectsScanlinesThatAreCutShort) {
   const std::vector<std::vector<uint8_t>> cut_short = {

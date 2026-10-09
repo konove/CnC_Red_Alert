@@ -3,10 +3,7 @@
 #ifndef CNC_RED_ALERT_TD_STARTUP_WINSTUB_H_
 #define CNC_RED_ALERT_TD_STARTUP_WINSTUB_H_
 
-#include "engine/gfx/palette.h"
 #include "engine/window/window_events.h"
-
-class PixelView;
 
 namespace game {
 class Input;
@@ -38,10 +35,6 @@ class GameWindowEvents final : public engine::window::WindowEvents {
 // Opens the game's window.
 void Create_Main_Window(void* instance, int command_show, int width,
                         int height);
-
-// Reads a title screen picture into the given page and its palette.
-void Load_Title_Screen(const char* name, PixelView* video_page,
-                       engine::gfx::Palette& palette);
 
 // Jolts the visible page up and down `shakes` times, for explosions.
 void ShakeScreen(int shakes);

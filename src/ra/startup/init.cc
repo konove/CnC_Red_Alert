@@ -99,7 +99,9 @@
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/cps_image.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/net/ipxaddr.h"
@@ -121,7 +123,6 @@
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/compat.h"
-#include "ra/assets/graphics_loader.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -219,8 +220,8 @@ static bool Save_Recording_Values(ByteStream& file);
  *=============================================================================================*/
 static void Load_Prolog_Page() {
   game::TheMouse().Hide();
-  Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
-                    ThePalettes().title_palette());
+  engine::gfx::DrawPcxFile("PROLOG.PCX", TheScreen().hidden_view(),
+                           ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   ThePalettes().title_palette().Set();
   game::TheMouse().Show();
@@ -1683,8 +1684,8 @@ void Init_Random() {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("TITLE.PCX", &TheScreen().hidden_view(),
-                    ThePalettes().title_palette());
+  engine::gfx::DrawPcxFile("TITLE.PCX", TheScreen().hidden_view(),
+                           ThePalettes().title_palette());
 
   if (visible) {
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

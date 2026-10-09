@@ -82,6 +82,7 @@
 #include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/net/ipxaddr.h"
@@ -151,7 +152,6 @@
 #include "td/startup/game_state.h"
 #include "td/startup/startup.h"
 #include "td/startup/startup_options.h"
-#include "td/startup/winstub.h"
 #include "td/ui/dialog.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/msglist.h"
@@ -989,8 +989,8 @@ bool Select_Game(bool fade) {
           game::TheMouse().Hide();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(),
-                            ThePalettes().title_palette());
+          engine::gfx::DrawPcxFile("PREPICK.PCX", TheScreen().hidden_view(),
+                                   ThePalettes().title_palette());
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
@@ -1057,8 +1057,8 @@ bool Select_Game(bool fade) {
 #ifdef DEMO
           game::TheMouse().Hide();
           Set_Palette(ThePalettes().black_palette());
-          Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
-                            ThePalettes().title_palette());
+          engine::gfx::DrawPcxFile("DEMOPIC.PCX", TheScreen().hidden_view(),
+                                   ThePalettes().title_palette());
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
@@ -2743,8 +2743,8 @@ void Load_Recording_Values(ByteStream& file) {
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 void Load_Title_Page(bool visible) {
-  Load_Title_Screen("HTITLE.PCX", &TheScreen().hidden_view(),
-                    ThePalettes().title_palette());
+  engine::gfx::DrawPcxFile("HTITLE.PCX", TheScreen().hidden_view(),
+                           ThePalettes().title_palette());
 
   if (visible) {
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

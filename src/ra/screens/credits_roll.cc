@@ -38,6 +38,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
@@ -45,7 +46,6 @@
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
-#include "ra/assets/graphics_loader.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -308,8 +308,8 @@ SlideShow::SlideShow(const RemapControlType& text_scheme, const int width,
   for (int index = 0; index < kSlideCount; index++) {
     PixelBuffer& page = base::At(slide_pages_, index);
     page.Init(width, height, {}, 0);
-    Load_Title_Screen(base::At(kSlideNames, index), &page.view(),
-                      base::At(slide_palettes_, index));
+    engine::gfx::DrawPcxFile(base::At(kSlideNames, index), page.view(),
+                             base::At(slide_palettes_, index));
   }
 
   // Black, so the text can be erased before the first slide is copied in.

@@ -19,13 +19,8 @@
 
 #include <cstdio>
 #include <cstring>
-#include <optional>
-#include <span>
 
 #include "engine/audio/audio_mixer.h"
-#include "engine/gfx/palette.h"
-#include "engine/gfx/pcx_file.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
@@ -73,30 +68,6 @@ void Focus_Restore() {
   }
 
   engine::window::HardwareCursor::GrabMouse();
-}
-
-/***********************************************************************************************
- * Load_Title_Screen -- loads the title screen into the given video buffer *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    screen name * video buffer * ptr to buffer for palette *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 7/5/96 11:30AM ST : Created *
- *=============================================================================================*/
-
-void Load_Title_Screen(const char* name, PixelView* video_page,
-                       engine::gfx::Palette& palette) {
-  if (const std::optional<engine::gfx::PcxPicture> picture =
-          engine::gfx::ReadPcxFile(name)) {
-    video_page->CopyFromBuffer(0, 0, picture->width, picture->height,
-                               picture->pixels);
-    palette = picture->palette;
-  }
 }
 
 }  // namespace td

@@ -305,4 +305,15 @@ std::optional<PcxPicture> ReadPcxFile(const std::string_view file_name) {
   return ReadPcx(*file);
 }
 
+bool DrawPcxFile(const std::string_view file_name, PixelView& view,
+                 Palette& palette) {
+  const std::optional<PcxPicture> picture = ReadPcxFile(file_name);
+  if (!picture) {
+    return false;
+  }
+  view.CopyFromBuffer(0, 0, picture->width, picture->height, picture->pixels);
+  palette = picture->palette;
+  return true;
+}
+
 }  // namespace engine::gfx

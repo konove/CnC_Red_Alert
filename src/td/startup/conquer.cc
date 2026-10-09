@@ -94,6 +94,7 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"  // IWYU pragma: keep (the DEMO build)
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/shape_blitter.h"
@@ -506,8 +507,8 @@ void Main_Game() {
 #ifdef DEMO
   game::TheMouse().Hide();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
-  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
-                    ThePalettes().title_palette());
+  engine::gfx::DrawPcxFile("DEMOPIC.PCX", TheScreen().hidden_view(),
+                           ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
   game::TheKeyboard().Clear();

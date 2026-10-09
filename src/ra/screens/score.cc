@@ -56,6 +56,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
@@ -67,7 +68,6 @@
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
-#include "ra/assets/graphics_loader.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -394,8 +394,8 @@ void ScoreClass::Presentation() {
   // Load this side's background onto the hidden page, brighten its palette,
   // and fade it in from black.
   game::TheMouse().Hide();
-  Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
-                    score_palette);
+  engine::gfx::DrawPcxFile(base::At(ScreenNames, house),
+                           TheScreen().hidden_view(), score_palette);
   engine::gfx::BrightenPalette(score_palette, 30, 30, 30);
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);

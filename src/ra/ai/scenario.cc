@@ -96,6 +96,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
@@ -116,7 +117,6 @@
 #include "ra/ai/trigger_action.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/assets/audio.h"
-#include "ra/assets/graphics_loader.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -1418,7 +1418,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   if (!IsSovietHouse(ThePlayer()->Class->House)) {
     filename = "ALIPAPER.PCX";
   }
-  Load_Title_Screen(filename, &TheScreen().hidden_view(), temp);
+  engine::gfx::DrawPcxFile(filename, TheScreen().hidden_view(), temp);
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
