@@ -5674,10 +5674,10 @@
         "bugs",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-09T00:34:58Z",
+      "updated": "2026-10-09T00:36:56Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "`WritePcx()` now writes an even `bytes_per_line` (`BytesPerLine()`): a row of odd width ends in a repeat of its last pixel, which `ReadPcx()` already drops. The widest writable picture is 32766 pixels instead of 32767; even-width pictures, which is every screenshot the games take, are written byte for byte as before.",
@@ -5721,21 +5721,33 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-09T00:39:38Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "Decided to keep 320x200. Both games already share the one writer, so no code changed; the comment in `WriteEncoded()` now says why the value stays (no reader uses it, and the `tools/ui_check.py` hashes cover the header bytes).",
       "toDecide": "Keep 320x200, write the picture's size as Red Alert does, or write a real dpi?",
+      "decisions": [
+        {
+          "question": "What should a written PCX header state in horizontal_dpi / vertical_dpi?",
+          "options": [
+            "Keep 320x200 (Recommended)",
+            "Picture's size",
+            "A real dpi (72x72)"
+          ],
+          "answer": "Keep 320x200 (Recommended)",
+          "time": "2026-10-09T00:39:34Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 169,
-          "endLine": 170,
+          "startLine": 184,
+          "endLine": 185,
           "text": "      .horizontal_dpi = 320,\n      .vertical_dpi = 200,",
           "before": [
             "      .top = 0,",

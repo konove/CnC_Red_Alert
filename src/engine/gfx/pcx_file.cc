@@ -171,7 +171,9 @@ std::optional<std::vector<uint8_t>> LockedScanlines(PixelView& view) {
 bool WriteEncoded(ByteStream& out, const PixelView& view,
                   const std::span<const uint8_t> scanlines,
                   const Palette& palette) {
-  // The device resolution is 320x200 whatever the picture's size.
+  // The resolution fields state 320x200 whatever the picture's size. No reader
+  // uses them, and the screenshot hashes of tools/ui_check.py cover them, so
+  // the value stays the one the files have always had.
   const PcxHeader header = {
       .id = kPcxId,
       .version = kVersion,
