@@ -91,7 +91,7 @@ class ListClass : public ControlClass {
     ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
     ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
   }
-  // Not copyable -- see LinkClass.
+  // Not copyable -- see Link.
   ListClass(const ListClass&) = delete;
   ~ListClass() override { ListClass::Remove_Scroll_Bar(); }
   ListClass& operator=(const ListClass&) = delete;
@@ -392,7 +392,7 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+  Link& Add(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
     if (IsScrollActive) {
       ScrollGadget.Add(list);
       DownGadget.Add(list);
@@ -400,7 +400,7 @@ class ListClass : public ControlClass {
     }
     return ControlClass::Add(list);
   }
-  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+  Link& Add_Tail(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
     ControlClass::Add_Tail(list);
     if (IsScrollActive) {
       UpGadget.Add_Tail(list);
@@ -409,7 +409,7 @@ class ListClass : public ControlClass {
     }
     return Head_Of_List();
   }
-  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+  Link& Add_Head(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {
     if (IsScrollActive) {
       ScrollGadget.Add_Head(list);
       DownGadget.Add_Head(list);

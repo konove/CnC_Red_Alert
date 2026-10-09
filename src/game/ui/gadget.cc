@@ -265,7 +265,7 @@ void GadgetClass::Disable() {
  *=============================================================================================*/
 GadgetClass* GadgetClass::Remove() {
   Clear_Focus();
-  return dynamic_cast<GadgetClass*>(game::LinkClass::Remove());
+  return dynamic_cast<GadgetClass*>(game::Link::Remove());
 }
 
 /***********************************************************************************************
@@ -283,7 +283,7 @@ GadgetClass* GadgetClass::Remove() {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Next() const {
-  return dynamic_cast<GadgetClass*>(game::LinkClass::Get_Next());
+  return dynamic_cast<GadgetClass*>(game::Link::Get_Next());
 }
 
 /***********************************************************************************************
@@ -302,7 +302,7 @@ GadgetClass* GadgetClass::Get_Next() const {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Prev() const {
-  return dynamic_cast<GadgetClass*>(game::LinkClass::Get_Prev());
+  return dynamic_cast<GadgetClass*>(game::Link::Get_Prev());
 }
 
 /***********************************************************************************************

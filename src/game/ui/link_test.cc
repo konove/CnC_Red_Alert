@@ -6,8 +6,8 @@ namespace game {
 namespace {
 
 TEST(LinkClassTest, AddAfterItselfLeavesTheListAlone) {
-  LinkClass head;
-  LinkClass node;
+  Link head;
+  Link node;
   node.Add_Tail(head);
 
   EXPECT_EQ(&node.Add(node), &head);
@@ -18,8 +18,8 @@ TEST(LinkClassTest, AddAfterItselfLeavesTheListAlone) {
 }
 
 TEST(LinkClassTest, AddHeadOfTheHeadLeavesTheListAlone) {
-  LinkClass head;
-  LinkClass node;
+  Link head;
+  Link node;
   node.Add_Tail(head);
 
   EXPECT_EQ(&head.Add_Head(node), &head);
@@ -30,8 +30,8 @@ TEST(LinkClassTest, AddHeadOfTheHeadLeavesTheListAlone) {
 }
 
 TEST(LinkClassTest, AddTailOfTheTailLeavesTheListAlone) {
-  LinkClass head;
-  LinkClass node;
+  Link head;
+  Link node;
   node.Add_Tail(head);
 
   EXPECT_EQ(&node.Add_Tail(head), &head);

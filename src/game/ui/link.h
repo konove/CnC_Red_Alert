@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// LinkClass, the intrusive doubly linked list node under every gadget.
+// Link, the intrusive doubly linked list node under every gadget.
 // Originally LINK.H (Joe L. Bostic, January 1995).
 
 #ifndef CNC_RED_ALERT_GAME_UI_LINK_H_
@@ -40,47 +40,41 @@ namespace game {
 // Add_Tail(), `list` itself for Add()), which they leave alone.
 //
 // Example:
-//   LinkClass a, b, c;
+//   Link a, b, c;
 //   b.Add_Tail(a);  // a b
 //   c.Add_Tail(a);  // a b c
 //   b.Remove();     // a c
-class LinkClass {
+class Link {
  public:
-  LinkClass() noexcept = default;
-  virtual ~LinkClass();
-  LinkClass(LinkClass&&) = delete;
-  LinkClass& operator=(LinkClass&&) = delete;
+  Link() noexcept = default;
+  virtual ~Link();
+  Link(Link&&) = delete;
+  Link& operator=(Link&&) = delete;
 
   // Return the node after or before this one, or nullptr at that end of the
   // list.
-  [[nodiscard]] virtual LinkClass* Get_Next() const;
-  [[nodiscard]] virtual LinkClass* Get_Prev() const;
+  [[nodiscard]] virtual Link* Get_Next() const;
+  [[nodiscard]] virtual Link* Get_Prev() const;
 
   // Inserts this node right after `list`, which may be in the middle of a
   // chain; that is how a list that depends on its order, like the gadgets', is
   // put together. Returns the head of the list.
-  virtual LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual Link& Add(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Appends this node to the list `list` is in, whichever of its nodes `list`
   // is. Returns the head of the list.
-  virtual LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual Link& Add_Tail(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Puts this node in front of the list `list` is in, whichever of its nodes
   // `list` is. Returns the new head, which is this node.
-  virtual LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual Link& Add_Head(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Return the first or last node of the list this one is in: this node itself
   // when it is in none.
-  [[nodiscard]] const LinkClass& Head_Of_List() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Head_Of(*this);
-  }
-  [[nodiscard]] const LinkClass& Tail_Of_List() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return Tail_Of(*this);
-  }
+  [[nodiscard]] const Link& Head_Of_List() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  Link& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND { return Head_Of(*this); }
+  [[nodiscard]] const Link& Tail_Of_List() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  Link& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND { return Tail_Of(*this); }
 
   // Forgets both neighbours without telling them, so they go on pointing at
   // this node. Remove() is the way to take one node out; this is for dropping
@@ -90,17 +84,17 @@ class LinkClass {
 
   // Takes this node out of its list and closes the gap. Returns the head of
   // what is left, or nullptr if this was the only node.
-  virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual Link* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Not copyable. The original copy operations did not copy: they spliced the
   // destination into the source object's list, which mutates the source. Use
   // Add() to put an object into a list.
-  LinkClass(const LinkClass&) = delete;
-  LinkClass& operator=(const LinkClass&) = delete;
+  Link(const Link&) = delete;
+  Link& operator=(const Link&) = delete;
 
  private:
   // The walks behind the Head_Of_List() and Tail_Of_List() overloads. Self is
-  // LinkClass or const LinkClass, so neither overload casts away const.
+  // Link or const Link, so neither overload casts away const.
   template <class Self>
   static Self& Head_Of(Self& self ABSL_ATTRIBUTE_LIFETIME_BOUND) {
     Self* link = &self;
@@ -129,8 +123,8 @@ class LinkClass {
   }
 
   // The neighbours in the chain; nullptr at that end of it.
-  LinkClass* Next = nullptr;
-  LinkClass* Prev = nullptr;
+  Link* Next = nullptr;
+  Link* Prev = nullptr;
 };
 
 }  // namespace game

@@ -94,8 +94,8 @@ static bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
 static void ResizeChannelList(IconListClass& chanlist, bool bExpand);
 static void ResizeUserList(IconListClass& userlist, bool bExpand);
 
-static bool bLinkInList(const game::LinkClass* pListHead,
-                        const game::LinkClass* pLinkToFind);
+static bool bLinkInList(const game::Link* pListHead,
+                        const game::Link* pLinkToFind);
 
 static int d_chanlist_w;
 static int d_chanlist_h;
@@ -1592,9 +1592,8 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
 }
 
 //***********************************************************************************************
-bool bLinkInList(const game::LinkClass* pListHead,
-                 const game::LinkClass* pLinkToFind) {
-  const game::LinkClass* pLink = pListHead;
+bool bLinkInList(const game::Link* pListHead, const game::Link* pLinkToFind) {
+  const game::Link* pLink = pListHead;
   while (pLink) {
     if (pLink == pLinkToFind) {
       return true;

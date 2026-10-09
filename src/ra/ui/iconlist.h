@@ -182,9 +182,9 @@ class IconListClass : public ListClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  //		virtual LinkClass & Add(LinkClass & object);
-  //		virtual LinkClass & Add_Tail(LinkClass & object);
-  //		virtual LinkClass & Add_Head(LinkClass & object);
+  //		virtual Link & Add(Link & object);
+  //		virtual Link & Add_Tail(Link & object);
+  //		virtual Link & Add_Head(Link & object);
   //		virtual GadgetClass * Remove();
 
   virtual void Show_Last_Item();

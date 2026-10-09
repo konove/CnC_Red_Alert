@@ -79,17 +79,17 @@ void DropListClass::Zap() {
   EditClass::Zap();
 }
 
-game::LinkClass& DropListClass::Add(game::LinkClass& object) {
+game::Link& DropListClass::Add(game::Link& object) {
   DropButton.Add(object);
   return EditClass::Add(object);
 }
 
-game::LinkClass& DropListClass::Add_Tail(game::LinkClass& object) {
+game::Link& DropListClass::Add_Tail(game::Link& object) {
   DropButton.Add_Tail(object);
   return EditClass::Add_Tail(object);
 }
 
-game::LinkClass& DropListClass::Add_Head(game::LinkClass& object) {
+game::Link& DropListClass::Add_Head(game::Link& object) {
   DropButton.Add_Head(object);
   return EditClass::Add_Head(object);
 }

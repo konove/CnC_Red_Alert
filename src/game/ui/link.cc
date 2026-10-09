@@ -22,29 +22,29 @@ namespace game {
 
 // Qualified because a destructor must not make a virtual call: the derived
 // part of the object, and with it a derived Remove(), is already gone.
-LinkClass::~LinkClass() { LinkClass::Remove(); }
+Link::~Link() { Link::Remove(); }
 
-void LinkClass::Zap() {
+void Link::Zap() {
   Next = nullptr;
   Prev = nullptr;
 }
 
-LinkClass* LinkClass::Get_Next() const { return Next; }
+Link* Link::Get_Next() const { return Next; }
 
-LinkClass* LinkClass::Get_Prev() const { return Prev; }
+Link* Link::Get_Prev() const { return Prev; }
 
-const LinkClass& LinkClass::Head_Of_List() const { return Head_Of(*this); }
+const Link& Link::Head_Of_List() const { return Head_Of(*this); }
 
-const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
+const Link& Link::Tail_Of_List() const { return Tail_Of(*this); }
 
-LinkClass& LinkClass::Add(LinkClass& list) {
+Link& Link::Add(Link& list) {
   // A node cannot follow itself: linking it would make Prev point at this node
   // and cut the list off in front of it.
   if (&list == this) {
     return Head_Of_List();
   }
 
-  LinkClass* ptr = list.Next;
+  Link* ptr = list.Next;
 
   // Link this node in after `list`.
   list.Next = this;
@@ -59,8 +59,8 @@ LinkClass& LinkClass::Add(LinkClass& list) {
   return Head_Of_List();
 }
 
-LinkClass& LinkClass::Add_Head(LinkClass& list) {
-  LinkClass* ptr = &list.Head_Of_List();
+Link& Link::Add_Head(Link& list) {
+  Link* ptr = &list.Head_Of_List();
 
   // Already the head. Linking it in front of itself would make Next point at
   // this node, and a walk down the list would never end.
@@ -76,8 +76,8 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
   return *this;
 }
 
-LinkClass& LinkClass::Add_Tail(LinkClass& list) {
-  LinkClass* ptr = &list.Tail_Of_List();
+Link& Link::Add_Tail(Link& list) {
+  Link* ptr = &list.Tail_Of_List();
 
   // Already the tail. Linking it behind itself would make Prev point at this
   // node and lose every node in front of it.
@@ -93,10 +93,10 @@ LinkClass& LinkClass::Add_Tail(LinkClass& list) {
   return Head_Of_List();
 }
 
-LinkClass* LinkClass::Remove() {
+Link* Link::Remove() {
   // Found before unlinking: afterwards this node leads nowhere.
-  LinkClass* head = &Head_Of_List();
-  LinkClass* tail = &Tail_Of_List();
+  Link* head = &Head_Of_List();
+  Link* tail = &Tail_Of_List();
 
   if (Prev) {
     Prev->Next = Next;

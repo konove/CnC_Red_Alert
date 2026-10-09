@@ -71,11 +71,10 @@ class DropListClass : public EditClass {
 
   // Link the list and its drop button into the chain `object` is in, and
   // return the head of that chain, which may be any gadget.
-  game::LinkClass& Add(game::LinkClass& object)
+  game::Link& Add(game::Link& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& Add_Tail(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Tail(game::LinkClass& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Head(game::LinkClass& object)
+  game::Link& Add_Head(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   DropListClass* Remove() override;
   void Zap() override;
@@ -102,7 +101,7 @@ class DropListClass : public EditClass {
 
   void Set_Position(int x, int y) override;
 
-  // Not copyable -- see LinkClass.
+  // Not copyable -- see Link.
   DropListClass(const DropListClass&) = delete;
   DropListClass& operator=(const DropListClass&) = delete;
 
@@ -151,11 +150,10 @@ class TDropListClass : public EditClass {
   }
 
   // As DropListClass's: each returns the head of the chain.
-  game::LinkClass& Add(game::LinkClass& object)
+  game::Link& Add(game::Link& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& Add_Tail(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Tail(game::LinkClass& object)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Head(game::LinkClass& object)
+  game::Link& Add_Head(game::Link& object)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   TDropListClass* Remove() override;
   void Zap() override;
@@ -226,19 +224,19 @@ void TDropListClass<T>::Zap() {
 }
 
 template <class T>
-game::LinkClass& TDropListClass<T>::Add(game::LinkClass& object) {
+game::Link& TDropListClass<T>::Add(game::Link& object) {
   DropButton.Add(object);
   return EditClass::Add(object);
 }
 
 template <class T>
-game::LinkClass& TDropListClass<T>::Add_Tail(game::LinkClass& object) {
+game::Link& TDropListClass<T>::Add_Tail(game::Link& object) {
   DropButton.Add_Tail(object);
   return EditClass::Add_Tail(object);
 }
 
 template <class T>
-game::LinkClass& TDropListClass<T>::Add_Head(game::LinkClass& object) {
+game::Link& TDropListClass<T>::Add_Head(game::Link& object) {
   DropButton.Add_Head(object);
   return EditClass::Add_Head(object);
 }

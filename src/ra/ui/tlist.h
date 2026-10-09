@@ -87,12 +87,9 @@ class TListClass final : public game::ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  game::LinkClass& Add(game::LinkClass& list)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Tail(game::LinkClass& list)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  game::LinkClass& Add_Head(game::LinkClass& list)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& Add(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& Add_Tail(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::Link& Add_Head(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   game::GadgetClass* Remove() override;
 
  protected:
@@ -484,7 +481,7 @@ void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
 }
 
 template <class T>
-game::LinkClass& TListClass<T>::Add(game::LinkClass& list) {
+game::Link& TListClass<T>::Add(game::Link& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -501,7 +498,7 @@ game::LinkClass& TListClass<T>::Add(game::LinkClass& list) {
 }
 
 template <class T>
-game::LinkClass& TListClass<T>::Add_Head(game::LinkClass& list) {
+game::Link& TListClass<T>::Add_Head(game::Link& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -518,7 +515,7 @@ game::LinkClass& TListClass<T>::Add_Head(game::LinkClass& list) {
 }
 
 template <class T>
-game::LinkClass& TListClass<T>::Add_Tail(game::LinkClass& list) {
+game::Link& TListClass<T>::Add_Tail(game::Link& list) {
   /*
   **	Add myself to the list.
   */

@@ -202,7 +202,7 @@ game/        → The code both games share, in namespace game::, above the engin
                simulation enums (ArmorType, MoveType, BStateType, ...),
                UnitTrackerClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
                [depends: game_core]
-  ui/        → LinkClass, Input, the gadget base classes, the widgets as templates over each
+  ui/        → Link, Input, the gadget base classes, the widgets as templates over each
                game's UiSkin (ra/ui/ui_skin.h, td/ui/ui_skin.h), aliased per game, and the names of
                the sixteen standard palette colors (target `game_ui`)
                [depends: game_core]

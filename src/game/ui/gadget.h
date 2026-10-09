@@ -33,7 +33,7 @@
  *                  Last Update : January 3, 1995   [MML] *
  *                                                                                             *
  *                                                                                             *
- *        LinkClass [This is the linked list manager class. It keeps a record *
+ *        Link [This is the linked list manager class. It keeps a record *
  *            �      of the next and previous gadget in the list. It is possible
  ** �      delete a gadget out of the middle of the list with this * � class.] *
  *            � * GadgetClass [The is the basic gadget class. It handles
@@ -93,7 +93,7 @@ namespace game {
 
 class ControlClass;
 
-class GadgetClass : public game::LinkClass {
+class GadgetClass : public game::Link {
  public:
   // Input events a gadget listens for, stored OR'd in Flags.
   static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.
@@ -116,7 +116,7 @@ class GadgetClass : public game::LinkClass {
   GadgetClass(int x, int y, int w, int h, unsigned flags,
               bool sticky = false) noexcept;
   GadgetClass() noexcept = default;
-  // Not copyable -- see LinkClass.
+  // Not copyable -- see Link.
   GadgetClass(const GadgetClass&) = delete;
   ~GadgetClass() override;
   GadgetClass& operator=(const GadgetClass&) = delete;
