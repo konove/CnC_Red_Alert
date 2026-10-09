@@ -241,6 +241,7 @@ void TDropListClass<T>::Set_Selected_Index(int index) {
 template <class T>
 void TDropListClass<T>::Clear_Focus() {
   Collapse();
+  EditClass::Clear_Focus();
 }
 
 template <class T>

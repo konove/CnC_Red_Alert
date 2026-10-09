@@ -6691,17 +6691,18 @@
         "bug",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T07:36:41Z",
+      "updated": "2026-10-09T16:05:27Z",
       "source": "4f1ad716..cfc8a308",
+      "resolution": "`DropListClass::Clear_Focus()` and `TDropListClass<T>::Clear_Focus()` now call `EditClass::Clear_Focus()` after `Collapse()`, so a drop list that `GadgetList::Remove()` takes out no longer keeps the keyboard focus. `ra/ui/drop_test.cc` has a test for each class; both failed before the change.",
       "anchors": [
         {
           "path": "src/ra/ui/drop.cc",
           "startLine": 95,
-          "endLine": 95,
-          "text": "void DropListClass::Clear_Focus() { Collapse(); }",
+          "endLine": 98,
+          "text": "void DropListClass::Clear_Focus() {\n  Collapse();\n  EditClass::Clear_Focus();\n}",
           "before": [
             "  }",
             "}",
@@ -6717,8 +6718,8 @@
         {
           "path": "src/ra/ui/drop.h",
           "startLine": 241,
-          "endLine": 244,
-          "text": "template <class T>\nvoid TDropListClass<T>::Clear_Focus() {\n  Collapse();\n}",
+          "endLine": 245,
+          "text": "template <class T>\nvoid TDropListClass<T>::Clear_Focus() {\n  Collapse();\n  EditClass::Clear_Focus();\n}",
           "before": [
             "  }",
             "}",

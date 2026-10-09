@@ -4,6 +4,7 @@
 
 #include "base/array.h"
 #include "base/installed.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
 #include "gtest/gtest.h"
@@ -14,6 +15,14 @@
 namespace ra {
 
 namespace {
+
+// A typed list entry that draws nothing; the tests never draw.
+struct Item {
+  [[nodiscard]] static const char* Description() { return "item"; }
+  void Draw_It(PixelView& /*view*/, int /*index*/, int /*x*/, int /*y*/,
+               int /*width*/, int /*height*/, bool /*selected*/,
+               FontType /*font*/, TextPrintType /*flags*/) const {}
+};
 
 // Building the list selects and measures the font it prints in, which reads
 // the fonts and colour schemes Game installs in the real game. Default ones
@@ -83,6 +92,35 @@ TEST_F(DropListClassTest, ClearingTheGadgetListClosesTheDroppedList) {
   gadgets.Add(drop_);
   drop_.Expand();
   EXPECT_EQ(gadgets.gadgets().size(), 3U);
+}
+
+// A drop list that leaves the dialog must not keep the keystrokes.
+TEST_F(DropListClassTest, LeavingAGadgetListDropsTheKeyboardFocus) {
+  game::GadgetList gadgets;
+  gadgets.Add(drop_);
+  drop_.Set_Focus();
+  ASSERT_TRUE(drop_.Has_Focus());
+  drop_.Expand();
+
+  gadgets.Remove(drop_);
+  EXPECT_FALSE(drop_.Has_Focus());
+  EXPECT_FALSE(drop_.IsDropped);
+}
+
+TEST_F(DropListClassTest, LeavingAGadgetListDropsATypedListsKeyboardFocus) {
+  char text[16] = {};
+  TDropListClass<Item*> typed{
+      2,  text, sizeof(text), FontType::k6Point, TPF_NONE, 0, 0, 100, 40,
+      {}, {}};
+  game::GadgetList gadgets;
+  gadgets.Add(typed);
+  typed.Set_Focus();
+  ASSERT_TRUE(typed.Has_Focus());
+  typed.Expand();
+
+  gadgets.Remove(typed);
+  EXPECT_FALSE(typed.Has_Focus());
+  EXPECT_FALSE(typed.IsDropped);
 }
 
 }  // namespace

@@ -92,7 +92,10 @@ void DropListClass::Set_Selected_Index(int index) {
   }
 }
 
-void DropListClass::Clear_Focus() { Collapse(); }
+void DropListClass::Clear_Focus() {
+  Collapse();
+  EditClass::Clear_Focus();
+}
 
 void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                                  game::ControlClass& whom) {
