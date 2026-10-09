@@ -172,7 +172,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
       LineCount((h - 1) / LineHeight),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
-      ScrollGadget(0, x + w, y, 0, h, true) {
+      ScrollGadget(0, x + w, y, 0, h, game::SliderStyle::kSunkenBar) {
   /*
   **	Set preliminary values for the slider related gadgets. They don't
   *automatically *	appear at this time, but there are some values that can

@@ -1962,7 +1962,7 @@ int MapEditClass::Load_Scenario() {
     **	Build level (technology).
     */
     SliderClass techlevel(kButtonTech, housebtn.X + housebtn.Width + 15,
-                          housebtn.Y, 100, 8);
+                          housebtn.Y, 100, 8, game::SliderStyle::kGauge);
     techlevel.Set_Maximum(16);
 
     char statictechbuff[15];
@@ -1974,7 +1974,7 @@ int MapEditClass::Load_Scenario() {
     **	Starting credits.
     */
     SliderClass creditbtn(kButtonCredits, housebtn.X + housebtn.Width + 15,
-                          techlevel.Y + 20, 100, 8);
+                          techlevel.Y + 20, 100, 8, game::SliderStyle::kGauge);
     creditbtn.Set_Maximum(201);
 
     char staticcreditbuff[15];
@@ -1986,7 +1986,7 @@ int MapEditClass::Load_Scenario() {
     **	Maximum unit/infantry slider.
     */
     SliderClass maxunit(kButtonMaxunit, housebtn.X + housebtn.Width + 15,
-                        creditbtn.Y + 20, 100, 8);
+                        creditbtn.Y + 20, 100, 8, game::SliderStyle::kGauge);
     maxunit.Set_Maximum(501);
 
     char staticmaxunitbuff[15];
@@ -2012,7 +2012,8 @@ int MapEditClass::Load_Scenario() {
     **	Smartness lider.
     */
     SliderClass smarties(kButtonSmarties, sourcebtn.X,
-                         sourcebtn.Y + sourcebtn.Height + 15, 35, 8);
+                         sourcebtn.Y + sourcebtn.Height + 15, 35, 8,
+                         game::SliderStyle::kGauge);
     smarties.Set_Maximum(TheRules().MaxIQ + 1);
 
     char staticsmartiesbuff[15];

@@ -119,7 +119,7 @@ DifficultyChoice AskDifficulty(const bool is_expansion_mission) {
   const int stops =
       TheRules().IsFineDifficulty ? kDifficultyLevels : kCoarseDifficultyStops;
   SliderClass slider(kSliderId, kSliderX, kSliderY, kSliderWidth, kSliderHeight,
-                     true);
+                     game::SliderStyle::kSunkenBar);
   slider.Set_Maximum(stops);
   slider.Set_Value(stops / 2);
   game::GadgetList gadgets;

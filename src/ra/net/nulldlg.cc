@@ -2843,7 +2843,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   SliderClass difficulty(
       kButtonDifficulty, d_name_x,
       optionlist.Y + optionlist.Height + d_margin1 + d_margin1,
-      d_dialog_w - ((d_name_x - d_dialog_x) * 2), 16, true);
+      d_dialog_w - ((d_name_x - d_dialog_x) * 2), 16,
+      game::SliderStyle::kSunkenBar);
   if (TheRules().IsFineDifficulty) {
     difficulty.Set_Maximum(5);
     difficulty.Set_Value(2);

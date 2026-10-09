@@ -183,9 +183,9 @@ void GameControlsClass::Process() {
   */
 
   SliderClass gspeed_btn(kButtonSpeed, d_speed_x, d_speed_y, d_speed_w,
-                         d_speed_h, true);
+                         d_speed_h, game::SliderStyle::kSunkenBar);
   SliderClass scrate_btn(kButtonScrollrate, d_scroll_x, d_scroll_y, d_scroll_w,
-                         d_scroll_h, true);
+                         d_scroll_h, game::SliderStyle::kSunkenBar);
   TextButtonClass visual_btn(kButtonVisual, TXT_VISUAL_CONTROLS, kButtonFont,
                              kButtonFlags, d_visual_x, d_visual_y, d_visual_w,
                              d_visual_h);

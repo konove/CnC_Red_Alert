@@ -41,57 +41,38 @@
 #define CNC_RED_ALERT_GAME_UI_SLIDER_H_
 
 #include <algorithm>
-#include <memory>
 
-#include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/gauge.h"
 #include "game/ui/input.h"
-#include "game/ui/shapebtn.h"
 #include "game/ui/widget_skin.h"
 
 namespace game {
 
-// A gauge whose thumb covers a range of the value: a scroll bar. A stand-alone
-// slider gets plus and minus buttons at its ends; one that belongs to a list
-// box is drawn as a sunken bar without them.
+// How a slider is drawn.
+enum class SliderStyle {
+  kGauge,      // Like a GaugeClass: a filled body up to the thumb.
+  kSunkenBar,  // A sunken bar with a raised thumb on it, as in a list box.
+};
+
+// A gauge whose thumb covers a range of the value: a scroll bar.
 // NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin.
 template <WidgetSkin Skin>
 class SliderClass final : public GaugeClass<Skin> {
   using Base = GaugeClass<Skin>;
 
  public:
-  SliderClass(unsigned id, int x, int y, int w, int h,
-              bool belong_to_list = false)
-      : Base(id, x, y, w, h), BelongToList(belong_to_list) {
-    if (!BelongToList) {
-      PlusGadget = std::make_unique<ShapeButtonClass<Skin>>(
-          id, MixArchive::RetrieveData("BTN-PLUS.SHP"),
-          this->X + this->Width + 2, this->Y);
-      MinusGadget = std::make_unique<ShapeButtonClass<Skin>>(
-          id, MixArchive::RetrieveData("BTN-MINS.SHP"), this->X - 6, this->Y);
-
-      // The buttons are not chained behind the slider. They were, but every
-      // dialog then appends the slider to its gadgets, which cut them off
-      // again: no dialog has ever shown them.
-      PlusGadget->Make_Peer(*this);
-      PlusGadget->Flag_To_Redraw();
-      MinusGadget->Make_Peer(*this);
-      MinusGadget->Flag_To_Redraw();
-    }
+  SliderClass(unsigned id, int x, int y, int w, int h, SliderStyle style)
+      : Base(id, x, y, w, h), style_(style) {
     Set_Thumb_Size(1);
     Recalc_Thumb();
 
     // Gauges have at least 2 colors, but sliders should only have one.
     this->IsColorized = false;
   }
-  ~SliderClass() override {
-    // In creation order; the members alone would go in reverse.
-    PlusGadget.reset();
-    MinusGadget.reset();
-  }
+  ~SliderClass() override = default;
   SliderClass(const SliderClass&) = delete;
   SliderClass& operator=(const SliderClass&) = delete;
   SliderClass(SliderClass&&) = delete;
@@ -132,10 +113,11 @@ class SliderClass final : public GaugeClass<Skin> {
   }
 
   bool Draw_Me(PixelView& view, bool forced) override {
-    // A list-attached slider draws a thumb instead of a gauge body; the
-    // stand-alone case still goes through GaugeClass below.
+    // A sunken bar draws a thumb instead of a gauge body; the gauge style
+    // still goes through GaugeClass below.
+    const bool sunken = style_ == SliderStyle::kSunkenBar;
     // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-    if (BelongToList && ControlClass::Draw_Me(view, forced)) {
+    if (sunken && ControlClass::Draw_Me(view, forced)) {
       Skin::Draw_Gauge_Box(view, this->X, this->Y, this->Width, this->Height,
                            false);
       Draw_Thumb(view);
@@ -144,33 +126,9 @@ class SliderClass final : public GaugeClass<Skin> {
     return Base::Draw_Me(view, forced);
   }
 
-  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*unused*/,
-                    ControlClass& whom) override {
-    if (flags & GadgetClass::kLeftRelease) {
-      if (&whom == PlusGadget.get()) {
-        Step(false);
-      }
-      if (&whom == MinusGadget.get()) {
-        Step(true);
-      }
-    }
-  }
-
   int Thumb_Pixels() override { return ThumbSize; }
 
  protected:
-  /*
-  **	If the slider bar has been created, these point to the respective
-  **	gadgets that it is composed of.
-  */
-  std::unique_ptr<ShapeButtonClass<Skin>> PlusGadget;
-  std::unique_ptr<ShapeButtonClass<Skin>> MinusGadget;
-
-  /*
-  **	If I belong to a listbox, I have to draw myself differently...
-  */
-  bool BelongToList : 1;
-
   /*
   **	This is the logical size of the thumb. This value is used when drawing
   **	the thumb imagery. It is also the amount that is bumped when the
@@ -236,6 +194,8 @@ class SliderClass final : public GaugeClass<Skin> {
   }
 
  private:
+  SliderStyle style_;
+
   void Recalc_Thumb() {
     const int length = this->IsHorizontal ? this->Width : this->Height;
     const int size = Skin::Scale(length, Thumb, this->MaxValue);

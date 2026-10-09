@@ -218,13 +218,13 @@ void SoundControlsClass::Process() {
   **	Music volume slider.
   */
   SliderClass music(kSliderMusic, option_x + mslider_x, option_y + mslider_y,
-                    mslider_w, mslider_height, true);
+                    mslider_w, mslider_height, game::SliderStyle::kSunkenBar);
 
   /*
   **	Sound volume slider.
   */
   SliderClass sound(kSliderSound, option_x + fxslider_x, option_y + fxslider_y,
-                    fxslider_w, fxslider_height, true);
+                    fxslider_w, fxslider_height, game::SliderStyle::kSunkenBar);
 
   /*
   **	Causes left mouse clicks inside the dialog area, but not on any

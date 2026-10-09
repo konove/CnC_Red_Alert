@@ -6368,10 +6368,10 @@
         "bug",
         "game-ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T02:15:21Z",
+      "updated": "2026-10-09T16:06:01Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
       "resolution": "`InsertAfter()`, `AppendTo()` and `PrependTo()` now `DCHECK` that the node is in no list (after the already-in-place early returns); the ring guards stay because the normal `NDEBUG` build still lets it through. A sweep of the gtests and `tools/ui_check.py` in a build with DCHECKs on found three callers, all fixed: `ListClass`/`TListClass` unlink their scroll gadgets before re-adding them (`UnlinkScrollGadgets()`), and `SliderClass` no longer chains its ± buttons behind itself in the constructor, which every dialog's `AppendTo()` cut off again.",
@@ -6419,10 +6419,10 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T07:29:00Z",
+      "updated": "2026-10-09T16:06:04Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
       "fixedIn": "cfc8a308",
@@ -6510,64 +6510,69 @@
       "effort": "s",
       "tags": [
         "dead-code",
-        "game-ui",
-        "needs-decision"
+        "game-ui"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T05:42:27Z",
-      "updated": "2026-10-09T05:42:27Z",
+      "updated": "2026-10-09T16:15:46Z",
       "parent": "T-222",
+      "resolution": "Deleted `PlusGadget`, `MinusGadget`, the `Peer_To_Peer()` override and the hand-written destructor from `SliderClass`; `BTN-PLUS.SHP`/`BTN-MINS.SHP` are in neither game's data. The `belong_to_list` bool became a required `game::SliderStyle` (`kGauge`/`kSunkenBar`) at all 22 construction sites. No change on screen: `ui_check` hashes unchanged, strict build and ctest pass.",
       "toDecide": "- **Delete them**: remove both members, the `belong_to_list` parameter and the `Peer_To_Peer()` override; no change on screen.\n- **Show them**: have `SliderClass` add the buttons with itself (overrides of the add functions and `Remove()`, like `ListClass`'s scroll gadgets). Changes the TD options dialogs and RA's editor house dialog; needs the two shapes to exist in the game data and new `ui_check` hashes.",
+      "decisions": [
+        {
+          "question": "SliderClass's ± buttons are never in a gadget list, and BTN-PLUS.SHP / BTN-MINS.SHP are in neither game's data. What should happen to them?",
+          "options": [
+            "Delete them (Recommended)",
+            "Show them, with other art",
+            "Leave as is"
+          ],
+          "answer": "Delete them (Recommended)",
+          "time": "2026-10-09T16:07:41Z"
+        },
+        {
+          "question": "If the buttons are deleted, `belong_to_list` only selects the drawing style (sunken bar with a thumb vs. gauge body). What about that parameter?",
+          "options": [
+            "Keep it, rename (Recommended)",
+            "Keep it unchanged",
+            "Remove it, always sunken bar"
+          ],
+          "answer": "Keep it, rename (Recommended)",
+          "time": "2026-10-09T16:07:41Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/ui/slider.h",
-          "startLine": 69,
-          "endLine": 85,
-          "text": "    if (!BelongToList) {\n      PlusGadget = std::make_unique<ShapeButtonClass<Skin>>(\n          id, MixArchive::RetrieveData(\"BTN-PLUS.SHP\"),\n          this->X + this->Width + 2, this->Y);\n      MinusGadget = std::make_unique<ShapeButtonClass<Skin>>(\n          id, MixArchive::RetrieveData(\"BTN-MINS.SHP\"), this->X - 6, this->Y);\n\n      // The buttons are not chained behind the slider. They were, but every\n      // dialog then appends the slider to its gadgets, which cut them off\n      // again: no dialog has ever shown them.\n      PlusGadget->Make_Peer(*this);\n      PlusGadget->Flag_To_Redraw();\n      MinusGadget->Make_Peer(*this);\n      MinusGadget->Flag_To_Redraw();\n    }\n    Set_Thumb_Size(1);\n    Recalc_Thumb();",
+          "startLine": 54,
+          "endLine": 58,
+          "text": "// How a slider is drawn.\nenum class SliderStyle {\n  kGauge,      // Like a GaugeClass: a filled body up to the thumb.\n  kSunkenBar,  // A sunken bar with a raised thumb on it, as in a list box.\n};",
           "before": [
-            "  SliderClass(unsigned id, int x, int y, int w, int h,",
-            "              bool belong_to_list = false)",
-            "      : Base(id, x, y, w, h), BelongToList(belong_to_list) {"
+            "",
+            "namespace game {",
+            ""
           ],
           "after": [
             "",
-            "    // Gauges have at least 2 colors, but sliders should only have one.",
-            "    this->IsColorized = false;"
+            "// A gauge whose thumb covers a range of the value: a scroll bar.",
+            "// NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin."
           ],
           "lost": false
         },
         {
           "path": "src/game/ui/slider.h",
-          "startLine": 147,
-          "endLine": 157,
-          "text": "  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*unused*/,\n                    ControlClass& whom) override {\n    if (flags & GadgetClass::kLeftRelease) {\n      if (&whom == PlusGadget.get()) {\n        Step(false);\n      }\n      if (&whom == MinusGadget.get()) {\n        Step(true);\n      }\n    }\n  }",
+          "startLine": 67,
+          "endLine": 74,
+          "text": "  SliderClass(unsigned id, int x, int y, int w, int h, SliderStyle style)\n      : Base(id, x, y, w, h), style_(style) {\n    Set_Thumb_Size(1);\n    Recalc_Thumb();\n\n    // Gauges have at least 2 colors, but sliders should only have one.\n    this->IsColorized = false;\n  }",
           "before": [
-            "    return Base::Draw_Me(view, forced);",
-            "  }",
-            ""
+            "  using Base = GaugeClass<Skin>;",
+            "",
+            " public:"
           ],
           "after": [
-            "",
-            "  int Thumb_Pixels() override { return ThumbSize; }",
-            ""
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/game/ui/slider.h",
-          "startLine": 166,
-          "endLine": 167,
-          "text": "  std::unique_ptr<ShapeButtonClass<Skin>> PlusGadget;\n  std::unique_ptr<ShapeButtonClass<Skin>> MinusGadget;",
-          "before": [
-            "  **\tIf the slider bar has been created, these point to the respective",
-            "  **\tgadgets that it is composed of.",
-            "  */"
-          ],
-          "after": [
-            "",
-            "  /*",
-            "  **\tIf I belong to a listbox, I have to draw myself differently..."
+            "  ~SliderClass() override = default;",
+            "  SliderClass(const SliderClass&) = delete;",
+            "  SliderClass& operator=(const SliderClass&) = delete;"
           ],
           "lost": false
         }
@@ -6691,10 +6696,10 @@
         "bug",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T16:05:27Z",
+      "updated": "2026-10-09T16:08:38Z",
       "source": "4f1ad716..cfc8a308",
       "resolution": "`DropListClass::Clear_Focus()` and `TDropListClass<T>::Clear_Focus()` now call `EditClass::Clear_Focus()` after `Collapse()`, so a drop list that `GadgetList::Remove()` takes out no longer keeps the keyboard focus. `ra/ui/drop_test.cc` has a test for each class; both failed before the change.",
       "anchors": [

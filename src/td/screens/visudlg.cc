@@ -134,7 +134,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass brightness(kButtonBrightness, slider_x,
                          slider_y + (slider_y_spacing * 0), slider_width,
-                         slider_height);
+                         slider_height, game::SliderStyle::kGauge);
   brightness.Set_Thumb_Size(40);
   brightness.Set_Value(TheOptions().Get_Brightness());
   gadgets.Add(brightness);
@@ -143,7 +143,7 @@ void VisualControlsClass::Process() {
   **	Color (saturation) control.
   */
   SliderClass color(kButtonColor, slider_x, slider_y + (slider_y_spacing * 1),
-                    slider_width, slider_height);
+                    slider_width, slider_height, game::SliderStyle::kGauge);
   color.Set_Thumb_Size(40);
   color.Set_Value(TheOptions().Get_Color());
   gadgets.Add(color);
@@ -153,7 +153,7 @@ void VisualControlsClass::Process() {
   */
   SliderClass contrast(kButtonContrast, slider_x,
                        slider_y + (slider_y_spacing * 2), slider_width,
-                       slider_height);
+                       slider_height, game::SliderStyle::kGauge);
   contrast.Set_Thumb_Size(40);
   contrast.Set_Value(TheOptions().Get_Contrast());
   gadgets.Add(contrast);
@@ -162,7 +162,7 @@ void VisualControlsClass::Process() {
   **	Tint (hue) control.
   */
   SliderClass tint(kButtonTint, slider_x, slider_y + (slider_y_spacing * 3),
-                   slider_width, slider_height);
+                   slider_width, slider_height, game::SliderStyle::kGauge);
   tint.Set_Thumb_Size(40);
   tint.Set_Value(TheOptions().Get_Tint());
   gadgets.Add(tint);
