@@ -6,10 +6,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <fstream>
-#include <ios>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <span>
 #include <utility>
@@ -18,12 +17,15 @@
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
 #include "engine/file/game_files_test_util.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface_test_util.h"
 #include "engine/stream/byte_stream.h"
+#include "engine/stream/byte_stream_test_util.h"
 #include "engine/stream/memory_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
@@ -91,8 +93,12 @@ std::vector<uint8_t> WrittenFile(PixelView& view, const Palette& palette) {
 
 // The bytes of the file at `path`, or nothing if there is none.
 std::vector<uint8_t> FileBytes(const std::filesystem::path& path) {
-  std::ifstream in(path, std::ios::binary);
-  return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+  const std::unique_ptr<DiskStream> in =
+      DiskStream::Open(path.string(), FileAccess::kRead);
+  if (in == nullptr) {
+    return {};
+  }
+  return ReadAll<std::vector<uint8_t>>(*in, in->Size());
 }
 
 // The header of a written file, or nothing if the file is shorter than one.

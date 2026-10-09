@@ -5,11 +5,10 @@
 #include <cstddef>
 #include <memory>
 #include <span>
-#include <string>
 #include <string_view>
 #include <utility>
 
-#include "engine/stream/byte_stream.h"
+#include "engine/stream/byte_stream_test_util.h"
 #include "engine/stream/memory_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
@@ -18,13 +17,6 @@ namespace {
 
 std::span<const std::byte> Bytes(const std::string_view text) {
   return std::as_bytes(std::span(text));
-}
-
-std::string ReadAll(ByteStream& stream, const int count) {
-  std::string out(static_cast<size_t>(count), '\0');
-  out.resize(
-      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));
-  return out;
 }
 
 TEST(RangeStreamTest, SeesOnlyItsWindow) {

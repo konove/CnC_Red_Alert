@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 220,
+  "nextId": 222,
   "items": [
     {
       "id": "T-2",
@@ -5975,61 +5975,27 @@
         "testing",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T07:46:43Z",
+      "updated": "2026-10-09T01:22:18Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
+      "resolution": "`ReadAll()` now lives once in the new header `src/engine/stream/byte_stream_test_util.h`, as a template over the result (a `std::string` by default). The three stream tests include it in place of their own copies, and `FileBytes()` in `src/engine/gfx/pcx_file_test.cc` reads the written file back through `DiskStream` and `ReadAll<std::vector<uint8_t>>()` instead of a `std::ifstream`.",
       "anchors": [
         {
-          "path": "src/engine/file/disk_stream_test.cc",
-          "startLine": 35,
-          "endLine": 35,
-          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
+          "path": "src/engine/stream/byte_stream_test_util.h",
+          "startLine": 24,
+          "endLine": 29,
+          "text": "Bytes ReadAll(ByteStream& stream, const base::ssize count) {\n  Bytes out(base::ToSize(count), {});\n  out.resize(base::ToSize(stream.Read(std::as_writable_bytes(std::span(out)))));\n  return out;\n}\n",
           "before": [
-            "  return std::as_bytes(std::span(text));",
-            "}",
-            ""
+            "//   EXPECT_EQ(ReadAll<std::vector<uint8_t>>(stream, 10),",
+            "//             std::vector<uint8_t>{});",
+            "template <typename Bytes = std::string>"
           ],
           "after": [
-            "  std::string out(static_cast<size_t>(count), '\\0');",
-            "  out.resize(",
-            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/engine/stream/range_stream_test.cc",
-          "startLine": 23,
-          "endLine": 23,
-          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
-          "before": [
-            "  return std::as_bytes(std::span(text));",
-            "}",
+            "#endif  // CNC_RED_ALERT_ENGINE_STREAM_BYTE_STREAM_TEST_UTIL_H_",
             ""
-          ],
-          "after": [
-            "  std::string out(static_cast<size_t>(count), '\\0');",
-            "  out.resize(",
-            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/engine/stream/memory_stream_test.cc",
-          "startLine": 20,
-          "endLine": 20,
-          "text": "std::string ReadAll(ByteStream& stream, const int count) {",
-          "before": [
-            "  return std::as_bytes(std::span(text));",
-            "}",
-            ""
-          ],
-          "after": [
-            "  std::string out(static_cast<size_t>(count), '\\0');",
-            "  out.resize(",
-            "      static_cast<size_t>(stream.Read(std::as_writable_bytes(std::span(out)))));"
           ],
           "lost": false
         }
@@ -6080,10 +6046,10 @@
         "td",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T17:44:41Z",
-      "updated": "2026-10-09T01:10:22Z",
+      "updated": "2026-10-09T01:14:05Z",
       "parent": "T-194",
       "source": "8b1945aa..66912554",
       "resolution": "Both copies are replaced by `bool engine::gfx::DrawPcxFile(std::string_view, PixelView&, Palette&)` in `engine/gfx/pcx_file.h`, which returns whether the picture was read and leaves the view and palette alone if not; two tests cover it. All 12 callers use it, `ra/assets/graphics_loader.h` is deleted and the declaration is gone from `td/startup/winstub.h`.",
@@ -6218,6 +6184,147 @@
             "  }",
             "",
             "  // Release the run's buffers so that the next run re-reads MovieTime."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-220",
+      "title": "Decide what to do with Tiberian Dawn's `#ifdef DEMO` branches",
+      "details": "`DEMO` is defined nowhere: `td/core/defines.h:74` has it commented out, and no CMake file sets it. About 26 `#ifdef DEMO` / `defined(DEMO)` blocks under `src/td` therefore compile in no build, so no compiler or clang-tidy run checks them and tree-wide changes have to patch them blind.\n\nSeen while fixing T-208: three of the six TD calls of `engine::gfx::DrawPcxFile()` sit in such blocks (`td/screens/ending.cc`, `td/startup/conquer.cc`, `td/startup/init.cc`), and `ending.cc` and `conquer.cc` now need `#include \"engine/gfx/pcx_file.h\"  // IWYU pragma: keep (the DEMO build)` only for them.\n\nOptions: delete the branches, or make `DEMO` a `config::k...` constant tested with a plain `if` so the code is compiled and checked.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "dead-code",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:10:33Z",
+      "updated": "2026-10-09T01:10:33Z",
+      "source": "bdbb8075",
+      "toDecide": "Delete the `#ifdef DEMO` branches in Tiberian Dawn, or turn `DEMO` into a `config::` constant so they are compiled and checked?",
+      "anchors": [
+        {
+          "path": "src/td/core/defines.h",
+          "startLine": 74,
+          "endLine": 74,
+          "text": "// #define DEMO",
+          "before": [
+            "**\tThe demo version of C&C will be built if the following define",
+            "**\tis active.",
+            "*/"
+          ],
+          "after": [
+            "",
+            "/**********************************************************************",
+            "**  Define this to allow play of the bonus missions for the Gateway"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-221",
+      "title": "Share the text-to-bytes helper of the stream tests",
+      "details": "`Bytes(std::string_view)`, which returns the text as a `std::span<const std::byte>`, is defined five times: in `src/engine/stream/byte_stream_test.cc`, `src/engine/stream/memory_stream_test.cc`, `src/engine/stream/range_stream_test.cc`, `src/engine/file/disk_stream_test.cc` and `src/engine/codec/stream_error_test.cc`. Move one copy next to `ReadAll()` in `src/engine/stream/byte_stream_test_util.h`, include that header in the five tests and delete their copies (and the `<string_view>`/`<span>` includes `misc-include-cleaner` then reports as unused).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T01:22:22Z",
+      "updated": "2026-10-09T01:22:22Z",
+      "parent": "T-194",
+      "anchors": [
+        {
+          "path": "src/engine/stream/byte_stream_test.cc",
+          "startLine": 21,
+          "endLine": 21,
+          "text": "std::span<const std::byte> Bytes(const std::string_view text) {",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/stream/memory_stream_test.cc",
+          "startLine": 15,
+          "endLine": 15,
+          "text": "std::span<const std::byte> Bytes(const std::string_view text) {",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/stream/range_stream_test.cc",
+          "startLine": 18,
+          "endLine": 18,
+          "text": "std::span<const std::byte> Bytes(const std::string_view text) {",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/file/disk_stream_test.cc",
+          "startLine": 31,
+          "endLine": 31,
+          "text": "std::span<const std::byte> Bytes(const std::string_view text) {",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/codec/stream_error_test.cc",
+          "startLine": 30,
+          "endLine": 30,
+          "text": "std::span<const std::byte> Bytes(std::string_view text) {",
+          "before": [
+            "",
+            "namespace {",
+            ""
+          ],
+          "after": [
+            "  return std::as_bytes(std::span(text));",
+            "}",
+            ""
           ],
           "lost": false
         }
