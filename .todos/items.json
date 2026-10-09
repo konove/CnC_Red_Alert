@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 228,
+  "nextId": 230,
   "items": [
     {
       "id": "T-2",
@@ -6366,22 +6366,35 @@
       "effort": "m",
       "tags": [
         "bug",
-        "game-ui",
-        "needs-decision"
+        "game-ui"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T02:15:21Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
+      "resolution": "`InsertAfter()`, `AppendTo()` and `PrependTo()` now `DCHECK` that the node is in no list (after the already-in-place early returns); the ring guards stay because the normal `NDEBUG` build still lets it through. A sweep of the gtests and `tools/ui_check.py` in a build with DCHECKs on found three callers, all fixed: `ListClass`/`TListClass` unlink their scroll gadgets before re-adding them (`UnlinkScrollGadgets()`), and `SliderClass` no longer chains its ± buttons behind itself in the constructor, which every dialog's `AppendTo()` cut off again.",
       "toDecide": "Should the three add functions call `Link::Remove()` on the node first?\n\n- **Yes**: adding a linked node moves it cleanly, and the ring guards in `HeadOf()`/`TailOf()` can go. Risk: after `ForgetNeighbors()` a node's old neighbours still point at it, so a later `Remove()` on such a neighbour writes through stale pointers into a list that has already been rebuilt. Needs the ~150 `ForgetNeighbors()` callers looked at (see the sibling item) and a UI check of the sidebar and the network dialogs.\n- **No, CHECK instead**: `DCHECK(next_ == nullptr && previous_ == nullptr)` in the three functions finds a misusing caller in debug runs; small.\n- **Leave it**: documented in the class comment as it is now.",
+      "decisions": [
+        {
+          "question": "Should Link's InsertAfter(), AppendTo() and PrependTo() do anything about a node that is still in a list?",
+          "options": [
+            "DCHECK + one sweep (Recommended)",
+            "CHECK in every build",
+            "Remove() first",
+            "Leave it"
+          ],
+          "answer": "DCHECK + one sweep (Recommended)",
+          "time": "2026-10-09T02:05:03Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/ui/link.cc",
-          "startLine": 31,
-          "endLine": 85,
-          "text": "Link& Link::InsertAfter(Link& predecessor) {\n  // A node cannot follow itself: linking it would make previous_ point at this\n  // node and cut the list off in front of it.\n  if (&predecessor == this) {\n    return HeadOfList();\n  }\n\n  Link* old_next = predecessor.next_;\n\n  // Link this node in after `predecessor`.\n  predecessor.next_ = this;\n  previous_ = &predecessor;\n\n  // Link it to the node that used to follow `predecessor`, if there was one.\n  next_ = old_next;\n  if (old_next) {\n    old_next->previous_ = this;\n  }\n\n  return HeadOfList();\n}\n\nLink& Link::AppendTo(Link& list) {\n  Link* old_tail = &list.TailOfList();\n\n  // Already the tail. Linking it behind itself would make previous_ point at\n  // this node and lose every node in front of it.\n  if (old_tail == this) {\n    return HeadOfList();\n  }\n\n  // Link this node in behind the old tail.\n  old_tail->next_ = this;\n  previous_ = old_tail;\n  next_ = nullptr;\n\n  return HeadOfList();\n}\n\nLink& Link::PrependTo(Link& list) {\n  Link* old_head = &list.HeadOfList();\n\n  // Already the head. Linking it in front of itself would make next_ point at\n  // this node, and a walk down the list would never end.\n  if (old_head == this) {\n    return *this;\n  }\n\n  // Link this node in front of the old head.\n  old_head->previous_ = this;\n  next_ = old_head;\n  previous_ = nullptr;\n\n  return *this;\n}",
+          "startLine": 42,
+          "endLine": 99,
+          "text": "Link& Link::InsertAfter(Link& predecessor) {\n  // A node cannot follow itself: linking it would make previous_ point at this\n  // node and cut the list off in front of it.\n  if (&predecessor == this) {\n    return HeadOfList();\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  Link* old_next = predecessor.next_;\n\n  // Link this node in after `predecessor`.\n  predecessor.next_ = this;\n  previous_ = &predecessor;\n\n  // Link it to the node that used to follow `predecessor`, if there was one.\n  next_ = old_next;\n  if (old_next) {\n    old_next->previous_ = this;\n  }\n\n  return HeadOfList();\n}\n\nLink& Link::AppendTo(Link& list) {\n  Link* old_tail = &list.TailOfList();\n\n  // Already the tail. Linking it behind itself would make previous_ point at\n  // this node and lose every node in front of it.\n  if (old_tail == this) {\n    return HeadOfList();\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  // Link this node in behind the old tail.\n  old_tail->next_ = this;\n  previous_ = old_tail;\n  next_ = nullptr;\n\n  return HeadOfList();\n}\n\nLink& Link::PrependTo(Link& list) {\n  Link* old_head = &list.HeadOfList();\n\n  // Already the head. Linking it in front of itself would make next_ point at\n  // this node, and a walk down the list would never end.\n  if (old_head == this) {\n    return *this;\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  // Link this node in front of the old head.\n  old_head->previous_ = this;\n  next_ = old_head;\n  previous_ = nullptr;\n\n  return *this;\n}",
           "before": [
             "",
             "Link* Link::Previous() const { return previous_; }",
@@ -6498,9 +6511,9 @@
             "  */"
           ],
           "after": [
+            "    UnlinkScrollGadgets();",
             "    if (IsScrollActive) {",
-            "      ScrollGadget.InsertAfter(list);",
-            "      DownGadget.InsertAfter(list);"
+            "      ScrollGadget.InsertAfter(list);"
           ],
           "lost": false
         },
@@ -6600,9 +6613,9 @@
             "template <class T>"
           ],
           "after": [
-            "  /*",
-            "  **\tAdd the scroll bar gadgets if they're active.",
-            "  */"
+            "  UnlinkScrollGadgets();",
+            "",
+            "  /*"
           ],
           "lost": false
         }
@@ -6639,6 +6652,128 @@
             "",
             " private:",
             "  // The walks behind the HeadOfList() and TailOfList() overloads. Self is"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-228",
+      "title": "Decide what to do with SliderClass's ± buttons, which no dialog shows",
+      "details": "A `SliderClass` built without `belong_to_list` creates `PlusGadget` and `MinusGadget` (`BTN-PLUS.SHP`, `BTN-MINS.SHP`) and makes itself their peer, but they are in no gadget list: never drawn, never clicked, so the `Peer_To_Peer()` branch that steps the slider never runs. The constructor used to chain them behind the slider, and every dialog's `AppendTo()` on the slider cut them off again (same in the original `Add_Tail`). Built this way: all TD sliders (`td/screens/sounddlg.cc`, `visudlg.cc`, `gamedlg.cc`) and four in `ra/editor/mapeddlg.cc`; every other RA slider passes `true`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "dead-code",
+        "game-ui",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T05:42:27Z",
+      "updated": "2026-10-09T05:42:27Z",
+      "parent": "T-222",
+      "toDecide": "- **Delete them**: remove both members, the `belong_to_list` parameter and the `Peer_To_Peer()` override; no change on screen.\n- **Show them**: have `SliderClass` add the buttons with itself (overrides of the add functions and `Remove()`, like `ListClass`'s scroll gadgets). Changes the TD options dialogs and RA's editor house dialog; needs the two shapes to exist in the game data and new `ui_check` hashes.",
+      "anchors": [
+        {
+          "path": "src/game/ui/slider.h",
+          "startLine": 69,
+          "endLine": 85,
+          "text": "    if (!BelongToList) {\n      PlusGadget = std::make_unique<ShapeButtonClass<Skin>>(\n          id, MixArchive::RetrieveData(\"BTN-PLUS.SHP\"),\n          this->X + this->Width + 2, this->Y);\n      MinusGadget = std::make_unique<ShapeButtonClass<Skin>>(\n          id, MixArchive::RetrieveData(\"BTN-MINS.SHP\"), this->X - 6, this->Y);\n\n      // The buttons are not chained behind the slider. They were, but every\n      // dialog then appends the slider to its gadgets, which cut them off\n      // again: no dialog has ever shown them.\n      PlusGadget->Make_Peer(*this);\n      PlusGadget->Flag_To_Redraw();\n      MinusGadget->Make_Peer(*this);\n      MinusGadget->Flag_To_Redraw();\n    }\n    Set_Thumb_Size(1);\n    Recalc_Thumb();",
+          "before": [
+            "  SliderClass(unsigned id, int x, int y, int w, int h,",
+            "              bool belong_to_list = false)",
+            "      : Base(id, x, y, w, h), BelongToList(belong_to_list) {"
+          ],
+          "after": [
+            "",
+            "    // Gauges have at least 2 colors, but sliders should only have one.",
+            "    this->IsColorized = false;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/ui/slider.h",
+          "startLine": 147,
+          "endLine": 157,
+          "text": "  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*unused*/,\n                    ControlClass& whom) override {\n    if (flags & GadgetClass::kLeftRelease) {\n      if (&whom == PlusGadget.get()) {\n        Step(false);\n      }\n      if (&whom == MinusGadget.get()) {\n        Step(true);\n      }\n    }\n  }",
+          "before": [
+            "    return Base::Draw_Me(view, forced);",
+            "  }",
+            ""
+          ],
+          "after": [
+            "",
+            "  int Thumb_Pixels() override { return ThumbSize; }",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/ui/slider.h",
+          "startLine": 166,
+          "endLine": 167,
+          "text": "  std::unique_ptr<ShapeButtonClass<Skin>> PlusGadget;\n  std::unique_ptr<ShapeButtonClass<Skin>> MinusGadget;",
+          "before": [
+            "  **\tIf the slider bar has been created, these point to the respective",
+            "  **\tgadgets that it is composed of.",
+            "  */"
+          ],
+          "after": [
+            "",
+            "  /*",
+            "  **\tIf I belong to a listbox, I have to draw myself differently..."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-229",
+      "title": "Four tests abort in a build with DCHECKs on",
+      "details": "Configured `RelWithDebInfo` without `-DNDEBUG` (`-DCMAKE_CXX_FLAGS_RELWITHDEBINFO=\"-O2 -g\"`), these abort instead of passing:\n\n- `UncompressBlockTest.RejectsBadHeaders` and `DifficultyForLevelTest.ALevelOffTheScaleIsRejected`: `DCHECK(std::in_range<std::size_t>(value))` in `base/numeric.h:30`. The tests pass a value the code under test is meant to reject, so the conversion happens before the rejection, or the DCHECK is on input data.\n- `TriggerActionGameTest.DestroyTeamRemovesTheTeamsOfTheType` and `.CreateTeamMakesOneAsScenarioSetup`: `DCHECK(Class->member_count() > 0)` in the `TeamClass` constructor, `ra/ai/team.cc:333`. The test's team type has no members.\n\nFor each: fix the code so the bad value is rejected before the DCHECK, or fix the test's setup. Nothing runs the tests with DCHECKs on today; a CI job that does would keep them honest.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bug",
+        "tests"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T05:42:27Z",
+      "updated": "2026-10-09T05:42:27Z",
+      "anchors": [
+        {
+          "path": "src/base/numeric.h",
+          "startLine": 30,
+          "endLine": 30,
+          "text": "  DCHECK(std::in_range<std::size_t>(value));",
+          "before": [
+            "// Example:",
+            "//   std::memcpy(dest, src, base::ToSize(length));",
+            "constexpr std::size_t ToSize(std::integral auto value) {"
+          ],
+          "after": [
+            "  return static_cast<std::size_t>(value);",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/team.cc",
+          "startLine": 333,
+          "endLine": 333,
+          "text": "  DCHECK(Class->member_count() > 0);",
+          "before": [
+            "      House(owner) {",
+            "  DCHECK(Class);",
+            "  DCHECK(Class->is_active());"
+          ],
+          "after": [
+            "",
+            "  if (owner == nullptr) {",
+            "    House = HouseClass::As_Pointer(Class->house());"
           ],
           "lost": false
         }

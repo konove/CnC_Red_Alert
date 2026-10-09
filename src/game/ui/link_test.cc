@@ -110,8 +110,30 @@ TEST(LinkTest, DestroyingANodeTakesItOutOfItsList) {
   EXPECT_EQ(c.Previous(), &a);
 }
 
-// Adding a node that is still linked is a caller's mistake and can close the
-// chain into a ring. The walks to the ends must still come back.
+// Adding a node that is still linked is a caller's mistake. A build with
+// DCHECKs stops at it.
+TEST(LinkDeathTest, AddingANodeThatIsStillLinkedIsCaughtInDebugBuilds) {
+  // Without DCHECKs the add goes through and leaves `a` pointing at `b`, so
+  // every node forgets its neighbours before it is destroyed.
+  const auto add_linked_node = [](Link& (Link::*add)(Link&)) {
+    Link a;
+    Link b;
+    Link other;
+    b.AppendTo(a);
+    (b.*add)(other);
+    a.ForgetNeighbors();
+    b.ForgetNeighbors();
+    other.ForgetNeighbors();
+  };
+
+  EXPECT_DEBUG_DEATH(add_linked_node(&Link::AppendTo), "still in one");
+  EXPECT_DEBUG_DEATH(add_linked_node(&Link::PrependTo), "still in one");
+  EXPECT_DEBUG_DEATH(add_linked_node(&Link::InsertAfter), "still in one");
+}
+
+// Only a build without DCHECKs lets the mistake through, and there it can close
+// the chain into a ring. The walks to the ends must still come back.
+#ifdef NDEBUG
 TEST(LinkTest, AWalkDownARingStopsAfterOneLap) {
   Link a;
   Link b;
@@ -135,6 +157,7 @@ TEST(LinkTest, AWalkUpARingStopsAfterOneLap) {
   a.ForgetNeighbors();
   b.ForgetNeighbors();
 }
+#endif  // NDEBUG
 
 TEST(LinkTest, AddAfterItselfLeavesTheListAlone) {
   Link head;

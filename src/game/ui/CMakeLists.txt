@@ -23,6 +23,7 @@ target_sources(game_ui PUBLIC
 
 target_link_libraries(game_ui
         PUBLIC game_core engine_window base absl::core_headers
+        PRIVATE absl::check
 )
 
 # Tests

@@ -18,7 +18,18 @@
 
 #include "game/ui/link.h"
 
+#include "absl/log/check.h"
+
 namespace game {
+
+namespace {
+
+// The add functions overwrite a node's pointers without unlinking it, so a node
+// that is still in a list would leave its old neighbours pointing at it.
+constexpr char kStillLinked[] =
+    "Link added to a list while still in one; Remove() it first";
+
+}  // namespace
 
 // Qualified because a destructor must not make a virtual call: the derived
 // part of the object, and with it a derived Remove(), is already gone.
@@ -34,6 +45,7 @@ Link& Link::InsertAfter(Link& predecessor) {
   if (&predecessor == this) {
     return HeadOfList();
   }
+  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;
 
   Link* old_next = predecessor.next_;
 
@@ -58,6 +70,7 @@ Link& Link::AppendTo(Link& list) {
   if (old_tail == this) {
     return HeadOfList();
   }
+  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;
 
   // Link this node in behind the old tail.
   old_tail->next_ = this;
@@ -75,6 +88,7 @@ Link& Link::PrependTo(Link& list) {
   if (old_head == this) {
     return *this;
   }
+  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;
 
   // Link this node in front of the old head.
   old_head->previous_ = this;

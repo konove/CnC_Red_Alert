@@ -35,10 +35,11 @@ namespace game {
 //
 // InsertAfter(), AppendTo() and PrependTo() expect this node to be in no list:
 // they overwrite its pointers without unlinking it, so a node that is still
-// linked has to be taken out with Remove() first. The one case they allow for
-// is a node that is already where it is asked to go (the head for PrependTo(),
-// the tail for AppendTo(), its own predecessor for InsertAfter()), which they
-// leave alone.
+// linked has to be taken out with Remove() first. A build with DCHECKs stops at
+// one that is not; any other build links it anyway and leaves its old
+// neighbours pointing at it. The one case they allow for is a node that is
+// already where it is asked to go (the head for PrependTo(), the tail for
+// AppendTo(), its own predecessor for InsertAfter()), which they leave alone.
 //
 // Example:
 //   Link a, b, c;
