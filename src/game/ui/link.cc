@@ -16,178 +16,35 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\link.cpv   2.18   16 Oct 1995 16:52:18
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : LINK.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 01/15/95 *
- *                                                                                             *
- *                  Last Update : January 19, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions:
- *   LinkClass::~LinkClass -- Default destructor for linked list object.
- *   LinkClass::Zap -- Forces the link pointers to NULL.
- *   LinkClass::Get_Next -- Fetches the next object in list.
- *   LinkClass::Get_Prev -- Fetches previous object in linked list.
- *   LinkClass::Head_Of_List -- Finds the head of the list.
- *   LinkClass::Tail_Of_List -- Scans for the object at the end of the list.
- *   LinkClass::Add -- This object adds itself to the given list
- *   LinkClass::Add_Head -- This gadget makes itself the head of the given list.
- *   LinkClass::Add_Tail -- Add myself to the end of the given list.
- *   LinkClass::Remove -- Removes the specified object from the list.
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #include "game/ui/link.h"
 
 namespace game {
 
-/***********************************************************************************************
- * LinkClass::~LinkClass -- Default destructor for linked list object. *
- *                                                                                             *
- *    This default destructor will remove the object from any linked list it may
- *be part of.   *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
+// Qualified because a destructor must not make a virtual call: the derived
+// part of the object, and with it a derived Remove(), is already gone.
 LinkClass::~LinkClass() { LinkClass::Remove(); }
 
-/***********************************************************************************************
- * LinkClass::Zap -- Forces the link pointers to NULL. *
- *                                                                                             *
- *    This routine will "zap" out the link pointers. This is usually necessary
- *when the link   * pointers start in an undefined state, but we KNOW that they
- *aren't pointing to anything  * valid. In such a case it becomes necessary to
- *zap them so that when the object is added  * to a list, it will be added
- *correctly.                                                  *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
 void LinkClass::Zap() {
   Next = nullptr;
   Prev = nullptr;
 }
 
-/***********************************************************************************************
- * LinkClass::Get_Next -- Fetches the next object in list. *
- *                                                                                             *
- *    This routine will return with a pointer to the next object in the list. If
- *there are     * no more objects, then NULL is returned. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with pointer to next object in list or NULL if at end of
- *list.             *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass* LinkClass::Get_Next() const { return Next; }
 
-/***********************************************************************************************
- * LinkClass::Get_Prev -- Fetches previous object in linked list. *
- *                                                                                             *
- *    Use this routine to get a pointer to the previous object in the linked
- *list. If there    * are no previous objects (such as at the head of the list),
- *then NULL is returned.        *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the previous object in the list or NULL if
- *none.         *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass* LinkClass::Get_Prev() const { return Prev; }
 
-/***********************************************************************************************
- * LinkClass::Head_Of_List -- Finds the head of the list. *
- *                                                                                             *
- *    Use this routine to scan for and return a reference to the object at the
- *head of the     * list. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the object at the head of the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
 const LinkClass& LinkClass::Head_Of_List() const { return Head_Of(*this); }
 
-/***********************************************************************************************
- * LinkClass::Tail_Of_List -- Scans for the object at the end of the list. *
- *                                                                                             *
- *    Use this routine to scan for and return a reference to the object at the
- *end of the      * list. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the object at the end of the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
 const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
 
-/***********************************************************************************************
- * LinkClass::Add -- This object adds itself to the given list *
- *                                                                                             *
- *    Use this routine to add a link object to the list, but to be added right
- *after the       * given link. This allows inserting a link in the middle of
- *the chain. A quite necessary   * ability if the chain is order dependant
- *(e.g., the gadget system).                       *
- *                                                                                             *
- * INPUT:   list -- gadget object to add this one to *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the head of the list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass& LinkClass::Add(LinkClass& list) {
-  /*
-  **	Save ptr to next gadget.
-  */
   LinkClass* ptr = list.Next;
 
-  /*
-  **	Link myself in after 'list'.
-  */
+  // Link this node in after `list`.
   list.Next = this;
   Prev = &list;
 
-  /*
-  **	Link myself to next gadget, if there is one.
-  */
+  // Link it to the node that used to follow `list`, if there was one.
   Next = ptr;
   if (ptr) {
     ptr->Prev = this;
@@ -196,27 +53,10 @@ LinkClass& LinkClass::Add(LinkClass& list) {
   return Head_Of_List();
 }
 
-/***********************************************************************************************
- * LinkClass::Add_Head -- This gadget makes itself the head of the given list. *
- *                                                                                             *
- * INPUT:   list -- the list to make myself the head of *
- *                                                                                             *
- * OUTPUT:  Returns with a reference to the object at the head of the list. This
- *should be     * the same object that is passed in. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/19/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass& LinkClass::Add_Head(LinkClass& list) {
-  /*
-  **	Get head of given list.
-  */
   LinkClass* ptr = &list.Head_Of_List();
 
-  /*
-  **	Link myself in front of it.
-  */
+  // Link this node in front of the old head.
   ptr->Prev = this;
   Next = ptr;
   Prev = nullptr;
@@ -224,27 +64,10 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
   return *this;
 }
 
-/***********************************************************************************************
- * LinkClass::Add_Tail -- Add myself to the end of the given list. *
- *                                                                                             *
- * INPUT:   list -- list to add myself to *
- *                                                                                             *
- * OUTPUT:  the head of the list *
- *                                                                                             *
- * WARNINGS:   The previous and next pointers for the added object MUST have
- *been properly     * initialized for this routine to work correctly. *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass& LinkClass::Add_Tail(LinkClass& list) {
-  /*
-  **	Get head of given list.
-  */
   LinkClass* ptr = &list.Tail_Of_List();
 
-  /*
-  **	Link myself in front of it.
-  */
+  // Link this node in behind the old tail.
   ptr->Next = this;
   Prev = ptr;
   Next = nullptr;
@@ -252,23 +75,8 @@ LinkClass& LinkClass::Add_Tail(LinkClass& list) {
   return Head_Of_List();
 }
 
-/***********************************************************************************************
- * LinkClass::Remove -- Removes the specified object from the list. *
- *                                                                                             *
- *    This routine will remove the specified object from the list of objects.
- *Because of the   * previous and next pointers, it is possible to remove an
- *object from the list without     * knowing the head of the list. To do this,
- *just call Remove() with the parameter of       * "this". *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the new head of list. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
 LinkClass* LinkClass::Remove() {
+  // Found before unlinking: afterwards this node leads nowhere.
   LinkClass* head = &Head_Of_List();
   LinkClass* tail = &Tail_Of_List();
 
@@ -281,6 +89,8 @@ LinkClass* LinkClass::Remove() {
   Prev = nullptr;
   Next = nullptr;
 
+  // The head is unchanged unless this node was it. Then the new head is found
+  // from the tail, the one other node known to be still in the list.
   if (head == this) {
     if (tail == this) {
       return nullptr;

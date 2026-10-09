@@ -16,27 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\link.h_v   2.17   16 Oct 1995 16:45:52
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : LINK.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 01/15/95 *
- *                                                                                             *
- *                  Last Update : January 15, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// LinkClass, the intrusive doubly linked list node under every gadget.
+// Originally LINK.H (Joe L. Bostic, January 1995).
 
 #ifndef CNC_RED_ALERT_GAME_UI_LINK_H_
 #define CNC_RED_ALERT_GAME_UI_LINK_H_
@@ -45,11 +26,22 @@
 
 namespace game {
 
-/*
-**	This implements a simple linked list. It is possible to add, remove, and
-*traverse the *	list. Since this is a doubly linked list, it is possible to
-*remove an entry from the *	middle of an existing list.
-*/
+// A node of an intrusive doubly linked list: a class derives from it and its
+// objects can then be chained, the way a dialog chains its gadgets. There is no
+// list object. A list is known by any one of its nodes, usually the head, and
+// the functions that change it return the head it has afterwards.
+//
+// A node does not own its neighbours. Destroying it takes it out of its list.
+//
+// The Add functions expect this node to be in no list: they overwrite its
+// pointers without unlinking it, so a node that is still linked has to be
+// taken out with Remove() first.
+//
+// Example:
+//   LinkClass a, b, c;
+//   b.Add_Tail(a);  // a b
+//   c.Add_Tail(a);  // a b c
+//   b.Remove();     // a c
 class LinkClass {
  public:
   LinkClass() noexcept = default;
@@ -57,11 +49,26 @@ class LinkClass {
   LinkClass(LinkClass&&) = delete;
   LinkClass& operator=(LinkClass&&) = delete;
 
+  // Return the node after or before this one, or nullptr at that end of the
+  // list.
   [[nodiscard]] virtual LinkClass* Get_Next() const;
   [[nodiscard]] virtual LinkClass* Get_Prev() const;
+
+  // Inserts this node right after `list`, which may be in the middle of a
+  // chain; that is how a list that depends on its order, like the gadgets', is
+  // put together. Returns the head of the list.
   virtual LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Appends this node to the list `list` is in, whichever of its nodes `list`
+  // is. Returns the head of the list.
   virtual LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Puts this node in front of the list `list` is in, whichever of its nodes
+  // `list` is. Returns the new head, which is this node.
   virtual LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  // Return the first or last node of the list this one is in: this node itself
+  // when it is in none.
   [[nodiscard]] const LinkClass& Head_Of_List() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -72,7 +79,15 @@ class LinkClass {
   LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Tail_Of(*this);
   }
+
+  // Forgets both neighbours without telling them, so they go on pointing at
+  // this node. Remove() is the way to take one node out; this is for dropping
+  // a whole list at once, by zapping every node of it before the list is built
+  // again (the sidebar's buttons, a dialog's gadgets on a redraw).
   virtual void Zap();
+
+  // Takes this node out of its list and closes the gap. Returns the head of
+  // what is left, or nullptr if this was the only node.
   virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Not copyable. The original copy operations did not copy: they spliced the
@@ -82,15 +97,17 @@ class LinkClass {
   LinkClass& operator=(const LinkClass&) = delete;
 
  private:
-  // The list walks behind both Head_Of_List and Tail_Of_List overloads. Self
-  // is LinkClass or const LinkClass, so neither overload casts away const.
+  // The walks behind the Head_Of_List() and Tail_Of_List() overloads. Self is
+  // LinkClass or const LinkClass, so neither overload casts away const.
   template <class Self>
   static Self& Head_Of(Self& self ABSL_ATTRIBUTE_LIFETIME_BOUND) {
     Self* link = &self;
     while (link->Prev) {
       link = link->Prev;
       if (link == &self) {
-        break;  // Safety check
+        // The chain is a ring, which no function here makes on purpose. Stop
+        // after one lap instead of walking it forever.
+        break;
       }
     }
     return *link;
@@ -101,15 +118,15 @@ class LinkClass {
     while (link->Next) {
       link = link->Next;
       if (link == &self) {
-        break;  // Safety check
+        // The chain is a ring, which no function here makes on purpose. Stop
+        // after one lap instead of walking it forever.
+        break;
       }
     }
     return *link;
   }
 
-  /*
-  **	Pointers to previous and next link objects in chain.
-  */
+  // The neighbours in the chain; nullptr at that end of it.
   LinkClass* Next = nullptr;
   LinkClass* Prev = nullptr;
 };
