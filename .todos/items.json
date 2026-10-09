@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 230,
+  "nextId": 234,
   "items": [
     {
       "id": "T-2",
@@ -6349,11 +6349,11 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T01:50:35Z",
-      "updated": "2026-10-09T01:50:35Z",
+      "updated": "2026-10-09T07:29:00Z",
       "source": "26da3baa..97e3f608",
       "anchors": [
         {
-          "path": "src/game/ui/link.h",
+          "path": "src/game/ui/gadget_list.h",
           "lost": false
         }
       ]
@@ -6405,7 +6405,7 @@
             "const Link& Link::HeadOfList() const { return HeadOf(*this); }",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -6419,35 +6419,29 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T06:35:27Z",
+      "updated": "2026-10-09T07:29:00Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
+      "fixedIn": "cfc8a308",
+      "resolution": "Every gadget list is a `game::GadgetList` over a vector (`docs/GADGET_LIST_PLAN.md`, commits 4f1ad716..cfc8a308); `Clear()` empties one and keeps the focus. `Link` and `ForgetNeighbors()` are deleted.",
       "comments": [
         {
           "author": "agent",
           "time": "2026-10-09T06:35:27Z",
           "text": "Decided with the user 2026-10-08: neither option in the details. Introduce a list object, `game::GadgetList`, over a `std::vector<GadgetClass*>`, convert every gadget list in both games under this item, and delete `Link` at the end. Plan: `docs/GADGET_LIST_PLAN.md` (written, waiting for the user's review; no code changed yet).\n\nFindings behind it: the ~21 `ForgetNeighbors()` calls in front of `Add_A_Button()` (sidebar, display) are redundant, since `Add_A_Button()` already removes the gadget; `GadgetClass::Remove()` clears keyboard focus and `ForgetNeighbors()` does not, so replacing call by call would take the focus from an edit field on every dialog rebuild; `wolapiob.cc` drops ten shared buttons out of a list that lives on."
+        },
+        {
+          "author": "agent",
+          "time": "2026-10-09T07:29:00Z",
+          "text": "Checks run: ctest, strict build, `tools/ui_check.py` (13 scripts, no hash changed), `tools/net_check.py`. Still to check by hand, since no script reaches them: the RA and TD network join/new-game dialogs (type a name while the list refreshes; the field must keep the focus), the TD trigger editor, the RA trigger and team type editors' drop lists, a drop list opened and closed in the RA lobby. The WOL dialogs cannot be run and are covered only by the build."
         }
       ],
       "anchors": [
         {
-          "path": "src/game/ui/link.h",
-          "startLine": 88,
-          "endLine": 92,
-          "text": "  // Forgets both neighbours without telling them, so they go on pointing at\n  // this node. Remove() is the way to take one node out; this is for dropping\n  // a whole list at once, by calling this on every node of it before the list\n  // is built again (the sidebar's buttons, a dialog's gadgets on a redraw).\n  virtual void ForgetNeighbors();",
-          "before": [
-            "  [[nodiscard]] const Link& TailOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;",
-            "  Link& TailOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return TailOf(*this); }",
-            ""
-          ],
-          "after": [
-            "",
-            "  // Takes this node out of its list and closes the gap. Returns the head of",
-            "  // what is left, or nullptr if this was the only node."
-          ],
+          "path": "src/game/ui/gadget_list.h",
           "lost": false
         }
       ]
@@ -6463,32 +6457,14 @@
         "game-ui",
         "needs-decision"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T07:29:00Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
-      "toDecide": "Keep or change:\n\n- `Link` (alternative `ListNode`; rejected because `ListClass` is the list box widget)\n- `ForgetNeighbors()` for `Zap()` (alternatives `ResetLinks()`, `DropLinks()`)\n- `AppendTo(list)` / `PrependTo(list)` for `Add_Tail()` / `Add_Head()` (alternatives `AddToTail()` / `AddToHead()`)\n- `InsertAfter(predecessor)` for `Add()`\n- `Previous()` for `Get_Prev()` (alternative `Prev()`)",
-      "anchors": [
-        {
-          "path": "src/game/ui/link.h",
-          "startLine": 48,
-          "endLine": 48,
-          "text": "class Link {",
-          "before": [
-            "//   b.AppendTo(a);  // a b",
-            "//   c.AppendTo(a);  // a b c",
-            "//   b.Remove();     // a c"
-          ],
-          "after": [
-            " public:",
-            "  Link() noexcept = default;",
-            ""
-          ],
-          "lost": false
-        }
-      ]
+      "resolution": "`Link` is deleted (T-224, cfc8a308); the names in question no longer exist.",
+      "toDecide": "Keep or change:\n\n- `Link` (alternative `ListNode`; rejected because `ListClass` is the list box widget)\n- `ForgetNeighbors()` for `Zap()` (alternatives `ResetLinks()`, `DropLinks()`)\n- `AppendTo(list)` / `PrependTo(list)` for `Add_Tail()` / `Add_Head()` (alternatives `AddToTail()` / `AddToHead()`)\n- `InsertAfter(predecessor)` for `Add()`\n- `Previous()` for `Get_Prev()` (alternative `Prev()`)"
     },
     {
       "id": "T-226",
@@ -6500,133 +6476,13 @@
         "naming",
         "game-ui"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T07:29:00Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
-      "anchors": [
-        {
-          "path": "src/game/ui/list.h",
-          "startLine": 395,
-          "endLine": 395,
-          "text": "  Link& InsertAfter(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override {",
-          "before": [
-            "  ** These overloaded list routines handle adding/removing the scroll bar",
-            "  ** automatically when the list box is added or removed.",
-            "  */"
-          ],
-          "after": [
-            "    UnlinkScrollGadgets();",
-            "    if (IsScrollActive) {",
-            "      ScrollGadget.InsertAfter(list);"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/drop.h",
-          "startLine": 74,
-          "endLine": 74,
-          "text": "  game::Link& InsertAfter(game::Link& object)",
-          "before": [
-            "",
-            "  // Link the list and its drop button into the chain `object` is in, and",
-            "  // return the head of that chain, which may be any gadget."
-          ],
-          "after": [
-            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
-            "  game::Link& AppendTo(game::Link& object)",
-            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/drop.h",
-          "startLine": 154,
-          "endLine": 154,
-          "text": "  game::Link& InsertAfter(game::Link& object)",
-          "before": [
-            "  }",
-            "",
-            "  // As DropListClass's: each returns the head of the chain."
-          ],
-          "after": [
-            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
-            "  game::Link& AppendTo(game::Link& object)",
-            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/drop.h",
-          "startLine": 229,
-          "endLine": 229,
-          "text": "game::Link& TDropListClass<T>::InsertAfter(game::Link& object) {",
-          "before": [
-            "}",
-            "",
-            "template <class T>"
-          ],
-          "after": [
-            "  DropButton.InsertAfter(object);",
-            "  return EditClass::InsertAfter(object);",
-            "}"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/drop.cc",
-          "startLine": 82,
-          "endLine": 82,
-          "text": "game::Link& DropListClass::InsertAfter(game::Link& object) {",
-          "before": [
-            "  EditClass::ForgetNeighbors();",
-            "}",
-            ""
-          ],
-          "after": [
-            "  DropButton.InsertAfter(object);",
-            "  return EditClass::InsertAfter(object);",
-            "}"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/tlist.h",
-          "startLine": 90,
-          "endLine": 90,
-          "text": "  game::Link& InsertAfter(game::Link& list)",
-          "before": [
-            "  ** These overloaded list routines handle adding/removing the scroll bar",
-            "  ** automatically when the list box is added or removed.",
-            "  */"
-          ],
-          "after": [
-            "      ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
-            "  game::Link& AppendTo(game::Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;",
-            "  game::Link& PrependTo(game::Link& list)"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/ra/ui/tlist.h",
-          "startLine": 486,
-          "endLine": 486,
-          "text": "game::Link& TListClass<T>::InsertAfter(game::Link& list) {",
-          "before": [
-            "}",
-            "",
-            "template <class T>"
-          ],
-          "after": [
-            "  UnlinkScrollGadgets();",
-            "",
-            "  /*"
-          ],
-          "lost": false
-        }
-      ]
+      "resolution": "The `InsertAfter()` overrides are deleted with `Link` (T-224, cfc8a308)."
     },
     {
       "id": "T-227",
@@ -6638,31 +6494,13 @@
         "refactoring",
         "game-ui"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T01:50:57Z",
+      "updated": "2026-10-09T07:29:00Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
-      "anchors": [
-        {
-          "path": "src/game/ui/link.h",
-          "startLine": 64,
-          "endLine": 95,
-          "text": "  [[nodiscard]] virtual Link* Next() const;\n  [[nodiscard]] virtual Link* Previous() const;\n\n  // Inserts this node right after `predecessor`, which may be in the middle of\n  // a chain; that is how a list that depends on its order, like the gadgets',\n  // is put together. Returns the head of the list.\n  virtual Link& InsertAfter(Link& predecessor) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Appends this node to the list `list` is in, whichever of its nodes `list`\n  // is. Returns the head of the list.\n  virtual Link& AppendTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Puts this node in front of the list `list` is in, whichever of its nodes\n  // `list` is. Returns the new head, which is this node.\n  virtual Link& PrependTo(Link& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;\n\n  // Return the first or last node of the list this one is in: this node itself\n  // when it is in none.\n  [[nodiscard]] const Link& HeadOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;\n  Link& HeadOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return HeadOf(*this); }\n  [[nodiscard]] const Link& TailOfList() const ABSL_ATTRIBUTE_LIFETIME_BOUND;\n  Link& TailOfList() ABSL_ATTRIBUTE_LIFETIME_BOUND { return TailOf(*this); }\n\n  // Forgets both neighbours without telling them, so they go on pointing at\n  // this node. Remove() is the way to take one node out; this is for dropping\n  // a whole list at once, by calling this on every node of it before the list\n  // is built again (the sidebar's buttons, a dialog's gadgets on a redraw).\n  virtual void ForgetNeighbors();\n\n  // Takes this node out of its list and closes the gap. Returns the head of\n  // what is left, or nullptr if this was the only node.\n  virtual Link* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;",
-          "before": [
-            "",
-            "  // Return the node after or before this one, or nullptr at that end of the",
-            "  // list."
-          ],
-          "after": [
-            "",
-            " private:",
-            "  // The walks behind the HeadOfList() and TailOfList() overloads. Self is"
-          ],
-          "lost": false
-        }
-      ]
+      "resolution": "`Link` is deleted (T-224, cfc8a308); `GadgetList` has no virtual functions."
     },
     {
       "id": "T-228",
@@ -6781,6 +6619,193 @@
             "",
             "  if (owner == nullptr) {",
             "    House = HouseClass::As_Pointer(Class->house());"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-230",
+      "title": "Delete Red Alert's MapEditClass::Set_House_Buttons(), which nothing calls",
+      "details": "Both call sites in `ra/editor/mapedit.cc` are commented out, and the function ignores its `GadgetClass*` and id parameters: it only selects `house` in `HouseList`. Delete it with its declaration in `ra/editor/mapedit.h`, and the two commented-out calls.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "dead-code",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T07:29:00Z",
+      "updated": "2026-10-09T07:29:00Z",
+      "source": "4f1ad716..cfc8a308",
+      "anchors": [
+        {
+          "path": "src/ra/editor/mapedplc.cc",
+          "startLine": 1558,
+          "endLine": 1564,
+          "text": "void MapEditClass::Set_House_Buttons(HousesType house,\n                                     game::GadgetClass* /*unused*/,\n                                     int /*unused*/)\n// void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass * btnlist,\n// int base_id)\n{\n  HouseList->Set_Selected_Index(static_cast<int>(house));",
+          "before": [
+            " *   11/23/1994 BR : Created.                                              *",
+            " *   01/26/1996 JLB : Uses new house selection list method.                *",
+            " *=========================================================================*/"
+          ],
+          "after": [
+            "}",
+            "",
+            "/***************************************************************************"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-231",
+      "title": "Cover GadgetList's input dispatch to the stuck and focused gadget",
+      "details": "`gadget_list_test.cc` covers the list and the sweep, but not `GadgetClass::OfferToStuckOrFocused()` (a sticky gadget holding the mouse, a key going to the focused gadget) nor the held/up flags of `ReadInput()`. Run `tools/coverage.py src/game/ui/gadget.cc src/game/ui/gadget_list.cc` and add the missing tests.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T07:29:00Z",
+      "updated": "2026-10-09T07:29:00Z",
+      "source": "4f1ad716..cfc8a308",
+      "anchors": [
+        {
+          "path": "src/game/ui/gadget.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-232",
+      "title": "Make the drop lists' Clear_Focus() drop the keyboard focus",
+      "details": "`DropListClass::Clear_Focus()` and `TDropListClass::Clear_Focus()` only call `Collapse()`; they never call `GadgetClass::Clear_Focus()`, so `Focused` stays on a drop list that `GadgetList::Remove()` took out (the header promises the focus is dropped). Older than the gadget list: `GadgetClass::Remove()` made the same call.\n\nSeen in `ra/editor/team_type_dialog.cc:463-466`: click into `unit_mission_drop`'s field, pick a mission that needs another argument; the drop list leaves the list and keystrokes still go to the invisible field. Call the base function after `Collapse()` and add a test with a drop list to `ra/ui/drop_test.cc`.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bug",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T07:36:41Z",
+      "updated": "2026-10-09T07:36:41Z",
+      "source": "4f1ad716..cfc8a308",
+      "anchors": [
+        {
+          "path": "src/ra/ui/drop.cc",
+          "startLine": 95,
+          "endLine": 95,
+          "text": "void DropListClass::Clear_Focus() { Collapse(); }",
+          "before": [
+            "  }",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,",
+            "                                 game::ControlClass& whom) {"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.h",
+          "startLine": 241,
+          "endLine": 244,
+          "text": "template <class T>\nvoid TDropListClass<T>::Clear_Focus() {\n  Collapse();\n}",
+          "before": [
+            "  }",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "template <class T>",
+            "void TDropListClass<T>::Peer_To_Peer(unsigned flags,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-233",
+      "title": "Tidy what the gadget list left: stale comments, Expand() outside a list, undocumented part focus",
+      "details": "From the final review of 4f1ad716..cfc8a308, all minor:\n\n- Stale comments: `nullmgr.cc` (both games) still says \"drop the pointer\" above `Commands.Clear()`; `game/ui/control.cc:154` names `Extract_Gadget()`; `gscreen.cc` (both games) keeps a commented-out `Buttons->Is_List_To_Redraw()`.\n- `DropListClass::Expand()` / `TDropListClass::Expand()` set `IsDropped` even when the drop list is in no list, and `OnAdded()` never adds a dropped `List`. No caller does this; make `Expand()` do nothing without a list.\n- `gadget_list.h` says a re-`Add()` keeps the gadget's focus but not that a composite's parts are taken out with `Remove()`, which drops theirs (a scroll thumb being dragged is let go). Say so, or detach the parts without dropping it.\n- `GadgetList::Remove()` also drops `StuckOn`, which `GadgetClass::Remove()` never did (the plan said it did). Kept on purpose; `docs/GADGET_LIST_PLAN.md` should say it is new.\n- The map editor's popup controls no longer force a full redraw when the first button changes (`mapedsel.cc`); believed covered by `Flag_To_Redraw(true)` and the editor's forced `DrawAll()`, unchecked because the editor is an internal build.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game-ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-09T07:36:41Z",
+      "updated": "2026-10-09T07:36:41Z",
+      "parent": "T-222",
+      "source": "4f1ad716..cfc8a308",
+      "anchors": [
+        {
+          "path": "src/game/ui/gadget_list.h",
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/nullmgr.cc",
+          "startLine": 601,
+          "endLine": 602,
+          "text": "  // cancelbtn is a local of this function; drop the pointer with it so the\n  // static does not outlive the button it names.",
+          "before": [
+            "  }",
+            "",
+            "  Remove_Abort_Modem();"
+          ],
+          "after": [
+            "  Commands.Clear();",
+            "",
+            "  return dialstatus;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nullmgr.cc",
+          "lost": false
+        },
+        {
+          "path": "src/game/ui/control.cc",
+          "startLine": 154,
+          "endLine": 154,
+          "text": " *is primarily  * used by the Extract_Gadget() function. *",
+          "before": [
+            " * ControlClass::Get_ID -- Gets the ID number for this gadget. *",
+            " *                                                                                             *",
+            " *    This function will query and return with the ID number for this gadget. It"
+          ],
+          "after": [
+            " *                                                                                             *",
+            " * INPUT:   none *",
+            " *                                                                                             *"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ui/drop.cc",
+          "startLine": 117,
+          "endLine": 129,
+          "text": "  if (!IsDropped) {\n    List.X = X;\n    List.Y = Y + 18;\n    List.Width = Width;\n    List.Height = ListHeight;\n    if (list() != nullptr) {\n      // Second in the list: ahead of what it covers, whatever was added\n      // first aside.\n      list()->AddAfter(List, *list()->gadgets().front());\n    }\n    List.Flag_To_Redraw();\n    IsDropped = true;\n  }",
+          "before": [
+            "}",
+            "",
+            "void DropListClass::Expand() {"
+          ],
+          "after": [
+            "}",
+            "",
+            "void DropListClass::OnAdded(game::GadgetList& list) {"
           ],
           "lost": false
         }
