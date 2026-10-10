@@ -1815,8 +1815,9 @@ bool Main_Loop() {
       const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
       LOG(INFO) << "frame " << game::CurrentFrame() << " unit "
                 << unit->Class->IniName << " coord " << unit->Coord.packed()
-                << " mission " << static_cast<int>(unit->Mission) << " navcom "
-                << unit->NavCom.packed();
+                << " mission "
+                << static_cast<int>(unit->mission_state().current())
+                << " navcom " << unit->NavCom.packed();
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); ++index) {
       const InfantryClass* infantry =
@@ -1824,8 +1825,8 @@ bool Main_Loop() {
       LOG(INFO) << "frame " << game::CurrentFrame() << " infantry "
                 << TheObjectHeaps().infantry().SlotIndexOf(infantry)
                 << " coord " << infantry->Coord.packed() << " mission "
-                << static_cast<int>(infantry->Mission) << " navcom "
-                << infantry->NavCom.packed();
+                << static_cast<int>(infantry->mission_state().current())
+                << " navcom " << infantry->NavCom.packed();
     }
     // Compare every serialized field of migrated objects in smoke runs.
     const auto log_heap = [](auto& heap, const char* kind) {

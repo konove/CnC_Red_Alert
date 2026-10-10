@@ -522,7 +522,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
     **	An enemy object that is discovered will go into hunt mode if
     **	its current mission is to ambush.
     */
-    if (!house->IsHuman && Mission == MISSION_AMBUSH) {
+    if (!house->IsHuman && mission_state().current() == MISSION_AMBUSH) {
       Assign_Mission(MISSION_HUNT);
     }
 
@@ -3406,8 +3406,9 @@ std::span<const unsigned char> TechnoClass::Remap_Table() {
 void TechnoClass::Detach(Target target, bool all) {
   MissionClass::Detach(target, all);
 
-  if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
-    SuspendedMission = MISSION_NONE;
+  if (mission_state().suspended() != MISSION_NONE &&
+      SuspendedTarCom == target) {
+    mission_state().set_suspended(MISSION_NONE);
     SuspendedTarCom = Target{};
   }
 
@@ -3642,8 +3643,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       /*
       **	Never recruite sticky guard units to defend a base.
       */
-      if (infantry->Mission == MISSION_STICKY ||
-          infantry->Mission == MISSION_SLEEP) {
+      if (infantry->mission_state().current() == MISSION_STICKY ||
+          infantry->mission_state().current() == MISSION_SLEEP) {
         continue;
       }
 
@@ -3705,7 +3706,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       /*
       **	Never recruite sticky guard units to defend a base.
       */
-      if (unit->Mission == MISSION_STICKY || unit->Mission == MISSION_SLEEP) {
+      if (unit->mission_state().current() == MISSION_STICKY ||
+          unit->mission_state().current() == MISSION_SLEEP) {
         continue;
       }
 

@@ -429,7 +429,8 @@ bool FootClass::Basic_Path() {
         **	to a destination just because there is another friendly unit
         **	occupying the destination location.
         */
-        if (Mission == MISSION_MOVE && Distance(NavCom) < 0x0280) {
+        if (mission_state().current() == MISSION_MOVE &&
+            Distance(NavCom) < 0x0280) {
           maxtype = game::MOVE_DESTROYABLE;
         }
       }
@@ -559,7 +560,7 @@ bool FootClass::Basic_Path() {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Move() {
-  if (!NavCom && !IsDriving && MissionQueue == MISSION_NONE) {
+  if (!NavCom && !IsDriving && mission_state().queued() == MISSION_NONE) {
     Enter_Idle_Mode();
   }
   if (!TarCom && !House->IsHuman) {
@@ -1149,7 +1150,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
       **	This ensures that if a unit is in sticky mode, then it will snap
       *out of *	it when it takes damage.
       */
-      if (source && Mission == MISSION_STICKY) {
+      if (source && mission_state().current() == MISSION_STICKY) {
         Enter_Idle_Mode();
       }
 
@@ -1167,9 +1168,12 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
           (!TarCom || ((!House->IsHuman || TheSpecialFlags().smart_defense) &&
                        (!tweap || !In_Range(TarCom)))) &&
           //				!NavCom &&
-          (Mission == MISSION_AMBUSH || Mission == MISSION_GUARD ||
-           Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
-           Mission == MISSION_ATTACK || Mission == MISSION_TIMED_HUNT)) {
+          (mission_state().current() == MISSION_AMBUSH ||
+           mission_state().current() == MISSION_GUARD ||
+           mission_state().current() == MISSION_RESCUE ||
+           mission_state().current() == MISSION_GUARD_AREA ||
+           mission_state().current() == MISSION_ATTACK ||
+           mission_state().current() == MISSION_TIMED_HUNT)) {
         /*
         **	Assign the source of the damage as the new target. This occurs
         *for the computer *	controled units. For the player, this only
@@ -1181,7 +1185,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
           ** mode, "snap out of it" into HUNT mode; otherwise, assign
           ** HUNT as the next mission through the normal mission queue.
           */
-          if (Mission == MISSION_TIMED_HUNT) {
+          if (mission_state().current() == MISSION_TIMED_HUNT) {
             Set_Mission(MISSION_HUNT);
           } else {
             Assign_Mission(MISSION_HUNT);
@@ -1419,8 +1423,10 @@ void FootClass::Per_Cell_Process(bool center) {
     }
 
     if (TarCom &&
-        (Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
-         Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
+        (mission_state().current() == MISSION_RESCUE ||
+         mission_state().current() == MISSION_GUARD_AREA ||
+         mission_state().current() == MISSION_ATTACK ||
+         mission_state().current() == MISSION_HUNT) &&
         inrange) {
       Assign_Destination(Target{});
       base::At(Path, 0) = game::Facing::kNone;
@@ -1555,7 +1561,8 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
         if (Target::FromCellIndex(Cell::Containing(Coord)) == where) {
           return RADIO_YEA_NOW_WHAT;
         }
-        if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
+        if (mission_state().current() == MISSION_GUARD &&
+            mission_state().queued() == MISSION_NONE) {
           Assign_Mission(MISSION_MOVE);
         }
         Assign_Destination(where);
@@ -1568,7 +1575,8 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
     *occurs *	for passengers and when vehicles need to be repaired.
     */
     case RADIO_TRYING_TO_LOAD:
-      if (Mission == MISSION_ENTER || MissionQueue == MISSION_ENTER) {
+      if (mission_state().current() == MISSION_ENTER ||
+          mission_state().queued() == MISSION_ENTER) {
         TechnoClass::Receive_Message(from, message, param);
         return RADIO_ROGER;
       }
@@ -1759,7 +1767,7 @@ int FootClass::Rescue_Mission(Target tarcom) {
   ** something, or is not very effective, then it will be of no help
   ** at all.
   */
-  if (Team || Mission == MISSION_HARVEST || !Risk()) {
+  if (Team || mission_state().current() == MISSION_HARVEST || !Risk()) {
     return 0;
   }
 
@@ -1873,7 +1881,8 @@ Target FootClass::Greatest_Threat(ThreatType method) const {
   /*
   **	If this object can cloak, then it won't select a target automatically.
   */
-  if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
+  if (House->IsHuman && IsCloakable &&
+      mission_state().current() == MISSION_GUARD) {
     return Target{};
   }
 
@@ -1920,7 +1929,7 @@ void FootClass::Detach(Target target, bool all) {
 
   if (SuspendedNavCom == target) {
     SuspendedNavCom = Target{};
-    SuspendedMission = MISSION_NONE;
+    mission_state().set_suspended(MISSION_NONE);
   }
 
   /*

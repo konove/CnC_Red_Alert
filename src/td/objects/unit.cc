@@ -370,7 +370,7 @@ void UnitClass::AI() {
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
   */
-  if (!Team && Mission == MISSION_GUARD &&
+  if (!Team && mission_state().current() == MISSION_GUARD &&
       !TheMap().In_Radar(Cell::Containing(Coord))) {
     Stun();
     delete this;
@@ -425,7 +425,7 @@ void UnitClass::AI() {
   *loading is merely a part of their normal operation.
   */
   if (Class->IsTransporter &&
-      (!door().IsClosed() && Mission != MISSION_UNLOAD &&
+      (!door().IsClosed() && mission_state().current() != MISSION_UNLOAD &&
        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER))
   /*
   **	Double check that there is a passenger that is trying to load or unload.
@@ -673,7 +673,7 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
     **	has already turned its radio off. Turn this radio off as well.
     */
     case RADIO_OVER_OUT:
-      if (Mission == MISSION_RETURN) {
+      if (mission_state().current() == MISSION_RETURN) {
         Assign_Mission(MISSION_GUARD);
       }
       TarComClass::Receive_Message(from, message, param);
@@ -1239,13 +1239,14 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
   *contact since *	no radio coordination occurs on a just a simple movement
   *mission.
   */
-  if (Mission == MISSION_MOVE && !NavCom) {
+  if (mission_state().current() == MISSION_MOVE && !NavCom) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 
   if (Class->Primary == WEAPON_NONE) {
     if (Class->IsToHarvest) {
-      if (!radio().InContact() && Mission != MISSION_HARVEST) {
+      if (!radio().InContact() &&
+          mission_state().current() != MISSION_HARVEST) {
         if (initial || !House->IsHuman ||
             TheMap().at(Cell::Containing(Coord)).Land_Type() == LAND_TIBERIUM) {
           order = MISSION_HARVEST;
@@ -1627,7 +1628,8 @@ void UnitClass::Per_Cell_Process(bool center) {
   */
   TechnoClass* whom = Contact_With_Whom();
   if ((IsTethered && whom && center) &&
-      (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
+      (whom->What_Am_I() == RTTI_BUILDING &&
+       mission_state().current() == MISSION_ENTER) &&
       (whom == TheMap().at(cell).Cell_Building())) {
     switch (Transmit_Message(RADIO_IM_IN, whom)) {
       case RADIO_ROGER:
@@ -1685,7 +1687,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   **	When breaking away from a transport object or building, possibly
   **	scatter or otherwise begin normal unit operations.
   */
-  if (IsTethered && center && Mission != MISSION_ENTER) {
+  if (IsTethered && center && mission_state().current() != MISSION_ENTER) {
     if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
       if (!NavCom) {
         Scatter(Coordinate{}, true);
@@ -2322,12 +2324,12 @@ int UnitClass::Mission_Unload() {
 
   switch (Class->Type) {
     case UNIT_APC:
-      switch (Status) {
+      switch (mission_state().step()) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
           if (cargo().How_Many() && cell.index() != 0) {
             Do_Turn(dir);
-            Status = kManeuvering;
+            mission_state().set_step(kManeuvering);
             return 1;
           }
           Assign_Mission(MISSION_GUARD);
@@ -2337,7 +2339,7 @@ int UnitClass::Mission_Unload() {
           if (!IsRotating) {
             APC_Open_Door();
             if (door().IsOpening()) {
-              Status = kOpeningDoor;
+              mission_state().set_step(kOpeningDoor);
               return 1;
             }
           }
@@ -2345,11 +2347,11 @@ int UnitClass::Mission_Unload() {
 
         case kOpeningDoor:
           if (door().IsOpen()) {
-            Status = kUnloading;
+            mission_state().set_step(kUnloading);
             return 1;
           }
           if (!door().IsOpening()) {
-            Status = kInitialCheck;
+            mission_state().set_step(kInitialCheck);
           }
           break;
 
@@ -2386,11 +2388,11 @@ int UnitClass::Mission_Unload() {
               */
               if (!placed) {
                 cargo().Attach(passenger);
-                Status = kClosingDoor;
+                mission_state().set_step(kClosingDoor);
               }
             }
           } else {
-            Status = kClosingDoor;
+            mission_state().set_step(kClosingDoor);
           }
           break;
 
@@ -2411,17 +2413,17 @@ int UnitClass::Mission_Unload() {
       break;
 
     case UNIT_MCV:
-      switch (Status) {
+      switch (mission_state().step()) {
         case 0:
           base::At(Path, 0) = game::Facing::kNone;
-          Status = 1;
+          mission_state().set_step(1);
           break;
 
         case 1:
           if (!IsDriving) {
             Try_To_Deploy();
             if (IsDeploying) {
-              Status = 2;
+              mission_state().set_step(2);
             } else {
               Assign_Mission(MISSION_GUARD);
             }
@@ -2435,10 +2437,10 @@ int UnitClass::Mission_Unload() {
       return 1;
 
     case UNIT_HOVER:
-      switch (Status) {
+      switch (mission_state().step()) {
         case 0:
           if (Unload_Hovercraft_Process()) {
-            Status = 1;
+            mission_state().set_step(1);
           }
           break;
 
@@ -2517,7 +2519,7 @@ int UnitClass::Mission_Harvest() {
     return kTicksPerSecond * 30;
   }
 
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Go and find a Tiberium field to harvest.
     */
@@ -2527,7 +2529,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = true;
         animation().Set_Rate(2);
         animation().Set_Stage(0);
-        Status = kHarvesting;
+        mission_state().set_step(kHarvesting);
         return 1;
       }
       /*
@@ -2536,7 +2538,7 @@ int UnitClass::Mission_Harvest() {
        *prevent the harvester from repeatedly *	searching for Tiberium.
        */
       if (!NavCom) {
-        Status = kGoingtoidle;
+        mission_state().set_step(kGoingtoidle);
         return kTicksPerSecond * 15;
       }
       break;
@@ -2548,14 +2550,14 @@ int UnitClass::Mission_Harvest() {
       if (!Harvesting()) {
         IsHarvesting = false;
         if (Tiberium_Load() == 0x0100) {
-          Status = kFindhome;
+          mission_state().set_step(kFindhome);
           ArchiveTarget = Target::FromCellIndex(Cell::Containing(Coord));
         } else {
           if (!Goto_Tiberium() && !NavCom) {
             ArchiveTarget = Target{};
-            Status = kFindhome;
+            mission_state().set_step(kFindhome);
           } else {
-            Status = kHarvesting;
+            mission_state().set_step(kHarvesting);
             IsHarvesting = true;
           }
         }
@@ -2578,7 +2580,7 @@ int UnitClass::Mission_Harvest() {
         **	contact with the refinery and then await docking orders.
         */
         if (nearest && Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
-          Status = kHeadinghome;
+          mission_state().set_step(kHeadinghome);
         } else {
           TheWorld().scenario_init()++;
           nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
@@ -2628,14 +2630,14 @@ int UnitClass::Mission_Harvest() {
 int UnitClass::Mission_Hunt() {
   Validate();
   if (*this == UNIT_MCV) {
-    switch (Status) {
+    switch (mission_state().step()) {
       /*
       **	This stage handles locating a convenient spot, rotating to face
       *the correct *	direction and then commencing the deployment operation.
       */
       case 0:
         if (Goto_Clear_Spot() && Try_To_Deploy()) {
-          Status = 1;
+          mission_state().set_step(1);
         }
 
         break;
@@ -2647,7 +2649,7 @@ int UnitClass::Mission_Hunt() {
       */
       case 1:
         if (!IsDeploying) {
-          Status = 0;
+          mission_state().set_step(0);
         }
         break;
       default:
@@ -3622,12 +3624,13 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
     UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
-      absl::SNPrintF(
-          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
-          unit->Class->IniName, unit->Health_Ratio(),
-          Cell::Containing(unit->Coord).index(),
-          unit->PrimaryFacing.current().value(), Mission_Name(unit->Mission),
-          unit->Trigger ? unit->Trigger->Get_Name() : "None");
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
+                     unit->House->Class->IniName, unit->Class->IniName,
+                     unit->Health_Ratio(),
+                     Cell::Containing(unit->Coord).index(),
+                     unit->PrimaryFacing.current().value(),
+                     Mission_Name(unit->mission_state().current()),
+                     unit->Trigger ? unit->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
   }

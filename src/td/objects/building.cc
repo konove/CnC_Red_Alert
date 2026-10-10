@@ -416,7 +416,7 @@ RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
     **	building.
     */
     case RADIO_IM_IN:
-      if (Mission == MISSION_DECONSTRUCTION) {
+      if (mission_state().current() == MISSION_DECONSTRUCTION) {
         return RADIO_NEGATIVE;
       }
       switch (Class->Type) {
@@ -587,7 +587,7 @@ RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
     *yard *	animation.
     */
     case RADIO_COMPLETE:
-      if (Mission != MISSION_DECONSTRUCTION) {
+      if (mission_state().current() != MISSION_DECONSTRUCTION) {
         Assign_Mission(MISSION_GUARD);
       }
       TechnoClass::Receive_Message(from, message, param);
@@ -694,7 +694,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     **	If the building is deconstructing, then the display frame progresses
     **	from the end to the beginning. Reverse the shape number accordingly.
     */
-    if (Mission == MISSION_DECONSTRUCTION) {
+    if (mission_state().current() == MISSION_DECONSTRUCTION) {
       shapenum = Class->Anims.at(BState).Start + Class->Anims.at(BState).Count -
                  1 - shapenum;
     }
@@ -733,8 +733,9 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
         **	from the building's turret facing. All other animation stages
         **	fetch their frame from the embedded animation sequencer.
         */
-        if (Status == kSamReady || Status == kSamFiring ||
-            Status == kSamLocking) {
+        if (mission_state().step() == kSamReady ||
+            mission_state().step() == kSamFiring ||
+            mission_state().step() == kSamLocking) {
           shapenum += 16;
         } else {
           shapenum = animation().Fetch_Stage();
@@ -1157,7 +1158,8 @@ void BuildingClass::AI() {
   }
 
   if ((!Class->IsTurretEquipped && *this != STRUCT_OBELISK) ||
-      Mission == MISSION_CONSTRUCTION || Mission == MISSION_DECONSTRUCTION) {
+      mission_state().current() == MISSION_CONSTRUCTION ||
+      mission_state().current() == MISSION_DECONSTRUCTION) {
     if (stagechange) {
       /*
       **	Check for animation end or if special case of MCV deconstructing
@@ -1174,7 +1176,7 @@ void BuildingClass::AI() {
       */
       if (animation().Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
           (TheSpecialFlags().mcv_deploy && *this == STRUCT_CONST &&
-           Mission == MISSION_DECONSTRUCTION &&
+           mission_state().current() == MISSION_DECONSTRUCTION &&
            animation().Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
@@ -1411,8 +1413,8 @@ void BuildingClass::AI() {
   **	For computer controlled buildings, determine what should be produced and
   *start *	production accordingly.
   */
-  if (!House->IsHuman && Mission != MISSION_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION) {
+  if (!House->IsHuman && mission_state().current() != MISSION_CONSTRUCTION &&
+      mission_state().current() != MISSION_DECONSTRUCTION) {
     /*
     **	Possibly start repair process if the building is below half strength.
     */
@@ -1507,8 +1509,9 @@ void BuildingClass::AI() {
   *entails *	rotating the turret to the desired facing as well as figuring
   *out what that *	desired facing should be.
   */
-  if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
-       Mission != MISSION_DECONSTRUCTION) &&
+  if ((Class->IsTurretEquipped &&
+       mission_state().current() != MISSION_CONSTRUCTION &&
+       mission_state().current() != MISSION_DECONSTRUCTION) &&
       PrimaryFacing.IsRotating()) {
     /*
     **	Rotate turret to match desired facing.
@@ -1799,7 +1802,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
     **	SAM sites that are closed will take half damage, but never less than one
     *point.
     */
-    if (*this == STRUCT_SAM && Status == kSamUnderground) {
+    if (*this == STRUCT_SAM && mission_state().step() == kSamUnderground) {
       damage /= 2;
       damage++;
     }
@@ -1865,7 +1868,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           ShakeScreen(shakes);
         }
         Sound_Effect(VOC_CRUMBLE, Coord);
-        if (Mission == MISSION_DECONSTRUCTION) {
+        if (mission_state().current() == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
           animation().Set_Rate(0);
         } else {
@@ -3281,18 +3284,18 @@ void BuildingClass::Sell_Back(int control) {
     bool decon = false;
     switch (control) {
       case -1:
-        decon = Mission != MISSION_DECONSTRUCTION;
+        decon = mission_state().current() != MISSION_DECONSTRUCTION;
         break;
 
       case 1:
-        if (Mission == MISSION_DECONSTRUCTION) {
+        if (mission_state().current() == MISSION_DECONSTRUCTION) {
           return;
         }
         decon = true;
         break;
 
       case 0:
-        if (Mission != MISSION_DECONSTRUCTION) {
+        if (mission_state().current() != MISSION_DECONSTRUCTION) {
           return;
         }
         decon = false;
@@ -4056,7 +4059,8 @@ bool BuildingClass::Can_Demolish() const {
   Validate();
   if (!Class->Get_Buildup_Data().empty() &&
       BState != game::BSTATE_CONSTRUCTION &&
-      Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
+      mission_state().current() != MISSION_DECONSTRUCTION &&
+      mission_state().current() != MISSION_CONSTRUCTION) {
     return *this != STRUCT_REFINERY || !cargo().Is_Something_Attached();
   }
   return false;
@@ -4115,10 +4119,10 @@ int BuildingClass::Mission_Guard() {
     */
     constexpr int kInitialEntry = 0;
     constexpr int kIdle = 1;
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitialEntry:
         Begin_Mode(game::BSTATE_IDLE);
-        Status = kIdle;
+        mission_state().set_step(kIdle);
         break;
 
       case kIdle:
@@ -4128,7 +4132,7 @@ int BuildingClass::Mission_Guard() {
         */
         if (*this == STRUCT_REPAIR && radio().InContact() &&
             Contact_With_Whom()->Is_Techno() &&
-            Contact_With_Whom()->Mission == MISSION_ENTER &&
+            Contact_With_Whom()->mission_state().current() == MISSION_ENTER &&
             Distance(Contact_With_Whom()) < 0x0040 &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           Assign_Mission(MISSION_REPAIR);
@@ -4162,14 +4166,14 @@ int BuildingClass::Mission_Construction() {
   Validate();
   constexpr int kInitial = 0;
   constexpr int kDuring = 1;
-  switch (Status) {
+  switch (mission_state().step()) {
     case kInitial:
       Begin_Mode(game::BSTATE_CONSTRUCTION);
       Transmit_Message(RADIO_BUILDING);
       if (IsOwnedByPlayer) {
         Sound_Effect(VOC_CONSTRUCTION, Coord);
       }
-      Status = kDuring;
+      mission_state().set_step(kDuring);
       break;
 
     case kDuring:
@@ -4221,7 +4225,7 @@ int BuildingClass::Mission_Deconstruction() {
   constexpr int kInitial = 0;
   constexpr int kHolding = 1;
   constexpr int kDuring = 2;
-  switch (Status) {
+  switch (mission_state().step()) {
     case kInitial:
 
       /*
@@ -4244,7 +4248,7 @@ int BuildingClass::Mission_Deconstruction() {
 
       IsReadyToCommence = false;
       Transmit_Message(RADIO_RUN_AWAY);
-      Status = kHolding;
+      mission_state().set_step(kHolding);
       break;
 
     case kHolding:
@@ -4305,7 +4309,7 @@ int BuildingClass::Mission_Deconstruction() {
         if (IsOwnedByPlayer) {
           Sound_Effect(VOC_CASHTURN, Coord);
         }
-        Status = kDuring;
+        mission_state().set_step(kDuring);
         Begin_Mode(game::BSTATE_CONSTRUCTION);
         Detach_All(true);
         Transmit_Message(RADIO_OVER_OUT);
@@ -4400,7 +4404,7 @@ int BuildingClass::Mission_Deconstruction() {
 int BuildingClass::Mission_Attack() {
   Validate();
   if (*this == STRUCT_SAM) {
-    switch (Status) {
+    switch (mission_state().step()) {
       /*
       **	The launcher is underground and awaiting the acquisition of
       **	a target.
@@ -4410,7 +4414,7 @@ int BuildingClass::Mission_Attack() {
         if (TarCom) {
           animation().Set_Rate(2);
           animation().Set_Stage(0);
-          Status = kSamRising;
+          mission_state().set_step(kSamRising);
           return 1;
         }
         Assign_Mission(MISSION_GUARD);
@@ -4425,9 +4429,9 @@ int BuildingClass::Mission_Attack() {
           animation().Set_Rate(0);
           PrimaryFacing.SnapTo(game::Direction::kNorth);
           if (!TarCom) {
-            Status = kSamLowering;
+            mission_state().set_step(kSamLowering);
           } else {
-            Status = kSamReady;
+            mission_state().set_step(kSamReady);
           }
         }
         return 1;
@@ -4440,7 +4444,7 @@ int BuildingClass::Mission_Attack() {
         if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
             TarCom.AsAircraft()->Altitude == 0) {
           Assign_Target(Target{});
-          Status = kSamLocking;
+          mission_state().set_step(kSamLocking);
           return kTicksPerSecond;
         }
         if (!PrimaryFacing.IsRotating()) {
@@ -4448,7 +4452,7 @@ int BuildingClass::Mission_Attack() {
           if (PrimaryFacing.current() != facing) {
             PrimaryFacing.set_desired(facing);
           } else {
-            Status = kSamFiring;
+            mission_state().set_step(kSamFiring);
           }
         }
         return 1;
@@ -4460,20 +4464,20 @@ int BuildingClass::Mission_Attack() {
         if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
             TarCom.AsAircraft()->Altitude == 0) {
           Assign_Target(Target{});
-          Status = kSamLocking;
+          mission_state().set_step(kSamLocking);
         } else {
           const game::FireErrorType error = Can_Fire(TarCom, 0);
           if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
               error == game::FIRE_RANGE) {
             Assign_Target(Target{});
-            Status = kSamLocking;
+            mission_state().set_step(kSamLocking);
           } else {
             if (error == game::FIRE_FACING) {
-              Status = kSamReady;
+              mission_state().set_step(kSamReady);
             } else {
               if (error == game::FIRE_OK) {
                 Fire_At(TarCom, 0);
-                Status = kSamReady2;
+                mission_state().set_step(kSamReady2);
                 return 1;
               }
             }
@@ -4485,7 +4489,7 @@ int BuildingClass::Mission_Attack() {
         if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
             TarCom.AsAircraft()->Altitude == 0) {
           Assign_Target(Target{});
-          Status = kSamLocking;
+          mission_state().set_step(kSamLocking);
           return kTicksPerSecond;
         }
         if (!PrimaryFacing.IsRotating()) {
@@ -4493,7 +4497,7 @@ int BuildingClass::Mission_Attack() {
           if (PrimaryFacing.current() != facing) {
             PrimaryFacing.set_desired(facing);
           } else {
-            Status = kSamFiring2;
+            mission_state().set_step(kSamFiring2);
           }
         }
         return 1;
@@ -4502,20 +4506,20 @@ int BuildingClass::Mission_Attack() {
         if (!TarCom || TarCom.kind() != KIND_AIRCRAFT ||
             TarCom.AsAircraft()->Altitude == 0) {
           Assign_Target(Target{});
-          Status = kSamLocking;
+          mission_state().set_step(kSamLocking);
         } else {
           const game::FireErrorType error = Can_Fire(TarCom, 0);
           if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
               error == game::FIRE_RANGE) {
             Assign_Target(Target{});
-            Status = kSamLocking;
+            mission_state().set_step(kSamLocking);
           } else {
             if (error == game::FIRE_FACING) {
-              Status = kSamReady2;
+              mission_state().set_step(kSamReady2);
             } else {
               if (error == game::FIRE_OK) {
                 Fire_At(TarCom, 0);
-                Status = kSamLocking;
+                mission_state().set_step(kSamLocking);
                 return kTicksPerSecond * 3;
               }
             }
@@ -4531,7 +4535,7 @@ int BuildingClass::Mission_Attack() {
           if (PrimaryFacing.current() == game::Direction::kNorth) {
             animation().Set_Rate(2);
             animation().Set_Stage(48);
-            Status = kSamLowering;
+            mission_state().set_step(kSamLowering);
           } else {
             PrimaryFacing.set_desired(game::Direction::kNorth);
           }
@@ -4545,7 +4549,7 @@ int BuildingClass::Mission_Attack() {
         if (animation().Fetch_Stage() >= 63) {
           animation().Set_Rate(0);
           animation().Set_Stage(0);
-          Status = kSamUnderground;
+          mission_state().set_step(kSamUnderground);
           return kTicksPerSecond;
         }
         if (animation().Fetch_Rate() == 0) {
@@ -4613,16 +4617,16 @@ int BuildingClass::Mission_Harvest() {
   constexpr int kWaitForDock = 1;    // Waiting for docking to complete.
   constexpr int kMiddle = 2;         // Offload "bails" of tiberium.
   constexpr int kWaitForUndock = 3;  // Waiting for undocking to complete.
-  switch (Status) {
+  switch (mission_state().step()) {
     case kInitial:
       Begin_Mode(game::BSTATE_ACTIVE);
-      Status = kWaitForDock;
+      mission_state().set_step(kWaitForDock);
       break;
 
     case kWaitForDock:
       if (IsReadyToCommence) {
         IsReadyToCommence = false;
-        Status = kMiddle;
+        mission_state().set_step(kMiddle);
         Begin_Mode(game::BSTATE_AUX1);
       }
       break;
@@ -4654,7 +4658,7 @@ int BuildingClass::Mission_Harvest() {
           }
         }
         Begin_Mode(game::BSTATE_AUX2);
-        Status = kWaitForUndock;
+        mission_state().set_step(kWaitForUndock);
       }
       break;
 
@@ -4697,10 +4701,10 @@ int BuildingClass::Mission_Repair() {
   if (*this == STRUCT_CONST) {
     constexpr int kInitial = 0;
     constexpr int kDuring = 1;
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitial:
         Begin_Mode(game::BSTATE_ACTIVE);
-        Status = kDuring;
+        mission_state().set_step(kDuring);
         break;
 
       case kDuring:
@@ -4718,7 +4722,7 @@ int BuildingClass::Mission_Repair() {
     constexpr int kInitial = 0;
     constexpr int kIdle = 1;
     constexpr int kDuring = 2;
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitial:
         if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
@@ -4728,7 +4732,7 @@ int BuildingClass::Mission_Repair() {
         IsReadyToCommence = false;
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Distance(Contact_With_Whom()) < 0x0010) {
-          Status = kIdle;
+          mission_state().set_step(kIdle);
           return kTicksPerSecond / 4;
         }
         break;
@@ -4742,7 +4746,7 @@ int BuildingClass::Mission_Repair() {
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           if (Contact_With_Whom()->Health_Ratio() < 0x0100 &&
               Transmit_Message(RADIO_REPAIR) == RADIO_ROGER) {
-            Status = kDuring;
+            mission_state().set_step(kDuring);
             Begin_Mode(game::BSTATE_ACTIVE);
             IsReadyToCommence = false;
           } else {
@@ -4759,7 +4763,7 @@ int BuildingClass::Mission_Repair() {
       case kDuring:
         if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
-          Status = kIdle;
+          mission_state().set_step(kIdle);
           return 1;
         }
         if (IsReadyToCommence &&
@@ -4773,7 +4777,7 @@ int BuildingClass::Mission_Repair() {
             }
 #endif
             Begin_Mode(game::BSTATE_IDLE);
-            Status = kIdle;
+            mission_state().set_step(kIdle);
 #ifdef OBSOLETE
           } else {
             int time = std::clamp(
@@ -4794,13 +4798,13 @@ int BuildingClass::Mission_Repair() {
   if (*this == STRUCT_HELIPAD) {
     constexpr int kInitial = 0;
     constexpr int kDuring = 1;
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitial:
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Transmit_Message(RADIO_PREPARED) == RADIO_NEGATIVE) {
           Begin_Mode(game::BSTATE_ACTIVE);
           Contact_With_Whom()->Assign_Mission(MISSION_SLEEP);
-          Status = kDuring;
+          mission_state().set_step(kDuring);
           return 1;
         }
         Assign_Mission(MISSION_GUARD);
@@ -4864,7 +4868,7 @@ int BuildingClass::Mission_Missile() {
   constexpr int kDoneLaunch = 4;
 
   if (*this == STRUCT_TEMPLE) {
-    switch (Status) {
+    switch (mission_state().step()) {
       /*
       ** The initial case is responsible for starting the door
       ** opening on the building.
@@ -4872,7 +4876,7 @@ int BuildingClass::Mission_Missile() {
       case kInitial:
         IsReadyToCommence = false;
         Begin_Mode(game::BSTATE_ACTIVE);
-        Status = kDoorOpening;
+        mission_state().set_step(kDoorOpening);
         return 1;
 
       /*
@@ -4883,7 +4887,7 @@ int BuildingClass::Mission_Missile() {
         if (IsReadyToCommence) {
           Begin_Mode(game::BSTATE_IDLE);
           base::NewPooled<AnimClass>(ANIM_ATOM_DOOR, Center_Coord());
-          Status = kLaunchUp;
+          mission_state().set_step(kLaunchUp);
           return 14;
         }
         return 1;
@@ -4913,7 +4917,7 @@ int BuildingClass::Mission_Missile() {
         }
 
         if (bullet) {
-          Status = kLaunchDown;
+          mission_state().set_step(kLaunchDown);
           return 8 * kTicksPerSecond;
         }
       }
@@ -4946,7 +4950,7 @@ int BuildingClass::Mission_Missile() {
           Sound_Effect(VOC_NUKE_FIRE, start);
         }
         if (bullet) {
-          Status = kDoneLaunch;
+          mission_state().set_step(kDoneLaunch);
           return 7 * kTicksPerSecond;
         }
       }
@@ -4998,7 +5002,7 @@ bool BuildingClass::Revealed(HouseClass* house) {
     */
     if (!radio().InContact() &&
         (house == House || TheSession().type() != GAME_NORMAL) &&
-        Mission != MISSION_CONSTRUCTION) {
+        mission_state().current() != MISSION_CONSTRUCTION) {
       Grand_Opening();
     }
 
@@ -5186,7 +5190,7 @@ int BuildingClass::Mission_Unload() {
     constexpr int kLeave = 2;
     constexpr int kClose = 3;
     UnitClass* unit = nullptr;
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitial:
         unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
         if (unit) {
@@ -5194,7 +5198,7 @@ int BuildingClass::Mission_Unload() {
           unit->Commence();
         }
         door().Open(2, 11);
-        Status = kOpen;
+        mission_state().set_step(kOpen);
         break;
 
       case kOpen:
@@ -5206,10 +5210,10 @@ int BuildingClass::Mission_Unload() {
                 DriveClass::kOutOfWeaponFactory,
                 Adjacent_Cell(Center_Coord(), game::Facing::kSouthWest));
             unit->Set_Speed(128);
-            Status = kLeave;
+            mission_state().set_step(kLeave);
           } else {
             door().Close(2, 11);
-            Status = kClose;
+            mission_state().set_step(kClose);
           }
         }
         break;
@@ -5217,7 +5221,7 @@ int BuildingClass::Mission_Unload() {
       case kLeave:
         if (!IsTethered) {
           door().Close(2, 11);
-          Status = kClose;
+          mission_state().set_step(kClose);
         }
         break;
 

@@ -847,7 +847,7 @@ bool DriveClass::Start_Of_Move() {
   if (!NavCom && facing == game::Facing::kNone) {
     IsTurretLockedDown = false;
     Stop_Driver();
-    if (Mission == MISSION_MOVE) {
+    if (mission_state().current() == MISSION_MOVE) {
       Enter_Idle_Mode();
     }
     return false;  // Why is it calling this routine!?!
@@ -901,7 +901,8 @@ bool DriveClass::Start_Of_Move() {
     }
     if (!Basic_Path()) {
       if (Distance(NavCom) < 0x0280 &&
-          (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
+          (mission_state().current() == MISSION_MOVE ||
+           mission_state().current() == MISSION_GUARD_AREA)) {
         Assign_Destination(Target{});
       } else {
         /*
@@ -1006,7 +1007,7 @@ bool DriveClass::Start_Of_Move() {
   Mark(MARK_DOWN);
 
   if (cando != game::MOVE_OK) {
-    if (Mission == MISSION_MOVE && House->IsHuman &&
+    if (mission_state().current() == MISSION_MOVE && House->IsHuman &&
         Distance(NavCom) < 0x0200) {
       Assign_Destination(Target{});
     }
@@ -1273,7 +1274,7 @@ void DriveClass::AI() {
       **	is a navigation target or a remaining path,
       **	then start on a new track.
       */
-      if (Mission != MISSION_GUARD || NavCom != Target{}) {
+      if (mission_state().current() != MISSION_GUARD || NavCom != Target{}) {
         if (NavCom || base::At(Path, 0) != game::Facing::kNone) {
           Start_Of_Move();
           While_Moving();

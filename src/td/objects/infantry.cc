@@ -428,7 +428,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
     Death_Announcement(source);
     Stop_Driver();
     Stun();
-    Mission = MISSION_NONE;
+    mission_state().set_current(MISSION_NONE);
     Assign_Mission(MISSION_GUARD);
     Commence();
 
@@ -678,7 +678,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
   **	If the infantry unit is entering a cell that contains the building it is
   *trying to *	capture, then capture it.
   */
-  if (center && Mission == MISSION_CAPTURE) {
+  if (center && mission_state().current() == MISSION_CAPTURE) {
     TechnoClass* tech = cellptr->Cell_Techno();
     if (tech && tech->As_Target() == NavCom) {
       tech->Captured(House);
@@ -700,7 +700,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
   **	at attach itself to the transporter.
   */
   TechnoClass* techno = Contact_With_Whom();
-  if (center && Mission == MISSION_ENTER && techno &&
+  if (center && mission_state().current() == MISSION_ENTER && techno &&
       Cell::Containing(Coord) == Cell::Containing(techno->Coord) &&
       techno == NavCom.AsTechno()) {
     if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
@@ -714,7 +714,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
   **	If the infantry unit is entering a cell that contains the building it is
   *trying to *	sabotage, then sabotage it.
   */
-  if (center && Mission == MISSION_SABOTAGE) {
+  if (center && mission_state().current() == MISSION_SABOTAGE) {
     BuildingClass* building = cellptr->Cell_Building();
     if (building && building->As_Target() == NavCom) {
       const bool temp = TheSpecialFlags().scatter;
@@ -916,7 +916,8 @@ void InfantryClass::Assign_Destination(Target target) {
   /*
   **	Handle entry logic here.
   */
-  if (Mission == MISSION_ENTER || MissionQueue == MISSION_ENTER) {
+  if (mission_state().current() == MISSION_ENTER ||
+      mission_state().queued() == MISSION_ENTER) {
     /*
     **	If not already in radio contact (presumed with the transport), then
     **	either try to establish contact if allowed, or just move close and
@@ -1027,7 +1028,7 @@ void InfantryClass::AI() {
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
   */
-  if (!Team && Mission == MISSION_GUARD &&
+  if (!Team && mission_state().current() == MISSION_GUARD &&
       !TheMap().In_Radar(Cell::Containing(Coord))) {
     Stun();
     delete this;
@@ -1311,7 +1312,8 @@ void InfantryClass::AI() {
       /*
       **	When in guard mode, never allow a valid navcom.
       */
-      if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE && NavCom) {
+      if (mission_state().current() == MISSION_GUARD &&
+          mission_state().queued() == MISSION_NONE && NavCom) {
         Assign_Destination(Target{});
         //				if (IsTethered) Scatter(0, true);
       }
@@ -1320,7 +1322,7 @@ void InfantryClass::AI() {
       **	A head to coordinate is needed. If there is no path
       **	available, then create one.
       */
-      if (NavCom && Strength && Mission != MISSION_GUARD) {
+      if (NavCom && Strength && mission_state().current() != MISSION_GUARD) {
         /*
         **	Determine if the next cell in the list is available
         **	to be entered. If not, then abort the path and try
@@ -1384,7 +1386,8 @@ void InfantryClass::AI() {
         const Cell acell = Cell::Containing(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {
-          if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
+          if ((mission_state().current() == MISSION_MOVE ||
+               mission_state().current() == MISSION_ENTER) &&
               !IsTethered && House->IsHuman && Distance(NavCom) < 0x0200) {
             Assign_Destination(Target{});
           }
@@ -1455,7 +1458,7 @@ void InfantryClass::AI() {
 
         if (Cell::Containing(Coord) == NavCom.AsCell()) {
           NavCom = Target{};
-          if (Mission == MISSION_MOVE) {
+          if (mission_state().current() == MISSION_MOVE) {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
@@ -1633,7 +1636,8 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
   ObjectClass* obj = cellptr->Cell_Occupier();
   while (obj) {
     if ((obj != this) &&
-        ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
+        ((mission_state().current() != MISSION_CAPTURE &&
+          mission_state().current() != MISSION_SABOTAGE) ||
          obj->What_Am_I() != RTTI_AIRCRAFT ||
          !dynamic_cast<AircraftClass*>(obj)->radio().InContact())) {
       /*
@@ -1647,7 +1651,8 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
       */
       if ((obj->What_Am_I() == RTTI_BUILDING ||
            obj->What_Am_I() == RTTI_AIRCRAFT) &&
-          ((Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
+          ((mission_state().current() == MISSION_CAPTURE ||
+            mission_state().current() == MISSION_SABOTAGE) &&
            (obj->As_Target() == NavCom || obj->As_Target() == TarCom))) {
         return game::MOVE_OK;
       }
@@ -1656,8 +1661,8 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
       **	Special check to always allow entry into the building that this
       *infantry *	is trying to capture.
       */
-      if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
-          IsTethered) {
+      if (mission_state().current() == MISSION_ENTER &&
+          obj->As_Target() == NavCom && IsTethered) {
         return game::MOVE_OK;
       }
 
@@ -2467,7 +2472,8 @@ BulletClass* InfantryClass::Fire_At(Target target, int which) {
       */
       if (Class->IsFraidyCat && !Ammo) {
         Fear = FEAR_MAXIMUM;
-        if (Mission == MISSION_ATTACK || Mission == MISSION_HUNT) {
+        if (mission_state().current() == MISSION_ATTACK ||
+            mission_state().current() == MISSION_HUNT) {
           Assign_Mission(MISSION_GUARD);
         }
       }
@@ -2617,8 +2623,8 @@ Target InfantryClass::Greatest_Threat(ThreatType threat) const {
     **	unless specifically in hunt mode.
     */
     case WEAPON_RIFLE:
-      if (House->IsHuman &&
-          (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA)) {
+      if (House->IsHuman && (mission_state().current() == MISSION_GUARD ||
+                             mission_state().current() == MISSION_GUARD_AREA)) {
         return Target{};
       }
       // A sniper hunts infantry and buildings only. FootClass would add
@@ -3199,9 +3205,9 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
           infantry->House->Class->IniName, infantry->Class->IniName,
           infantry->Health_Ratio(), Cell::Containing(infantry->Coord).index(),
           CellClass::Spot_Index(infantry->Coord),
-          Mission_Name(infantry->Mission == MISSION_NONE
-                           ? infantry->MissionQueue
-                           : infantry->Mission),
+          Mission_Name(infantry->mission_state().current() == MISSION_NONE
+                           ? infantry->mission_state().queued()
+                           : infantry->mission_state().current()),
           infantry->PrimaryFacing.current().value(),
           infantry->Trigger ? infantry->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);

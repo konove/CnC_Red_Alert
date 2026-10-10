@@ -3346,10 +3346,10 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
              uindex++) {
           const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(uindex);
           if (unit && !unit->Team && unit->House == this &&
-              unit->Mission != MISSION_GUARD_AREA &&
-              unit->Mission != MISSION_HUNT &&
-              unit->Mission != MISSION_STICKY &&
-              unit->Mission != MISSION_SLEEP) {
+              unit->mission_state().current() != MISSION_GUARD_AREA &&
+              unit->mission_state().current() != MISSION_HUNT &&
+              unit->mission_state().current() != MISSION_STICKY &&
+              unit->mission_state().current() != MISSION_SLEEP) {
             counter.at(unit->Class->Type)--;
           }
         }
@@ -3472,10 +3472,10 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           const InfantryClass* infantry =
               TheObjectHeaps().infantry().ActiveAt(uindex);
           if (infantry && !infantry->Team && infantry->House == this &&
-              infantry->Mission != MISSION_GUARD_AREA &&
-              infantry->Mission != MISSION_HUNT &&
-              infantry->Mission != MISSION_STICKY &&
-              infantry->Mission != MISSION_SLEEP) {
+              infantry->mission_state().current() != MISSION_GUARD_AREA &&
+              infantry->mission_state().current() != MISSION_HUNT &&
+              infantry->mission_state().current() != MISSION_STICKY &&
+              infantry->mission_state().current() != MISSION_SLEEP) {
             counter.at(infantry->Class->Type)--;
           }
         }

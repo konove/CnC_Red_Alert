@@ -221,7 +221,7 @@ TEST_P(EdgeEntryTest, AGroupWithoutATeamMovesOntoTheMap) {
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
   const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(0);
   EXPECT_EQ(unit->Team, nullptr);
-  EXPECT_EQ(unit->Mission, MISSION_MOVE);
+  EXPECT_EQ(unit->mission_state().current(), MISSION_MOVE);
   // The member enters one cell off the visible map and is sent to the map
   // cell straight across the edge from it.
   const Cell entry_cell = Cell::Containing(unit->Coord);
@@ -253,7 +253,7 @@ TEST_F(ReinforcementTest, AGroupWithATeamWaitsForItsOrders) {
     const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     EXPECT_FALSE(unit->IsInLimbo);
     EXPECT_EQ(unit->Team, team);
-    EXPECT_EQ(unit->Mission, MISSION_GUARD);
+    EXPECT_EQ(unit->mission_state().current(), MISSION_GUARD);
     EXPECT_EQ(unit->NavCom, Target{});
   }
   EXPECT_EQ(TheWorld().scenario_init(), 0);
@@ -278,7 +278,7 @@ TEST_F(ReinforcementTest, AHovercraftStartsBelowTheBeachItLandsOn) {
   EXPECT_EQ(Cell::Containing(hovercraft->Coord),
             Cell::FromXY(30, MAP_CELL_H - 1));
   EXPECT_EQ(hovercraft->cargo().How_Many(), 2);
-  EXPECT_EQ(hovercraft->Mission, MISSION_UNLOAD);
+  EXPECT_EQ(hovercraft->mission_state().current(), MISSION_UNLOAD);
   EXPECT_EQ(hovercraft->NavCom, Target::FromCellIndex(kBeach));
   // UnitClass::Unlimbo() makes every hovercraft a loaner, so that it can
   // leave the map again.
@@ -325,7 +325,7 @@ TEST_F(ReinforcementTest, OneGunboatSailsWestAlongTheShippingLane) {
   EXPECT_EQ(Cell::Containing(gunboat->Coord),
             Cell::FromXY(MAP_CELL_W - 1, kLaneRow));
   EXPECT_TRUE(gunboat->IsALoaner);
-  EXPECT_EQ(gunboat->Mission, MISSION_GUARD);
+  EXPECT_EQ(gunboat->mission_state().current(), MISSION_GUARD);
   EXPECT_EQ(gunboat->NavCom, Target::FromCellIndex(Cell::FromXY(0, kLaneRow)));
 }
 
@@ -342,7 +342,7 @@ TEST_F(ReinforcementTest, AnA10FliesInAsALoanerAndHunts) {
   EXPECT_FALSE(a10->IsInLimbo);
   EXPECT_EQ(Cell::Containing(a10->Coord).x(), 0);
   EXPECT_TRUE(a10->IsALoaner);
-  EXPECT_EQ(a10->Mission, MISSION_HUNT);
+  EXPECT_EQ(a10->mission_state().current(), MISSION_HUNT);
   EXPECT_EQ(TheWorld().scenario_init(), 0);
 }
 
@@ -363,7 +363,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterUnloadsAtTheReinforcementWaypoint) {
   EXPECT_EQ(helicopter->cargo().How_Many(), 2);
   // It only delivers the soldiers and then leaves.
   EXPECT_TRUE(helicopter->IsALoaner);
-  EXPECT_EQ(helicopter->Mission, MISSION_UNLOAD);
+  EXPECT_EQ(helicopter->mission_state().current(), MISSION_UNLOAD);
   EXPECT_EQ(helicopter->NavCom, Target::FromCellIndex(kWaypoint));
 }
 
@@ -380,7 +380,7 @@ TEST_F(ReinforcementTest, AnEmptyHelicopterIsKeptAndMovesToTheWaypoint) {
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   const AircraftClass* helicopter = TheObjectHeaps().aircraft().ActiveAt(0);
   EXPECT_FALSE(helicopter->IsALoaner);
-  EXPECT_EQ(helicopter->Mission, MISSION_MOVE);
+  EXPECT_EQ(helicopter->mission_state().current(), MISSION_MOVE);
   EXPECT_EQ(helicopter->NavCom, Target::FromCellIndex(kWaypoint));
 }
 

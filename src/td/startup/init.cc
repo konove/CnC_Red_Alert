@@ -1727,10 +1727,10 @@ bool Select_Game(bool fade) {
       building->cargo().Attach(passenger);
       building->set_kills(75);
       building->PurchasePrice = 1234;
-      building->Mission = MISSION_REPAIR;
-      building->SuspendedMission = MISSION_GUARD;
-      building->MissionQueue = MISSION_UNLOAD;
-      building->Status = 3;
+      building->mission_state().set_current(MISSION_REPAIR);
+      building->mission_state().set_suspended(MISSION_GUARD);
+      building->mission_state().set_queued(MISSION_UNLOAD);
+      building->mission_state().set_step(3);
       building->CountDown.Set(175);
       building->PlacementDelay.Set(210);
       building->LastStrength = building->Strength - 20;

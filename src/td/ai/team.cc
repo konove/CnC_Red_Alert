@@ -690,9 +690,11 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	If the object is doing some mission that precludes it from joining
   **	a team then don't add it.
   */
-  if (obj->Mission == MISSION_STICKY || obj->Mission == MISSION_SLEEP ||
-      obj->Mission == MISSION_GUARD_AREA || obj->Mission == MISSION_HUNT ||
-      obj->Mission == MISSION_HARVEST) {
+  if (obj->mission_state().current() == MISSION_STICKY ||
+      obj->mission_state().current() == MISSION_SLEEP ||
+      obj->mission_state().current() == MISSION_GUARD_AREA ||
+      obj->mission_state().current() == MISSION_HUNT ||
+      obj->mission_state().current() == MISSION_HARVEST) {
     return false;
   }
 
@@ -1142,8 +1144,9 @@ void TeamClass::Coordinate_Attack() {
       Coordinate_Conscript(unit);
 
       if (unit->IsInitiated && !unit->IsInLimbo) {
-        if (unit->Mission != MISSION_ATTACK && unit->Mission != MISSION_ENTER &&
-            unit->Mission != MISSION_CAPTURE) {
+        if (unit->mission_state().current() != MISSION_ATTACK &&
+            unit->mission_state().current() != MISSION_ENTER &&
+            unit->mission_state().current() != MISSION_CAPTURE) {
           unit->Assign_Mission(MISSION_ATTACK);
           unit->Assign_Target(td::Target{});
           unit->Assign_Destination(td::Target{});
@@ -1187,8 +1190,9 @@ bool TeamClass::Coordinate_Regroup() {
 
     if (unit->IsInitiated && !unit->IsInLimbo) {
       if (unit->Distance(Center) > STRAY_DISTANCE &&
-          (unit->Mission != MISSION_GUARD_AREA || !unit->TarCom)) {
-        if (unit->Mission != MISSION_MOVE || !unit->NavCom ||
+          (unit->mission_state().current() != MISSION_GUARD_AREA ||
+           !unit->TarCom)) {
+        if (unit->mission_state().current() != MISSION_MOVE || !unit->NavCom ||
             td::Distance(unit->NavCom.AsCell(), Center) > STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(td::Target::FromCellIndex(Center));
@@ -1205,7 +1209,7 @@ bool TeamClass::Coordinate_Regroup() {
         /*
         **	The team is regrouping, so just sit here and wait.
         */
-        if (unit->Mission != MISSION_GUARD_AREA) {
+        if (unit->mission_state().current() != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Assign_Destination(td::Target{});
         }
@@ -1257,7 +1261,7 @@ void TeamClass::Coordinate_Move() {
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
                  base::At(Class->MissionList, CurrentMission + 1).Mission !=
                      TMISSION_MOVE)) {
-              if (unit->Mission != MISSION_MOVE) {
+              if (unit->mission_state().current() != MISSION_MOVE) {
                 unit->Assign_Mission(MISSION_MOVE);
               }
               if (unit->NavCom != Target) {
@@ -1265,7 +1269,8 @@ void TeamClass::Coordinate_Move() {
               }
               finished = false;
             } else {
-              if (unit->Mission == MISSION_MOVE && !unit->NavCom) {
+              if (unit->mission_state().current() == MISSION_MOVE &&
+                  !unit->NavCom) {
                 unit->Enter_Idle_Mode();
               }
             }
@@ -1323,7 +1328,7 @@ bool TeamClass::Lagging_Units() {
       ** first unit.
       */
       if (unit->Distance(ObjectiveCenter) > STRAY_DISTANCE) {
-        if (unit->Mission != MISSION_MOVE || !unit->NavCom ||
+        if (unit->mission_state().current() != MISSION_MOVE || !unit->NavCom ||
             td::Distance(unit->NavCom.AsCell(), ObjectiveCenter) >
                 STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
@@ -1385,7 +1390,7 @@ void TeamClass::Coordinate_Unload() {
         unit->Assign_Mission(MISSION_UNLOAD);
         unit->Assign_Destination(Target);
       } else {
-        if (unit->Mission != MISSION_UNLOAD) {
+        if (unit->mission_state().current() != MISSION_UNLOAD) {
           unit->Assign_Mission(MISSION_UNLOAD);
           unit->Assign_Destination(Target);
         }

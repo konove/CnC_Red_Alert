@@ -4039,7 +4039,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&
         building->Class->ToBuild == RTTI_BUILDINGTYPE &&
-        building->Mission != MISSION_DECONSTRUCTION &&
+        building->mission_state().current() != MISSION_DECONSTRUCTION &&
         (base::Bit<uint16_t>(building->ActLike) & Ownable) != 0 &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
         (intheory || !building->radio().InContact())) {
