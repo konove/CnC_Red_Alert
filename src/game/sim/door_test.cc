@@ -26,8 +26,8 @@ class FakeStage {
     return true;
   }
   [[nodiscard]] int Fetch_Stage() const { return stage_; }
-  void Set_Stage(int stage) { stage_ = stage; }
-  void Set_Rate(int rate) { rate_ = rate; }
+  void Set_Stage(const int stage) { stage_ = stage; }
+  void Set_Rate(const int rate) { rate_ = rate; }
 
   template <class Archive>
   void Serialize(Archive& ar) {

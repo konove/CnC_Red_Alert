@@ -85,7 +85,7 @@ class Door {
   // (`stage_count` - 1) frames later. `stage_count` must be at least 2 and
   // `frames_per_stage` nonzero, or the door never opens. Returns false, and
   // changes nothing, if it is already open or opening.
-  bool OpenDoor(int frames_per_stage, int stage_count) {
+  bool OpenDoor(const int frames_per_stage, const int stage_count) {
     if (state_ != State::kClosed && state_ != State::kClosing) {
       return false;
     }
@@ -95,7 +95,7 @@ class Door {
 
   // Starts closing an open or opening door, as OpenDoor() opens one. Returns
   // false if it is already closed or closing.
-  bool CloseDoor(int frames_per_stage, int stage_count) {
+  bool CloseDoor(const int frames_per_stage, const int stage_count) {
     if (state_ != State::kOpen && state_ != State::kOpening) {
       return false;
     }
@@ -116,7 +116,8 @@ class Door {
   };
 
   // Restarts the animation from stage 0 on the way to `state`.
-  void StartAnimation(State state, int frames_per_stage, int stage_count) {
+  void StartAnimation(const State state, const int frames_per_stage,
+                      const int stage_count) {
     // Fewer than two stages would leave an open door on frame -1, and more
     // than 256 do not fit the saved byte.
     DCHECK(stage_count >= 2 && stage_count <= 256);
