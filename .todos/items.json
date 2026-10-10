@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 352,
+  "nextId": 353,
   "items": [
     {
       "id": "T-2",
@@ -11662,10 +11662,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T02:35:59Z",
+      "updated": "2026-10-10T02:38:12Z",
       "resolution": "`TechnoClass::Draw_It()` in both games now skips the health bar when the object is under three pixels wide (`kMinHealthBarWidth`), so the clamp never sees an upper bound below 1 and no degenerate rectangle is drawn. The width is really reachable: a vehicle whose shape is not loaded has `MaxSize` 0 and so width 0. `ra/objects/techno_test.cc` and the new `td/objects/techno_test.cc` draw a one-pixel-wide and a zero-width vehicle (7 stray pixels before the fix, none after) and an 18-pixel one as the control.",
       "anchors": [
         {
@@ -11715,16 +11715,17 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T02:42:37Z",
+      "resolution": "Repaired rather than deleted, because the WChat/DDE code around it is still live on Windows: the two fills now go through `TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0)` and `Rect{0, 440, 640, 40}`, and `engine/gfx/rect.h` is included inside the file's `#ifdef _WIN32` include block. The top band is 40 rows, not the 41 the inclusive legacy corners covered, so it no longer blanks the first row of the picture. Not compiled on Windows; the Linux strict check of `init.cc` passes.",
       "anchors": [
         {
           "path": "src/td/startup/init.cc",
           "startLine": 874,
           "endLine": 875,
-          "text": "            TheScreen().visible_page().FillRect(0, 0, 639, 40, 0);\n            TheScreen().visible_page().FillRect(0, 440, 639, 479, 0);",
+          "text": "            TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0);\n            TheScreen().visible_view().FillRect(Rect{0, 440, 640, 40}, 0);",
           "before": [
             "          ** Make sure top and bottom of screen are clear in 640x480 mode",
             "          */",
@@ -12070,6 +12071,60 @@
         },
         {
           "path": "src/ra/net/netdlg.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-352",
+      "title": "Shift the selection box down only when the health bar is drawn",
+      "details": "`TechnoClass::Draw_It()` in both games moves the top corners of the selection box down by `fudge` (4 pixels) to leave room for the health bar. `fudge` repeats only part of the bar's condition (`House->Is_Ally(ThePlayer())` or the enemy-bar flag), so the corners still move when the bar is skipped: when `Strength` is 0, or when the object is narrower than `kMinHealthBarWidth`.\n\nCompute the bar's condition once (`const bool shows_health_bar = width >= kMinHealthBarWidth && Strength && (...)`), use it for the bar and for `fudge`, and extend `HealthBarPixels()` in `src/ra/objects/techno_test.cc` and `src/td/objects/techno_test.cc` (or add a sibling helper) to check where the white corner pixels land with and without a bar.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "td",
+        "ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T02:38:02Z",
+      "updated": "2026-10-10T02:38:02Z",
+      "source": "48565e48",
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 1272,
+          "endLine": 1273,
+          "text": "      const int fudge =\n          House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar ? 4 : 0;",
+          "before": [
+            "      const int ly = height / 2;",
+            "      const int dx = width / 5;",
+            "      const int dy = height / 5;"
+          ],
+          "after": [
+            "      if (What_Am_I() == RTTI_VESSEL) {",
+            "        lx = width / 2;",
+            "      }"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/techno.cc",
+          "startLine": 979,
+          "endLine": 982,
+          "text": "      const int fudge =\n          House->Is_Ally(ThePlayer()) || TheSpecialFlags().enemy_health_bars\n              ? 4\n              : 0;",
+          "before": [
+            "      const int ly = height / 2;",
+            "      const int dx = width / 5;",
+            "      const int dy = height / 5;"
+          ],
+          "after": [
+            "",
+            "      // Upper left corner.",
+            "      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,"
+          ],
           "lost": false
         }
       ]

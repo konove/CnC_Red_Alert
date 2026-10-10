@@ -157,8 +157,8 @@
 #include "td/ui/msglist.h"
 
 #ifdef _WIN32
+#include "engine/gfx/rect.h"
 #include "td/startup/ccdde.h"
-
 #endif
 
 namespace td {
@@ -871,8 +871,8 @@ bool Select_Game(bool fade) {
           ** Make sure top and bottom of screen are clear in 640x480 mode
           */
           if (TheScreen().mode_height() == 480) {
-            TheScreen().visible_page().FillRect(0, 0, 639, 40, 0);
-            TheScreen().visible_page().FillRect(0, 440, 639, 479, 0);
+            TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0);
+            TheScreen().visible_view().FillRect(Rect{0, 440, 640, 40}, 0);
           }
         }
       }
