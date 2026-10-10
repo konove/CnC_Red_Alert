@@ -1914,7 +1914,7 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->Class->ToBuild == RTTI_INFANTRYTYPE &&
         (base::Bit<uint16_t>(building->ActLike) & Ownable) != 0 &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
-        (intheory || !building->In_Radio_Contact())) {
+        (intheory || !building->radio().InContact())) {
       anybuilding = building;
       if (building->IsLeader) {
         return building;

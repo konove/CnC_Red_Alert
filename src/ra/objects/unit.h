@@ -247,7 +247,7 @@ class UnitClass final : public DriveClass {
   Target Greatest_Threat(ThreatType threat) override;  // const;
   game::Direction Desired_Load_Dir(ObjectClass* passenger,
                                    Cell& moveto) const override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
   int Mission_Guard_Area() override;

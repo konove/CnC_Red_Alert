@@ -531,7 +531,7 @@ void DriveClass::Assign_Destination(Target target) {
   */
   if (b != nullptr && *b == STRUCT_REFINERY && What_Am_I() == RTTI_UNIT &&
       dynamic_cast<const UnitTypeClass&>(*Techno_Type_Class()).IsToHarvest) {
-    if (Contact_With_Whom() != b && !b->In_Radio_Contact()) {
+    if (Contact_With_Whom() != b && !b->radio().InContact()) {
       /*
       **	Establish radio contact protocol. If the facility responds
       *correctly, *	then remain in radio contact and proceed toward the
@@ -912,7 +912,7 @@ bool DriveClass::Start_Of_Move() {
               **	object can just say "good enough" and stop here.
               */
               if (Distance(NavCom) < TheRules().CloseEnoughDistance &&
-                  !In_Radio_Contact()) {
+                  !radio().InContact()) {
                 Assign_Destination(Target{});
                 return false;
               }
@@ -978,7 +978,7 @@ bool DriveClass::Start_Of_Move() {
           **	object can just say "good enough" and stop here.
           */
           if (Distance(NavCom) < TheRules().CloseEnoughDistance &&
-              !In_Radio_Contact()) {
+              !radio().InContact()) {
             Assign_Destination(Target{});
             return false;
           }

@@ -145,7 +145,6 @@
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
-#include "td/objects/radio.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -1175,40 +1174,6 @@ void ObjectClass::Detach_This_From_All(Target target, bool all) {
       TheObjectHeaps().anim().ActiveAt(index)->Detach(target, all);
     }
   }
-}
-
-/***********************************************************************************************
- * ObjectClass::Receive_Message -- Processes an incoming radio message. *
- *                                                                                             *
- *    Any radio message received that applies to objects in general are handled
- *by this        * routine. Typically, this is the "redraw" message, which
- *occurs when another object is    * loading or unloading and thus overlapping.
- **
- *                                                                                             *
- * INPUT:   message  -- The message received. *
- *                                                                                             *
- * OUTPUT:  Returns with the appropriate radio response. If the message was
- *recognized, then   * RADIO_ROGER is returned, otherwise, just RADIO_STATIC is
- *returned.                 *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/24/1994 JLB : Created. *
- *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
-                                              RadioMessageType message,
-                                              int32_t& /*unused*/) {
-  /*
-  **	This message serves as a rendering convenience. It lets the system
-  **	know that there might be a visual conflict and the unit in radio
-  **	contact should be redrawn. This typically occurs when a vehicle
-  **	is being unloaded from a hover lander.
-  */
-  if (message == RADIO_REDRAW) {
-    Mark(MARK_CHANGE);
-    return RADIO_ROGER;
-  }
-  return RADIO_STATIC;
 }
 
 /***********************************************************************************************

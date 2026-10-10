@@ -57,6 +57,7 @@
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
 #include "ra/objects/house.h"
+#include "ra/objects/mission.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
 #include "ra/objects/stage.h"
@@ -70,7 +71,7 @@ namespace ra {
 /****************************************************************************
 **	This is the common data between building and units.
 */
-class TechnoClass : public RadioClass {
+class TechnoClass : public MissionClass, public RadioPeer {
  public:
   /*
   **	If this techno object has detected that it has outlived its
@@ -372,6 +373,15 @@ class TechnoClass : public RadioClass {
   virtual int Made_A_Kill() { return ++kills_; }
   [[nodiscard]] int kills() const { return kills_; }
 
+  // The radio set: who this object is in contact with. Messages are sent
+  // with Transmit_Message(), which names this object as the sender.
+  [[nodiscard]] RadioClass& radio() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return radio_;
+  }
+  [[nodiscard]] const RadioClass& radio() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return radio_;
+  }
+
   // The flashing that shows the player this object was targeted.
   [[nodiscard]] game::FlasherClass& flasher() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return flasher_;
@@ -447,8 +457,28 @@ class TechnoClass : public RadioClass {
   virtual void Renovate();
   void AI() override;
   bool Revealed(HouseClass* house) override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
-                                   int32_t& param) override;
+  // Answers a radio message from `from`, nullptr when it has no sender.
+  // Returns RADIO_STATIC for a message that means nothing to this object.
+  virtual RadioMessageType Receive_Message(TechnoClass* from,
+                                           RadioMessageType message,
+                                           int32_t& param);
+  // RadioPeer: hands the message to Receive_Message(). Only a techno ever
+  // sends one to a techno; any other sender arrives as nullptr.
+  RadioMessageType Receive(RadioPeer* from, RadioMessageType message,
+                           int32_t& param) final;
+  // Sends `message` from this object to `to`, or to the object it is in
+  // radio contact with when `to` is nullptr, and returns the answer;
+  // RADIO_STATIC when there is nobody to send it to. See RadioClass::Transmit()
+  // for what RADIO_HELLO and RADIO_OVER_OUT do to the contact.
+  RadioMessageType Transmit_Message(
+      RadioMessageType message, int32_t& param = RadioClass::DiscardedParam(),
+      TechnoClass* to = nullptr);
+  RadioMessageType Transmit_Message(RadioMessageType message, TechnoClass* to);
+  // Returns the object this one is in radio contact with, or nullptr when
+  // there is no contact.
+  [[nodiscard]] TechnoClass* Contact_With_Whom() const;
+  // Breaks radio contact: an object in limbo talks to nobody.
+  bool Limbo() override;
   void Cloaking_AI();
 
   /*
@@ -513,6 +543,13 @@ class TechnoClass : public RadioClass {
   // stores it that way; the tally wraps past 65535.
   uint16_t kills_{0};
 
+  // The answer to a message no techno class handles itself: the radio's
+  // answer to RADIO_HELLO and RADIO_OVER_OUT, a redraw for RADIO_REDRAW,
+  // RADIO_STATIC otherwise.
+  RadioMessageType Default_Radio_Answer(TechnoClass* from,
+                                        RadioMessageType message);
+
+  RadioClass radio_;
   game::FlasherClass flasher_;
   StageClass animation_;
   CargoClass cargo_;

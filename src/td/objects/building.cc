@@ -295,7 +295,7 @@ int BuildingClass::Validate() const {
  *anim to start immediately.                          * 08/13/1995 JLB : Uses
  *ScenarioInit for special loose "CAN_LOAD" check.                    *
  *=============================================================================================*/
-RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
+RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   Validate();
@@ -308,7 +308,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     case RADIO_CAN_LOAD:
       TechnoClass::Receive_Message(from, message, param);
       if (BState == game::BSTATE_CONSTRUCTION ||
-          (!TheWorld().scenario_init() && In_Radio_Contact())) {
+          (!TheWorld().scenario_init() && radio().InContact())) {
         return RADIO_NEGATIVE;
       }
       switch (Class->Type) {
@@ -563,7 +563,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     *the current *	state of the building.
     */
     case RADIO_ARE_REFINERY:
-      if (cargo().Is_Something_Attached() || In_Radio_Contact() || IsInLimbo ||
+      if (cargo().Is_Something_Attached() || radio().InContact() || IsInLimbo ||
           House->Class->House != from->Owner() ||
           *this != STRUCT_REFINERY /* && *this != STRUCT_REPAIR*/) {
         return RADIO_NEGATIVE;
@@ -827,7 +827,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     /*
     **	A Tethered object is always rendered AFTER the building.
     */
-    if (IsTethered && In_Radio_Contact() && !Contact_With_Whom()->IsInLimbo) {
+    if (IsTethered && radio().InContact() && !Contact_With_Whom()->IsInLimbo) {
       Contact_With_Whom()->Render(view, true);
     }
 
@@ -2415,7 +2415,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
   */
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
-      if (!In_Radio_Contact()) {
+      if (!radio().InContact()) {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
         air->Altitude = 0;
@@ -4126,7 +4126,7 @@ int BuildingClass::Mission_Guard() {
         **	Special case to break out of guard mode if this is a repair
         **	facility and there is a customer waiting at the grease pit.
         */
-        if (*this == STRUCT_REPAIR && In_Radio_Contact() &&
+        if (*this == STRUCT_REPAIR && radio().InContact() &&
             Contact_With_Whom()->Is_Techno() &&
             Contact_With_Whom()->Mission == MISSION_ENTER &&
             Distance(Contact_With_Whom()) < 0x0040 &&
@@ -4704,7 +4704,7 @@ int BuildingClass::Mission_Repair() {
         break;
 
       case kDuring:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Assign_Mission(MISSION_GUARD);
         }
         break;
@@ -4720,7 +4720,7 @@ int BuildingClass::Mission_Repair() {
     constexpr int kDuring = 2;
     switch (Status) {
       case kInitial:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
           Assign_Mission(MISSION_GUARD);
           return 1;
@@ -4734,7 +4734,7 @@ int BuildingClass::Mission_Repair() {
         break;
 
       case kIdle:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Assign_Mission(MISSION_GUARD);
           return 1;
         }
@@ -4757,7 +4757,7 @@ int BuildingClass::Mission_Repair() {
         break;
 
       case kDuring:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
           Status = kIdle;
           return 1;
@@ -4808,7 +4808,7 @@ int BuildingClass::Mission_Repair() {
 
       case kDuring:
         if (IsReadyToCommence) {
-          if (!In_Radio_Contact() ||
+          if (!radio().InContact() ||
               Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_NEGATIVE) {
             Assign_Mission(MISSION_GUARD);
             return 1;
@@ -4996,7 +4996,7 @@ bool BuildingClass::Revealed(HouseClass* house) {
     **	owned house is not yet revealed, it won't be reflected in the sidebar
     **	selection icons.
     */
-    if (!In_Radio_Contact() &&
+    if (!radio().InContact() &&
         (house == House || TheSession().type() != GAME_NORMAL) &&
         Mission != MISSION_CONSTRUCTION) {
       Grand_Opening();

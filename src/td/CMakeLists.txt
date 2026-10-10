@@ -88,7 +88,7 @@ apply_dotenv_settings(td_saveload_test)
 add_gtest(
     NAME td_game_test
     SOURCES startup/game_test.cc startup/conquer_test.cc core/target_test.cc
-            startup/startup.cc
+            objects/radio_test.cc startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_game_test PRIVATE TD_NO_ENTRY_POINT=1)

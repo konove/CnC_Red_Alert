@@ -586,7 +586,7 @@ int FootClass::Mission_Move() {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 int FootClass::Mission_Capture() {
-  if (!NavCom && !In_Radio_Contact()) {
+  if (!NavCom && !radio().InContact()) {
     Enter_Idle_Mode();
     if (TheMap().at(Cell::Containing(Center_Coord())).Cell_Building()) {
       Scatter(Coordinate{}, true);
@@ -817,7 +817,7 @@ Coordinate FootClass::Sort_Y() const {
   if (IsUnloading) {
     return Coord + Coordinate::FromLeptons(0, 0x100);
   }
-  if (In_Radio_Contact() && IsTethered &&
+  if (radio().InContact() && IsTethered &&
       Contact_With_Whom()->What_Am_I() == RTTI_UNIT) {
     return Coord + Coordinate::FromLeptons(0, 0x100);
   }
@@ -1250,7 +1250,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
     case ACTION_ENTER:
       if (Can_Player_Move() && object && object->Is_Techno() &&
-          !dynamic_cast<RadioClass*>(object)->In_Radio_Contact()) {
+          !dynamic_cast<TechnoClass*>(object)->radio().InContact()) {
         Player_Assign_Mission(MISSION_ENTER, Target{}, object->As_Target());
       }
       break;
@@ -1507,7 +1507,7 @@ bool FootClass::Restore_Mission() {
  *                                                                                             *
  * HISTORY: * 05/14/1995 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType FootClass::Receive_Message(RadioClass* from,
+RadioMessageType FootClass::Receive_Message(TechnoClass* from,
                                             RadioMessageType message,
                                             int32_t& param) {
   switch (message) {
@@ -1527,7 +1527,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *away!
     */
     case RADIO_RUN_AWAY:
-      if (In_Radio_Contact() && (NavCom == Contact_With_Whom()->As_Target())) {
+      if (radio().InContact() && (NavCom == Contact_With_Whom()->As_Target())) {
         Assign_Destination(Target{});
       }
 
@@ -1630,7 +1630,7 @@ int FootClass::Mission_Enter() {
   **	If radio contact has not yet been established with the transport, try to
   **	establish contact now.
   */
-  if (!In_Radio_Contact()) {
+  if (!radio().InContact()) {
     TechnoClass* techno = ArchiveTarget.AsTechno();
     if (!techno) {
       techno = NavCom.AsTechno();
@@ -2007,7 +2007,7 @@ bool FootClass::Can_Demolish() const {
   switch (What_Am_I()) {
     case RTTI_UNIT:
     case RTTI_AIRCRAFT:
-      if (In_Radio_Contact() &&
+      if (radio().InContact() &&
           Contact_With_Whom()->What_Am_I() == RTTI_BUILDING &&
           *dynamic_cast<BuildingClass*>(Contact_With_Whom()) == STRUCT_REPAIR &&
           Distance(Contact_With_Whom()) < 0x0080) {

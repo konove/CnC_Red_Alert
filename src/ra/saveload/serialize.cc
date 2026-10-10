@@ -19,7 +19,6 @@
 #include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
 #include "ra/objects/overlay.h"
-#include "ra/objects/radio.h"
 #include "ra/objects/smudge.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/template.h"
@@ -151,7 +150,6 @@ void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
 }
 
 template class ObjectPtr<ObjectClass>;
-template class ObjectPtr<RadioClass>;
 template class ObjectPtr<TechnoClass>;
 template class ObjectPtr<FootClass>;
 

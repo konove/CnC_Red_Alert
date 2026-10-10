@@ -557,7 +557,7 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType UnitClass::Receive_Message(RadioClass* from,
+RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
                                             RadioMessageType message,
                                             int32_t& param) {
   Validate();
@@ -1245,7 +1245,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
 
   if (Class->Primary == WEAPON_NONE) {
     if (Class->IsToHarvest) {
-      if (!In_Radio_Contact() && Mission != MISSION_HARVEST) {
+      if (!radio().InContact() && Mission != MISSION_HARVEST) {
         if (initial || !House->IsHuman ||
             TheMap().at(Cell::Containing(Coord)).Land_Type() == LAND_TIBERIUM) {
           order = MISSION_HARVEST;
@@ -3464,7 +3464,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       object->What_Am_I() == RTTI_BUILDING) {
     const auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
-        !building->In_Radio_Contact() &&
+        !building->radio().InContact() &&
         !building->cargo().Is_Something_Attached()) {
       action = ACTION_MOVE;
     }

@@ -698,7 +698,7 @@ void UnitClass::Firing_AI() {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType UnitClass::Receive_Message(RadioClass* from,
+RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
                                             RadioMessageType message,
                                             int32_t& param) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
@@ -795,7 +795,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         /*
         **	Establish contact and let the loading process proceed normally.
         */
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Transmit_Message(RADIO_HELLO, from);
         } else {
           /*
@@ -1360,7 +1360,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
   } else {
     if (!Is_Weapon_Equipped()) {
       if (Class->IsToHarvest) {
-        if (!In_Radio_Contact() && Mission != MISSION_HARVEST &&
+        if (!radio().InContact() && Mission != MISSION_HARVEST &&
             MissionQueue != MISSION_HARVEST) {
           if (initial || !House->IsHuman ||
               TheMap().at(Coord).Land_Type() == LAND_TIBERIUM) {
@@ -3590,7 +3590,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
     auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
         Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER &&
-        !building->In_Radio_Contact() &&
+        !building->radio().InContact() &&
         !building->cargo().Is_Something_Attached()) {
       action = ACTION_MOVE;
     }
@@ -4546,7 +4546,7 @@ void UnitClass::Assign_Destination(Target target) {
   *they *	cannot proceed. This is accomplished with a radio message to
   *this effect.
   */
-  if (In_Radio_Contact() && Class->Max_Passengers() > 0 &&
+  if (radio().InContact() && Class->Max_Passengers() > 0 &&
       Contact_With_Whom()->Is_Infantry()) {
     Transmit_Message(RADIO_OVER_OUT);
   }
@@ -4562,14 +4562,14 @@ void UnitClass::Assign_Destination(Target target) {
     **	either try to establish contact if allowed, or just move close and
     **	wait until radio contact can be established.
     */
-    if (!In_Radio_Contact()) {
+    if (!radio().InContact()) {
       if (b != nullptr) {
         /*
         **	Determine if the transport is already in radio contact. If so,
         *then just move *	toward the transport and try to establish
         *contact at a later time.
         */
-        if (b->In_Radio_Contact()) {
+        if (b->radio().InContact()) {
           // TCTCTC -- call for an update from the transport to get a good
           // rendezvous position.
           ArchiveTarget = target;
@@ -4602,7 +4602,7 @@ void UnitClass::Assign_Destination(Target target) {
           *then just move *	toward the transport and try to establish
           *contact at a later time.
           */
-          if (techno->In_Radio_Contact()) {
+          if (techno->radio().InContact()) {
             // TCTCTC -- call for an update from the transport to get a good
             // rendezvous position.
 
@@ -4632,7 +4632,7 @@ void UnitClass::Assign_Destination(Target target) {
   *unloading).
   */
   if (b != nullptr && *b == STRUCT_REPAIR) {
-    if (b->In_Radio_Contact() && b->Contact_With_Whom() != this) {
+    if (b->radio().InContact() && b->Contact_With_Whom() != this) {
       //			if (target != NULL) {
       ArchiveTarget = target;
       //			}
@@ -5080,7 +5080,7 @@ int UnitClass::Mission_Guard_Area() {
   */
   if (TheSession().Type != GAME_NORMAL &&
       (*this == UNIT_APC || *this == UNIT_PHASE) && !TarCom &&
-      !In_Radio_Contact() && House->Which_Zone(this) != ZONE_NONE &&
+      !radio().InContact() && House->Which_Zone(this) != ZONE_NONE &&
       !House->IsHuman) {
     int needed = Class->Max_Passengers() - cargo().How_Many();
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {

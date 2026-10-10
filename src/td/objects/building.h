@@ -294,7 +294,7 @@ class BuildingClass final : public TechnoClass {
   bool Revealed(HouseClass* house) override;
   void Repair(int control) override;
   void Sell_Back(int control) override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
   void Assign_Target(Target target) override;

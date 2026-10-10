@@ -753,7 +753,7 @@ int AircraftClass::Mission_Hunt() {
           /*
           **	After takeoff is complete, break radio contact.
           */
-          if (In_Radio_Contact()/*KO && Map[Coord].Cell_Building() == Contact_With_Whom()*/) {
+          if (radio().InContact()/*KO && Map[Coord].Cell_Building() == Contact_With_Whom()*/) {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
@@ -1279,7 +1279,7 @@ int AircraftClass::Mission_Unload() {
           /*
           **	Break off radio contact with the helipad it is taking off from.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -1339,7 +1339,7 @@ bool AircraftClass::Is_LZ_Clear(Target target) const {
       return true;
     }
 
-    if (In_Radio_Contact() && Contact_With_Whom() == object) {
+    if (radio().InContact() && Contact_With_Whom() == object) {
       return true;
     }
     return false;
@@ -1724,7 +1724,7 @@ int AircraftClass::Mission_Move() {
           /*
           **	After takeoff is complete, break radio contact.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -1842,7 +1842,7 @@ int AircraftClass::Mission_Move() {
           **	After takeoff is complete, break radio contact with any helipad
           *that this *	helicopter is taking off from.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -2073,7 +2073,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House &&
-                    ship->cargo().How_Many() < ship->Class->Max_Passengers() /* && !ship->In_Radio_Contact()*/) {
+                    ship->cargo().How_Many() < ship->Class->Max_Passengers() /* && !ship->radio().InContact()*/) {
                   if (Distance(ship) < dist || !dock) {
                     dock = ship;
                     dist = Distance(ship);
@@ -2357,7 +2357,7 @@ ActionType AircraftClass::What_Action(ObjectClass* target) {
       target->What_Am_I() == RTTI_BUILDING) {
     const auto* building = dynamic_cast<const BuildingClass*>(target);
     if (building->Class->Type == STRUCT_REPAIR &&
-        !building->In_Radio_Contact() &&
+        !building->radio().InContact() &&
         !building->cargo().Is_Something_Attached()) {
       action = ACTION_ENTER;
     }
@@ -2506,7 +2506,7 @@ int AircraftClass::Mission_Attack() {
           /*
           **	Break off radio contact with the helipad it is taking off from.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -2758,7 +2758,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
+RadioMessageType AircraftClass::Receive_Message(TechnoClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
@@ -2905,7 +2905,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           !House->Is_Ally(from->Owner())) {
         return RADIO_STATIC;
       }
-      if (/*!In_Radio_Contact() &&*/ cargo().How_Many() <
+      if (/*!radio().InContact() &&*/ cargo().How_Many() <
           Class->Max_Passengers()) {
         return RADIO_ROGER;
       }
@@ -3384,7 +3384,7 @@ int AircraftClass::Mission_Enter() {
         **	After takeoff is complete, break radio contact with any helipad
         *that this *	helicopter is taking off from.
         */
-        if (In_Radio_Contact() &&
+        if (radio().InContact() &&
             TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
         }
@@ -3397,7 +3397,7 @@ int AircraftClass::Mission_Enter() {
       **	Establish radio contact with the building this helicopter is
       *trying *	to land at.
       */
-      if (In_Radio_Contact()) {
+      if (radio().InContact()) {
         if (!NavCom) {
           Transmit_Message(RADIO_DOCKING);
           if (!NavCom) {
@@ -3486,7 +3486,7 @@ int AircraftClass::Mission_Enter() {
 
     case kTravel:
       Transmit_Message(RADIO_DOCKING);
-      if (!In_Radio_Contact() && NavCom.kind() != RTTI_VESSEL) {
+      if (!radio().InContact() && NavCom.kind() != RTTI_VESSEL) {
         Assign_Destination(Target{});
         Enter_Idle_Mode();
       } else {
@@ -3505,7 +3505,7 @@ int AircraftClass::Mission_Enter() {
             SecondaryFacing.set_desired(Pose_Dir());
           }
 
-          if (NavCom.kind() == RTTI_VESSEL && !In_Radio_Contact()) {
+          if (NavCom.kind() == RTTI_VESSEL && !radio().InContact()) {
             Enter_Idle_Mode();
             break;
           }
@@ -3528,7 +3528,7 @@ int AircraftClass::Mission_Enter() {
         Enter_Idle_Mode();
       }
       // If we were trying to land on a carrier and it moved, take off again
-      if (NavCom.AsVessel() && !In_Radio_Contact()) {
+      if (NavCom.AsVessel() && !radio().InContact()) {
         Status = kInitial;
         break;
       }
@@ -3833,7 +3833,7 @@ int AircraftClass::Mission_Guard() {
   */
   if (House->Available_Money() >= 100 &&
       Health_Ratio() <= TheRules().ConditionYellow) {
-    if (!In_Radio_Contact() ||
+    if (!radio().InContact() ||
         (Height == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
                          *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
                              STRUCT_REPAIR))) {
@@ -3852,7 +3852,7 @@ int AircraftClass::Mission_Guard() {
   **	abort any normal guard logic in order to look for a helipad
   **	to rearm.
   */
-  if ((Ammo == 0 && Is_Weapon_Equipped()) && (!In_Radio_Contact())) {
+  if ((Ammo == 0 && Is_Weapon_Equipped()) && (!radio().InContact())) {
     const TechnoClass* dock = Find_Docking_Bay(STRUCT_HELIPAD, false);
     if (!Class->IsFixedWing) {
       int dist = 0x7FFFFFFF;
@@ -3899,7 +3899,7 @@ int AircraftClass::Mission_Guard() {
   **	Computer controlled helicopters will defend themselves by bouncing
   *around *	and looking for a free helipad.
   */
-  if (Height == 0 && !In_Radio_Contact()) {
+  if (Height == 0 && !radio().InContact()) {
     Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
@@ -3950,7 +3950,7 @@ int AircraftClass::Mission_Guard_Area() {
     return kTicksPerSecond;
   }
 
-  if (Height == 0 && !In_Radio_Contact()) {
+  if (Height == 0 && !radio().InContact()) {
     Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
@@ -4168,7 +4168,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
         }
 
         if ((NavCom && NavCom.AsTechno() == Contact_With_Whom()) &&
-            (In_Radio_Contact() &&
+            (radio().InContact() &&
              Transmit_Message(RADIO_IM_IN) != RADIO_ROGER)) {
           Scatter(Coordinate{}, true);
         }
@@ -4232,7 +4232,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
           **	aircraft is in radio contact with, then assume that radio
           **	contact is now superfluous. Break radio contact.
           */
-          if (In_Radio_Contact() && NavCom &&
+          if (radio().InContact() && NavCom &&
               NavCom != Contact_With_Whom()->As_Target()) {
             Transmit_Message(RADIO_OVER_OUT);
           }

@@ -922,7 +922,7 @@ void InfantryClass::Assign_Destination(Target target) {
     **	either try to establish contact if allowed, or just move close and
     **	wait until radio contact can be established.
     */
-    if (!In_Radio_Contact()) {
+    if (!radio().InContact()) {
       TechnoClass* techno = target.AsTechno();
 
       if (techno) {
@@ -931,7 +931,7 @@ void InfantryClass::Assign_Destination(Target target) {
         *then just move *	toward the transport and try to establish
         *contact at a later time.
         */
-        if (techno->In_Radio_Contact()) {
+        if (techno->radio().InContact()) {
           // TCTCTC -- call for an update from the transport to get a good
           // rondezvous position.
 
@@ -1275,7 +1275,7 @@ void InfantryClass::AI() {
       case DO_PUNCH_HIT2:
       case DO_KICK_HIT1:
       case DO_KICK_HIT2:
-        if (In_Radio_Contact()) {
+        if (radio().InContact()) {
           Do_Action(DO_FIGHT_READY, true);
         } else {
           IsBoxing = false;
@@ -1635,7 +1635,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
     if ((obj != this) &&
         ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
          obj->What_Am_I() != RTTI_AIRCRAFT ||
-         !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact())) {
+         !dynamic_cast<AircraftClass*>(obj)->radio().InContact())) {
       /*
       **	Special case check so that a landed aircraft that is in radio
       *contact, will not block *	a capture attempt. It is presumed that
@@ -2446,7 +2446,7 @@ BulletClass* InfantryClass::Fire_At(Target target, int which) {
     *some *	error, then abort fightning mode. Otherwise, tell the target
     *that it has *	just been hit.
     */
-    if (In_Radio_Contact() && target &&
+    if (radio().InContact() && target &&
         Transmit_Message(hitaction) == RADIO_ROGER) {
       Arm = Rearm_Delay(true);
     } else {
@@ -2851,7 +2851,7 @@ Coordinate InfantryClass::Fire_Coord(int /*unused*/) const {
  *   01/19/1995 BWG : Created.                                             *
  *   05/14/1995 JLB : Handles loading maneuver messages.                   *
  *=========================================================================*/
-RadioMessageType InfantryClass::Receive_Message(RadioClass* from,
+RadioMessageType InfantryClass::Receive_Message(TechnoClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   Validate();

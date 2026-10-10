@@ -311,14 +311,6 @@ template void TerrainClass::Serialize(ArchiveWriter&);
 template void TerrainClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void RadioClass::Serialize(Archive& ar) {
-  MissionClass::Serialize(ar);
-  ar(Old, ObjectPtr(Radio));
-}
-template void RadioClass::Serialize(ArchiveWriter&);
-template void RadioClass::Serialize(ArchiveReader&);
-
-template <class Archive>
 void CargoClass::Serialize(Archive& ar) {
   ar(Quantity, ObjectPtr(CargoHold));
 }
@@ -327,7 +319,13 @@ template void CargoClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
-  RadioClass::Serialize(ar);
+  MissionClass::Serialize(ar);
+  radio_.Serialize(ar);
+  TechnoClass* contact = Contact_With_Whom();
+  ar(ObjectPtr(contact));
+  if constexpr (Archive::kIsReading) {
+    radio_.set_contact(contact);
+  }
   flasher_.Serialize(ar);
   animation_.Serialize(ar);
   cargo_.Serialize(ar);

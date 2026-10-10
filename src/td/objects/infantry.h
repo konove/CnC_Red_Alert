@@ -216,7 +216,7 @@ class InfantryClass final : public FootClass {
   Target As_Target() const override;
   game::FireErrorType Can_Fire(Target target, int which) const override;
   void Assign_Target(Target /*target*/) override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   int Rearm_Delay(bool second) const override;
   void Set_Occupy_Bit(Coordinate coord) {

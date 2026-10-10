@@ -150,6 +150,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -675,7 +676,7 @@ Coordinate TechnoClass::Fire_Coord(int which) const {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
-    : RadioClass(rtti, id),
+    : MissionClass(rtti, id),
       IsUseless(false),
       IsTickedOff(false),
       IsCloakable(false),
@@ -842,7 +843,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
     IsDiscoveredByComputer = true;
   }
 
-  if (RadioClass::Revealed(house)) {
+  if (MissionClass::Revealed(house)) {
     /*
     **	An enemy object that is discovered will go into hunt mode if
     **	its current mission is to ambush.
@@ -927,7 +928,7 @@ void TechnoClass::Hidden() {
 bool TechnoClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
-  if (RadioClass::Mark(mark)) {
+  if (MissionClass::Mark(mark)) {
     /*
     **	When redrawing an object, if there is another object tethered to this
     *one, *	redraw it as well.
@@ -962,7 +963,7 @@ bool TechnoClass::Mark(MarkType mark) {
  * HISTORY: * 10/17/1994 JLB : Created. * 06/17/1995 JLB : Handles tether
  *contact messages.                                         *
  *=============================================================================================*/
-RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
+RadioMessageType TechnoClass::Receive_Message(TechnoClass* from,
                                               RadioMessageType message,
                                               int32_t& param) {
   DCHECK(IsActive);
@@ -1015,7 +1016,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     */
     case RADIO_OVER_OUT:
       Transmit_Message(RADIO_UNTETHER, from);
-      RadioClass::Receive_Message(from, message, param);
+      Default_Radio_Answer(from, message);
       return RADIO_ROGER;
 
     /*
@@ -1027,7 +1028,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     case RADIO_BACKUP_NOW:
     case RADIO_HOLD_STILL:
       Transmit_Message(RADIO_TETHER, from);
-      RadioClass::Receive_Message(from, message, param);
+      Default_Radio_Answer(from, message);
       return RADIO_ROGER;
 
     /*
@@ -1116,7 +1117,65 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     default:
       break;
   }
-  return RadioClass::Receive_Message(from, message, param);
+  return Default_Radio_Answer(from, message);
+}
+
+// Every techno's radio only ever holds a techno (see Contact_With_Whom()), so
+// a sender that is not one can only be a test's stand-in.
+RadioMessageType TechnoClass::Receive(RadioPeer* from, RadioMessageType message,
+                                      int32_t& param) {
+  return Receive_Message(dynamic_cast<TechnoClass*>(from), message, param);
+}
+
+RadioMessageType TechnoClass::Transmit_Message(RadioMessageType message,
+                                               int32_t& param,
+                                               TechnoClass* to) {
+  DCHECK(IsActive);
+
+  return radio_.Transmit(*this, message, param, to);
+}
+
+RadioMessageType TechnoClass::Transmit_Message(RadioMessageType message,
+                                               TechnoClass* to) {
+  return Transmit_Message(message, RadioClass::DiscardedParam(), to);
+}
+
+// The contact is set from a TechnoClass* in Transmit_Message(), in Receive()
+// and on load, never from anything else, so the cast only gives nullptr when
+// there is no contact.
+TechnoClass* TechnoClass::Contact_With_Whom() const {
+  return dynamic_cast<TechnoClass*>(radio_.contact());
+}
+
+bool TechnoClass::Limbo() {
+  DCHECK(IsActive);
+
+  if (!IsInLimbo) {
+    Transmit_Message(RADIO_OVER_OUT);
+  }
+  return MissionClass::Limbo();
+}
+
+RadioMessageType TechnoClass::Default_Radio_Answer(TechnoClass* from,
+                                                   RadioMessageType message) {
+  DCHECK(IsActive);
+
+  if (const std::optional<RadioMessageType> answer =
+          radio_.Receive(from, message, Strength != 0)) {
+    return *answer;
+  }
+
+  /*
+  **	This message serves as a rendering convenience. It lets the system
+  **	know that there might be a visual conflict and the unit in radio
+  **	contact should be redrawn. This typically occurs when a vehicle
+  **	is being unloaded from a hover lander.
+  */
+  if (message == RADIO_REDRAW) {
+    Mark(MARK_CHANGE);
+    return RADIO_ROGER;
+  }
+  return RADIO_STATIC;
 }
 
 /***********************************************************************************************
@@ -1324,7 +1383,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
 bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK(IsActive);
 
-  if (RadioClass::Unlimbo(coord, dir)) {
+  if (MissionClass::Unlimbo(coord, dir)) {
     PrimaryFacing.SnapTo(dir);
     Enter_Idle_Mode(true);
     Commence();
@@ -2585,7 +2644,7 @@ void TechnoClass::AI() {
     Mark(MARK_CHANGE_REDRAW);
   }
 
-  RadioClass::AI();
+  MissionClass::AI();
 
   if (!IsActive || (Height > 0 && What_Am_I() != RTTI_AIRCRAFT)) {
     return;
@@ -2888,7 +2947,7 @@ bool TechnoClass::Select() {
     return false;
   }
 
-  if (RadioClass::Select()) {
+  if (MissionClass::Select()) {
     /*
     **	Speak a confirmation of selection.
     */
@@ -4010,7 +4069,7 @@ void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
   DCHECK(IsActive);
 
   SuspendedTarCom = TarCom;
-  RadioClass::Override_Mission(mission, tarcom, navcom);
+  MissionClass::Override_Mission(mission, tarcom, navcom);
   Assign_Target(tarcom);
 }
 
@@ -4029,7 +4088,7 @@ void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
 bool TechnoClass::Restore_Mission() {
   DCHECK(IsActive);
 
-  if (RadioClass::Restore_Mission()) {
+  if (MissionClass::Restore_Mission()) {
     Assign_Target(SuspendedTarCom);
     return true;
   }
@@ -4751,7 +4810,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
  *=============================================================================================*/
 void TechnoClass::Detach(Target target, bool all) {
   DCHECK(IsActive);
-  RadioClass::Detach(target, all);
+  MissionClass::Detach(target, all);
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
     SuspendedMission = MISSION_NONE;
@@ -4771,7 +4830,8 @@ void TechnoClass::Detach(Target target, bool all) {
   **	If it is in radio contact with another object, then that radio contact
   **	must be broken.
   */
-  if (all && In_Radio_Contact() && Contact_With_Whom()->As_Target() == target) {
+  if (all && radio().InContact() &&
+      Contact_With_Whom()->As_Target() == target) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 }

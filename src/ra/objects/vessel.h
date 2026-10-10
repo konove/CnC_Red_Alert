@@ -143,7 +143,7 @@ class VesselClass : public DriveClass {
       bool redraw = false) const override;
   game::Direction Desired_Load_Dir(ObjectClass* passenger,
                                    Cell& moveto) const override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;

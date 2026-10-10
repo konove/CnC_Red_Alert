@@ -46,46 +46,56 @@
 #include "td/objects/radio.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "td/core/defines.h"
-#include "td/objects/mission.h"
-#include "td/objects/techno.h"  // IWYU pragma: keep
 
 namespace td {
 
-// Every radio in the game is part of a TechnoClass object, so the cast only
-// fails when there is no contact at all.
-TechnoClass* RadioClass::Contact_With_Whom() const {
-  return dynamic_cast<TechnoClass*>(Radio);
+RadioPeer::~RadioPeer() = default;
+
+RadioMessageType RadioClass::Transmit(RadioPeer& sender,
+                                      RadioMessageType message, int32_t& param,
+                                      RadioPeer* to) {
+  if (to == nullptr) {
+    to = contact_;
+  }
+
+  /*
+  **	If there is no target for the radio message, then always return static.
+  */
+  if (to == nullptr) {
+    return RADIO_STATIC;
+  }
+
+  /*
+  **	Handle some special case processing that occurs when certain messages
+  **	are transmitted.
+  */
+  if (to == contact_ && message == RADIO_OVER_OUT) {
+    contact_ = nullptr;
+  }
+
+  /*
+  **	If the message indicates that radio contact should be established,
+  **	then try to do so, after ending the conversation this radio is in.
+  **	If the other party agrees then contact is established.
+  */
+  if (message == RADIO_HELLO) {
+    Transmit(sender, RADIO_OVER_OUT, DiscardedParam());
+    if (to->Receive(&sender, message, param) == RADIO_ROGER) {
+      contact_ = to;
+      return RADIO_ROGER;
+    }
+    return RADIO_NEGATIVE;
+  }
+
+  return to->Receive(&sender, message, param);
 }
 
-/***********************************************************************************************
- * RadioClass::Receive_Message -- Handles receipt of a radio message. *
- *                                                                                             *
- *    This is the base version of what should happen when a radio message is
- *received. It      * turns the radio off when the "OVER_OUT" message is
- *received. All other messages are      * merely acknowledged with a "ROGER". *
- *                                                                                             *
- * INPUT:   from     -- The object that is initiating this radio message (always
- *valid).        *
- *                                                                                             *
- *          message  -- The radio message received. *
- *                                                                                             *
- *          param    -- Reference to optional value that might be used to return
- *more          * information than can be conveyed in the simple radio response
- ** messages.                                                              *
- *                                                                                             *
- * OUTPUT:  Returns with the response radio message. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. * 09/24/1994 JLB : Streamlined to be
- *only a communications carrier.                         * 05/22/1995 JLB :
- *Recognized who is sending the message                                    *
- *=============================================================================================*/
-RadioMessageType RadioClass::Receive_Message(RadioClass* from,
-                                             RadioMessageType message,
-                                             int32_t& param) {
+std::optional<RadioMessageType> RadioClass::Receive(RadioPeer* from,
+                                                    RadioMessageType message,
+                                                    bool can_accept_contact) {
   /*
   **	Keep a record of the last message received by this radio.
   */
@@ -97,9 +107,8 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
   **	This only applies if the message is coming from the object that
   **	has an established conversation with this object.
   */
-  if (from == Radio && message == RADIO_OVER_OUT) {
-    MissionClass::Receive_Message(from, message, param);
-    Radio_Off();
+  if (from == contact_ && message == RADIO_OVER_OUT) {
+    Off();
     return RADIO_ROGER;
   }
 
@@ -108,102 +117,15 @@ RadioMessageType RadioClass::Receive_Message(RadioClass* from,
   **	is already in an established conversation with another object, then
   **	return with "negative". If all is well, return with "roger".
   */
-  if (message == RADIO_HELLO && Strength) {
-    if (Radio == from || !Radio) {
-      Radio = from;
+  if (message == RADIO_HELLO && can_accept_contact) {
+    if (contact_ == from || contact_ == nullptr) {
+      contact_ = from;
       return RADIO_ROGER;
     }
     return RADIO_NEGATIVE;
   }
 
-  return MissionClass::Receive_Message(from, message, param);
-}
-
-/***********************************************************************************************
- * RadioClass::Transmit_Message -- Transmit message from one object to another.
- **
- *                                                                                             *
- *    This routine is used to transmit a radio message from this object to
- *another. Most       * inter object coordination is handled through this
- *mechanism.                             *
- *                                                                                             *
- * INPUT:   to       -- Pointer to the object that will receive the radio
- *message.             *
- *                                                                                             *
- *          message  -- The message itself (see RadioType). *
- *                                                                                             *
- *          param    -- Optional reference to parameter that might be used to
- *pass or          * receive additional information. *
- *                                                                                             *
- * OUTPUT:  Returns with the response radio message from the receiving object. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/22/1995 JLB : Created. *
- *=============================================================================================*/
-RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              int32_t& param, RadioClass* to) {
-  if (!to) {
-    to = Contact_With_Whom();
-  }
-
-  /*
-  **	If there is no target for the radio message, then always return static.
-  */
-  if (!to) {
-    return RADIO_STATIC;
-  }
-
-  /*
-  **	Handle some special case processing that occurs when certain messages
-  **	are transmitted.
-  */
-  if (to == Radio && message == RADIO_OVER_OUT) {
-    Radio = nullptr;
-  }
-
-  /*
-  **	If this object is not in radio contact but the message
-  **	indicates that radio contact should be established, then
-  **	try to do so. If the other party agrees then contact
-  **	is established.
-  */
-  if (/*!Radio &&*/ message == RADIO_HELLO) {
-    Transmit_Message(RADIO_OVER_OUT);
-    if (to->Receive_Message(this, message, param) == RADIO_ROGER) {
-      Radio = to;
-      return RADIO_ROGER;
-    }
-    return RADIO_NEGATIVE;
-  }
-
-  return to->Receive_Message(this, message, param);
-}
-
-/***********************************************************************************************
- * RadioClass::Limbo -- When limboing a unit will always break radio contact. *
- *                                                                                             *
- *    This routine will break radio contact as the object is entering limbo
- *state.             *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Was the object successfully limboed? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/25/1995 JLB : Created. *
- *=============================================================================================*/
-bool RadioClass::Limbo() {
-  if (!IsInLimbo) {
-    Transmit_Message(RADIO_OVER_OUT);
-  }
-  return MissionClass::Limbo();
-}
-
-RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
-                                              RadioClass* to) {
-  return Transmit_Message(message, DiscardedParam(), to);
+  return std::nullopt;
 }
 
 }  // namespace td

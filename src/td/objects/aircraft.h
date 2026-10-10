@@ -159,7 +159,7 @@ class AircraftClass : public FootClass {
   */
   void AI() override;
   void Enter_Idle_Mode(bool initial = false) override;
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void Scatter(Coordinate threat, bool forced = false) override;
 

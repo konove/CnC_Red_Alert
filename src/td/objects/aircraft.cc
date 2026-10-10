@@ -784,7 +784,7 @@ void AircraftClass::AI() {
         IsLanding = false;
         Set_Speed(0);
         if ((NavCom && NavCom.AsTechno() == Contact_With_Whom()) &&
-            (In_Radio_Contact() &&
+            (radio().InContact() &&
              Transmit_Message(RADIO_IM_IN) != RADIO_ROGER)) {
           Scatter(Coordinate{}, true);
         }
@@ -846,7 +846,7 @@ void AircraftClass::AI() {
           **	aircraft is in radio contact with, then assume that radio
           **	contact is now superfluous. Break radio contact.
           */
-          if (In_Radio_Contact() && NavCom &&
+          if (radio().InContact() && NavCom &&
               NavCom != Contact_With_Whom()->As_Target()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -1039,7 +1039,7 @@ int AircraftClass::Mission_Unload() {
       **	Find a suitable airfield to land at.
       */
       case kPickAirstrip:
-        if (!NavCom || !In_Radio_Contact()) {
+        if (!NavCom || !radio().InContact()) {
           BuildingClass* building = Find_Docking_Bay(STRUCT_AIRSTRIP, false);
           if (building &&
               (Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER)) {
@@ -1081,7 +1081,7 @@ int AircraftClass::Mission_Unload() {
       **	Home in on target. When close enough, drop the cargo.
       */
       case kFlyToAirstrip:
-        if (!NavCom || !In_Radio_Contact()) {
+        if (!NavCom || !radio().InContact()) {
           Status = kPickAirstrip;
         } else {
           /*
@@ -1261,7 +1261,7 @@ int AircraftClass::Mission_Unload() {
             /*
             **	Break off radio contact with the helipad it is taking off from.
             */
-            if (In_Radio_Contact() &&
+            if (radio().InContact() &&
                 TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                     Contact_With_Whom()) {
               Transmit_Message(RADIO_OVER_OUT);
@@ -1313,7 +1313,7 @@ bool AircraftClass::Is_LZ_Clear(Target target) const {
       return true;
     }
 
-    if (In_Radio_Contact() && Contact_With_Whom() == object) {
+    if (radio().InContact() && Contact_With_Whom() == object) {
       return true;
     }
     return false;
@@ -1649,7 +1649,7 @@ int AircraftClass::Mission_Move() {
       **	Home in on target. When close enough, drop the cargo.
       */
       case kFlyToAirstrip:
-        if (!NavCom || !In_Radio_Contact()) {
+        if (!NavCom || !radio().InContact()) {
           return kTicksPerSecond;
         }
         /*
@@ -1721,7 +1721,7 @@ int AircraftClass::Mission_Move() {
           **	After takeoff is complete, break radio contact with any helipad
           *that this *	helicopter is taking off from.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                   Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
@@ -1815,7 +1815,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
       }
     } else {
 #ifdef NEVER
-      if (In_Radio_Contact() &&
+      if (radio().InContact() &&
           Contact_With_Whom() ==
               TheMap()[Cell::Containing(Coord)].Cell_Techno()) {
         Transmit_Message(RADIO_IM_IN);
@@ -2216,7 +2216,7 @@ int AircraftClass::Mission_Attack() {
           /*
           **	Break off radio contact with the helipad it is taking off from.
           */
-          if (In_Radio_Contact() &&
+          if (radio().InContact() &&
               TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                   Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
@@ -2474,7 +2474,7 @@ Coordinate AircraftClass::Target_Coord() const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
+RadioMessageType AircraftClass::Receive_Message(TechnoClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   Validate();
@@ -2610,7 +2610,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     **	Asks if the passenger can load on this transport.
     */
     case RADIO_CAN_LOAD:
-      if (!In_Radio_Contact() && Class->IsTransporter &&
+      if (!radio().InContact() && Class->IsTransporter &&
           cargo().How_Many() < Class->Max_Passengers() && from &&
           House->Class->House == from->Owner()) {
         return RADIO_ROGER;
@@ -3003,7 +3003,7 @@ int AircraftClass::Mission_Enter() {
         **	After takeoff is complete, break radio contact with any helipad
         *that this *	helicopter is taking off from.
         */
-        if (In_Radio_Contact() &&
+        if (radio().InContact() &&
             TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                 Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
@@ -3017,7 +3017,7 @@ int AircraftClass::Mission_Enter() {
       **	Establish radio contact with the building this helicopter is
       *trying *	to land at.
       */
-      if (In_Radio_Contact()) {
+      if (radio().InContact()) {
         Status = kTravel;
       } else {
         TechnoClass* tech = NavCom.AsTechno();
@@ -3034,7 +3034,7 @@ int AircraftClass::Mission_Enter() {
 
     case kTravel:
       Transmit_Message(RADIO_DOCKING);
-      if (!In_Radio_Contact()) {
+      if (!radio().InContact()) {
         Assign_Destination(Target{});
         Enter_Idle_Mode();
       } else {
@@ -3383,7 +3383,7 @@ int AircraftClass::Mission_Guard() {
   **	repair bay first.
   */
   if (House->Available_Money() >= 100 && Health_Ratio() <= 0x0080) {
-    if (!In_Radio_Contact() ||
+    if (!radio().InContact() ||
         (Altitude == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
                            *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=
                                STRUCT_REPAIR))) {
@@ -3402,7 +3402,7 @@ int AircraftClass::Mission_Guard() {
   **	abort any normal guard logic in order to look for a helipad
   **	to rearm.
   */
-  if ((Ammo == 0 && Class->Primary != WEAPON_NONE) && (!In_Radio_Contact())) {
+  if ((Ammo == 0 && Class->Primary != WEAPON_NONE) && (!radio().InContact())) {
     const BuildingClass* building = Find_Docking_Bay(STRUCT_HELIPAD, false);
     if (building) {
       Assign_Destination(building->As_Target());
@@ -3432,7 +3432,7 @@ int AircraftClass::Mission_Guard() {
   **	Computer controlled helicopters will defend themselves by bouncing
   *around *	and looking for a free helipad.
   */
-  if (Altitude == 0 && !In_Radio_Contact()) {
+  if (Altitude == 0 && !radio().InContact()) {
     Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
@@ -3466,7 +3466,7 @@ int AircraftClass::Mission_Guard_Area() {
     return kTicksPerSecond;
   }
 
-  if (Altitude == 0 && !In_Radio_Contact()) {
+  if (Altitude == 0 && !radio().InContact()) {
     Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }

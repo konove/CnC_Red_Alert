@@ -969,7 +969,8 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   *dispensation is given to *	units that are in radio contact. It is presumed
   *that they are very busy and should *	not be disturbed.
   */
-  if (!Is_It_Breathing(obj) || obj->In_Radio_Contact() || obj->House != House) {
+  if (!Is_It_Breathing(obj) || obj->radio().InContact() ||
+      obj->House != House) {
     return false;
   }
 
@@ -2268,7 +2269,7 @@ int TeamClass::TMission_Load() {
   **	it is in the process of loading. During this time, don't bother to
   *assign *	the enter mission to the other team members.
   */
-  if (trans->In_Radio_Contact()) {
+  if (trans->radio().InContact()) {
     return 1;
   }
 

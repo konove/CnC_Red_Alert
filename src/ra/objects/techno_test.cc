@@ -187,5 +187,67 @@ TEST_F(TechnoTest, TheSelectionBoxStaysPutWithoutAHealthBar) {
   }
 }
 
+// Two rangers with strength, which a radio needs to accept contact.
+class TechnoRadioTest : public TechnoTest {
+ protected:
+  TechnoRadioTest() {
+    caller_.Strength = 1;
+    callee_.Strength = 1;
+  }
+
+  TechnoClass& caller_ = MakeUnit(HOUSE_GREECE);
+  TechnoClass& callee_ = MakeUnit(HOUSE_GREECE);
+};
+
+TEST_F(TechnoRadioTest, HelloPutsTwoTechnosInContact) {
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_HELLO, &callee_), RADIO_ROGER);
+
+  EXPECT_EQ(caller_.Contact_With_Whom(), &callee_);
+  EXPECT_EQ(callee_.Contact_With_Whom(), &caller_);
+  EXPECT_TRUE(callee_.radio().InContact());
+}
+
+TEST_F(TechnoRadioTest, ADestroyedTechnoAcceptsNoContact) {
+  callee_.Strength = 0;
+
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_HELLO, &callee_), RADIO_NEGATIVE);
+
+  EXPECT_EQ(caller_.Contact_With_Whom(), nullptr);
+  EXPECT_FALSE(callee_.radio().InContact());
+}
+
+TEST_F(TechnoRadioTest, OverAndOutEndsContactOnBothSides) {
+  caller_.Transmit_Message(RADIO_HELLO, &callee_);
+
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_OVER_OUT), RADIO_ROGER);
+
+  EXPECT_FALSE(caller_.radio().InContact());
+  EXPECT_FALSE(callee_.radio().InContact());
+}
+
+TEST_F(TechnoRadioTest, AMessageWithNoContactIsStatic) {
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_REDRAW), RADIO_STATIC);
+}
+
+TEST_F(TechnoRadioTest, ARedrawRequestIsAcknowledged) {
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_REDRAW, &callee_), RADIO_ROGER);
+}
+
+TEST_F(TechnoRadioTest, AMessageNoClassHandlesIsStatic) {
+  EXPECT_EQ(caller_.Transmit_Message(RADIO_CANT, &callee_), RADIO_STATIC);
+}
+
+TEST_F(TechnoRadioTest, GoingIntoLimboEndsContact) {
+  caller_.Transmit_Message(RADIO_HELLO, &callee_);
+  // Limbo() only hangs up for an object that is on the map; the base class
+  // then finds it was never placed and does nothing more.
+  caller_.IsInLimbo = false;
+
+  caller_.Limbo();
+
+  EXPECT_FALSE(caller_.radio().InContact());
+  EXPECT_FALSE(callee_.radio().InContact());
+}
+
 }  // namespace
 }  // namespace ra

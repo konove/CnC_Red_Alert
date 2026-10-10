@@ -241,7 +241,7 @@ const base::EnumArray<game::BSizeType, Coordinate> BuildingClass::CenterOffset =
  *anim to start immediately.                          * 08/13/1995 JLB : Uses
  *ScenarioInit for special loose "CAN_LOAD" check.                    *
  *=============================================================================================*/
-RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
+RadioMessageType BuildingClass::Receive_Message(TechnoClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
@@ -261,7 +261,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       if (Mission == MISSION_CONSTRUCTION ||
           Mission == MISSION_DECONSTRUCTION ||
           BState == game::BSTATE_CONSTRUCTION ||
-          (!TheWorld().scenario_init() && In_Radio_Contact() &&
+          (!TheWorld().scenario_init() && radio().InContact() &&
            Contact_With_Whom() != from)) {
         return RADIO_NEGATIVE;
       }
@@ -548,7 +548,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       **	Establish contact with the object if this building isn't already
       *in contact *	with another.
       */
-      if (!In_Radio_Contact()) {
+      if (!radio().InContact()) {
         Transmit_Message(RADIO_HELLO, from);
       }
 
@@ -682,7 +682,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     *the current *	state of the building.
     */
     case RADIO_ARE_REFINERY:
-      if (cargo().Is_Something_Attached() || In_Radio_Contact() || IsInLimbo ||
+      if (cargo().Is_Something_Attached() || radio().InContact() || IsInLimbo ||
           House->Class->House != from->Owner() ||
           *this != STRUCT_REFINERY /* && *this != STRUCT_REPAIR*/) {
         return RADIO_NEGATIVE;
@@ -825,7 +825,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     /*
     **	A Tethered object is always rendered AFTER the building.
     */
-    if (IsTethered && In_Radio_Contact() && !Contact_With_Whom()->IsInLimbo &&
+    if (IsTethered && radio().InContact() && !Contact_With_Whom()->IsInLimbo &&
         Contact_With_Whom()->What_Am_I() != RTTI_BUILDING) {
       TechnoClass* contact = Contact_With_Whom();
 
@@ -1810,7 +1810,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         **	If it is in radio contact and the object seems to be attached,
         *then tell *	it to run away.
         */
-        if (In_Radio_Contact() &&
+        if (radio().InContact() &&
             Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           Transmit_Message(RADIO_RUN_AWAY);
         }
@@ -2417,7 +2417,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
-      if (!In_Radio_Contact()) {
+      if (!radio().InContact()) {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
         air->Height = 0;
@@ -4042,7 +4042,7 @@ int BuildingClass::Mission_Guard() {
         **	Special case to break out of guard mode if this is a repair
         **	facility and there is a customer waiting at the grease pit.
         */
-        if (*this == STRUCT_REPAIR && In_Radio_Contact() &&
+        if (*this == STRUCT_REPAIR && radio().InContact() &&
             Contact_With_Whom()->Is_Techno() &&
             Contact_With_Whom()->Mission == MISSION_ENTER &&
             Distance(Contact_With_Whom()) < 0x0040 &&
@@ -4590,7 +4590,7 @@ int BuildingClass::Mission_Repair() {
         break;
 
       case kDuring:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Assign_Mission(MISSION_GUARD);
         }
         break;
@@ -4607,7 +4607,7 @@ int BuildingClass::Mission_Repair() {
     constexpr int kDuring = 2;
     switch (Status) {
       case kInitial: {
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
           Assign_Mission(MISSION_GUARD);
           return 1;
@@ -4638,7 +4638,7 @@ int BuildingClass::Mission_Repair() {
       }
 
       case kIdle:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Assign_Mission(MISSION_GUARD);
           return 1;
         }
@@ -4679,7 +4679,7 @@ int BuildingClass::Mission_Repair() {
         break;
 
       case kDuring:
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Begin_Mode(game::BSTATE_IDLE);
           Status = kIdle;
           return 1;
@@ -4797,7 +4797,7 @@ int BuildingClass::Mission_Repair() {
 
       case kDuring:
         if (IsReadyToCommence) {
-          if (!In_Radio_Contact() ||
+          if (!radio().InContact() ||
               Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_NEGATIVE) {
             Assign_Mission(MISSION_GUARD);
             return 1;
@@ -5047,11 +5047,11 @@ bool BuildingClass::Revealed(HouseClass* house) {
     **	owned house is not yet revealed, it won't be reflected in the sidebar
     **	selection icons.
     */
-    if (!In_Radio_Contact() && House->IsHuman &&
+    if (!radio().InContact() && House->IsHuman &&
         Mission != MISSION_CONSTRUCTION) {
       Grand_Opening();
     } else {
-      if (!In_Radio_Contact() && !House->IsHuman && house == House &&
+      if (!radio().InContact() && !House->IsHuman && house == House &&
           Mission != MISSION_CONSTRUCTION) {
         Grand_Opening();
       }
@@ -5280,7 +5280,7 @@ int BuildingClass::Mission_Unload() {
           door().Close(kDoorRate, kDoorStages);
           Status = kClose;
         } else {
-          //					if (In_Radio_Contact() &&
+          //					if (radio().InContact() &&
           //!((FootClass *)Contact_With_Whom())->IsDriving) {
           //						Transmit_Message(RADIO_OVER_OUT);
           //					}

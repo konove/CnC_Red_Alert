@@ -527,7 +527,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
   /*
   ** Patch so the transport will draw its passengers on top of itself.
   */
-  if (!door().IsClosed() && IsTethered && In_Radio_Contact() &&
+  if (!door().IsClosed() && IsTethered && radio().InContact() &&
       !Contact_With_Whom()->IsInLimbo) {
     DCHECK(Contact_With_Whom()->IsActive);
     Contact_With_Whom()->Render(view, true);
@@ -1333,7 +1333,7 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
  *                                                                                             *
  * HISTORY: * 05/31/1996 BWG : Created. *
  *=============================================================================================*/
-RadioMessageType VesselClass::Receive_Message(RadioClass* from,
+RadioMessageType VesselClass::Receive_Message(TechnoClass* from,
                                               RadioMessageType message,
                                               int32_t& param) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
@@ -1411,7 +1411,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         /*
         **	Establish contact and let the loading process proceed normally.
         */
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           param = Target{}.packed();
           Transmit_Message(RADIO_HELLO, from);
           Transmit_Message(RADIO_MOVE_HERE, param);
@@ -1492,7 +1492,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         **	Establish contact with the object if this building isn't already
         *in contact *	with another.
         */
-        if (!In_Radio_Contact()) {
+        if (!radio().InContact()) {
           Transmit_Message(RADIO_HELLO, from);
         }
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
@@ -1753,7 +1753,7 @@ int VesselClass::Mission_Unload() {
           /*
           **	Don't do anything if still in radio contact.
           */
-          if (In_Radio_Contact()) {
+          if (radio().InContact()) {
             return kTicksPerSecond;
           }
 
@@ -1868,7 +1868,7 @@ void VesselClass::Assign_Destination(Target target) {
   *they *	cannot proceed. This is accomplished with a radio message to
   *this effect.
   */
-  if (In_Radio_Contact() && Class->Max_Passengers() > 0 &&
+  if (radio().InContact() && Class->Max_Passengers() > 0 &&
       (Contact_With_Whom()->Is_Infantry() ||
        Contact_With_Whom()->What_Am_I() == RTTI_UNIT)) {
     int32_t param = Target{}.packed();

@@ -335,7 +335,7 @@ class FootClass : public TechnoClass {
   */
   bool Basic_Path();
 
-  RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
+  RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   [[nodiscard]] bool Can_Demolish() const override;
   bool Is_Recruitable(const HouseClass* house = nullptr) const;

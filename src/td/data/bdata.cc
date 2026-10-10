@@ -4042,7 +4042,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->Mission != MISSION_DECONSTRUCTION &&
         (base::Bit<uint16_t>(building->ActLike) & Ownable) != 0 &&
         (!legal || building->House->Can_Build(Type, building->ActLike)) &&
-        (intheory || !building->In_Radio_Contact())) {
+        (intheory || !building->radio().InContact())) {
       return building;
     }
   }

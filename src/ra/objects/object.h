@@ -58,7 +58,6 @@ namespace ra {
 class BuildingClass;
 class HouseClass;
 class ObjectTypeClass;
-class RadioClass;
 class TechnoClass;
 class TriggerClass;
 
@@ -298,9 +297,6 @@ class ObjectClass : public AbstractClass {
   }
   [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
                                                         bool legal) const;
-  virtual RadioMessageType Receive_Message(RadioClass* from,
-                                           RadioMessageType message,
-                                           int32_t& param);
   virtual bool Revealed(HouseClass* house);
   virtual void Repair(int /*unused*/);
   virtual void Sell_Back(int /*unused*/);

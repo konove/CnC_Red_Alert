@@ -828,7 +828,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
     *mission.
     */
     if (MissionQueue == MISSION_NONE && !NavCom && !TarCom &&
-        !In_Radio_Contact()) {
+        !radio().InContact()) {
       Enter_Idle_Mode();
     }
     Commence();
@@ -981,7 +981,7 @@ void InfantryClass::Assign_Destination(Target target) {
     **	either try to establish contact if allowed, or just move close and
     **	wait until radio contact can be established.
     */
-    if (!In_Radio_Contact()) {
+    if (!radio().InContact()) {
       TechnoClass* techno = target.AsTechno();
       if (techno != nullptr) {
         /*
@@ -989,7 +989,7 @@ void InfantryClass::Assign_Destination(Target target) {
         *then just move *	toward the transport and try to establish
         *contact at a later time.
         */
-        if (techno->In_Radio_Contact()) {
+        if (techno->radio().InContact()) {
           // TCTCTC -- call for an update from the transport to get a good
           // rendezvous position.
 
@@ -1239,7 +1239,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
       **	Always allow movement if the cell is the object to be captured
       *or sabotaged.
       */
-      if (((Mission == MISSION_ENTER && In_Radio_Contact()) ||
+      if (((Mission == MISSION_ENTER && radio().InContact()) ||
            Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
           (obj->As_Target() == NavCom || obj->As_Target() == TarCom)) {
         return game::MOVE_OK;
@@ -1278,7 +1278,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
       */
       //			if ((Mission != MISSION_CAPTURE && Mission !=
       // MISSION_SABOTAGE) || obj->What_Am_I() != RTTI_AIRCRAFT ||
-      //!((AircraftClass *)obj)->In_Radio_Contact()) {
+      //!((AircraftClass *)obj)->radio().InContact()) {
 
       /*
       **	Special check to always allow entry into the building that this

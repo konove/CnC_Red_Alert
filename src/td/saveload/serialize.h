@@ -169,12 +169,10 @@ extern template void SerializeObjectList<ArchiveReader>(
     ArchiveReader&, std::vector<ObjectClass*>&);
 
 class TechnoClass;
-class RadioClass;
 class FootClass;
 
 extern template class ObjectPtr<ObjectClass>;
 extern template class ObjectPtr<TechnoClass>;
-extern template class ObjectPtr<RadioClass>;
 extern template class ObjectPtr<FootClass>;
 
 class HouseTypeClass;

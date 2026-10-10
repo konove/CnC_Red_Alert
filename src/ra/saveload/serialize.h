@@ -70,12 +70,10 @@ class TechnoTypePtr {
 };
 
 class FootClass;
-class RadioClass;
 class TechnoClass;
 
 // serialize.cc instantiates ObjectPtr for these types.
 extern template class ObjectPtr<ObjectClass>;
-extern template class ObjectPtr<RadioClass>;
 extern template class ObjectPtr<TechnoClass>;
 extern template class ObjectPtr<FootClass>;
 

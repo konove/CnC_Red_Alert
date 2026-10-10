@@ -1396,42 +1396,6 @@ void ObjectClass::Detach_All(bool all) {
 }
 
 /***********************************************************************************************
- * ObjectClass::Receive_Message -- Processes an incoming radio message. *
- *                                                                                             *
- *    Any radio message received that applies to objects in general are handled
- *by this        * routine. Typically, this is the "redraw" message, which
- *occurs when another object is    * loading or unloading and thus overlapping.
- **
- *                                                                                             *
- * INPUT:   message  -- The message received. *
- *                                                                                             *
- * OUTPUT:  Returns with the appropriate radio response. If the message was
- *recognized, then   * RADIO_ROGER is returned, otherwise, just RADIO_STATIC is
- *returned.                 *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 09/24/1994 JLB : Created. *
- *=============================================================================================*/
-RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
-                                              RadioMessageType message,
-                                              int32_t& /*unused*/) {
-  DCHECK(IsActive);
-
-  /*
-  **	This message serves as a rendering convenience. It lets the system
-  **	know that there might be a visual conflict and the unit in radio
-  **	contact should be redrawn. This typically occurs when a vehicle
-  **	is being unloaded from a hover lander.
-  */
-  if (message == RADIO_REDRAW) {
-    Mark(MARK_CHANGE);
-    return RADIO_ROGER;
-  }
-  return RADIO_STATIC;
-}
-
-/***********************************************************************************************
  * ObjectClass::Take_Damage -- Applies damage to the object. *
  *                                                                                             *
  *    This routine applies damage to the object according to the damage
@@ -2096,7 +2060,7 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
         building->MissionQueue != MISSION_DECONSTRUCTION &&
         (base::Bit<uint32_t>(building->ActLike) & Get_Ownable()) != 0 &&
         (!legal || building->House->Can_Build(this, building->ActLike)) &&
-        (intheory || !building->In_Radio_Contact())) {
+        (intheory || !building->radio().InContact())) {
       // BG: Hack so only kennels can build dogs, and no other, and barracks can
       //     only build humans and no other.
       if (What_Am_I() == RTTI_INFANTRYTYPE) {

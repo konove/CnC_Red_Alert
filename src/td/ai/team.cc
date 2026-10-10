@@ -672,7 +672,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
 
   if (!obj || !obj->Strength ||
       (obj->IsInLimbo && !TheWorld().scenario_init()) ||
-      obj->In_Radio_Contact() || obj->House != House) {
+      obj->radio().InContact() || obj->House != House) {
     return false;
   }
 

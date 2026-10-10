@@ -518,9 +518,9 @@ void DriveClass::Assign_Destination(Target target) {
   *they *	cannot proceed. This is accomplished with a radio message to
   *this effect.
   */
-  // if (tunit && In_Radio_Contact() && Class->IsTransporter &&
+  // if (tunit && radio().InContact() && Class->IsTransporter &&
   // Contact_With_Whom()->Is_Infantry()) {
-  if (In_Radio_Contact() && Class->IsTransporter &&
+  if (radio().InContact() && Class->IsTransporter &&
       Contact_With_Whom()->Is_Infantry()) {
     Transmit_Message(RADIO_OVER_OUT);
   }
@@ -531,7 +531,7 @@ void DriveClass::Assign_Destination(Target target) {
   *unloading).
   */
   if (b && *b == STRUCT_REPAIR) {
-    if (b->In_Radio_Contact()) {
+    if (b->radio().InContact()) {
       target = Target{};
     } else {
       /*
