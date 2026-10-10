@@ -132,9 +132,9 @@ variants move. The hardware path needs `unsafe` for the `core::arch` SHA intrins
 `is_x86_feature_detected!`, so this module is the exception to `forbid(unsafe_code)`: the `unsafe`
 is confined to one function. Effort: s.
 
-- [ ] Task-level plan, including whether a vetted crate (`sha1`) replaces a port
-- [ ] `src/rust/src/sha1.rs`, shims in `sha1_compress.cc`
-- [ ] `sha1_compress_test` unchanged; benchmark both paths
+- [x] Task-level plan, including whether a vetted crate (`sha1`) replaces a port
+- [x] `src/rust/src/sha1.rs`, shims in `sha1_compress.cc`
+- [x] `sha1_compress_test` unchanged; benchmark both paths
 
 ### Phase 5: Blowfish
 
@@ -167,7 +167,7 @@ loops are split into clip and kernel.
 
 - **Crates or ports.** SHA-1, Blowfish, base64, LZO and the bignum all have maintained crates. A
   crate is less code to own; a port is the point of a learning project and keeps the dependency list
-  at `cxx` alone. Decide per phase, starting with Phase 4.
+  at `cxx` alone. Decided per phase: SHA-1 and Blowfish are ports (`docs/RUST_SHA1_PLAN.md`).
 - **Where a blit kernel's bridge call stops paying.** Phases 1 to 5 are called per frame, block or
   file. A blit runs per object per frame; measure one before planning the pixel loops.
 - ~~Whether `vq_decoder` and `xor_delta` have in-place callers.~~ Neither has

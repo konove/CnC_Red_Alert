@@ -17,6 +17,8 @@ target_link_libraries(vqaplay PRIVATE tool_game_data engine_video base
 add_executable(kernel_bench kernel_bench.cc
         ${CMAKE_SOURCE_DIR}/src/engine/codec/aud_decoder_reference_test_util.cc
         ${CMAKE_SOURCE_DIR}/src/engine/codec/xor_delta_reference_test_util.cc
+        ${CMAKE_SOURCE_DIR}/src/engine/crypto/sha1_compress_reference_test_util.cc
         ${CMAKE_SOURCE_DIR}/src/engine/video/vqa/adpcm_decoders_reference_test_util.cc
         ${CMAKE_SOURCE_DIR}/src/engine/video/vqa/vq_decoder_reference_test_util.cc)
-target_link_libraries(kernel_bench PRIVATE engine_codec engine_vqa base absl::str_format)
+target_link_libraries(kernel_bench PRIVATE engine_codec engine_crypto engine_vqa base
+                      absl::str_format)

@@ -17,6 +17,8 @@
 #include "engine/codec/aud_decoder_reference_test_util.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/codec/xor_delta_reference_test_util.h"
+#include "engine/crypto/sha1_compress.h"
+#include "engine/crypto/sha1_compress_reference_test_util.h"
 #include "engine/video/vqa/adpcm_decoders.h"
 #include "engine/video/vqa/adpcm_decoders_reference_test_util.h"
 #include "engine/video/vqa/vq_decoder.h"
@@ -204,11 +206,34 @@ void BenchVq() {
          }));
 }
 
+void BenchSha1() {
+  base::Lcg lcg(4);
+  const auto blocks = lcg.Bytes(1024 * engine::crypto::kSha1BlockSize);
+  engine::crypto::Sha1State state{};
+  Report("sha-1, portable",
+         MegabytesPerSecond(
+             blocks.size(),
+             [&] { engine::crypto::Sha1CompressPortable(state, blocks); }),
+         MegabytesPerSecond(blocks.size(), [&] {
+           sha1_reference::Sha1CompressPortable(state, blocks);
+         }));
+  if (engine::crypto::Sha1HardwareAvailable()) {
+    Report("sha-1, SHA extensions",
+           MegabytesPerSecond(
+               blocks.size(),
+               [&] { engine::crypto::Sha1CompressHardware(state, blocks); }),
+           MegabytesPerSecond(blocks.size(), [&] {
+             sha1_reference::Sha1CompressHardware(state, blocks);
+           }));
+  }
+}
+
 }  // namespace
 
 int main() {
   BenchXorDelta();
   BenchAudio();
   BenchVq();
+  BenchSha1();
   return 0;
 }

@@ -23,18 +23,19 @@ target_sources(engine_crypto PUBLIC
 
 target_link_libraries(engine_crypto
         PUBLIC engine_stream absl::check absl::core_headers
-        PRIVATE absl::strings
+        PRIVATE absl::strings engine_rs_cxx
 )
 
 # Byte- and pixel-crunching kernels: keep them fast when debugging
 # everything else (cmake/OptimizeInDebug.cmake).
-optimize_in_debug(blowfish.cc mp.cc sha1_compress.cc)
+optimize_in_debug(blowfish.cc mp.cc)
 
 # Tests
 include(Testing)
 add_gtest(
         NAME engine_crypto_test
         SOURCES blowfish_stream_test.cc blowfish_test.cc key_phrase_hash_test.cc mp_test.cc
-            pk_stream_test.cc random_source_test.cc sha1_compress_test.cc
-        LIBS engine_crypto absl::str_format
+            pk_stream_test.cc random_source_test.cc sha1_compress_differential_test.cc
+            sha1_compress_reference_test_util.cc sha1_compress_test.cc
+        LIBS engine_crypto base absl::str_format
 )
