@@ -7,13 +7,18 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/lcg_test_util.h"
+#include "engine/codec/aud_decoder.h"
+#include "engine/codec/aud_decoder_reference_test_util.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/codec/xor_delta_reference_test_util.h"
+#include "engine/video/vqa/adpcm_decoders.h"
+#include "engine/video/vqa/adpcm_decoders_reference_test_util.h"
 
 namespace {
 
@@ -110,9 +115,64 @@ void BenchXorDelta() {
          }));
 }
 
+// Megabytes are of decoded sound.
+void BenchAudio() {
+  constexpr int kBlockBytes = 64 * 1024;
+  base::Lcg lcg(2);
+  const auto adpcm = lcg.Bytes(kBlockBytes);
+  Report("ima adpcm, .AUD block",
+         MegabytesPerSecond(adpcm.size() * 4,
+                            [&] {
+                              AdpcmState state;
+                              DecodeAdpcmBlock(state, adpcm);
+                            }),
+         MegabytesPerSecond(adpcm.size() * 4, [&] {
+           AdpcmState state;
+           aud_decoder_reference::DecodeAdpcmBlock(state, adpcm);
+         }));
+
+  // The movie loader's layout: the stream at the end of its destination.
+  std::vector<uint8_t> sound(adpcm.size() * 4);
+  const auto stream = std::span(sound).subspan(adpcm.size() * 3);
+  const auto refill = [&] {
+    std::ranges::transform(adpcm, stream.begin(), [](const std::byte value) {
+      return std::to_integer<uint8_t>(value);
+    });
+  };
+  Report("ima adpcm, movie chunk",
+         MegabytesPerSecond(sound.size(),
+                            [&] {
+                              refill();
+                              ImaAdpcmDecoder().Decode(stream, sound);
+                            }),
+         MegabytesPerSecond(sound.size(), [&] {
+           refill();
+           adpcm_decoders_reference::ImaAdpcmDecoder().Decode(stream, sound);
+         }));
+
+  // Random commands, each with its whole payload.
+  std::vector<std::byte> westwood;
+  while (std::ssize(westwood) < kBlockBytes) {
+    const uint8_t command = lcg.Byte();
+    westwood.push_back(std::byte{command});
+    if (command < 0x80 || (command < 0xc0 && (command & 0x20U) == 0)) {
+      const auto payload = lcg.Bytes((command & 0x3fU) + 1);
+      westwood.insert(westwood.end(), payload.begin(), payload.end());
+    }
+  }
+  const std::size_t decoded =
+      DecodeWestwoodBlock(westwood).value_or(std::vector<uint8_t>{}).size();
+  Report("westwood 8-bit block",
+         MegabytesPerSecond(decoded, [&] { DecodeWestwoodBlock(westwood); }),
+         MegabytesPerSecond(decoded, [&] {
+           aud_decoder_reference::DecodeWestwoodBlock(westwood);
+         }));
+}
+
 }  // namespace
 
 int main() {
   BenchXorDelta();
+  BenchAudio();
   return 0;
 }

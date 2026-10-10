@@ -111,10 +111,11 @@ decode is Rust. Two functions, two callers, three test files already covering th
 `vqa/adpcm_decoders.cc`. The two IMA decoders differ in state width and output form; the plan
 decides whether one Rust function serves both shims. Effort: s.
 
-- [ ] Task-level plan
-- [ ] `src/rust/src/adpcm.rs`, `westwood_audio.rs`
-- [ ] Shims; an in-place entry point for `ImaAdpcmDecoder::Decode`
-- [ ] Differential test; listen to one sound and one movie on a real device
+- [x] Task-level plan
+- [x] `src/rust/src/adpcm.rs`, `westwood_audio.rs`
+- [x] Shims; an in-place entry point for `ImaAdpcmDecoder::Decode`
+- [x] Differential test
+- [ ] Listen to one sound and one movie on a real device
 
 ### Phase 3: `vq_decoder`
 
