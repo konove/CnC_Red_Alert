@@ -4039,7 +4039,7 @@ void UnitClass::APC_Open_Door() {
 std::span<const unsigned char> UnitClass::Remap_Table() {
   Validate();
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
-    return House->Remap_Table(IsBlushing, false);
+    return House->Remap_Table(flasher().IsBlushing, false);
   }
   return TarComClass::Remap_Table();
 }

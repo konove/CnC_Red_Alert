@@ -1710,7 +1710,7 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Clicked_As_Target(int count) {
-  FlashCount = static_cast<uint8_t>(count);
+  flasher_.FlashCount = static_cast<uint8_t>(count);
 }
 
 /***********************************************************************************************
@@ -1870,7 +1870,7 @@ void TechnoClass::AI() {
   **	If the object is flashing and a change of flash state has occured, then
   *mark the *	object to be redrawn.
   */
-  if (Process()) {
+  if (flasher_.Process()) {
     Mark(MARK_CHANGE);
   }
 }
@@ -3329,7 +3329,7 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const unsigned char> TechnoClass::Remap_Table() {
-  return House->Remap_Table(IsBlushing, true);
+  return House->Remap_Table(flasher().IsBlushing, true);
 }
 
 /***********************************************************************************************

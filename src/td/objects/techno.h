@@ -68,7 +68,6 @@ namespace td {
 **	This is the common data between building and units.
 */
 class TechnoClass : public RadioClass,
-                    public game::FlasherClass,
                     public StageClass,
                     public CargoClass {
  public:
@@ -268,6 +267,15 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int kills() const { return kills_; }
   void set_kills(int kills) { kills_ = static_cast<uint16_t>(kills); }
 
+  // The flashing that shows the player this object was targeted.
+  [[nodiscard]] game::FlasherClass& flasher() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flasher_;
+  }
+  [[nodiscard]] const game::FlasherClass& flasher() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flasher_;
+  }
+
   // The door this object opens to load and unload: an APC's or a transport's
   // hatch, a war factory's door. One that has none leaves it closed.
   [[nodiscard]] game::Door& door() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -364,6 +372,7 @@ class TechnoClass : public RadioClass,
   // stores it that way; the tally wraps past 65535.
   uint16_t kills_{0};
 
+  game::FlasherClass flasher_;
   game::Door door_;
 };
 

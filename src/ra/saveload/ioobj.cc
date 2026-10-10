@@ -328,7 +328,7 @@ template void CargoClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
   RadioClass::Serialize(ar);
-  game::FlasherClass::Serialize(ar);
+  flasher_.Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
   door_.Serialize(ar);

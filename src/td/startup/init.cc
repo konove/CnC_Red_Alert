@@ -1764,8 +1764,8 @@ bool Select_Game(bool fade) {
       building->PrimaryFacing.SnapTo(game::Direction::kSouthWest);
       building->Arm = 19;
       building->Ammo = 11;
-      building->FlashCount = 23;
-      building->IsBlushing = true;
+      building->flasher().FlashCount = 23;
+      building->flasher().IsBlushing = true;
       building->Set_Stage(7);
       building->Set_Rate(13);
       building->door().Open(7, 18);
