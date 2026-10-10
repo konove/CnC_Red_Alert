@@ -893,7 +893,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
  *=============================================================================================*/
 void TechnoClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
-  Clear_Redraw_Flag();
+  ClearDoorRedraw();
   if (IsSelected || TheSpecialFlags().all_health_bars) {
     PixelView draw_window(
         view.buffer(),
@@ -1861,7 +1861,8 @@ void TechnoClass::AI() {
   **	changes, then flag the object to be redrawn as well as  determine
   **	if the current animation process needs to change.
   */
-  if ((What_Am_I() != RTTI_BUILDING) && (Graphic_Logic() || Time_To_Redraw())) {
+  if ((What_Am_I() != RTTI_BUILDING) &&
+      (Graphic_Logic() || DoorNeedsRedraw())) {
     Mark(MARK_CHANGE);
   }
 

@@ -452,8 +452,8 @@ int AircraftClass::Shape_Number() const {
   **	If there is a door on this aircraft (Chinook), then adjust the
   **	shape number to match the door open state.
   */
-  if (!Is_Door_Closed()) {
-    shapenum = Class->Rotation + Door_Stage();
+  if (!IsDoorClosed()) {
+    shapenum = Class->Rotation + DoorFrame();
   }
 
   return shapenum;
@@ -2831,7 +2831,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_IM_IN:
       if (How_Many() == Class->Max_Passengers()) {
-        Close_Door(5, 4);
+        CloseDoor(5, 4);
       }
 
       /*
@@ -2852,7 +2852,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
         FootClass::Receive_Message(from, message, param);
 
         if (!IsTethered && !IsLanding && !IsTakingOff && Height == 0) {
-          Open_Door(5, 4);
+          OpenDoor(5, 4);
 
           /*
           **	If the potential passenger needs someplace to go, then figure
@@ -3021,7 +3021,7 @@ bool AircraftClass::Process_Take_Off() {
   } else {
     switch (Height) {
       case 0:
-        Close_Door(5, 4);
+        CloseDoor(5, 4);
         PrimaryFacing = SecondaryFacing;
         break;
 
@@ -4131,7 +4131,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
   *appropriate. As the aircraft transitions *	between flying level and ground
   *level, it will be moved into the appropriate render *	layer.
   */
-  if (Is_Door_Closed() && (IsLanding || IsTakingOff)) {
+  if (IsDoorClosed() && (IsLanding || IsTakingOff)) {
     const LayerType layer = In_Which_Layer();
 
     if (IsLanding) {

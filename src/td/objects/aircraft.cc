@@ -411,8 +411,8 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	If there is a door on this aircraft (Chinook), then adjust the
   **	shape number to match the door open state.
   */
-  if (!Is_Door_Closed()) {
-    shapenum = 32 + Door_Stage();
+  if (!IsDoorClosed()) {
+    shapenum = 32 + DoorFrame();
   }
 
   /*
@@ -772,7 +772,7 @@ void AircraftClass::AI() {
   *appropriate. As the aircraft transitions *	between flying level and ground
   *level, it will be moved into the appropriate render *	layer.
   */
-  if (Is_Door_Closed() && (IsLanding || IsTakingOff)) {
+  if (IsDoorClosed() && (IsLanding || IsTakingOff)) {
     Mark();
     const LayerType layer = In_Which_Layer();
 
@@ -2540,7 +2540,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_IM_IN:
       if (How_Many() == Class->Max_Passengers()) {
-        Close_Door(5, 4);
+        CloseDoor(5, 4);
       }
 
       /*
@@ -2563,7 +2563,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
         FootClass::Receive_Message(from, message, param);
 
         if (!IsTethered && !IsLanding && !IsTakingOff && Altitude == 0) {
-          Open_Door(5, 4);
+          OpenDoor(5, 4);
 
           /*
           **	If the potential passenger needs someplace to go, then figure
@@ -2717,7 +2717,7 @@ bool AircraftClass::Process_Take_Off() {
   IsTakingOff = true;
   switch (Altitude) {
     case 0:
-      Close_Door(5, 4);
+      CloseDoor(5, 4);
       PrimaryFacing = SecondaryFacing;
       break;
 

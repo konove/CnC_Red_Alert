@@ -1189,7 +1189,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Tells the door logic that it has been drawn.
   */
-  Clear_Redraw_Flag();
+  ClearDoorRedraw();
 
   if (IsSelected) {
     PixelView draw_window(
@@ -2642,7 +2642,7 @@ void TechnoClass::AI() {
     if (About_To_Change()) {
       Mark(MARK_CHANGE_REDRAW);
     }
-    if (Graphic_Logic() || Time_To_Redraw()) {
+    if (Graphic_Logic() || DoorNeedsRedraw()) {
       Mark(MARK_CHANGE_REDRAW);
     }
   }

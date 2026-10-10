@@ -137,19 +137,19 @@ TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
 
 TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
   DoorClass door;
-  ASSERT_TRUE(door.Open_Door(2, 4));
+  ASSERT_TRUE(door.OpenDoor(2, 4));
   door.AI();
   DoorClass loaded;
   Restore(loaded, Save(door));
-  EXPECT_TRUE(loaded.Is_Door_Opening());
-  EXPECT_EQ(loaded.Time_To_Redraw(), door.Time_To_Redraw());
+  EXPECT_TRUE(loaded.IsDoorOpening());
+  EXPECT_EQ(loaded.DoorNeedsRedraw(), door.DoorNeedsRedraw());
   for (int frame = 0; frame < 10; ++frame) {
     loaded.AI();
     door.AI();
-    EXPECT_EQ(loaded.Door_Stage(), door.Door_Stage());
-    EXPECT_EQ(loaded.Is_Door_Open(), door.Is_Door_Open());
+    EXPECT_EQ(loaded.DoorFrame(), door.DoorFrame());
+    EXPECT_EQ(loaded.IsDoorOpen(), door.IsDoorOpen());
   }
-  EXPECT_TRUE(loaded.Is_Door_Open());
+  EXPECT_TRUE(loaded.IsDoorOpen());
 }
 
 TEST(TdSaveValuesTest, FlashStateSurvivesRoundTrip) {

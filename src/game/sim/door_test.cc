@@ -43,48 +43,48 @@ using TestDoor = Door<FakeStage>;
 
 TEST(DoorTest, OpensThroughEveryStageThenStops) {
   TestDoor door;
-  EXPECT_TRUE(door.Is_Door_Closed());
-  ASSERT_TRUE(door.Open_Door(1, 4));
-  EXPECT_TRUE(door.Is_Door_Opening());
-  EXPECT_FALSE(door.Open_Door(1, 4));  // Already opening.
+  EXPECT_TRUE(door.IsDoorClosed());
+  ASSERT_TRUE(door.OpenDoor(1, 4));
+  EXPECT_TRUE(door.IsDoorOpening());
+  EXPECT_FALSE(door.OpenDoor(1, 4));  // Already opening.
   // Four stages are shown as 0 to 3 while opening; the last frame of the
   // animation finishes it, and an open door shows its last stage less one,
   // as the originals did.
   for (int frame = 1; frame <= 2; ++frame) {
     door.AI();
-    EXPECT_EQ(door.Door_Stage(), frame);
-    EXPECT_TRUE(door.Is_Door_Opening());
+    EXPECT_EQ(door.DoorFrame(), frame);
+    EXPECT_TRUE(door.IsDoorOpening());
   }
   door.AI();
-  EXPECT_TRUE(door.Is_Door_Open());
-  EXPECT_EQ(door.Door_Stage(), 2);
-  EXPECT_TRUE(door.Time_To_Redraw());
-  door.Clear_Redraw_Flag();
+  EXPECT_TRUE(door.IsDoorOpen());
+  EXPECT_EQ(door.DoorFrame(), 2);
+  EXPECT_TRUE(door.DoorNeedsRedraw());
+  door.ClearDoorRedraw();
   door.AI();  // The rate dropped to 0 when the door finished.
-  EXPECT_FALSE(door.Time_To_Redraw());
-  EXPECT_EQ(door.Door_Stage(), 2);
+  EXPECT_FALSE(door.DoorNeedsRedraw());
+  EXPECT_EQ(door.DoorFrame(), 2);
 }
 
 TEST(DoorTest, ClosingCountsTheStagesDown) {
   TestDoor door;
-  door.Open_Door(1, 3);
+  door.OpenDoor(1, 3);
   door.AI();
   door.AI();
-  ASSERT_TRUE(door.Is_Door_Open());
-  ASSERT_TRUE(door.Close_Door(1, 3));
-  EXPECT_EQ(door.Door_Stage(), 1);
+  ASSERT_TRUE(door.IsDoorOpen());
+  ASSERT_TRUE(door.CloseDoor(1, 3));
+  EXPECT_EQ(door.DoorFrame(), 1);
   door.AI();
-  EXPECT_EQ(door.Door_Stage(), 0);
-  EXPECT_TRUE(door.Is_Door_Closing());
+  EXPECT_EQ(door.DoorFrame(), 0);
+  EXPECT_TRUE(door.IsDoorClosing());
   door.AI();
-  EXPECT_TRUE(door.Is_Door_Closed());
-  EXPECT_EQ(door.Door_Stage(), 0);
-  EXPECT_FALSE(door.Close_Door(1, 3));  // Already closed.
+  EXPECT_TRUE(door.IsDoorClosed());
+  EXPECT_EQ(door.DoorFrame(), 0);
+  EXPECT_FALSE(door.CloseDoor(1, 3));  // Already closed.
 }
 
 TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   TestDoor door;
-  door.Open_Door(1, 5);
+  door.OpenDoor(1, 5);
   door.AI();
   std::array<std::byte, 64> bytes{};
   SpanSink sink(bytes);
@@ -97,9 +97,9 @@ TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   ArchiveReader reader(source);
   loaded.Serialize(reader);
   ASSERT_TRUE(reader.ok());
-  EXPECT_TRUE(loaded.Is_Door_Opening());
-  EXPECT_EQ(loaded.Door_Stage(), 1);
-  EXPECT_TRUE(loaded.Time_To_Redraw());
+  EXPECT_TRUE(loaded.IsDoorOpening());
+  EXPECT_EQ(loaded.DoorFrame(), 1);
+  EXPECT_TRUE(loaded.DoorNeedsRedraw());
 }
 
 }  // namespace
