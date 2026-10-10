@@ -834,7 +834,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     **	Draw the weapon factory custom overlay graphic.
     */
     if (*this == STRUCT_WEAP && Strength > 1) {
-      shapenum = DoorFrame();
+      shapenum = door().Frame();
       if (Health_Ratio() < 0x0080) {
         shapenum += 10;
       }
@@ -1196,8 +1196,8 @@ void BuildingClass::AI() {
   **	If there is a door that is animating, then it might cause this building
   **	to be redrawn. Check for and flag to redraw as necessary.
   */
-  if (DoorNeedsRedraw()) {
-    ClearDoorRedraw();
+  if (door().NeedsRedraw()) {
+    door().ClearRedraw();
     Mark(MARK_CHANGE);
   }
 
@@ -5191,12 +5191,12 @@ int BuildingClass::Mission_Unload() {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
         }
-        OpenDoor(2, 11);
+        door().Open(2, 11);
         Status = kOpen;
         break;
 
       case kOpen:
-        if (IsDoorOpen()) {
+        if (door().IsOpen()) {
           unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
@@ -5206,7 +5206,7 @@ int BuildingClass::Mission_Unload() {
             unit->Set_Speed(128);
             Status = kLeave;
           } else {
-            CloseDoor(2, 11);
+            door().Close(2, 11);
             Status = kClose;
           }
         }
@@ -5214,13 +5214,13 @@ int BuildingClass::Mission_Unload() {
 
       case kLeave:
         if (!IsTethered) {
-          CloseDoor(2, 11);
+          door().Close(2, 11);
           Status = kClose;
         }
         break;
 
       case kClose:
-        if (IsDoorClosed()) {
+        if (door().IsClosed()) {
           Enter_Idle_Mode();
         }
         break;

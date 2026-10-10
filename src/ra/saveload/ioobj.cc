@@ -331,7 +331,7 @@ void TechnoClass::Serialize(Archive& ar) {
   game::FlasherClass::Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
-  game::Door::Serialize(ar);
+  door_.Serialize(ar);
   bool is_useless = IsUseless;
   bool is_ticked_off = IsTickedOff;
   bool is_cloakable = IsCloakable;

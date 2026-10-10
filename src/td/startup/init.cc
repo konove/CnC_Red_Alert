@@ -1768,7 +1768,7 @@ bool Select_Game(bool fade) {
       building->IsBlushing = true;
       building->Set_Stage(7);
       building->Set_Rate(13);
-      building->OpenDoor(7, 18);
+      building->door().Open(7, 18);
     }
     if (TheStartupOptions().world_test) {
       if (TheObjectHeaps().unit().Count() == 0) {

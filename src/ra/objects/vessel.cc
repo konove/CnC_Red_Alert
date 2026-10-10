@@ -405,8 +405,8 @@ int VesselClass::Shape_Number() const {
   /*
   **	Door opening and closing animation stage check.
   */
-  if (!IsDoorClosed()) {
-    shapenum = DoorFrame();
+  if (!door().IsClosed()) {
+    shapenum = door().Frame();
   }
 
   return shapenum;
@@ -527,7 +527,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
   /*
   ** Patch so the transport will draw its passengers on top of itself.
   */
-  if (!IsDoorClosed() && IsTethered && In_Radio_Contact() &&
+  if (!door().IsClosed() && IsTethered && In_Radio_Contact() &&
       !Contact_With_Whom()->IsInLimbo) {
     DCHECK(Contact_With_Whom()->IsActive);
     Contact_With_Whom()->Render(view, true);
@@ -593,7 +593,7 @@ void VesselClass::AI() {
   /*
   **	Act on new orders if the unit is at a good position to do so.
   */
-  if (!IsDriving && IsDoorClosed() /*Mission != MISSION_UNLOAD*/) {
+  if (!IsDriving && door().IsClosed() /*Mission != MISSION_UNLOAD*/) {
     Commence();
   }
 
@@ -646,7 +646,7 @@ void VesselClass::AI() {
   }
 
   if ((Class->Max_Passengers() > 0) &&
-      (!IsDoorClosed() && Mission != MISSION_UNLOAD &&
+      (!door().IsClosed() && Mission != MISSION_UNLOAD &&
        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
        DoorShutCountDown.IsFinished()))
   /*
@@ -661,7 +661,7 @@ void VesselClass::AI() {
   **	Don't start a new mission unless the vehicle is in the center of
   **	a cell (not driving) and the door (if any) is closed.
   */
-  if (!IsDriving && IsDoorClosed() /*&& Mission != MISSION_UNLOAD*/) {
+  if (!IsDriving && door().IsClosed() /*&& Mission != MISSION_UNLOAD*/) {
     Commence();
   }
 
@@ -1456,7 +1456,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             **	transport doors. Close the doors if the transport is
             *full or needs *	to rotate.
             */
-            if (!IsDoorOpen()) {
+            if (!door().IsOpen()) {
               LST_Open_Door();
             }
 
@@ -1467,7 +1467,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             */
             if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                  RADIO_YEA_NOW_WHAT) &&
-                IsDoorOpen()) {
+                door().IsOpen()) {
               param = As_Target().packed();
               Transmit_Message(RADIO_TETHER);
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
@@ -1663,7 +1663,7 @@ void VesselClass::LST_Open_Door() {
   DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
-    OpenDoor(5, 6);
+    door().Open(5, 6);
   }
 }
 
@@ -1684,7 +1684,7 @@ void VesselClass::LST_Close_Door() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  CloseDoor(5, 6);
+  door().Close(5, 6);
 }
 
 /***********************************************************************************************
@@ -1730,7 +1730,7 @@ int VesselClass::Mission_Unload() {
       case kManeuvering:
         if (!IsRotating) {
           LST_Open_Door();
-          if (IsDoorOpening()) {
+          if (door().IsOpening()) {
             Status = kOpeningDoor;
             return 1;
           }
@@ -1738,11 +1738,11 @@ int VesselClass::Mission_Unload() {
         break;
 
       case kOpeningDoor:
-        if (IsDoorOpen()) {
+        if (door().IsOpen()) {
           Status = kUnloading;
           return 1;
         }
-        if (!IsDoorOpening()) {
+        if (!door().IsOpening()) {
           Status = kInitialCheck;
         }
         break;
@@ -1819,10 +1819,10 @@ int VesselClass::Mission_Unload() {
       **	Close LST door in preparation for normal operation.
       */
       case kClosingDoor:
-        if (IsDoorOpen()) {
+        if (door().IsOpen()) {
           LST_Close_Door();
         }
-        if (IsDoorClosed()) {
+        if (door().IsClosed()) {
           if (IsALoaner) {
             Assign_Mission(MISSION_RETREAT);
           } else {
@@ -1875,12 +1875,12 @@ void VesselClass::Assign_Destination(Target target) {
         RADIO_MOVE_HERE,
         param);  // should stop objects heading toward this transport.
     Transmit_Message(RADIO_OVER_OUT);
-    if (!IsDoorClosed()) {
+    if (!door().IsClosed()) {
       LST_Close_Door();
     }
   }
 
-  if (!IsDoorClosed()) {
+  if (!door().IsClosed()) {
     LST_Close_Door();
   }
 

@@ -906,10 +906,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-10T18:30:24Z",
+      "updated": "2026-10-10T20:53:08Z",
       "fixedIn": "6739ec97",
       "resolution": "Left as shipped: the original 1996 `CODE/TEAM.CPP` has the add inside the loop for vehicles and ships too, and TD's `Recruit()` has no nearest search to compare with. `Add()` refuses a unit already on the team, so the effect is that the first matching vehicle joins and then each nearer one, until the quantity is full. Added a comment saying so in both branches and `TeamTest.RecruitsTheFirstVehicleFoundAndEachNearerOneAfterIt`, which pins it.",
       "toDecide": "In `TeamClass::Recruit()` the vehicle and ship branches add the best candidate so far on every later pass of the loop. First compare with the original source and Tiberian Dawn's `Recruit()`; then:\n\n- **Move the add after the loop**, as the infantry and aircraft branches have it: changes which units a team recruits (xcheck reference update).\n- **Leave** it as shipped.",
@@ -928,8 +928,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team.cc",
-          "startLine": 1180,
-          "endLine": 1180,
+          "startLine": 1181,
+          "endLine": 1181,
           "text": "int TeamClass::Recruit(int typeindex) {",
           "before": [
             " * HISTORY: * 12/29/1994 JLB : Created. * 04/10/1995 JLB : Scans for units too.",
@@ -12279,10 +12279,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-10T20:25:03Z",
-      "updated": "2026-10-10T20:36:51Z",
+      "updated": "2026-10-10T20:52:59Z",
       "resolution": "`game::Door` is a plain class (door.h/door.cc) that counts its own stages and frames instead of holding a game's `StageClass`; the per-game `DoorClass` aliases and `ra|td/objects/door.h` are gone and the games use `game::Door` directly. The door's saved layout changed in both games, and Red Alert's door no longer reads the frame clock: its first stage comes one frame sooner when the door is started by the object's own mission in the same frame (Tiberian Dawn is unchanged).",
       "decisions": [
         {
@@ -12305,8 +12305,8 @@
           "text": "class Door {",
           "before": [
             "//   game::Door door;",
-            "//   door.OpenDoor(/*frames_per_stage=*/2, /*stage_count=*/10);",
-            "//   while (!door.IsDoorOpen()) door.AI();"
+            "//   door.Open(/*frames_per_stage=*/2, /*stage_count=*/10);",
+            "//   while (!door.IsOpen()) door.AI();"
           ],
           "after": [
             " public:",
@@ -12323,25 +12323,26 @@
       "details": "",
       "priority": "p3",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-10T20:25:45Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-10T21:04:52Z",
+      "resolution": "`TechnoClass` in both games no longer inherits `game::Door`; it holds a private `door_` reached through `door()`, and all callers go through it. With the owner no longer inheriting the names, Door's methods lost their redundant \"Door\": `Open`, `Close`, `IsOpen`, `IsClosed`, `IsOpening`, `Frame`, `NeedsRedraw`, `ClearRedraw`. The saved-game field order is unchanged.",
       "anchors": [
         {
           "path": "src/ra/objects/techno.h",
-          "startLine": 73,
+          "startLine": 74,
           "endLine": 77,
-          "text": "class TechnoClass : public RadioClass,\n                    public game::FlasherClass,\n                    public StageClass,\n                    public CargoClass,\n                    public game::Door {",
+          "text": "                    public game::FlasherClass,\n                    public StageClass,\n                    public CargoClass {\n public:",
           "before": [
-            "/****************************************************************************",
             "**\tThis is the common data between building and units.",
-            "*/"
+            "*/",
+            "class TechnoClass : public RadioClass,"
           ],
           "after": [
-            " public:",
             "  /*",
-            "  **\tIf this techno object has detected that it has outlived its"
+            "  **\tIf this techno object has detected that it has outlived its",
+            "  **\tpurpose, then this flag will be true. Such object will either"
           ],
           "lost": false
         }
@@ -12384,16 +12385,23 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T21:06:55Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Keep the shipped look, or pass 4 so frames 0-2 are shown?\n\n- Keep: nothing to do; close as wont_fix.\n- Pass 4 with the same rates: the door takes 30 frames to open instead of 10 (3 instead of 1 for the fast case), which delays unloading - a simulation change, so multiplayer against an unfixed peer desyncs.\n- Pass 4 and lower the rate to keep roughly the same duration: 10 frames cannot be split into 3 equal stages (rate 3 gives 9), so the timing still shifts by a frame.\n\nEither change needs a look at the APC art to confirm shapes 33-34 and 36-37 are door frames.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T21:06:55Z",
+          "text": "Since T-363 the door is a member: the calls are `door().Open(10, 2)` / `door().Open(1, 2)` / `door().Close(10, 2)` and the draw code adds `door().Frame()`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/objects/unit.cc",
-          "startLine": 4039,
-          "endLine": 4064,
-          "text": "  CloseDoor(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);\n  DCHECK(IsActive);\n\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      OpenDoor(10, 2);\n    } else {\n      OpenDoor(1, 2);",
+          "startLine": 4040,
+          "endLine": 4065,
+          "text": "  door().Close(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);\n  DCHECK(IsActive);\n\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      door().Open(10, 2);\n    } else {\n      door().Open(1, 2);",
           "before": [
             "  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);",
             "  DCHECK(IsActive);",
@@ -12410,7 +12418,7 @@
           "path": "src/td/objects/unit.cc",
           "startLine": 3995,
           "endLine": 4018,
-          "text": "  CloseDoor(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  Validate();\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      OpenDoor(10, 2);\n    } else {\n      OpenDoor(1, 2);",
+          "text": "  door().Close(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  Validate();\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      door().Open(10, 2);\n    } else {\n      door().Open(1, 2);",
           "before": [
             " *=============================================================================================*/",
             "void UnitClass::APC_Close_Door() {",
@@ -12478,7 +12486,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-10T21:06:55Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "comments": [
@@ -12486,6 +12494,11 @@
           "author": "agent",
           "time": "2026-10-10T20:52:39Z",
           "text": "Since d87f0c26 (T-362) `Door` is a plain class with the bodies in `door.cc`, `final_stage_` is an `int32_t` and the `DCHECK` in `StartAnimation()` is `stage_count >= 2`; with a frame count it becomes `frame_count >= 1`, with no upper limit."
+        },
+        {
+          "author": "agent",
+          "time": "2026-10-10T21:06:55Z",
+          "text": "Since T-363 the methods are `Door::Open()` / `Door::Close()`, called as `door().Open(...)`: list the callers with `git grep -nE 'door\\(\\)\\.(Open|Close)\\(' -- src`."
         }
       ],
       "anchors": [
@@ -12493,16 +12506,16 @@
           "path": "src/game/sim/door.h",
           "startLine": 54,
           "endLine": 63,
-          "text": "  // Starts opening a closed or closing door, advancing one stage every\n  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *\n  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and\n  // `frames_per_stage` positive, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool OpenDoor(int frames_per_stage, int stage_count);\n\n  // Starts closing an open or opening door, as OpenDoor() opens one. Returns\n  // false if it is already closed or closing.\n  bool CloseDoor(int frames_per_stage, int stage_count);",
+          "text": "  // Starts opening a closed or closing door, advancing one stage every\n  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *\n  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and\n  // `frames_per_stage` positive, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool Open(int frames_per_stage, int stage_count);\n\n  // Starts closing an open or opening door, as Open() opens one. Returns\n  // false if it is already closed or closing.\n  bool Close(int frames_per_stage, int stage_count);",
           "before": [
             "",
-            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
+            "  [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }",
             ""
           ],
           "after": [
             "",
-            "  [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }",
-            "  [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }"
+            "  [[nodiscard]] bool IsOpen() const { return state_ == State::kOpen; }",
+            "  [[nodiscard]] bool IsClosed() const { return state_ == State::kClosed; }"
           ],
           "lost": false
         }
@@ -12519,10 +12532,10 @@
         "game",
         "needs-decision"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-10T20:52:53Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "fixedIn": "d87f0c26",
@@ -12565,16 +12578,23 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T21:06:55Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Make the change or keep the flag?\n\nIt is not behaviour-exact: today a non-building re-marks itself every frame until it is drawn, and the change would mark it once, so it needs a look at a real display (APC, transport, war factory doors). The saved byte either stays as an unused placeholder or goes with a `kSaveGameVersion` bump.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T21:06:55Z",
+          "text": "Since T-363 the accessors are `NeedsRedraw()` and `ClearRedraw()`, called through `door()`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 44,
-          "endLine": 47,
-          "text": "  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }",
+          "startLine": 39,
+          "endLine": 42,
+          "text": "  [[nodiscard]] bool NeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearRedraw() const { needs_redraw_ = false; }",
           "before": [
             "",
             "  // Returns whether the animation has moved on since the flag was last",
@@ -12589,8 +12609,8 @@
         },
         {
           "path": "src/game/sim/door.h",
-          "startLine": 141,
-          "endLine": 144,
+          "startLine": 96,
+          "endLine": 99,
           "text": "  // Whether the animation moved on, so the object the door belongs to should\n  // be redrawn. Drawing clears it from const draw routines, so it is redraw\n  // bookkeeping rather than logical state.\n  mutable bool needs_redraw_ = false;",
           "before": [
             "",
@@ -12662,10 +12682,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-10T20:52:56Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "fixedIn": "d87f0c26",
@@ -12685,16 +12705,23 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-10T21:06:55Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Keep these three, or prefer `DoorStage()` (the original's word, though it returns the frame to draw and not the animation's stage), and `door_needs_redraw()` / `clear_door_redraw()` in accessor style? A rename is a scripted replace over about 15 call sites in both games.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T21:06:55Z",
+          "text": "T-363 made the door a member of `TechnoClass` and, with the owner no longer inheriting the names, renamed these to `Frame()`, `NeedsRedraw()` and `ClearRedraw()` (called as `door().Frame()`). The question left is whether those names are right, or `needs_redraw()` / `clear_redraw()` in accessor style."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.h",
           "startLine": 37,
           "endLine": 50,
-          "text": "  // Returns whether the animation has moved on since the flag was last\n  // cleared, so the door's owner needs redrawing.\n  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }\n\n  // Advances the animation one game frame; finishes opening or closing, and\n  // stops the animation, once the last stage is reached.\n  void AI();\n\n  // Returns the frame of the door's animation to draw: 0 when closed, up to\n  // `stage_count` - 2 when open (see the class comment).\n  [[nodiscard]] int DoorFrame() const;",
+          "text": "  // Returns whether the animation has moved on since the flag was last\n  // cleared, so the door's owner needs redrawing.\n  [[nodiscard]] bool NeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearRedraw() const { needs_redraw_ = false; }\n\n  // Advances the animation one game frame; finishes opening or closing, and\n  // stops the animation, once the last stage is reached.\n  void AI();\n\n  // Returns the frame of the door's animation to draw: 0 when closed, up to\n  // `stage_count` - 2 when open (see the class comment).\n  [[nodiscard]] int Frame() const;",
           "before": [
             "       needs_redraw_);",
             "  }",
@@ -12702,7 +12729,7 @@
           ],
           "after": [
             "",
-            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
+            "  [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }",
             ""
           ],
           "lost": false

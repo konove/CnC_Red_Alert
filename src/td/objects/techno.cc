@@ -893,7 +893,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
  *=============================================================================================*/
 void TechnoClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
-  ClearDoorRedraw();
+  door().ClearRedraw();
   if (IsSelected || TheSpecialFlags().all_health_bars) {
     PixelView draw_window(
         view.buffer(),
@@ -1730,7 +1730,7 @@ void TechnoClass::Clicked_As_Target(int count) {
 void TechnoClass::AI() {
   CargoClass::AI();
   RadioClass::AI();
-  game::Door::AI();
+  door_.AI();
 
   if (!IsActive) {
     return;
@@ -1862,7 +1862,7 @@ void TechnoClass::AI() {
   **	if the current animation process needs to change.
   */
   if ((What_Am_I() != RTTI_BUILDING) &&
-      (Graphic_Logic() || DoorNeedsRedraw())) {
+      (Graphic_Logic() || door().NeedsRedraw())) {
     Mark(MARK_CHANGE);
   }
 

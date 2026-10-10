@@ -356,7 +356,7 @@ void UnitClass::AI() {
   /*
   **	Act on new orders if the unit is at a good position to do so.
   */
-  if (!IsDriving && IsDoorClosed() /*Mission != MISSION_UNLOAD*/) {
+  if (!IsDriving && door().IsClosed() /*Mission != MISSION_UNLOAD*/) {
     Commence();
   }
 
@@ -425,7 +425,7 @@ void UnitClass::AI() {
   *loading is merely a part of their normal operation.
   */
   if (Class->IsTransporter &&
-      (!IsDoorClosed() && Mission != MISSION_UNLOAD &&
+      (!door().IsClosed() && Mission != MISSION_UNLOAD &&
        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER))
   /*
   **	Double check that there is a passenger that is trying to load or unload.
@@ -439,7 +439,7 @@ void UnitClass::AI() {
   **	Don't start a new mission unless the vehicle is in the center of
   **	a cell (not driving) and the door (if any) is closed.
   */
-  if (!IsDriving && IsDoorClosed() /*&& Mission != MISSION_UNLOAD*/) {
+  if (!IsDriving && door().IsClosed() /*&& Mission != MISSION_UNLOAD*/) {
     Commence();
   }
 
@@ -632,11 +632,11 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
             *needs *	to rotate.
             */
             if (IsRotating) {
-              if (!IsDoorClosed()) {
+              if (!door().IsClosed()) {
                 APC_Close_Door();
               }
             } else {
-              if (!IsDoorOpen()) {
+              if (!door().IsOpen()) {
                 APC_Open_Door();
               }
             }
@@ -648,7 +648,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
             */
             if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                  RADIO_YEA_NOW_WHAT) &&
-                IsDoorOpen()) {
+                door().IsOpen()) {
               param = As_Target().packed();
               Transmit_Message(RADIO_TETHER);
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
@@ -2020,7 +2020,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
           *There are only *	certain directions where this door animation
           *will work.
           */
-          if (!IsDoorClosed() &&
+          if (!door().IsClosed() &&
               (PrimaryFacing.current() == game::Direction::kNorthWest ||
                PrimaryFacing.current() == game::Direction::kNorthEast)) {
             if (PrimaryFacing.current() == game::Direction::kNorthEast) {
@@ -2030,7 +2030,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
                 shapenum = 35;
               }
             }
-            shapenum += DoorFrame();
+            shapenum += door().Frame();
           }
         }
       }
@@ -2331,7 +2331,7 @@ int UnitClass::Mission_Unload() {
         case kManeuvering:
           if (!IsRotating) {
             APC_Open_Door();
-            if (IsDoorOpening()) {
+            if (door().IsOpening()) {
               Status = kOpeningDoor;
               return 1;
             }
@@ -2339,11 +2339,11 @@ int UnitClass::Mission_Unload() {
           break;
 
         case kOpeningDoor:
-          if (IsDoorOpen()) {
+          if (door().IsOpen()) {
             Status = kUnloading;
             return 1;
           }
-          if (!IsDoorOpening()) {
+          if (!door().IsOpening()) {
             Status = kInitialCheck;
           }
           break;
@@ -2393,10 +2393,10 @@ int UnitClass::Mission_Unload() {
         **	Close APC door in preparation for normal operation.
         */
         case kClosingDoor:
-          if (IsDoorOpen()) {
+          if (door().IsOpen()) {
             APC_Close_Door();
           }
-          if (IsDoorClosed()) {
+          if (door().IsClosed()) {
             Assign_Mission(MISSION_GUARD);
           }
           break;
@@ -3732,7 +3732,7 @@ int UnitClass::Mission_Move() {
   **	Always make sure that that transport door is closed if the vehcile is
   *moving.
   */
-  if (!IsDoorClosed()) {
+  if (!door().IsClosed()) {
     APC_Close_Door();
   }
 
@@ -3992,7 +3992,7 @@ int UnitClass::Pip_Count() const {
  *=============================================================================================*/
 void UnitClass::APC_Close_Door() {
   Validate();
-  CloseDoor(10, 2);
+  door().Close(10, 2);
 }
 
 /***********************************************************************************************
@@ -4013,9 +4013,9 @@ void UnitClass::APC_Open_Door() {
   if (!IsDriving && !IsRotating) {
     if (PrimaryFacing.current() == game::Direction::kNorthWest ||
         PrimaryFacing.current() == game::Direction::kNorthEast) {
-      OpenDoor(10, 2);
+      door().Open(10, 2);
     } else {
-      OpenDoor(1, 2);
+      door().Open(1, 2);
     }
   }
 }

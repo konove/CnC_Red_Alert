@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
@@ -69,8 +70,7 @@ namespace td {
 class TechnoClass : public RadioClass,
                     public game::FlasherClass,
                     public StageClass,
-                    public CargoClass,
-                    public game::Door {
+                    public CargoClass {
  public:
   /*
   **	This flag will be true if the object has been damaged with malace.
@@ -267,6 +267,15 @@ class TechnoClass : public RadioClass,
   virtual int Made_A_Kill() { return ++kills_; }
   [[nodiscard]] int kills() const { return kills_; }
   void set_kills(int kills) { kills_ = static_cast<uint16_t>(kills); }
+
+  // The door this object opens to load and unload: an APC's or a transport's
+  // hatch, a war factory's door. One that has none leaves it closed.
+  [[nodiscard]] game::Door& door() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return door_;
+  }
+  [[nodiscard]] const game::Door& door() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return door_;
+  }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;
@@ -354,6 +363,8 @@ class TechnoClass : public RadioClass,
   // Kills this object has scored. It is 16 bits wide because the save game
   // stores it that way; the tally wraps past 65535.
   uint16_t kills_{0};
+
+  game::Door door_;
 };
 
 extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);

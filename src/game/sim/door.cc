@@ -25,7 +25,7 @@ void Door::AI() {
   needs_redraw_ = true;
 }
 
-int Door::DoorFrame() const {
+int Door::Frame() const {
   switch (state_) {
     case State::kClosing:
       return final_stage_ - 1 - stage_;
@@ -39,7 +39,7 @@ int Door::DoorFrame() const {
   }
 }
 
-bool Door::OpenDoor(const int frames_per_stage, const int stage_count) {
+bool Door::Open(const int frames_per_stage, const int stage_count) {
   if (state_ != State::kClosed && state_ != State::kClosing) {
     return false;
   }
@@ -47,7 +47,7 @@ bool Door::OpenDoor(const int frames_per_stage, const int stage_count) {
   return true;
 }
 
-bool Door::CloseDoor(const int frames_per_stage, const int stage_count) {
+bool Door::Close(const int frames_per_stage, const int stage_count) {
   if (state_ != State::kOpen && state_ != State::kOpening) {
     return false;
   }

@@ -841,7 +841,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     **	Draw the weapon factory custom overlay graphic.
     */
     if (*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP) {
-      int shapenum = DoorFrame();
+      int shapenum = door().Frame();
       if (Health_Ratio() <= TheRules().ConditionYellow) {
         shapenum += 4;
       }
@@ -5217,7 +5217,7 @@ int BuildingClass::Mission_Unload() {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
         }
-        OpenDoor(kDoorRate, kDoorStages);
+        door().Open(kDoorRate, kDoorStages);
         Status = kClearBib;
         break;
 
@@ -5249,7 +5249,7 @@ int BuildingClass::Mission_Unload() {
       **	unit to drive out.
       */
       case kOpen:
-        if (IsDoorOpen()) {
+        if (door().IsOpen()) {
           unit = dynamic_cast<UnitClass*>(Contact_With_Whom());
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
@@ -5265,7 +5265,7 @@ int BuildingClass::Mission_Unload() {
             unit->Set_Speed(128);
             Status = kLeave;
           } else {
-            CloseDoor(kDoorRate, kDoorStages);
+            door().Close(kDoorRate, kDoorStages);
             Status = kClose;
           }
         }
@@ -5276,7 +5276,7 @@ int BuildingClass::Mission_Unload() {
       */
       case kLeave:
         if (!IsTethered) {
-          CloseDoor(kDoorRate, kDoorStages);
+          door().Close(kDoorRate, kDoorStages);
           Status = kClose;
         } else {
           //					if (In_Radio_Contact() &&
@@ -5290,7 +5290,7 @@ int BuildingClass::Mission_Unload() {
       **	Wait while the door closes.
       */
       case kClose:
-        if (IsDoorClosed()) {
+        if (door().IsClosed()) {
           Enter_Idle_Mode();
         }
         break;
@@ -6354,8 +6354,8 @@ void BuildingClass::Animation_AI() {
   **	If there is a door that is animating, then it might cause this building
   **	to be redrawn. Check for and flag to redraw as necessary.
   */
-  if (DoorNeedsRedraw()) {
-    ClearDoorRedraw();
+  if (door().NeedsRedraw()) {
+    door().ClearRedraw();
     Mark(MARK_CHANGE);
   }
 
