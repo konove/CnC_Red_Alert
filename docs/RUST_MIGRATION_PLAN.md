@@ -2,9 +2,9 @@
 
 Written 2026-10-09, on the tree at aa739494. Answers T-210.
 
-**Status: phases 1 to 6 done** (2026-10-10, branch `rust-migration`); the "later" list is open. Each
-phase has its own plan and outcome in `docs/RUST_<NAME>_PLAN.md`. Open by hand: listening to a sound
-and a movie on a real device (Phase 2).
+**Status: phases 1 to 6 done** and merged to main (2026-10-10, d3623d18..6c9dbc99); the "later" list
+is open. Each phase has its own plan and outcome in `docs/RUST_<NAME>_PLAN.md`. Open by hand:
+listening to a sound and a movie on a real device (Phase 2).
 
 **Goal:** Move the remaining byte- and pixel-crunching kernels of `src/engine` into the `engine_rs`
 crate, one kernel per phase, without changing a byte of any kernel's output or any C++ caller.
