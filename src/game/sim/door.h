@@ -3,6 +3,8 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_DOOR_H_
 #define CNC_RED_ALERT_GAME_SIM_DOOR_H_
 
+#include "absl/log/check.h"
+
 namespace game {
 
 // The state of a door that opens and closes over a number of animation
@@ -89,10 +91,7 @@ class Door {
     if (state_ != State::kClosed && state_ != State::kClosing) {
       return false;
     }
-    state_ = State::kOpening;
-    final_stage_ = static_cast<unsigned char>(stage_count - 1);
-    animation_.Set_Stage(0);
-    animation_.Set_Rate(frames_per_stage);
+    StartAnimation(State::kOpening, frames_per_stage, stage_count);
     return true;
   }
 
@@ -102,10 +101,7 @@ class Door {
     if (state_ != State::kOpen && state_ != State::kOpening) {
       return false;
     }
-    state_ = State::kClosing;
-    final_stage_ = static_cast<unsigned char>(stage_count - 1);
-    animation_.Set_Stage(0);
-    animation_.Set_Rate(frames_per_stage);
+    StartAnimation(State::kClosing, frames_per_stage, stage_count);
     return true;
   }
 
@@ -120,6 +116,18 @@ class Door {
     kOpen = 2,
     kClosing = 3,
   };
+
+  // Restarts the animation from stage 0 on the way to `state`.
+  void StartAnimation(State state, int frames_per_stage, int stage_count) {
+    // Fewer than two stages would leave an open door on frame -1, and more
+    // than 256 do not fit the saved byte.
+    DCHECK(stage_count >= 2 && stage_count <= 256);
+    DCHECK_GT(frames_per_stage, 0);
+    state_ = state;
+    final_stage_ = static_cast<unsigned char>(stage_count - 1);
+    animation_.Set_Stage(0);
+    animation_.Set_Rate(frames_per_stage);
+  }
 
   // Counts the stages of the opening or closing in progress, from 0; stopped
   // (rate 0) while the door is open or closed.
