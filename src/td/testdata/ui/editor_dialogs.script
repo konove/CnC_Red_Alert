@@ -1,0 +1,40 @@
+# The scenario editor on the first GDI mission, and its dialogs that erase a
+# line of text before printing it again: the strip along the top, the map size
+# dialog, whose box is dragged so that its coordinates change, and the team
+# members dialog, which names the picture under the pointer.
+# args: -EDITOR
+at 200 shot editor
+at 201 rclick 400 150
+at 240 shot main_menu
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 259 key RETURN
+at 300 shot size_map
+at 301 press 217 121
+at 310 move 200 110
+at 320 move 190 100
+at 330 shot size_map_dragging
+at 331 release 190 100
+at 360 shot size_map_moved
+# Cancel goes back to the menu, with Size Map still chosen.
+at 361 key ESC
+at 401 key DOWN
+at 405 key DOWN
+at 409 key DOWN
+at 419 key RETURN
+at 460 shot ai_menu
+# Edit Teams. The arrow keys do not move this menu's choice.
+at 461 click 145 190
+at 520 shot team_list
+at 521 click 120 322
+at 560 shot team_edit
+at 561 click 147 365
+at 600 shot team_members
+at 601 move 260 100
+at 640 shot member_chem_warrior
+at 641 move 60 260
+at 680 shot member_nod_buggy
+at 681 move 320 20
+at 720 shot member_none
+at 721 quit

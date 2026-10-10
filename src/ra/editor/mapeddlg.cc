@@ -1452,7 +1452,8 @@ int MapEditClass::Load_Scenario() {
           delta1 = game::TheMouse().x() - mx;
           delta2 = game::TheMouse().y() - my;
           if (delta1 == 0 && delta2 == 0) {
-            break;
+            // The pointer has not moved: wait for the next frame.
+            continue;
           }
 
           /*

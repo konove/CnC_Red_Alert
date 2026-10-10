@@ -71,6 +71,7 @@
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
+#include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
@@ -1205,19 +1206,24 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Erase old coordinates .....................
         */
-        view.FillRect(Rect{kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
-                           kDialogW - 14, 10},
+        txt_x = kDialogX + (kDialogW / 8);
+        txt_y = kDialogY + kDialogH - kOkH - 10 - 22;
+        constexpr TextPrintType kCoordFlags =
+            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
+        // Every row of a glyph: a fill shorter than the font leaves the
+        // bottom of the old digits behind.
+        view.FillRect(Rect{kDialogX + 7, txt_y, kDialogW - 14,
+                           FontMaxHeight(TextFontStyle(
+                               FontType::k6PointGradient, kCoordFlags))},
                       game::kBlack);
 
         /*
         ..................... Draw the coordinates ......................
         */
-        txt_x = kDialogX + (kDialogW / 8);
-        txt_y = kDialogY + kDialogH - kOkH - 10 - 22;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x1 - kBordX1 - 1);
         const TextPrinter centered(
             view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW});
+                   kCoordFlags});
         centered.Print(txt, {txt_x, txt_y});
 
         txt_x += (kDialogW - 20) / 4;
@@ -1305,7 +1311,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         delta1 = game::TheMouse().x() - mx;
         delta2 = game::TheMouse().y() - my;
         if (delta1 == 0 && delta2 == 0) {
-          break;
+          // The pointer has not moved: wait for the next frame.
+          continue;
         }
 
         /*

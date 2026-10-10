@@ -1,10 +1,12 @@
 # Starts a new GDI campaign from the main menu: the choice of side, whose
-# pictures are movie frames and so not in the screenshot, the briefing, and
-# the first mission under way.
+# pictures are movie frames and so not in the screenshot, the same screen with
+# its "choose side" text erased once a side is picked, the briefing, and the
+# first mission under way.
 at 300 shot main_menu
 at 301 click 320 58
 at 500 shot choose_side
 at 501 click 160 200
+at 640 shot side_chosen
 at 3000 shot mission_start
 at 9000 shot mission_under_way
 at 9001 quit

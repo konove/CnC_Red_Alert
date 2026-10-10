@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 354,
+  "nextId": 358,
   "items": [
     {
       "id": "T-2",
@@ -12095,11 +12095,12 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T03:13:34Z",
       "source": "T-344",
+      "resolution": "Added `editor_dialogs.script` for both games (top strip, map size dialog with its box dragged, team members names) and a `side_chosen` shot to TD `new_game.script`. They turned up two bugs, both fixed: dragging in `Size_Map()` closed the dialog in both games (a `break` left from a former `switch`), and TD's coordinate erase was 10 rows under a 12-row font, leaving the old digits' bottom rows. The network, serial and ending fills cannot be reached by a script; that is the follow-up item.",
       "anchors": [
         {
           "path": "src/td/editor/mapeddlg.cc",
@@ -12221,6 +12222,167 @@
             "        bottom = 350 + 1;",
             "",
             "        // The heights are positions on the scale drawn beside the bar, whose"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-354",
+      "title": "Decide how to show the network, serial and ending text-erase fills on screen",
+      "details": "T-351 put the editor fills and Tiberian Dawn's \"choose side\" erase on ui_check screenshots. The rest of T-344's fills cannot be reached by a `-SCRIPT` run:\n\n- TD `Net_New_Dialog()` and `Net_Join_Dialog()` in `src/td/net/netdlg.cc` (unit count, build level, message area): `Select_MPlayer_Game()` offers Network only when `Is_IPX()`, and `src/td/net/network.h` constructs the manager with `available = false`, so the menu shows Modem/Serial alone. These two dialogs may be dead code in this port.\n- TD `Com_Scenario_Dialog()` and `Com_Show_Scenario_Dialog()` in `src/td/net/nulldlg.cc` (opponent line): need a connected serial port.\n- `Net_Reconnect_Dialog()` in both games (time allowed): needs a live network game whose peer stalls.\n- TD `ending.cc` \"choose a target\" strip: needs the last Nod mission won.\n\nRead against the font, the heights look right: the TD 6-point gradient font is 12 rows, and these fills are 12 or 13 rows (`d_txt6_h` is 13); RA's is `d_txt6_h + 2` = 15. That matters because T-351 found the TD map size dialog's fill (10 rows) shorter than the font.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "testing",
+        "td",
+        "ra",
+        "ui-check",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T03:13:31Z",
+      "updated": "2026-10-10T03:13:31Z",
+      "source": "eeda1518",
+      "toDecide": "Which way to check them: (a) accept the reading of the code above and close this; (b) add startup switches or `UiFixture` tests that call the dialogs directly, about a day, and `UiFixture` uses a block font so it would not catch a height shorter than the real font; (c) remove the TD network dialogs if they are dead without IPX, which is a separate dead-code job.",
+      "anchors": [
+        {
+          "path": "src/td/net/netdlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/netdlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/td/net/network.h",
+          "startLine": 246,
+          "endLine": 246,
+          "text": "      false,  // no IPX driver: only an Internet game can play",
+          "before": [
+            "",
+            "  engine::net::IPXManagerClass ipx_{",
+            "      tcp_transport_,"
+          ],
+          "after": [
+            "      &IPXGlobalConnClass::Make,",
+            "      6,  // most private connections",
+            "      sizeof(GlobalPacketType),"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-355",
+      "title": "Stop the map size dialog's coordinate erase from clipping its labels' descenders",
+      "details": "In TD `MapEditClass::Size_Map()` (`src/td/editor/mapeddlg.cc`) the labels X, Y, Width, Height are printed 11 rows above the coordinates in a 12-row font, and only on a background redraw. The coordinate erase starts at the coordinates' top row, which is the labels' last row, so the tail of the g in \"Height\" is cut off from the first frame (see `size_map` in `build/ui_check/td/editor_dialogs/`). Either print the labels after the fill on every map redraw, or move them up a row or two; then `tools/ui_check.py --accept src/td/testdata/ui/editor_dialogs.script`.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "editor",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T03:13:31Z",
+      "updated": "2026-10-10T03:13:31Z",
+      "source": "eeda1518",
+      "anchors": [
+        {
+          "path": "src/td/editor/mapeddlg.cc",
+          "startLine": 1098,
+          "endLine": 1098,
+          "text": "        centered.Print(\"X\", {txt_x, txt_y});",
+          "before": [
+            "        const TextPrinter centered(",
+            "            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,",
+            "                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW});"
+          ],
+          "after": [
+            "",
+            "        txt_x += (kDialogW - 20) / 4;",
+            "        centered.Print(\"Y\", {txt_x, txt_y});"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-356",
+      "title": "Find out why Red Alert's team members dialog shows no unit pictures",
+      "details": "`MapEditClass::Team_Members()` in `src/ra/editor/mapedtm.cc` draws a grid of empty blue boxes: only the count and the name under the pointer appear (shots `member_*` of `src/ra/testdata/ui/editor_dialogs.script`). Tiberian Dawn's version of the dialog shows a cameo or the unit in every box. Check whether the cameos fail to load in the editor or the draw call was lost, and whether the pale area right of the bottom row is meant.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "editor",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T03:13:31Z",
+      "updated": "2026-10-10T03:13:31Z",
+      "source": "eeda1518",
+      "anchors": [
+        {
+          "path": "src/ra/editor/mapedtm.cc",
+          "startLine": 479,
+          "endLine": 479,
+          "text": "int MapEditClass::Team_Members(HousesType house) {",
+          "before": [
+            "constexpr int kCancelX = kDialogCx + 5;",
+            "constexpr int kCancelY = 0;",
+            ""
+          ],
+          "after": [
+            "  /*",
+            "  **\tButton enumerations:",
+            "  */"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-357",
+      "title": "Make the arrow keys move the choice in Tiberian Dawn's editor AI menu",
+      "details": "In the TD scenario editor, `MapEditClass::AI_Menu()` (`src/td/editor/mapedit.cc`) opens with no item highlighted, and four DOWN keys followed by RETURN chose the first item, Pre-Build a Base, not Edit Teams; the main menu before it and Red Alert's AI menu follow the arrow keys. Seen in a `-SCRIPT` run with the pointer away from the menu; `src/td/testdata/ui/editor_dialogs.script` clicks the item instead. Look at how `Do_Menu()` picks its first selection when the pointer is outside the menu.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "editor"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T03:13:31Z",
+      "updated": "2026-10-10T03:13:31Z",
+      "source": "eeda1518",
+      "anchors": [
+        {
+          "path": "src/td/editor/mapedit.cc",
+          "startLine": 1748,
+          "endLine": 1748,
+          "text": "void MapEditClass::AI_Menu() {",
+          "before": [
+            " * HISTORY:                                                                *",
+            " *   11/29/1994 BR : Created.                                              *",
+            " *=========================================================================*/"
+          ],
+          "after": [
+            "  const char* _menus[kMaxAiMenuNum + 1];",
+            "",
+            "  /*"
           ],
           "lost": false
         }
