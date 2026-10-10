@@ -66,8 +66,9 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
       return pressed || on ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
                            : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
-    Fancy_Text_Print(view, text, x, y, kCcGreen, game::kTransparentBlack, font,
-                     flags | state | TPF_CENTER);
+    TextPrinter(view, {kCcGreen, game::kTransparentBlack, font,
+                       flags | state | TPF_CENTER})
+        .Print(text, {x, y});
     return;
   }
   int color = game::kWhite;
@@ -76,8 +77,9 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
   } else if (pressed) {
     color = base::Any(flags & TPF_NOSHADOW) ? game::kGrey : game::kLightGrey;
   }
-  Fancy_Text_Print(view, text, x, y, on ? game::kRed : color,
-                   game::kTransparentBlack, font, flags | TPF_CENTER);
+  TextPrinter(view, {on ? game::kRed : color, game::kTransparentBlack, font,
+                     flags | TPF_CENTER})
+      .Print(text, {x, y});
 }
 
 int UiSkin::Scale(const int amount, const int numerator,
@@ -119,28 +121,27 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
     const TextPrintType state =
         focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color,
-                            game::kTransparentBlack, font, flags | state,
-                            width - 2);
+    const TextPrinter printer(
+        view, {color, game::kTransparentBlack, font, flags | state});
+    printer.PrintClipped(text, {x + 1, y + 1}, width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
             width - 2) {
-      Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
-                              y + 1, color, game::kTransparentBlack, font,
-                              flags | state);
+      printer.PrintClipped("_", {x + 1 + StringPixelWidth(style, text), y + 1},
+                           -1);
     }
   } else {
-    Conquer_Clip_Text_Print(view, text, x + 1, y + 1,
-                            focused ? game::kBlue : game::kWhite,
-                            game::kTransparentBlack, font, flags, width - 2);
+    const TextPrinter printer(view, {focused ? game::kBlue : game::kWhite,
+                                     game::kTransparentBlack, font, flags});
+    printer.PrintClipped(text, {x + 1, y + 1}, width - 2);
 
     if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
         StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
             width - 2) {
-      Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
-                              y + 1, game::kBlue, game::kTransparentBlack, font,
-                              flags);
+      // `focused` holds here, so the printer is the blue one.
+      printer.PrintClipped("_", {x + 1 + StringPixelWidth(style, text), y + 1},
+                           -1);
     }
   }
 }
@@ -163,27 +164,27 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
     } else if (!base::Any(state & TPF_USE_GRAD_PAL)) {
       state = state | TPF_MEDIUM_COLOR;
     }
-    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, game::kTransparentBlack,
-                            font, state, width, tabs);
+    TextPrinter(view, {kCcGreen, game::kTransparentBlack, font, state})
+        .PrintClipped(text, {x, y}, width, tabs);
   } else {
-    Conquer_Clip_Text_Print(view, text, x, y,
-                            selected ? game::kBlue : game::kWhite,
-                            game::kTransparentBlack, font, flags, width, tabs);
+    TextPrinter(view, {selected ? game::kBlue : game::kWhite,
+                       game::kTransparentBlack, font, flags})
+        .PrintClipped(text, {x, y}, width, tabs);
   }
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const Font font,
                          const PrintFlags style) {
-  Fancy_Text_Print(view, "%s", x, y, color, game::kTransparentBlack, font,
-                   style, text);
+  TextPrinter(view, {color, game::kTransparentBlack, font, style})
+      .Print(text, {x, y});
 }
 
 void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
                            const int y, TextColor color, const Font font,
                            const PrintFlags style, const int width) {
-  Conquer_Clip_Text_Print(view, text, x, y, color, game::kTransparentBlack,
-                          font, style, width);
+  TextPrinter(view, {color, game::kTransparentBlack, font, style})
+      .PrintClipped(text, {x, y}, width);
 }
 
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,

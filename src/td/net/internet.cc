@@ -516,10 +516,11 @@ bool Do_The_Internet_Menu_Thang() {
       */
       Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-      Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
-                       d_dialog_y + (25 * factor), kCcGreen,
-                       game::kTransparentBlack, FontType::k6PointGradient,
-                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      TextPrinter(view,
+                  {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+          .Print(buffer,
+                 {d_dialog_cx - (width / 2), d_dialog_y + (25 * factor)});
 
       // buttons = &cancelbtn;
 

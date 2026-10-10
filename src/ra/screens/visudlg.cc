@@ -260,11 +260,12 @@ void VisualControlsClass::Process() {
       **	Draw the titles.
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
-        Fancy_Text_Print(view, SliderTitle(base::At(_titles, i)), slider_x - 16,
-                         text_y + (i * slider_y_spacing), Get_Color_Scheme(),
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_RIGHT |
-                             (curbutton == i ? TPF_BRIGHT_COLOR : kTextFlags));
+        TextPrinter(view,
+                    {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                     kTextFlags | TPF_RIGHT |
+                         (curbutton == i ? TPF_BRIGHT_COLOR : kTextFlags)})
+            .Print(SliderTitle(base::At(_titles, i)),
+                   {slider_x - 16, text_y + (i * slider_y_spacing)});
       }
       gadgets.DrawAll(view);
       game::TheMouse().Show();

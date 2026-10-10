@@ -286,14 +286,13 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonSpeed - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(view, TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, scheme,
-                       game::kTransparentBlack, kTextFont, style);
+      const TextPrinter label(
+          view, {scheme, game::kTransparentBlack, kTextFont, kTextFlags});
+      label.With(style).Print(TXT_SPEED, {d_speed_x, d_speed_y - d_txt6_h});
 
-      Fancy_Text_Print(view, TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2,
-                       scheme, game::kTransparentBlack, kTextFont, kTextFlags);
-      Fancy_Text_Print(
-          view, TXT_FASTER, d_speed_x + d_speed_w, d_speed_y + d_speed_h + 2,
-          scheme, game::kTransparentBlack, kTextFont, kTextFlags | TPF_RIGHT);
+      label.Print(TXT_SLOWER, {d_speed_x, d_speed_y + d_speed_h + 2});
+      label.With(TPF_RIGHT).Print(
+          TXT_FASTER, {d_speed_x + d_speed_w, d_speed_y + d_speed_h + 2});
 
       /*
       **	Label the scroll rate slider
@@ -302,16 +301,12 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonScrollrate - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(view, TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       scheme, game::kTransparentBlack, kTextFont, style);
+      label.With(style).Print(TXT_SCROLLRATE,
+                              {d_scroll_x, d_scroll_y - d_txt6_h});
 
-      Fancy_Text_Print(view, TXT_SLOWER, d_scroll_x,
-                       d_scroll_y + d_scroll_h + 2, scheme,
-                       game::kTransparentBlack, kTextFont, kTextFlags);
-      Fancy_Text_Print(view, TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 2, scheme,
-                       game::kTransparentBlack, kTextFont,
-                       kTextFlags | TPF_RIGHT);
+      label.Print(TXT_SLOWER, {d_scroll_x, d_scroll_y + d_scroll_h + 2});
+      label.With(TPF_RIGHT).Print(
+          TXT_FASTER, {d_scroll_x + d_scroll_w, d_scroll_y + d_scroll_h + 2});
 
       commands.DrawAll(view);
 

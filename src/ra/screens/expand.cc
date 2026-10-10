@@ -360,9 +360,9 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x + 100, y, scheme,
-                          game::kTransparentBlack, TextFont,
-                          flags & ~TPF_CENTER, width, Tabs);
+  TextPrinter(view,
+              {scheme, game::kTransparentBlack, TextFont, flags & ~TPF_CENTER})
+      .PrintClipped(buffer, {x + 100, y}, width, Tabs);
 }
 
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this

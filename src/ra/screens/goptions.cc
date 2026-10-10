@@ -45,6 +45,7 @@
 #include <memory>
 #include <vector>
 
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
@@ -326,11 +327,13 @@ void GameOptionsClass::Process() {
       /*
       **	Display the version number at the bottom of the dialog box.
       */
-      Fancy_Text_Print(
-          view, "%s\rV%s", OptionX + OptionWidth - 50,
-          OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
-          Get_Color_Scheme(), game::kTransparentBlack, FontType::kEditor,
-          TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName, Version_Name());
+      TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack,
+                         FontType::kEditor, TPF_NOSHADOW | TPF_RIGHT})
+          .Print(absl::StrFormat("%s\rV%s", TheScenario().ScenarioName,
+                                 Version_Name()),
+                 {OptionX + OptionWidth - 50,
+                  OptionY + OptionHeight -
+                      (TheSession().Type == GAME_NORMAL ? 64 : 48)});
 
       buttons.DrawAll(view);
       TabClass::Hilite_Tab(view, 0);

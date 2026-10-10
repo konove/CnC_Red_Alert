@@ -308,10 +308,9 @@ bool LoadOptionsClass::Process() {
       Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
       if (Style == SAVE) {
-        Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
-                         d_edit_y - d_txt8_h, Get_Color_Scheme(),
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+        TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack,
+                           kTextFont, kTextFlags | TPF_CENTER})
+            .Print(TXT_MISSION_DESCRIPTION, {d_dialog_cx, d_edit_y - d_txt8_h});
       }
 
       /*

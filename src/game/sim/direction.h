@@ -31,6 +31,7 @@
 #include <cstdint>
 
 #include "base/enum_step.h"  // IWYU pragma: export
+#include "game/core/point.h"  // IWYU pragma: export
 
 namespace game {
 
@@ -142,13 +143,6 @@ inline constexpr Direction Direction::kNorthWest{7 << 5};
 
 // Objects, tracks and packets hold a direction in one byte.
 static_assert(sizeof(Direction) == 1);
-
-// A position on a plane where (0, 0) is the north-west corner, so y grows
-// southward. The unit is the caller's: pixels, leptons or cells.
-struct Point {
-  int x = 0;
-  int y = 0;
-};
 
 // Returns the direction from `from` to `to` as one of the eight compass points.
 // The diagonals take more than their share of the circle: a slope steeper than

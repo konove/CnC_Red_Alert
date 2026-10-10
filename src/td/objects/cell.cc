@@ -90,6 +90,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -944,12 +945,13 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                   TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
                   TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-    Fancy_Text_Print(view, "%d\r%2X%c\r%02X.%02X",
-                     TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                     TheMap().TacPixelY + y, game::kWhite,
-                     game::kTransparentBlack, FontType::k6Point,
-                     TPF_NOSHADOW | TPF_CENTER, cell.index(), Flag.Composite,
-                     Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
+    TextPrinter(view, {game::kWhite, game::kTransparentBlack, FontType::k6Point,
+                       TPF_NOSHADOW | TPF_CENTER})
+        .Print(absl::StrFormat("%d\r%2X%c\r%02X.%02X", cell.index(),
+                               Flag.Composite, Cell_Occupier() ? '*' : ' ',
+                               Overlay, OverlayData),
+               {TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+                TheMap().TacPixelY + y});
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -1063,10 +1065,10 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
           */
           if (IsTrigger) {
             trig = Get_Trigger();
-            Fancy_Text_Print(view, trig->Get_Name(), x + TheMap().TacPixelX,
-                             y + TheMap().TacPixelY, game::kPink,
-                             game::kTransparentBlack, FontType::k6Point,
-                             TPF_NOSHADOW);
+            TextPrinter(view, {game::kPink, game::kTransparentBlack,
+                               FontType::k6Point, TPF_NOSHADOW})
+                .Print(trig->Get_Name(),
+                       {x + TheMap().TacPixelX, y + TheMap().TacPixelY});
           }
 
           /*
@@ -1077,28 +1079,27 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
               if (base::At(TheWorld().waypoint(), i) == Cell_Number()) {
                 base::At(waypt, 0) = static_cast<char>('A' + i);
                 base::At(waypt, 1) = 0;
-                Fancy_Text_Print(
-                    view, waypt,
-                    TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                    TheMap().TacPixelY + y + (game::kCellHeightPixels / 2) - 3,
-                    game::kYellow, game::kTransparentBlack, FontType::k6Point,
-                    TPF_NOSHADOW | TPF_CENTER);
+                TextPrinter(view,
+                            {game::kYellow, game::kTransparentBlack,
+                             FontType::k6Point, TPF_NOSHADOW | TPF_CENTER})
+                    .Print(waypt, {TheMap().TacPixelX + x +
+                                       (game::kCellWidthPixels / 2),
+                                   TheMap().TacPixelY + y +
+                                       (game::kCellHeightPixels / 2) - 3});
                 break;
               }
             }
+            const TextPrinter mark(view, {game::kWhite, game::kTransparentBlack,
+                                          FontType::k6Point, TPF_NOSHADOW});
             if (base::At(TheWorld().waypoint(), kWayptHome) == Cell_Number()) {
-              Fancy_Text_Print(
-                  view, "Home", TheMap().TacPixelX + x,
-                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
-                  game::kWhite, game::kTransparentBlack, FontType::k6Point,
-                  TPF_NOSHADOW);
+              mark.Print("Home", {TheMap().TacPixelX + x,
+                                  TheMap().TacPixelY + y +
+                                      game::kCellHeightPixels - 7});
             }
             if (base::At(TheWorld().waypoint(), kWayptReinf) == Cell_Number()) {
-              Fancy_Text_Print(
-                  view, "Reinf", TheMap().TacPixelX + x,
-                  TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
-                  game::kWhite, game::kTransparentBlack, FontType::k6Point,
-                  TPF_NOSHADOW);
+              mark.Print("Reinf", {TheMap().TacPixelX + x,
+                                   TheMap().TacPixelY + y +
+                                       game::kCellHeightPixels - 7});
             }
           }
         }

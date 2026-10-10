@@ -1860,14 +1860,13 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   int y = RadY + RadOffY;
 
-  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y, game::kLightGrey,
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  const TextPrinter heading(
+      view, {game::kLightGrey, game::kTransparentBlack,
+             FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW});
+  heading.Print(TXT_NAME_COLON, {RadX + RadOffX, y});
 
-  Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   game::kLightGrey, game::kTransparentBlack,
-                   FontType::k6PointGradient,
-                   TPF_RIGHT | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+  heading.With(TPF_RIGHT).Print(TXT_KILLS_COLON,
+                                {RadX + RadOffX + RadIWidth - 2, y});
 
   y += (6 * factor) + 1;
 
@@ -1933,8 +1932,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
         base::At(txt, 9) = '.';
         base::At(txt, 10) = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, game::kBlack,
-                       FontType::k6PointGradient, style);
+      const TextPrinter row(
+          view, {color, game::kBlack, FontType::k6PointGradient, style});
+      row.Print(txt, {RadX + RadOffX, y});
 
       int kills = 0;
       for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
@@ -1942,9 +1942,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
         kills += ptr->BuildingsKilled.at(h);
       }
       absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
-      Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                       game::kBlack, FontType::k6PointGradient,
-                       style | TPF_RIGHT);
+      row.With(TPF_RIGHT).Print(txt, {RadX + RadOffX + RadIWidth - 2, y});
 
       y += (6 * factor) + 1;
     }

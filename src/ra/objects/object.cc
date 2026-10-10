@@ -1191,13 +1191,14 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger != nullptr) {
-          Fancy_Text_Print(
-              view, Trigger->Class->IniName,
-              x + base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
-                           kWindowX),
-              y, &ThePalettes().color_remaps().at(PCOLOR_RED),
-              game::kTransparentBlack, FontType::k6Point,
-              TPF_CENTER | TPF_NOSHADOW);
+          TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                             game::kTransparentBlack, FontType::k6Point,
+                             TPF_CENTER | TPF_NOSHADOW})
+              .Print(
+                  Trigger->Class->IniName,
+                  {x + base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)],
+                                kWindowX),
+                   y});
         }
       }
 

@@ -1427,9 +1427,9 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, kCcGreen, game::kBlack,
-                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                   TotalValue);
+  TextPrinter(view, {kCcGreen, game::kBlack, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+      .Print(absl::StrFormat("Tiberium=%ld   ", TotalValue), {0, 0});
 
   /*------------------------------------------------------------------------
   If there are no object controls displayed, just invoke parent's Redraw
@@ -1461,9 +1461,10 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     /*
     ......................... print the label ..........................
     */
-    Fancy_Text_Print(view, buf, 320, 0, kCcTan, game::kTransparentBlack,
-                     FontType::k6PointGradient,
-                     TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+    TextPrinter(view,
+                {kCcTan, game::kTransparentBlack, FontType::k6PointGradient,
+                 TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL})
+        .Print(buf, {320, 0});
   }
 }
 

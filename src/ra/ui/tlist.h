@@ -113,7 +113,7 @@ class TListClass final : public game::ControlClass {
   }
 
   // The font and the print flags the lines render with, as
-  // Fancy_Text_Print() takes them.
+  // a TextPrinter takes them.
   FontType TextFont;
   TextPrintType TextFlags;
 

@@ -252,14 +252,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       **	Redraw the buttons.
       */
       {
-        Fancy_Text_Print(view, TXT_WOL_NAME, d_name_x + (d_name_w / 2),
-                         d_name_y - 14, Get_Color_Scheme(),
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
-        Fancy_Text_Print(view, TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
-                         d_pass_y - 14, Get_Color_Scheme(),
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_CENTER);
+        const TextPrinter centered(
+            view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                   kTextFlags | TPF_CENTER});
+        centered.Print(TXT_WOL_NAME,
+                       {d_name_x + (d_name_w / 2), d_name_y - 14});
+        centered.Print(TXT_WOL_PASSWORD,
+                       {d_pass_x + (d_pass_w / 2), d_pass_y - 14});
         commands.FlagToRedraw();
       }
       game::TheMouse().Show();

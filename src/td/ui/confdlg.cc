@@ -175,10 +175,10 @@ bool ConfirmationClass::Process(const char* string) {
       */
       Dialog_Box(view, x, y, width, height);
       Draw_Caption(view, TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(view, buffer, x + (20 * factor), y + (30 * factor),
-                       kCcGreen, game::kTransparentBlack,
-                       FontType::k6PointGradient,
-                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      TextPrinter(view,
+                  {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+          .Print(buffer, {x + (20 * factor), y + (30 * factor)});
 
       /*
       **	Draw the titles.

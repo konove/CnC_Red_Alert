@@ -438,10 +438,8 @@ bool TeamType::Edit() {
 
   PixelView& view = TheScreen().visible_view();
 
-  const auto caption = [&](const char* const text, const int x, const int y) {
-    Fancy_Text_Print(view, text, x, y, scheme, game::kTransparentBlack,
-                     FontType::kEditor, TPF_NOSHADOW);
-  };
+  const TextPrinter caption(
+      view, {scheme, game::kTransparentBlack, FontType::kEditor, TPF_NOSHADOW});
 
   commands.AddAfter(ok_button, name_edit);
   commands.Add(cancel_button);
@@ -511,33 +509,34 @@ bool TeamType::Edit() {
       Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
 
       // Draw the captions
-      caption("Name:", name_edit.X, name_edit.Y - 7);
-      caption("House:", house_drop.X, house_drop.Y - 7);
-      caption("Pri:", priority_edit.X, priority_edit.Y - 7);
-      caption("Max:", max_edit.X, max_edit.Y - 7);
-      caption("Num:", initial_edit.X, initial_edit.Y - 7);
-      caption("Loc:", origin_edit.X, origin_edit.Y - 7);
-      caption("#  Team Mission", script_list.X, script_list.Y - 7);
-      Fancy_Text_Print(view, "Trigger:", trigger_drop.X - 4, trigger_drop.Y + 1,
-                       scheme, game::kTransparentBlack, FontType::kEditor,
-                       TPF_RIGHT | TPF_NOSHADOW);
+      caption.Print("Name:", {name_edit.X, name_edit.Y - 7});
+      caption.Print("House:", {house_drop.X, house_drop.Y - 7});
+      caption.Print("Pri:", {priority_edit.X, priority_edit.Y - 7});
+      caption.Print("Max:", {max_edit.X, max_edit.Y - 7});
+      caption.Print("Num:", {initial_edit.X, initial_edit.Y - 7});
+      caption.Print("Loc:", {origin_edit.X, origin_edit.Y - 7});
+      caption.Print("#  Team Mission", {script_list.X, script_list.Y - 7});
+      caption.With(TPF_RIGHT).Print("Trigger:",
+                                    {trigger_drop.X - 4, trigger_drop.Y + 1});
 
-      caption(MemberDescription().c_str(),
-              members_button.X + members_button.Width + 3,
-              members_button.Y + 1);
+      caption.Print(
+          MemberDescription(),
+          {members_button.X + members_button.Width + 3, members_button.Y + 1});
 
       // Horizontal spacing for check box description text.
       constexpr int kCheckTextOffsetX = 8;
-      caption("Use safest, possibly longer, route to target?",
-              roundabout_check.X + kCheckTextOffsetX, roundabout_check.Y);
-      caption("Charge toward target ignoring distractions?",
-              suicide_check.X + kCheckTextOffsetX, suicide_check.Y);
-      caption("Only 'Autocreate A.I.' uses this team type?",
-              autocreate_check.X + kCheckTextOffsetX, autocreate_check.Y);
-      caption("Prebuild team members before team is created?",
-              prebuilt_check.X + kCheckTextOffsetX, prebuilt_check.Y);
-      caption("Automatically reinforce team whenever possible?",
-              reinforce_check.X + kCheckTextOffsetX, reinforce_check.Y);
+      caption.Print(
+          "Use safest, possibly longer, route to target?",
+          {roundabout_check.X + kCheckTextOffsetX, roundabout_check.Y});
+      caption.Print("Charge toward target ignoring distractions?",
+                    {suicide_check.X + kCheckTextOffsetX, suicide_check.Y});
+      caption.Print(
+          "Only 'Autocreate A.I.' uses this team type?",
+          {autocreate_check.X + kCheckTextOffsetX, autocreate_check.Y});
+      caption.Print("Prebuild team members before team is created?",
+                    {prebuilt_check.X + kCheckTextOffsetX, prebuilt_check.Y});
+      caption.Print("Automatically reinforce team whenever possible?",
+                    {reinforce_check.X + kCheckTextOffsetX, reinforce_check.Y});
 
       // Redraw the buttons
       commands.DrawAll(view);

@@ -281,8 +281,9 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
 
   if ((Text != TXT_NONE && (forced || !CountDownTimer.Remaining())) &&
       view.Lock()) {
-    Fancy_Text_Print(view, Text, DrawX, DrawY, Color, game::kBlack,
-                     FontType::kMap, TPF_NOSHADOW);
+    const TextPrinter tip(view,
+                          {Color, game::kBlack, FontType::kMap, TPF_NOSHADOW});
+    tip.Print(Text, {DrawX, DrawY});
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int text_height = FontMaxHeight(font);
     view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + text_height,
@@ -292,8 +293,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       char buffer[15];
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = StringPixelWidth(font, buffer);
-      Fancy_Text_Print(view, buffer, DrawX, DrawY + text_height, Color,
-                       game::kBlack, FontType::kMap, TPF_NOSHADOW);
+      tip.Print(buffer, {DrawX, DrawY + text_height});
       view.DrawRect(DrawX - 1, DrawY + text_height, DrawX + width + 1,
                     DrawY + text_height + text_height - 1,
                     static_cast<unsigned char>(Color));

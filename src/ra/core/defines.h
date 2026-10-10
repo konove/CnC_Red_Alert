@@ -2029,7 +2029,7 @@ inline constexpr int kCycleColorCount = 7;
 inline constexpr int kPulseColor = 255;
 inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 
-// The fonts the game prints with. Fancy_Text_Print() and the text widgets
+// The fonts the game prints with. TextPrinter and the text widgets
 // take one beside their TextPrintType flags. The names say what the font looks
 // like, not what it is used for.
 enum class FontType {
@@ -2046,7 +2046,7 @@ enum class FontType {
   kVcr,    // The font of the movie playback controls.
 };
 
-// The style flags of Fancy_Text_Print(): shadow, justification and colour.
+// The style flags of a TextPrinter: shadow, justification and colour.
 // The font is a separate FontType.
 enum class CNC_FLAG_ENUM TextPrintType {
   TPF_NONE = 0x0000,          // No style flags.

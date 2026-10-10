@@ -349,23 +349,18 @@ void SoundControlsClass::Process() {
       /*
       ** Draw the Music, Speech & Sound titles.
       */
-      Fancy_Text_Print(view, TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
-                       option_y + mslider_y - 4, scheme,
-                       game::kTransparentBlack, kTextFont,
-                       kTextFlags | TPF_RIGHT);
-      Fancy_Text_Print(view, TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
-                       option_y + fxslider_y - 4, scheme,
-                       game::kTransparentBlack, kTextFont,
-                       kTextFlags | TPF_RIGHT);
+      const TextPrinter right_label(view, {scheme, game::kTransparentBlack,
+                                           kTextFont, kTextFlags | TPF_RIGHT});
+      right_label.Print(TXT_MUSIC_VOLUME,
+                        {option_x + mslider_x - 10, option_y + mslider_y - 4});
+      right_label.Print(TXT_SOUND_VOLUME, {option_x + fxslider_x - 10,
+                                           option_y + fxslider_y - 4});
 
-      Fancy_Text_Print(view, TXT_SHUFFLE,
-                       option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
-                       option_y + shuffle_y + 2, scheme,
-                       game::kTransparentBlack, kTextFont,
-                       kTextFlags | TPF_RIGHT);
-      Fancy_Text_Print(view, TXT_REPEAT, option_x + repeat_x - 10,
-                       option_y + repeat_y + 2, scheme, game::kTransparentBlack,
-                       kTextFont, kTextFlags | TPF_RIGHT);
+      right_label.Print(TXT_SHUFFLE, {option_x + shuffle_x - 10 +
+                                          (config::kIsEnglish ? 0 : 4),
+                                      option_y + shuffle_y + 2});
+      right_label.Print(TXT_REPEAT,
+                        {option_x + repeat_x - 10, option_y + repeat_y + 2});
 
       gadgets.DrawAll(view);
       game::TheMouse().Show();
@@ -494,16 +489,15 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, scheme,
-                            game::kTransparentBlack, TextFont, flags, width,
-                            Tabs);
+    TextPrinter(view, {scheme, game::kTransparentBlack, TextFont, flags})
+        .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(
-        view, Get_Item(index), x, y,
-        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        game::kTransparentBlack, TextFont, TextFlags, width, Tabs);
+    TextPrinter(view,
+                {selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                          : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                 game::kTransparentBlack, TextFont, TextFlags})
+        .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
   }
 }
 

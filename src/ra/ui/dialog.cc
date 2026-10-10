@@ -59,19 +59,17 @@
 #include <string>
 #include <string_view>
 
-#include "absl/strings/str_format.h"
-#include "absl/types/span.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/flags.h"
 #include "base/numeric.h"
-#include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
+#include "game/core/point.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
@@ -357,42 +355,13 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   Draw_Box(view, x, y, w, h, style, true);
 }
 
-/***********************************************************************************************
- * Simple_Text_Print -- Prints text with a drop shadow. *
- *                                                                                             *
- *    This routine functions like Text_Print, but will render a drop * shadow
- *(in black). *
- *                                                                                             *
- *    The C&C gradient font colors are as follows:
- ** 0		transparent (background)
- ** 1		foreground color for mono-color fonts only
- ** 2		shadow under characters ("drop shadow")
- ** 3		shadow all around characters ("full shadow")
- ** 4-10	unused
- ** 11		top row
- ** 12		next row
- ** 13		next row
- ** 14		next row
- ** 15		bottom row
- **
- *                                                                                             *
- * INPUT:   text  -- Pointer to text to render. *
- *                                                                                             *
- *          x,y   -- Pixel coordinate for to print text. *
- *                                                                                             *
- *          fore  -- Foreground color. *
- *                                                                                             *
- *          back  -- Background color. *
- *                                                                                             *
- *          flag  -- Text print control flags. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
- *spacing in a more friendly manner.                        *
- *=============================================================================================*/
+// The C&C gradient font colors:
+//   0      transparent (background)
+//   1      foreground color for mono-color fonts only
+//   2      shadow under characters ("drop shadow")
+//   3      shadow all around characters ("full shadow")
+//   4-10   unused
+//   11-15  the rows of a glyph, top to bottom
 namespace {
 
 // The shadows the 3-point font has no room for.
@@ -499,7 +468,7 @@ FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
 }
 
 TextStyle TextStyleFor(const FontType font, TextPrintType flags,
-                       RemapControlType* fore, const int back) {
+                       const RemapControlType* fore, const int back) {
   flags = SupportedTextFlags(font, flags);
   unsigned char fontpalette[16];  // Working font palette array.
 
@@ -618,192 +587,11 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
   return {.flag = flags, .forecolor = forecolor, .font_style = font_style};
 }
 
-void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
-                       RemapControlType* fore, int back, const FontType font,
-                       TextPrintType flag) {
-  const TextStyle style = TextStyleFor(font, flag, fore, back);
-  flag = style.flag;
-
-  /*
-  **	Display the (centered) message if there is one.
-  */
-  if (text && *text) {
-    switch (flag & (TPF_CENTER | TPF_RIGHT)) {
-      case TPF_CENTER:
-        x -= StringPixelWidth(style.font_style, text) / 2;
-        break;
-
-      case TPF_RIGHT:
-        x -= StringPixelWidth(style.font_style, text);
-        break;
-
-      case TextPrintType::TPF_NONE:
-      case TextPrintType::TPF_NOSHADOW:
-      case TextPrintType::TPF_DROPSHADOW:
-      case TextPrintType::TPF_FULLSHADOW:
-      case TextPrintType::TPF_LIGHTSHADOW:
-      case TextPrintType::TPF_MEDIUM_COLOR:
-      case TextPrintType::TPF_BRIGHT_COLOR:
-      case TextPrintType::TPF_USE_GRAD_PAL:
-      default:
-        break;
-    }
-
-    if (x < view.width() && y < view.height()) {
-      view.Print(style.font_style, text, x, y, style.forecolor, back);
-    }
-  }
-}
-
-/***********************************************************************************************
- * Fancy_Text_Print -- Prints text with a drop shadow. *
- *                                                                                             *
- *    This routine functions like Text_Print, but will render a drop * shadow
- *(in black). *
- *                                                                                             *
- * INPUT:   text  -- Text number to print. *
- *                                                                                             *
- *          x,y   -- Pixel coordinate for to print text. *
- *                                                                                             *
- *          fore  -- Foreground color. *
- *                                                                                             *
- *          back  -- Background color. *
- *                                                                                             *
- *          flag  -- Text print control flags. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine is much slower than normal text print and * if
- *rendered to the SEENPAGE, the intermediate rendering                         *
- *             steps could be visible. *
- *                                                                                             *
- * HISTORY: * 11/29/1994 JLB : Created *
- *=============================================================================================*/
-void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
-                      RemapControlType* fore, const int back,
-                      const FontType font, const TextPrintType flag,
-                      const absl::Span<const absl::FormatArg> args) {
-  if (text != TXT_NONE) {
-    Fancy_Text_Print(view, TextString(text), x, y, fore, back, font, flag,
-                     args);
-  }
-}
-
-/***********************************************************************************************
- * Fancy_Text_Print -- Prints text with a drop shadow. *
- *                                                                                             *
- *    This routine functions like Text_Print, but will render a drop * shadow
- *(in black). *
- *                                                                                             *
- * INPUT:   text  -- Pointer to text to render. *
- *                                                                                             *
- *          x,y   -- Pixel coordinate for to print text. *
- *                                                                                             *
- *          fore  -- Foreground color. *
- *                                                                                             *
- *          back  -- Background color. *
- *                                                                                             *
- *          flag  -- Text print control flags. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   This routine is much slower than normal text print and * if
- *rendered to the SEENPAGE, the intermediate rendering                         *
- *             steps could be visible. *
- *                                                                                             *
- * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
- *spacing in a more friendly manner.                        * 11/29/1994 JLB :
- *Separated actual draw action.                                            *
- *=============================================================================================*/
-void Fancy_Text_Print(PixelView& view, const char* text, const int x,
-                      const int y, RemapControlType* fore, const int back,
-                      const FontType font, const TextPrintType flag,
-                      const absl::Span<const absl::FormatArg> args) {
-  if (text) {
-    const std::string formatted = base::FormatRuntime(text, args);
-    Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, font, flag);
-  }
-}
-
-/***********************************************************************************************
- * Clip_Text_Print -- Prints text with clipping and <TAB> support. *
- *                                                                                             *
- *    Use this routine to print text that that should be clipped at an arbitrary
- *right margin  * as well as possibly recognizing <TAB> characters. Typical
- *users of this routine would    * be list boxes. *
- *                                                                                             *
- * INPUT:   text  -- Reference to the text to print. *
- *                                                                                             *
- *          x,y   -- Pixel coordinate of the upper left corner of the text
- *position.           *
- *                                                                                             *
- *          fore  -- The foreground color to use. *
- *                                                                                             *
- *          back  -- The background color to use. *
- *                                                                                             *
- *          flag  -- The text print flags to use. *
- *                                                                                             *
- *          width -- The maximum pixel width to draw the text. Extra characters
- *beyond this    * point will not be printed. *
- *                                                                                             *
- *          tabs  -- Optional pointer to a series of pixel tabstop positions. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/21/1995 JLB : Created. *
- *=============================================================================================*/
-void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
-                             RemapControlType* fore, int back,
-                             const FontType font, TextPrintType flag, int width,
-                             std::span<const int> tabs) {
-  if (text == nullptr) {
-    return;
-  }
-  char buffer[512];
-  base::SafeCopy(buffer, text);
-  const FontStyle style = TextFontStyle(font, flag);
-  std::span<char> source(buffer);
-  int offset = 0;
-  while (offset < width && !source.empty() && source.front() != '\0') {
-    const auto text_view = std::string_view(source.data());
-    const auto tab = text_view.find('\t');
-    const auto count = tab == std::string_view::npos ? text_view.size() : tab;
-    int line_width = 0;
-    size_t visible = 0;
-    while (visible < count) {
-      const int next = CharPixelWidth(style, base::At(source, visible));
-      if (offset + line_width + next >= width) {
-        break;
-      }
-      line_width += next;
-      ++visible;
-    }
-    base::At(source, visible) = '\0';
-    Simple_Text_Print(view, source.data(), x + offset, y, fore, back, font,
-                      flag);
-    offset += line_width;
-    if (visible < count || tab == std::string_view::npos) {
-      break;
-    }
-    if (!tabs.empty()) {
-      while (tabs.size() > 1 && offset > tabs.front()) {
-        tabs = tabs.subspan(1);
-      }
-      offset = tabs.front();
-    } else {
-      offset = (offset + (1 / 50) + 1) * 50;
-    }
-    source = source.subspan(tab + 1);
-  }
-}
-
 namespace {
 
-// The color scheme Plain_Text_Print paints with: every slot the same palette
-// index, so the text comes out in one flat color.
-RemapControlType Plain_Scheme(const int fore) {
+// The color scheme TextPrinter::Plain() paints with: every slot the same
+// palette index, so the text comes out in one flat color.
+RemapControlType PlainScheme(const int fore) {
   RemapControlType scheme{};
 
   base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
@@ -824,72 +612,112 @@ RemapControlType Plain_Scheme(const int fore) {
 
 }  // namespace
 
-/***************************************************************************
- * Plain_Text_Print -- Prints text without using a color scheme            *
- *                                                                         *
- * INPUT:                                                                  *
- *		text		text to print
- ** x,y		coords to print at
- ** fore		desired foreground color
- ** back		desired background color
- ** flag		text print control flags
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		Do not use the gradient control flag with this routine!  For
- ** a gradient appearance, use Fancy_Text_Print.
- ** Despite this routine's name, it is actually faster to call
- ** Fancy_Text_Print than this routine.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   01/05/1996 BRR : Created.                                             *
- *=========================================================================*/
-void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
-                      const int fore, const int back, const FontType font,
-                      const TextPrintType flag,
-                      const absl::Span<const absl::FormatArg> args) {
-  RemapControlType scheme = Plain_Scheme(fore);
+TextPrinter::TextPrinter(PixelView& view, const PrintStyle& style)
+    : view_(&view), style_(style) {}
 
-  Fancy_Text_Print(view, text, x, y, &scheme, back, font, flag, args);
+TextPrinter TextPrinter::Plain(PixelView& view, const int fore, const int back,
+                               const FontType font, const TextPrintType flags) {
+  TextPrinter printer(view, {.back = back, .font = font, .flags = flags});
+  printer.plain_scheme_ = PlainScheme(fore);
+  return printer;
 }
 
-/***************************************************************************
- * Plain_Text_Print -- Prints text without using a color scheme            *
- *                                                                         *
- * INPUT:                                                                  *
- *		text		text to print
- ** x,y		coords to print at
- ** fore		desired foreground color
- ** back		desired background color
- ** flag		text print control flags
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		Do not use the gradient control flag with this routine!  For
- ** a gradient appearance, use Fancy_Text_Print.
- ** Despite this routine's name, it is actually faster to call
- ** Fancy_Text_Print than this routine.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   01/05/1996 BRR : Created.                                             *
- *=========================================================================*/
-void Plain_Text_Print(PixelView& view, const char* text, const int x,
-                      const int y, const int fore, const int back,
-                      const FontType font, const TextPrintType flag,
-                      const absl::Span<const absl::FormatArg> args) {
-  RemapControlType scheme = Plain_Scheme(fore);
+TextPrinter TextPrinter::With(const TextPrintType flags) const {
+  TextPrinter printer = *this;
+  printer.style_.flags = style_.flags | flags;
+  return printer;
+}
 
-  Fancy_Text_Print(view, text, x, y, &scheme, back, font, flag, args);
+void TextPrinter::Print(const std::string& text, const game::Point at) const {
+  Print(text.c_str(), at);
+}
+
+void TextPrinter::Print(const int text, const game::Point at) const {
+  if (text != TXT_NONE) {
+    Print(TextString(text), at);
+  }
+}
+
+void TextPrinter::Print(const char* text, const game::Point at) const {
+  if (text == nullptr || *text == '\0') {
+    return;
+  }
+  const TextStyle style =
+      TextStyleFor(style_.font, style_.flags, scheme(), style_.back);
+  int x = at.x;
+  switch (style.flag & (TPF_CENTER | TPF_RIGHT)) {
+    case TPF_CENTER:
+      x -= StringPixelWidth(style.font_style, text) / 2;
+      break;
+
+    case TPF_RIGHT:
+      x -= StringPixelWidth(style.font_style, text);
+      break;
+
+    case TextPrintType::TPF_NONE:
+    case TextPrintType::TPF_NOSHADOW:
+    case TextPrintType::TPF_DROPSHADOW:
+    case TextPrintType::TPF_FULLSHADOW:
+    case TextPrintType::TPF_LIGHTSHADOW:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
+    default:
+      break;
+  }
+
+  if (x < view_->width() && at.y < view_->height()) {
+    view_->Print(style.font_style, text, x, at.y, style.forecolor, style_.back);
+  }
+}
+
+void TextPrinter::PrintClipped(const char* text, const game::Point at,
+                               const int width,
+                               std::span<const int> tabs) const {
+  if (text == nullptr) {
+    return;
+  }
+  char buffer[512];
+  base::SafeCopy(buffer, text);
+  const FontStyle font = TextFontStyle(style_.font, style_.flags);
+  std::span<char> source(buffer);
+  int offset = 0;
+  while (offset < width && !source.empty() && source.front() != '\0') {
+    const auto text_view = std::string_view(source.data());
+    const auto tab = text_view.find('\t');
+    const auto count = tab == std::string_view::npos ? text_view.size() : tab;
+    int line_width = 0;
+    size_t visible = 0;
+    while (visible < count) {
+      const int next = CharPixelWidth(font, base::At(source, visible));
+      if (offset + line_width + next >= width) {
+        break;
+      }
+      line_width += next;
+      ++visible;
+    }
+    base::At(source, visible) = '\0';
+    Print(source.data(), {at.x + offset, at.y});
+    offset += line_width;
+    if (visible < count || tab == std::string_view::npos) {
+      break;
+    }
+    if (!tabs.empty()) {
+      while (tabs.size() > 1 && offset > tabs.front()) {
+        tabs = tabs.subspan(1);
+      }
+      offset = tabs.front();
+    } else {
+      offset = (offset + (1 / 50) + 1) * 50;
+    }
+    source = source.subspan(tab + 1);
+  }
+}
+
+// The scheme lives in the printer itself when it is a plain one, so that a
+// copy of the printer points at its own.
+const RemapControlType* TextPrinter::scheme() const {
+  return plain_scheme_ ? &*plain_scheme_ : style_.scheme;
 }
 
 /***********************************************************************************************
@@ -921,13 +749,14 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
-      Fancy_Text_Print(view, text, (w / 2) + x, 4 + y, Get_Color_Scheme(),
-                       game::kTransparentBlack, FontType::kEditor,
-                       TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      TextPrinter(
+          view, {Get_Color_Scheme(), game::kTransparentBlack, FontType::kEditor,
+                 TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+          .Print(text, {(w / 2) + x, 4 + y});
     } else {
-      Fancy_Text_Print(view, text, (w / 2) + x, 16 + y, Get_Color_Scheme(),
-                       game::kTransparentBlack, kTextFont,
-                       TPF_CENTER | kTextFlags);
+      TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                         TPF_CENTER | kTextFlags})
+          .Print(text, {(w / 2) + x, 16 + y});
       const FontStyle font = TextFontStyle(kTextFont, TPF_CENTER | kTextFlags);
       const int length = StringPixelWidth(font, text);
       view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,

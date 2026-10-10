@@ -256,9 +256,9 @@ ScenarioVarType ChooseMissionVariant() {
   game::TheKeyboard().Clear();
 
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_STAND_BY, 320, 380, Get_Color_Scheme(),
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_CENTER | TPF_DROPSHADOW);
+  TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack,
+                     FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW})
+      .Print(TXT_STAND_BY, {320, 380});
   TheTheme().Fade_Out();
 
   return base::At(kChoiceVariants, choice);

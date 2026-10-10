@@ -120,9 +120,8 @@ void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
     scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
                                                        : PCOLOR_GREY);
   }
-  Conquer_Clip_Text_Print(view, Description(), x, y, scheme,
-                          game::kTransparentBlack, font, flags, width,
-                          kTabStops);
+  TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
+      .PrintClipped(Description(), {x, y}, width, kTabStops);
 }
 
 // Returns the name selected in `list`, or an empty view when the list has no
@@ -962,21 +961,14 @@ bool TriggerType::Edit() {
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
       // Draw the captions
-      Fancy_Text_Print(view, "Trigger Event:", event1_list.X, event1_list.Y - 7,
-                       scheme, game::kTransparentBlack, FontType::kEditor,
-                       TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Action to Perform:", action1_list.X,
-                       action1_list.Y - 7, scheme, game::kTransparentBlack,
-                       FontType::kEditor, TPF_NOSHADOW);
-      Fancy_Text_Print(view, "House:", owner_list.X, owner_list.Y - 7, scheme,
-                       game::kTransparentBlack, FontType::kEditor,
-                       TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Name:", name_edit.X, name_edit.Y - 7, scheme,
-                       game::kTransparentBlack, FontType::kEditor,
-                       TPF_NOSHADOW);
-      Fancy_Text_Print(view, "Persistence:", persistence_list.X,
-                       persistence_list.Y - 7, scheme, game::kTransparentBlack,
-                       FontType::kEditor, TPF_NOSHADOW);
+      const TextPrinter caption(view, {scheme, game::kTransparentBlack,
+                                       FontType::kEditor, TPF_NOSHADOW});
+      caption.Print("Trigger Event:", {event1_list.X, event1_list.Y - 7});
+      caption.Print("Action to Perform:", {action1_list.X, action1_list.Y - 7});
+      caption.Print("House:", {owner_list.X, owner_list.Y - 7});
+      caption.Print("Name:", {name_edit.X, name_edit.Y - 7});
+      caption.Print("Persistence:",
+                    {persistence_list.X, persistence_list.Y - 7});
 
       // For linked events, draw a bracket from each event list to the action
       // list it sets off.

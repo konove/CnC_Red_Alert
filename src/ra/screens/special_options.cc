@@ -109,10 +109,10 @@ void RunSpecialOptionsDialog() {
       Dialog_Box(kDialogX, kDialogY, kDialogWidth, kDialogHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kDialogX, kDialogY, kDialogWidth);
 
-      Fancy_Text_Print(view, TXT_SPEED_BUILD, kCheckBoxX + kLabelOffsetX,
-                       kCheckBoxY, Get_Color_Scheme(), game::kTransparentBlack,
-                       FontType::k6PointGradient,
-                       TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      TextPrinter(view,
+                  {Get_Color_Scheme(), game::kTransparentBlack,
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+          .Print(TXT_SPEED_BUILD, {kCheckBoxX + kLabelOffsetX, kCheckBoxY});
       gadgets.DrawAll(view);
       game::TheMouse().Show();
     }

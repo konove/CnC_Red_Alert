@@ -59,6 +59,7 @@
 #include <span>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
@@ -793,16 +794,14 @@ PathType* FootClass::Find_Path(Cell dest, std::span<game::Facing> final_moves,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "   Left", 0, 92, game::kWhite, game::kBlack,
-                           FontType::k6Point, TPF_NONE);
-          Fancy_Text_Print(view, "Total Steps", 0, 100, game::kWhite,
-                           game::kBlack, FontType::k6Point, TPF_NONE);
+          const TextPrinter report(
+              view, {game::kWhite, game::kBlack, FontType::k6Point, TPF_NONE});
+          report.Print("   Left", {0, 92});
+          report.Print("Total Steps", {0, 100});
           if (left) {
-            Fancy_Text_Print(view, "    %d", 0, 108, game::kWhite, game::kBlack,
-                             FontType::k6Point, TPF_NONE, pleft.Length);
+            report.Print(absl::StrFormat("    %d", pleft.Length), {0, 108});
           } else {
-            Fancy_Text_Print(view, "   FAIL", 0, 108, game::kWhite,
-                             game::kBlack, FontType::k6Point, TPF_NONE);
+            report.Print("   FAIL", {0, 108});
           }
         }
 
@@ -826,16 +825,14 @@ PathType* FootClass::Find_Path(Cell dest, std::span<game::Facing> final_moves,
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
           PixelView& view = TheScreen().visible_view();
-          Fancy_Text_Print(view, "  Right", 0, 92, game::kWhite, game::kBlack,
-                           FontType::k6Point, TPF_NONE);
-          Fancy_Text_Print(view, "Total Steps", 0, 100, game::kWhite,
-                           game::kBlack, FontType::k6Point, TPF_NONE);
+          const TextPrinter report(
+              view, {game::kWhite, game::kBlack, FontType::k6Point, TPF_NONE});
+          report.Print("  Right", {0, 92});
+          report.Print("Total Steps", {0, 100});
           if (right) {
-            Fancy_Text_Print(view, "    %d", 0, 108, game::kWhite, game::kBlack,
-                             FontType::k6Point, TPF_NONE, pright.Length);
+            report.Print(absl::StrFormat("    %d", pright.Length), {0, 108});
           } else {
-            Fancy_Text_Print(view, "   FAIL", 0, 108, game::kWhite,
-                             game::kBlack, FontType::k6Point, TPF_NONE);
+            report.Print("   FAIL", {0, 108});
           }
         }
 
@@ -1595,8 +1592,8 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
   PixelView& view = TheScreen().visible_view();
 
   TheScreen().visible_page().view().Clear();
-  Fancy_Text_Print(view, txt, 160, 0, game::kWhite, game::kBlack,
-                   FontType::k8Point, TPF_CENTER);
+  TextPrinter(view, {game::kWhite, game::kBlack, FontType::k8Point, TPF_CENTER})
+      .Print(txt, {160, 0});
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;

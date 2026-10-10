@@ -75,7 +75,7 @@ namespace ra {
  *button.        *
  *                                                                                             *
  *          style -- The print style for the text in the button. These are the
- *TPF_ flags      * used by Fancy_Text_Print(). *
+ *TPF_ flags      * a TextPrinter takes. *
  *                                                                                             *
  * OUTPUT:   none *
  *                                                                                             *
@@ -237,8 +237,9 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(),
-                     game::kTransparentBlack, TextFont, PrintFlags);
+    TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, TextFont,
+                       PrintFlags})
+        .Print(text, {x, Y});
   }
 }
 

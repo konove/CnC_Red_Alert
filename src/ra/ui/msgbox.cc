@@ -237,8 +237,9 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(),
-                   game::kTransparentBlack, kTextFont, tpf);
+  const TextPrinter body(
+      view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont, tpf});
+  body.Print(buffer, {printx, y + 40});
 
   /*
   **	Redraw the buttons.
@@ -266,8 +267,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Draw the body of the message.
         */
-        Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(),
-                         game::kTransparentBlack, kTextFont, tpf);
+        body.Print(buffer, {printx, y + 40});
 
         /*
         **	Redraw the buttons.

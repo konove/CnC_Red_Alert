@@ -48,6 +48,7 @@
 #include <cctype>
 #include <cstdint>
 
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/gfx/font.h"
@@ -61,7 +62,6 @@
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/screen.h"
-#include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -171,11 +171,11 @@ static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     game::TheMouse().Hide();
-    Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter(view, {hfgc, bgc, FontType::k8Point, TPF_DROPSHADOW})
+        .Print(text, {xpix, ypix});
     engine::window::WaitTicks(2);
-    Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter(view, {nfgc, bgc, FontType::k8Point, TPF_DROPSHADOW})
+        .Print(text, {xpix, ypix});
     game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
@@ -268,19 +268,17 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(view, 0, 0, 0, game::kTransparentBlack,
-                   game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
   const int font_height =
       FontMaxHeight(TextFontStyle(FontType::k8Point, TPF_DROPSHADOW));
   game::TheMouse().Hide();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * font_height) + (i * line_spacing);
-    Fancy_Text_Print(
-        view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
-        text_index == selected_entry && MenuUpdate ? menu.highlight_color
-                                                   : menu.normal_color,
-        game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
+    TextPrinter(
+        view, {text_index == selected_entry && MenuUpdate ? menu.highlight_color
+                                                          : menu.normal_color,
+               game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW})
+        .Print(base::At(labels, base::ToSize(text_index)), {menu_x, draw_y});
   }
   MenuSkip = line_spacing;
   game::TheMouse().Show();
@@ -425,14 +423,14 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     game::TheMouse().Hide();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, game::kTransparentBlack, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter(view, {normcol, game::kTransparentBlack, FontType::k8Point,
+                       TPF_DROPSHADOW})
+        .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, game::kTransparentBlack, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter(view, {litcol, game::kTransparentBlack, FontType::k8Point,
+                       TPF_DROPSHADOW})
+        .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -864,42 +862,19 @@ int Main_Menu(int timeout) {
       PixelView& hidden = TheScreen().hidden_view();
       Dialog_Box(hidden, kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(hidden, TXT_NONE, kDialogX, kDialogY, kDialogW);
-      if constexpr (config::kVirginCheatKeysEnabled) {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, game::kGrey,
-                         game::kTransparentBlack, FontType::k6Point,
-                         TPF_FULLSHADOW | TPF_RIGHT,
-                         TheGameState().version_text());
+        TextPrinter(hidden, {game::kGrey, game::kTransparentBlack,
+                             FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT})
+            .Print(absl::StrFormat("Demo%s", TheGameState().version_text()),
+                   {kDialogX + kDialogW - 10, kDialogY + kDialogH - 20});
 #else
-        Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, game::kGrey,
-                         game::kTransparentBlack, FontType::k6Point,
-                         TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
-                         TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
+      TextPrinter(hidden, {game::kGrey, game::kTransparentBlack,
+                           FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT})
+          .Print(absl::StrFormat("V.%d%s", Version_Number(),
+                                 TheGameState().version_text()),
+                 {kDialogX + kDialogW - 10, kDialogY + kDialogH - 20});
 #endif
-        //			Fancy_Text_Print("V.%d%s%02d",
-        // D_DIALOG_X+D_DIALOG_W-5,
-        // D_DIALOG_Y+D_DIALOG_H-10, GREY, TBLACK,
-        // TPF_6POINT|TPF_FULLSHADOW|TPF_RIGHT, Version_Number(), VersionText,
-        // FOREIGN_VERSION_NUMBER);
-      } else {
-#ifdef DEMO
-        Version_Number();
-        Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, game::kGrey,
-                         game::kTransparentBlack, FontType::k6Point,
-                         TPF_FULLSHADOW | TPF_RIGHT,
-                         TheGameState().version_text());
-#else
-        Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, game::kGrey,
-                         game::kTransparentBlack, FontType::k6Point,
-                         TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
-                         TheGameState().version_text());
-#endif
-      }
 
       /*
       **	Copy the menu to the visible page.

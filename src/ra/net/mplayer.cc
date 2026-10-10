@@ -577,9 +577,9 @@ int Surrender_Dialog(const char* text) {
       //	Draw the captions
       //...............................................................
       // Stalemate games.
-      Fancy_Text_Print(view, text, kDDialogCx, kDDialogY + kDTopmargin,
-                       Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
-                       TPF_CENTER | kTextFlags);
+      TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                         TPF_CENTER | kTextFlags})
+          .Print(text, {kDDialogCx, kDDialogY + kDTopmargin});
 
       //..................................................................
       //	Redraw the buttons
@@ -759,10 +759,10 @@ int Abort_Dialog() {
       //...............................................................
       //	Draw the captions
       //...............................................................
-      Fancy_Text_Print(view, TextString(TXT_CONFIRM_EXIT), kDDialogCx,
-                       kDDialogY + kDTopmargin, Get_Color_Scheme(),
-                       game::kTransparentBlack, kTextFont,
-                       TPF_CENTER | kTextFlags);
+      TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                         TPF_CENTER | kTextFlags})
+          .Print(TextString(TXT_CONFIRM_EXIT),
+                 {kDDialogCx, kDDialogY + kDTopmargin});
 
       //..................................................................
       //	Redraw the buttons

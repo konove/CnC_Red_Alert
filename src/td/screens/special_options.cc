@@ -181,10 +181,11 @@ void RunSpecialOptionsDialog() {
 
       for (int index = 0; index < std::ssize(kOptions); ++index) {
         const CheckBoxClass& check_box = *check_boxes.at(base::ToSize(index));
-        Fancy_Text_Print(view, kOptions.at(base::ToSize(index)).label,
-                         check_box.X + kLabelOffsetX, check_box.Y, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(kOptions.at(base::ToSize(index)).label,
+                   {check_box.X + kLabelOffsetX, check_box.Y});
       }
       gadgets.DrawAll(view);
       game::TheMouse().Show();

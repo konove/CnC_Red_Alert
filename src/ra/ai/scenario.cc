@@ -850,10 +850,10 @@ void Do_Win() {
     PixelView& view = TheScreen().visible_view();
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
-    Fancy_Text_Print(view, TXT_SCENARIO_WON, x, 180,
-                     &ThePalettes().color_remaps().at(PCOLOR_RED),
-                     game::kTransparentBlack, FontType::kVcr,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+    TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                       game::kTransparentBlack, FontType::kVcr,
+                       TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW})
+        .Print(TXT_SCENARIO_WON, {x, 180});
     speech_timer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
     }
@@ -1025,10 +1025,10 @@ void Do_Lose() {
   **	Announce win to player.
   */
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, 180,
-                   &ThePalettes().color_remaps().at(PCOLOR_RED),
-                   game::kTransparentBlack, FontType::kVcr,
-                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+  TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                     game::kTransparentBlack, FontType::kVcr,
+                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW})
+      .Print(TXT_SCENARIO_LOST, {x, 180});
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
@@ -1117,10 +1117,10 @@ void Do_Draw() {
   **	Announce win to player.
   */
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_WOL_DRAW, x, 180,
-                   &ThePalettes().color_remaps().at(PCOLOR_RED),
-                   game::kTransparentBlack, FontType::kVcr,
-                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+  TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                     game::kTransparentBlack, FontType::kVcr,
+                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW})
+      .Print(TXT_WOL_DRAW, {x, 180});
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }

@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
@@ -174,13 +175,15 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
 /*=========================================================================*/
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
+  const TextPrinter highlighted =
+      TextPrinter::Plain(view, hfgc, bgc, FontType::k8Point, TPF_DROPSHADOW);
+  const TextPrinter normal =
+      TextPrinter::Plain(view, nfgc, bgc, FontType::k8Point, TPF_DROPSHADOW);
   for (int loop = 0; loop < 3; loop++) {
     game::TheMouse().Hide();
-    Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    highlighted.Print(text, {xpix, ypix});
     engine::window::WaitTicks(2);
-    Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    normal.Print(text, {xpix, ypix});
     game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
@@ -234,18 +237,16 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
-  Plain_Text_Print(view, 0, 0, 0, game::kTransparentBlack,
-                   game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
   const int item_height =
       FontMaxHeight(TextFontStyle(kMenuTextFont, kMenuTextFlags));
   game::TheMouse().Hide();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * item_height) + (lp * skip);
-    Plain_Text_Print(
-        view, base::At(text, base::ToSize(idx)), menux, drawy,
-        base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
-        game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW);
+    TextPrinter::Plain(
+        view, base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
+        game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW)
+        .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[base::ToSize(idx)], menux, drawy,
     //menuptr[kHilite],
@@ -393,14 +394,14 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     game::TheMouse().Hide();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, game::kTransparentBlack, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter::Plain(view, normcol, game::kTransparentBlack,
+                       FontType::k8Point, TPF_DROPSHADOW)
+        .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, game::kTransparentBlack, FontType::k8Point,
-                     TPF_DROPSHADOW);
+    TextPrinter::Plain(view, litcol, game::kTransparentBlack, FontType::k8Point,
+                       TPF_DROPSHADOW)
+        .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -727,10 +728,10 @@ int Main_Menu(int32_t /*unused*/) {
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
       commands.DrawAll(hidden);
-      Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
-                       d_dialog_y + d_dialog_h - 10, Get_Color_Scheme(),
-                       game::kTransparentBlack, FontType::kEditor,
-                       TPF_NOSHADOW | TPF_RIGHT, Version_Name());
+      TextPrinter(hidden, {Get_Color_Scheme(), game::kTransparentBlack,
+                           FontType::kEditor, TPF_NOSHADOW | TPF_RIGHT})
+          .Print(absl::StrFormat("V%s", Version_Name()),
+                 {d_dialog_x + d_dialog_w - 36, d_dialog_y + d_dialog_h - 10});
 
       /*
       **	Copy the menu to the visible page.

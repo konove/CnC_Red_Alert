@@ -253,6 +253,17 @@ target_compile_definitions(ra_text_style_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_text_style_test)
 apply_language_setting(ra_text_style_test)
 
+# Prints with TextPrinter onto a page of its own, in UiFixture's block font.
+add_gtest(
+    NAME ra_text_printer_test
+    SOURCES ui/text_printer_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_text_printer_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_text_printer_test)
+apply_language_setting(ra_text_printer_test)
+
 add_gtest(
     NAME ra_shape_draw_test
     SOURCES assets/shape_draw_test.cc startup/startup.cc

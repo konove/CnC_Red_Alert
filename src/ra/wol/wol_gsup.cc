@@ -1015,40 +1015,34 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(
-            view, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-            d_playerlist_y - d_txt6_h, scheme, game::kTransparentBlack,
-            kTextFont, kTextFlags | TPF_CENTER);
+        const TextPrinter label(
+            view, {scheme, game::kTransparentBlack, kTextFont, kTextFlags});
+        const TextPrinter centered_label = label.With(TPF_CENTER);
+        const TextPrinter right_label = label.With(TPF_RIGHT);
+        const TextPrinter info(
+            view, {scheme, game::kTransparentBlack, FontType::kType, TPF_NONE});
+        centered_label.Print(
+            TXT_PLAYERS,
+            {d_playerlist_x + (d_playerlist_w / 2), d_playerlist_y - d_txt6_h});
         if (bHost) {
-          Fancy_Text_Print(view, TXT_SCENARIOS,
-                           d_scenariolist_x + d_scenariolist_w,
-                           d_scenariolist_y - 12, scheme,
-                           game::kTransparentBlack, FontType::kType, TPF_RIGHT);
+          info.With(TPF_RIGHT).Print(
+              TXT_SCENARIOS,
+              {d_scenariolist_x + d_scenariolist_w, d_scenariolist_y - 12});
         }
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
-        Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_RIGHT);
-        Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
-                         game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_RIGHT);
-        Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, game::kTransparentBlack, kTextFont,
-                         kTextFlags | TPF_RIGHT);
-        Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
-                         d_aiplayers_y, scheme, game::kTransparentBlack,
-                         kTextFont, kTextFlags | TPF_RIGHT);
-        Fancy_Text_Print(
-            view, TXT_SIDE_COLON,
-            //					d_house_x + (d_house_w / 2),
-            d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
-            game::kTransparentBlack, kTextFont, TPF_CENTER | kTextFlags);
-        Fancy_Text_Print(view, TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
-                         d_color_y - d_txt6_h, scheme, game::kTransparentBlack,
-                         kTextFont, TPF_CENTER | kTextFlags);
+        right_label.Print(TXT_COUNT, {d_count_x - 4, d_count_y});
+        right_label.Print(TXT_LEVEL, {d_level_x - 4, d_level_y});
+        right_label.Print(TXT_CREDITS_COLON, {d_credits_x - 4, d_credits_y});
+        right_label.Print(TXT_AI_PLAYERS_COLON,
+                          {d_aiplayers_x - 4, d_aiplayers_y});
+        centered_label.Print(
+            TXT_SIDE_COLON,
+            {d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h});
+        centered_label.Print(TXT_COLOR_COLON, {d_color_x + (d_color_w * 4),
+                                               d_color_y - d_txt6_h});
 
         const char* szGameKind = nullptr;
         const dib::Image* pIcon = nullptr;
@@ -1078,9 +1072,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         const int iGameInfoSpacingY = 14;
         const int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
-        Fancy_Text_Print(view, szGameKind, d_gamekind_x,
-                         d_gamekind_y - (iGameInfoSpacingY * 1), scheme,
-                         game::kTransparentBlack, FontType::kType, TPF_NONE);
+        info.Print(szGameKind,
+                   {d_gamekind_x, d_gamekind_y - (iGameInfoSpacingY * 1)});
         //	Game kind icon.
         if (pIcon != nullptr) {
           DrawDib(view, *pIcon, d_gamekind_x - 16,
@@ -1088,10 +1081,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         //	"Tournament."
         if (pWO->GameInfoCurrent.bTournament) {
-          Fancy_Text_Print(view, TXT_WOL_CG_TOURNAMENT,
-                           d_gamekind_x + iGameInfoSecondColumnX,
-                           d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
-                           game::kTransparentBlack, FontType::kType, TPF_NONE);
+          info.Print(TXT_WOL_CG_TOURNAMENT,
+                     {d_gamekind_x + iGameInfoSecondColumnX,
+                      d_gamekind_y + (iGameInfoSpacingY * 1)});
           DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconTournament),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
@@ -1101,10 +1093,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if (pWO->GameInfoCurrent.bPrivate) {
           const std::string szPrivatePassword = base::FormatRuntime(
               TXT_WOL_PRIVATEPASSWORD, pWO->GameInfoCurrent.szPassword);
-          Fancy_Text_Print(view, szPrivatePassword.c_str(),
-                           d_gamekind_x + iGameInfoSecondColumnX,
-                           d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
-                           game::kTransparentBlack, FontType::kType, TPF_NONE);
+          info.Print(szPrivatePassword.c_str(),
+                     {d_gamekind_x + iGameInfoSecondColumnX,
+                      d_gamekind_y + (iGameInfoSpacingY * 2)});
           DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconPrivate),
                           d_gamekind_x + iGameInfoSecondColumnX - 16,
                           d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
@@ -1232,9 +1223,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
 
         //	Print scenario name.
-        Conquer_Clip_Text_Print(view, szScenarioNameDisplay, d_gamekind_x,
-                                d_gamekind_y, scheme, game::kTransparentBlack,
-                                FontType::kType, TPF_NONE, d_gamekind_w);
+        TextPrinter(
+            view, {scheme, game::kTransparentBlack, FontType::kType, TPF_NONE})
+            .PrintClipped(szScenarioNameDisplay, {d_gamekind_x, d_gamekind_y},
+                          d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);

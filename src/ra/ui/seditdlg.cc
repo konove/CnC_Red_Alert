@@ -236,13 +236,12 @@ const char* SimpleEditDlgClass::Show() {
       /*
       **	Redraw the buttons.
       */
-      Fancy_Text_Print(view, szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
-                       kTextFlags);
+      const TextPrinter prompt(
+          view,
+          {Get_Color_Scheme(), game::kTransparentBlack, kTextFont, kTextFlags});
+      prompt.Print(szPrompt.c_str(), {d_prompt_x, d_prompt_y});
       if (!szPrompt2.empty()) {
-        Fancy_Text_Print(view, szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
-                         kTextFlags);
+        prompt.Print(szPrompt2.c_str(), {d_prompt2_x, d_prompt2_y});
       }
       commands.FlagToRedraw();
       game::TheMouse().Show();

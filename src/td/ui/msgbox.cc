@@ -233,6 +233,9 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the dialog.
   */
+  const TextPrinter message(
+      view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+             TPF_USE_GRAD_PAL | TPF_NOSHADOW});
   game::TheMouse().Hide();
   if (preserve) {
     back.resize(base::ToSize(width * height));
@@ -257,10 +260,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                     kCcGreen, game::kTransparentBlack,
-                     FontType::k6PointGradient,
-                     TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    message.Print(buffer, {x + (20 * factor), y + (25 * factor)});
 #ifdef JAPANESE
   }
 #endif
@@ -302,10 +302,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
-                           kCcGreen, game::kTransparentBlack,
-                           FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          message.Print(buffer, {x + (20 * factor), y + (25 * factor)});
 #ifdef JAPANESE
         }
 #endif

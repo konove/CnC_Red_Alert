@@ -443,9 +443,9 @@ int MapEditClass::Placement_Dialog() {
       **	Warning: TextString returns an EMS pointer, so standard string
       **	functions won't work!
       */
-      Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,
-                       kPictureY + kMargin, scheme, game::kTransparentBlack,
-                       FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
+      TextPrinter(view, {scheme, game::kTransparentBlack, FontType::kEditor,
+                         TPF_CENTER | TPF_NOSHADOW})
+          .Print(curobj->Full_Name(), {kPictureCx, kPictureY + kMargin});
 
       /*
       **	Redraw buttons

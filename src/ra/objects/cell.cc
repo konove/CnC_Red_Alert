@@ -97,6 +97,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
@@ -977,13 +978,14 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
                   TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
                   TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
                   static_cast<unsigned char>(LocalRandomPick(1, 254)));
-    Fancy_Text_Print(view, "%02X%02X\r%d%d%d\r%d %d",
-                     TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                     TheMap().TacPixelY + y, &ThePalettes().grey_scheme(),
-                     game::kTransparentBlack, FontType::kEditor,
-                     TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, cell.y(),
-                     cell.x(), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
-                     Zones.at(MZONE_DESTROYER), Overlay, OverlayData);
+    TextPrinter(view, {&ThePalettes().grey_scheme(), game::kTransparentBlack,
+                       FontType::kEditor,
+                       TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW})
+        .Print(absl::StrFormat("%02X%02X\r%d%d%d\r%d %d", cell.y(), cell.x(),
+                               Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
+                               Zones.at(MZONE_DESTROYER), Overlay, OverlayData),
+               {TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+                TheMap().TacPixelY + y});
   } else {
     if constexpr (config::kScenarioEditorEnabled) {
       /*
@@ -1059,11 +1061,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
         **	Draw the cell's Trigger mnemonic, if it has a trigger
         */
         if (Trigger != nullptr) {
-          Fancy_Text_Print(view, Trigger->Class->IniName,
-                           x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                           &ThePalettes().color_remaps().at(PCOLOR_RED),
-                           game::kTransparentBlack, FontType::kEditor,
-                           TPF_FULLSHADOW);
+          TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                             game::kTransparentBlack, FontType::kEditor,
+                             TPF_FULLSHADOW})
+              .Print(Trigger->Class->IniName,
+                     {x + TheMap().TacPixelX, y + TheMap().TacPixelY});
         }
 
         /*
@@ -1081,32 +1083,32 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
                 base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
                 base::At(waypt, 2) = 0;
               }
-              Fancy_Text_Print(
-                  view, waypt,
-                  TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                  TheMap().TacPixelY + y + (game::kCellHeightPixels / 2) - 3,
-                  &ThePalettes().color_remaps().at(PCOLOR_RED),
-                  game::kTransparentBlack, FontType::kEditor,
-                  TPF_CENTER | TPF_FULLSHADOW);
+              TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_RED),
+                                 game::kTransparentBlack, FontType::kEditor,
+                                 TPF_CENTER | TPF_FULLSHADOW})
+                  .Print(waypt,
+                         {TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+                          TheMap().TacPixelY + y +
+                              (game::kCellHeightPixels / 2) - 3});
               break;
             }
           }
+          const TextPrinter waypoint_name(
+              view,
+              {&ThePalettes().color_remaps().at(PCOLOR_GREY),
+               game::kTransparentBlack, FontType::kEditor, TPF_FULLSHADOW});
           if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) ==
               Cell_Number()) {
-            Fancy_Text_Print(
-                view, "Home", TheMap().TacPixelX + x,
-                TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
-                &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                game::kTransparentBlack, FontType::kEditor, TPF_FULLSHADOW);
+            waypoint_name.Print(
+                "Home", {TheMap().TacPixelX + x,
+                         TheMap().TacPixelY + y + game::kCellHeightPixels - 7});
           }
           if (base::At(TheScenario().Waypoint,
                        ScenarioClass::kReinforcementWaypoint) ==
               Cell_Number()) {
-            Fancy_Text_Print(
-                view, "Reinf", TheMap().TacPixelX + x,
-                TheMap().TacPixelY + y + game::kCellHeightPixels - 7,
-                &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                game::kTransparentBlack, FontType::kEditor, TPF_FULLSHADOW);
+            waypoint_name.Print("Reinf", {TheMap().TacPixelX + x,
+                                          TheMap().TacPixelY + y +
+                                              game::kCellHeightPixels - 7});
           }
         }
       }

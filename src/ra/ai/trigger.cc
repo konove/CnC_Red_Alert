@@ -132,15 +132,15 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description().c_str(), x, y, scheme,
-                              game::kTransparentBlack, font, flags, width,
-                              _tabs);
+      TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
+          .PrintClipped(Description().c_str(), {x, y}, width, _tabs);
     } else {
-      Conquer_Clip_Text_Print(
-          view, Description().c_str(), x, y,
-          (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                    : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          game::kTransparentBlack, font, flags, width, _tabs);
+      TextPrinter(
+          view,
+          {(selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
+           game::kTransparentBlack, font, flags})
+          .PrintClipped(Description().c_str(), {x, y}, width, _tabs);
     }
   }
 }

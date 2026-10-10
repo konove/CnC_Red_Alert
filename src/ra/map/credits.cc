@@ -46,7 +46,9 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "absl/strings/str_format.h"
 #include "base/fixed.h"
+#include "base/strings/format.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
@@ -56,6 +58,7 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
+#include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/tab.h"
@@ -124,9 +127,10 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab(view);
-    Fancy_Text_Print(view, "%ld", xx, 0, &ThePalettes().metal_scheme(),
-                     game::kTransparentBlack, FontType::kMetal12,
-                     TPF_CENTER | TPF_USE_GRAD_PAL, Current);
+    const TextPrinter tab_text(
+        view, {&ThePalettes().metal_scheme(), game::kTransparentBlack,
+               FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL});
+    tab_text.Print(absl::StrFormat("%ld", Current), {xx, 0});
 
     if (TheScenario().MissionTimer.IsRunning()) {
       int64_t secs = TheScenario().MissionTimer.Remaining() / kTicksPerSecond;
@@ -172,15 +176,13 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
       }
 
       if (hours) {
-        Fancy_Text_Print(view, TXT_TIME_FORMAT_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), game::kTransparentBlack,
-                         FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
-                         hours, mins, secs);
+        tab_text.Print(base::FormatRuntime(TextString(TXT_TIME_FORMAT_HOURS),
+                                           hours, mins, secs),
+                       {400, 0});
       } else {
-        Fancy_Text_Print(view, TXT_TIME_FORMAT_NO_HOURS, 400, 0,
-                         &ThePalettes().metal_scheme(), game::kTransparentBlack,
-                         FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL,
-                         mins, secs);
+        tab_text.Print(base::FormatRuntime(TextString(TXT_TIME_FORMAT_NO_HOURS),
+                                           mins, secs),
+                       {400, 0});
       }
     }
 

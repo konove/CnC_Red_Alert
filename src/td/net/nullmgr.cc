@@ -321,9 +321,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Dialog_Box(view, x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  TextPrinter(view,
+              {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+               TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+      .Print(buffer, {x + (20 * factor), y + (25 * factor)});
 
   game::TheMouse().Show();
 
@@ -645,9 +646,11 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(view, buffer, (view.width() / 2) - (text_width / 2),
-                   y + (25 * factor), kCcGreen, game::kTransparentBlack,
-                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  TextPrinter(view,
+              {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+               TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+      .Print(buffer,
+             {(view.width() / 2) - (text_width / 2), y + (25 * factor)});
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -898,10 +901,11 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         */
         Draw_Caption(view, TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(
-            view, text_buffer, (view.width() / 2) - (text_width / 2),
-            y + (25 * factor), kCcGreen, game::kTransparentBlack,
-            FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(text_buffer,
+                   {(view.width() / 2) - (text_width / 2), y + (25 * factor)});
 
         Commands.DrawAll(view);
       }

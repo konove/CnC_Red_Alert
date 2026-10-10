@@ -1116,13 +1116,13 @@ void MessageListClass::Draw(PixelView& view) {
     if (CursorChar && EditCurPos - EditInitPos < MaxChars - 1 &&
         EditLabel->Has_Focus()) {
       txt[0] = CursorChar;
-      Fancy_Text_Print(
-          view, txt,
-          EditLabel->X + StringPixelWidth(TextFontStyle(EditLabel->TextFont,
-                                                        EditLabel->Style),
-                                          EditLabel->Text),
-          EditLabel->Y, EditLabel->Color, game::kTransparentBlack,
-          EditLabel->TextFont, EditLabel->Style);
+      TextPrinter(view, {EditLabel->Color, game::kTransparentBlack,
+                         EditLabel->TextFont, EditLabel->Style})
+          .Print(txt, {EditLabel->X +
+                           StringPixelWidth(TextFontStyle(EditLabel->TextFont,
+                                                          EditLabel->Style),
+                                            EditLabel->Text),
+                       EditLabel->Y});
     }
 
     if (TheScreen().IsVisible(&view)) {

@@ -550,10 +550,10 @@ int MapEditClass::Placement_Dialog() {
         Warning: Text_String returns an EMS pointer, so standard string
         functions won't work!
         ...............................................................*/
-        Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,
-                         kPictureY + kMargin, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(curobj->Full_Name(), {kPictureCx, kPictureY + kMargin});
       }
 
       /*

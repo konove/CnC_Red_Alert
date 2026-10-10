@@ -215,13 +215,14 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                 int width, bool selected) {
   RemapControlType* color = nullptr;
 
+  const TextPrinter item(view, {base::At(Colors, index),
+                                game::kTransparentBlack, TextFont, TextFlags});
+
   /*
   ** Draw a non-selected item in its color
   */
   if (!selected) {
-    Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            base::At(Colors, index), game::kTransparentBlack,
-                            TextFont, TextFlags, width, Tabs);
+    item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
     return;
   }
 
@@ -239,9 +240,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NORMAL:
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                              base::At(Colors, index), game::kTransparentBlack,
-                              TextFont, TextFlags, width, Tabs);
+      item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
 
     /*
@@ -250,13 +249,12 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_HIGHLIGHT:
       if (HasGradientFontBits(TextFont)) {
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color,
-                                game::kTransparentBlack, TextFont,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+        TextPrinter(view, {color, game::kTransparentBlack, TextFont,
+                           TextFlags | TPF_BRIGHT_COLOR})
+            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color,
-                                game::kTransparentBlack, TextFont, TextFlags,
-                                width, Tabs);
+        TextPrinter(view, {color, game::kTransparentBlack, TextFont, TextFlags})
+            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
       break;
 
@@ -265,9 +263,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_BOX:
       view.DrawRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                              base::At(Colors, index), game::kTransparentBlack,
-                              TextFont, TextFlags, width, Tabs);
+      item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
 
     /*
@@ -276,15 +272,11 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_BAR:
       if (HasGradientFontBits(TextFont)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1, color->Color);
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                                base::At(Colors, index),
-                                game::kTransparentBlack, TextFont,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+        item.With(TPF_BRIGHT_COLOR)
+            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
-        Conquer_Clip_Text_Print(
-            view, Get_Item(index), x, y, base::At(Colors, index),
-            game::kTransparentBlack, TextFont, TextFlags, width, Tabs);
+        item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
       break;
 

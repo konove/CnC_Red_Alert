@@ -128,6 +128,16 @@ add_gtest(
 target_compile_definitions(td_options_dialogs_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_options_dialogs_test)
 
+# Prints with TextPrinter onto a page of its own, in UiFixture's block font.
+add_gtest(
+    NAME td_text_printer_test
+    SOURCES ui/text_printer_test.cc ${TD_GAME_TEST_UTIL} ${TD_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_text_printer_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_text_printer_test)
+
 # Plays the developer options dialog in a real Game.
 add_gtest(
     NAME td_special_options_test

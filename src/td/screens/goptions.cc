@@ -298,37 +298,37 @@ void GameOptionsClass::Process() {
       */
 #ifdef DEMO
       Version_Number();
-      Fancy_Text_Print(
-          view, "DEMO%s",
-          ((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
-            WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth])
-           << 3) -
-              3 * resfactor,
-          WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] +
-              WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
-              ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
-                                                    : (24 * resfactor)),
-          game::kGrey, game::kTransparentBlack, FontType::k6Point,
-          TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
-          TheGameState().version_text());
+      TextPrinter(view, {game::kGrey, game::kTransparentBlack,
+                         FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT})
+          .Print(
+              absl::StrFormat("DEMO%s", ScenarioName),
+              {((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
+                 WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth])
+                << 3) -
+                   3 * resfactor,
+               WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] +
+                   WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
+                   ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
+                                                         : (24 * resfactor))});
 #else
-      Fancy_Text_Print(
-          view, "%s\rV.%d%s",
-          ((base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
-                     kWindowX) +
-            base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
-                     kWindowWidth)) *
-           8) -
-              (3 * resfactor),
-          base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
-                   kWindowY) +
-              base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+      TextPrinter(view, {game::kGrey, game::kTransparentBlack,
+                         FontType::k6Point, TPF_NOSHADOW | TPF_RIGHT})
+          .Print(
+              absl::StrFormat("%s\rV.%d%s", TheWorld().scenario_name(),
+                              Version_Number(), TheGameState().version_text()),
+              {((base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+                          kWindowX) +
+                 base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+                          kWindowWidth)) *
+                8) -
+                   (3 * resfactor),
+               base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
+                        kWindowY) +
+                   base::At(
+                       base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                        kWindowHeight) -
-              (TheSession().type() == GAME_NORMAL ? 32 * resfactor
-                                                  : 24 * resfactor),
-          game::kGrey, game::kTransparentBlack, FontType::k6Point,
-          TPF_NOSHADOW | TPF_RIGHT, TheWorld().scenario_name(),
-          Version_Number(), TheGameState().version_text());
+                   (TheSession().type() == GAME_NORMAL ? 32 * resfactor
+                                                       : 24 * resfactor)});
 #endif
 
       buttons.DrawAll(view);
@@ -665,9 +665,10 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   **	Draw the caption.
   */
   if (text != TXT_NONE) {
-    Fancy_Text_Print(view, text, (w / 2) + x, (5 * factor) + y, kCcGreen,
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    TextPrinter(view,
+                {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                 TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+        .Print(text, {(w / 2) + x, (5 * factor) + y});
 
     const FontStyle font =
         TextFontStyle(FontType::k6PointGradient,

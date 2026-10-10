@@ -184,9 +184,9 @@ void ToolTipClass::Show(PixelView& view) {
     // Simple_Text_Print( szTipUse, xShowUse, yShowUse,
     // Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
     // TPF_TYPE ); //TPF_DROPSHADOW );
-    Simple_Text_Print(view, szTipUse, xShowUse, yShowUse, Get_Color_Scheme(),
-                      game::kBlack, FontType::kType,
-                      TPF_NONE);  // TPF_DROPSHADOW );
+    TextPrinter(view,
+                {Get_Color_Scheme(), game::kBlack, FontType::kType, TPF_NONE})
+        .Print(szTipUse, {xShowUse, yShowUse});  // TPF_DROPSHADOW );
     Draw_Box(view, xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
     game::TheMouse().Show();
     bShowing = true;

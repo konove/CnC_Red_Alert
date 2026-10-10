@@ -384,10 +384,11 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         */
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + 50, Get_Color_Scheme(),
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {Get_Color_Scheme(), game::kTransparentBlack,
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(info_string.c_str(),
+                   {d_dialog_cx - (width / 2), d_dialog_y + 50});
 
         game::TheMouse().Show();
       }
@@ -685,10 +686,11 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         */
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor), Get_Color_Scheme(),
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {Get_Color_Scheme(), game::kTransparentBlack,
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(info_string.c_str(),
+                   {d_dialog_cx - (width / 2), d_dialog_y + (25 * factor)});
 
         game::TheMouse().Show();
       }

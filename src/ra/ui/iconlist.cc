@@ -448,15 +448,13 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     //	Tabs hack. If there are icons, and a tab, push back the FIRST tab
     // appropriately. 	(Ignore others. This is a hack because having more than
     // one tab will now break this.)
+    const TextPrinter item(view,
+                           {pRemap, game::kTransparentBlack, TextFont, flags});
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
-      Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap,
-                              game::kTransparentBlack, TextFont, flags, width,
-                              tab);
+      item.PrintClipped(Get_Item(index), {xText, y}, width, tab);
     } else {
-      Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap,
-                              game::kTransparentBlack, TextFont, flags, width,
-                              {});
+      item.PrintClipped(Get_Item(index), {xText, y}, width, {});
     }
   }
 

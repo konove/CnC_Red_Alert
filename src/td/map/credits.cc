@@ -62,6 +62,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "absl/strings/str_format.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/standard_colors.h"
@@ -119,9 +120,9 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab(view);
-    Fancy_Text_Print(view, "%ld", xx, 0, 11, game::kTransparentBlack,
-                     FontType::kGreen12Gradient, TPF_CENTER | TPF_USE_GRAD_PAL,
-                     Current);
+    TextPrinter(view, {11, game::kTransparentBlack, FontType::kGreen12Gradient,
+                       TPF_CENTER | TPF_USE_GRAD_PAL})
+        .Print(absl::StrFormat("%ld", Current), {xx, 0});
 
     IsToRedraw = false;
     IsAudible = false;

@@ -1060,6 +1060,11 @@ static int Net_Join_Dialog() {
     */
     if (display != REDRAW_NONE) {
       game::TheMouse().Hide();
+      const TextPrinter label(
+          view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                 TPF_USE_GRAD_PAL | TPF_NOSHADOW});
+      const TextPrinter right_label = label.With(TPF_RIGHT);
+      const TextPrinter centered = label.With(TPF_CENTER);
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -1075,47 +1080,28 @@ static int Net_Join_Dialog() {
         Draw_Caption(view, TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
 
-        Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print(TXT_YOUR_NAME, {d_name_x - 5, d_name_y + 1});
 
-        Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print(TXT_SIDE_COLON, {d_gdi_x - 5, d_gdi_y + 1});
 
-        Fancy_Text_Print(view, TXT_COLOR_COLON, base::At(cbox_x, 0) - 5,
-                         d_color_y + 1, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print(TXT_COLOR_COLON,
+                          {base::At(cbox_x, 0) - 5, d_color_y + 1});
 
-        Fancy_Text_Print(view, TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
-                         d_gamelist_y - d_txt6_h, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        centered.Print(TXT_GAMES, {d_gamelist_x + (d_gamelist_w / 2),
+                                   d_gamelist_y - d_txt6_h});
 
-        Fancy_Text_Print(view, TXT_PLAYERS,
-                         d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        centered.Print(TXT_PLAYERS, {d_playerlist_x + (d_playerlist_w / 2),
+                                     d_playerlist_y - d_txt6_h});
 
         /*...............................................................
         Join-state-specific labels:
         ...............................................................*/
         if (joinstate > JOIN_NOTHING) {
-          Fancy_Text_Print(view, namebuf, d_name_x, d_name_y + 1, kCcGreen,
-                           game::kTransparentBlack, FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(namebuf, {d_name_x, d_name_y + 1});
           if (TheSession().house() == HOUSE_GOOD) {
-            Fancy_Text_Print(view, TXT_G_D_I, d_gdi_x, d_gdi_y + 1, kCcGreen,
-                             game::kTransparentBlack, FontType::k6PointGradient,
-                             TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            label.Print(TXT_G_D_I, {d_gdi_x, d_gdi_y + 1});
           } else {
-            Fancy_Text_Print(view, TXT_N_O_D, d_gdi_x, d_gdi_y + 1, kCcGreen,
-                             game::kTransparentBlack, FontType::k6PointGradient,
-                             TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            label.Print(TXT_N_O_D, {d_gdi_x, d_gdi_y + 1});
           }
         }
 
@@ -1195,16 +1181,15 @@ static int Net_Join_Dialog() {
                            base::At(TheSession().scenarios(),
                                     TheSession().scenario_index()));
 
-            Fancy_Text_Print(view, txt, d_dialog_cx, d_msg1_y, kCcGreen,
-                             game::kTransparentBlack, FontType::k6PointGradient,
-                             TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
+            centered.Print(txt, {d_dialog_cx, d_msg1_y});
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Text_String(TXT_NOT_FOUND));
 
-            Fancy_Text_Print(view, txt, d_dialog_cx, d_msg1_y, kCcNodColor,
-                             game::kTransparentBlack, FontType::k6PointGradient,
-                             TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
+            TextPrinter(view, {kCcNodColor, game::kTransparentBlack,
+                               FontType::k6PointGradient,
+                               TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER})
+                .Print(txt, {d_dialog_cx, d_msg1_y});
           }
 
           /*............................................................
@@ -1212,9 +1197,7 @@ static int Net_Join_Dialog() {
           ............................................................*/
           p = Text_String(TXT_START_CREDITS_COLON);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p, TheSession().credits());
-          Fancy_Text_Print(view, txt, d_dialog_cx, d_msg2_y, kCcGreen,
-                           game::kTransparentBlack, FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
+          centered.Print(txt, {d_dialog_cx, d_msg2_y});
 
           // The labels below are measured in the font they print in.
           const FontStyle label_font = TextFontStyle(
@@ -1226,11 +1209,9 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_COUNT);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
                          TheSession().unit_count());
-          Fancy_Text_Print(
-              view, txt,
-              d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(label_font, p),
-              d_msg3_y, kCcGreen, game::kTransparentBlack,
-              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg3_y});
 
           p = Text_String(TXT_LEVEL);
           if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -1239,12 +1220,9 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               StringPixelWidth(label_font, p),
-                           d_msg3_y, kCcGreen, game::kTransparentBlack,
-                           FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg3_y});
 
           /*............................................................
           Bases
@@ -1255,11 +1233,9 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
-          Fancy_Text_Print(
-              view, txt,
-              d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(label_font, p),
-              d_msg4_y, kCcGreen, game::kTransparentBlack,
-              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg4_y});
 
           /*............................................................
           Tiberium
@@ -1271,11 +1247,9 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(
-              view, txt,
-              d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(label_font, p),
-              d_msg5_y, kCcGreen, game::kTransparentBlack,
-              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg5_y});
 
           /*............................................................
           Goody boxes
@@ -1287,12 +1261,9 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               StringPixelWidth(label_font, p),
-                           d_msg4_y, kCcGreen, game::kTransparentBlack,
-                           FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg4_y});
 
           /*............................................................
           Computer AI players
@@ -1309,22 +1280,16 @@ static int Net_Join_Dialog() {
                              Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               StringPixelWidth(label_font, p),
-                           d_msg5_y, kCcGreen, game::kTransparentBlack,
-                           FontType::k6PointGradient,
-                           TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          label.Print(txt, {d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
+                                StringPixelWidth(label_font, p),
+                            d_msg5_y});
 
         } else {
           /*...............................................................
           Rejection notice
           ...............................................................*/
           if (joinstate == JOIN_REJECTED) {
-            Fancy_Text_Print(view, TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y,
-                             kCcGreen, game::kTransparentBlack,
-                             FontType::k6PointGradient,
-                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            centered.Print(TXT_REQUEST_DENIED, {d_dialog_cx, d_msg3_y});
           }
         }
       }
@@ -3207,6 +3172,9 @@ static int Net_New_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   while (process) {
+    const TextPrinter label(
+        view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+               TPF_NOSHADOW | TPF_USE_GRAD_PAL});
 
     /*
     ...................... Refresh display if needed ......................
@@ -3219,10 +3187,7 @@ static int Net_New_Dialog() {
                     d_count_x + d_count_w + (2 * factor) + 20, d_count_y + 12,
                     0);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-      Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
-                       d_count_y, kCcGreen, game::kTransparentBlack,
-                       FontType::k6PointGradient,
-                       TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+      label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
       display = REDRAW_NONE;
     }
 
@@ -3246,49 +3211,33 @@ static int Net_New_Dialog() {
         Draw_Caption(view, TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y,
                      d_dialog_w);
 
-        Fancy_Text_Print(view, TXT_PLAYERS,
-                         d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_CENTER);
+        label.With(TPF_CENTER)
+            .Print(TXT_PLAYERS, {d_playerlist_x + (d_playerlist_w / 2),
+                                 d_playerlist_y - d_txt6_h});
 
-        Fancy_Text_Print(view, TXT_SCENARIOS,
-                         d_scenariolist_x + (d_scenariolist_w / 2),
-                         d_scenariolist_y - d_txt6_h, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_CENTER);
+        label.With(TPF_CENTER)
+            .Print(TXT_SCENARIOS, {d_scenariolist_x + (d_scenariolist_w / 2),
+                                   d_scenariolist_y - d_txt6_h});
 
-        Fancy_Text_Print(view, TXT_COUNT, d_count_x - (2 * factor), d_count_y,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_RIGHT);
+        label.With(TPF_RIGHT).Print(TXT_COUNT,
+                                    {d_count_x - (2 * factor), d_count_y});
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
-                         d_count_y, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+        label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
 
-        Fancy_Text_Print(view, TXT_LEVEL, d_level_x - (2 * factor), d_level_y,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_RIGHT);
+        label.With(TPF_RIGHT).Print(TXT_LEVEL,
+                                    {d_level_x - (2 * factor), d_level_y});
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(view, txt, d_level_x + d_level_w + (2 * factor),
-                         d_level_y, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+        label.Print(txt, {d_level_x + d_level_w + (2 * factor), d_level_y});
 
-        Fancy_Text_Print(view, TXT_START_CREDITS_COLON,
-                         d_credits_x - (5 * factor), d_credits_y + (1 * factor),
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL | TPF_RIGHT);
+        label.With(TPF_RIGHT).Print(
+            TXT_START_CREDITS_COLON,
+            {d_credits_x - (5 * factor), d_credits_y + (1 * factor)});
       }
 
       /*
@@ -3376,10 +3325,7 @@ static int Net_New_Dialog() {
                       d_count_y + (6 * factor), game::kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
-                         d_count_y, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+        label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
         game::TheMouse().Show();
 
         transmit = 1;
@@ -3402,10 +3348,7 @@ static int Net_New_Dialog() {
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(view, txt, d_level_x + d_level_w + (2 * factor),
-                         d_level_y, kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_NOSHADOW | TPF_USE_GRAD_PAL);
+        label.Print(txt, {d_level_x + d_level_w + (2 * factor), d_level_y});
         game::TheMouse().Show();
 
         transmit = 1;
@@ -4299,6 +4242,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   // The font the dialog's lines print in, for measuring them.
   const FontStyle font = TextFontStyle(
       FontType::k6PointGradient, TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  const TextPrinter centered(view,
+                             {kCcGreen, game::kBlack, FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW});
 
   /*------------------------------------------------------------------------
   Draw the dialog from scratch
@@ -4327,19 +4273,13 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     game::TheMouse().Hide();
     Dialog_Box(view, x, y, w, h);
 
-    Fancy_Text_Print(view, status.c_str(), 160 * factor, y + (d_margin * 2),
-                     kCcGreen, game::kBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    centered.Print(status.c_str(), {160 * factor, y + (d_margin * 2)});
 
-    Fancy_Text_Print(view, time_allowed.c_str(), 160 * factor,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
-                     game::kBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    centered.Print(time_allowed.c_str(),
+                   {160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin});
 
-    Fancy_Text_Print(view, buf3, 160 * factor,
-                     y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), kCcGreen,
-                     game::kBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    centered.Print(
+        buf3, {160 * factor, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2)});
 
     game::TheMouse().Show();
 
@@ -4357,10 +4297,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                   (160 * factor) + (pixwidth / 2) + 12,
                   y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
                   game::kTransparentBlack);
-    Fancy_Text_Print(view, time_allowed.c_str(), 160 * factor,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
-                     game::kBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    centered.Print(time_allowed.c_str(),
+                   {160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin});
 
     game::TheMouse().Show();
   }
@@ -4633,10 +4571,11 @@ static int Net_Fake_New_Dialog() {
         ...............................................................*/
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor), kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(buffer,
+                   {d_dialog_cx - (width / 2), d_dialog_y + (25 * factor)});
       }
 
       /*
@@ -5200,10 +5139,11 @@ static int Net_Fake_Join_Dialog() {
         ...............................................................*/
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor), kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(buffer,
+                   {d_dialog_cx - (width / 2), d_dialog_y + (25 * factor)});
 
         /*
         .................... Rebuild the button list ....................

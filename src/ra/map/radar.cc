@@ -562,14 +562,13 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
       *only.
       */
       if (TheSession().Type != GAME_NORMAL) {
-        Fancy_Text_Print(
-            view,
-            TextString(
-                HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
-            RadX + (RadWidth / 2), RadY + RadHeight - 20,
-            &ThePalettes().color_remaps().at(ThePlayer()->RemapColor),
-            game::kTransparentBlack, kTextFont,
-            TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
+        TextPrinter(view,
+                    {&ThePalettes().color_remaps().at(ThePlayer()->RemapColor),
+                     game::kTransparentBlack, kTextFont,
+                     TPF_CENTER | kTextFlags | TPF_DROPSHADOW})
+            .Print(TextString(HouseTypeClass::As_Reference(ThePlayer()->ActLike)
+                                  .Full_Name()),
+                   {RadX + (RadWidth / 2), RadY + RadHeight - 20});
       }
 
       MouseClass::Repair.Draw_Me(view, true);
@@ -2170,10 +2169,10 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
   MouseClass::Upgrade.Draw_Me(view, true);
   MouseClass::Zoom.Draw_Me(view, true);
 
-  Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_NOSHADOW);
+  const TextPrinter label(
+      view, {&ThePalettes().color_remaps().at(PCOLOR_GREY),
+             game::kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW});
+  label.Print(TXT_SPY_INFO, {RadX + RadOffX + 12, y});
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
@@ -2182,6 +2181,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
     RemapControlType* color = &ThePalettes().color_remaps().at(c_idx);
     const FontType font = FontType::k6PointGradient;
     const TextPrintType style = TPF_USE_GRAD_PAL | TPF_NOSHADOW;
+
+    const TextPrinter value(view, {color, game::kBlack, font, style});
 
     /*
     ** Print house's name below 'spy report'
@@ -2196,45 +2197,32 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
-                       font, style);
+      value.Print(txt, {RadX + RadOffX + 12, y});
     } else {
       base::SafeCopy(txt, "________");
     }
     y += 12 + 1;
 
-    Fancy_Text_Print(view, TXT_BUILDNGS, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_NOSHADOW);
+    label.Print(TXT_BUILDNGS, {RadX + RadOffX + 12, y});
     y += 12 + 1;
 
     // count & print buildings
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
-                     font, style);
+    value.Print(txt, {RadX + RadOffX + 12, y});
     y += 12 + 1;
 
-    Fancy_Text_Print(view, TXT_UNITS, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_NOSHADOW);
+    label.Print(TXT_UNITS, {RadX + RadOffX + 12, y});
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
-                     font, style);
+    value.Print(txt, {RadX + RadOffX + 12, y});
     y += 12 + 1;
 
-    Fancy_Text_Print(view, TXT_INFANTRY, RadX + RadOffX + 12, y,
-                     &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_NOSHADOW);
+    label.Print(TXT_INFANTRY, {RadX + RadOffX + 12, y});
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, game::kBlack,
-                     font, style);
+    value.Print(txt, {RadX + RadOffX + 12, y});
     return true;
   }
   return false;
@@ -2268,14 +2256,12 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   int y = RadY + RadOffY + 4;
 
-  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_NOSHADOW);
-  Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                   game::kTransparentBlack, FontType::k6PointGradient,
-                   TPF_RIGHT | TPF_NOSHADOW);
+  const TextPrinter label(
+      view, {&ThePalettes().color_remaps().at(PCOLOR_GREY),
+             game::kTransparentBlack, FontType::k6PointGradient, TPF_NOSHADOW});
+  label.Print(TXT_NAME_COLON, {RadX + RadOffX, y});
+  label.With(TPF_RIGHT).Print(TXT_KILLS_COLON,
+                              {RadX + RadOffX + RadIWidth - 2, y});
   y += 12 + 1;
 
   view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
@@ -2324,8 +2310,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color,
-                     game::kTransparentBlack, FontType::k6PointGradient, style);
+    const TextPrinter row(view, {color, game::kTransparentBlack,
+                                 FontType::k6PointGradient, style});
+    row.Print(txt, {RadX + RadOffX, y});
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2333,9 +2320,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
       kills += ptr->BuildingsKilled.at(h);
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     style | TPF_RIGHT);
+    row.With(TPF_RIGHT).Print(txt, {RadX + RadOffX + RadIWidth - 2, y});
 
     y += 12 + 1;
   }

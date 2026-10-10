@@ -825,30 +825,21 @@ bool Select_Game(bool fade) {
         }
 
         PixelView& view = TheScreen().visible_view();
-        if constexpr (config::kVirginCheatKeysEnabled) {
-          Fancy_Text_Print(
-              view, "V.%d%s", TheScreen().visible_view().width() - 1,
-              TheScreen().visible_view().height() - 10, game::kGrey,
-              game::kTransparentBlack, FontType::k6Point,
-              TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
-              TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
-        } else {
 #ifdef DEMO
-          Version_Number();
-          Fancy_Text_Print(
-              view, "DEMO V%s", TheScreen().visible_view().width() - 1,
-              TheScreen().visible_view().height() - 10, game::kGrey,
-              game::kTransparentBlack, FontType::k6Point,
-              TPF_FULLSHADOW | TPF_RIGHT, TheGameState().version_text());
+        Version_Number();
+        TextPrinter(view, {game::kGrey, game::kTransparentBlack,
+                           FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT})
+            .Print(absl::StrFormat("DEMO V%s", TheGameState().version_text()),
+                   {TheScreen().visible_view().width() - 1,
+                    TheScreen().visible_view().height() - 10});
 #else
-          Fancy_Text_Print(view, "V.%d%s",
-                           TheScreen().visible_view().width() - 1,
-                           TheScreen().visible_view().height() - 10,
-                           game::kGrey, game::kTransparentBlack,
-                           FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT,
-                           Version_Number(), TheGameState().version_text());
+        TextPrinter(view, {game::kGrey, game::kTransparentBlack,
+                           FontType::k6Point, TPF_FULLSHADOW | TPF_RIGHT})
+            .Print(absl::StrFormat("V.%d%s", Version_Number(),
+                                   TheGameState().version_text()),
+                   {TheScreen().visible_view().width() - 1,
+                    TheScreen().visible_view().height() - 10});
 #endif
-        }
         display = false;
         game::TheMouse().Show();
       }

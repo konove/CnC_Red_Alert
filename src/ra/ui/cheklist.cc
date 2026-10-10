@@ -146,8 +146,8 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, game::kTransparentBlack,
-                          TextFont, flags, width, Tabs);
+  TextPrinter(view, {scheme, game::kTransparentBlack, TextFont, flags})
+      .PrintClipped(buffer, {x, y}, width, Tabs);
 }
 
 }  // namespace ra

@@ -371,10 +371,10 @@ bool Init_Game() {
     Load_Title_Page(true);
 
     game::TheMouse().Hide();
-    Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
-                     &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
-                     game::kTransparentBlack, kTextFont,
-                     TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
+    TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
+                       game::kTransparentBlack, kTextFont,
+                       TPF_CENTER | kTextFlags | TPF_DROPSHADOW})
+        .Print(TXT_STAND_BY, {320, 240});
     game::TheMouse().Show();
 
     ThePalettes().title_palette().Set(kFadePaletteSlow);

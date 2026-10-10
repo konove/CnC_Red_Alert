@@ -277,13 +277,12 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
 
+  const TextPrinter message(view, {Get_Color_Scheme(), game::kTransparentBlack,
+                                   kTextFont, kTextFlags});
   if (lines == 1) {
-    Fancy_Text_Print(view, buffer, x + (width / 2), y + 25, Get_Color_Scheme(),
-                     game::kTransparentBlack, kTextFont,
-                     kTextFlags | TPF_CENTER);
+    message.With(TPF_CENTER).Print(buffer, {x + (width / 2), y + 25});
   } else {
-    Fancy_Text_Print(view, buffer, x + 40, y + 25, Get_Color_Scheme(),
-                     game::kTransparentBlack, kTextFont, kTextFlags);
+    message.Print(buffer, {x + 40, y + 25});
   }
 
   game::TheMouse().Show();
@@ -523,9 +522,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(view, buffer.c_str(), (view.width() / 2) - (text_width / 2),
-                   y + 50, Get_Color_Scheme(), game::kTransparentBlack,
-                   kTextFont, kTextFlags);
+  TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack, kTextFont,
+                     kTextFlags})
+      .Print(buffer.c_str(), {(view.width() / 2) - (text_width / 2), y + 50});
 
   Commands.DrawAll(view);
   game::TheMouse().Show();
@@ -741,9 +740,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         ...............................................................*/
         Draw_Caption(view, TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(
-            view, text_buffer, (view.width() / 2) - (text_width / 2), y + 50,
-            Get_Color_Scheme(), game::kTransparentBlack, kTextFont, kTextFlags);
+        TextPrinter(view, {Get_Color_Scheme(), game::kTransparentBlack,
+                           kTextFont, kTextFlags})
+            .Print(text_buffer,
+                   {(view.width() / 2) - (text_width / 2), y + 50});
 
         Commands.DrawAll(view);
       }

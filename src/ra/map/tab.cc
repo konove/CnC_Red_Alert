@@ -133,17 +133,17 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
     CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
     Draw_Credits_Tab(view);
     view.DrawLine(0, tab_height - 2, rightx, tab_height - 2, game::kBlack);
-    Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                     &ThePalettes().metal_scheme(), game::kTransparentBlack,
-                     FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL);
+    TextPrinter(view, {&ThePalettes().metal_scheme(), game::kTransparentBlack,
+                       FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL})
+        .Print(TXT_TAB_BUTTON_CONTROLS, {EVA_WIDTH, 0});
     if (IsSidebarActive) {
     } else {
       CC_Draw_Shape(view, TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
                     ShapeFlags::kNone);
-      Fancy_Text_Print(view, TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
-                       &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                       game::kTransparentBlack, FontType::kMetal12,
-                       TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
+      TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_GREY),
+                         game::kTransparentBlack, FontType::kMetal12,
+                         TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR})
+          .Print(TXT_TAB_SIDEBAR, {width - EVA_WIDTH, 0});
     }
 
     view.Unlock();
@@ -181,9 +181,9 @@ void TabClass::Hilite_Tab(PixelView& view, int tab) {
   */
   CC_Draw_Shape(view, TabShape, 1, xpos, 0, WINDOW_MAIN, ShapeFlags::kNone);
   ThePalettes().metal_scheme().Color = 128 + 6;
-  Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
-                   &ThePalettes().metal_scheme(), game::kTransparentBlack,
-                   FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL);
+  TextPrinter(view, {&ThePalettes().metal_scheme(), game::kTransparentBlack,
+                     FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL})
+      .Print(TXT_TAB_BUTTON_CONTROLS, {EVA_WIDTH, 0});
   ThePalettes().metal_scheme().Color = 128;
 }
 

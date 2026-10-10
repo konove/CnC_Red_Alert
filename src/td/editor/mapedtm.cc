@@ -429,9 +429,10 @@ int MapEditClass::Select_Team(const char* caption) {
         /*
         ....................... Draw the captions .......................
         */
-        Fancy_Text_Print(view, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print(caption, {kDialogCx, kDialogY + kMargin});
       }
       /*
       ........................ Redraw the buttons ........................
@@ -1031,30 +1032,22 @@ int MapEditClass::Edit_Team() {
         /*
         ....................... Draw the captions .......................
         */
-        Fancy_Text_Print(view, "Team Edit", kDialogCx, kDialogY + kMargin,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        const TextPrinter label(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_USE_GRAD_PAL | TPF_NOSHADOW});
+        const TextPrinter right_label = label.With(TPF_RIGHT);
+        label.With(TPF_CENTER)
+            .Print("Team Edit", {kDialogCx, kDialogY + kMargin});
 
-        Fancy_Text_Print(view, "Name", kNameX - 5, kNameY, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print("Name", {kNameX - 5, kNameY});
 
-        Fancy_Text_Print(view, "Priority", kPriorityX - 5, kPriorityY, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print("Priority", {kPriorityX - 5, kPriorityY});
 
-        Fancy_Text_Print(view, "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print("Max Num", {kMaxnumX - 5, kMaxnumY});
 
-        Fancy_Text_Print(view, "Init Num", kInitnumX - 5, kInitnumY, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print("Init Num", {kInitnumX - 5, kInitnumY});
 
-        Fancy_Text_Print(view, "Fear", kFearX - 5, kFearY, kCcGreen,
-                         game::kTransparentBlack, FontType::k6PointGradient,
-                         TPF_RIGHT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        right_label.Print("Fear", {kFearX - 5, kFearY});
       }
       /*
       ........................ Redraw the buttons ........................
@@ -1692,10 +1685,10 @@ int MapEditClass::Team_Members(HousesType house) {
         */
         Dialog_Box(view, kDialogX, dlg_y, kDialogW, dlg_h);
         Draw_Caption(view, TXT_NONE, kDialogX, dlg_y, kDialogW);
-        Fancy_Text_Print(view, "Team Members", kDialogCx, dlg_y + kMargin,
-                         kCcGreen, game::kTransparentBlack,
-                         FontType::k6PointGradient,
-                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        TextPrinter(
+            view, {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+            .Print("Team Members", {kDialogCx, dlg_y + kMargin});
 
         //
         //	Draw the objects.
@@ -1710,11 +1703,11 @@ int MapEditClass::Team_Members(HousesType house) {
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-          Fancy_Text_Print(view,
-                           teamclass.at(base::ToSize(curclass))->Full_Name(),
-                           kDialogX + (kDialogW / 2), msg_y, kCcTan,
-                           game::kTransparentBlack, FontType::k6PointGradient,
-                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          TextPrinter(
+              view, {kCcTan, game::kTransparentBlack, FontType::k6PointGradient,
+                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+              .Print(teamclass.at(base::ToSize(curclass))->Full_Name(),
+                     {kDialogX + (kDialogW / 2), msg_y});
         }
       }
 
@@ -1790,11 +1783,11 @@ int MapEditClass::Team_Members(HousesType house) {
                         msg_y + kTxt6H, game::kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-            Fancy_Text_Print(view,
-                             teamclass.at(base::ToSize(curclass))->Full_Name(),
-                             kDialogX + (kDialogW / 2), msg_y, kCcGreen,
-                             game::kTransparentBlack, FontType::k6PointGradient,
-                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+            TextPrinter(view, {kCcGreen, game::kTransparentBlack,
+                               FontType::k6PointGradient,
+                               TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+                .Print(teamclass.at(base::ToSize(curclass))->Full_Name(),
+                       {kDialogX + (kDialogW / 2), msg_y});
           }
 
           /*
@@ -1959,9 +1952,10 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
                house);
 
   if (quant > 0) {
-    Fancy_Text_Print(view, "%d", x + 1, y + kPictureH - 16, kCcGreen,
-                     game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
+    TextPrinter(view,
+                {kCcGreen, game::kTransparentBlack, FontType::k6PointGradient,
+                 TPF_USE_GRAD_PAL | TPF_DROPSHADOW})
+        .Print(absl::StrFormat("%d", quant), {x + 1, y + kPictureH - 16});
   }
 
   game::TheMouse().Show();

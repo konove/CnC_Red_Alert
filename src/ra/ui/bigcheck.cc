@@ -71,9 +71,9 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
     //			flags = flags | TPF_MEDIUM_COLOR;
     //		}
 
-    Conquer_Clip_Text_Print(
-        view, szCaption.c_str(), X + BIGCHECK_OFFSETX, Y + BIGCHECK_OFFSETY,
-        pScheme, game::kTransparentBlack, TextFont, flags, Width, {});
+    TextPrinter(view, {pScheme, game::kTransparentBlack, TextFont, flags})
+        .PrintClipped(szCaption.c_str(),
+                      {X + BIGCHECK_OFFSETX, Y + BIGCHECK_OFFSETY}, Width, {});
 
     game::TheMouse().Show();
     return true;
