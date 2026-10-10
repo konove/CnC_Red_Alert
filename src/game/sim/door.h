@@ -34,13 +34,7 @@ class Door {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    // A bit-field cannot bind to the archive's reference parameter, so the
-    // flag goes through a local.
-    bool needs_redraw = needs_redraw_;
-    ar(animation_, final_stage_, state_, needs_redraw);
-    if constexpr (Archive::kIsReading) {
-      needs_redraw_ = needs_redraw;
-    }
+    ar(animation_, final_stage_, state_, needs_redraw_);
   }
 
   // Returns whether the animation has moved on since the flag was last
@@ -133,14 +127,14 @@ class Door {
 
   // The number of stages of the current door animation, less one: the stage
   // at which the opening or closing is finished.
-  unsigned char final_stage_{0};
+  unsigned char final_stage_ = 0;
 
   State state_ = State::kClosed;
 
   // Whether the animation moved on, so the object the door belongs to should
   // be redrawn. Drawing clears it from const draw routines, so it is redraw
   // bookkeeping rather than logical state.
-  mutable bool needs_redraw_ : 1 {false};
+  mutable bool needs_redraw_ = false;
 };
 
 }  // namespace game
