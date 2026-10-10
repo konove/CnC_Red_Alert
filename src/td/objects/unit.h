@@ -48,10 +48,16 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
+#include "game/sim/direction.h"
+#include "game/sim/enums.h"
+#include "game/sim/heading.h"
 #include "td/core/defines.h"
+#include "td/objects/bullet.h"
+#include "td/objects/drive.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
-#include "td/objects/tarcom.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 
@@ -69,7 +75,7 @@ namespace td {
 **	these structures. This structure holds information that is specific
 **	and dynamic for a particular unit.
 */
-class UnitClass final : public TarComClass {
+class UnitClass final : public DriveClass {
  public:
   // Field-wise state and checked references; load shells have no scenario effects.
   template <class Archive>
@@ -79,6 +85,18 @@ class UnitClass final : public TarComClass {
   **	This records the house flag that this object is currently carrying.
   */
   HousesType Flagged = HOUSE_NONE;
+
+  /*
+  **	This is the timer that controls the reload rate. The MSAM rocket
+  **	launcher is the primary user of this.
+  */
+  engine::platform::Timer<game::FrameTickSource> Reload;
+
+  /*
+  **	This is the facing of the turret. It can be, and usually is,
+  **	rotated independently of the body it is attached to.
+  */
+  game::Heading SecondaryFacing;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -180,6 +198,17 @@ class UnitClass final : public TarComClass {
   RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
+  // Fires at `target` when Can_Fire() allows it and returns the projectile,
+  // nullptr when nothing was fired.
+  BulletClass* Fire_At(Target target, int which) override;
+  // The direction a projectile leaves in: the turret's, or the body's when
+  // there is no turret.
+  [[nodiscard]] game::Direction Fire_Direction() const override;
+  // False while a locked turret still has to swing round to `dir`, which
+  // this starts.
+  bool Ok_To_Move(game::Direction dir) override;
+  // Where weapon `which` (0 primary, 1 secondary) releases its projectile.
+  [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   int Mission_Attack() override;
   int Mission_Unload() override;
   int Mission_Guard() override;
@@ -217,6 +246,16 @@ class UnitClass final : public TarComClass {
   int Validate() const;
 
  private:
+  // Turns the turret, or the radar dish, towards where it should point.
+  void Rotate_Turret();
+  // Fires at the target when a weapon can, and otherwise turns the turret or
+  // the body towards it.
+  void Engage_Target();
+  // DriveClass::Can_Fire() narrowed by what the turret allows: not while
+  // moving without a free turret, not while it rotates, and only when it
+  // faces the target.
+  [[nodiscard]] game::FireErrorType Turret_Can_Fire(Target target,
+                                                    int which) const;
 };
 
 extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);

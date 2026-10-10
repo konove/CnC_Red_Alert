@@ -169,15 +169,16 @@
 #include "td/net/session.h"
 #include "td/objects/anim.h"
 #include "td/objects/building.h"
+#include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
 #include "td/objects/cell.h"
 #include "td/objects/combat.h"
+#include "td/objects/drive.h"
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
-#include "td/objects/tarcom.h"
 #include "td/objects/techno.h"
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
@@ -360,7 +361,9 @@ void UnitClass::AI() {
     Commence();
   }
 
-  TarComClass::AI();
+  DriveClass::AI();
+  Rotate_Turret();
+  Engage_Target();
 
   if (!IsActive) {
     return;
@@ -514,7 +517,7 @@ void UnitClass::AI() {
 game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
   Validate();
 
-  game::FireErrorType cf = TarComClass::Can_Fire(target, which);
+  game::FireErrorType cf = Turret_Can_Fire(target, which);
   /*
   ** If it's a dinosaur, when it's OK to fire we should start the firing
   ** animation, but wait for the proper attack stage before starting the
@@ -578,7 +581,7 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
     *procedure *	so that proper unloading may take place.
     */
     case RADIO_BACKUP_NOW:
-      TarComClass::Receive_Message(from, message, param);
+      DriveClass::Receive_Message(from, message, param);
       if (!IsRotating &&
           PrimaryFacing.current() != game::Direction::kSouthWest) {
         Do_Turn(game::Direction::kSouthWest);
@@ -608,7 +611,7 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
     case RADIO_DOCKING:
       if (Class->IsTransporter && *this == UNIT_APC &&
           cargo().How_Many() < Class->Max_Passengers()) {
-        TarComClass::Receive_Message(from, message, param);
+        DriveClass::Receive_Message(from, message, param);
 
         /*
         **	If the potential passenger needs someplace to go, then figure
@@ -676,7 +679,7 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
       if (mission_state().current() == MISSION_RETURN) {
         Assign_Mission(MISSION_GUARD);
       }
-      TarComClass::Receive_Message(from, message, param);
+      DriveClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
     case RadioMessageType::RADIO_STATIC:
     case RadioMessageType::RADIO_ROGER:
@@ -710,7 +713,7 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
     default:
       break;
   }
-  return TarComClass::Receive_Message(from, message, param);
+  return DriveClass::Receive_Message(from, message, param);
 }
 
 /***********************************************************************************************
@@ -738,7 +741,9 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
   */
   dir = game::DirectionOf(game::NearestFacing(dir));
 
-  if (TarComClass::Unlimbo(coord, dir)) {
+  if (DriveClass::Unlimbo(coord, dir)) {
+    SecondaryFacing.SnapTo(dir);
+
     /*
     **	Ensure that the owning house knows about the
     **	new object.
@@ -838,7 +843,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
   **	In order for a this to be damaged, it must either be a unit
   **	with a crew or a sandworm.
   */
-  res = TarComClass::Take_Damage(damage, distance, warhead, source);
+  res = DriveClass::Take_Damage(damage, distance, warhead, source);
 
   if (res == game::RESULT_DESTROYED) {
     Death_Announcement(source);
@@ -1131,7 +1136,7 @@ UnitClass::~UnitClass() {
  * HISTORY: * 04/21/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
-    : TarComClass(classid, house) {
+    : DriveClass(classid, house) {
   Reload.Set(0);
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
@@ -1203,11 +1208,11 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
         break;
     }
   }
-  TarComClass::Active_Click_With(action, object);
+  DriveClass::Active_Click_With(action, object);
 }
 
 void UnitClass::Active_Click_With(ActionType action, Cell cell) {
-  TarComClass::Active_Click_With(action, cell);
+  DriveClass::Active_Click_With(action, cell);
 }
 
 /***********************************************************************************************
@@ -1886,7 +1891,7 @@ void UnitClass::Per_Cell_Process(bool center) {
     }
   }
 
-  TarComClass::Per_Cell_Process(center);
+  DriveClass::Per_Cell_Process(center);
 }
 
 /***********************************************************************************************
@@ -2154,7 +2159,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
         MouseClass::UnitShadow);
   }
 
-  TarComClass::Draw_It(view, x, y, window);
+  DriveClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************
@@ -2675,7 +2680,7 @@ int UnitClass::Mission_Hunt() {
         Target_Something_Nearby(THREAT_AREA);
       }
     } else {
-      return TarComClass::Mission_Hunt();
+      return DriveClass::Mission_Hunt();
     }
   }
   return kTicksPerSecond;
@@ -3144,7 +3149,7 @@ Coordinate UnitClass::Target_Coord() const {
   //	if (*this == UNIT_GUNBOAT) {
   //		return(Coord_Move(Coord, PrimaryFacing.current(), 0x0080));
   //	}
-  return TarComClass::Center_Coord();
+  return DriveClass::Center_Coord();
 }
 
 /***********************************************************************************************
@@ -3240,7 +3245,7 @@ bool UnitClass::Stop_Driver() {
       Mark(MARK_DOWN);
     }
   }
-  return TarComClass::Stop_Driver();
+  return DriveClass::Stop_Driver();
 }
 
 /***********************************************************************************************
@@ -3261,7 +3266,7 @@ bool UnitClass::Stop_Driver() {
  *=============================================================================================*/
 bool UnitClass::Start_Driver(Coordinate& headto) {
   Validate();
-  if (TarComClass::Start_Driver(headto)) {
+  if (DriveClass::Start_Driver(headto)) {
     Mark_Track(headto, MARK_DOWN);
     return true;
   }
@@ -3288,7 +3293,7 @@ bool UnitClass::Limbo() {
   if (!IsInLimbo) {
     Stop_Driver();
   }
-  return TarComClass::Limbo();
+  return DriveClass::Limbo();
 }
 
 /***********************************************************************************************
@@ -3415,7 +3420,7 @@ void UnitClass::Response_Attack() {
  *=============================================================================================*/
 ActionType UnitClass::What_Action(ObjectClass* object) {
   Validate();
-  ActionType action = TarComClass::What_Action(object);
+  ActionType action = DriveClass::What_Action(object);
 
   /*
   **	If the unit doesn't have a weapon, but can crush the object, then
@@ -3477,7 +3482,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
 
 ActionType UnitClass::What_Action(Cell cell) const {
   Validate();
-  const ActionType action = TarComClass::What_Action(cell);
+  const ActionType action = DriveClass::What_Action(cell);
   if (action == ACTION_MOVE && TheMap().at(cell).Land_Type() == LAND_TIBERIUM &&
       Class->IsToHarvest) {
     return ACTION_HARVEST;
@@ -3504,7 +3509,7 @@ ActionType UnitClass::What_Action(Cell cell) const {
  *=============================================================================================*/
 bool UnitClass::Can_Player_Move() const {
   Validate();
-  return TarComClass::Can_Player_Move() && *this != UNIT_GUNBOAT &&
+  return DriveClass::Can_Player_Move() && *this != UNIT_GUNBOAT &&
          *this != UNIT_HOVER;
 }
 
@@ -3715,7 +3720,7 @@ int UnitClass::Mission_Guard() {
     Assign_Mission(MISSION_HARVEST);
     return kTicksPerSecond;
   }
-  return TarComClass::Mission_Guard();
+  return DriveClass::Mission_Guard();
 }
 
 /***********************************************************************************************
@@ -3753,7 +3758,7 @@ int UnitClass::Mission_Move() {
     Assign_Mission(MISSION_HUNT);
     return kTicksPerSecond;
   }
-  return TarComClass::Mission_Move();
+  return DriveClass::Mission_Move();
 }
 
 /***********************************************************************************************
@@ -3886,7 +3891,7 @@ int UnitClass::Mission_Attack() {
     Assign_Mission(MISSION_HUNT);
     return kTicksPerSecond;
   }
-  return TarComClass::Mission_Attack();
+  return DriveClass::Mission_Attack();
 }
 
 /***********************************************************************************************
@@ -3957,7 +3962,7 @@ void UnitClass::Stun() {
   if (Flagged != HOUSE_NONE) {
     HouseClass::As_Pointer(Flagged)->Flag_Attach(Cell::Containing(Coord));
   }
-  TarComClass::Stun();
+  DriveClass::Stun();
 }
 
 /***********************************************************************************************
@@ -4051,7 +4056,7 @@ std::span<const unsigned char> UnitClass::Remap_Table() {
   if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
     return House->Remap_Table(flasher().IsBrightened(), false);
   }
-  return TarComClass::Remap_Table();
+  return DriveClass::Remap_Table();
 }
 
 /***********************************************************************************************
@@ -4078,7 +4083,7 @@ InfantryType UnitClass::Crew_Type() const {
     }
     return INFANTRY_C7;
   }
-  return TarComClass::Crew_Type();
+  return DriveClass::Crew_Type();
 }
 
 /***********************************************************************************************
@@ -4099,6 +4104,453 @@ InfantryType UnitClass::Crew_Type() const {
 RTTIType UnitClass::What_Am_I() const {
   Validate();
   return RTTI_UNIT;
+}
+
+/***********************************************************************************************
+ * UnitClass::Ok_To_Move -- Queries whether the vehicle can move. *
+ *                                                                                             *
+ *    This virtual routine is used to determine if the vehicle is allowed * to
+ *start moving. It is typically called when the vehicle desires * to move but
+ *needs confirmation from the turret logic before                              *
+ *    proceeding. This happens when dealing with a vehicle that must have * its
+ *turret face the same direction as the body before the vehicle * may begin
+ *movement. *
+ *                                                                                             *
+ * INPUT:   dir      -- The facing the unit wants to travel in. *
+ *                                                                                             *
+ * OUTPUT:  bool; Can the unit begin forward movement now? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/12/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Ok_To_Move(game::Direction dir) {
+  if (Class->IsLockTurret) {
+    if (IsRotating) {
+      return false;
+    }
+    if (SecondaryFacing.current() != dir) {
+      SecondaryFacing.set_desired(dir);
+      return false;
+    }
+  }
+  return true;
+}
+
+/***********************************************************************************************
+ * UnitClass::Rotate_Turret -- Turns the turret or the radar dish. *
+ *                                                                                             *
+ *    This processes the reloading of the turret. It does this by decrementing
+ *the arming      * countdown  timer and when it reaches zero, the turret may
+ *fire.                          *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/21/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Rotate_Turret() {
+  /*
+  **	A unit with a constant rotating radar dish is handled here.
+  */
+  if (Class->IsRadarEquipped) {
+    SecondaryFacing.SnapTo(SecondaryFacing.current() + 8);
+    Mark(MARK_CHANGE);
+  } else {
+    IsRotating = false;
+    if (Class->IsTurretEquipped) {
+      if (IsTurretLockedDown) {
+        SecondaryFacing.set_desired(PrimaryFacing.current());
+      }
+
+      if (SecondaryFacing.IsRotating()) {
+        if (SecondaryFacing.Turn(Class->ROT + 1)) {
+          Mark(MARK_CHANGE);
+        }
+
+        /*
+        **	If no further rotation is necessary, flag that the rotation
+        **	has stopped.
+        */
+        IsRotating = SecondaryFacing.IsRotating();
+      } else {
+        if (!IsTurretLockedDown && !TarCom) {
+          if (!NavCom) {
+            SecondaryFacing.set_desired(PrimaryFacing.current());
+          } else {
+            SecondaryFacing.set_desired(DirectionTo(NavCom));
+          }
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Fire_At -- Try to fire upon the target specified. *
+ *                                                                                             *
+ *    This routine is the auto-fire logic for the turret. It will check * to see
+ *if firing is technically legal given the specified target. * If it is legal to
+ *fire, it does so. It is safe to call this routine                      * every
+ *game tick. *
+ *                                                                                             *
+ * INPUT:   target   -- The target to fire upon. *
+ *                                                                                             *
+ *          which    -- Which weapon to use when firing. 0=primary, 1=secondary.
+ **
+ *                                                                                             *
+ * OUTPUT:  bool; Did firing occur? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/26/1994 JLB : Created. *
+ *=============================================================================================*/
+BulletClass* UnitClass::Fire_At(Target target, int which) {
+  BulletClass* bullet = nullptr;
+
+  if (Can_Fire(target, which) == game::FIRE_OK) {
+    bullet = DriveClass::Fire_At(target, which);
+
+    if (bullet) {
+      /*
+      **	Possible reload timer set.
+      */
+      if (*this == UNIT_MSAM && Reload.IsFinished()) {
+        Reload.Set(int64_t{kTicksPerSecond} * 30);
+      }
+    }
+  }
+
+  return bullet;
+}
+
+/***********************************************************************************************
+ * UnitClass::Turret_Can_Fire -- Determines if turret can fire upon target. *
+ *                                                                                             *
+ *    This routine determines if the turret can fire upon the target *
+ *    specified. *
+ *                                                                                             *
+ * INPUT:   target   -- The target to fire upon. *
+ *                                                                                             *
+ *          which    -- Which weapon to use to determine legality to fire.
+ *0=primary,          * 1=secondary. *
+ *                                                                                             *
+ * OUTPUT:  Returns the fire status type that indicates if firing is allowed and
+ *if not, why.  *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/26/1994 JLB : Created. * 06/01/1994 JLB : Returns reason why it
+ *can't fire.                                        *
+ *=============================================================================================*/
+game::FireErrorType UnitClass::Turret_Can_Fire(Target target, int which) const {
+  int diff = 0;
+  const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
+
+  if (fire == game::FIRE_OK) {
+    const WeaponTypeClass* weapon = which == 0 ? &Weapons.at(Class->Primary)
+                                               : &Weapons.at(Class->Secondary);
+
+    /*
+    **	If this unit cannot fire while moving, then bail.
+    */
+    if ((!Class->IsTurretEquipped || Class->IsLockTurret) && NavCom) {
+      return game::FIRE_MOVING;
+    }
+
+    /*
+    **	If the turret is rotating and the projectile isn't a homing type, then
+    **	firing must be delayed until the rotation stops.
+    */
+    if (!IsFiring && IsRotating &&
+        !BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
+      return game::FIRE_ROTATING;
+    }
+
+    const game::Direction dir =
+        DirectionTo(target);  // The facing to impart upon the projectile.
+
+    /*
+    **	Determine if the turret facing isn't too far off of facing the target.
+    */
+    if (Class->IsTurretEquipped) {
+      diff = game::ShortestTurn(SecondaryFacing.current(), dir);
+    } else {
+      diff = game::ShortestTurn(PrimaryFacing.current(), dir);
+    }
+    diff = std::abs(diff);
+
+    /*
+    **	Special flame tank logic.
+    */
+    if (weapon->Fires == BULLET_FLAME &&
+        game::NearestFacing(dir) ==
+            game::NearestFacing(PrimaryFacing.current())) {
+      diff = 0;
+    }
+
+    if (BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
+      diff /= 4;
+    }
+    if (diff < 8) {
+      return DriveClass::Can_Fire(target, which);
+    }
+    return game::FIRE_FACING;
+  }
+  return fire;
+}
+
+/***********************************************************************************************
+ * UnitClass::Fire_Coord -- Determines the coorindate that projectile would
+ *appear.          *
+ *                                                                                             *
+ *    Use this routine to determine the exact coordinate that a projectile would
+ *appear if it  * were fired from this unit. For units with turrets, typically,
+ *this would be at the end   * of the barrel. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with coordinate of where a projectile should appear if this
+ *unit were      * to fire one. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/28/1994 JLB : Created. *
+ *=============================================================================================*/
+Coordinate UnitClass::Fire_Coord(int which) const {
+  Coordinate coord = Center_Coord();
+  int dist = 0;
+  int lateral = 0;
+  game::Direction dir = PrimaryFacing.current();
+
+  if (Class->IsTurretEquipped) {
+    dir = SecondaryFacing.current();
+  }
+
+  switch (Class->Type) {
+    case UNIT_GUNBOAT:
+      coord = Coord_Move(coord, PrimaryFacing.current(),
+                         base::At(Pixel2Lepton, Class->TurretOffset));
+      dist = 0x0060;
+      break;
+
+    case UNIT_ARTY:
+      coord = Coord_Move(coord, game::Direction::kNorth, 0x0040);
+      dist = 0x0060;
+      break;
+
+    case UNIT_FTANK:
+      dist = 0x30;
+      if (IsSecondShot) {
+        coord = Coord_Move(coord, dir + game::Direction::kEast, 0x20);
+      } else {
+        coord = Coord_Move(coord, dir + game::Direction::kWest, 0x20);
+      }
+      break;
+
+    case UNIT_HTANK:
+      coord = Coord_Move(coord, game::Direction::kNorth, 0x0040);
+      if (which == 0) {
+        dist = 0x00C0;
+        lateral = 0x0028;
+      } else {
+        dist = 0x0008;
+        lateral = 0x0040;
+      }
+      if (IsSecondShot) {
+        coord = Coord_Move(coord, dir + game::Direction::kEast,
+                           static_cast<uint16_t>(lateral));
+      } else {
+        coord = Coord_Move(coord, dir + game::Direction::kWest,
+                           static_cast<uint16_t>(lateral));
+      }
+      break;
+
+    case UNIT_LTANK:
+      coord = Coord_Move(coord, game::Direction::kNorth, 0x0020);
+      dist = 0x00C0;
+      break;
+
+    case UNIT_MTANK:
+      coord = Coord_Move(coord, game::Direction::kNorth, 0x0030);
+      dist = 0x00C0;
+      break;
+
+    case UNIT_APC:
+    case UNIT_JEEP:
+    case UNIT_BUGGY:
+      coord = Coord_Move(coord, game::Direction::kNorth, 0x0030);
+      dist = 0x0030;
+      break;
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_STANK:
+    case UnitType::UNIT_VICE:
+    case UnitType::UNIT_MLRS:
+    case UnitType::UNIT_HARVESTER:
+    case UnitType::UNIT_MSAM:
+    case UnitType::UNIT_HOVER:
+    case UnitType::UNIT_MHQ:
+    case UnitType::UNIT_MCV:
+    case UnitType::UNIT_BIKE:
+    case UnitType::UNIT_TRIC:
+    case UnitType::UNIT_TREX:
+    case UnitType::UNIT_RAPT:
+    case UnitType::UNIT_STEG:
+    case UnitType::UNIT_COUNT:
+    default:
+      break;
+  }
+
+  if (dist) {
+    coord = Coord_Move(coord, dir, static_cast<uint16_t>(dist));
+  }
+
+  return coord;
+}
+
+/***********************************************************************************************
+ * UnitClass::Fire_Direction -- Determines the directinon of firing. *
+ *                                                                                             *
+ *    This routine will return with the facing that a projectile will travel if
+ *it was         * fired at this instant. The facing should match the turret
+ *facing for those units         * equipped with a turret. If the unit doesn't
+ *have a turret, then it will be the facing    * of the body. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the default firing direction for a projectile. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/25/1995 JLB : Created. *
+ *=============================================================================================*/
+game::Direction UnitClass::Fire_Direction() const {
+  if (Class->IsTurretEquipped) {
+    if (*this == UNIT_MSAM) {
+      int diff1 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kEast);
+      int diff2 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kWest);
+      diff1 = std::abs(diff1);
+      diff2 = std::abs(diff2);
+      const int diff = std::min(diff1, diff2);
+      const int to_north = game::ShortestTurn(SecondaryFacing.current(),
+                                              game::Direction::kNorth);
+      const int adj = base::FixedToCardinal(std::abs(to_north), 64 - diff);
+      if (to_north < 0) {
+        return SecondaryFacing.current() - adj;
+      }
+      return SecondaryFacing.current() + game::Direction(adj);
+    }
+    return SecondaryFacing.current();
+  }
+
+  return PrimaryFacing.current();
+}
+
+/***********************************************************************************************
+ * UnitClass::Engage_Target -- Fires at the target or turns towards it. *
+ *                                                                                             *
+ *    This handles the AI logic for the targeting computer. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/02/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Engage_Target() {
+  if (Class->Primary != WEAPON_NONE) {
+    /*
+    **	Determine which weapon can fire. First check for the primary weapon. If
+    *that weapon *	cannot fire, then check any secondary weapon. If neither
+    *weapon can fire, then the *	failure code returned is that from the
+    *primary weapon.
+    */
+    const WeaponTypeClass* weapon = &Weapons.at(Class->Primary);
+    int primary = 0;
+    game::FireErrorType ok = Can_Fire(TarCom, 0);
+    if ((ok != game::FIRE_OK) && (Can_Fire(TarCom, 1) == game::FIRE_OK)) {
+      ok = game::FIRE_OK;
+      primary = 1;
+      weapon = &Weapons.at(Class->Secondary);
+    }
+
+    switch (ok) {
+      case game::FIRE_OK:
+        if (!Class->IsFireAnim) {
+          IsFiring = false;
+        }
+
+        if (Fire_At(TarCom, primary)) {
+          Sound_Effect(weapon->Sound, Coord);
+        }
+        break;
+
+      case game::FIRE_FACING:
+        if (Class->IsLockTurret) {
+          if (!NavCom && !IsDriving) {
+            PrimaryFacing.set_desired(DirectionTo(TarCom));
+            SecondaryFacing.set_desired(PrimaryFacing.desired());
+          }
+        } else {
+          if (*this == UNIT_FTANK) {
+            SecondaryFacing.set_desired(
+                game::DirectionOf(game::NearestFacing(DirectionTo(TarCom))));
+          } else {
+            SecondaryFacing.set_desired(DirectionTo(TarCom));
+          }
+          //					SecondaryFacing.set_desired(Direction256(Center_Coord(),
+          // TarCom.AsCoordinate()));
+        }
+        break;
+
+      case game::FIRE_CLOAKED:
+        IsFiring = false;
+        Do_Uncloak();
+        break;
+      case game::FireErrorType::FIRE_AMMO:
+      case game::FireErrorType::FIRE_REARM:
+      case game::FireErrorType::FIRE_ROTATING:
+      case game::FireErrorType::FIRE_ILLEGAL:
+      case game::FireErrorType::FIRE_CANT:
+      case game::FireErrorType::FIRE_MOVING:
+      case game::FireErrorType::FIRE_RANGE:
+      case game::FireErrorType::FIRE_BUSY:
+      default:
+        break;
+    }
+  }
+
+  if (TarCom && !IsRotating) {
+    const game::Direction dir = DirectionTo(TarCom);
+
+    if (Class->IsTurretEquipped) {
+      SecondaryFacing.set_desired(dir);
+    } else {
+      /*
+      **	Non turret equipped vehicles will rotate their body to face the
+      *target only *	if the vehicle isn't currently moving or facing the
+      *correct direction. This *	applies only to tracked vehicles.
+      *Wheeled vehicles never rotate to face the *	target, since they
+      *aren't maneuverable enough.
+      */
+      if ((Class->Speed == SPEED_TRACK || *this == UNIT_BIKE) && !NavCom &&
+          !IsDriving && PrimaryFacing.current() != dir) {
+        if (*this == UNIT_FTANK) {
+          PrimaryFacing.set_desired(
+              game::DirectionOf(game::NearestFacing(dir)));
+        } else {
+          PrimaryFacing.set_desired(dir);
+        }
+      }
+    }
+  }
 }
 
 }  // namespace td

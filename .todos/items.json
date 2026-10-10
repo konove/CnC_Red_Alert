@@ -13356,7 +13356,7 @@
             "  // Field-wise state and checked references; load shells have no scenario effects.",
             "  template <class Archive>"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/tarcom.h",
@@ -13373,7 +13373,7 @@
             "  // Field-wise state and checked references; load shells have no scenario effects.",
             "  template <class Archive>"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

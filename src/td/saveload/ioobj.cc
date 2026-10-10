@@ -78,11 +78,9 @@
 #include "td/objects/radio.h"
 #include "td/objects/smudge.h"
 #include "td/objects/stage.h"
-#include "td/objects/tarcom.h"
 #include "td/objects/techno.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"
-#include "td/objects/turret.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 #include "td/saveload/saveload.h"
@@ -644,23 +642,9 @@ template void DriveClass::Serialize(ArchiveWriter&);
 template void DriveClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TurretClass::Serialize(Archive& ar) {
+void UnitClass::Serialize(Archive& ar) {
   DriveClass::Serialize(ar);
   ar(Reload, SecondaryFacing);
-}
-template void TurretClass::Serialize(ArchiveWriter&);
-template void TurretClass::Serialize(ArchiveReader&);
-
-template <class Archive>
-void TarComClass::Serialize(Archive& ar) {
-  TurretClass::Serialize(ar);
-}
-template void TarComClass::Serialize(ArchiveWriter&);
-template void TarComClass::Serialize(ArchiveReader&);
-
-template <class Archive>
-void UnitClass::Serialize(Archive& ar) {
-  TarComClass::Serialize(ar);
   ar(Flagged);
   if constexpr (Archive::kIsReading) {
     if (Flagged < HOUSE_NONE || Flagged >= HOUSE_COUNT) {
