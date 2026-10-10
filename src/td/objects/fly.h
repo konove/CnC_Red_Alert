@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_FLY_H_
 #define CNC_RED_ALERT_TD_OBJECTS_FLY_H_
 
+#include "game/sim/mph.h"
 #include "td/core/defines.h"
 
 namespace td {
@@ -76,9 +77,9 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Fly_Speed(int speed, game::MPHType maximum);
+  void Fly_Speed(int speed, int maximum);
   ImpactType Physics(Coordinate& coord, game::Direction facing);
-  [[nodiscard]] game::MPHType Get_Speed() const { return SpeedAdd; }
+  [[nodiscard]] int Get_Speed() const { return SpeedAdd; }
 
   /*
   **	File I/O.
@@ -90,7 +91,7 @@ class FlyClass {
   *"distance" *	has accumulated so that moving the object becomes reasonable.
   */
   int SpeedAccum{0};          // Lepton accumulator.
-  game::MPHType SpeedAdd{game::MPH_IMMOBILE};  // Lepton add (per frame).
+  int SpeedAdd{game::kMphImmobile};  // Lepton add (per frame).
 };
 
 }  // namespace td

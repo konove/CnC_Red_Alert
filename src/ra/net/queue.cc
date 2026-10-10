@@ -352,8 +352,7 @@ bool Queue_Mission(Target whom, MissionType mission, Target target,
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 bool Queue_Mission(Target whom, MissionType mission, Target target,
-                   Target destination, SpeedType speed,
-                   game::MPHType maxspeed) {
+                   Target destination, SpeedType speed, int maxspeed) {
   return TheNetwork().out_list().Add(
       EventClass(whom, mission, target, destination, speed, maxspeed));
 }

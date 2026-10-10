@@ -3343,7 +3343,7 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
   **	Give the bullet a boost of speed if the weapon indicates that this is
   *required. Only *	need to perform this check if the target is an aircraft.
   */
-  int firespeed = static_cast<int>(weapon->MaxSpeed);
+  int firespeed = weapon->MaxSpeed;
   if (weapon->IsTurboBoosted && target.kind() == RTTI_AIRCRAFT) {
     firespeed *= TheRules().TurboBoost;
   }
@@ -6630,8 +6630,8 @@ bool TechnoTypeClass::Read_INI(engine::file::IniFile& ini) {
         static_cast<int16_t>(ini.GetInt(Name(), "Strength", MaxStrength));
     SightRange = ini.GetInt(Name(), "Sight", SightRange);
     Level = ini.GetInt(Name(), "TechLevel", Level);
-    MaxSpeed = static_cast<game::MPHType>(Scale_To_256(ini.GetInt(
-        Name(), "Speed", Fixed(static_cast<int>(MaxSpeed), 256) * 100)));
+    MaxSpeed =
+        Scale_To_256(ini.GetInt(Name(), "Speed", Fixed(MaxSpeed, 256) * 100));
     Cost = ini.GetInt(Name(), "Cost", Cost);
     MaxAmmo = ini.GetInt(Name(), "Ammo", MaxAmmo);
     Risk = Reward = Points = ini.GetInt(Name(), "Points", Points);

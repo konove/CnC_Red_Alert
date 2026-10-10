@@ -135,6 +135,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -506,7 +507,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	Helicopters that are flying have a "bobbing" effect.
   */
   int jitter = 0;
-  if (Height == kFlightLevel && static_cast<int>(Get_Speed()) < 3) {
+  if (Height == kFlightLevel && Get_Speed() < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
     jitter = base::At(_jitter, game::CurrentFrame() % 16);
@@ -1598,7 +1599,7 @@ BulletClass* AircraftClass::Fire_At(Target target, int which) {
   **	Falling bullets move at a speed proportionate to the delivery craft.
   */
   if (bullet && bullet->Class->IsDropping) {
-    bullet->Fly_Speed(40, game::MPH_MEDIUM_SLOW);  // TCTC To fix.
+    bullet->Fly_Speed(40, game::kMphMediumSlow);  // TCTC To fix.
   }
 
   return bullet;
@@ -3662,9 +3663,8 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  const game::MPHType sp = static_cast<game::MPHType>(std::min(
-      static_cast<int>(Class->MaxSpeed) * SpeedBias * House->AirspeedBias,
-      static_cast<int>(game::MPH_LIGHT_SPEED)));
+  const int sp = std::min(Class->MaxSpeed * SpeedBias * House->AirspeedBias,
+                          game::kMphLightSpeed);
   Fly_Speed(speed, sp);
 }
 

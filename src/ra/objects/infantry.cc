@@ -122,6 +122,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/tevent.h"
@@ -4047,18 +4048,17 @@ void InfantryClass::Movement_AI() {
         /*
         **	Advance the infantry as far as it should go.
         */
-        game::MPHType maxspeed = static_cast<game::MPHType>(
-            std::min(static_cast<int>(Class->MaxSpeed) * SpeedBias *
-                         House->GroundspeedBias,
-                     static_cast<int>(game::MPH_LIGHT_SPEED)));
+        int maxspeed =
+            std::min(Class->MaxSpeed * SpeedBias * House->GroundspeedBias,
+                     game::kMphLightSpeed);
 
         if (IsFormationMove) {
           maxspeed = FormationMaxSpeed;
         }
 
-        Coord = Coord_Move(Coord, DirectionTo(Head_To_Coord()),
-                           static_cast<uint16_t>(static_cast<int>(maxspeed) *
-                                                 Fixed(movespeed, 256)));
+        Coord =
+            Coord_Move(Coord, DirectionTo(Head_To_Coord()),
+                       static_cast<uint16_t>(maxspeed * Fixed(movespeed, 256)));
       }
       Mark(MARK_DOWN);
     }

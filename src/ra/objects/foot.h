@@ -48,6 +48,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
+#include "game/sim/mph.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/objects/house.h"
@@ -281,7 +282,7 @@ class FootClass : public TechnoClass {
   /*
   ** For formation moves, this will be the override maximum speed.
   */
-  game::MPHType FormationMaxSpeed;
+  int FormationMaxSpeed;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -321,7 +322,7 @@ class FootClass : public TechnoClass {
         TryTryAgain(kPathRetry),
         BaseAttackTimer(0),
         FormationSpeed(SPEED_FOOT),
-        FormationMaxSpeed(game::MPH_IMMOBILE),
+        FormationMaxSpeed(game::kMphImmobile),
         HeadToCoord() {
     base::At(Path, 0) = game::Facing::kNone;
   }

@@ -35,6 +35,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
@@ -87,7 +88,7 @@ static const AircraftTypeClass AttackPlane(
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NAPALM, WEAPON_NONE,
     game::ARMOR_ALUMINUM,  // Armor type of this aircraft.
-    game::MPH_FAST,        // Maximum speed of aircraft.
+    game::kMphFast,        // Maximum speed of aircraft.
     5,                     // Rate of turn.
     MISSION_HUNT           // Default mission for aircraft.
 );
@@ -126,10 +127,10 @@ static const AircraftTypeClass TransportHeli(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // Armor type of this aircraft.
-    game::MPH_MEDIUM_FAST,  // Maximum speed of aircraft.
-    5,                      // Rate of turn.
-    MISSION_HUNT            // Default mission for aircraft.
+    game::ARMOR_ALUMINUM,  // Armor type of this aircraft.
+    game::kMphMediumFast,  // Maximum speed of aircraft.
+    5,                     // Rate of turn.
+    MISSION_HUNT           // Default mission for aircraft.
 );
 
 // Apache attack helicopter.
@@ -167,7 +168,7 @@ static const AircraftTypeClass AttackHeli(
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_CHAIN_GUN, WEAPON_NONE,
     game::ARMOR_STEEL,  // Armor type of this aircraft.
-    game::MPH_FAST,     // Maximum speed of aircraft.
+    game::kMphFast,     // Maximum speed of aircraft.
     4,                  // Rate of turn.
     MISSION_HUNT        // Default mission for aircraft.
 );
@@ -207,7 +208,7 @@ static const AircraftTypeClass OrcaHeli(
         kHouseFlagGood,  // Who can own this aircraft type.
     WEAPON_DRAGON, WEAPON_NONE,
     game::ARMOR_STEEL,  // Armor type of this aircraft.
-    game::MPH_FAST,     // Maximum speed of aircraft.
+    game::kMphFast,     // Maximum speed of aircraft.
     4,                  // Rate of turn.
     MISSION_HUNT        // Default mission for aircraft.
 );
@@ -247,7 +248,7 @@ static const AircraftTypeClass CargoPlane(
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
     game::ARMOR_ALUMINUM,  // Armor type of this aircraft.
-    game::MPH_FAST,        // Maximum speed of aircraft.
+    game::kMphFast,        // Maximum speed of aircraft.
     5,                     // Rate of turn.
     MISSION_HUNT           // Default mission for aircraft.
 );
@@ -266,8 +267,7 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_theater, bool is_repairable, bool is_buildable, bool is_crew,
     int ammo, int16_t strength, int sightrange, int cost, int scenario,
     int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
-    game::ArmorType armor, game::MPHType maxspeed, int rot,
-    MissionType deforder) noexcept
+    game::ArmorType armor, int maxspeed, int rot, MissionType deforder) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, false, false,
                       is_transporter, false, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,

@@ -69,7 +69,7 @@
 #include "engine/file/ini_file.h"
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
-#include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/theme.h"
 #include "ra/core/const.h"
@@ -401,7 +401,7 @@ bool RulesClass::General(engine::file::IniFile& ini) {
     Gravity = ini.GetInt(GENERAL, "Gravity", Gravity);
     GrowthRate = ini.GetFixed(GENERAL, "GrowthRate", GrowthRate);
     HomingScatter = GetLepton(ini, GENERAL, "HomingScatter", HomingScatter);
-    Incoming = GetMPHType(ini, GENERAL, "Incoming", game::MPH_IMMOBILE);
+    Incoming = GetMph(ini, GENERAL, "Incoming", game::kMphImmobile);
     IronCurtainDuration =
         ini.GetFixed(GENERAL, "IronCurtain", IronCurtainDuration);
     IsAllyReveal = ini.GetBool(GENERAL, "AllyReveal", IsAllyReveal);
@@ -430,14 +430,13 @@ bool RulesClass::General(engine::file::IniFile& ini) {
     ChronoTechLevel = ini.GetInt(GENERAL, "ChronoTechLevel", ChronoTechLevel);
     CrateTime = ini.GetFixed(GENERAL, "CrateRegen", CrateTime);
     VortexRange = GetLepton(ini, GENERAL, "VortexRange", VortexRange);
-    VortexSpeed = static_cast<game::MPHType>(Scale_To_256(
-        ini.GetInt(GENERAL, "VortexSpeed", static_cast<int>(VortexSpeed))));
+    VortexSpeed = Scale_To_256(ini.GetInt(GENERAL, "VortexSpeed", VortexSpeed));
     VortexDamage = ini.GetInt(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.GetFixed(GENERAL, "VortexChance", VortexChance);
 
     TheWorld().chronal_vortex().Set_Range(VortexRange /
                                           game::kCellWidthLeptons);
-    TheWorld().chronal_vortex().Set_Speed(static_cast<int>(VortexSpeed));
+    TheWorld().chronal_vortex().Set_Speed(VortexSpeed);
     TheWorld().chronal_vortex().Set_Damage(VortexDamage);
 
     // ChronalVortex.Set_Range ( ini.GetInt (GENERAL, "VortexRange",

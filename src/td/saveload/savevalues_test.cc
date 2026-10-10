@@ -10,8 +10,8 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
-#include "game/sim/enums.h"
 #include "game/sim/flasher.h"
+#include "game/sim/mph.h"
 #include "gtest/gtest.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
@@ -113,7 +113,7 @@ TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
   SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   uint32_t accumulator = 511;
-  game::MPHType speed = game::MPH_FAST;
+  int speed = game::kMphFast;
   writer(accumulator, speed);
   FlyClass flight;
   Restore(flight, bytes);

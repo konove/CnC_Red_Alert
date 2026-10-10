@@ -73,9 +73,8 @@ HousesType GetHousesType(const engine::file::IniFile& ini,
 // `defvalue` when it is missing. Both keep their low 16 bits.
 int GetLepton(const engine::file::IniFile& ini, std::string_view section,
               std::string_view entry, int defvalue);
-game::MPHType GetMPHType(const engine::file::IniFile& ini,
-                         std::string_view section, std::string_view entry,
-                         game::MPHType defvalue);
+int GetMph(const engine::file::IniFile& ini, std::string_view section,
+           std::string_view entry, int defvalue);
 OverlayType GetOverlayType(const engine::file::IniFile& ini,
                            std::string_view section, std::string_view entry,
                            OverlayType defvalue);
@@ -124,8 +123,8 @@ bool PutHousesType(engine::file::IniFile& ini, std::string_view section,
 // stored as ".5"). It keeps its low 16 bits. Returns whether it was stored.
 bool PutLepton(engine::file::IniFile& ini, std::string_view section,
                std::string_view entry, int value);
-bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
-                std::string_view entry, game::MPHType value);
+bool PutMph(engine::file::IniFile& ini, std::string_view section,
+            std::string_view entry, int value);
 bool PutVQType(engine::file::IniFile& ini, std::string_view section,
                std::string_view entry, VQType value);
 bool PutOverlayType(engine::file::IniFile& ini, std::string_view section,

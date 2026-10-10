@@ -84,6 +84,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "td/assets/assets.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -3610,7 +3611,7 @@ BuildingTypeClass::BuildingTypeClass(
           is_flammable, false, is_stealthy, is_selectable, is_legal_target,
           is_insignificant, is_immune, is_theater, is_twoshooter,
           is_turret_equipped, is_repairable, is_buildable, is_crew, -1,
-          static_cast<int16_t>(strength * 2), game::MPH_IMMOBILE, sightrange,
+          static_cast<int16_t>(strength * 2), game::kMphImmobile, sightrange,
           cost, scenario, risk, reward, ownable, primary, secondary, armor),
       IsBibbed(is_bibbed),
       IsWall(is_wall),

@@ -143,6 +143,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
@@ -3212,7 +3213,7 @@ void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,
         TheGameState().allow_voice() = true;
         TheWorld().form_move() = false;
         TheWorld().form_speed() = SPEED_WHEEL;
-        TheWorld().form_max_speed() = game::MPH_LIGHT_SPEED;
+        TheWorld().form_max_speed() = game::kMphLightSpeed;
 
         if ((action == ACTION_MOVE || action == ACTION_NOMOVE) &&
             std::ssize(TheWorld().current_object())) {

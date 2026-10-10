@@ -48,6 +48,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/objects/type.h"
@@ -76,10 +77,10 @@ static const BulletTypeClass ClassSniper(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HOLLOW_POINT,   // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFF               // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HOLLOW_POINT,  // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFF              // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassBullet(
@@ -99,10 +100,10 @@ static const BulletTypeClass ClassBullet(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_SA,             // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFF               // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_SA,            // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFF              // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassSpreadfire(
@@ -122,10 +123,10 @@ static const BulletTypeClass ClassSpreadfire(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFFPIFF           // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,            // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFFPIFF          // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassAPDS(
@@ -145,10 +146,10 @@ static const BulletTypeClass ClassAPDS(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,                    // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_AP,           // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT3         // Explosion to use upon impact.
+    game::kMphVeryFast,  // SPEED:		Miles per hour.
+    0,                   // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_AP,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT3        // Explosion to use upon impact.
 );
 
 static const BulletTypeClass Class120mm(
@@ -168,10 +169,10 @@ static const BulletTypeClass Class120mm(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
-    ANIM_ART_EXP1           // Explosion to use upon impact.
+    game::kMphMediumFast,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,            // WARHEAD:		If fires weapon, warhead type
+    ANIM_ART_EXP1          // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassMissile(
@@ -191,7 +192,7 @@ static const BulletTypeClass ClassMissile(
     true,      // Good against aircraft?
     7,         // ARMING:		Time to arm projectile after launch.
     0,         // RANGE:		Inherent override range factor.
-    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    game::kMphRocket,  // SPEED:		Miles per hour.
     5,                 // ROT:			Rate of turn (degrees per tick).
     WARHEAD_HE,        // WARHEAD:		If fires weapon, warhead type
     ANIM_FRAG1         // Explosion to use upon impact.
@@ -214,7 +215,7 @@ static const BulletTypeClass ClassMissile2(
     true,      // Good against aircraft?
     9,         // ARMING:		Time to arm projectile after launch.
     0,         // RANGE:		Inherent override range factor.
-    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    game::kMphRocket,  // SPEED:		Miles per hour.
     7,                 // ROT:			Rate of turn (degrees per tick).
     WARHEAD_HE,        // WARHEAD:		If fires weapon, warhead type
     ANIM_FRAG1         // Explosion to use upon impact.
@@ -237,10 +238,10 @@ static const BulletTypeClass ClassPatriot(
     true,       // Good against aircraft?
     0,          // ARMING:		Time to arm projectile after launch.
     0,          // RANGE:		Inherent override range factor.
-    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    10,                   // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_AP,           // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT1         // Explosion to use upon impact.
+    game::kMphVeryFast,  // SPEED:		Miles per hour.
+    10,                  // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_AP,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT1        // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassDragon(
@@ -260,7 +261,7 @@ static const BulletTypeClass ClassDragon(
     true,      // Good against aircraft?
     3,         // ARMING:		Time to arm projectile after launch.
     0,         // RANGE:		Inherent override range factor.
-    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    game::kMphRocket,  // SPEED:		Miles per hour.
     5,                 // ROT:			Rate of turn (degrees per tick).
     WARHEAD_AP,        // WARHEAD:		If fires weapon, warhead type
     ANIM_VEH_HIT2      // Explosion to use upon impact.
@@ -283,7 +284,7 @@ static const BulletTypeClass ClassFlame(
     false,    // Good against aircraft?
     12,       // ARMING:		Time to arm projectile after launch.
     12,       // RANGE:		Inherent override range factor.
-    game::MPH_FAST,  // SPEED:		Miles per hour.
+    game::kMphFast,  // SPEED:		Miles per hour.
     0,               // ROT:			Rate of turn (degrees per tick).
     WARHEAD_FIRE,    // WARHEAD:		If fires weapon, warhead type
     ANIM_NONE        // Explosion to use upon impact.
@@ -306,7 +307,7 @@ static const BulletTypeClass ClassChem(
     false,    // Good against aircraft?
     12,       // ARMING:		Time to arm projectile after launch.
     12,       // RANGE:		Inherent override range factor.
-    game::MPH_FAST,  // SPEED:		Miles per hour.
+    game::kMphFast,  // SPEED:		Miles per hour.
     0,               // ROT:			Rate of turn (degrees per tick).
     WARHEAD_HE,      // WARHEAD:		If fires weapon, warhead type
     ANIM_NONE        // Explosion to use upon impact.
@@ -329,10 +330,10 @@ static const BulletTypeClass ClassNapalm(
     false,      // Good against aircraft?
     24,         // ARMING:		Time to arm projectile after launch.
     24,         // RANGE:		Inherent override range factor.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FIRE,           // WARHEAD:		If fires weapon, warhead type
-    ANIM_NAPALM2            // Explosion to use upon impact.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FIRE,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_NAPALM2           // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassGrenade(
@@ -352,10 +353,10 @@ static const BulletTypeClass ClassGrenade(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT2           // Explosion to use upon impact.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,            // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT2          // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassLaser(
@@ -375,10 +376,10 @@ static const BulletTypeClass ClassLaser(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_LASER,          // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE               // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_LASER,         // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE              // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassNukeUp(
@@ -398,10 +399,10 @@ static const BulletTypeClass ClassNukeUp(
     false,       // Good against aircraft?
     0,           // ARMING:		Time to arm projectile after launch.
     0,           // RANGE:		Inherent override range factor.
-    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,                    // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,           // WARHEAD:		If fires weapon, warhead type
-    ANIM_FRAG1            // Explosion to use upon impact.
+    game::kMphVeryFast,  // SPEED:		Miles per hour.
+    0,                   // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_FRAG1           // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassNukeDown(
@@ -421,10 +422,10 @@ static const BulletTypeClass ClassNukeDown(
     false,       // Good against aircraft?
     0,           // ARMING:		Time to arm projectile after launch.
     0,           // RANGE:		Inherent override range factor.
-    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,                    // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,           // WARHEAD:		If fires weapon, warhead type
-    ANIM_ATOM_BLAST       // Explosion to use upon impact.
+    game::kMphVeryFast,  // SPEED:		Miles per hour.
+    0,                   // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_ATOM_BLAST      // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassHonestJohn(
@@ -444,7 +445,7 @@ static const BulletTypeClass ClassHonestJohn(
     false,      // Good against aircraft?
     10,         // ARMING:		Time to arm projectile after launch.
     0,          // RANGE:		Inherent override range factor.
-    game::MPH_FAST,  // SPEED:		Miles per hour.
+    game::kMphFast,  // SPEED:		Miles per hour.
     10,              // ROT:			Rate of turn (degrees per tick).
     WARHEAD_FIRE,    // WARHEAD:		If fires weapon, warhead type
     ANIM_NAPALM3     // Explosion to use upon impact.
@@ -467,10 +468,10 @@ static const BulletTypeClass ClassHeadButt(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HEADBUTT,       // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE               // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HEADBUTT,      // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE              // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassTRexBite(
@@ -490,10 +491,10 @@ static const BulletTypeClass ClassTRexBite(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                      // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FEEDME,         // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE               // Explosion to use upon impact.
+    game::kMphLightSpeed,  // SPEED:		Miles per hour.
+    0,                     // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FEEDME,        // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE              // Explosion to use upon impact.
 );
 
 /*
@@ -543,8 +544,8 @@ BulletTypeClass::BulletTypeClass(
     bool is_arcing, bool is_dropping, bool is_invisible,
     bool is_proximity_armed, bool is_flame_equipped, bool is_fueled,
     bool is_faceless, bool is_inaccurate, bool is_translucent,
-    bool is_antiaircraft, int arming, int range, game::MPHType maxspeed,
-    unsigned rot, WarheadType warhead, AnimType explosion) noexcept
+    bool is_antiaircraft, int arming, int range, int maxspeed, unsigned rot,
+    WarheadType warhead, AnimType explosion) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
                       TXT_NONE, ininame, game::ARMOR_NONE, 0),
       IsHigh(is_high),

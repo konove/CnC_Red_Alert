@@ -266,8 +266,8 @@ TechnoTypeClass::TechnoTypeClass(
     bool is_legal_target, bool is_insignificant, bool is_immune,
     bool is_theater, bool is_twoshooter, bool is_turret_equipped,
     bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-    int16_t strength, game::MPHType maxspeed, int sightrange, int cost,
-    int scenario, int /*risk*/, int reward, int ownable, WeaponType primary,
+    int16_t strength, int maxspeed, int sightrange, int cost, int scenario,
+    int /*risk*/, int reward, int ownable, WeaponType primary,
     WeaponType secondary, game::ArmorType armor) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,

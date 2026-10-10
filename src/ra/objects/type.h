@@ -59,6 +59,7 @@
 #include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "game/sim/direction.h"
+#include "game/sim/mph.h"
 #include "ra/core/defines.h"
 #include "ra/core/packed.h"
 #include "ra/objects/object.h"
@@ -519,7 +520,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	This value indicates the maximum speed that this object can achieve.
   */
-  game::MPHType MaxSpeed{game::MPH_IMMOBILE};
+  int MaxSpeed{game::kMphImmobile};
 
   /*
   **	This indicates the speed (locomotion) type for this unit. Through this

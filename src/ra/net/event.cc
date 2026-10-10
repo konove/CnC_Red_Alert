@@ -70,7 +70,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
-#include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
@@ -376,8 +375,7 @@ EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
-                       ra::Target destination, SpeedType speed,
-                       game::MPHType maxspeed)
+                       ra::Target destination, SpeedType speed, int maxspeed)
     : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = MEGAMISSION_F;

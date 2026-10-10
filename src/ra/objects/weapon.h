@@ -45,6 +45,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/file/ini_file.h"
+#include "game/sim/mph.h"
 #include "ra/core/defines.h"
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
@@ -141,7 +142,7 @@ class WeaponTypeClass {
   /*
   **	Speed of the projectile launched.
   */
-  game::MPHType MaxSpeed{game::MPH_IMMOBILE};
+  int MaxSpeed{game::kMphImmobile};
 
   /*
   **	Warhead to attach to the projectile.

@@ -173,7 +173,7 @@ class EventClass {
       ra::Target Target;         // Target to assign.
       ra::Target Destination;    // Destination to assign.
       SpeedType Speed;           // Formation override speed.
-      game::MPHType MaxSpeed;    // Formation override maximum speed.
+      int MaxSpeed;              // Formation override maximum speed.
     } MegaMission_F;
     struct {
       ra::Target Whom;      // Whom to apply mission to.
@@ -267,7 +267,7 @@ class EventClass {
              ra::Target destination = ra::Target{});
 
   EventClass(ra::Target src, MissionType mission, ra::Target target,
-             ra::Target destination, SpeedType speed, game::MPHType maxspeed);
+             ra::Target destination, SpeedType speed, int maxspeed);
 
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, Cell cell);

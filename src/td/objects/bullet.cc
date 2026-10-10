@@ -67,8 +67,8 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
-#include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "td/core/config.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
@@ -709,7 +709,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	For very fast and invisible projectiles, just make the projectile exist
     *at the target *	location and dispense with the actual flight.
     */
-    if (Class->MaxSpeed == game::MPH_LIGHT_SPEED && Class->IsInvisible) {
+    if (Class->MaxSpeed == game::kMphLightSpeed && Class->IsInvisible) {
       Coord = tcoord;
     }
 
@@ -721,8 +721,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
     int range = 0xFF;
     if (!Class->Range) {
       if (!Class->IsDropping) {
-        range =
-            (td::Distance(tcoord, Coord) / static_cast<int>(Class->MaxSpeed)) + 4;
+        range = (td::Distance(tcoord, Coord) / Class->MaxSpeed) + 4;
       }
     } else {
       range = Class->Range;
@@ -733,12 +732,12 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	certian projectiles alter speed according to the distance to the
     **	target.
     */
-    int speed = static_cast<int>(Class->MaxSpeed);
-    if (speed == static_cast<int>(game::MPH_LIGHT_SPEED)) {
-      speed = static_cast<int>(game::MPH_IMMOBILE);
+    int speed = Class->MaxSpeed;
+    if (speed == game::kMphLightSpeed) {
+      speed = game::kMphImmobile;
     }
     if (Class->IsArcing) {
-      speed = static_cast<int>(Class->MaxSpeed) + (Distance(tcoord) / 32);
+      speed = Class->MaxSpeed + (Distance(tcoord) / 32);
 
       /*
       **	Set minimum speed (i.e., distance) for arcing projectiles.
@@ -746,7 +745,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, static_cast<game::MPHType>(speed));
+      Fly_Speed(255, speed);
     }
 
     /*

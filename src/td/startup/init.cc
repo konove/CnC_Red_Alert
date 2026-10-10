@@ -97,6 +97,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/prebuilt_base.h"
@@ -1801,7 +1802,7 @@ bool Select_Game(bool fade) {
       bullet->Next = ground;
       bullet->Payback = owner;
       bullet->PrimaryFacing.SnapTo(game::Direction::kSouthEast);
-      bullet->Fly_Speed(127, game::MPH_FAST);
+      bullet->Fly_Speed(127, game::kMphFast);
       bullet->Arm_Fuse(owner->Coord,
                        Coordinate::FromPacked(owner->Coord.packed() + 0x200),
                        95, 5);
@@ -1819,7 +1820,7 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;
       }
-      missile->Fly_Speed(127, game::MPH_SLOW);
+      missile->Fly_Speed(127, game::kMphSlow);
       missile->Arm_Fuse(owner->Coord, destination, 95, 5);
       missile->Strength = 0;
       anim->Attach_To(owner);

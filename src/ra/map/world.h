@@ -115,8 +115,7 @@ class World {
 
   // The speed the team being built moves at, filled in while its members
   // are gathered, and the same for a formation.
-  std::array<game::MPHType, kTeamCount>& team_max_speed()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::array<int, kTeamCount>& team_max_speed() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_max_speed_;
   }
   std::array<SpeedType, kTeamCount>& team_speed()
@@ -125,7 +124,7 @@ class World {
   }
   bool& form_move() ABSL_ATTRIBUTE_LIFETIME_BOUND { return form_move_; }
   SpeedType& form_speed() ABSL_ATTRIBUTE_LIFETIME_BOUND { return form_speed_; }
-  game::MPHType& form_max_speed() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  int& form_max_speed() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return form_max_speed_;
   }
 
@@ -209,11 +208,11 @@ class World {
 
   std::vector<Carryover> carryover_;
 
-  std::array<game::MPHType, kTeamCount> team_max_speed_{};
+  std::array<int, kTeamCount> team_max_speed_{};
   std::array<SpeedType, kTeamCount> team_speed_{};
   bool form_move_ = false;
   SpeedType form_speed_{};
-  game::MPHType form_max_speed_{};
+  int form_max_speed_{};
 
   bool is_tanya_dead_ = false;
   bool save_tanya_ = false;

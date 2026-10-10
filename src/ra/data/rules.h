@@ -46,6 +46,7 @@
 #include "base/installed.h"
 #include "engine/file/ini_file.h"
 #include "game/core/cell_size.h"
+#include "game/sim/mph.h"
 #include "ra/core/defines.h"
 #include "ra/objects/mission.h"
 
@@ -335,7 +336,7 @@ class RulesClass {
   **	Controls the Chronal vortex characteristics.
   */
   int VortexRange{10 * game::kCellWidthLeptons};
-  game::MPHType VortexSpeed{static_cast<game::MPHType>(10)};
+  int VortexSpeed{10};
   int VortexDamage{200};
   Fixed VortexChance;
 
@@ -760,7 +761,7 @@ class RulesClass {
   **	of targets to run for cover if the projectile gives them enough time
   **	to react.
   */
-  game::MPHType Incoming{game::MPH_IMMOBILE};
+  int Incoming{game::kMphImmobile};
 
   /*
   **	Minimum and maximum damage allowed per shot.

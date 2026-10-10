@@ -71,6 +71,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
@@ -136,7 +137,7 @@ static const UnitTypeClass UnitVisceroid(
     WEAPON_CHEMSPRAY, WEAPON_NONE,
     game::ARMOR_WOOD,  // ARMOR:		Armor type
     SPEED_TRACK,       // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,  // SPEED:		Miles per hour.
+    game::kMphMedium,  // SPEED:		Miles per hour.
     5,                 // ROT:			Rate of turn (degrees per tick).
     0,                 // Turret center offset along body centerline.
     MISSION_HUNT       // ORDERS:		Default order to give new unit.
@@ -188,7 +189,7 @@ static const UnitTypeClass UnitFTank(
     WEAPON_FLAME_TONGUE, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,   // SPEED:		Miles per hour.
+    game::kMphMedium,   // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_HUNT        // ORDERS:		Default order to give new unit.
@@ -238,12 +239,12 @@ static const UnitTypeClass UnitSTank(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_DRAGON, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_TRACK,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    5,                      // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_TRACK,           // MOVE:			Locomotion type.
+    game::kMphMediumFast,  // SPEED:		Miles per hour.
+    5,                     // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Light tank
@@ -292,7 +293,7 @@ static const UnitTypeClass UnitLTank(
     WEAPON_75MM, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,   // SPEED:		Miles per hour.
+    game::kMphMedium,   // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_HUNT        // ORDERS:		Default order to give new unit.
@@ -344,7 +345,7 @@ static const UnitTypeClass UnitMTank(
     WEAPON_105MM, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,   // SPEED:		Miles per hour.
+    game::kMphMedium,   // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_HUNT        // ORDERS:		Default order to give new unit.
@@ -394,12 +395,12 @@ static const UnitTypeClass UnitHTank(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_120MM, WEAPON_MAMMOTH_TUSK,
-    game::ARMOR_STEEL,      // ARMOR:		Armor type
-    SPEED_TRACK,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    5,                      // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_STEEL,     // ARMOR:		Armor type
+    SPEED_TRACK,           // MOVE:			Locomotion type.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    5,                     // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Mobile HQ
@@ -448,7 +449,7 @@ static const UnitTypeClass UnitMHQ(
     WEAPON_NONE, WEAPON_NONE,
     game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,           // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,      // SPEED:		Miles per hour.
+    game::kMphMedium,      // SPEED:		Miles per hour.
     5,                     // ROT:			Rate of turn (degrees per tick).
     0,                     // Turret center offset along body centerline.
     MISSION_HUNT           // ORDERS:		Default order to give new unit.
@@ -499,12 +500,12 @@ static const UnitTypeClass UnitHover(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_HOVER,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    127,                    // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_HOVER,           // MOVE:			Locomotion type.
+    game::kMphMediumFast,  // SPEED:		Miles per hour.
+    127,                   // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Mobile sam launcher
@@ -554,7 +555,7 @@ static const UnitTypeClass UnitSAM(
     WEAPON_HONEST_JOHN, WEAPON_NONE,
     game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,           // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,      // SPEED:		Miles per hour.
+    game::kMphMedium,      // SPEED:		Miles per hour.
     5,                     // ROT:			Rate of turn (degrees per tick).
     0,                     // Turret center offset along body centerline.
     MISSION_HUNT           // ORDERS:		Default order to give new unit.
@@ -604,12 +605,12 @@ static const UnitTypeClass UnitArty(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_155MM, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_TRACK,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    2,                      // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_TRACK,           // MOVE:			Locomotion type.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    2,                     // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Harvester
@@ -658,12 +659,12 @@ static const UnitTypeClass UnitHarvester(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_WHEEL,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    5,                      // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HARVEST         // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_WHEEL,           // MOVE:			Locomotion type.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    5,                     // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HARVEST        // ORDERS:		Default order to give new unit.
 );
 
 // Mobile construction vehicle
@@ -710,12 +711,12 @@ static const UnitTypeClass UnitMCV(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_WHEEL,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    5,                      // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_WHEEL,           // MOVE:			Locomotion type.
+    game::kMphMediumSlow,  // SPEED:		Miles per hour.
+    5,                     // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Jeep (hummer)
@@ -762,12 +763,12 @@ static const UnitTypeClass UnitJeep(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_WHEEL,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    10,                     // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_WHEEL,           // MOVE:			Locomotion type.
+    game::kMphMediumFast,  // SPEED:		Miles per hour.
+    10,                    // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Buggy
@@ -814,12 +815,12 @@ static const UnitTypeClass UnitBuggy(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
-    game::ARMOR_ALUMINUM,   // ARMOR:		Armor type
-    SPEED_WHEEL,            // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    10,                     // ROT:			Rate of turn (degrees per tick).
-    0,                      // Turret center offset along body centerline.
-    MISSION_HUNT            // ORDERS:		Default order to give new unit.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    SPEED_WHEEL,           // MOVE:			Locomotion type.
+    game::kMphMediumFast,  // SPEED:		Miles per hour.
+    10,                    // ROT:			Rate of turn (degrees per tick).
+    0,                     // Turret center offset along body centerline.
+    MISSION_HUNT           // ORDERS:		Default order to give new unit.
 );
 
 // Attack cycle
@@ -872,7 +873,7 @@ static const UnitTypeClass UnitBike(
     WEAPON_DRAGON, WEAPON_NONE,
     game::ARMOR_WOOD,  // ARMOR:		Armor type
     SPEED_WHEEL,       // MOVE:			Locomotion type.
-    game::MPH_FAST,    // SPEED:		Miles per hour.
+    game::kMphFast,    // SPEED:		Miles per hour.
     10,                // ROT:			Rate of turn (degrees per tick).
     0,                 // Turret center offset along body centerline.
     MISSION_HUNT       // ORDERS:		Default order to give new unit.
@@ -924,7 +925,7 @@ static const UnitTypeClass UnitMLRS(
     WEAPON_MLRS, WEAPON_NONE,
     game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
     SPEED_TRACK,           // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,      // SPEED:		Miles per hour.
+    game::kMphMedium,      // SPEED:		Miles per hour.
     5,                     // ROT:			Rate of turn (degrees per tick).
     0,                     // Turret center offset along body centerline.
     MISSION_GUARD          // ORDERS:		Default order to give new unit.
@@ -974,12 +975,12 @@ static const UnitTypeClass UnitAPC(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagBad | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_M60MG, WEAPON_NONE,
-    game::ARMOR_STEEL,        // ARMOR:		Armor type
-    SPEED_TRACK,              // MOVE:			Locomotion type.
-    game::MPH_MEDIUM_FASTER,  // SPEED:		Miles per hour.
-    5,                        // ROT:			Rate of turn (degrees per tick).
-    0,                        // Turret center offset along body centerline.
-    MISSION_HUNT              // ORDERS:		Default order to give new unit.
+    game::ARMOR_STEEL,       // ARMOR:		Armor type
+    SPEED_TRACK,             // MOVE:			Locomotion type.
+    game::kMphMediumFaster,  // SPEED:		Miles per hour.
+    5,                       // ROT:			Rate of turn (degrees per tick).
+    0,                       // Turret center offset along body centerline.
+    MISSION_HUNT             // ORDERS:		Default order to give new unit.
 );
 
 // Gunboat
@@ -1028,7 +1029,7 @@ static const UnitTypeClass UnitGunBoat(
     WEAPON_TOMAHAWK, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_FLOAT,        // MOVE:			Locomotion type.
-    game::MPH_SLOW,     // SPEED:		Miles per hour.
+    game::kMphSlow,     // SPEED:		Miles per hour.
     1,                  // ROT:			Rate of turn (degrees per tick).
     14,                 // Turret center offset along body centerline.
     MISSION_GUARD       // ORDERS:		Default order to give new unit.
@@ -1078,7 +1079,7 @@ static const UnitTypeClass UnitTric(
     WEAPON_STEG, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_SLOW,     // SPEED:		Miles per hour.
+    game::kMphSlow,     // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_GUARD       // ORDERS:		Default order to give new unit.
@@ -1128,7 +1129,7 @@ static const UnitTypeClass UnitTrex(
     WEAPON_TREX, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_MEDIUM,   // SPEED:		Miles per hour.
+    game::kMphMedium,   // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_GUARD       // ORDERS:		Default order to give new unit.
@@ -1178,7 +1179,7 @@ static const UnitTypeClass UnitRapt(
     WEAPON_TREX, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_FAST,     // SPEED:		Miles per hour.
+    game::kMphFast,     // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_GUARD       // ORDERS:		Default order to give new unit.
@@ -1228,7 +1229,7 @@ static const UnitTypeClass UnitSteg(
     WEAPON_STEG, WEAPON_NONE,
     game::ARMOR_STEEL,  // ARMOR:		Armor type
     SPEED_TRACK,        // MOVE:			Locomotion type.
-    game::MPH_SLOW,     // SPEED:		Miles per hour.
+    game::kMphSlow,     // SPEED:		Miles per hour.
     5,                  // ROT:			Rate of turn (degrees per tick).
     0,                  // Turret center offset along body centerline.
     MISSION_GUARD       // ORDERS:		Default order to give new unit.
@@ -1293,7 +1294,7 @@ UnitTypeClass::UnitTypeClass(
     bool is_cloakable, bool is_animating, int ammo, int16_t strength,
     int sightrange, int cost, int scenario, int risk, int reward, int ownable,
     WeaponType primary, WeaponType secondary, game::ArmorType armor,
-    SpeedType speed, game::MPHType maxSpeed, unsigned rot, int toffset,
+    SpeedType speed, int maxSpeed, unsigned rot, int toffset,
     MissionType order) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, false, is_nominal,
                       is_transporter, false, is_crushable, is_stealthy,

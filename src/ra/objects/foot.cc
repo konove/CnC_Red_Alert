@@ -101,6 +101,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
@@ -173,7 +174,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       TryTryAgain(kPathRetry),
       BaseAttackTimer(0),
       FormationSpeed(SPEED_FOOT),
-      FormationMaxSpeed(game::MPH_IMMOBILE),
+      FormationMaxSpeed(game::kMphImmobile),
       HeadToCoord() {
   Path[0] = game::Facing::kNone;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
@@ -1885,7 +1886,7 @@ int FootClass::Rescue_Mission(Target tarcom) {
     ** Next we need to figure out how fast the unit moves because this
     ** decreases the distance penalty.
     */
-    speed = std::max(static_cast<int>(Techno_Type_Class()->MaxSpeed), 1);
+    speed = std::max(Techno_Type_Class()->MaxSpeed, 1);
 
     const int ratio = speed > 0 ? std::max(dist / speed, 1) : 1;
 

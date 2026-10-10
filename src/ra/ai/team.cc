@@ -91,6 +91,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
@@ -2651,12 +2652,12 @@ int TeamClass::TMission_Formation() {
   if (Formation != FORMATION_NONE) {
     base::At(std::span(TheWorld().team_speed()), group) = SPEED_WHEEL;
     base::At(std::span(TheWorld().team_max_speed()), group) =
-        game::MPH_LIGHT_SPEED;
+        game::kMphLightSpeed;
     member = Member;
     while (member != nullptr) {
       const RTTIType mytype = member->What_Am_I();
       SpeedType memspeed = SPEED_NONE;
-      game::MPHType memmax = game::MPH_IMMOBILE;
+      int memmax = game::kMphImmobile;
       bool speedcheck = false;
 
       if (mytype == RTTI_INFANTRY) {
@@ -2697,7 +2698,7 @@ int TeamClass::TMission_Formation() {
           base::At(std::span(TheWorld().team_max_speed()), group);
       if (member->What_Am_I() == RTTI_INFANTRY) {
         member->FormationSpeed = SPEED_FOOT;
-        member->FormationMaxSpeed = game::MPH_SLOW_ISH;
+        member->FormationMaxSpeed = game::kMphSlowIsh;
       }
       member = member->Member;
     }

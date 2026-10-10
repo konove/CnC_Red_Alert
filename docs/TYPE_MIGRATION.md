@@ -189,7 +189,7 @@ where the language already converts: an enumerator in integer arithmetic (`HOUSE
 
    ```cpp
    // Intentional narrowing: we know the enum value fits in int.
-   int speed = static_cast<int>(MPH_LIGHT_SPEED);
+   int facing = static_cast<int>(game::Facing::kNorth);
    // Intentional truncation: caller guarantees value fits 16 bits.
    int16_t count = static_cast<int16_t>(NumBufs);
    ```
@@ -216,7 +216,7 @@ where the language already converts: an enumerator in integer arithmetic (`HOUSE
 
 ```cpp
 // Before (C-style cast)                        // After
-(int)MPH_LIGHT_SPEED                            static_cast<int>(MPH_LIGHT_SPEED)
+(int)game::Facing::kNorth                       static_cast<int>(game::Facing::kNorth)
 (short)NumBufs                                  static_cast<int16_t>(NumBufs)
 (unsigned long)ListenHeader                     reinterpret_cast<uintptr_t>(ListenHeader)
 (long)(center_x - x)                            static_cast<int32_t>(center_x - x)

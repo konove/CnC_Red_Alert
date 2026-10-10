@@ -47,7 +47,7 @@
 #include "base/fixed.h"
 #include "game/core/cell_size.h"
 #include "game/sim/direction.h"
-#include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 
@@ -72,8 +72,8 @@ namespace ra {
  *movement.                                          *
  *=============================================================================================*/
 ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
-  if (SpeedAdd != game::MPH_IMMOBILE) {
-    int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
+  if (SpeedAdd != game::kMphImmobile) {
+    int actual = SpeedAdd + SpeedAccum;
     const std::div_t result = std::div(actual, game::kLeptonsPerPixel);
     SpeedAccum = result.rem;
     actual -= result.rem;
@@ -136,10 +136,8 @@ ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
  * HISTORY: * 07/26/1994 JLB : Created. * 07/26/1994 JLB : Added maximum speed
  *as guiding value.                                    *
  *=============================================================================================*/
-void FlyClass::Fly_Speed(int speed, game::MPHType maximum) {
-  SpeedAdd =
-      static_cast<game::MPHType>(static_cast<int>(maximum) * Fixed(speed, 256));
-  //	SpeedAdd = (MPHType)Fixed_To_Cardinal((int)maximum, speed);
+void FlyClass::Fly_Speed(int speed, int maximum) {
+  SpeedAdd = maximum * Fixed(speed, 256);
 }
 
 }  // namespace ra

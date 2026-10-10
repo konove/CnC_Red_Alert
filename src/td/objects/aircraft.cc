@@ -130,6 +130,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
@@ -402,7 +403,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	The orca attack helicopter uses a special shape set when it is
   *travelling *	forward above a certain speed.
   */
-  if (*this == AIRCRAFT_ORCA && Get_Speed() >= game::MPH_MEDIUM_FAST) {
+  if (*this == AIRCRAFT_ORCA && Get_Speed() >= game::kMphMediumFast) {
     shapenum += 32;
   }
 

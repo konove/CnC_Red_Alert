@@ -202,7 +202,7 @@ bool WeaponTypeClass::Read_INI(engine::file::IniFile& ini) {
     IsSupressed = ini.GetBool(Name(), "Supress", IsSupressed);
     Burst = ini.GetInt(Name(), "Burst", Burst);
     Attack = ini.GetInt(Name(), "Damage", Attack);
-    MaxSpeed = GetMPHType(ini, Name(), "Speed", MaxSpeed);
+    MaxSpeed = GetMph(ini, Name(), "Speed", MaxSpeed);
     ROF = ini.GetInt(Name(), "ROF", ROF);
     Range = GetLepton(ini, Name(), "Range", Range);
     Sound = GetVocType(ini, Name(), "Report", Sound);

@@ -168,6 +168,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/prebuilt_base.h"
@@ -2454,7 +2455,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
         if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_NUKE_DOWN, Target::FromCell(cell), nullptr, 200,
-              WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
+              WARHEAD_NUKE, game::kMphVeryFast);
           if (bullet) {
             const int celly = std::max(cell.y() - 15, 1);
             const Coordinate start = Cell::FromXY(cell.x(), celly).Center();

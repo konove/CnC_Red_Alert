@@ -521,7 +521,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	This value indicates the maximum speed that this object can achieve.
   */
-  game::MPHType MaxSpeed;
+  int MaxSpeed;
 
   /*
   **	This is the maximum number of ammo shots this object can hold. If
@@ -559,8 +559,8 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_legal_target, bool is_insignificant, bool is_immune,
                   bool is_theater, bool is_twoshooter, bool is_turret_equipped,
                   bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-                  int16_t strength, game::MPHType maxspeed, int sightrange,
-                  int cost, int scenario, int risk, int reward, int ownable,
+                  int16_t strength, int maxspeed, int sightrange, int cost,
+                  int scenario, int risk, int reward, int ownable,
                   WeaponType primary, WeaponType secondary,
                   game::ArmorType armor) noexcept;
 
@@ -981,8 +981,8 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_animating, int ammo, int16_t strength, int sightrange,
                 int cost, int scenario, int risk, int reward, int ownable,
                 WeaponType primary, WeaponType secondary, game::ArmorType armor,
-                SpeedType speed, game::MPHType maxSpeed, unsigned rot,
-                int toffset, MissionType order) noexcept;
+                SpeedType speed, int maxSpeed, unsigned rot, int toffset,
+                MissionType order) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
   static UnitType From_Name(std::string_view name);
@@ -1095,7 +1095,7 @@ class InfantryTypeClass : public TechnoTypeClass {
                     int pronelaunch, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
-                    game::MPHType maxSpeed) noexcept;
+                    int maxSpeed) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
     return RTTI_INFANTRYTYPE;
   }
@@ -1220,7 +1220,7 @@ class BulletTypeClass : public ObjectTypeClass {
   /*
   **	Maximum speed for this bullet type.
   */
-  game::MPHType MaxSpeed;
+  int MaxSpeed;
 
   /*
   **	This projectile has a certain style of warhead. This value specifies
@@ -1260,7 +1260,7 @@ class BulletTypeClass : public ObjectTypeClass {
                   bool is_invisible, bool is_proximity_armed,
                   bool is_flame_equipped, bool is_fueled, bool is_faceless,
                   bool is_inaccurate, bool is_translucent, bool is_antiair,
-                  int arming, int range, game::MPHType maxspeed, unsigned rot,
+                  int arming, int range, int maxspeed, unsigned rot,
                   WarheadType warhead, AnimType explosion) noexcept;
   ~BulletTypeClass() override;
   BulletTypeClass(const BulletTypeClass&) = delete;
@@ -1678,7 +1678,7 @@ class AircraftTypeClass : public TechnoTypeClass {
                     int ammo, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
-                    game::ArmorType armor, game::MPHType MaxSpeed, int ROT,
+                    game::ArmorType armor, int MaxSpeed, int ROT,
                     MissionType deforder) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override;
 

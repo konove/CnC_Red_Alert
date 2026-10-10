@@ -112,27 +112,6 @@ enum class FireErrorType {
 using enum FireErrorType;
 
 /**********************************************************************
-**	Units that move can move at different speeds. These enumerate the
-**	different speeds that a unit can move.
-*/
-enum class MPHType {
-  MPH_IMMOBILE = 0,
-  MPH_VERY_SLOW = 5,       //	2
-  MPH_KINDA_SLOW = 6,      //	3
-  MPH_SLOW = 8,            //	4
-  MPH_SLOW_ISH = 10,       // 5
-  MPH_MEDIUM_SLOW = 12,    // 6
-  MPH_MEDIUM = 18,         // 9
-  MPH_MEDIUM_FAST = 30,    // 12
-  MPH_MEDIUM_FASTER = 35,  // 14
-  MPH_FAST = 40,           // 16
-  MPH_ROCKET = 60,         // 24
-  MPH_VERY_FAST = 100,     // 40
-  MPH_LIGHT_SPEED = 255    // 100
-};
-using enum MPHType;
-
-/**********************************************************************
 **	These are the response values when checking to see if an object
 **	can enter or exist at a specified location. By examining this
 **	return value, appropriate action may be chosen.

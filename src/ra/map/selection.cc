@@ -28,7 +28,7 @@
 
 #include "base/array.h"
 #include "game/core/object_heap.h"
-#include "game/sim/enums.h"
+#include "game/sim/mph.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
@@ -92,7 +92,7 @@ void Toggle_Formation() {
         set_form = obj->XFormOffset == kNoFormationOffset;
         base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
         base::At(std::span(TheWorld().team_max_speed()), team) =
-            game::MPH_LIGHT_SPEED;
+            game::kMphLightSpeed;
         break;
       }
     }
@@ -107,7 +107,7 @@ void Toggle_Formation() {
           set_form = obj->XFormOffset == kNoFormationOffset;
           base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
           base::At(std::span(TheWorld().team_max_speed()), team) =
-              game::MPH_LIGHT_SPEED;
+              game::kMphLightSpeed;
           break;
         }
       }
@@ -124,7 +124,7 @@ void Toggle_Formation() {
           set_form = obj->XFormOffset == kNoFormationOffset;
           base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
           base::At(std::span(TheWorld().team_max_speed()), team) =
-              game::MPH_LIGHT_SPEED;
+              game::kMphLightSpeed;
           break;
         }
       }
@@ -377,7 +377,7 @@ void Handle_Team(const int team, const int action) {
       int32_t maxy = 0;
       base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
       base::At(std::span(TheWorld().team_max_speed()), team) =
-          game::MPH_LIGHT_SPEED;
+          game::kMphLightSpeed;
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* obj = TheObjectHeaps().unit().ActiveAt(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {

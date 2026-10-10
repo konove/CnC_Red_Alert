@@ -61,7 +61,7 @@ bool Queue_Mission(Target whom, MissionType mission);
 bool Queue_Mission(Target whom, MissionType mission, Target target,
                    Target destination);
 bool Queue_Mission(Target whom, MissionType mission, Target target,
-                   Target destination, SpeedType speed, game::MPHType maxspeed);
+                   Target destination, SpeedType speed, int maxspeed);
 bool Queue_Options();
 bool Queue_Exit();
 void Queue_AI();

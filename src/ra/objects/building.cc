@@ -142,6 +142,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/prebuilt_base.h"
@@ -1868,8 +1869,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
               Target::FromCell(AdjacentCell(cellcenter, game::Facing::kNorth)),
-              nullptr, 200, WARHEAD_FIRE,
-              static_cast<int>(game::MPH_MEDIUM_FAST));
+              nullptr, 200, WARHEAD_FIRE, game::kMphMediumFast);
           if (bullet) {
             bullet->Unlimbo(center, game::Direction::kNorth);
           }
@@ -1877,8 +1877,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
               Target::FromCell(AdjacentCell(cellcenter, game::Facing::kEast)),
-              nullptr, 200, WARHEAD_FIRE,
-              static_cast<int>(game::MPH_MEDIUM_FAST));
+              nullptr, 200, WARHEAD_FIRE, game::kMphMediumFast);
           if (bullet) {
             bullet->Unlimbo(center, game::Direction::kEast);
           }
@@ -1886,8 +1885,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
               Target::FromCell(AdjacentCell(cellcenter, game::Facing::kSouth)),
-              nullptr, 200, WARHEAD_FIRE,
-              static_cast<int>(game::MPH_MEDIUM_FAST));
+              nullptr, 200, WARHEAD_FIRE, game::kMphMediumFast);
           if (bullet) {
             bullet->Unlimbo(center, game::Direction::kSouth);
           }
@@ -1895,8 +1893,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
               Target::FromCell(AdjacentCell(cellcenter, game::Facing::kWest)),
-              nullptr, 200, WARHEAD_FIRE,
-              static_cast<int>(game::MPH_MEDIUM_FAST));
+              nullptr, 200, WARHEAD_FIRE, game::kMphMediumFast);
           if (bullet) {
             bullet->Unlimbo(center, game::Direction::kWest);
           }
@@ -4887,9 +4884,9 @@ int BuildingClass::Mission_Missile() {
           const Cell cell = Cell::FromXY(center.x(), 1);
           const Target targ = Target::FromCell(cell);
 
-          auto* bullet = base::NewPooled<BulletClass>(
-              BULLET_GPS_SATELLITE, targ, this, 200, WARHEAD_FIRE,
-              static_cast<int>(game::MPH_ROCKET));
+          auto* bullet =
+              base::NewPooled<BulletClass>(BULLET_GPS_SATELLITE, targ, this,
+                                           200, WARHEAD_FIRE, game::kMphRocket);
           if (bullet) {
             const Coordinate launch =
                 Coord_Move(Center_Coord(), game::Direction(0xC0), 0x30);
@@ -4949,8 +4946,7 @@ int BuildingClass::Mission_Missile() {
         const Cell cell = Cell::FromXY(center.x(), 1);
         const Target targ = Target::FromCell(cell);
         auto* bullet = base::NewPooled<BulletClass>(
-            BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE,
-            static_cast<int>(game::MPH_VERY_FAST));
+            BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE, game::kMphVeryFast);
         if (bullet) {
           const Coordinate launch =
               Coord_Move(Center_Coord(), game::Direction(28), 0xA0);
@@ -4977,7 +4973,7 @@ int BuildingClass::Mission_Missile() {
           }
           bullet = base::NewPooled<BulletClass>(
               BULLET_NUKE_DOWN, Target::FromCell(House->NukeDest), this, 200,
-              WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
+              WARHEAD_NUKE, game::kMphVeryFast);
           if (bullet) {
             const int celly = std::max(House->NukeDest.y() - 64, 1);
             const Coordinate start =

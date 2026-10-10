@@ -75,6 +75,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/mph.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
@@ -596,10 +597,9 @@ bool DriveClass::While_Moving() {
   **	visibly move on the map, then process accordingly.
   ** Slow the unit down if he's carrying a flag.
   */
-  game::MPHType maxspeed = static_cast<game::MPHType>(
-      std::min(static_cast<int>(Techno_Type_Class()->MaxSpeed) * SpeedBias *
-                   House->GroundspeedBias,
-               static_cast<int>(game::MPH_LIGHT_SPEED)));
+  int maxspeed = std::min(
+      Techno_Type_Class()->MaxSpeed * SpeedBias * House->GroundspeedBias,
+      game::kMphLightSpeed);
   if (IsFormationMove) {
     maxspeed = FormationMaxSpeed;
   }
@@ -607,9 +607,9 @@ bool DriveClass::While_Moving() {
   int actual = 0;  // Working movement addition value.
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
-    actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * Fixed(Speed, 256);
+    actual = SpeedAccum + maxspeed / 2 * Fixed(Speed, 256);
   } else {
-    actual = SpeedAccum + static_cast<int>(maxspeed) * Fixed(Speed, 256);
+    actual = SpeedAccum + maxspeed * Fixed(Speed, 256);
   }
 
   if (actual > game::kLeptonsPerPixel) {

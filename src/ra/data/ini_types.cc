@@ -131,7 +131,7 @@ bool PutLepton(engine::file::IniFile& ini, std::string_view section,
 }
 
 /***********************************************************************************************
- * GetMPHType -- Fetches the speed value as a number from 0 to 100.
+ * GetMph -- Fetches the speed value as a number from 0 to 100.
  **
  *                                                                                             *
  *    This routine will fetch the speed value as if it were expressed as a
@@ -152,16 +152,14 @@ bool PutLepton(engine::file::IniFile& ini, std::string_view section,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-game::MPHType GetMPHType(const engine::file::IniFile& ini,
-                         std::string_view section, std::string_view entry,
-                         game::MPHType defvalue) {
-  const int val =
-      ini.GetInt(section, entry, static_cast<int>(defvalue) * 100 / 256);
-  return static_cast<game::MPHType>(Scale_To_256(val));
+int GetMph(const engine::file::IniFile& ini, std::string_view section,
+           std::string_view entry, int defvalue) {
+  const int val = ini.GetInt(section, entry, defvalue * 100 / 256);
+  return Scale_To_256(val);
 }
 
 /***********************************************************************************************
- * PutMPHType -- Stores the speed value to the section & entry
+ * PutMph -- Stores the speed value to the section & entry
  *specified.         *
  *                                                                                             *
  *    Use this routine to store a speed value into the INI database. The number
@@ -180,9 +178,9 @@ game::MPHType GetMPHType(const engine::file::IniFile& ini,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool PutMPHType(engine::file::IniFile& ini, std::string_view section,
-                std::string_view entry, game::MPHType value) {
-  return ini.PutInt(section, entry, static_cast<int>(value) * 100 / 256);
+bool PutMph(engine::file::IniFile& ini, std::string_view section,
+            std::string_view entry, int value) {
+  return ini.PutInt(section, entry, value * 100 / 256);
 }
 
 /***********************************************************************************************
