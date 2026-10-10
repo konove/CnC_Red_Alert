@@ -3598,9 +3598,8 @@ int Com_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(Rect::FromCorners(d_dialog_x + (2 * factor), d_opponent_y,
-                                        d_dialog_x + d_dialog_w - (4 * factor),
-                                        d_opponent_y + d_txt6_h),
+        view.FillRect(Rect{d_dialog_x + (2 * factor), d_opponent_y,
+                           d_dialog_w - (6 * factor), d_txt6_h},
                       game::kBlack);
 
         if (parms_received) {
@@ -4890,9 +4889,9 @@ int Com_Show_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(Rect::FromCorners(d_dialog_x + (2 * factor), d_opponent_y,
-                                        d_dialog_x + d_dialog_w - (4 * factor),
-                                        d_ghosts_y + d_txt6_h),
+        view.FillRect(Rect{d_dialog_x + (2 * factor), d_opponent_y,
+                           d_dialog_w - (6 * factor),
+                           d_ghosts_y + d_txt6_h - d_opponent_y},
                       game::kBlack);
 
         if (parms_received) {

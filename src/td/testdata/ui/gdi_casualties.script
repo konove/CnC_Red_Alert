@@ -1,0 +1,11 @@
+# The GDI score screen after a mission in which men died: the casualty bars,
+# which win_mission.script, won before a shot is fired, never fills.
+# args: -PLAYTEST
+at 301 click 320 58
+at 501 click 160 200
+at 9000 keydown ALT
+at 9001 key W
+at 9005 keyup ALT
+at 10000 shot casualties
+at 10800 shot buildings_lost
+at 10801 quit

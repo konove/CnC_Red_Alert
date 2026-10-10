@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 348,
+  "nextId": 352,
   "items": [
     {
       "id": "T-2",
@@ -11557,63 +11557,95 @@
       "tags": [
         "bugs",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T02:20:18Z",
+      "resolution": "The 70 text-erase fills (TD `mapsel.cc`, `score.cc`, the editor and network dialogs, RA `netdlg.cc`/`mapedtm.cc`) are now exact `Rect{x, y, w, h}`; the ending, intro and editor strip fills cover 640x40 / 640x16; the tooltip border hugs its text on the right, the Nod casualty bars are exactly `killed` wide (new `Draw_Bar`), and the text button's black border hugs the button. `Draw_Box`, the placement grid, gauges, colour swatches and the other true inclusive corners keep `FromCorners`. New UI scripts `tooltip` (both games), `gdi_casualties` and `nod_casualties` pin the changed screens; the only pixel changes are the tooltip edge, the bars, and score-screen grid art no longer blacked out beside the numbers.",
       "toDecide": "For each group: is the extra pixel what the screen should look like (then write it as `Rect{x, y, w + 1, h + 1}` or leave `FromCorners`), or a bug to fix to `Rect{x, y, w, h}`? Fixing changes screenshots and needs a look at the dialogs, the map selection and the score screen.",
+      "decisions": [
+        {
+          "question": "The ~70 black text-erase fills that are one pixel too wide and tall (mapsel, score, editor and network dialogs): what should they become?",
+          "options": [
+            "Fix to Rect{x, y, w, h} (Recommended)",
+            "Keep pixels, write explicitly",
+            "Leave as FromCorners"
+          ],
+          "answer": "Fix to Rect{x, y, w, h} (Recommended)",
+          "time": "2026-10-10T02:10:08Z"
+        },
+        {
+          "question": "The screen-edge fills in ending.cc, intro.cc and mapedit.cc that miss the last column/row or overshoot the view: fix them?",
+          "options": [
+            "Fix to the full area (Recommended)",
+            "Fix ending and intro only",
+            "Leave as is"
+          ],
+          "answer": "Fix to the full area (Recommended)",
+          "time": "2026-10-10T02:10:08Z"
+        },
+        {
+          "question": "The visible shapes that are a pixel or two larger than their nominal size (score casualty bars, help tooltip border, text button black border): keep the original look?",
+          "options": [
+            "Keep the look (Recommended)",
+            "Fix the text button border only",
+            "Fix all three to nominal size"
+          ],
+          "answer": "3 - but let's take screenshots somehow?",
+          "time": "2026-10-10T02:10:08Z"
+        }
+      ],
       "anchors": [
         {
-          "path": "src/td/ui/dialog.cc",
-          "startLine": 168,
-          "endLine": 175,
-          "text": "      view.FillRect(Rect::FromCorners(x, y, x + w, y + h),\n                    static_cast<unsigned char>(style.Filler));\n    }\n  }\n\n  switch (up) {\n    case BOXSTYLE_GREEN_BOX:\n      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h),",
+          "path": "src/td/screens/score.cc",
+          "startLine": 2014,
+          "endLine": 2019,
+          "text": "static void Draw_Bar(PixelView& view, const int y, const int width,\n                     const uint8_t color) {\n  view.FillRect(Rect{0, y, width, 2}, color);\n  view.DrawLine(1, y + 2, width, y + 2, game::kTransparentBlack);\n  view.PutPixel(width, y + 1, game::kTransparentBlack);\n}",
           "before": [
-            "      CC_Texture_Fill(view, MixArchive::RetrieveData(\"BTEXTURE.SHP\"),",
-            "                      TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);",
-            "    } else {"
+            " *=========================================================================*/",
+            "// Draws a casualty bar `width` pixels long and two high at row `y`, with its",
+            "// shadow one pixel down and to the right. `width` is at least 1."
           ],
           "after": [
-            "                    static_cast<unsigned char>(style.Highlight));",
-            "      break;",
-            ""
+            "",
+            "void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,",
+            "                     int ckilled) {"
           ],
           "lost": false
         },
         {
-          "path": "src/td/editor/mapedit.cc",
-          "startLine": 1426,
-          "endLine": 1426,
-          "text": "  view.FillRect(Rect{0, 0, 641, 17}, game::kBlack);",
+          "path": "src/td/map/help.cc",
+          "startLine": 290,
+          "endLine": 290,
+          "text": "    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},",
           "before": [
-            "  //",
-            "  // Erase scrags at top of screen",
-            "  //"
+            "    tip.Print(Text, {DrawX, DrawY});",
+            "    const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);",
+            "    const int text_height = FontMaxHeight(font);"
           ],
           "after": [
+            "                  static_cast<unsigned char>(Color));",
             "",
-            "  /*",
-            "  **\tDisplay the total value of all Tiberium on the map."
+            "    if (Cost) {"
           ],
           "lost": false
         },
         {
-          "path": "src/td/screens/ending.cc",
-          "startLine": 261,
-          "endLine": 262,
-          "text": "  TheScreen().visible_view().FillRect(Rect{0, 360, 639, 39}, 0);\n  show.text_page().view().FillRect(Rect{0, 360, 639, 39}, 0);",
+          "path": "src/ra/map/help.cc",
+          "startLine": 284,
+          "endLine": 284,
+          "text": "    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, font_height + 2},",
           "before": [
-            "  /* get rid of all the animating objects */",
-            "  Clear_Score_Objects();",
-            "  // erase the \"choose a target\" text"
+            "    help.Print(Text, {DrawX, DrawY});",
+            "    const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);",
+            "    const int font_height = FontMaxHeight(font);"
           ],
           "after": [
+            "                  static_cast<unsigned char>(Color));",
             "",
-            "  game::TheMouse().Hide();",
-            "  game::TheKeyboard().Clear();"
+            "    if (Cost) {"
           ],
           "lost": false
         }
@@ -11789,6 +11821,254 @@
             "              ThePalettes()",
             "                  .color_remaps()"
           ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-348",
+      "title": "Remove the text button's black border nobody turns on",
+      "details": "No construction of `TextButtonClass` in either game passes `blackborder`, so `IsBlackBorder` is always false and the border in `Draw_Background` never draws. Remove the parameter, the member and the branch.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "dead-code",
+        "ui"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T02:21:28Z",
+      "source": "T-344",
+      "anchors": [
+        {
+          "path": "src/game/ui/textbtn.h",
+          "startLine": 67,
+          "endLine": 67,
+          "text": "                  int w = -1, int h = -1, bool blackborder = false)",
+          "before": [
+            "        PrintFlags(Skin::kButtonDefaultFlags) {}",
+            "  TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,",
+            "                  Skin::Font font, Skin::PrintFlags style, int x, int y,"
+          ],
+          "after": [
+            "      : ToggleClass(id, x, y, w, h),",
+            "        IsBlackBorder(blackborder),",
+            "        String(text),"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-349",
+      "title": "Decide whether the multiplayer colour swatches should be inset on all sides",
+      "details": "The colour boxes fill `FromCorners(x + 1, y + 1, x + 1 + w - 2, y + 1 + h - 2)` (RA variants use `- 4` / `+ 2`): one pixel inset on the left and top of the `w` x `h` box, none on the right and bottom, so the fill runs under the selection box's right and bottom edge. Not changed in T-344 because no ui_check script shows these dialogs.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ui",
+        "ra",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T02:21:28Z",
+      "source": "T-344",
+      "toDecide": "Keep the original look (fill flush right and bottom), or inset the swatch evenly as `Rect{x + 1, y + 1, w - 2, h - 2}`? Changing it needs a look at the network and skirmish dialogs.",
+      "anchors": [
+        {
+          "path": "src/ra/net/netdlg.cc",
+          "startLine": 1887,
+          "endLine": 1887,
+          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "before": [
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                d_color_y + 1 + d_color_h - 2),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/nulldlg.cc",
+          "startLine": 3187,
+          "endLine": 3187,
+          "text": "                                  base::At(cbox_x, i) + 1 + d_color_w - 2,",
+          "before": [
+            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "            view.FillRect(",
+            "                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                  d_color_y + 1 + d_color_h - 2),",
+            "                ThePalettes()",
+            "                    .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/nulldlg.cc",
+          "startLine": 4931,
+          "endLine": 4931,
+          "text": "                                base::At(cbox_x, i) + 2 + d_color_w - 4,",
+          "before": [
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,"
+          ],
+          "after": [
+            "                                d_color_y + 2 + d_color_h - 4),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/wol/wol_gsup.cc",
+          "startLine": 1124,
+          "endLine": 1124,
+          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "before": [
+            "        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                d_color_y + 1 + d_color_h - 2),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/netdlg.cc",
+          "startLine": 1146,
+          "endLine": 1146,
+          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 2,",
+          "before": [
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                d_color_y + 1 + d_color_h - 2),",
+            "              static_cast<unsigned char>(",
+            "                  base::At(TheSession().graphic_colors(), i)));"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "startLine": 3577,
+          "endLine": 3577,
+          "text": "                  base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),",
+          "before": [
+            "          view.FillRect(",
+            "              Rect::FromCorners(",
+            "                  base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),"
+          ],
+          "after": [
+            "                  d_color_y + (1 * factor) + d_color_h - (2 * factor)),",
+            "              static_cast<unsigned char>(",
+            "                  base::At(TheSession().graphic_colors(), i)));"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "startLine": 4868,
+          "endLine": 4868,
+          "text": "                  base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),",
+          "before": [
+            "          view.FillRect(",
+            "              Rect::FromCorners(",
+            "                  base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),"
+          ],
+          "after": [
+            "                  d_color_y + (1 * factor) + d_color_h - (2 * factor)),",
+            "              static_cast<unsigned char>(",
+            "                  base::At(TheSession().graphic_colors(), i)));"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-350",
+      "title": "RA power bar is one row taller than its power height",
+      "details": "The two columns of the power bar fill `FromCorners(490, bottom - power_height, 490 + 1, bottom)`: the rows are inclusive, so the bar is `power_height + 1` rows and zero power still draws one row. Check against the bar's art and `drain_height`, and write it as `Rect{490, bottom - power_height, 2, power_height}` if the extra row is a slip. No ui_check script shows a powered base.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ui",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T02:21:28Z",
+      "source": "T-344",
+      "anchors": [
+        {
+          "path": "src/ra/map/power.cc",
+          "startLine": 238,
+          "endLine": 243,
+          "text": "            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),\n            static_cast<unsigned char>(color2));\n        view.FillRect(\n            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),\n            static_cast<unsigned char>(color1));\n      }",
+          "before": [
+            "        bottom = 350 + 1;",
+            "",
+            "        view.FillRect("
+          ],
+          "after": [
+            "",
+            "      /*",
+            "      **\tDraw the power drain threshold marker."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-351",
+      "title": "Add ui_check scripts for the editor and network dialogs whose erase fills changed",
+      "details": "T-344 made the text-erase fills exact in the TD scenario editor (`mapeddlg.cc` coordinates line, `mapedtm.cc` item name, `mapedit.cc` top strip), RA `mapedtm.cc`, the TD network dialogs (`netdlg.cc` unit count, build level, message area, time allowed; `nulldlg.cc` opponent line) and RA `netdlg.cc` (time allowed). None is on a ui_check screenshot, and neither are the TD ending and intro fills. Add scripts that show them, or look at the dialogs by hand, to confirm no stale pixel is left after text changes.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "tests",
+        "ui",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T02:21:28Z",
+      "source": "T-344",
+      "anchors": [
+        {
+          "path": "src/td/editor/mapeddlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/td/net/netdlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/td/net/nulldlg.cc",
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/netdlg.cc",
           "lost": false
         }
       ]

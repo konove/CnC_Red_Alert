@@ -1,0 +1,9 @@
+# The help text that pops up when the mouse rests on the map: over the shroud
+# and over a unit.
+at 301 click 320 58
+at 501 click 160 200
+at 3000 move 100 100
+at 3300 shot shroud
+at 3301 move 508 240
+at 3600 shot unit
+at 3601 quit

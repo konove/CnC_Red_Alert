@@ -1780,10 +1780,8 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           game::TheMouse().Hide();
-          view.FillRect(
-              Rect::FromCorners(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
-                                msg_y + kTxt6H),
-              game::kBlack);
+          view.FillRect(Rect{kDialogX + 8, msg_y, kDialogW - 16, kTxt6H},
+                        game::kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             TextPrinter(view, {kCcGreen, game::kTransparentBlack,

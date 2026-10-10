@@ -1423,7 +1423,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   //
   // Erase scrags at top of screen
   //
-  view.FillRect(Rect{0, 0, 641, 17}, game::kBlack);
+  view.FillRect(Rect{0, 0, 640, 16}, game::kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.

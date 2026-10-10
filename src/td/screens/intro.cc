@@ -283,8 +283,7 @@ void Choose_Side() {
 
   // erase the "choose side" text
   show.page().view().FillRect(Rect{0, 180, 320, 20}, 0);
-  TheScreen().visible_view().FillRect(
-      Rect::FromCorners(0, 180 * 2, 319 * 2, 199 * 2), 0);
+  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40}, 0);
   show.ShowPage();
   TheScreen().sys_mem_page().view().Clear();
 

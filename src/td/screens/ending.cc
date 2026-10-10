@@ -258,8 +258,8 @@ void Nod_Ending() {
   /* get rid of all the animating objects */
   Clear_Score_Objects();
   // erase the "choose a target" text
-  TheScreen().visible_view().FillRect(Rect{0, 360, 639, 39}, 0);
-  show.text_page().view().FillRect(Rect{0, 360, 639, 39}, 0);
+  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40}, 0);
+  show.text_page().view().FillRect(Rect{0, 360, 640, 40}, 0);
 
   game::TheMouse().Hide();
   game::TheKeyboard().Clear();

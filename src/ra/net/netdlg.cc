@@ -5688,10 +5688,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     const int time_width = StringPixelWidth(font, time_allowed.c_str());
 
     const int fillx = 320 - (time_width / 2) - 6;
-    view.FillRect(Rect::FromCorners(
-                      fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                      fillx + time_width + 12,
-                      y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2),
+    view.FillRect(Rect{fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+                       time_width + 12, d_txt6_h + 2},
                   game::kBlack);
 
     TextPrinter(view,

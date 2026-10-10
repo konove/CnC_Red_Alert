@@ -1721,9 +1721,8 @@ void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
       base::FormatRuntime(str, percent <= max ? percent : max);
   const int width = static_cast<int>(text.size()) * 7;
 
-  show.text_page().view().FillRect(
-      Rect::FromCorners(xpos * 2, ypos * 2, (xpos + width) * 2, (ypos + 7) * 2),
-      game::kBlack);
+  show.text_page().view().FillRect(Rect{xpos * 2, ypos * 2, width * 2, 7 * 2},
+                                   game::kBlack);
   show.text_page().view().Print(font, text.c_str(), xpos * 2, ypos * 2,
                                 game::kWhite, game::kTransparentBlack);
 
@@ -1800,16 +1799,12 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
           const int xposindex6 = xpos + (index * 6);
 
-          show.page().view().FillRect(
-              Rect::FromCorners(xposindex6, ypos, xposindex6 + 6, ypos + 6),
-              game::kTransparentBlack);
+          show.page().view().FillRect(Rect{xposindex6, ypos, 6, 6},
+                                      game::kTransparentBlack);
           TheScreen().sys_mem_page().view().FillRect(
-              Rect::FromCorners(xposindex6, ypos, xposindex6 + 6, ypos + 6),
-              game::kTransparentBlack);
+              Rect{xposindex6, ypos, 6, 6}, game::kTransparentBlack);
           show.text_page().view().FillRect(
-              Rect::FromCorners(xposindex6 * 2, ypos * 2, (xposindex6 + 6) * 2,
-                                (ypos + 6) * 2),
-              game::kBlack);
+              Rect{xposindex6 * 2, ypos * 2, 6 * 2, 6 * 2}, game::kBlack);
         }
 
       } else if (key != '\r') {  // else if (key != KN_RETURN &&
@@ -1817,17 +1812,12 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
         ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
-          show.page().view().FillRect(
-              Rect::FromCorners(xpos + (index * 6), ypos,
-                                xpos + (index * 6) + 6, ypos + 5),
-              game::kTransparentBlack);
+          show.page().view().FillRect(Rect{xpos + (index * 6), ypos, 6, 6},
+                                      game::kTransparentBlack);
           TheScreen().sys_mem_page().view().FillRect(
-              Rect::FromCorners(xpos + (index * 6), ypos,
-                                xpos + (index * 6) + 6, ypos + 5),
-              game::kTransparentBlack);
+              Rect{xpos + (index * 6), ypos, 6, 6}, game::kTransparentBlack);
           show.text_page().view().FillRect(
-              Rect::FromCorners(2 * (xpos + (index * 6)), ypos * 2,
-                                2 * (xpos + (index * 6) + 6), 2 * (ypos + 6)),
+              Rect{2 * (xpos + (index * 6)), ypos * 2, 6 * 2, 6 * 2},
               game::kBlack);
           base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
@@ -1865,9 +1855,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
                                 HALLFAME_X + (_lastpos * 6) + 5, ypos,
                                 game::kTransparentBlack);
     show.text_page().view().FillRect(
-        Rect::FromCorners(2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
-                          2 * (HALLFAME_X + (_lastpos * 6) + 5),
-                          (2 * ypos) + 1),
+        Rect{2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos, 6 * 2, 2},
         game::kBlack);
     _lastpos = pos;
     _state = false;
@@ -1877,8 +1865,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
       HALLFAME_X + (pos * 6), ypos, HALLFAME_X + (pos * 6) + 5, ypos,
       _state ? game::kLightBlue : game::kTransparentBlack);
   show.text_page().view().FillRect(
-      Rect::FromCorners(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
-                        2 * (HALLFAME_X + (pos * 6) + 5), (2 * ypos) + 1),
+      Rect{2 * (HALLFAME_X + (pos * 6)), 2 * ypos, 6 * 2, 2},
       _state ? game::kLightBlue : game::kBlack);
 
   /*
@@ -2022,15 +2009,19 @@ void New_Infantry_Anim(int index, int anim) {
  * HISTORY:                                                                *
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
+// Draws a casualty bar `width` pixels long and two high at row `y`, with its
+// shadow one pixel down and to the right. `width` is at least 1.
+static void Draw_Bar(PixelView& view, const int y, const int width,
+                     const uint8_t color) {
+  view.FillRect(Rect{0, y, width, 2}, color);
+  view.DrawLine(1, y + 2, width, y + 2, game::kTransparentBlack);
+  view.PutPixel(width, y + 1, game::kTransparentBlack);
+}
+
 void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
                      int ckilled) {
   if (gkilled) {
-    view.FillRect(Rect::FromCorners(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5),
-                  game::kLightCyan);
-    view.DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
-                  game::kTransparentBlack);
-    view.DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
-                  0 + std::min(i, gkilled) + 1, 0 + 5, game::kTransparentBlack);
+    Draw_Bar(view, 4, std::min(i, gkilled), game::kLightCyan);
     if (i <= gkilled) {
       const int anim = base::At(InfantryMan, i / 11).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
@@ -2046,14 +2037,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
     }
   }
   if (nkilled) {
-    view.FillRect(
-        Rect::FromCorners(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17),
-        game::kRed);
-    view.DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
-                  game::kTransparentBlack);
-    view.DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
-                  0 + std::min(i, nkilled) + 1, 0 + 17,
-                  game::kTransparentBlack);
+    Draw_Bar(view, 16, std::min(i, nkilled), game::kRed);
     if (i <= nkilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN / 3) + (i / 11)).anim;
@@ -2072,14 +2056,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
   }
 
   if (ckilled) {
-    view.FillRect(
-        Rect::FromCorners(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29),
-        game::kRed);
-    view.DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
-                  game::kTransparentBlack);
-    view.DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,
-                  0 + std::min(i, ckilled) + 1, 0 + 29,
-                  game::kTransparentBlack);
+    Draw_Bar(view, 28, std::min(i, ckilled), game::kRed);
     if (i <= ckilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN * 2 / 3) + (i / 11)).anim;

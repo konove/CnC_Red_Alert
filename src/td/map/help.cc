@@ -287,8 +287,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
     tip.Print(Text, {DrawX, DrawY});
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int text_height = FontMaxHeight(font);
-    view.DrawRect(Rect::FromCorners(DrawX - 1, DrawY - 1, DrawX + Width + 1,
-                                    DrawY + text_height),
+    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},
                   static_cast<unsigned char>(Color));
 
     if (Cost) {
@@ -296,12 +295,13 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = StringPixelWidth(font, buffer);
       tip.Print(buffer, {DrawX, DrawY + text_height});
+      // The cost box shares its top edge with the bottom of the text box;
+      // the black line opens the part of that edge the two have in common.
       view.DrawRect(
-          Rect::FromCorners(DrawX - 1, DrawY + text_height, DrawX + width + 1,
-                            DrawY + text_height + text_height - 1),
+          Rect{DrawX - 1, DrawY + text_height, width + 2, text_height},
           static_cast<unsigned char>(Color));
       view.DrawLine(DrawX, DrawY + text_height,
-                    DrawX + std::min(width + 1, Width) - 1, DrawY + text_height,
+                    DrawX + std::min(width, Width) - 1, DrawY + text_height,
                     game::kBlack);
     }
 

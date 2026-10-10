@@ -1205,10 +1205,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Erase old coordinates .....................
         */
-        view.FillRect(Rect::FromCorners(
-                          kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
-                          kDialogX + kDialogW - 7,
-                          kDialogY + kDialogH - kOkH - 10 - 22 + 10),
+        view.FillRect(Rect{kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
+                           kDialogW - 14, 10},
                       game::kBlack);
 
         /*

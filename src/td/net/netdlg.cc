@@ -1170,10 +1170,9 @@ static int Net_Join_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(
-            Rect::FromCorners(d_dialog_x + 2, d_msg1_y,
-                              d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h),
-            game::kBlack);
+        view.FillRect(Rect{d_dialog_x + 2, d_msg1_y, d_dialog_w - 6,
+                           d_msg5_y + d_txt6_h - d_msg1_y},
+                      game::kBlack);
 
         if (joinstate == JOIN_CONFIRMED && parms_received) {
           /*............................................................
@@ -3188,10 +3187,7 @@ static int Net_New_Dialog() {
       ** Wipe the background behind the unit count then reprint it
       */
       view.FillRect(
-          Rect::FromCorners(d_count_x + d_count_w + (2 * factor), d_count_y,
-                            d_count_x + d_count_w + (2 * factor) + 20,
-                            d_count_y + 12),
-          0);
+          Rect{d_count_x + d_count_w + (2 * factor), d_count_y, 20, 12}, 0);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
       label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
       display = REDRAW_NONE;
@@ -3326,11 +3322,9 @@ static int Net_New_Dialog() {
             base::At(TheSession().unit_count_min(), TheSession().bases());
 
         game::TheMouse().Hide();
-        view.FillRect(
-            Rect::FromCorners(d_count_x + d_count_w + (2 * factor), d_count_y,
-                              d_count_x + d_count_w + (14 * factor),
-                              d_count_y + (6 * factor)),
-            game::kBlack);
+        view.FillRect(Rect{d_count_x + d_count_w + (2 * factor), d_count_y,
+                           12 * factor, (6 * factor)},
+                      game::kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
         label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
@@ -3347,11 +3341,9 @@ static int Net_New_Dialog() {
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
         game::TheMouse().Hide();
-        view.FillRect(
-            Rect::FromCorners(d_level_x + d_level_w + (2 * factor), d_level_y,
-                              d_level_x + d_level_w + (14 * factor),
-                              d_level_y + (6 * factor)),
-            game::kBlack);
+        view.FillRect(Rect{d_level_x + d_level_w + (2 * factor), d_level_y,
+                           12 * factor, (6 * factor)},
+                      game::kBlack);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
@@ -4303,10 +4295,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
     const int pixwidth = StringPixelWidth(font, time_allowed.c_str());
     view.FillRect(
-        Rect::FromCorners((160 * factor) - (pixwidth / 2) - 12,
-                          y + (d_margin * 2) + d_txt6_h + d_margin,
-                          (160 * factor) + (pixwidth / 2) + 12,
-                          y + (d_margin * 2) + (d_txt6_h * 2) + d_margin),
+        Rect{(160 * factor) - (pixwidth / 2) - 12,
+             y + (d_margin * 2) + d_txt6_h + d_margin, pixwidth + 24, d_txt6_h},
         game::kTransparentBlack);
     centered.Print(time_allowed.c_str(),
                    {160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin});

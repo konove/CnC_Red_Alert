@@ -116,9 +116,7 @@ class TextButtonClass final : public ToggleClass {
  protected:
   void Draw_Background(PixelView& view) {
     if (IsBlackBorder) {
-      view.DrawRect(
-          Rect::FromCorners(X - 1, Y - 1, X + Width + 2, Y + Height + 2),
-          kBlack);
+      view.DrawRect(Rect{X - 1, Y - 1, Width + 2, Height + 2}, kBlack);
     }
     Skin::Draw_Button_Box(view, X, Y, Width, Height, TextFont, PrintFlags,
                           IsDisabled, IsPressed);
