@@ -42,9 +42,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/ui/control.h"
-#include "game/ui/standard_colors.h"
 #include "game/ui/toggle.h"
 #include "game/ui/widget_skin.h"
 
@@ -58,25 +56,21 @@ class TextButtonClass final : public ToggleClass {
  public:
   TextButtonClass()
       : ToggleClass(0, 0, 0, 0, 0),
-        IsBlackBorder(false),
         String(nullptr),
         TextFont(Skin::kButtonDefaultFont),
         PrintFlags(Skin::kButtonDefaultFlags) {}
   TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   Skin::Font font, Skin::PrintFlags style, int x, int y,
-                  int w = -1, int h = -1, bool blackborder = false)
+                  int w = -1, int h = -1)
       : ToggleClass(id, x, y, w, h),
-        IsBlackBorder(blackborder),
         String(text),
         TextFont(font),
         PrintFlags(style) {
     Size_To_Text(w, h);
   }
   TextButtonClass(unsigned id, int text, Skin::Font font,
-                  Skin::PrintFlags style, int x, int y, int w = -1, int h = -1,
-                  bool blackborder = false)
+                  Skin::PrintFlags style, int x, int y, int w = -1, int h = -1)
       : ToggleClass(id, x, y, w, h),
-        IsBlackBorder(blackborder),
         String(nullptr),
         TextFont(font),
         PrintFlags(style) {
@@ -115,9 +109,6 @@ class TextButtonClass final : public ToggleClass {
 
  protected:
   void Draw_Background(PixelView& view) {
-    if (IsBlackBorder) {
-      view.DrawRect(Rect{X - 1, Y - 1, Width + 2, Height + 2}, kBlack);
-    }
     Skin::Draw_Button_Box(view, X, Y, Width, Height, TextFont, PrintFlags,
                           IsDisabled, IsPressed);
   }
@@ -127,8 +118,6 @@ class TextButtonClass final : public ToggleClass {
                               PrintFlags, IsDisabled, IsPressed, IsOn);
     }
   }
-
-  bool IsBlackBorder : 1;
 
   /*
   **	This points to a constant string that is used for the button's text.

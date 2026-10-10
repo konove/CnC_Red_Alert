@@ -11750,10 +11750,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T02:50:05Z",
+      "updated": "2026-10-10T02:51:06Z",
       "resolution": "The four copies now call one `DrawColorBox()` in `ra/ui/dialog.h`, which fills exactly the inside of the one-pixel bevel (`Rect{x+1, y+1, w-2, h-2}`). The network and Westwood Online boxes gain the uncoloured column on the right, the second null-modem dialog the column on the left and the row on top; the first null-modem dialog looks as before. The differences were EA's uneven `RESFACTOR` scaling. Covered by `ra/ui/color_box_test.cc`.",
       "toDecide": "Are the two null-modem dialogs meant to look different from the network and Westwood Online ones? If not, make all four the same (which changes how those dialogs look) and share the code.",
       "decisions": [
@@ -11867,26 +11867,27 @@
         "dead-code",
         "ui"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T02:54:08Z",
       "source": "T-344",
+      "resolution": "Removed the `blackborder` parameter from both `TextButtonClass` constructors, the `IsBlackBorder` member and the border branch in `Draw_Background`, plus the `engine/gfx/rect.h` and `game/ui/standard_colors.h` includes only that branch used. All 374 constructions in `src/` (WOL and `#ifdef` code included) pass at most eight arguments, so nothing else changed.",
       "anchors": [
         {
           "path": "src/game/ui/textbtn.h",
-          "startLine": 67,
-          "endLine": 67,
-          "text": "                  int w = -1, int h = -1, bool blackborder = false)",
+          "startLine": 65,
+          "endLine": 65,
+          "text": "      : ToggleClass(id, x, y, w, h),",
           "before": [
-            "        PrintFlags(Skin::kButtonDefaultFlags) {}",
             "  TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,",
-            "                  Skin::Font font, Skin::PrintFlags style, int x, int y,"
+            "                  Skin::Font font, Skin::PrintFlags style, int x, int y,",
+            "                  int w = -1, int h = -1)"
           ],
           "after": [
-            "      : ToggleClass(id, x, y, w, h),",
-            "        IsBlackBorder(blackborder),",
-            "        String(text),"
+            "        String(text),",
+            "        TextFont(font),",
+            "        PrintFlags(style) {"
           ],
           "lost": false
         }
