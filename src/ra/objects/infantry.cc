@@ -3352,7 +3352,7 @@ void InfantryClass::Read_INI(engine::file::IniFile& ini) {
           **	Fetch the mission and facing.
           */
           const MissionType mission =
-              Mission_From_Name(tokens.Next());
+              MissionClass::Mission_From_Name(tokens.Next());
           const std::string_view validation = tokens.Next();
           if (!validation.empty()) {
             dir = game::Direction(base::ParseIntegerOr<int>(validation, 0));
@@ -3428,18 +3428,19 @@ void InfantryClass::Write_INI(engine::file::IniFile& ini) {
       char buf[128];
 
       absl::SNPrintF(uname, sizeof(uname), "%d", index);
-      absl::SNPrintF(
-          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
-          infantry->House->Class->IniName, infantry->Class->IniName,
-          infantry->Health_Ratio() * 256,
-          Cell::Containing(infantry->Coord).index(),
-          CellClass::Spot_Index(infantry->Coord),
-          Mission_Name(infantry->mission_state().current() == MISSION_NONE
-                           ? infantry->mission_state().queued()
-                           : infantry->mission_state().current()),
-          infantry->PrimaryFacing.current().value(),
-          infantry->Trigger != nullptr ? infantry->Trigger->Class->IniName
-                                       : "None");
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
+                     infantry->House->Class->IniName, infantry->Class->IniName,
+                     infantry->Health_Ratio() * 256,
+                     Cell::Containing(infantry->Coord).index(),
+                     CellClass::Spot_Index(infantry->Coord),
+                     MissionClass::Mission_Name(
+                         infantry->mission_state().current() == MISSION_NONE
+                             ? infantry->mission_state().queued()
+                             : infantry->mission_state().current()),
+                     infantry->PrimaryFacing.current().value(),
+                     infantry->Trigger != nullptr
+                         ? infantry->Trigger->Class->IniName
+                         : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
   }

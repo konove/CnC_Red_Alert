@@ -155,6 +155,7 @@
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
+#include "td/objects/mission.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
 #include "td/objects/techno.h"
@@ -544,7 +545,8 @@ void AircraftClass::Read_INI(const engine::file::IniFile& ini) {
             air->Strength = static_cast<int16_t>(
                 base::FixedToCardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(tokens.Next()));
+              air->Assign_Mission(
+                  MissionClass::Mission_From_Name(tokens.Next()));
             } else {
               base::DeletePooled(air);
             }
@@ -594,9 +596,10 @@ void AircraftClass::Write_INI(engine::file::IniFile& ini) {
                      // Read_INI() queues the scenario's mission behind the
                      // move an aircraft enters the map with, so the queue is
                      // where an aircraft just read keeps it.
-                     Mission_Name(unit->mission_state().queued() != MISSION_NONE
-                                      ? unit->mission_state().queued()
-                                      : unit->mission_state().current()));
+                     MissionClass::Mission_Name(
+                         unit->mission_state().queued() != MISSION_NONE
+                             ? unit->mission_state().queued()
+                             : unit->mission_state().current()));
       ini.PutString(INI_Name(), uname, buf);
     }
   }

@@ -12331,13 +12331,13 @@
       "anchors": [
         {
           "path": "src/ra/objects/techno.h",
-          "startLine": 75,
-          "endLine": 75,
+          "startLine": 77,
+          "endLine": 77,
           "text": " public:",
           "before": [
-            "**\tThis is the common data between building and units.",
-            "*/",
-            "class TechnoClass : public MissionClass, public RadioPeer {"
+            "class TechnoClass : public ObjectClass,",
+            "                    public RadioPeer,",
+            "                    public MissionHandler {"
           ],
           "after": [
             "  /*",
@@ -13231,7 +13231,7 @@
             "",
             "  /*---------------------------------------------------------------------"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/mission.h",
@@ -13248,7 +13248,7 @@
             "",
             "  /*---------------------------------------------------------------------"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13290,7 +13290,7 @@
             "",
             "  /*---------------------------------------------------------------------"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/mission.h",
@@ -13307,7 +13307,7 @@
             "",
             "  /*---------------------------------------------------------------------"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

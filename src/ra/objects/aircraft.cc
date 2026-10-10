@@ -670,7 +670,8 @@ void AircraftClass::Read_INI(engine::file::IniFile& ini) {
             air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
                                                  Fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
-              air->Assign_Mission(Mission_From_Name(tokens.Next()));
+              air->Assign_Mission(
+                  MissionClass::Mission_From_Name(tokens.Next()));
             } else {
               base::DeletePooled(air);
             }

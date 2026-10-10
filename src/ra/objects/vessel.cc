@@ -2014,7 +2014,7 @@ void VesselClass::Read_INI(engine::file::IniFile& ini) {
           const auto dir =
               game::Direction(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
-              Mission_From_Name(tokens.Next());
+              MissionClass::Mission_From_Name(tokens.Next());
 
           vessel->Trigger = nullptr;
           TriggerType* tp = TriggerType::FromName(tokens.Next());
@@ -2092,7 +2092,7 @@ void VesselClass::Write_INI(engine::file::IniFile& ini) {
           vessel->House->Class->IniName, vessel->Class->IniName,
           vessel->Health_Ratio() * 256, Cell::Containing(vessel->Coord).index(),
           vessel->PrimaryFacing.current().value(),
-          Mission_Name(vessel->mission_state().current()),
+          MissionClass::Mission_Name(vessel->mission_state().current()),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
       ini.PutString(INI_Name(), uname, buf);

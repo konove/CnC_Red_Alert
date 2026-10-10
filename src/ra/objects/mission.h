@@ -42,142 +42,134 @@
 
 #include <string_view>
 
-#include "absl/base/attributes.h"
 #include "base/fixed.h"
 #include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/objects/object.h"
 
 namespace ra {
 
-/****************************************************************************
-**	This handles order assignment and tracking. The order is used to guide
-**	overall AI processing.
-*/
-class MissionClass : public ObjectClass {
+// The functions that carry out the missions, one for each mission or small
+// group of them. MissionClass::AI() calls the one for the current mission
+// when its timer has run out. Each returns the number of game frames to wait
+// before it is called again, and keeps its place between calls in
+// MissionClass::step().
+//
+// TechnoClass implements it, and its subclasses override the missions they
+// can perform.
+class MissionHandler {
  public:
+  MissionHandler() = default;
+  virtual ~MissionHandler();
+  MissionHandler(const MissionHandler&) = delete;
+  MissionHandler& operator=(const MissionHandler&) = delete;
+  MissionHandler(MissionHandler&&) = delete;
+  MissionHandler& operator=(MissionHandler&&) = delete;
 
-  /*---------------------------------------------------------------------
-  **	Constructors, Destructors, and overloaded operators.
-  */
-  MissionClass(RTTIType rtti, int id);
+  virtual int Mission_Sleep() = 0;
+  virtual int Mission_Ambush() = 0;
+  virtual int Mission_Attack() = 0;
+  virtual int Mission_Capture() = 0;
+  virtual int Mission_Guard() = 0;
+  virtual int Mission_Guard_Area() = 0;
+  virtual int Mission_Harvest() = 0;
+  virtual int Mission_Hunt() = 0;
+  virtual int Mission_Move() = 0;
+  virtual int Mission_Retreat() = 0;
+  virtual int Mission_Return() = 0;
+  virtual int Mission_Stop() = 0;
+  virtual int Mission_Unload() = 0;
+  virtual int Mission_Enter() = 0;
+  virtual int Mission_Construction() = 0;
+  virtual int Mission_Deconstruction() = 0;
+  virtual int Mission_Repair() = 0;
+  virtual int Mission_Missile() = 0;
+};
 
-  // Saved-game support for the base part; derived classes call it first.
+// What an object has been ordered to do: the mission it is carrying out, the
+// one queued to start when the object can change over (Commence()), the one
+// set aside by an override, and how far the current mission's state machine
+// has come. It also times the calls of the mission function.
+//
+// It does not know its owner. The owner passes itself to AI() as the
+// MissionHandler whose functions do the work.
+//
+// Example:
+//   mission.Assign(MISSION_ATTACK);
+//   if (mission.Commence()) { ... }  // at the next cell centre
+//   mission.AI(*this);                // every game frame
+class MissionClass {
+ public:
+  // Whether an object on `mission` may be recruited into a team.
+  static bool Is_Recruitable_Mission(MissionType mission);
+  // The name of `mission` as scenario files spell it, "None" for
+  // MISSION_NONE, and the mission with that name, MISSION_NONE when there is
+  // none. Case does not matter.
+  static const char* Mission_Name(MissionType mission);
+  static MissionType Mission_From_Name(std::string_view name);
+
+  // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ObjectClass::Serialize(ar);
-    ar(Mission, SuspendedMission, MissionQueue, Status, MissionTimer);
-  }
-
- protected:
-  // Shell for ObjectHeap::Load; Serialize() supplies every value.
-  MissionClass()
-      : Mission(MISSION_NONE),
-        SuspendedMission(MISSION_NONE),
-        MissionQueue(MISSION_NONE),
-        Status(0),
-        MissionTimer(0) {}
-
- public:
-  ~MissionClass() override = default;
-  MissionClass(const MissionClass&) = delete;
-  MissionClass& operator=(const MissionClass&) = delete;
-  MissionClass(MissionClass&&) = delete;
-  MissionClass& operator=(MissionClass&&) = delete;
-
-  /*---------------------------------------------------------------------
-  **	Member function prototypes.
-  */
-
-  void Shorten_Mission_Timer() { MissionTimer.Set(0); }
-  // The mission state of this object. MissionClass is on its way to becoming
-  // a member of TechnoClass (docs/OBJECT_COMPOSITION_PLAN.md, step 6); its
-  // state is already reached through this accessor, as it will be then.
-  [[nodiscard]] MissionClass& mission_state() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *this;
-  }
-  [[nodiscard]] const MissionClass& mission_state() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *this;
+    ar(current_, suspended_, queued_, step_, timer_);
   }
 
   // The mission being carried out, MISSION_NONE before the first one starts.
-  // Get_Mission() is the one to ask what the object is up to: it answers with
-  // the queued mission while there is no current one.
-  [[nodiscard]] MissionType current() const { return Mission; }
-  void set_current(MissionType mission) { Mission = mission; }
-  // The mission set aside by Override_Mission() for Restore_Mission() to
-  // bring back; MISSION_NONE when there is none.
-  [[nodiscard]] MissionType suspended() const { return SuspendedMission; }
-  void set_suspended(MissionType mission) { SuspendedMission = mission; }
+  // CurrentOrQueued() is the one to ask what the object is up to.
+  [[nodiscard]] MissionType current() const { return current_; }
+  void set_current(MissionType mission) { current_ = mission; }
+  // The mission set aside by Suspend(); MISSION_NONE when there is none.
+  [[nodiscard]] MissionType suspended() const { return suspended_; }
+  void set_suspended(MissionType mission) { suspended_ = mission; }
   // The mission that Commence() will start; MISSION_NONE when none waits.
-  [[nodiscard]] MissionType queued() const { return MissionQueue; }
-  void set_queued(MissionType mission) { MissionQueue = mission; }
-  // The step the current mission's state machine is at. Each Mission_*()
+  [[nodiscard]] MissionType queued() const { return queued_; }
+  void set_queued(MissionType mission) { queued_ = mission; }
+  // The step the current mission's state machine is at. Each mission
   // function gives the numbers its own meaning; Commence() starts at 0.
-  [[nodiscard]] int step() const { return Status; }
-  void set_step(int step) { Status = step; }
+  [[nodiscard]] int step() const { return step_; }
+  void set_step(int step) { step_ = step; }
 
-  [[nodiscard]] MissionType Get_Mission() const override;
-  virtual void Assign_Mission(MissionType order);
-  virtual bool Commence();
-  void AI() override;
+  // The current mission, or the queued one while there is no current one.
+  [[nodiscard]] MissionType CurrentOrQueued() const {
+    return current_ == MISSION_NONE ? queued_ : current_;
+  }
 
-  /*
-  **	Support functions.
-  */
-  virtual int Mission_Sleep();
-  virtual int Mission_Ambush();
-  virtual int Mission_Attack();
-  virtual int Mission_Capture();
-  virtual int Mission_Guard();
-  virtual int Mission_Guard_Area();
-  virtual int Mission_Harvest();
-  virtual int Mission_Hunt();
-  virtual int Mission_Move();
-  virtual int Mission_Retreat();
-  virtual int Mission_Return();
-  virtual int Mission_Stop();
-  virtual int Mission_Unload();
-  virtual int Mission_Enter();
-  virtual int Mission_Construction();
-  virtual int Mission_Deconstruction();
-  virtual int Mission_Repair();
-  virtual int Mission_Missile();
-  virtual void Set_Mission(MissionType mission);
-  static bool Is_Recruitable_Mission(MissionType mission);
+  // Queues `order` to start at the next Commence(), replacing what was
+  // queued. MISSION_NONE and the current mission are ignored. MISSION_QMOVE is
+  // queued as MISSION_MOVE.
+  void Assign(MissionType order);
 
-  static const char* Mission_Name(MissionType mission);
-  static MissionType Mission_From_Name(std::string_view name);
-  virtual void Override_Mission(MissionType mission, Target /*unused*/,
-                                Target /*unused*/);
-  virtual bool Restore_Mission();
+  // Starts the queued mission at step 0, to run on the next AI(). Returns
+  // false, changing nothing, when no mission is queued.
+  bool Commence();
+
+  // Makes `mission` the current one at once and drops the queued one. The
+  // step and the timer are left alone.
+  void Set(MissionType mission) {
+    current_ = mission;
+    queued_ = MISSION_NONE;
+  }
+
+  // Sets the queued mission aside, or the current one when none is queued,
+  // for the owner to bring back after an override.
+  void Suspend() { suspended_ = queued_ != MISSION_NONE ? queued_ : current_; }
+
+  // Makes the mission function due on the next AI().
+  void ShortenTimer() { timer_.Set(0); }
+
+  // Call once a game frame. When the timer has run out it calls the function
+  // of `handler` for the current mission and waits the frames it returns.
+  void AI(MissionHandler& handler);
 
  private:
-  /*
-  **	This the tactical strategy to use. It is used by the unit script. This
-  **	is a general guide for unit AI processing.
-  */
-  MissionType Mission;
-  MissionType SuspendedMission;
+  MissionType current_ = MISSION_NONE;
+  MissionType suspended_ = MISSION_NONE;
+  MissionType queued_ = MISSION_NONE;
+  int step_ = 0;
 
-  /*
-  **	The order queue is used for orders that should take effect when the
-  *vehicle *	has reached the center point of a cell. The queued order number
-  *is +1 when stored here *	so that 0 will indicated there is no queued
-  *order.
-  */
-  MissionType MissionQueue;
-
-  int Status;
-
-  /*
-  **	This the thread processing timer. When this value counts down to zero,
-  *then *	more script processing may occur.
-  */
-  engine::platform::Timer<game::FrameTickSource> MissionTimer;
+  // Counts down to the next call of the mission function.
+  engine::platform::Timer<game::FrameTickSource> timer_{0};
 };
 
 /****************************************************************************

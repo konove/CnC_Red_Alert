@@ -319,7 +319,8 @@ template void CargoClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
-  MissionClass::Serialize(ar);
+  ObjectClass::Serialize(ar);
+  mission_state_.Serialize(ar);
   radio_.Serialize(ar);
   TechnoClass* contact = Contact_With_Whom();
   ar(ObjectPtr(contact));

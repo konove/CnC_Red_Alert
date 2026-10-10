@@ -4777,7 +4777,7 @@ void UnitClass::Read_INI(engine::file::IniFile& ini) {
           const auto dir =
               game::Direction(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
-              Mission_From_Name(tokens.Next());
+              MissionClass::Mission_From_Name(tokens.Next());
 
           unit->Trigger = nullptr;
           TriggerType* tp = TriggerType::FromName(tokens.Next());
@@ -4849,7 +4849,7 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
           unit->Class->IniName, unit->Health_Ratio() * 256,
           Cell::Containing(unit->Coord).index(),
           unit->PrimaryFacing.current().value(),
-          Mission_Name(unit->mission_state().current()),
+          MissionClass::Mission_Name(unit->mission_state().current()),
           unit->Trigger != nullptr ? unit->Trigger->Class->IniName : "None");
       ini.PutString(INI_Name(), uname, buf);
     }

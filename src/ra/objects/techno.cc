@@ -676,7 +676,7 @@ Coordinate TechnoClass::Fire_Coord(int which) const {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
-    : MissionClass(rtti, id),
+    : ObjectClass(rtti, id),
       IsUseless(false),
       IsTickedOff(false),
       IsCloakable(false),
@@ -843,7 +843,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
     IsDiscoveredByComputer = true;
   }
 
-  if (MissionClass::Revealed(house)) {
+  if (ObjectClass::Revealed(house)) {
     /*
     **	An enemy object that is discovered will go into hunt mode if
     **	its current mission is to ambush.
@@ -928,7 +928,7 @@ void TechnoClass::Hidden() {
 bool TechnoClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
-  if (MissionClass::Mark(mark)) {
+  if (ObjectClass::Mark(mark)) {
     /*
     **	When redrawing an object, if there is another object tethered to this
     *one, *	redraw it as well.
@@ -1153,7 +1153,7 @@ bool TechnoClass::Limbo() {
   if (!IsInLimbo) {
     Transmit_Message(RADIO_OVER_OUT);
   }
-  return MissionClass::Limbo();
+  return ObjectClass::Limbo();
 }
 
 RadioMessageType TechnoClass::Default_Radio_Answer(TechnoClass* from,
@@ -1383,7 +1383,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
 bool TechnoClass::Unlimbo(Coordinate coord, game::Direction dir) {
   DCHECK(IsActive);
 
-  if (MissionClass::Unlimbo(coord, dir)) {
+  if (ObjectClass::Unlimbo(coord, dir)) {
     PrimaryFacing.SnapTo(dir);
     Enter_Idle_Mode(true);
     Commence();
@@ -2647,7 +2647,8 @@ void TechnoClass::AI() {
     Mark(MARK_CHANGE_REDRAW);
   }
 
-  MissionClass::AI();
+  ObjectClass::AI();
+  Run_Mission();
 
   if (!IsActive || (Height > 0 && What_Am_I() != RTTI_AIRCRAFT)) {
     return;
@@ -2950,7 +2951,7 @@ bool TechnoClass::Select() {
     return false;
   }
 
-  if (MissionClass::Select()) {
+  if (ObjectClass::Select()) {
     /*
     **	Speak a confirmation of selection.
     */
@@ -4068,11 +4069,12 @@ int TechnoClass::Weapon_Range(int which) const {
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
 void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
-                                   Target navcom) {
+                                   Target /*navcom*/) {
   DCHECK(IsActive);
 
   SuspendedTarCom = TarCom;
-  MissionClass::Override_Mission(mission, tarcom, navcom);
+  mission_state_.Suspend();
+  Assign_Mission(mission);
   Assign_Target(tarcom);
 }
 
@@ -4091,11 +4093,73 @@ void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
 bool TechnoClass::Restore_Mission() {
   DCHECK(IsActive);
 
-  if (MissionClass::Restore_Mission()) {
+  if (mission_state_.suspended() != MISSION_NONE) {
+    Assign_Mission(mission_state_.suspended());
+    mission_state_.set_suspended(MISSION_NONE);
     Assign_Target(SuspendedTarCom);
     return true;
   }
   return false;
+}
+
+MissionType TechnoClass::Get_Mission() const {
+  DCHECK(IsActive);
+
+  return mission_state_.CurrentOrQueued();
+}
+
+void TechnoClass::Assign_Mission(MissionType order) {
+  DCHECK(IsActive);
+
+  mission_state_.Assign(order);
+}
+
+bool TechnoClass::Commence() {
+  DCHECK(IsActive);
+
+  return mission_state_.Commence();
+}
+
+void TechnoClass::Set_Mission(MissionType mission) {
+  DCHECK(IsActive);
+
+  mission_state_.Set(mission);
+}
+
+int TechnoClass::Mission_Sleep() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Ambush() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Attack() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Capture() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Guard() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Guard_Area() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Harvest() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Hunt() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Move() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Retreat() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Return() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Stop() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Unload() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Enter() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Construction() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Deconstruction() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Repair() { return kTicksPerSecond * 30; }
+int TechnoClass::Mission_Missile() { return kTicksPerSecond * 30; }
+
+void TechnoClass::Run_Mission() {
+  /*
+  **	If this is the kind of object that is "paralyzed with fear" while it is
+  **	above ground level (such as when be paradropped), it will perform no
+  **	mission AI processing.
+  */
+  if ((What_Am_I() == RTTI_INFANTRY || What_Am_I() == RTTI_UNIT ||
+       What_Am_I() == RTTI_VESSEL) &&
+      Height > 0) {
+    return;
+  }
+
+  if (Strength > 0) {
+    mission_state_.AI(*this);
+  }
 }
 
 /***********************************************************************************************
@@ -4813,7 +4877,7 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
  *=============================================================================================*/
 void TechnoClass::Detach(Target target, bool all) {
   DCHECK(IsActive);
-  MissionClass::Detach(target, all);
+  ObjectClass::Detach(target, all);
 
   if (mission_state().suspended() != MISSION_NONE &&
       SuspendedTarCom == target) {

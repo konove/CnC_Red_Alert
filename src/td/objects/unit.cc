@@ -3548,7 +3548,8 @@ void UnitClass::Read_INI(const engine::file::IniFile& ini) {
                   .Center();
           const auto dir =
               game::Direction(base::ParseIntegerOr<int>(tokens.Next(), 0));
-          const MissionType mission = Mission_From_Name(tokens.Next());
+          const MissionType mission =
+              MissionClass::Mission_From_Name(tokens.Next());
           unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {
             unit->Trigger->AttachCount++;
@@ -3624,13 +3625,13 @@ void UnitClass::Write_INI(engine::file::IniFile& ini) {
     UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
-      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
-                     unit->House->Class->IniName, unit->Class->IniName,
-                     unit->Health_Ratio(),
-                     Cell::Containing(unit->Coord).index(),
-                     unit->PrimaryFacing.current().value(),
-                     Mission_Name(unit->mission_state().current()),
-                     unit->Trigger ? unit->Trigger->Get_Name() : "None");
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
+          unit->Class->IniName, unit->Health_Ratio(),
+          Cell::Containing(unit->Coord).index(),
+          unit->PrimaryFacing.current().value(),
+          MissionClass::Mission_Name(unit->mission_state().current()),
+          unit->Trigger ? unit->Trigger->Get_Name() : "None");
       ini.PutString(INI_Name(), uname, buf);
     }
   }

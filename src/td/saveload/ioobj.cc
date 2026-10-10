@@ -454,24 +454,9 @@ template void BulletClass::Serialize(ArchiveWriter&);
 template void BulletClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void MissionClass::Serialize(Archive& ar) {
-  ObjectClass::Serialize(ar);
-  ar(Mission, SuspendedMission, MissionQueue, Status, MissionTimer);
-  if constexpr (Archive::kIsReading) {
-    for (const MissionType mission :
-         {Mission, SuspendedMission, MissionQueue}) {
-      if (mission < MISSION_NONE || mission >= MISSION_COUNT) {
-        ar.Fail("invalid saved mission");
-      }
-    }
-  }
-}
-template void MissionClass::Serialize(ArchiveWriter&);
-template void MissionClass::Serialize(ArchiveReader&);
-
-template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
-  MissionClass::Serialize(ar);
+  ObjectClass::Serialize(ar);
+  mission_state_.Serialize(ar);
   radio_.Serialize(ar);
   TechnoClass* contact = Contact_With_Whom();
   ar(ObjectPtr(contact));

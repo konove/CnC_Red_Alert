@@ -1687,7 +1687,7 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
           Assign_Mission(MISSION_MOVE);
         }
         Assign_Destination(Target::FromPacked(param));
-        Shorten_Mission_Timer();
+        mission_state().ShortenTimer();
       }
       return RADIO_ROGER;
 
@@ -2522,7 +2522,7 @@ bool FootClass::Is_Recruitable(const HouseClass* house) const {
   **	If it is currently in a mission the precludes recruitment into a team,
   *then *	return with this information.
   */
-  if (!Is_Recruitable_Mission(mission_state().current())) {
+  if (!MissionClass::Is_Recruitable_Mission(mission_state().current())) {
     return false;
   }
 

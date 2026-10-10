@@ -54,7 +54,6 @@
 
 #include <string_view>
 
-#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "base/fixed.h"
 #include "engine/file/ini_file.h"
@@ -62,286 +61,12 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/data/rules.h"
-#include "ra/objects/object.h"
 
 namespace ra {
 
-/***********************************************************************************************
- * MissionClass::MissionClass -- Default constructor for the mission object
- *type.              *
- *                                                                                             *
- *    This is the default constructor for the mission class object. It sets the
- *mission        * handler into a default -- do nothing -- state. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/23/1995 JLB : Created. * 03/01/1996 JLB : Uses initializer
- *lists.                                                  *
- *=============================================================================================*/
-MissionClass::MissionClass(RTTIType rtti, int id)
-    : ObjectClass(rtti, id),
-      Mission(MISSION_NONE),
-      SuspendedMission(MISSION_NONE),
-      MissionQueue(MISSION_NONE),
-      Status(0),
-      MissionTimer(0) {}
+MissionHandler::~MissionHandler() = default;
 
-/***********************************************************************************************
- * MissionClass::Mission_???  -- Stub mission functions that do nothing. *
- *                                                                                             *
- *    These are the stub routines that handle the mission logic. They do nothing
- *at this       * level. Derived classes will override these routine as
- *necessary.                         *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the number of game frames to delay before calling this
- *mission        * handler again. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/23/1995 JLB : Created. *
- *=============================================================================================*/
-int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Ambush() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Attack() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Capture() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Guard() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Guard_Area() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Harvest() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Hunt() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Move() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Retreat() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Return() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Stop() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Unload() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Enter() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Construction() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Deconstruction() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Repair() { return kTicksPerSecond * 30; }
-int MissionClass::Mission_Missile() { return kTicksPerSecond * 30; }
-
-/***********************************************************************************************
- * MissionClass::Set_Mission -- Sets the mission to the specified value. *
- *                                                                                             *
- *    Use this routine to set the current mission for this object. This routine
- *will blast     * over the current mission, bypassing the queue method. Call it
- *when the mission needs     * to be changed immediately. *
- *                                                                                             *
- * INPUT:   mission  -- The mission to set to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/23/1995 JLB : Created. *
- *=============================================================================================*/
-void MissionClass::Set_Mission(MissionType mission) {
-  DCHECK(IsActive);
-
-  Mission = mission;
-  MissionQueue = MISSION_NONE;
-}
-
-/***********************************************************************************************
- * MissionClass::Get_Mission -- Fetches the mission that this object is acting
- *under.          *
- *                                                                                             *
- *    Use this routine to fetch the mission that this object is CURRENTLY acting
- *under. The    * mission queue may be filled with a imminent mission change,
- *but this routine does not    * consider that. It only returns the CURRENT
- *mission.                                      *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with the mission that this unit is currently following. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/23/1995 JLB : Created. *
- *=============================================================================================*/
-MissionType MissionClass::Get_Mission() const {
-  DCHECK(IsActive);
-
-  return Mission == MISSION_NONE ? MissionQueue : Mission;
-}
-
-/***********************************************************************************************
- * MissionClass::AI -- Processes order script. *
- *                                                                                             *
- *    This routine will process the order script for as much time as * possible
- *or until a script delay is detected. This routine should * be called for every
- *unit once per game loop (if possible).                               *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/23/1994 JLB : Created. * 06/25/1995 JLB : Added new missions. *
- *=============================================================================================*/
-void MissionClass::AI() {
-  DCHECK(IsActive);
-
-  ObjectClass::AI();
-
-  /*
-  **	If this is the kind of object that is "paralyzed with fear" while it is
-  *above *	ground level (such as when be paradropped), it will perform no
-  *mission AI *	processing.
-  */
-  if ((What_Am_I() == RTTI_INFANTRY || What_Am_I() == RTTI_UNIT ||
-       What_Am_I() == RTTI_VESSEL) &&
-      Height > 0) {
-    return;
-  }
-
-  /*
-  **	This is the script AI equivalent processing.
-  */
-  if (MissionTimer.IsFinished() && Strength > 0) {
-    switch (Mission) {
-      case MISSION_HARMLESS:
-      case MISSION_SLEEP:
-      case MissionType::MISSION_NONE:
-      default:
-        MissionTimer.Set(Mission_Sleep());
-        break;
-
-      case MISSION_STICKY:
-      case MISSION_GUARD:
-        MissionTimer.Set(Mission_Guard());
-        break;
-
-      case MISSION_ENTER:
-        MissionTimer.Set(Mission_Enter());
-        break;
-
-      case MISSION_CONSTRUCTION:
-        MissionTimer.Set(Mission_Construction());
-        break;
-
-      case MISSION_DECONSTRUCTION:
-        MissionTimer.Set(Mission_Deconstruction());
-        break;
-
-      case MISSION_CAPTURE:
-      case MISSION_SABOTAGE:
-        MissionTimer.Set(Mission_Capture());
-        break;
-
-      case MISSION_QMOVE:
-      case MISSION_MOVE:
-        MissionTimer.Set(Mission_Move());
-        break;
-
-      case MISSION_ATTACK:
-        MissionTimer.Set(Mission_Attack());
-        break;
-
-      case MISSION_RETREAT:
-        MissionTimer.Set(Mission_Retreat());
-        break;
-
-      case MISSION_HARVEST:
-        MissionTimer.Set(Mission_Harvest());
-        break;
-
-      case MISSION_GUARD_AREA:
-        MissionTimer.Set(Mission_Guard_Area());
-        break;
-
-      case MISSION_RETURN:
-        MissionTimer.Set(Mission_Return());
-        break;
-
-      case MISSION_STOP:
-        MissionTimer.Set(Mission_Stop());
-        break;
-
-      case MISSION_AMBUSH:
-        MissionTimer.Set(Mission_Ambush());
-        break;
-
-      case MISSION_HUNT:
-      case MISSION_RESCUE:
-        MissionTimer.Set(Mission_Hunt());
-        break;
-
-      case MISSION_UNLOAD:
-        MissionTimer.Set(Mission_Unload());
-        break;
-
-      case MISSION_REPAIR:
-        MissionTimer.Set(Mission_Repair());
-        break;
-
-      case MISSION_MISSILE:
-        MissionTimer.Set(Mission_Missile());
-        break;
-    }
-  }
-}
-
-/***********************************************************************************************
- * MissionClass::Commence -- Start script with new order. *
- *                                                                                             *
- *    This routine will start script processing according to any queued * order
- *it may have. If there is no queued order, then this routine * does nothing.
- *Call this routine whenever the unit is in a good                           *
- *    position to change its order (such as when it is stopped). *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Did the mission actually change? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/23/1994 JLB : Created. * 07/14/1994 JLB : Simplified. *
- *   06/17/1995 JLB : Returns success flag. *
- *=============================================================================================*/
-bool MissionClass::Commence() {
-  DCHECK(IsActive);
-
-  if (MissionQueue != MISSION_NONE) {
-    Mission = MissionQueue;
-    MissionQueue = MISSION_NONE;
-
-    /*
-    **	Force immediate state machine processing at the first state machine
-    *state value.
-    */
-    MissionTimer.Set(0);
-    Status = 0;
-    return true;
-  }
-  return false;
-}
-
-/***********************************************************************************************
- * MissionClass::Assign_Mission -- Give an order to a unit. *
- *                                                                                             *
- *    This routine will assign the specified mission to the mission queue for
- *this object.     * The actual mission logic will then be performed at the
- *first available and legal         * opportunity. *
- *                                                                                             *
- * INPUT:   order -- Mission to give the unit. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/04/1991 JLB : Created. * 04/15/1994 JLB : Converted to member
- *function.                                            *
- *=============================================================================================*/
-void MissionClass::Assign_Mission(MissionType order) {
-  DCHECK(IsActive);
-
+void MissionClass::Assign(MissionType order) {
   /*
   **	Ensure that a MISSION_QMOVE is translated into a MISSION_MOVE.
   */
@@ -349,8 +74,114 @@ void MissionClass::Assign_Mission(MissionType order) {
     order = MISSION_MOVE;
   }
 
-  if (order != MISSION_NONE && Mission != order) {
-    MissionQueue = order;
+  if (order != MISSION_NONE && current_ != order) {
+    queued_ = order;
+  }
+}
+
+bool MissionClass::Commence() {
+  if (queued_ != MISSION_NONE) {
+    current_ = queued_;
+    queued_ = MISSION_NONE;
+
+    /*
+    **	Force immediate state machine processing at the first state machine
+    **	state value.
+    */
+    timer_.Set(0);
+    step_ = 0;
+    return true;
+  }
+  return false;
+}
+
+// The timer is set after the mission function returns, so a function that
+// shortens it, or commences another mission, still waits the delay it asks
+// for.
+void MissionClass::AI(MissionHandler& handler) {
+  if (!timer_.IsFinished()) {
+    return;
+  }
+
+  switch (current_) {
+    case MISSION_HARMLESS:
+    case MISSION_SLEEP:
+    case MissionType::MISSION_NONE:
+    default:
+      timer_.Set(handler.Mission_Sleep());
+      break;
+
+    case MISSION_STICKY:
+    case MISSION_GUARD:
+      timer_.Set(handler.Mission_Guard());
+      break;
+
+    case MISSION_ENTER:
+      timer_.Set(handler.Mission_Enter());
+      break;
+
+    case MISSION_CONSTRUCTION:
+      timer_.Set(handler.Mission_Construction());
+      break;
+
+    case MISSION_DECONSTRUCTION:
+      timer_.Set(handler.Mission_Deconstruction());
+      break;
+
+    case MISSION_CAPTURE:
+    case MISSION_SABOTAGE:
+      timer_.Set(handler.Mission_Capture());
+      break;
+
+    case MISSION_QMOVE:
+    case MISSION_MOVE:
+      timer_.Set(handler.Mission_Move());
+      break;
+
+    case MISSION_ATTACK:
+      timer_.Set(handler.Mission_Attack());
+      break;
+
+    case MISSION_RETREAT:
+      timer_.Set(handler.Mission_Retreat());
+      break;
+
+    case MISSION_HARVEST:
+      timer_.Set(handler.Mission_Harvest());
+      break;
+
+    case MISSION_GUARD_AREA:
+      timer_.Set(handler.Mission_Guard_Area());
+      break;
+
+    case MISSION_RETURN:
+      timer_.Set(handler.Mission_Return());
+      break;
+
+    case MISSION_STOP:
+      timer_.Set(handler.Mission_Stop());
+      break;
+
+    case MISSION_AMBUSH:
+      timer_.Set(handler.Mission_Ambush());
+      break;
+
+    case MISSION_HUNT:
+    case MISSION_RESCUE:
+      timer_.Set(handler.Mission_Hunt());
+      break;
+
+    case MISSION_UNLOAD:
+      timer_.Set(handler.Mission_Unload());
+      break;
+
+    case MISSION_REPAIR:
+      timer_.Set(handler.Mission_Repair());
+      break;
+
+    case MISSION_MISSILE:
+      timer_.Set(handler.Mission_Missile());
+      break;
   }
 }
 
@@ -403,57 +234,6 @@ const char* MissionClass::Mission_Name(MissionType mission) {
     return Missions.at(mission);
   }
   return "None";
-}
-
-/***********************************************************************************************
- * MissionClass::Override_Mission -- temporarily overrides the units mission *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:      MissionType mission - the mission we want to override * Target
- *tarcom  - the new target we want to override                      * Target
- *navcom  - the new navigation point to override                    *
- *                                                                                             *
- * OUTPUT:      none *
- *                                                                                             *
- * WARNINGS:   If a mission is already overridden, the current mission is * just
- *re-assigned.                                                             *
- *                                                                                             *
- * HISTORY: * 04/28/1995 PWG : Created. *
- *=============================================================================================*/
-void MissionClass::Override_Mission(MissionType mission, Target /*unused*/,
-                                    Target /*unused*/) {
-  DCHECK(IsActive);
-
-  if (MissionQueue != MISSION_NONE) {
-    SuspendedMission = MissionQueue;
-  } else {
-    SuspendedMission = Mission;
-  }
-
-  Assign_Mission(mission);
-}
-
-/***********************************************************************************************
- * MissionClass::Restore_Mission -- Restores overridden mission *
- *                                                                                             *
- * INPUT:      none *
- *                                                                                             *
- * OUTPUT:     none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/28/1995 PWG : Created. *
- *=============================================================================================*/
-bool MissionClass::Restore_Mission() {
-  DCHECK(IsActive);
-
-  if (SuspendedMission != MISSION_NONE) {
-    Assign_Mission(SuspendedMission);
-    SuspendedMission = MISSION_NONE;
-    return true;
-  }
-  return false;
 }
 
 /***********************************************************************************************

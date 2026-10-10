@@ -71,7 +71,9 @@ namespace ra {
 /****************************************************************************
 **	This is the common data between building and units.
 */
-class TechnoClass : public MissionClass, public RadioPeer {
+class TechnoClass : public ObjectClass,
+                    public RadioPeer,
+                    public MissionHandler {
  public:
   /*
   **	If this techno object has detected that it has outlived its
@@ -373,6 +375,17 @@ class TechnoClass : public MissionClass, public RadioPeer {
   virtual int Made_A_Kill() { return ++kills_; }
   [[nodiscard]] int kills() const { return kills_; }
 
+  // The missions this object has been given and its place in the current
+  // one. Orders go through Assign_Mission() and the functions next to it,
+  // which subclasses extend.
+  [[nodiscard]] MissionClass& mission_state() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return mission_state_;
+  }
+  [[nodiscard]] const MissionClass& mission_state() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return mission_state_;
+  }
+
   // The radio set: who this object is in contact with. Messages are sent
   // with Transmit_Message(), which names this object as the sender.
   [[nodiscard]] RadioClass& radio() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -431,9 +444,43 @@ class TechnoClass : public MissionClass, public RadioPeer {
                                                      int which = 0) const;
   virtual Target Greatest_Threat(ThreatType method);  // const;
   virtual void Assign_Target(Target target);
-  void Override_Mission(MissionType mission, Target tarcom,
-                        Target navcom) override;
-  bool Restore_Mission() override;
+  // What the object is up to: its current mission, or the queued one while
+  // it has none.
+  [[nodiscard]] MissionType Get_Mission() const override;
+  // Queues `order` to start when the object can change over; see
+  // MissionClass::Assign().
+  virtual void Assign_Mission(MissionType order);
+  // Starts the queued mission. Returns false when there is none.
+  bool Commence();
+  // Makes `mission` the current one at once, dropping the queued one.
+  void Set_Mission(MissionType mission);
+  // Sets the mission and target aside and assigns `mission` against
+  // `tarcom`; Restore_Mission() brings them back. Returns false from
+  // Restore_Mission() when nothing was set aside.
+  virtual void Override_Mission(MissionType mission, Target tarcom,
+                                Target navcom);
+  virtual bool Restore_Mission();
+
+  // MissionHandler. A techno that cannot perform a mission idles for half a
+  // minute before it is asked again.
+  int Mission_Sleep() override;
+  int Mission_Ambush() override;
+  int Mission_Attack() override;
+  int Mission_Capture() override;
+  int Mission_Guard() override;
+  int Mission_Guard_Area() override;
+  int Mission_Harvest() override;
+  int Mission_Hunt() override;
+  int Mission_Move() override;
+  int Mission_Retreat() override;
+  int Mission_Return() override;
+  int Mission_Stop() override;
+  int Mission_Unload() override;
+  int Mission_Enter() override;
+  int Mission_Construction() override;
+  int Mission_Deconstruction() override;
+  int Mission_Repair() override;
+  int Mission_Missile() override;
   virtual BulletClass* Fire_At(Target target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
@@ -549,6 +596,11 @@ class TechnoClass : public MissionClass, public RadioPeer {
   RadioMessageType Default_Radio_Answer(TechnoClass* from,
                                         RadioMessageType message);
 
+  // Runs the current mission's function when it is due. An object with no
+  // strength left performs none.
+  void Run_Mission();
+
+  MissionClass mission_state_;
   RadioClass radio_;
   game::FlasherClass flasher_;
   StageClass animation_;
