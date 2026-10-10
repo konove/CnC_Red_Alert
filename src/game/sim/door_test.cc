@@ -47,9 +47,8 @@ TEST(DoorTest, OpensThroughEveryStageThenStops) {
   ASSERT_TRUE(door.OpenDoor(1, 4));
   EXPECT_TRUE(door.IsDoorOpening());
   EXPECT_FALSE(door.OpenDoor(1, 4));  // Already opening.
-  // Four stages are shown as 0 to 3 while opening; the last frame of the
-  // animation finishes it, and an open door shows its last stage less one,
-  // as the originals did.
+  // A count of four stages shows frames 0, 1 and 2: the third step finishes
+  // the opening, and the open door stays on frame 2, as the originals did.
   for (int frame = 1; frame <= 2; ++frame) {
     door.AI();
     EXPECT_EQ(door.DoorFrame(), frame);

@@ -68,16 +68,14 @@ class Door {
     switch (state_) {
       case State::kClosing:
         return final_stage_ - 1 - animation_.Fetch_Stage();
-      case State::kClosed:
-        return 0;
       case State::kOpening:
         return animation_.Fetch_Stage();
       case State::kOpen:
         return final_stage_ - 1;
+      case State::kClosed:
       default:
-        break;
+        return 0;
     }
-    return 0;
   }
 
   [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }
