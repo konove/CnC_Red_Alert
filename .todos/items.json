@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 362,
+  "nextId": 374,
   "items": [
     {
       "id": "T-2",
@@ -12568,6 +12568,492 @@
             "",
             "  // Encrypt the blowfish key with the public key.",
             "  char encrypted_key[kMaxKeyBlockSize];"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-362",
+      "title": "Should it be not a template but a proper class passed into a Door?",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-10T20:25:03Z",
+      "updated": "2026-10-10T20:25:03Z",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 31,
+          "endLine": 32,
+          "text": "template <class Stage>\nclass Door {",
+          "before": [
+            "//   DoorClass door;",
+            "//   door.OpenDoor(/*frames_per_stage=*/2, /*stage_count=*/10);",
+            "//   while (!door.IsDoorOpen()) door.AI();"
+          ],
+          "after": [
+            " public:",
+            "  Door() = default;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-363",
+      "title": "multi inheritance is bad - try to extract DoorClass to a member",
+      "details": "",
+      "priority": "p3",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-10T20:25:45Z",
+      "updated": "2026-10-10T20:25:45Z",
+      "anchors": [
+        {
+          "path": "src/ra/objects/techno.h",
+          "startLine": 73,
+          "endLine": 77,
+          "text": "class TechnoClass : public RadioClass,\n                    public game::FlasherClass,\n                    public StageClass,\n                    public CargoClass,\n                    public DoorClass {",
+          "before": [
+            "/****************************************************************************",
+            "**\tThis is the common data between building and units.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tIf this techno object has detected that it has outlived its"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-364",
+      "title": "Leftovers from the game/sim/door.h modernization",
+      "details": "What the `/modernize-file` run on `src/game/sim/door.h` and `door_test.cc` found and did not do. The run renamed `game::DoorClass` to `game::Door` and its members to the Google style, made the state an enum, and left the header at 100% line coverage.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "game",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:04Z",
+      "updated": "2026-10-10T20:29:04Z",
+      "source": "a7307f0b..8c8a8a33",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-365",
+      "title": "Decide whether the APC door should show all its frames",
+      "details": "`UnitClass::APC_Open_Door()` and `APC_Close_Door()` call `OpenDoor(10, 2)` / `OpenDoor(1, 2)` / `CloseDoor(10, 2)` in both games. `game::Door` shows `stage_count - 1` frames, so with 2 `DoorFrame()` is 0 for the whole animation and for the open door. The draw code adds `DoorFrame()` to shape 32 (north-east) or 35 (north-west) in `src/ra/objects/unit.cc` (around line 2032) and `src/td/objects/unit.cc` (around 2023), which leaves room for three door frames per facing: only the first is ever drawn. It reads like an off-by-one in the original.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Keep the shipped look, or pass 4 so frames 0-2 are shown?\n\n- Keep: nothing to do; close as wont_fix.\n- Pass 4 with the same rates: the door takes 30 frames to open instead of 10 (3 instead of 1 for the fast case), which delays unloading - a simulation change, so multiplayer against an unfixed peer desyncs.\n- Pass 4 and lower the rate to keep roughly the same duration: 10 frames cannot be split into 3 equal stages (rate 3 gives 9), so the timing still shifts by a frame.\n\nEither change needs a look at the APC art to confirm shapes 33-34 and 36-37 are door frames.",
+      "anchors": [
+        {
+          "path": "src/ra/objects/unit.cc",
+          "startLine": 4039,
+          "endLine": 4064,
+          "text": "  CloseDoor(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);\n  DCHECK(IsActive);\n\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      OpenDoor(10, 2);\n    } else {\n      OpenDoor(1, 2);",
+          "before": [
+            "  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);",
+            "  DCHECK(IsActive);",
+            ""
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/unit.cc",
+          "startLine": 3995,
+          "endLine": 4018,
+          "text": "  CloseDoor(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  Validate();\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      OpenDoor(10, 2);\n    } else {\n      OpenDoor(1, 2);",
+          "before": [
+            " *=============================================================================================*/",
+            "void UnitClass::APC_Close_Door() {",
+            "  Validate();"
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "}"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-366",
+      "title": "Decide whether a door that reverses should continue from the frame it reached",
+      "details": "`Door::StartAnimation()` always restarts the stage counter at 0, so `CloseDoor()` on a door that is still opening draws the fully open frame next, and `OpenDoor()` on a closing door jumps to the closed frame. `DoorTest.TurningRoundRestartsFromTheEndFrame` pins it. This is the original behaviour.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Leave the jump, or start the reversed animation from the mirrored stage (`final_stage_ - 1 - current`)?\n\nContinuing from the reached frame makes the reversed door finish sooner than a full animation, so everything that waits on `IsDoorOpen()` / `IsDoorClosed()` (weapons factory exit, transport unloading) happens earlier: a simulation change in both games.",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 120,
+          "endLine": 130,
+          "text": "                      const int stage_count) {\n    // Fewer than two stages would leave an open door on frame -1, and more\n    // than 256 do not fit the saved byte.\n    DCHECK(stage_count >= 2 && stage_count <= 256);\n    DCHECK_GT(frames_per_stage, 0);\n    state_ = state;\n    final_stage_ = static_cast<unsigned char>(stage_count - 1);\n    animation_.Set_Stage(0);\n    animation_.Set_Rate(frames_per_stage);\n  }\n",
+          "before": [
+            "",
+            "  // Restarts the animation from stage 0 on the way to `state`.",
+            "  void StartAnimation(const State state, const int frames_per_stage,"
+          ],
+          "after": [
+            "  // Counts the stages of the opening or closing in progress, from 0; stopped",
+            "  // (rate 0) while the door is open or closed.",
+            "  Stage animation_;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-367",
+      "title": "Pass Door the number of frames instead of the stage count",
+      "details": "`OpenDoor(frames_per_stage, stage_count)` and `CloseDoor()` take one more than the number of frames the animation shows (the class comment explains it). Change the parameter to `frame_count` and store it directly in `final_stage_`, and have each caller pass one less: `git grep -nE '\\b(Open|Close)Door\\(' -- src` lists them (war factory `kDoorStages` 5 in `src/ra/objects/building.cc`, 11 in `src/td/objects/building.cc`, 18 in `src/td/startup/init.cc`, 4 for aircraft, 6 for vessels, 2 for the APC). Behaviour must stay exactly as it is; `door_test.cc` and `td/saveload/savevalues_test.cc` follow. The `DCHECK` in `StartAnimation()` becomes `frame_count >= 1 && frame_count <= 255`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 84,
+          "endLine": 104,
+          "text": "  // `frames_per_stage` game frames; it is open `frames_per_stage` *\n  // (`stage_count` - 1) frames later. `stage_count` must be at least 2 and\n  // `frames_per_stage` nonzero, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool OpenDoor(const int frames_per_stage, const int stage_count) {\n    if (state_ != State::kClosed && state_ != State::kClosing) {\n      return false;\n    }\n    StartAnimation(State::kOpening, frames_per_stage, stage_count);\n    return true;\n  }\n\n  // Starts closing an open or opening door, as OpenDoor() opens one. Returns\n  // false if it is already closed or closing.\n  bool CloseDoor(const int frames_per_stage, const int stage_count) {\n    if (state_ != State::kOpen && state_ != State::kOpening) {\n      return false;\n    }\n    StartAnimation(State::kClosing, frames_per_stage, stage_count);\n    return true;\n  }",
+          "before": [
+            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
+            "",
+            "  // Starts opening a closed or closing door, advancing one stage every"
+          ],
+          "after": [
+            "",
+            "  [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }",
+            "  [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-368",
+      "title": "Decide whether Door's stage count should be saved as an int",
+      "details": "`final_stage_` is an `unsigned char` although it is a count, because `Door::Serialize()` writes it at that width and the member's type is the save format.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Retype it to `int` (four bytes in the save, a `kSaveGameVersion` bump in both games and the save/load smoke tests), or leave the byte? Nothing but tidiness is gained; the largest count any caller passes is 18.",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 135,
+          "endLine": 137,
+          "text": "  // The number of stages of the current door animation, less one: the stage\n  // at which the opening or closing is finished.\n  unsigned char final_stage_ = 0;",
+          "before": [
+            "  // (rate 0) while the door is open or closed.",
+            "  Stage animation_;",
+            ""
+          ],
+          "after": [
+            "",
+            "  State state_ = State::kClosed;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-369",
+      "title": "Decide whether Door::AI() should report the redraw instead of keeping a flag",
+      "details": "`needs_redraw_` is `mutable` and saved, and `ClearDoorRedraw()` is const, only because `TechnoClass::Draw_It()` clears it from a const draw routine (`src/ra/objects/techno.cc`, `src/td/objects/techno.cc`). `Door::AI()` could return whether the animation moved and let the owner mark itself there (`TechnoClass::AI()` in both games, `BuildingClass` in `src/ra/objects/building.cc` around line 6357 and `src/td/objects/building.cc` around 1199), which removes the flag, the mutable and both accessors.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "game",
+        "ra",
+        "td",
+        "manual-check",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Make the change or keep the flag?\n\nIt is not behaviour-exact: today a non-building re-marks itself every frame until it is drawn, and the change would mark it once, so it needs a look at a real display (APC, transport, war factory doors). The saved byte either stays as an unused placeholder or goes with a `kSaveGameVersion` bump.",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 44,
+          "endLine": 47,
+          "text": "  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }",
+          "before": [
+            "",
+            "  // Returns whether the animation has moved on since the flag was last",
+            "  // cleared, so the door's owner needs redrawing."
+          ],
+          "after": [
+            "",
+            "  // Advances the animation one game frame; finishes opening or closing, and",
+            "  // stops the animation, once the last stage is reached."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 141,
+          "endLine": 144,
+          "text": "  // Whether the animation moved on, so the object the door belongs to should\n  // be redrawn. Drawing clears it from const draw routines, so it is redraw\n  // bookkeeping rather than logical state.\n  mutable bool needs_redraw_ = false;",
+          "before": [
+            "",
+            "  State state_ = State::kClosed;",
+            ""
+          ],
+          "after": [
+            "};",
+            "",
+            "}  // namespace game"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-370",
+      "title": "Decide what loading a Door with an impossible state should do",
+      "details": "`Door::Serialize()` reads `state_` as a raw `int32_t` (the archive does not validate enums) and the animation's rate independently. A damaged save can load a state outside `Door::State`, or a running animation on a door that is open or closed. `DoorFrame()` then returns 0 from its `default:` arm and `AI()` stops the animation without changing the state; these are the two branch sides no test reaches (27 of 30 branches covered).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Leave it (a damaged save is not otherwise defended against field by field), fail the load through the archive's error, or clamp to `State::kClosed`? The first costs nothing; the others need a look at how the other saved enums are treated so the door is not a special case.",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 36,
+          "endLine": 40,
+          "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(animation_, final_stage_, state_, needs_redraw_);\n  }",
+          "before": [
+            " public:",
+            "  Door() = default;",
+            ""
+          ],
+          "after": [
+            "",
+            "  // Returns whether the animation has moved on since the flag was last",
+            "  // cleared, so the door's owner needs redrawing."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-371",
+      "title": "Rename each game's DoorClass alias",
+      "details": "The shared template is `game::Door<Stage>` now, but each game still names its instantiation `DoorClass` (`using DoorClass = game::Door<StageClass>;`). Rename the alias to `Door` in `ra::` and `td::`, one commit per game: the users are `TechnoClass`'s base list (`techno.h`), `DoorClass::AI()` in `techno.cc`, `DoorClass::Serialize(ar)` in `saveload/ioobj.cc`, and `td/saveload/savevalues_test.cc`. Check `docs/CLANG_TIDY_PRIORITIES.md` only mentions it historically.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "anchors": [
+        {
+          "path": "src/ra/objects/door.h",
+          "startLine": 11,
+          "endLine": 11,
+          "text": "using DoorClass = game::Door<StageClass>;",
+          "before": [
+            "",
+            "namespace ra {",
+            ""
+          ],
+          "after": [
+            "",
+            "}  // namespace ra",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/door.h",
+          "startLine": 11,
+          "endLine": 11,
+          "text": "using DoorClass = game::Door<StageClass>;",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            "",
+            "}  // namespace td",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-372",
+      "title": "Confirm the names the door's queries got",
+      "details": "Commit `1f40a860` renamed `Door_Stage()` to `DoorFrame()`, `Time_To_Redraw()` to `DoorNeedsRedraw()` and `Clear_Redraw_Flag()` to `ClearDoorRedraw()`. They are called unqualified on technos, which inherit the door, so each carries `Door`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "toDecide": "Keep these three, or prefer `DoorStage()` (the original's word, though it returns the frame to draw and not the animation's stage), and `door_needs_redraw()` / `clear_door_redraw()` in accessor style? A rename is a scripted replace over about 15 call sites in both games.",
+      "anchors": [
+        {
+          "path": "src/game/sim/door.h",
+          "startLine": 44,
+          "endLine": 66,
+          "text": "  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }\n\n  // Advances the animation one game frame; finishes opening or closing, and\n  // stops the animation, once the last stage is reached.\n  void AI() {\n    if (animation_.Graphic_Logic()) {\n      if (animation_.Fetch_Stage() >= final_stage_) {\n        animation_.Set_Rate(0);\n        if (state_ == State::kOpening) {\n          state_ = State::kOpen;\n        } else if (state_ == State::kClosing) {\n          state_ = State::kClosed;\n        }\n      }\n      needs_redraw_ = true;\n    }\n  }\n\n  // Returns the frame of the door's animation to draw: 0 when closed, up to\n  // `stage_count` - 2 when open (see the class comment).",
+          "before": [
+            "",
+            "  // Returns whether the animation has moved on since the flag was last",
+            "  // cleared, so the door's owner needs redrawing."
+          ],
+          "after": [
+            "  [[nodiscard]] int DoorFrame() const {",
+            "    switch (state_) {",
+            "      case State::kClosing:"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-373",
+      "title": "Rename StageClass's methods in both games to the Google style",
+      "details": "`game::Door<Stage>` requires `Graphic_Logic()`, `Fetch_Stage()`, `Set_Stage(int)` and `Set_Rate(int)` of its `Stage`, the legacy names of `StageClass` in `src/ra/objects/stage.h` and `src/td/objects/stage.h`. `FakeStage` in `door_test.cc` has to spell them the same way, and CLion shows four warnings there (empty messages, on those four names) that the door's IDE pass could not clear. Run `/modernize-file` on both `stage.h` files; the two games must end up with the same method names because the template calls them, and `door.h`'s class comment and `FakeStage` follow.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:29:36Z",
+      "parent": "T-364",
+      "source": "a7307f0b..8c8a8a33",
+      "anchors": [
+        {
+          "path": "src/ra/objects/stage.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/stage.h",
+          "lost": false
+        },
+        {
+          "path": "src/game/sim/door_test.cc",
+          "startLine": 21,
+          "endLine": 30,
+          "text": "  bool Graphic_Logic() {\n    if (rate_ == 0) {\n      return false;\n    }\n    ++stage_;\n    return true;\n  }\n  [[nodiscard]] int Fetch_Stage() const { return stage_; }\n  void Set_Stage(const int stage) { stage_ = stage; }\n  void Set_Rate(const int rate) { rate_ = rate; }",
+          "before": [
+            "// rate is nonzero, like the games' StageClass with a rate of 1.",
+            "class FakeStage {",
+            " public:"
+          ],
+          "after": [
+            "",
+            "  template <class Archive>",
+            "  void Serialize(Archive& ar) {"
           ],
           "lost": false
         }
