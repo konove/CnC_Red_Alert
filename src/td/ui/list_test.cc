@@ -216,6 +216,37 @@ TEST(TdMessageListTest, MatchingCrcDoesNotMergeDifferentPlayers) {
   EXPECT_EQ(messages.Num_Messages(), 2);
 }
 
+TEST(TdMessageListTest, SameTextInAnotherFontIsNotADuplicate) {
+  MessageListClass messages;
+  messages.Init(0, 0, 4, 80, 8);
+  char text[] = "Alice:hello";
+  auto* label =
+      messages.Add_Message(text, 0, FontType::k6Point, TPF_NONE, -1, 0, 0);
+  ASSERT_NE(label, nullptr);
+  EXPECT_EQ(
+      messages.Add_Message(text, 0, FontType::k6Point, TPF_NONE, -1, 0, 0),
+      label);
+  EXPECT_NE(
+      messages.Add_Message(text, 0, FontType::k8Point, TPF_NONE, -1, 0, 0),
+      label);
+  EXPECT_EQ(messages.Num_Messages(), 2);
+}
+
+TEST(TdMessageListTest, TailDoesNotMergeIntoMessageInAnotherFont) {
+  MessageListClass messages;
+  messages.Init(0, 0, 4, 80, 8);
+  char head[] = "Alice:head";
+  char tail[] = "Alice:tail";
+  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
+                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  ASSERT_NE(label, nullptr);
+  EXPECT_NE(messages.Add_Message(tail, 0, FontType::k8Point, TPF_NONE, -1,
+                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+            label);
+  EXPECT_EQ(std::string_view(label->Text), "Alice:head");
+  EXPECT_EQ(messages.Num_Messages(), 2);
+}
+
 }  // namespace
 
 }  // namespace td

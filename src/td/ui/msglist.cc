@@ -225,7 +225,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     */
     if ((!txtlabel->Segments) &&
         ((std::string_view(txtlabel->Text) == txt) &&
-         txtlabel->Color == color && txtlabel->Style == style)) {
+         txtlabel->Color == color && txtlabel->TextFont == font &&
+         txtlabel->Style == style)) {
       return txtlabel;
     }
   }
@@ -240,8 +241,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
     position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
     for (game::GadgetClass* const gadget : MessageList.gadgets()) {
       txtlabel = dynamic_cast<TextLabelClass*>(gadget);
-      if (txtlabel->Color == color && txtlabel->Style == style &&
-          txtlabel->CRC == crc) {
+      if (txtlabel->Color == color && txtlabel->TextFont == font &&
+          txtlabel->Style == style && txtlabel->CRC == crc) {
         const std::string_view current(txtlabel->Text);
         const std::string_view incoming(txt);
         const auto current_colon = current.find(':');

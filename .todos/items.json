@@ -909,7 +909,8 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-10T18:03:30Z",
+      "updated": "2026-10-10T18:30:24Z",
+      "fixedIn": "6739ec97",
       "resolution": "Left as shipped: the original 1996 `CODE/TEAM.CPP` has the add inside the loop for vehicles and ships too, and TD's `Recruit()` has no nearest search to compare with. `Add()` refuses a unit already on the team, so the effect is that the first matching vehicle joins and then each nearer one, until the quantity is full. Added a comment saying so in both branches and `TeamTest.RecruitsTheFirstVehicleFoundAndEachNearerOneAfterIt`, which pins it.",
       "toDecide": "In `TeamClass::Recruit()` the vehicle and ship branches add the best candidate so far on every later pass of the loop. First compare with the original source and Tiberian Dawn's `Recruit()`; then:\n\n- **Move the add after the loop**, as the infantry and aircraft branches have it: changes which units a team recruits (xcheck reference update).\n- **Leave** it as shipped.",
       "decisions": [
@@ -1376,11 +1377,12 @@
         "bugs",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
-      "parent": "T-124"
+      "updated": "2026-10-10T18:35:16Z",
+      "parent": "T-124",
+      "resolution": "`MessageListClass::Add_Message()` in `td/ui/msglist.cc` now also requires `txtlabel->TextFont == font` in the duplicate check and in the multi-segment tail match. Two tests in `td/ui/list_test.cc` (`SameTextInAnotherFontIsNotADuplicate`, `TailDoesNotMergeIntoMessageInAnotherFont`) fail without the change and pass with it."
     },
     {
       "id": "T-46",
