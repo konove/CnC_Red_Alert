@@ -48,6 +48,7 @@
 #include "engine/stream/archive.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/door.h"
 #include "game/sim/enums.h"
 #include "game/sim/flasher.h"
 #include "magic_enum/magic_enum.hpp"
@@ -64,7 +65,6 @@
 #include "td/objects/building.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
-#include "td/objects/door.h"
 #include "td/objects/drive.h"
 #include "td/objects/factory.h"
 #include "td/objects/fly.h"
@@ -488,7 +488,7 @@ void TechnoClass::Serialize(Archive& ar) {
   game::FlasherClass::Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
-  DoorClass::Serialize(ar);
+  game::Door::Serialize(ar);
   ar(kills_);
   bool ticked = IsTickedOff;
   bool cloakable = IsCloakable;

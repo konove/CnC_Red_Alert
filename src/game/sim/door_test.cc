@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <span>
 
 #include "engine/stream/archive.h"
@@ -14,35 +13,8 @@ namespace game {
 
 namespace {
 
-// A stage that advances one step on every Graphic_Logic() call while its
-// rate is nonzero, like the games' StageClass with a rate of 1.
-class FakeStage {
- public:
-  bool Graphic_Logic() {
-    if (rate_ == 0) {
-      return false;
-    }
-    ++stage_;
-    return true;
-  }
-  [[nodiscard]] int Fetch_Stage() const { return stage_; }
-  void Set_Stage(const int stage) { stage_ = stage; }
-  void Set_Rate(const int rate) { rate_ = rate; }
-
-  template <class Archive>
-  void Serialize(Archive& ar) {
-    ar(stage_, rate_);
-  }
-
- private:
-  int32_t stage_ = 0;
-  int32_t rate_ = 0;
-};
-
-using TestDoor = Door<FakeStage>;
-
 TEST(DoorTest, OpensThroughEveryStageThenStops) {
-  TestDoor door;
+  Door door;
   EXPECT_TRUE(door.IsDoorClosed());
   ASSERT_TRUE(door.OpenDoor(1, 4));
   EXPECT_TRUE(door.IsDoorOpening());
@@ -64,8 +36,24 @@ TEST(DoorTest, OpensThroughEveryStageThenStops) {
   EXPECT_EQ(door.DoorFrame(), 2);
 }
 
+TEST(DoorTest, AStageLastsFramesPerStageCalls) {
+  Door door;
+  ASSERT_TRUE(door.OpenDoor(3, 3));
+  for (int stage = 1; stage <= 2; ++stage) {
+    door.AI();
+    door.AI();
+    EXPECT_EQ(door.DoorFrame(), stage - 1);
+    EXPECT_FALSE(door.DoorNeedsRedraw());
+    door.AI();
+    EXPECT_TRUE(door.DoorNeedsRedraw());
+    door.ClearDoorRedraw();
+  }
+  EXPECT_TRUE(door.IsDoorOpen());
+  EXPECT_EQ(door.DoorFrame(), 1);
+}
+
 TEST(DoorTest, ClosingCountsTheStagesDown) {
-  TestDoor door;
+  Door door;
   door.OpenDoor(1, 3);
   door.AI();
   door.AI();
@@ -82,7 +70,7 @@ TEST(DoorTest, ClosingCountsTheStagesDown) {
 }
 
 TEST(DoorTest, TurningRoundRestartsFromTheEndFrame) {
-  TestDoor door;
+  Door door;
   door.OpenDoor(1, 4);
   door.AI();
   ASSERT_EQ(door.DoorFrame(), 1);
@@ -105,16 +93,18 @@ TEST(DoorTest, TurningRoundRestartsFromTheEndFrame) {
 }
 
 TEST(DoorTest, SerializeRoundTripsTheAnimation) {
-  TestDoor door;
-  door.OpenDoor(1, 5);
-  door.AI();
+  Door door;
+  door.OpenDoor(2, 5);
+  for (int call = 0; call < 3; ++call) {
+    door.AI();
+  }
   std::array<std::byte, 64> bytes{};
   SpanSink sink(bytes);
   ArchiveWriter writer(sink);
   door.Serialize(writer);
   ASSERT_TRUE(writer.ok());
 
-  TestDoor loaded;
+  Door loaded;
   SpanSource source{std::span<const std::byte>(bytes)};
   ArchiveReader reader(source);
   loaded.Serialize(reader);
@@ -122,6 +112,9 @@ TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   EXPECT_TRUE(loaded.IsDoorOpening());
   EXPECT_EQ(loaded.DoorFrame(), 1);
   EXPECT_TRUE(loaded.DoorNeedsRedraw());
+  // The loaded door is half-way through its second stage.
+  loaded.AI();
+  EXPECT_EQ(loaded.DoorFrame(), 2);
 }
 
 }  // namespace

@@ -186,6 +186,7 @@
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/door.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/utracker.h"
@@ -212,7 +213,6 @@
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
 #include "td/objects/cell.h"
-#include "td/objects/door.h"
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/infantry.h"
@@ -1730,7 +1730,7 @@ void TechnoClass::Clicked_As_Target(int count) {
 void TechnoClass::AI() {
   CargoClass::AI();
   RadioClass::AI();
-  DoorClass::AI();
+  game::Door::AI();
 
   if (!IsActive) {
     return;

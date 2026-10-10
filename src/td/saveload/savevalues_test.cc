@@ -10,6 +10,7 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
+#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "game/sim/mph.h"
 #include "gtest/gtest.h"
@@ -20,7 +21,6 @@
 #include "td/core/special_flags.h"
 #include "td/objects/abstract.h"
 #include "td/objects/cell.h"
-#include "td/objects/door.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"
 #include "td/objects/stage.h"
@@ -136,10 +136,10 @@ TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
 }
 
 TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
-  DoorClass door;
+  game::Door door;
   ASSERT_TRUE(door.OpenDoor(2, 4));
   door.AI();
-  DoorClass loaded;
+  game::Door loaded;
   Restore(loaded, Save(door));
   EXPECT_TRUE(loaded.IsDoorOpening());
   EXPECT_EQ(loaded.DoorNeedsRedraw(), door.DoorNeedsRedraw());

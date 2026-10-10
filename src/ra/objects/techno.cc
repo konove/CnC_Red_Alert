@@ -172,6 +172,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/door.h"
 #include "game/sim/enums.h"
 #include "game/sim/utracker.h"
 #include "game/ui/standard_colors.h"
@@ -208,7 +209,6 @@
 #include "ra/objects/cargo.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/combat.h"
-#include "ra/objects/door.h"
 #include "ra/objects/foot.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/mission.h"
@@ -2592,7 +2592,7 @@ void TechnoClass::AI() {
     return;
   }
 
-  DoorClass::AI();
+  game::Door::AI();
 
   /*
   **	If this is a vehicle that heals itself (e.g., Mammoth Tank), then it

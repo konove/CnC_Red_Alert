@@ -38,6 +38,7 @@
 #include <cstdint>
 
 #include "game/core/heap_slot_ptr.h"
+#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/carryover.h"
@@ -57,7 +58,6 @@
 #include "ra/objects/building.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
-#include "ra/objects/door.h"
 #include "ra/objects/drive.h"
 #include "ra/objects/factory.h"
 #include "ra/objects/fly.h"
@@ -331,7 +331,7 @@ void TechnoClass::Serialize(Archive& ar) {
   game::FlasherClass::Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
-  DoorClass::Serialize(ar);
+  game::Door::Serialize(ar);
   bool is_useless = IsUseless;
   bool is_ticked_off = IsTickedOff;
   bool is_cloakable = IsCloakable;

@@ -3,17 +3,12 @@
 #ifndef CNC_RED_ALERT_GAME_SIM_DOOR_H_
 #define CNC_RED_ALERT_GAME_SIM_DOOR_H_
 
-#include "absl/log/check.h"
+#include <cstdint>
 
 namespace game {
 
 // The state of a door that opens and closes over a number of animation
-// stages, driven by the game's StageClass. Each game has its own StageClass,
-// whose saved layout differs, so the door is a template over it; a game names
-// its door as `using DoorClass = game::Door<StageClass>;`.
-//
-// Stage must provide Graphic_Logic(), Fetch_Stage(), Set_Stage(int) and
-// Set_Rate(int), and be serializable.
+// stages. It counts its own game frames: AI() must be called once a frame.
 //
 // The `stage_count` a door is opened or closed with is one more than the
 // number of frames its animation shows: with 4, DoorFrame() runs 0, 1, 2 while
@@ -25,10 +20,9 @@ namespace game {
 // the closed one.
 //
 // Example:
-//   DoorClass door;
+//   game::Door door;
 //   door.OpenDoor(/*frames_per_stage=*/2, /*stage_count=*/10);
 //   while (!door.IsDoorOpen()) door.AI();
-template <class Stage>
 class Door {
  public:
   Door() = default;
@@ -36,7 +30,8 @@ class Door {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(animation_, final_stage_, state_, needs_redraw_);
+    ar(stage_, countdown_, frames_per_stage_, final_stage_, state_,
+       needs_redraw_);
   }
 
   // Returns whether the animation has moved on since the flag was last
@@ -48,60 +43,24 @@ class Door {
 
   // Advances the animation one game frame; finishes opening or closing, and
   // stops the animation, once the last stage is reached.
-  void AI() {
-    if (animation_.Graphic_Logic()) {
-      if (animation_.Fetch_Stage() >= final_stage_) {
-        animation_.Set_Rate(0);
-        if (state_ == State::kOpening) {
-          state_ = State::kOpen;
-        } else if (state_ == State::kClosing) {
-          state_ = State::kClosed;
-        }
-      }
-      needs_redraw_ = true;
-    }
-  }
+  void AI();
 
   // Returns the frame of the door's animation to draw: 0 when closed, up to
   // `stage_count` - 2 when open (see the class comment).
-  [[nodiscard]] int DoorFrame() const {
-    switch (state_) {
-      case State::kClosing:
-        return final_stage_ - 1 - animation_.Fetch_Stage();
-      case State::kOpening:
-        return animation_.Fetch_Stage();
-      case State::kOpen:
-        return final_stage_ - 1;
-      case State::kClosed:
-      default:
-        return 0;
-    }
-  }
+  [[nodiscard]] int DoorFrame() const;
 
   [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }
 
   // Starts opening a closed or closing door, advancing one stage every
-  // `frames_per_stage` game frames; it is open `frames_per_stage` *
-  // (`stage_count` - 1) frames later. `stage_count` must be at least 2 and
-  // `frames_per_stage` nonzero, or the door never opens. Returns false, and
+  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *
+  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and
+  // `frames_per_stage` positive, or the door never opens. Returns false, and
   // changes nothing, if it is already open or opening.
-  bool OpenDoor(const int frames_per_stage, const int stage_count) {
-    if (state_ != State::kClosed && state_ != State::kClosing) {
-      return false;
-    }
-    StartAnimation(State::kOpening, frames_per_stage, stage_count);
-    return true;
-  }
+  bool OpenDoor(int frames_per_stage, int stage_count);
 
   // Starts closing an open or opening door, as OpenDoor() opens one. Returns
   // false if it is already closed or closing.
-  bool CloseDoor(const int frames_per_stage, const int stage_count) {
-    if (state_ != State::kOpen && state_ != State::kOpening) {
-      return false;
-    }
-    StartAnimation(State::kClosing, frames_per_stage, stage_count);
-    return true;
-  }
+  bool CloseDoor(int frames_per_stage, int stage_count);
 
   [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }
   [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }
@@ -116,25 +75,21 @@ class Door {
   };
 
   // Restarts the animation from stage 0 on the way to `state`.
-  void StartAnimation(const State state, const int frames_per_stage,
-                      const int stage_count) {
-    // Fewer than two stages would leave an open door on frame -1, and more
-    // than 256 do not fit the saved byte.
-    DCHECK(stage_count >= 2 && stage_count <= 256);
-    DCHECK_GT(frames_per_stage, 0);
-    state_ = state;
-    final_stage_ = static_cast<unsigned char>(stage_count - 1);
-    animation_.Set_Stage(0);
-    animation_.Set_Rate(frames_per_stage);
-  }
+  void StartAnimation(State state, int frames_per_stage, int stage_count);
 
-  // Counts the stages of the opening or closing in progress, from 0; stopped
-  // (rate 0) while the door is open or closed.
-  Stage animation_;
+  // The stage the opening or closing in progress has reached, from 0.
+  int32_t stage_ = 0;
+
+  // The calls of AI() left until the next stage.
+  int32_t countdown_ = 0;
+
+  // The calls of AI() a stage lasts; 0 while the door is open or closed and
+  // nothing is animating.
+  int32_t frames_per_stage_ = 0;
 
   // The number of stages of the current door animation, less one: the stage
   // at which the opening or closing is finished.
-  unsigned char final_stage_ = 0;
+  int32_t final_stage_ = 0;
 
   State state_ = State::kClosed;
 

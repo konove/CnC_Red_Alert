@@ -50,12 +50,12 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
+#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "game/sim/heading.h"
 #include "ra/core/defines.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
-#include "ra/objects/door.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
@@ -74,7 +74,7 @@ class TechnoClass : public RadioClass,
                     public game::FlasherClass,
                     public StageClass,
                     public CargoClass,
-                    public DoorClass {
+                    public game::Door {
  public:
   /*
   **	If this techno object has detected that it has outlived its

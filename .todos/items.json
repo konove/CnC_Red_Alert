@@ -12579,18 +12579,32 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-10T20:25:03Z",
-      "updated": "2026-10-10T20:25:03Z",
+      "updated": "2026-10-10T20:36:51Z",
+      "resolution": "`game::Door` is a plain class (door.h/door.cc) that counts its own stages and frames instead of holding a game's `StageClass`; the per-game `DoorClass` aliases and `ra|td/objects/door.h` are gone and the games use `game::Door` directly. The door's saved layout changed in both games, and Red Alert's door no longer reads the frame clock: its first stage comes one frame sooner when the door is started by the object's own mission in the same frame (Tiberian Dawn is unchanged).",
+      "decisions": [
+        {
+          "question": "How should Door stop being a template over each game's StageClass?",
+          "options": [
+            "Own counter in Door",
+            "Shared game::Stage class",
+            "Injected interface",
+            "Keep the template"
+          ],
+          "answer": "Own counter in Door",
+          "time": "2026-10-10T20:32:53Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 31,
-          "endLine": 32,
-          "text": "template <class Stage>\nclass Door {",
+          "startLine": 26,
+          "endLine": 26,
+          "text": "class Door {",
           "before": [
-            "//   DoorClass door;",
+            "//   game::Door door;",
             "//   door.OpenDoor(/*frames_per_stage=*/2, /*stage_count=*/10);",
             "//   while (!door.IsDoorOpen()) door.AI();"
           ],
@@ -12629,7 +12643,7 @@
             "  /*",
             "  **\tIf this techno object has detected that it has outlived its"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12745,7 +12759,7 @@
             "  // (rate 0) while the door is open or closed.",
             "  Stage animation_;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12783,7 +12797,7 @@
             "  [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }",
             "  [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12821,7 +12835,7 @@
             "  State state_ = State::kClosed;",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12917,7 +12931,7 @@
             "  // Returns whether the animation has moved on since the flag was last",
             "  // cleared, so the door's owner needs redrawing."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12954,7 +12968,7 @@
             "}  // namespace ra",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/door.h",
@@ -12971,7 +12985,7 @@
             "}  // namespace td",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13009,7 +13023,7 @@
             "    switch (state_) {",
             "      case State::kClosing:"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13055,7 +13069,7 @@
             "  template <class Archive>",
             "  void Serialize(Archive& ar) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

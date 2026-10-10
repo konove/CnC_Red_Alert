@@ -46,12 +46,12 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "game/sim/heading.h"
 #include "td/core/defines.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
-#include "td/objects/door.h"
 #include "td/objects/house.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
@@ -70,7 +70,7 @@ class TechnoClass : public RadioClass,
                     public game::FlasherClass,
                     public StageClass,
                     public CargoClass,
-                    public DoorClass {
+                    public game::Door {
  public:
   /*
   **	This flag will be true if the object has been damaged with malace.
