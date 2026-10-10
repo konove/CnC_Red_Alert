@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 353,
+  "nextId": 354,
   "items": [
     {
       "id": "T-2",
@@ -1417,10 +1417,10 @@
         "bugs",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-10T02:59:10Z",
       "fixedIn": "2292fcca",
       "resolution": "Already gone: `2292fcca` (\"Read TD's INI strings by value\") replaced the tokenizing reader, so `td/net/mplayer.cc` no longer copies a token into the buffer it is splitting."
     },
@@ -3180,10 +3180,10 @@
         "td",
         "dead-code"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-10T02:59:13Z",
       "resolution": "Already gone: `td/objects/target.cc` has no `#ifdef NEVER` block any more and nothing under `src/td` names `As_Terrain`."
     },
     {
@@ -5553,10 +5553,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-08T07:09:47Z",
-      "updated": "2026-10-10T01:12:00Z",
+      "updated": "2026-10-10T02:59:09Z",
       "resolution": "Replaced `Fancy_Text_Print`, `Plain_Text_Print`, `Simple_Text_Print` and `Conquer_Clip_Text_Print` in both games with a `TextPrinter` bound to a view and a `PrintStyle` (colour, back, font, flags): `printer.Print(text, {x, y})`, `With(flags)`, `PrintClipped()`, and `TextPrinter::Plain()` in RA. Callers format beforehand (`absl::StrFormat` / `base::FormatRuntime`), so the variadic overloads are gone; dialogs that print several texts in one style share a named printer. `game::Point` moved to `game/core/point.h`.",
       "decisions": [
         {
@@ -5584,8 +5584,8 @@
       "anchors": [
         {
           "path": "src/ra/ui/dialog.h",
-          "startLine": 85,
-          "endLine": 85,
+          "startLine": 92,
+          "endLine": 92,
           "text": "class TextPrinter {",
           "before": [
             "//                                  kTextFont, kTextFlags});",
@@ -11867,10 +11867,10 @@
         "dead-code",
         "ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T02:54:08Z",
+      "updated": "2026-10-10T02:59:12Z",
       "source": "T-344",
       "resolution": "Removed the `blackborder` parameter from both `TextButtonClass` constructors, the `IsBlackBorder` member and the border branch in `Draw_Background`, plus the `engine/gfx/rect.h` and `game/ui/standard_colors.h` includes only that branch used. All 374 constructions in `src/` (WOL and `#ifdef` code included) pass at most eight arguments, so nothing else changed.",
       "anchors": [
@@ -11903,15 +11903,27 @@
         "bugs",
         "ui",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T03:01:08Z",
       "source": "T-344",
+      "resolution": "Closed without a change. Red Alert's four dialogs were already settled by T-347 (`DrawColorBox()` fills exactly the inside of the bevel). In Tiberian Dawn the fill is not lopsided: `Rect::FromCorners` is inclusive and TD's `Draw_Box()` puts its bevel on columns `x` and `x + w`, so the fill from `x + factor` to `x + w - factor` is symmetric, leaving an even one-pixel background ring inside the bevel at 640 wide. The user chose to keep that look.",
       "toDecide": "Keep the original look (fill flush right and bottom), or inset the swatch evenly as `Rect{x + 1, y + 1, w - 2, h - 2}`? Changing it needs a look at the network and skirmish dialogs.",
+      "decisions": [
+        {
+          "question": "T-349: RA is already fixed by T-347 and TD's swatch fill turns out to be symmetric (a 1-pixel background ring inside the bevel at 640 wide). What should happen to TD's three colour-box sites?",
+          "options": [
+            "Close, no change (Recommended)",
+            "Dedupe, keep pixels",
+            "Dedupe and fill to bevel"
+          ],
+          "answer": "Close, no change (Recommended)",
+          "time": "2026-10-10T03:01:08Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/net/netdlg.cc",
@@ -12045,26 +12057,27 @@
         "ui",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T02:21:28Z",
+      "updated": "2026-10-10T03:03:44Z",
       "source": "T-344",
+      "resolution": "Not a slip, so the fill is unchanged and a comment now says why. Screenshots with forced heights show the scale beside the bar has its zero tick on row 351 (`bottom`) and a tick every 9 rows up to row 198, 153 rows above: a height is a position on that scale, and the fill runs from the zero tick to the tick of its height, both included. `Rect{490, bottom - power_height, 2, power_height}` would drop the zero-tick row. Zero power draws nothing already (`if (power_height)`), and heights 1-2 are hidden behind the drain marker.",
       "anchors": [
         {
           "path": "src/ra/map/power.cc",
-          "startLine": 238,
-          "endLine": 243,
-          "text": "            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),\n            static_cast<unsigned char>(color2));\n        view.FillRect(\n            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),\n            static_cast<unsigned char>(color1));\n      }",
+          "startLine": 241,
+          "endLine": 246,
+          "text": "        view.FillRect(\n            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),\n            static_cast<unsigned char>(color2));\n        view.FillRect(\n            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),\n            static_cast<unsigned char>(color1));",
           "before": [
-            "        bottom = 350 + 1;",
-            "",
-            "        view.FillRect("
+            "        // zero tick is the row `bottom` and whose top tick is 153 rows above",
+            "        // it. The fill runs from the zero tick to the tick of its height, both",
+            "        // included, so it is `power_height + 1` rows."
           ],
           "after": [
+            "      }",
             "",
-            "      /*",
-            "      **\tDraw the power drain threshold marker."
+            "      /*"
           ],
           "lost": false
         }
@@ -12155,6 +12168,59 @@
             "",
             "      // Upper left corner.",
             "      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-353",
+      "title": "RA power bar at full height overshoots the scale's top tick by one row",
+      "details": "`Draw_It` clamps both heights to `kPowerHeight - 2` = 108 and then scales them by 153/107, which gives 154: the fill's top row and the drain marker's row are 351 - 154 = 197, one above the scale's top tick on row 198 (measured on a screenshot with the heights forced to 108). The scale factor treats 107 as the old full height while the clamp and `Power_Height()` allow 108. Decide which is meant and make them agree, for example by clamping the scaled value to 153. The marker covers the fill's top rows when both are full, so it shows only when power is full and drain is not.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ui",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T03:03:52Z",
+      "updated": "2026-10-10T03:03:52Z",
+      "source": "da3e1218",
+      "anchors": [
+        {
+          "path": "src/ra/map/power.cc",
+          "startLine": 207,
+          "endLine": 208,
+          "text": "      power_height = std::clamp(power_height, 0, kPowerHeight - 2);\n      drain_height = std::clamp(drain_height, 0, kPowerHeight - 2);",
+          "before": [
+            "          DrainHeight == DesiredDrainHeight",
+            "              ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)",
+            "              : DrainHeight;"
+          ],
+          "after": [
+            "",
+            "      /*",
+            "      **\tDraw the power output graphic on top of the power bar framework."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/power.cc",
+          "startLine": 233,
+          "endLine": 234,
+          "text": "        power_height = power_height * (152 + 1) / (106 + 1);\n        drain_height = drain_height * (152 + 1) / (106 + 1);",
+          "before": [
+            "        **",
+            "        ** ST - 5/2/96 11:23AM",
+            "        */"
+          ],
+          "after": [
+            "        bottom = 350 + 1;",
+            "",
+            "        // The heights are positions on the scale drawn beside the bar, whose"
           ],
           "lost": false
         }

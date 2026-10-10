@@ -234,6 +234,10 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         drain_height = drain_height * (152 + 1) / (106 + 1);
         bottom = 350 + 1;
 
+        // The heights are positions on the scale drawn beside the bar, whose
+        // zero tick is the row `bottom` and whose top tick is 153 rows above
+        // it. The fill runs from the zero tick to the tick of its height, both
+        // included, so it is `power_height + 1` rows.
         view.FillRect(
             Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),
             static_cast<unsigned char>(color2));
