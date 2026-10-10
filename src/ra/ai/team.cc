@@ -978,8 +978,8 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	If the object is doing some mission that precludes it from joining
   **	a team then don't add it.
   */
-  if (obj->Mission != MISSION_NONE &&
-      !MissionClass::Is_Recruitable_Mission(obj->Mission)) {
+  if (obj->mission_state().current() != MISSION_NONE &&
+      !MissionClass::Is_Recruitable_Mission(obj->mission_state().current())) {
     return false;
   }
 
@@ -1115,7 +1115,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
       FootClass* temp = curr->Member;
       curr->Member = nullptr;
       curr->Team = nullptr;
-      curr->SuspendedMission = MISSION_NONE;
+      curr->mission_state().set_suspended(MISSION_NONE);
       curr->SuspendedNavCom = ra::Target{};
       curr->SuspendedTarCom = ra::Target{};
       curr = temp;
@@ -1758,9 +1758,9 @@ void TeamClass::Coordinate_Attack() {
             tank->Assign_Target(ra::Target{});
             tank->Assign_Mission(MISSION_GUARD);
           } else {
-            if (unit->Mission != MISSION_ATTACK &&
-                unit->Mission != MISSION_ENTER &&
-                unit->Mission != MISSION_CAPTURE) {
+            if (unit->mission_state().current() != MISSION_ATTACK &&
+                unit->mission_state().current() != MISSION_ENTER &&
+                unit->mission_state().current() != MISSION_CAPTURE) {
               unit->Transmit_Message(RADIO_OVER_OUT);
               unit->Assign_Mission(MISSION_ATTACK);
               unit->Assign_Target(ra::Target{});
@@ -1808,7 +1808,8 @@ bool TeamClass::Coordinate_Regroup() {
 
     if (Is_It_Playing(unit)) {
       if (unit->Distance(Zone) > TheRules().StrayDistance &&
-          (unit->Mission != MISSION_GUARD_AREA || !unit->TarCom)) {
+          (unit->mission_state().current() != MISSION_GUARD_AREA ||
+           !unit->TarCom)) {
         if (!unit->NavCom) {
           // TCTCTC
           //				if (!unit->NavCom ||
@@ -1829,7 +1830,7 @@ bool TeamClass::Coordinate_Regroup() {
         /*
         **	The team is regrouping, so just sit here and wait.
         */
-        if (unit->Mission != MISSION_GUARD_AREA) {
+        if (unit->mission_state().current() != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Assign_Destination(ra::Target{});
         }
@@ -1890,7 +1891,8 @@ void TeamClass::Coordinate_Do() {
         /*
         **	The team is regrouping, so just sit here and wait.
         */
-        if (!unit->TarCom && !unit->NavCom && unit->Mission != do_mission) {
+        if (!unit->TarCom && !unit->NavCom &&
+            unit->mission_state().current() != do_mission) {
           unit->ArchiveTarget = ra::Target{};
           unit->Assign_Mission(do_mission);
           unit->Assign_Target(ra::Target{});
@@ -1942,13 +1944,14 @@ void TeamClass::Coordinate_Move() {
           finished = false;
         }
 
-        if (unit->Mission == MISSION_UNLOAD ||
-            unit->MissionQueue == MISSION_UNLOAD) {
+        if (unit->mission_state().current() == MISSION_UNLOAD ||
+            unit->mission_state().queued() == MISSION_UNLOAD) {
           finished = false;
         }
 
-        if (Is_It_Playing(unit) && unit->Mission != MISSION_UNLOAD &&
-            unit->MissionQueue != MISSION_UNLOAD) {
+        if (Is_It_Playing(unit) &&
+            unit->mission_state().current() != MISSION_UNLOAD &&
+            unit->mission_state().queued() != MISSION_UNLOAD) {
           int stray = TheRules().StrayDistance;
           if (unit->What_Am_I() == RTTI_AIRCRAFT) {
             stray *= 3;
@@ -1982,7 +1985,7 @@ void TeamClass::Coordinate_Move() {
                    TeamMissionType::kMove)) {
             bool wasform = false;
 
-            if (unit->Mission != MISSION_MOVE) {
+            if (unit->mission_state().current() != MISSION_MOVE) {
               unit->Assign_Mission(MISSION_MOVE);
             }
 
@@ -2010,7 +2013,7 @@ void TeamClass::Coordinate_Move() {
             }
 
           } else {
-            if (unit->Mission == MISSION_MOVE &&
+            if (unit->mission_state().current() == MISSION_MOVE &&
                 (!unit->NavCom ||
                  Distance(unit->NavCom) < game::kCellWidthLeptons)) {
               unit->Assign_Destination(ra::Target{});
@@ -2126,7 +2129,7 @@ bool TeamClass::Lagging_Units() {
         ** We need to order all of the other units to hold their
         ** position until all lagging units catch up.
         */
-        if (unit->Mission != MISSION_GUARD) {
+        if (unit->mission_state().current() != MISSION_GUARD) {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Assign_Destination(ra::Target{});
         }
@@ -2193,7 +2196,7 @@ int TeamClass::TMission_Unload() {
         *considered to have *	finished its unload mission.
         */
         if (TheMap().at(unit->Center_Coord()).Cell_Building() == nullptr &&
-            unit->Mission != MISSION_UNLOAD) {
+            unit->mission_state().current() != MISSION_UNLOAD) {
           unit->Assign_Destination(ra::Target{});
           unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);
@@ -2285,7 +2288,7 @@ int TeamClass::TMission_Load() {
     ** Only assign the mission if the unit is not the transport.
     */
     if (Is_It_Playing(unit) && unit != trans) {
-      if (unit->Mission != MISSION_ENTER) {
+      if (unit->mission_state().current() != MISSION_ENTER) {
         unit->Assign_Mission(MISSION_ENTER);
         unit->Assign_Target(ra::Target{});
         unit->Assign_Destination(trans->As_Target());
@@ -3026,7 +3029,7 @@ int TeamClass::TMission_Deploy() {
     if (Is_It_Playing(unit)) {
       if (unit->What_Am_I() == RTTI_UNIT &&
           *dynamic_cast<UnitClass*>(unit) == UNIT_MCV) {
-        if (unit->Mission != MISSION_UNLOAD) {
+        if (unit->mission_state().current() != MISSION_UNLOAD) {
           unit->Assign_Destination(ra::Target{});
           unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);
@@ -3044,7 +3047,7 @@ int TeamClass::TMission_Deploy() {
         *considered to have *	finished its unload mission.
         */
         if (!TheMap().at(unit->Center_Coord()).Cell_Building() &&
-            unit->Mission != MISSION_UNLOAD) {
+            unit->mission_state().current() != MISSION_UNLOAD) {
           unit->Assign_Destination(ra::Target{});
           unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);

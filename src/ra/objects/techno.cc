@@ -848,7 +848,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
     **	An enemy object that is discovered will go into hunt mode if
     **	its current mission is to ambush.
     */
-    if (!house->IsHuman && Mission == MISSION_AMBUSH) {
+    if (!house->IsHuman && mission_state().current() == MISSION_AMBUSH) {
       Assign_Mission(MISSION_HUNT);
     }
 
@@ -1656,8 +1656,11 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	If the object is in a "harmless" state, then don't bother to consider it
   **	a threat.
   */
-  if (object->Mission != MISSION_NONE &&
-      TheRules().mission_control().at(object->Mission).IsNoThreat) {
+  if (object->mission_state().current() != MISSION_NONE &&
+      TheRules()
+          .mission_control()
+          .at(object->mission_state().current())
+          .IsNoThreat) {
     return false;
   }
 
@@ -4812,8 +4815,9 @@ void TechnoClass::Detach(Target target, bool all) {
   DCHECK(IsActive);
   MissionClass::Detach(target, all);
 
-  if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
-    SuspendedMission = MISSION_NONE;
+  if (mission_state().suspended() != MISSION_NONE &&
+      SuspendedTarCom == target) {
+    mission_state().set_suspended(MISSION_NONE);
     SuspendedTarCom = Target{};
   }
 
@@ -5123,8 +5127,11 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       **	Never recruit sticky guard units to defend a base.
       */
       if (!infantry->Is_Weapon_Equipped() ||
-          (infantry->Mission != MISSION_NONE &&
-           !TheRules().mission_control().at(infantry->Mission).IsRecruitable &&
+          (infantry->mission_state().current() != MISSION_NONE &&
+           !TheRules()
+                .mission_control()
+                .at(infantry->mission_state().current())
+                .IsRecruitable &&
            TheSession().Type == GAME_NORMAL)) {
         continue;
       }
@@ -5217,8 +5224,11 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       **	Never recruit sticky guard units to defend a base.
       */
       if (!unit->Is_Weapon_Equipped() ||
-          (unit->Mission != MISSION_NONE &&
-           !TheRules().mission_control().at(unit->Mission).IsRecruitable &&
+          (unit->mission_state().current() != MISSION_NONE &&
+           !TheRules()
+                .mission_control()
+                .at(unit->mission_state().current())
+                .IsRecruitable &&
            TheSession().Type == GAME_NORMAL)) {
         continue;
       }
@@ -5360,8 +5370,8 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   /*
   **	If the mission precludes retaliation, then don't retaliate.
   */
-  if (Mission != MISSION_NONE &&
-      !TheRules().mission_control().at(Mission).IsRetaliate) {
+  if (mission_state().current() != MISSION_NONE &&
+      !TheRules().mission_control().at(mission_state().current()).IsRetaliate) {
     return false;
   }
 

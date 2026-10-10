@@ -1209,8 +1209,8 @@ void HouseClass::AI() {
       BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
       if ((building && building->Strength > 0 &&
            building->Owner() == Class->House &&
-           building->Mission != MISSION_DECONSTRUCTION &&
-           building->MissionQueue != MISSION_DECONSTRUCTION) &&
+           building->mission_state().current() != MISSION_DECONSTRUCTION &&
+           building->mission_state().queued() != MISSION_DECONSTRUCTION) &&
           (ThePlayer() == building->House)) {
         building->Update_Buildables();
       }
@@ -4821,7 +4821,8 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
         **	If this unit is guarding the base, then cause it to shuffle
         **	location instead.
         */
-        if (PercentChance(20) && u->Mission == MISSION_GUARD_AREA &&
+        if (PercentChance(20) &&
+            u->mission_state().current() == MISSION_GUARD_AREA &&
             Which_Zone(u) != ZONE_NONE) {
           u->ArchiveTarget = Target::FromCell(Where_To_Go(u));
         }
@@ -4840,7 +4841,8 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
         **	If this soldier is guarding the base, then cause it to shuffle
         **	location instead.
         */
-        if (PercentChance(20) && i->Mission == MISSION_GUARD_AREA &&
+        if (PercentChance(20) &&
+            i->mission_state().current() == MISSION_GUARD_AREA &&
             Which_Zone(i) != ZONE_NONE) {
           i->ArchiveTarget = Target::FromCell(Where_To_Go(i));
         }

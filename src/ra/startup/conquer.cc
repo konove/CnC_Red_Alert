@@ -541,8 +541,8 @@ static void LogObjectPositions(const game::ObjectHeap<T>& objects,
     LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
               << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord.packed()) << " mission "
-              << magic_enum::enum_name(object->Mission) << " navcom "
-              << absl::StrFormat("%08x", object->NavCom.packed());
+              << magic_enum::enum_name(object->mission_state().current())
+              << " navcom " << absl::StrFormat("%08x", object->NavCom.packed());
   }
 }
 

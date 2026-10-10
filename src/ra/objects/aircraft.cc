@@ -712,13 +712,13 @@ int AircraftClass::Mission_Hunt() {
     constexpr int kFlyToTarget = 2;
     constexpr int kDropBombs = 3;
     constexpr int kRegroup = 4;
-    switch (Status) {
+    switch (mission_state().step()) {
       /*
       **	Acquiring target stage.
       */
       case kLookForTarget:
         if (TarCom) {
-          Status = kTakeOff;
+          mission_state().set_step(kTakeOff);
           return 1;
         }
         if (Team == nullptr) {
@@ -757,7 +757,7 @@ int AircraftClass::Mission_Hunt() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = kFlyToTarget;
+          mission_state().set_step(kFlyToTarget);
         }
         return 1;
 
@@ -781,20 +781,20 @@ int AircraftClass::Mission_Hunt() {
             break;
 
           case game::FIRE_AMMO:
-            Status = kRegroup;
+            mission_state().set_step(kRegroup);
             break;
 
           case game::FIRE_CANT:
           case game::FIRE_ILLEGAL:
-            if (Mission == MISSION_ATTACK) {
-              Status = kRegroup;
+            if (mission_state().current() == MISSION_ATTACK) {
+              mission_state().set_step(kRegroup);
             } else {
-              Status = kLookForTarget;
+              mission_state().set_step(kLookForTarget);
             }
             break;
 
           case game::FIRE_OK:
-            Status = kDropBombs;
+            mission_state().set_step(kDropBombs);
             return 1;
 
           case game::FireErrorType::FIRE_REARM:
@@ -823,7 +823,7 @@ int AircraftClass::Mission_Hunt() {
                            static_cast<uint16_t>(Weapon_Range(0) - 0x0200)));
             if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
-                Status = kRegroup;
+                mission_state().set_step(kRegroup);
               } else {
                 TheMap().at(TarCom.AsCell()).Incoming(Coord, true);
               }
@@ -845,24 +845,24 @@ int AircraftClass::Mission_Hunt() {
 
           case game::FIRE_RANGE:
           case game::FIRE_FACING:
-            Status = kFlyToTarget;
+            mission_state().set_step(kFlyToTarget);
             return kTicksPerSecond * 4;
 
           case game::FIRE_ILLEGAL:
-            if (Mission == MISSION_ATTACK) {
-              Status = kRegroup;
+            if (mission_state().current() == MISSION_ATTACK) {
+              mission_state().set_step(kRegroup);
             } else {
-              Status = kLookForTarget;
+              mission_state().set_step(kLookForTarget);
             }
             break;
 
           case game::FIRE_CANT:
-            Status = kRegroup;
+            mission_state().set_step(kRegroup);
             break;
 
           case game::FIRE_AMMO:
             AttacksRemaining--;
-            Status = kRegroup;
+            mission_state().set_step(kRegroup);
             break;
 
           case game::FireErrorType::FIRE_REARM:
@@ -888,7 +888,7 @@ int AircraftClass::Mission_Hunt() {
           Enter_Idle_Mode();
         }
 
-        if (Mission == MISSION_ATTACK ||
+        if (mission_state().current() == MISSION_ATTACK ||
             (Class->PrimaryWeapon != nullptr &&
              Class->PrimaryWeapon->IsCamera) ||
             (!AttacksRemaining && !cargo().Is_Something_Attached())) {
@@ -905,7 +905,7 @@ int AircraftClass::Mission_Hunt() {
           }
           Commence();
         } else {
-          Status = kLookForTarget;
+          mission_state().set_step(kLookForTarget);
         }
         break;
 
@@ -936,7 +936,10 @@ int AircraftClass::Mission_Hunt() {
       return 1;
     }
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -1164,14 +1167,14 @@ int AircraftClass::Mission_Unload() {
   constexpr int kUnloadPassengers = 3;
   constexpr int kTakeOff = 4;
 
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Search for an appropriate destination spot if one isn't already
     *assigned.
     */
     case kSearchForLz:
       if (Height == 0 && (NavCom || Coord == NavCom.AsCoordinate())) {
-        Status = kUnloadPassengers;
+        mission_state().set_step(kUnloadPassengers);
       } else {
         if (!Is_LZ_Clear(NavCom)) {
           const FootClass* foot = cargo().Attached_Object();
@@ -1189,9 +1192,9 @@ int AircraftClass::Mission_Unload() {
           }
         } else {
           if (Height == kFlightLevel) {
-            Status = kFlyToLz;
+            mission_state().set_step(kFlyToLz);
           } else {
-            Status = kTakeOff;
+            mission_state().set_step(kTakeOff);
           }
         }
       }
@@ -1208,14 +1211,14 @@ int AircraftClass::Mission_Unload() {
           SecondaryFacing.set_desired(Pose_Dir());
 
           if (distance < 0x0010) {
-            Status = kLandOnLz;
+            mission_state().set_step(kLandOnLz);
           }
           return 1;
         }
         SecondaryFacing.set_desired(PrimaryFacing.desired());
         return 5;
       }
-      Status = kSearchForLz;
+      mission_state().set_step(kSearchForLz);
     } break;
 
     /*
@@ -1224,10 +1227,10 @@ int AircraftClass::Mission_Unload() {
     */
     case kLandOnLz:
       if (IsTakingOff) {
-        Status = kTakeOff;
+        mission_state().set_step(kTakeOff);
       } else {
         if (Process_Landing()) {
-          Status = kUnloadPassengers;
+          mission_state().set_step(kUnloadPassengers);
         }
       }
       return 1;
@@ -1274,7 +1277,7 @@ int AircraftClass::Mission_Unload() {
     case kTakeOff: {
       if (Process_Take_Off()) {
         if (cargo().Is_Something_Attached()) {
-          Status = kSearchForLz;
+          mission_state().set_step(kSearchForLz);
 
           /*
           **	Break off radio contact with the helipad it is taking off from.
@@ -1293,7 +1296,10 @@ int AircraftClass::Mission_Unload() {
     default:
       break;
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -1410,13 +1416,13 @@ int AircraftClass::Mission_Retreat() {
   constexpr int kTakeOff = 0;
   constexpr int kFaceMapEdge = 1;
   constexpr int kKeepFlying = 2;
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Take off if landed.
     */
     case kTakeOff:
       if (Process_Take_Off()) {
-        Status = kFaceMapEdge;
+        mission_state().set_step(kFaceMapEdge);
       }
       return 1;
 
@@ -1437,7 +1443,7 @@ int AircraftClass::Mission_Retreat() {
       PrimaryFacing.set_desired(game::Direction(static_cast<int>(
           (static_cast<uint32_t>(House->Control.Edge) & 0x03U) << 6U)));
       SecondaryFacing.set_desired(PrimaryFacing.desired());
-      Status = kKeepFlying;
+      mission_state().set_step(kKeepFlying);
       break;
 
     /*
@@ -1448,7 +1454,10 @@ int AircraftClass::Mission_Retreat() {
     default:
       break;
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -1711,7 +1720,7 @@ int AircraftClass::Mission_Move() {
     constexpr int kTakeOff = 0;
     constexpr int kFlyTowardTarget = 1;
 
-    switch (Status) {
+    switch (mission_state().step()) {
       case kTakeOff:
 
         /*
@@ -1729,7 +1738,7 @@ int AircraftClass::Mission_Move() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = kFlyTowardTarget;
+          mission_state().set_step(kFlyTowardTarget);
         }
         return 1;
 
@@ -1811,7 +1820,7 @@ int AircraftClass::Mission_Move() {
   constexpr int kTakeOff = 1;
   constexpr int kFlyToLz = 2;
   constexpr int kLand = 3;
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Double check and change LZ if necessary.
     */
@@ -1825,7 +1834,7 @@ int AircraftClass::Mission_Move() {
             Team->Assign_Mission_Target(NavCom);
           }
         } else {
-          Status = kTakeOff;
+          mission_state().set_step(kTakeOff);
         }
       }
       break;
@@ -1835,7 +1844,7 @@ int AircraftClass::Mission_Move() {
     */
     case kTakeOff:
       if (!NavCom) {
-        Status = kValidateLz;
+        mission_state().set_step(kValidateLz);
       } else {
         if (Process_Take_Off()) {
           /*
@@ -1847,7 +1856,7 @@ int AircraftClass::Mission_Move() {
             Transmit_Message(RADIO_OVER_OUT);
           }
 
-          Status = kFlyToLz;
+          mission_state().set_step(kFlyToLz);
         }
         return 1;
       }
@@ -1868,7 +1877,7 @@ int AircraftClass::Mission_Move() {
           }
 
           if (distance < 0x0010) {
-            Status = kLand;
+            mission_state().set_step(kLand);
           }
           return 1;
         }
@@ -1883,7 +1892,7 @@ int AircraftClass::Mission_Move() {
           Team->Assign_Mission_Target(NavCom);
         }
         if (!NavCom) {
-          Status = kLand;
+          mission_state().set_step(kLand);
         }
       }
       return 1;
@@ -1897,9 +1906,9 @@ int AircraftClass::Mission_Move() {
         if (Team != nullptr) {
           Team->Assign_Mission_Target(NavCom);
         }
-        Status = kTakeOff;
+        mission_state().set_step(kTakeOff);
       }
-      if (Process_Landing() && (MissionQueue == MISSION_NONE)) {
+      if (Process_Landing() && (mission_state().queued() == MISSION_NONE)) {
         Enter_Idle_Mode();
       }
 
@@ -1909,7 +1918,10 @@ int AircraftClass::Mission_Move() {
       break;
   }
 
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -1962,8 +1974,8 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
       **	Weapon equipped helicopters that run out of ammo and were
       **	brought in as reinforcements will leave the map.
       */
-      if (Mission != MISSION_ATTACK && IsALoaner && Ammo == 0 &&
-          Class->PrimaryWeapon != nullptr) {
+      if (mission_state().current() != MISSION_ATTACK && IsALoaner &&
+          Ammo == 0 && Class->PrimaryWeapon != nullptr) {
         mission = MISSION_HUNT;
       } else {
         if (!IsALoaner) {
@@ -1975,8 +1987,9 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
           if (building != nullptr &&
               Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
             if (Class->IsFixedWing) {
-              Status = 0;  // BG - reset the mission status to avoid landing on
-                           // the ground next to the airstrip
+              mission_state().set_step(
+                  0);  // BG - reset the mission status to avoid landing on
+                       // the ground next to the airstrip
               if (IsLanding) {
                 Process_Take_Off();
               }
@@ -2465,15 +2478,15 @@ int AircraftClass::Mission_Attack() {
   constexpr int kFireAtTarget = 4;
   constexpr int kFireAtTarget2 = 5;
   constexpr int kReturnToBase = 6;
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Double check target and validate the attack zone.
     */
     case kValidateAz:
       if (!TarCom) {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
       } else {
-        Status = kPickAttackLocation;
+        mission_state().set_step(kPickAttackLocation);
       }
       break;
 
@@ -2482,13 +2495,13 @@ int AircraftClass::Mission_Attack() {
     */
     case kPickAttackLocation:
       if (!TarCom) {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
       } else {
         Assign_Destination(Good_Fire_Location(TarCom));
         if (NavCom) {
-          Status = kTakeOff;
+          mission_state().set_step(kTakeOff);
         } else {
-          Status = kReturnToBase;
+          mission_state().set_step(kReturnToBase);
         }
       }
       break;
@@ -2498,10 +2511,10 @@ int AircraftClass::Mission_Attack() {
     */
     case kTakeOff:
       if (!TarCom) {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
       } else {
         if (Process_Take_Off()) {
-          Status = kFlyToPosition;
+          mission_state().set_step(kFlyToPosition);
 
           /*
           **	Break off radio contact with the helipad it is taking off from.
@@ -2533,7 +2546,7 @@ int AircraftClass::Mission_Attack() {
         **	clicks on a new target while in flight to an existing target.
         */
         if (!NavCom) {
-          Status = kPickAttackLocation;
+          mission_state().set_step(kPickAttackLocation);
           return 1;
         }
 
@@ -2543,7 +2556,7 @@ int AircraftClass::Mission_Attack() {
           SecondaryFacing.set_desired(DirectionTo(TarCom));
 
           if (distance < 0x0010) {
-            Status = kFireAtTarget;
+            mission_state().set_step(kFireAtTarget);
             Assign_Destination(Target{});
           }
         } else {
@@ -2552,7 +2565,7 @@ int AircraftClass::Mission_Attack() {
           return 1;
         }
       } else {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
       }
       return 1;
 
@@ -2561,7 +2574,7 @@ int AircraftClass::Mission_Attack() {
     */
     case kFireAtTarget:
       if (!TarCom) {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
         return 1;
       }
 
@@ -2575,7 +2588,7 @@ int AircraftClass::Mission_Attack() {
         case game::FIRE_OK:
           Fire_At(TarCom, 0);
           TheMap().at(TarCom.AsCell()).Incoming(Coord, true);
-          Status = kFireAtTarget2;
+          mission_state().set_step(kFireAtTarget2);
           break;
 
         case game::FIRE_REARM:
@@ -2591,9 +2604,9 @@ int AircraftClass::Mission_Attack() {
         case game::FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
-            Status = kReturnToBase;
+            mission_state().set_step(kReturnToBase);
           } else {
-            Status = kFireAtTarget2;
+            mission_state().set_step(kFireAtTarget2);
           }
           break;
       }
@@ -2604,7 +2617,7 @@ int AircraftClass::Mission_Attack() {
     */
     case kFireAtTarget2:
       if (!TarCom) {
-        Status = kReturnToBase;
+        mission_state().set_step(kReturnToBase);
         return 1;
       }
 
@@ -2623,10 +2636,11 @@ int AircraftClass::Mission_Attack() {
           TheMap().at(TarCom.AsCell()).Incoming(Coord, true);
 
           if (Ammo) {
-            Status = TheRules().IsCurleyShuffle ? kPickAttackLocation
-                                                : kFireAtTarget;
+            mission_state().set_step(TheRules().IsCurleyShuffle
+                                         ? kPickAttackLocation
+                                         : kFireAtTarget);
           } else {
-            Status = kReturnToBase;
+            mission_state().set_step(kReturnToBase);
           }
           break;
 
@@ -2640,13 +2654,14 @@ int AircraftClass::Mission_Attack() {
         case game::FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
-            Status = kReturnToBase;
+            mission_state().set_step(kReturnToBase);
           } else {
             if (!In_Range(TarCom)) {
-              Status = kPickAttackLocation;
+              mission_state().set_step(kPickAttackLocation);
             } else {
-              Status = TheRules().IsCurleyShuffle ? kPickAttackLocation
-                                                  : kFireAtTarget;
+              mission_state().set_step(TheRules().IsCurleyShuffle
+                                           ? kPickAttackLocation
+                                           : kFireAtTarget);
             }
           }
           break;
@@ -2673,7 +2688,10 @@ int AircraftClass::Mission_Attack() {
       break;
   }
 
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -3369,12 +3387,12 @@ int AircraftClass::Mission_Enter() {
     return 1;
   }
 
-  switch (Status) {
+  switch (mission_state().step()) {
     case kInitial:
       if (Height < kFlightLevel || IsLanding) {
-        Status = kTakeoff;
+        mission_state().set_step(kTakeoff);
       } else {
-        Status = kAltitude;
+        mission_state().set_step(kAltitude);
       }
       break;
 
@@ -3388,7 +3406,7 @@ int AircraftClass::Mission_Enter() {
             TheMap().at(Coord).Cell_Building() == Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
         }
-        Status = kAltitude;
+        mission_state().set_step(kAltitude);
       }
       break;
 
@@ -3405,13 +3423,13 @@ int AircraftClass::Mission_Enter() {
             return 1;
           }
         }
-        Status = kStack;
+        mission_state().set_step(kStack);
       } else {
         TechnoClass* tech = NavCom.AsTechno();
         if (tech && Transmit_Message(RADIO_CAN_LOAD, tech) == RADIO_ROGER) {
           Transmit_Message(RADIO_HELLO, tech);
           Transmit_Message(RADIO_DOCKING);
-          Status = kStack;
+          mission_state().set_step(kStack);
         } else if (tech == nullptr || tech->What_Am_I() != RTTI_VESSEL) {
           // Reached when there is no NavCom object at all, or when the one
           // there is refused the dock request. Only a vessel is left alone to
@@ -3435,10 +3453,10 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = kDownwind;
+          mission_state().set_step(kDownwind);
         }
       } else {
-        Status = kDownwind;
+        mission_state().set_step(kDownwind);
       }
       break;
 
@@ -3456,10 +3474,10 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = kCrosswind;
+          mission_state().set_step(kCrosswind);
         }
       } else {
-        Status = kCrosswind;
+        mission_state().set_step(kCrosswind);
       }
       break;
 
@@ -3477,10 +3495,10 @@ int AircraftClass::Mission_Enter() {
 
         const int distance = Process_Fly_To(true, togo);
         if (distance < 0x0080) {
-          Status = kTravel;
+          mission_state().set_step(kTravel);
         }
       } else {
-        Status = kTravel;
+        mission_state().set_step(kTravel);
       }
       break;
 
@@ -3494,7 +3512,7 @@ int AircraftClass::Mission_Enter() {
 
         if (Class->IsFixedWing) {
           if (distance < 0x0400) {
-            Status = kLanding;
+            mission_state().set_step(kLanding);
           }
           return 1;
         }
@@ -3510,9 +3528,9 @@ int AircraftClass::Mission_Enter() {
             break;
           }
           if (distance < 0x0010) {
-            Status = kLanding;
+            mission_state().set_step(kLanding);
             if (NavCom.kind() == RTTI_VESSEL && NavCom.AsVessel()->NavCom) {
-              Status = kTravel;
+              mission_state().set_step(kTravel);
             }
           }
           break;
@@ -3529,7 +3547,7 @@ int AircraftClass::Mission_Enter() {
       }
       // If we were trying to land on a carrier and it moved, take off again
       if (NavCom.AsVessel() && !radio().InContact()) {
-        Status = kInitial;
+        mission_state().set_step(kInitial);
         break;
       }
       if (Process_Landing()) {
@@ -3760,7 +3778,7 @@ void AircraftClass::Scatter(Coordinate /*unused*/, bool /*forced*/,
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!TheRules().mission_control().at(Mission).IsScatter) {
+  if (!TheRules().mission_control().at(mission_state().current()).IsScatter) {
     return;
   }
 
@@ -3810,7 +3828,10 @@ int AircraftClass::Mission_Guard() {
       if (NavCom) {
         Assign_Mission(MISSION_MOVE);
       }
-      return TheRules().mission_control().at(Mission).Normal_Delay();
+      return TheRules()
+          .mission_control()
+          .at(mission_state().current())
+          .Normal_Delay();
     }
 
     if (Class->PrimaryWeapon == nullptr) {
@@ -3824,7 +3845,10 @@ int AircraftClass::Mission_Guard() {
     return 1;
   }
   if (House->IsHuman) {
-    return TheRules().mission_control().at(Mission).Normal_Delay();
+    return TheRules()
+        .mission_control()
+        .at(mission_state().current())
+        .Normal_Delay();
   }
 
   /*
@@ -4159,7 +4183,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
         /*
         ** If a fixed-wing aircraft just landed on the ground, blow him up
         */
-        if (Class->IsFixedWing && Mission != MISSION_ENTER) {
+        if (Class->IsFixedWing && mission_state().current() != MISSION_ENTER) {
           Strength = 1;
 
           MapEditClass::Remove(this, layer);
@@ -4263,7 +4287,7 @@ bool AircraftClass::Landing_Takeoff_AI() {
  *=============================================================================================*/
 bool AircraftClass::Edge_Of_World_AI() {
   if (!TheMap().In_Radar(Cell::Containing(Coord))) {
-    if (Mission == MISSION_RETREAT /*|| (*this == AIRCRAFT_CARGO && !cargo().Is_Something_Attached())*/) {
+    if (mission_state().current() == MISSION_RETREAT /*|| (*this == AIRCRAFT_CARGO && !cargo().Is_Something_Attached())*/) {
       /*
       **	Check to see if there are any civilians aboard. If so, then flag
       *the house *	that the civilian evacuation trigger event has been
@@ -4326,7 +4350,8 @@ void AircraftClass::Movement_AI() {
   **	If for some strange reason, there is a valid NavCom, but this aircraft
   *is not *	in a movement order, then give it a movement order.
   */
-  if (NavCom && Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
+  if (NavCom && mission_state().current() == MISSION_GUARD &&
+      mission_state().queued() == MISSION_NONE) {
     Assign_Mission(MISSION_MOVE);
   }
 
@@ -4420,7 +4445,7 @@ void AircraftClass::Assign_Destination(Target dest) {
     //		if (Class->IsFixedWing || dest.AsCell() !=
     // Cell::Containing(Center_Coord())) {
     Process_Take_Off();
-    Status = 0;
+    mission_state().set_step(0);
     //		}
   }
   FootClass::Assign_Destination(dest);

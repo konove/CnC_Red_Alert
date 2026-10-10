@@ -12946,12 +12946,14 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T22:55:33Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "f06cd1d3",
+      "resolution": "`AnimClass`, `TerrainClass` and `StripClass` hold `animation_` (with `animation()` where outside code uses it), `FactoryClass` holds `progress_`, in both games. `FactoryClass` and Tiberian Dawn's `AnimClass` inherited privately and got no public accessor.",
       "anchors": [
         {
           "path": "src/ra/objects/anim.h",
@@ -13104,16 +13106,18 @@
         "game",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T22:55:33Z",
       "blockedBy": [
         "T-376",
         "T-377"
       ],
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "729340ff",
+      "resolution": "Virtual destructors, deleted copy/move operations, empty `AI()` and pointer coding removed from `FlasherClass`, `CargoClass`, `StageClass` and `FlyClass` (and Red Alert's `FuseClass`); `td/objects/stage.cc` deleted. `FlasherClass` has `Start(count)` and `IsBrightened()` over private fields and its own `flasher_test.cc`.",
       "anchors": [
         {
           "path": "src/game/sim/flasher.h",
@@ -13149,12 +13153,14 @@
         "td",
         "net-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T22:55:33Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "0644b53e",
+      "resolution": "`RadioClass` is a plain member `radio_` behind `radio()`; `RadioPeer::Receive()` is implemented once by `TechnoClass` and forwards to the `Receive_Message(TechnoClass* from, ...)` chain. Settled: `ObjectClass` no longer declares `Receive_Message()` (its `RADIO_REDRAW` answer moved to `TechnoClass::Default_Radio_Answer()`), and `Transmit_Message()` stays on the techno, non-virtual. Save/load smoke and `tools/net_check.py` pass.",
       "anchors": [
         {
           "path": "src/ra/objects/radio.h",
@@ -13212,8 +13218,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/mission.h",
-          "startLine": 58,
-          "endLine": 58,
+          "startLine": 59,
+          "endLine": 59,
           "text": "class MissionClass : public ObjectClass {",
           "before": [
             "**\tThis handles order assignment and tracking. The order is used to guide",
@@ -13222,15 +13228,15 @@
           ],
           "after": [
             " public:",
-            "  /*",
-            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+            "",
+            "  /*---------------------------------------------------------------------"
           ],
           "lost": false
         },
         {
           "path": "src/td/objects/mission.h",
-          "startLine": 61,
-          "endLine": 61,
+          "startLine": 62,
+          "endLine": 62,
           "text": "class MissionClass : public ObjectClass {",
           "before": [
             "**\tThis handles order assignment and tracking. The order is used to guide",
@@ -13239,8 +13245,8 @@
           ],
           "after": [
             " public:",
-            "  /*",
-            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+            "",
+            "  /*---------------------------------------------------------------------"
           ],
           "lost": false
         }
@@ -13271,8 +13277,8 @@
       "anchors": [
         {
           "path": "src/ra/objects/mission.h",
-          "startLine": 58,
-          "endLine": 58,
+          "startLine": 59,
+          "endLine": 59,
           "text": "class MissionClass : public ObjectClass {",
           "before": [
             "**\tThis handles order assignment and tracking. The order is used to guide",
@@ -13281,15 +13287,15 @@
           ],
           "after": [
             " public:",
-            "  /*",
-            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+            "",
+            "  /*---------------------------------------------------------------------"
           ],
           "lost": false
         },
         {
           "path": "src/td/objects/mission.h",
-          "startLine": 61,
-          "endLine": 61,
+          "startLine": 62,
+          "endLine": 62,
           "text": "class MissionClass : public ObjectClass {",
           "before": [
             "**\tThis handles order assignment and tracking. The order is used to guide",
@@ -13298,8 +13304,8 @@
           ],
           "after": [
             " public:",
-            "  /*",
-            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+            "",
+            "  /*---------------------------------------------------------------------"
           ],
           "lost": false
         }

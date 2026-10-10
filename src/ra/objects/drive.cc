@@ -210,7 +210,7 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (TheRules().mission_control().at(Mission).IsParalyzed) {
+  if (TheRules().mission_control().at(mission_state().current()).IsParalyzed) {
     return;
   }
 
@@ -538,7 +538,8 @@ void DriveClass::Assign_Destination(Target target) {
       *desired destination.
       */
       if (Transmit_Message(RADIO_HELLO, b) == RADIO_ROGER) {
-        if (Mission != MISSION_ENTER && Mission != MISSION_HARVEST) {
+        if (mission_state().current() != MISSION_ENTER &&
+            mission_state().current() != MISSION_HARVEST) {
           Assign_Mission(MISSION_ENTER);
           target = Target{};
         } else {
@@ -558,7 +559,7 @@ void DriveClass::Assign_Destination(Target target) {
   FootClass::Assign_Destination(target);
 
   base::At(Path, 0) = game::Facing::kNone;  // Force recalculation of path.
-  if (!IsDriving && Mission != MISSION_UNLOAD) {
+  if (!IsDriving && mission_state().current() != MISSION_UNLOAD) {
     Start_Of_Move();
   }
 }
@@ -843,7 +844,7 @@ bool DriveClass::Start_Of_Move() {
   if (!NavCom && facing == game::Facing::kNone) {
     IsTurretLockedDown = false;
     Stop_Driver();
-    if (Mission == MISSION_MOVE) {
+    if (mission_state().current() == MISSION_MOVE) {
       Enter_Idle_Mode();
     }
     return false;  // Why is it calling this routine!?!
@@ -887,7 +888,8 @@ bool DriveClass::Start_Of_Move() {
       */
       if (!Is_On_Priority_Mission() &&
           Distance(NavCom) < TheRules().CloseEnoughDistance &&
-          (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
+          (mission_state().current() == MISSION_MOVE ||
+           mission_state().current() == MISSION_GUARD_AREA)) {
         Assign_Destination(Target{});
         if (!IsActive) {
           return false;
@@ -1021,7 +1023,7 @@ bool DriveClass::Start_Of_Move() {
   Mark(MARK_DOWN);
 
   if (cando != game::MOVE_OK) {
-    if (Mission == MISSION_MOVE /*KO&& House->IsHuman */ &&
+    if (mission_state().current() == MISSION_MOVE /*KO&& House->IsHuman */ &&
         Distance(NavCom) < TheRules().CloseEnoughDistance) {
       Assign_Destination(Target{});
       if (!IsActive) {
@@ -1308,15 +1310,16 @@ void DriveClass::AI() {
       **	is a navigation target or a remaining path,
       **	then start on a new track.
       */
-      if ((Mission != MISSION_GUARD || NavCom) && Mission != MISSION_UNLOAD) {
+      if ((mission_state().current() != MISSION_GUARD || NavCom) &&
+          mission_state().current() != MISSION_UNLOAD) {
         if (NavCom || base::At(Path, 0) != game::Facing::kNone) {
           /*
           **	Double check to make sure that the movement destination is
           **	in a zone that this unit can travel to. If not, then abort
           **	the navigation target.
           */
-          if (IsLocked && Mission != MISSION_ENTER && NavCom &&
-              !Is_In_Same_Zone(NavCom.AsCell())) {
+          if (IsLocked && mission_state().current() != MISSION_ENTER &&
+              NavCom && !Is_In_Same_Zone(NavCom.AsCell())) {
             Stop_Driver();
             Assign_Destination(Target{});
           } else {

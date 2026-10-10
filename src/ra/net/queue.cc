@@ -3956,8 +3956,9 @@ static void Compute_Game_CRC() {
                                   infp->PrimaryFacing.current().value()));
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(infp->Speed + infp->NavCom.packed()));
-    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
-                                            infp->TarCom.packed()));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(infp->mission_state().current()) +
+                          infp->TarCom.packed()));
   }
 
   //------------------------------------------------------------------------
@@ -3982,8 +3983,9 @@ static void Compute_Game_CRC() {
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(vessp->Speed + vessp->NavCom.packed()));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
-    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(vessp->Mission) +
-                                            vessp->TarCom.packed()));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(vessp->mission_state().current()) +
+                          vessp->TarCom.packed()));
   }
 
   //------------------------------------------------------------------------
@@ -4142,8 +4144,9 @@ static void Print_CRCs(const EventClass* ev) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(infp->Speed + infp->NavCom.packed()));
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(infp->Mission) +
-                                        infp->TarCom.packed()));
+                  static_cast<uint32_t>(
+                      static_cast<int>(infp->mission_state().current()) +
+                      infp->TarCom.packed()));
           absl::FPrintF(
               fp,
               "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
@@ -4205,8 +4208,9 @@ static void Print_CRCs(const EventClass* ev) {
                                                   vesselp->NavCom.packed()));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Strength));
           Add_CRC(&GameCRC,
-                  static_cast<uint32_t>(static_cast<int>(vesselp->Mission) +
-                                        vesselp->TarCom.packed()));
+                  static_cast<uint32_t>(
+                      static_cast<int>(vesselp->mission_state().current()) +
+                      vesselp->TarCom.packed()));
           absl::FPrintF(
               fp,
               "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "

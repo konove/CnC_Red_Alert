@@ -577,7 +577,8 @@ void VesselClass::AI() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE) {
+  if (mission_state().current() == MISSION_NONE &&
+      mission_state().queued() == MISSION_NONE) {
     Enter_Idle_Mode();
   }
 
@@ -586,7 +587,7 @@ void VesselClass::AI() {
   **	If the ship finds itself in a hunt order but it has no weapons, then
   *tell it *	to sail off the map instead.
   */
-  if (Mission == MISSION_HUNT && !Is_Weapon_Equipped()) {
+  if (mission_state().current() == MISSION_HUNT && !Is_Weapon_Equipped()) {
     Assign_Mission(MISSION_RETREAT);
   }
 
@@ -646,7 +647,7 @@ void VesselClass::AI() {
   }
 
   if ((Class->Max_Passengers() > 0) &&
-      (!door().IsClosed() && Mission != MISSION_UNLOAD &&
+      (!door().IsClosed() && mission_state().current() != MISSION_UNLOAD &&
        Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER &&
        DoorShutCountDown.IsFinished()))
   /*
@@ -1273,7 +1274,7 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
   *contact since *	no radio coordination occurs on a just a simple movement
   *mission.
   */
-  if (Mission == MISSION_MOVE && !NavCom) {
+  if (mission_state().current() == MISSION_MOVE && !NavCom) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 
@@ -1292,10 +1293,17 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
       }
 
     } else {
-      if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE &&
-           (TheRules().mission_control().at(Mission).IsParalyzed ||
-            TheRules().mission_control().at(Mission).IsZombie))) {
+      if (mission_state().current() == MISSION_GUARD ||
+          mission_state().current() == MISSION_GUARD_AREA ||
+          (mission_state().current() != MISSION_NONE &&
+           (TheRules()
+                .mission_control()
+                .at(mission_state().current())
+                .IsParalyzed ||
+            TheRules()
+                .mission_control()
+                .at(mission_state().current())
+                .IsZombie))) {
         return;
       }
 
@@ -1510,7 +1518,7 @@ RadioMessageType VesselClass::Receive_Message(TechnoClass* from,
     **	has already turned its radio off. Turn this radio off as well.
     */
     case RADIO_OVER_OUT:
-      if (Mission == MISSION_RETURN) {
+      if (mission_state().current() == MISSION_RETURN) {
         Assign_Mission(MISSION_GUARD);
       }
       DriveClass::Receive_Message(from, message, param);
@@ -1714,12 +1722,12 @@ int VesselClass::Mission_Unload() {
   Cell cell{};
 
   if (Class->Type == VESSEL_TRANSPORT) {
-    switch (Status) {
+    switch (mission_state().step()) {
       case kInitialCheck:
         dir = Desired_Load_Dir(nullptr, cell);
         if (cargo().How_Many() > 0 && cell.index() != 0) {
           Do_Turn(dir);
-          Status = kManeuvering;
+          mission_state().set_step(kManeuvering);
           return 1;
         }
         // Don't break out if still carrying passengers.
@@ -1732,7 +1740,7 @@ int VesselClass::Mission_Unload() {
         if (!IsRotating) {
           LST_Open_Door();
           if (door().IsOpening()) {
-            Status = kOpeningDoor;
+            mission_state().set_step(kOpeningDoor);
             return 1;
           }
         }
@@ -1740,11 +1748,11 @@ int VesselClass::Mission_Unload() {
 
       case kOpeningDoor:
         if (door().IsOpen()) {
-          Status = kUnloading;
+          mission_state().set_step(kUnloading);
           return 1;
         }
         if (!door().IsOpening()) {
-          Status = kInitialCheck;
+          mission_state().set_step(kInitialCheck);
         }
         break;
 
@@ -1812,7 +1820,7 @@ int VesselClass::Mission_Unload() {
             }
           }
         } else {
-          Status = kClosingDoor;
+          mission_state().set_step(kClosingDoor);
         }
         break;
 
@@ -1835,7 +1843,10 @@ int VesselClass::Mission_Unload() {
         break;
     }
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay();
+  return TheRules()
+      .mission_control()
+      .at(mission_state().current())
+      .Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -1910,7 +1921,7 @@ int VesselClass::Mission_Retreat() {
 
   constexpr int kPickRetreatPoint = 0;
   constexpr int kTravel = 1;
-  switch (Status) {
+  switch (mission_state().step()) {
     case kPickRetreatPoint:
       IsALoaner = true;
       if (!NavCom) {
@@ -1925,19 +1936,22 @@ int VesselClass::Mission_Retreat() {
         }
         Assign_Destination(Target::FromCell(cell));
       }
-      Status = kTravel;
+      mission_state().set_step(kTravel);
       return 1;
 
     case kTravel:
       if (!NavCom) {
-        Status = kPickRetreatPoint;
+        mission_state().set_step(kPickRetreatPoint);
       }
       break;
 
     default:
       break;
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay();
+  return TheRules()
+      .mission_control()
+      .at(mission_state().current())
+      .Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -2078,7 +2092,7 @@ void VesselClass::Write_INI(engine::file::IniFile& ini) {
           vessel->House->Class->IniName, vessel->Class->IniName,
           vessel->Health_Ratio() * 256, Cell::Containing(vessel->Coord).index(),
           vessel->PrimaryFacing.current().value(),
-          Mission_Name(vessel->Mission),
+          Mission_Name(vessel->mission_state().current()),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
       ini.PutString(INI_Name(), uname, buf);

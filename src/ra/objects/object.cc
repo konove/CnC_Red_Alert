@@ -2056,8 +2056,8 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
 
     if (!building->IsInLimbo && building->House->Class->House == house &&
         building->Class->ToBuild == RTTI &&
-        building->Mission != MISSION_DECONSTRUCTION &&
-        building->MissionQueue != MISSION_DECONSTRUCTION &&
+        building->mission_state().current() != MISSION_DECONSTRUCTION &&
+        building->mission_state().queued() != MISSION_DECONSTRUCTION &&
         (base::Bit<uint32_t>(building->ActLike) & Get_Ownable()) != 0 &&
         (!legal || building->House->Can_Build(this, building->ActLike)) &&
         (intheory || !building->radio().InContact())) {

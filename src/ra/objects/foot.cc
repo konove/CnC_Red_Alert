@@ -372,7 +372,7 @@ bool FootClass::Basic_Path() {
         **	to a destination just because there is another friendly unit
         **	occupying the destination location.
         */
-        if (Mission == MISSION_MOVE &&
+        if (mission_state().current() == MISSION_MOVE &&
             Distance(NavCom) < TheRules().CloseEnoughDistance) {
           maxtype = game::MOVE_DESTROYABLE;
         }
@@ -450,7 +450,7 @@ bool FootClass::Basic_Path() {
 int FootClass::Mission_Move() {
   DCHECK(IsActive);
 
-  if (!NavCom && !IsDriving && MissionQueue == MISSION_NONE) {
+  if (!NavCom && !IsDriving && mission_state().queued() == MISSION_NONE) {
     Enter_Idle_Mode();
     return 1;
   }
@@ -460,7 +460,10 @@ int FootClass::Mission_Move() {
       (Team == nullptr || !Team->Class->is_suicide())) {
     Target_Something_Nearby(THREAT_RANGE);
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -500,7 +503,10 @@ int FootClass::Mission_Capture() {
       Scatter(Coordinate{}, true);
     }
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -527,7 +533,10 @@ int FootClass::Mission_Attack() {
   } else {
     Enter_Idle_Mode();
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -552,12 +561,16 @@ int FootClass::Mission_Guard() {
     Random_Animate();
   }
 
-  int dtime = TheRules().mission_control().at(Mission).Normal_Delay();
+  int dtime =
+      TheRules().mission_control().at(mission_state().current()).Normal_Delay();
   if (What_Am_I() == RTTI_VESSEL) {
     switch (dynamic_cast<VesselClass*>(this)->Class->Type) {
       case VESSEL_DD:
       case VESSEL_PT:
-        dtime = TheRules().mission_control().at(Mission).AA_Delay();
+        dtime = TheRules()
+                    .mission_control()
+                    .at(mission_state().current())
+                    .AA_Delay();
         break;
 
       case VESSEL_CA:
@@ -580,14 +593,17 @@ int FootClass::Mission_Guard() {
     */
     if (!House->IsHuman && TarCom.kind() == RTTI_BUILDING &&
         dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
-        Mission != MISSION_SABOTAGE) {
+        mission_state().current() != MISSION_SABOTAGE) {
       Assign_Mission(MISSION_SABOTAGE);
     }
 
     switch (dynamic_cast<InfantryClass*>(this)->Class->Type) {
       case INFANTRY_E1:
       case INFANTRY_E3:
-        dtime = TheRules().mission_control().at(Mission).AA_Delay();
+        dtime = TheRules()
+                    .mission_control()
+                    .at(mission_state().current())
+                    .AA_Delay();
         break;
 
       case InfantryType::INFANTRY_NONE:
@@ -662,7 +678,10 @@ int FootClass::Mission_Hunt() {
       }
     }
   }
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -948,7 +967,7 @@ int FootClass::Mission_Guard_Area() {
   if (!House->IsHuman && What_Am_I() == RTTI_INFANTRY &&
       TarCom.kind() == RTTI_BUILDING &&
       dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
-      Mission != MISSION_SABOTAGE) {
+      mission_state().current() != MISSION_SABOTAGE) {
     Assign_Mission(MISSION_SABOTAGE);
     return 1;
   }
@@ -977,7 +996,8 @@ int FootClass::Mission_Guard_Area() {
     Approach_Target();
   }
 
-  int dtime = TheRules().mission_control().at(Mission).Normal_Delay();
+  int dtime =
+      TheRules().mission_control().at(mission_state().current()).Normal_Delay();
   if (What_Am_I() == RTTI_AIRCRAFT) {
     dtime *= 2;
   }
@@ -1077,8 +1097,14 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
       *out of *	it when it takes damage.
       */
       if (source != nullptr &&
-          TheRules().mission_control().at(Mission).IsNoThreat &&
-          !TheRules().mission_control().at(Mission).IsZombie) {
+          TheRules()
+              .mission_control()
+              .at(mission_state().current())
+              .IsNoThreat &&
+          !TheRules()
+               .mission_control()
+               .at(mission_state().current())
+               .IsZombie) {
         Enter_Idle_Mode();
       }
 
@@ -1093,7 +1119,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
           Assign_Target(source->As_Target());
         }
 
-        if (Mission == MISSION_AMBUSH) {
+        if (mission_state().current() == MISSION_AMBUSH) {
           Assign_Mission(MISSION_HUNT);
         }
 
@@ -1109,7 +1135,10 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
         /*
         **	If this object isn't doing anything important, then scatter.
         */
-        if ((TheRules().mission_control().at(Mission).IsScatter &&
+        if ((TheRules()
+                 .mission_control()
+                 .at(mission_state().current())
+                 .IsScatter &&
              !IsTethered && !IsDriving && !TarCom && !NavCom &&
              What_Am_I() != RTTI_AIRCRAFT && What_Am_I() != RTTI_VESSEL) &&
             (!House->IsHuman || TheRules().IsScatter)) {
@@ -1417,8 +1446,10 @@ bool FootClass::Per_Cell_Process(PCPType why) {
             dynamic_cast<const FootClass*>(techno)->Likely_Coord(), primary);
       }
 
-      if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
-           Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
+      if ((mission_state().current() == MISSION_RESCUE ||
+           mission_state().current() == MISSION_GUARD_AREA ||
+           mission_state().current() == MISSION_ATTACK ||
+           mission_state().current() == MISSION_HUNT) &&
           inrange) {
         Assign_Destination(Target{});
         Path[0] = game::Facing::kNone;
@@ -1618,11 +1649,11 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
         Assign_Destination(Target{});
       }
 
-      if (Mission == MISSION_SLEEP) {
+      if (mission_state().current() == MISSION_SLEEP) {
         Assign_Mission(MISSION_GUARD);
         Commence();
       }
-      if (Mission == MISSION_ENTER) {
+      if (mission_state().current() == MISSION_ENTER) {
         Assign_Mission(MISSION_GUARD);
       }
       if (!IsRotating && !NavCom) {
@@ -1651,7 +1682,8 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
             Target::FromPacked(param)) {
           return RADIO_YEA_NOW_WHAT;
         }
-        if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
+        if (mission_state().current() == MISSION_GUARD &&
+            mission_state().queued() == MISSION_NONE) {
           Assign_Mission(MISSION_MOVE);
         }
         Assign_Destination(Target::FromPacked(param));
@@ -1664,7 +1696,8 @@ RadioMessageType FootClass::Receive_Message(TechnoClass* from,
     *occurs *	for passengers and when vehicles need to be repaired.
     */
     case RADIO_TRYING_TO_LOAD:
-      if (Mission == MISSION_ENTER || MissionQueue == MISSION_ENTER) {
+      if (mission_state().current() == MISSION_ENTER ||
+          mission_state().queued() == MISSION_ENTER) {
         TechnoClass::Receive_Message(from, message, param);
         return RADIO_ROGER;
       }
@@ -1758,7 +1791,10 @@ int FootClass::Mission_Enter() {
     Enter_Idle_Mode();
   }
 
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 
@@ -1870,7 +1906,8 @@ int FootClass::Rescue_Mission(Target tarcom) {
   ** something, or is not very effective, then it will be of no help
   ** at all.
   */
-  if (Team != nullptr || Mission == MISSION_HARVEST || !Risk()) {
+  if (Team != nullptr || mission_state().current() == MISSION_HARVEST ||
+      !Risk()) {
     return 0;
   }
 
@@ -1958,7 +1995,8 @@ Target FootClass::Greatest_Threat(ThreatType method)  // const
   /*
   **	If this object can cloak, then it won't select a target automatically.
   */
-  if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
+  if (House->IsHuman && IsCloakable &&
+      mission_state().current() == MISSION_GUARD) {
     return Target{};
   }
 
@@ -2022,7 +2060,7 @@ void FootClass::Detach(Target target, bool all) {
 
   if (SuspendedNavCom == target) {
     SuspendedNavCom = Target{};
-    SuspendedMission = MISSION_NONE;
+    mission_state().set_suspended(MISSION_NONE);
   }
 
   /*
@@ -2372,7 +2410,7 @@ void FootClass::Queue_Navigation_List(Target target) {
     **	If this object isn't doing anything, then start acting on the
     **	navigation queue now.
     */
-    if (!NavCom && Mission == MISSION_GUARD) {
+    if (!NavCom && mission_state().current() == MISSION_GUARD) {
       Enter_Idle_Mode();
     }
   }
@@ -2431,7 +2469,7 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   *objects can never *	leave the map unless they are part of a team that gives
   *it special permision.
   */
-  if (!IsALoaner && Mission != MISSION_RETREAT &&
+  if (!IsALoaner && mission_state().current() != MISSION_RETREAT &&
       (Team == nullptr || !Team->Is_Leaving_Map())) {
     return false;
   }
@@ -2484,7 +2522,7 @@ bool FootClass::Is_Recruitable(const HouseClass* house) const {
   **	If it is currently in a mission the precludes recruitment into a team,
   *then *	return with this information.
   */
-  if (!Is_Recruitable_Mission(Mission)) {
+  if (!Is_Recruitable_Mission(mission_state().current())) {
     return false;
   }
 
@@ -2534,7 +2572,7 @@ void FootClass::AI() {
  * HISTORY: * 09/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool FootClass::Is_On_Priority_Mission() const {
-  return Mission == MISSION_ENTER;
+  return mission_state().current() == MISSION_ENTER;
 }
 
 /***********************************************************************************************
@@ -2560,13 +2598,13 @@ int FootClass::Mission_Retreat() {
   constexpr int kFindEdge = 0;
   constexpr int kTravelling = 1;
 
-  switch (Status) {
+  switch (mission_state().step()) {
     /*
     **	Find a suitable edge to travel to and then assign destination there.
     */
     case kFindEdge:
       if (NavCom) {
-        Status = kTravelling;
+        mission_state().set_step(kTravelling);
       } else {
         Cell cell{};
 
@@ -2593,7 +2631,7 @@ int FootClass::Mission_Retreat() {
         DCHECK(cell.index() == 0);  // An edge cell must be found!
 
         Assign_Destination(Target::FromCell(cell));
-        Status = kTravelling;
+        mission_state().set_step(kTravelling);
       }
       break;
 
@@ -2602,14 +2640,17 @@ int FootClass::Mission_Retreat() {
     */
     case kTravelling:
       if (!NavCom) {
-        Status = kFindEdge;
+        mission_state().set_step(kFindEdge);
       }
       break;
     default:
       break;
   }
 
-  return TheRules().mission_control().at(Mission).Normal_Delay() +
+  return TheRules()
+             .mission_control()
+             .at(mission_state().current())
+             .Normal_Delay() +
          RandomPick(0, 2);
 }
 

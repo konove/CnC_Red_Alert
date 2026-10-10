@@ -142,7 +142,7 @@ TEST_F(ReinforcementTest, AnAirStrikeArrivesWithItsOrders) {
     // It leaves the map when it is done.
     EXPECT_TRUE(bomber->IsALoaner);
     EXPECT_EQ(Cell::Containing(bomber->Coord).x(), 0);
-    EXPECT_EQ(bomber->Mission, MISSION_HUNT);
+    EXPECT_EQ(bomber->mission_state().current(), MISSION_HUNT);
     EXPECT_EQ(bomber->TarCom, target);
     EXPECT_EQ(bomber->NavCom, destination);
   }
@@ -158,7 +158,7 @@ TEST_F(ReinforcementTest, AnAirStrikeWithoutOrdersHasNoTargetOrDestination) {
 
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   const AircraftClass* bomber = TheObjectHeaps().aircraft().ActiveAt(0);
-  EXPECT_EQ(bomber->Mission, MISSION_HUNT);
+  EXPECT_EQ(bomber->mission_state().current(), MISSION_HUNT);
   EXPECT_EQ(bomber->TarCom, Target{});
   EXPECT_EQ(bomber->NavCom, Target{});
 }
@@ -367,7 +367,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportOnItsOrigin) {
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   EXPECT_EQ(apc->cargo().How_Many(), 2);
-  EXPECT_EQ(apc->MissionQueue, MISSION_UNLOAD);
+  EXPECT_EQ(apc->mission_state().queued(), MISSION_UNLOAD);
 }
 
 TEST_F(ReinforcementTest, AnInfantryTeamLeavesTheBuildingAtItsOrigin) {
@@ -414,7 +414,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportAtItsOrigin) {
 
   EXPECT_EQ(apc->cargo().How_Many(), 2);
   // Queued: the mission starts on the transport's next turn.
-  EXPECT_EQ(apc->MissionQueue, MISSION_UNLOAD);
+  EXPECT_EQ(apc->mission_state().queued(), MISSION_UNLOAD);
   ASSERT_EQ(TheObjectHeaps().infantry().Count(), 2);
   for (int index = 0; index < 2; index++) {
     EXPECT_TRUE(TheObjectHeaps().infantry().ActiveAt(index)->IsInLimbo);

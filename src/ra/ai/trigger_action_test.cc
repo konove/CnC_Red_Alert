@@ -728,12 +728,12 @@ TEST_F(TriggerActionGameTest, LaunchNukesOrdersEverySiloToFire) {
   auto* barracks = base::NewPooled<BuildingClass>(STRUCT_BARRACKS, HOUSE_USSR);
   ASSERT_NE(silo, nullptr);
   ASSERT_NE(barracks, nullptr);
-  const MissionType barracks_orders = barracks->MissionQueue;
+  const MissionType barracks_orders = barracks->mission_state().queued();
 
   EXPECT_TRUE(Perform(Record(TriggerActionType::kLaunchNukes)));
 
-  EXPECT_EQ(silo->MissionQueue, MISSION_MISSILE);
-  EXPECT_EQ(barracks->MissionQueue, barracks_orders);
+  EXPECT_EQ(silo->mission_state().queued(), MISSION_MISSILE);
+  EXPECT_EQ(barracks->mission_state().queued(), barracks_orders);
 }
 
 TEST_F(TriggerActionGameTest, DestroyObjectOnACellWithNoBridgeStillSucceeds) {

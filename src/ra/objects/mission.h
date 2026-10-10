@@ -42,6 +42,7 @@
 
 #include <string_view>
 
+#include "absl/base/attributes.h"
 #include "base/fixed.h"
 #include "engine/file/ini_file.h"
 #include "engine/platform/timer.h"
@@ -57,22 +58,6 @@ namespace ra {
 */
 class MissionClass : public ObjectClass {
  public:
-  /*
-  **	This the tactical strategy to use. It is used by the unit script. This
-  **	is a general guide for unit AI processing.
-  */
-  MissionType Mission;
-  MissionType SuspendedMission;
-
-  /*
-  **	The order queue is used for orders that should take effect when the
-  *vehicle *	has reached the center point of a cell. The queued order number
-  *is +1 when stored here *	so that 0 will indicated there is no queued
-  *order.
-  */
-  MissionType MissionQueue;
-
-  int Status;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -107,6 +92,34 @@ class MissionClass : public ObjectClass {
   */
 
   void Shorten_Mission_Timer() { MissionTimer.Set(0); }
+  // The mission state of this object. MissionClass is on its way to becoming
+  // a member of TechnoClass (docs/OBJECT_COMPOSITION_PLAN.md, step 6); its
+  // state is already reached through this accessor, as it will be then.
+  [[nodiscard]] MissionClass& mission_state() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return *this;
+  }
+  [[nodiscard]] const MissionClass& mission_state() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return *this;
+  }
+
+  // The mission being carried out, MISSION_NONE before the first one starts.
+  // Get_Mission() is the one to ask what the object is up to: it answers with
+  // the queued mission while there is no current one.
+  [[nodiscard]] MissionType current() const { return Mission; }
+  void set_current(MissionType mission) { Mission = mission; }
+  // The mission set aside by Override_Mission() for Restore_Mission() to
+  // bring back; MISSION_NONE when there is none.
+  [[nodiscard]] MissionType suspended() const { return SuspendedMission; }
+  void set_suspended(MissionType mission) { SuspendedMission = mission; }
+  // The mission that Commence() will start; MISSION_NONE when none waits.
+  [[nodiscard]] MissionType queued() const { return MissionQueue; }
+  void set_queued(MissionType mission) { MissionQueue = mission; }
+  // The step the current mission's state machine is at. Each Mission_*()
+  // function gives the numbers its own meaning; Commence() starts at 0.
+  [[nodiscard]] int step() const { return Status; }
+  void set_step(int step) { Status = step; }
+
   [[nodiscard]] MissionType Get_Mission() const override;
   virtual void Assign_Mission(MissionType order);
   virtual bool Commence();
@@ -143,6 +156,23 @@ class MissionClass : public ObjectClass {
   virtual bool Restore_Mission();
 
  private:
+  /*
+  **	This the tactical strategy to use. It is used by the unit script. This
+  **	is a general guide for unit AI processing.
+  */
+  MissionType Mission;
+  MissionType SuspendedMission;
+
+  /*
+  **	The order queue is used for orders that should take effect when the
+  *vehicle *	has reached the center point of a cell. The queued order number
+  *is +1 when stored here *	so that 0 will indicated there is no queued
+  *order.
+  */
+  MissionType MissionQueue;
+
+  int Status;
+
   /*
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
