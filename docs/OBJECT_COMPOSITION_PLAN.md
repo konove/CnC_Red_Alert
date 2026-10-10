@@ -2,8 +2,24 @@
 
 Written 2026-10-10.
 
-**Status: started.** `TechnoClass` holds its door (420fe870), flasher (49f1edcf), cargo hold
-(44ac2c70) and stage counter (9e23f36c) as members in both games. Steps 1 to 7 below are open.
+**Status: done** (2026-10-10, 8c93acff..HEAD of the `object-composition` branch). Every step below
+is implemented in both games; the object hierarchy is the one under [Target](#target). What the
+steps settled where the plan left a choice:
+
+- Step 1: the fuse's target accessor is `ImpactPoint()`, because `Target` is a type name.
+- Step 3: `FactoryClass` and Tiberian Dawn's `AnimClass`, which inherited privately, keep the
+  counter private with no accessor.
+- Step 5: `RadioPeer` has one function, `Receive(RadioPeer* from, ...)`, which `TechnoClass`
+  implements once by forwarding to the `Receive_Message(TechnoClass* from, ...)` chain; every
+  override already used the sender as a techno. `ObjectClass` no longer declares
+  `Receive_Message()`, and `Transmit_Message()` stays on the techno, no longer virtual.
+- Step 6: the member is `mission_state_` behind `mission_state()`, since `mission` is the usual name
+  of a `MissionType` parameter. Its fields are `current()`, `queued()`, `suspended()` and `step()`
+  (the former `Status`). The override and restore logic stays in `TechnoClass`, because it calls the
+  virtual `Assign_Mission()`.
+- Step 7: the two levels are folded into `UnitClass`, as Red Alert did.
+
+The steps are kept as written, in the future tense, as the record of what was planned.
 
 ## Context
 
@@ -18,7 +34,8 @@ The object classes of both games inherit for two different reasons, and only one
   `Set_Rate()`), any subclass can reach its state, and each one with a virtual destructor adds a
   vtable pointer to every object.
 
-The second kind is what this plan replaces with members. What is left of it on 2026-10-10:
+The second kind is what this plan replaces with members. What was left of it when the plan was
+written:
 
 | Base                                         | Inherited by                                                      | Holds                                                | Used polymorphically                                                |
 | -------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
