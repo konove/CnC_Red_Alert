@@ -1,8 +1,9 @@
 // File: Byte spans as the slices the cxx bridge to src/rust takes, and the
-// vectors it returns as C++ ones.
+// vectors it returns as C++ ones. Here, below every library with a kernel in
+// Rust; an includer links engine_rs_cxx itself for "rust/cxx.h".
 
-#ifndef CNC_RED_ALERT_ENGINE_CODEC_RUST_BYTES_H_
-#define CNC_RED_ALERT_ENGINE_CODEC_RUST_BYTES_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_RUST_BYTES_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_RUST_BYTES_H_
 
 #include <bit>
 #include <cstddef>
@@ -46,4 +47,4 @@ inline bool Overlaps(const std::span<const std::byte> a,
   return a_begin < b_begin + b.size() && b_begin < a_begin + a.size();
 }
 
-#endif  // CNC_RED_ALERT_ENGINE_CODEC_RUST_BYTES_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_RUST_BYTES_H_

@@ -5,7 +5,7 @@
 
 #include "absl/log/check.h"
 #include "base/numeric.h"
-#include "engine/codec/rust_bytes.h"
+#include "engine/stream/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
 std::optional<BlockShape> BlockShapeFor(const int width, const int height) {

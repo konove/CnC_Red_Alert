@@ -8,7 +8,7 @@
 
 #include "base/numeric.h"
 #include "base/types.h"
-#include "engine/codec/rust_bytes.h"
+#include "engine/stream/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
 // The decoders are engine_rs's adpcm and westwood_audio modules

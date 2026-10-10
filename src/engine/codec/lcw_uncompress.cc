@@ -47,7 +47,7 @@
 #include "absl/log/check.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "engine/codec/rust_bytes.h"
+#include "engine/stream/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
 // The decoders are engine_rs's lcw::uncompress and lcw::uncompress_in_place

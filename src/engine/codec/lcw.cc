@@ -44,7 +44,7 @@
 
 #include "base/numeric.h"
 #include "base/types.h"
-#include "engine/codec/rust_bytes.h"
+#include "engine/stream/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 
 // The kernels are engine_rs's lcw module (src/rust/src/lcw/).

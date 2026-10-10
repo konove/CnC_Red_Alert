@@ -11,7 +11,7 @@ crate, one kernel per phase, without changing a byte of any kernel's output or a
 **Architecture:** Unchanged from the LCW migration. The one staticlib crate in `src/rust/` gains a
 module per kernel (`#![forbid(unsafe_code)]` each, except where a phase says otherwise), `lib.rs`
 gains the bridge functions, and the C++ entry point keeps its signature and becomes a shim that
-converts spans with `engine/codec/rust_bytes.h`.
+converts spans with `engine/stream/rust_bytes.h`.
 
 ## What makes a kernel worth moving
 
