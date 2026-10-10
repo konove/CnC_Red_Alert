@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 383,
+  "nextId": 384,
   "items": [
     {
       "id": "T-2",
@@ -12777,11 +12777,13 @@
         "td",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:53:48Z",
-      "updated": "2026-10-10T21:53:48Z",
+      "updated": "2026-10-10T23:28:31Z",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "92621dcf",
+      "resolution": "All seven steps of `docs/OBJECT_COMPOSITION_PLAN.md` are implemented in both games on the `object-composition` branch (8c93acff..92621dcf); the plan's status paragraph lists what was settled along the way.",
       "anchors": [
         {
           "path": "docs/OBJECT_COMPOSITION_PLAN.md",
@@ -13209,12 +13211,14 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T23:28:31Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "215a7e2b",
+      "resolution": "The four fields are private behind `current()`, `suspended()`, `queued()` and `step()` (the former `Status`) with `set_` functions, reached through `mission_state()`; sites rewritten from the compiler's \"is private\" errors, one commit a game (726f926d Red Alert, 215a7e2b Tiberian Dawn).",
       "anchors": [
         {
           "path": "src/ra/objects/mission.h",
@@ -13264,16 +13268,18 @@
         "td",
         "net-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T23:28:31Z",
       "blockedBy": [
         "T-380",
         "T-379"
       ],
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "b5654126",
+      "resolution": "`MissionHandler` holds the `Mission_*()` functions and `TechnoClass` implements it; `MissionClass` is the plain member `mission_state_` whose `AI()` takes the handler. `TechnoClass` derives from `ObjectClass` directly. Override/restore logic stays in `TechnoClass` because it calls the virtual `Assign_Mission()`. Save/load smoke and `tools/net_check.py` pass.",
       "anchors": [
         {
           "path": "src/ra/objects/mission.h",
@@ -13321,12 +13327,14 @@
         "refactoring",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:58:01Z",
+      "updated": "2026-10-10T23:28:31Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "30853b48",
+      "resolution": "Folded into `UnitClass` as decided: it derives from `DriveClass`, owns `Reload` and `SecondaryFacing`, and the levels' parts of `AI()`, `Can_Fire()` and `Unlimbo()` are private helpers called in the old order. `turret.*` and `tarcom.*` are deleted.",
       "toDecide": "Fold `TurretClass` and `TarComClass` into `UnitClass`, as Red Alert did, or make them members of it, or leave them?\n\n- Fold: the simplest result and it brings the two games' `UnitClass` closer, but it is the largest diff in `src/td/objects/unit.cc`.\n- Members: matches the rest of the plan, but only worth it if they hold state with its own functions and do not mostly override `DriveClass` virtuals.\n- Leave: nothing to do; they are single inheritance already, just deeper than they need to be.",
       "decisions": [
         {
@@ -13342,38 +13350,31 @@
       ],
       "anchors": [
         {
-          "path": "src/td/objects/turret.h",
-          "startLine": 56,
-          "endLine": 56,
-          "text": "class TurretClass : public DriveClass {",
-          "before": [
-            "",
-            "namespace td {",
-            ""
-          ],
-          "after": [
-            " public:",
-            "  // Field-wise state and checked references; load shells have no scenario effects.",
-            "  template <class Archive>"
-          ],
-          "lost": true
-        },
+          "path": "src/td/objects/unit.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-383",
+      "title": "Red Alert's old-save fixture no longer loads",
+      "details": "`tools/ra_saveload_smoke.sh --load-fixture build/src/ra/rasdl` fails with \"fixture save did not load and run to frame 120\", or hangs at the menu, on unchanged `main` (100ef036) as well as after the object composition work. `src/ra/testdata/SAVEGAME.SCG01EA` was last regenerated in 4c05738e for save version 18 (2026-10-04) and `kSaveGameVersion` is still 18, so some later commit changed what is saved without bumping the version or regenerating the fixture. Bisect 4c05738e..100ef036 with the script to find it, then either bump the version and regenerate, or restore the layout. Nothing runs this check automatically, which is how it went unnoticed.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "saveload"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-10T23:28:31Z",
+      "source": "100ef036",
+      "anchors": [
         {
-          "path": "src/td/objects/tarcom.h",
-          "startLine": 57,
-          "endLine": 57,
-          "text": "class TarComClass : public TurretClass {",
-          "before": [
-            "**\tsuch operations as determining threat value down to actually launching",
-            "*the *\tprojectile.",
-            "*/"
-          ],
-          "after": [
-            " public:",
-            "  // Field-wise state and checked references; load shells have no scenario effects.",
-            "  template <class Archive>"
-          ],
-          "lost": true
+          "path": "tools/ra_saveload_smoke.sh",
+          "lost": false
         }
       ]
     }

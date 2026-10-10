@@ -3,9 +3,14 @@
 
 #include "td/objects/techno.h"
 
+#include <array>
+#include <cstddef>
+
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
 #include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
@@ -130,6 +135,101 @@ TEST_F(TechnoTest, TheSelectionBoxStaysPutWithoutAHealthBar) {
     EXPECT_EQ(drawn.health_bar_pixels, 0);
     EXPECT_EQ(drawn.box_top, -drawn.box_bottom);
   }
+}
+
+// A vehicle with strength, which an object needs to perform a mission.
+class TechnoMissionTest : public TechnoTest {
+ protected:
+  TechnoMissionTest() { unit_.Strength = 1; }
+
+  // The mission state as a saved game holds it: it changes when the mission
+  // function has run, because that restarts the timer.
+  std::array<std::byte, 64> SavedMission() {
+    std::array<std::byte, 64> bytes{};
+    SpanSink sink(bytes);
+    ArchiveWriter writer(sink);
+    writer(unit_.mission_state());
+    return bytes;
+  }
+
+  TechnoClass& unit_ = *base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
+};
+
+TEST_F(TechnoMissionTest, AnAssignedMissionIsQueuedUntilItCommences) {
+  unit_.Assign_Mission(MISSION_HARVEST);
+  EXPECT_EQ(unit_.mission_state().current(), MISSION_NONE);
+  EXPECT_EQ(unit_.Get_Mission(), MISSION_HARVEST);
+
+  EXPECT_TRUE(unit_.Commence());
+  EXPECT_EQ(unit_.mission_state().current(), MISSION_HARVEST);
+  EXPECT_FALSE(unit_.Commence());
+}
+
+TEST_F(TechnoMissionTest, SetMissionTakesEffectAtOnce) {
+  unit_.Assign_Mission(MISSION_HARVEST);
+  unit_.Set_Mission(MISSION_GUARD);
+  EXPECT_EQ(unit_.mission_state().current(), MISSION_GUARD);
+  EXPECT_EQ(unit_.mission_state().queued(), MISSION_NONE);
+}
+
+TEST_F(TechnoMissionTest, AnOverriddenMissionComesBackOnRestore) {
+  unit_.Assign_Mission(MISSION_HARVEST);
+  unit_.Commence();
+
+  unit_.Override_Mission(MISSION_STOP, Target{}, Target{});
+  EXPECT_EQ(unit_.mission_state().suspended(), MISSION_HARVEST);
+  EXPECT_EQ(unit_.mission_state().queued(), MISSION_STOP);
+  unit_.Commence();
+
+  EXPECT_TRUE(unit_.Restore_Mission());
+  EXPECT_EQ(unit_.mission_state().queued(), MISSION_HARVEST);
+  EXPECT_EQ(unit_.mission_state().suspended(), MISSION_NONE);
+  EXPECT_FALSE(unit_.Restore_Mission());
+}
+
+TEST_F(TechnoMissionTest, AnOverrideSetsAsideTheQueuedMissionFirst) {
+  unit_.Assign_Mission(MISSION_HARVEST);
+  unit_.Commence();
+  unit_.Assign_Mission(MISSION_GUARD);
+
+  unit_.Override_Mission(MISSION_STOP, Target{}, Target{});
+
+  EXPECT_EQ(unit_.mission_state().suspended(), MISSION_GUARD);
+}
+
+// TechnoClass::AI() is called directly: the vehicle's own would drive it.
+TEST_F(TechnoMissionTest, AIRunsTheMissionOfALivingObject) {
+  const auto before = SavedMission();
+  unit_.TechnoClass::AI();
+  EXPECT_NE(SavedMission(), before);
+}
+
+TEST_F(TechnoMissionTest, AIRunsNoMissionForADestroyedObject) {
+  unit_.Strength = 0;
+  const auto before = SavedMission();
+  unit_.TechnoClass::AI();
+  EXPECT_EQ(SavedMission(), before);
+}
+
+TEST_F(TechnoMissionTest, HelloPutsTwoTechnosInContact) {
+  TechnoClass& other = *base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
+  other.Strength = 1;
+
+  EXPECT_EQ(unit_.Transmit_Message(RADIO_HELLO, &other), RADIO_ROGER);
+  EXPECT_EQ(unit_.Contact_With_Whom(), &other);
+  EXPECT_EQ(other.Contact_With_Whom(), &unit_);
+
+  EXPECT_EQ(unit_.Transmit_Message(RADIO_OVER_OUT), RADIO_ROGER);
+  EXPECT_FALSE(unit_.radio().InContact());
+  EXPECT_FALSE(other.radio().InContact());
+}
+
+TEST_F(TechnoMissionTest, ADestroyedTechnoAcceptsNoContact) {
+  TechnoClass& other = *base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
+  other.Strength = 0;
+
+  EXPECT_EQ(unit_.Transmit_Message(RADIO_HELLO, &other), RADIO_NEGATIVE);
+  EXPECT_FALSE(unit_.radio().InContact());
 }
 
 }  // namespace
