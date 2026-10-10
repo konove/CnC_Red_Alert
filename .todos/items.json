@@ -904,14 +904,26 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-10T18:03:30Z",
+      "resolution": "Left as shipped: the original 1996 `CODE/TEAM.CPP` has the add inside the loop for vehicles and ships too, and TD's `Recruit()` has no nearest search to compare with. `Add()` refuses a unit already on the team, so the effect is that the first matching vehicle joins and then each nearer one, until the quantity is full. Added a comment saying so in both branches and `TeamTest.RecruitsTheFirstVehicleFoundAndEachNearerOneAfterIt`, which pins it.",
       "toDecide": "In `TeamClass::Recruit()` the vehicle and ship branches add the best candidate so far on every later pass of the loop. First compare with the original source and Tiberian Dawn's `Recruit()`; then:\n\n- **Move the add after the loop**, as the infantry and aircraft branches have it: changes which units a team recruits (xcheck reference update).\n- **Leave** it as shipped.",
+      "decisions": [
+        {
+          "question": "T-31: how should Red Alert's TeamClass::Recruit() handle the vehicle and ship add that sits inside the loop (it is identical in the original 1996 source)?",
+          "options": [
+            "Leave as shipped (Recommended)",
+            "Move the add after the loop",
+            "Leave, no comment or test"
+          ],
+          "answer": "Leave as shipped (Recommended)",
+          "time": "2026-10-10T18:02:06Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/team.cc",
@@ -12186,10 +12198,10 @@
         "ui",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T03:03:52Z",
-      "updated": "2026-10-10T05:14:19Z",
+      "updated": "2026-10-10T17:59:15Z",
       "source": "da3e1218",
       "resolution": "The scaled power and drain heights are now held to the scale's 153 rows (`kScaleRows`), so a height of 108 lands on the top tick and not one row above it. No game reaches it: `Power_Height()` stops at 104 and the bounce adds at most 2, so nothing changes on screen for reachable heights. No test added; checked with the strict build of `power.cc` only.",
       "anchors": [

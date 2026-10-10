@@ -70,5 +70,40 @@ TEST_F(TeamTest, ATeamMovingToANegativeWaypointIsNotLeavingTheMap) {
   EXPECT_FALSE(StartTeam({TeamMissionType::kMove, -1})->Is_Leaving_Map());
 }
 
+// The original game adds the best vehicle so far on every pass of its search,
+// not once after it, so a single round of recruiting takes more than the
+// nearest one.
+TEST_F(TeamTest, RecruitsTheFirstVehicleFoundAndEachNearerOneAfterIt) {
+  const Cell origin = Cell::FromXY(40, 50);
+  base::At(TheScenario().Waypoint, 0) = origin;
+  auto* team_type = base::NewPooled<TeamType>();
+  ASSERT_NE(team_type, nullptr);
+  team_type->set_house(HOUSE_USSR);
+  team_type->set_origin(0);
+  team_type->AddMember(
+      {.quantity = 3, .type = &UnitTypeClass::As_Reference(UNIT_JEEP)});
+  team_type->AddMission({TeamMissionType::kMove, 0});
+
+  // In the order the search meets them: six cells away, nine, then three.
+  auto* first = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
+  auto* farther = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
+  auto* nearer = base::NewPooled<UnitClass>(UNIT_JEEP, HOUSE_USSR);
+  ASSERT_NE(nearer, nullptr);
+  // With no rules loaded a vehicle is only placed while a scenario is read.
+  TheWorld().scenario_init()++;
+  ASSERT_TRUE(first->Unlimbo(Cell::FromXY(46, 50).Center()));
+  ASSERT_TRUE(farther->Unlimbo(Cell::FromXY(49, 50).Center()));
+  ASSERT_TRUE(nearer->Unlimbo(Cell::FromXY(43, 50).Center()));
+  TheWorld().scenario_init()--;
+
+  auto* team = base::NewPooled<TeamClass>(team_type, ThePlayer());
+  ASSERT_NE(team, nullptr);
+  team->AI();
+
+  EXPECT_EQ(first->Team, team);
+  EXPECT_EQ(farther->Team, nullptr);
+  EXPECT_EQ(nearer->Team, team);
+}
+
 }  // namespace
 }  // namespace ra

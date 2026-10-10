@@ -1264,6 +1264,12 @@ int TeamClass::Recruit(int typeindex) {
             bestdist = d;
           }
 
+          // This sits inside the loop in the original game too, unlike the
+          // infantry and aircraft branches. Add() refuses a member the team
+          // already has, so the first vehicle that qualifies joins at once,
+          // and after it every later one that is nearer than the last to
+          // join, until the team has its quantity. Kept as shipped: the
+          // missions were tuned to it (T-31).
           if (best) {
             best->Assign_Target(ra::Target{});
             Add(best);
@@ -1299,6 +1305,8 @@ int TeamClass::Recruit(int typeindex) {
             bestdist = d;
           }
 
+          // Inside the loop as for the vehicles above, and for the same
+          // reason.
           if (best) {
             best->Assign_Target(ra::Target{});
             Add(best);
