@@ -44,7 +44,6 @@
 #include "engine/codec/base64_sink.h"
 #include "engine/codec/base64_source.h"
 #include "engine/crypto/crc.h"
-#include "engine/crypto/int.h"
 #include "engine/crypto/pk.h"
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_sink.h"
@@ -565,10 +564,7 @@ PKey IniFile::GetPublicKey() const {
 
   // The fast key's exponent is a known constant, so a database published
   // without [PrivateKey] still yields it.
-  unsigned char encoded[512];
-  const BigInt exponent = PKey::Fast_Exponent();
-  const auto length = exponent.DEREncode(encoded);
-  key.Decode_Exponent(base::ObjectBytes(encoded).first(base::ToSize(length)));
+  key.SetFastExponent();
 
   key.Decode_Modulus(GetBase64Block(kPublicKeySection));
 

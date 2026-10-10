@@ -26,10 +26,11 @@ loops of LCW decompression, Blowfish, SHA-1 and the paletted blit, and unoptimiz
 out-of-line calls. Measured on Red Alert 2026-09-17, `Debug` against `RelWithDebInfo`: loading a
 saved game 483 ms vs 19 ms, startup bootstrap 1836 ms vs 45 ms, and the intro movie could not decode
 in real time at all, stretching 10.5 s of video to 22 s. `Debug` is for stepping in a debugger,
-nothing else. The worst kernels (RSA bignum, Blowfish, SHA-1, the fading table, the window blit) are
-compiled at `-O2` even in `Debug` via `optimize_in_debug()` in `cmake/OptimizeInDebug.cmake`, and
-the Rust kernels in `src/rust/` (LCW) via `[profile.dev] opt-level = 2` in `src/rust/Cargo.toml`;
-add a file there only if a Debug profile shows it hot.
+nothing else. The worst C++ kernels (the fading table, the window blit) are compiled at `-O2` even
+in `Debug` via `optimize_in_debug()` in `cmake/OptimizeInDebug.cmake`, and the Rust kernels in
+`src/rust/` (LCW, the bignum, Blowfish, SHA-1, the sound and movie decoders) via
+`[profile.dev] opt-level = 2` in `src/rust/Cargo.toml`; add a file there only if a Debug profile
+shows it hot.
 
 ## Setup
 
@@ -173,10 +174,11 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                [depends: engine_platform]
   codec/     → Compression and encoding: LCW, LZW, base64, the block codec backends, the .AUD
                decoders and the animated-cursor XOR delta (target `engine_codec`; links `lzo`, and
-               `engine_rs_cxx`, whose Rust kernels the LCW entry points call) [depends: engine_stream]
-  crypto/    → Ciphers, hashes and bignum public-key: Blowfish, SHA-1, the RSA-style bignum and
-               PKey (target `engine_crypto`; sibling of engine/codec/, neither includes the other)
+               `engine_rs_cxx`, whose Rust kernels the LCW, XOR delta and .AUD entry points call)
                [depends: engine_stream]
+  crypto/    → Ciphers, hashes and public-key: Blowfish, SHA-1 and PKey, each a C++ class or
+               function over a Rust kernel (target `engine_crypto`; links `engine_rs_cxx`; sibling
+               of engine/codec/, neither includes the other) [depends: engine_stream]
   file/      → Disk files, game files, MIX archives, search paths, the string table and the INI
                database (target `engine_file`) [depends: engine_codec, engine_crypto]
   net/       → Packets and sockets; net/serial/ holds the null-modem driver (target `engine_net`;
@@ -206,8 +208,10 @@ game/        → The code both games share, in namespace game::, above the engin
                game's UiSkin (ra/ui/ui_skin.h, td/ui/ui_skin.h), aliased per game, and the names of
                the sixteen standard palette colors (target `game_ui`)
                [depends: game_core]
-rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
-               src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
+rust/        → engine_rs, the engine kernels written in Rust (LCW, XOR delta, the sound and VQ
+               decoders, SHA-1, Blowfish, the public-key step), linked through the cxx bridge in
+               src/lib.rs; CMake target engine_rs_cxx (Corrosion); crates `sha1` and `num-bigint`
+               [depends: nothing in the tree]
 ra/          → Red Alert (~420 files) [depends: game_core, game_sim, game_ui, engine_net, engine_window, engine_video]
 td/          → Tiberian Dawn (~330 files) [depends: game_core, game_sim, game_ui, engine_net, engine_window, engine_video]
 ```

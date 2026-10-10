@@ -36,8 +36,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_MP_H_
-#define CNC_RED_ALERT_ENGINE_CRYPTO_MP_H_
+// Part of the C++ bignum and public-key code that engine_rs's pk module
+// replaced (src/rust/src/pk), kept so that a differential test and
+// kernel_bench can hold the Rust one to it. Not built into the engine.
+
+#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_MP_REFERENCE_TEST_UTIL_H_
+#define CNC_RED_ALERT_ENGINE_CRYPTO_MP_REFERENCE_TEST_UTIL_H_
 
 #include <cstdint>
 #include <cstdlib>
@@ -47,7 +51,7 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
-#include "engine/crypto/digit_cursor.h"
+#include "engine/crypto/digit_cursor_reference_test_util.h"
 #include "engine/stream/byte_source.h"
 
 extern uint16_t primeTable[3511];
@@ -202,4 +206,4 @@ void memrev(std::span<char> buffer);
 
 int XMP_Prepare_Modulus(DigitCursor<const uint32_t> modulus, int precision);
 
-#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_MP_H_
+#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_MP_REFERENCE_TEST_UTIL_H_

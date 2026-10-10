@@ -23,7 +23,6 @@
 #include "engine/codec/lzw_source.h"
 #include "engine/crypto/blowfish.h"
 #include "engine/crypto/blowfish_source.h"
-#include "engine/crypto/mp.h"
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_source.h"
 #include "engine/stream/byte_sink.h"
@@ -162,40 +161,6 @@ TEST(CodecStateTest, LcwLongRunsRespectTheirLengthAtEveryAlignment) {
     EXPECT_FALSE(
         LcwUncompBounded(std::as_bytes(std::span(encoded)), length - 1));
   }
-}
-
-TEST(CodecStateTest, ModularMultiplicationMatchesIndependentRemainder) {
-  // Three 16-bit digits exercise reduction windows with half-word offsets.
-  constexpr uint64_t kModulus = 0x10000000f;
-  constexpr int kPrecision = 3;
-  const std::array<uint32_t, kPrecision> modulus = {15, 1, 0};
-  ASSERT_EQ(XMP_Prepare_Modulus(modulus, kPrecision), 0);
-  uint64_t seed = 17;
-  for (int trial = 0; trial < 256; ++trial) {
-    seed = ((seed * 1664525) + 1013904223) % kModulus;
-    const uint64_t a = seed;
-    seed = ((seed * 1664525) + 1013904223) % kModulus;
-    const uint64_t b = seed;
-    const std::array<uint32_t, kPrecision> left = {
-        static_cast<uint32_t>(a), static_cast<uint32_t>(a >> 32), 0};
-    const std::array<uint32_t, kPrecision> right = {
-        static_cast<uint32_t>(b), static_cast<uint32_t>(b >> 32), 0};
-    std::array<uint32_t, kPrecision> result{};
-    ASSERT_EQ(XMP_Mod_Mult(result, left, right, kPrecision), 0);
-    // Repeated doubling avoids overflowing a native 64-bit product.
-    uint64_t expected = 0;
-    uint64_t addend = a;
-    for (uint64_t multiplier = b; multiplier; multiplier >>= 1) {
-      if (multiplier & 1) {
-        expected = (expected + addend) % kModulus;
-      }
-      addend = (addend * 2) % kModulus;
-    }
-    EXPECT_EQ(result.at(0), static_cast<uint32_t>(expected));
-    EXPECT_EQ(result.at(1), static_cast<uint32_t>(expected >> 32));
-    EXPECT_EQ(result.at(2), 0);
-  }
-  XMP_Mod_Mult_Clear(kPrecision);
 }
 
 TEST(CodecStateTest, LcwHandlesFragmentedHeadersAndPartialBlocks) {

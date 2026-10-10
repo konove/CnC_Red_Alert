@@ -6002,7 +6002,7 @@
             "    result.bytes_ = bytes;",
             "    return result;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

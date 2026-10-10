@@ -1,15 +1,12 @@
 #include "tools/game_data.h"
 
-#include <array>
 #include <cstddef>
-#include <cstdint>
 #include <span>
 #include <string_view>
 #include <vector>
 
 #include "base/numeric.h"
 #include "engine/codec/base64.h"
-#include "engine/crypto/int.h"
 #include "engine/crypto/pk.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
@@ -41,11 +38,7 @@ constexpr std::string_view kMixPublicKey =
 PKey BuildMixKey() {
   PKey key;
 
-  std::array<uint8_t, 512> der{};
-  const BigInt exponent = PKey::Fast_Exponent();
-  const int length = exponent.DEREncode(der);
-  key.Decode_Exponent(
-      std::as_bytes(std::span(der)).first(base::ToSize(length)));
+  key.SetFastExponent();
 
   std::vector<std::byte> modulus(kMixPublicKey.size());
   const int decoded =

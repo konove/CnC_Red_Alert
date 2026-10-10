@@ -40,67 +40,98 @@
 #ifndef CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_
 #define CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-#include "engine/crypto/int.h"
 #include "engine/stream/byte_source.h"
 
-/*
-**	This class holds a public or private key used in Public Key
-*Cryptography. It also serves *	as the conduit for encrypting/decrypting data
-*using that key. Cryptography, using this *	method, has a couple of
-*characteristics that affect how it is used. One, the process of
-**	encrypting/decrypting is very slow. This limits the effective quantity
-*of data that can *	be processed. Two, the ciphertext is larger than the
-*plaintext. This property generally *	limits its use to streaming data as
-*opposed to random access data. The data is processed *	in blocks. The size of
-*the ciphertext and plaintext blocks can be determined only from *	the key
-*itself.
-**
-**	A reasonable use of this technology would be to encrypt only critical
-*data such as the *	password for a fast general purpose cryptographic
-*algorithm.
-*/
+// One half of an RSA-style key pair: a modulus and an exponent. A block is
+// encrypted or decrypted by raising it to the exponent under the modulus;
+// what one half of a pair encrypts, the other decrypts.
+//
+// The process is slow and the ciphertext is larger than the plaintext, so it
+// suits only a little critical data, such as the key of a fast cipher: an
+// encrypted MIX archive starts with its Blowfish key encrypted this way. Data
+// is processed in blocks whose sizes follow from the modulus.
+//
+// The arithmetic is in Rust (src/rust/src/pk), which documents what the
+// numbers' encodings do with malformed input.
+//
+// Example:
+//   PKey key;
+//   key.SetFastExponent();
+//   key.Decode_Modulus(der_bytes);
+//   const int size = key.Decrypt(cipher, plain);
 class PKey {
  public:
-  PKey() noexcept : Modulus(0), Exponent(0), BitPrecision(0) {}
-  PKey(std::span<const std::byte> exponent,
-       std::span<const std::byte> modulus);  // DER initialization.
+  PKey() noexcept = default;
 
+  // Encrypts (decrypts) the whole blocks of `source` into `dest` and returns
+  // the number of bytes written. A trailing partial block is neither
+  // processed nor copied, and blocks stop when `dest` has no room for the
+  // next. A plain block is Plain_Block_Size() bytes, an encrypted one
+  // Crypt_Block_Size(). The buffers may overlap.
   [[nodiscard]] int Encrypt(std::span<const std::byte> source,
                             std::span<std::byte> dest) const;
   [[nodiscard]] int Decrypt(std::span<const std::byte> source,
                             std::span<std::byte> dest) const;
 
+  // Makes a key pair from two primes of `bits` bits each, 32 to 1024: `fastkey`
+  // with Fast_Exponent(), `slowkey` with the exponent that undoes it. Draws
+  // kSeedBytes from `random` and derives everything from them, so `random`
+  // must be as unpredictable as the key should be.
   static void Generate(ByteSource& random, int bits, PKey& fastkey,
                        PKey& slowkey);
 
-  [[nodiscard]] int Plain_Block_Size() const { return (BitPrecision - 1) / 8; }
+  [[nodiscard]] int Plain_Block_Size() const {
+    return (bit_precision_ - 1) / 8;
+  }
   [[nodiscard]] int Crypt_Block_Size() const { return Plain_Block_Size() + 1; }
   [[nodiscard]] int Block_Count(int plaintext_length) const {
     return ((plaintext_length - 1) / Plain_Block_Size()) + 1;
   }
 
+  // Writes the modulus (exponent) as a DER integer to the front of `buffer`,
+  // which must hold it (kMaxEncodedBytes always does), and returns its size;
+  // 0 for an empty buffer. Only the low 512 bits are encoded.
   [[nodiscard]] int Encode_Modulus(std::span<std::byte> buffer) const;
   [[nodiscard]] int Encode_Exponent(std::span<std::byte> buffer) const;
 
+  // Sets the modulus (exponent) from a DER integer. Malformed input leaves it
+  // as it was.
   void Decode_Modulus(std::span<const std::byte> buffer);
   void Decode_Exponent(std::span<const std::byte> buffer);
 
+  // Sets the exponent to Fast_Exponent(), the exponent of the public half of
+  // every pair, so that such a key needs only its modulus stored.
+  void SetFastExponent();
+
   static uint32_t Fast_Exponent() { return 65537; }
 
+  // How much Generate() reads from its random source.
+  static constexpr int kSeedBytes = 64;
+  // The most Encode_Modulus() and Encode_Exponent() write.
+  static constexpr int kMaxEncodedBytes = 67;
+
  private:
-  // p*q
-  BigInt Modulus;
+  // A 2048-bit number, least significant byte first.
+  using Number = std::array<uint8_t, 256>;
 
-  // 65537 or
-  // inverse of (p-1)(q-1).
-  BigInt Exponent;
+  // Runs the blocks of `source`, `in_size` bytes each, through the key into
+  // blocks of `out_size` bytes in `dest`. Returns the bytes written.
+  [[nodiscard]] int Crypt(std::span<const std::byte> source,
+                          std::span<std::byte> dest, int in_size,
+                          int out_size) const;
 
-  // Maximum bits allowed for block.
-  int BitPrecision;
+  void set_modulus(const Number& modulus);
+
+  Number modulus_{};   // p*q
+  Number exponent_{};  // 65537, or its inverse under (p-1)(q-1)
+  // One less than the modulus's bit count: the most bits a block may have and
+  // still be below the modulus. -1 for a zero modulus.
+  int bit_precision_ = 0;
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_

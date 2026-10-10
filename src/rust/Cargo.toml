@@ -15,6 +15,8 @@ doctest = false
 
 [dependencies]
 cxx = "1.0.202"
+# The arithmetic under the public-key step (src/pk).
+num-bigint = "0.5.1"
 # SHA-1 block compression, with the x86 and aarch64 SHA extensions. Without
 # the default features, which only add object identifiers.
 sha1 = { version = "0.11.0", default-features = false }

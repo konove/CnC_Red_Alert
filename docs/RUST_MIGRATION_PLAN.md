@@ -2,8 +2,9 @@
 
 Written 2026-10-09, on the tree at aa739494. Answers T-210.
 
-**Status: in progress.** Each phase below gets its own task-level plan (`docs/RUST_<NAME>_PLAN.md`,
-in the form of `docs/RUST_LCW_PLAN.md`) before its code is written.
+**Status: phases 1 to 6 done** (2026-10-10, branch `rust-migration`); the "later" list is open. Each
+phase has its own plan and outcome in `docs/RUST_<NAME>_PLAN.md`. Open by hand: listening to a sound
+and a movie on a real device (Phase 2).
 
 **Goal:** Move the remaining byte- and pixel-crunching kernels of `src/engine` into the `engine_rs`
 crate, one kernel per phase, without changing a byte of any kernel's output or any C++ caller.
@@ -71,9 +72,11 @@ Lines are the `.cc` without its tests.
 
 These hold for every phase; the first four are carried over from `docs/RUST_LCW_PLAN.md`.
 
-- **Output is byte-identical.** The existing C++ tests pass unchanged, and each phase adds a
-  differential test that feeds the same inputs (the test corpus plus seeded random and truncated
-  streams) to the old C++ kernel, kept as a test-only reference, and to the Rust one.
+- **Output is byte-identical,** with one exception found in Phase 6: the C++ bignum's exponentiation
+  is occasionally wrong, and there Rust returns the power (`docs/RUST_PK_PLAN.md`). The existing C++
+  tests pass unchanged, and each phase adds a differential test that feeds the same inputs (the test
+  corpus plus seeded random and truncated streams) to the old C++ kernel, kept as a test-only
+  reference, and to the Rust one.
 - **No C++ caller changes.** Signatures, error returns and the lenient or strict behavior on bad
   input stay as the header documents them.
 - **One buffer never crosses the bridge as both `&[u8]` and `&mut [u8]`.** Each phase's plan lists
@@ -151,9 +154,9 @@ The largest piece and its own project. The bridge is two or three functions (enc
 decrypt a block, key from its encoded form); `mp.cc`, `int.h` and most of `pk.cc` are deleted.
 Effort: l.
 
-- [ ] Task-level plan: the cut, and a crate (`num-bigint`, `crypto-bigint`) against a port
-- [ ] Implementation, with `mp_test`'s vectors moved to the level that survives
-- [ ] `pk_stream_test`, `mix_archive_test` unchanged; both games open their encrypted MIX files
+- [x] Task-level plan: the cut, and a crate (`num-bigint`, `crypto-bigint`) against a port
+- [x] Implementation, with `mp_test`'s vectors moved to the level that survives (`pk_test.cc`)
+- [x] `pk_stream_test`, `mix_archive_test` unchanged; both games open their encrypted MIX files
 
 ### Later, in no fixed order
 

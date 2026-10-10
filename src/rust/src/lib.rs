@@ -9,6 +9,7 @@
 pub mod adpcm;
 pub mod blowfish;
 pub mod lcw;
+pub mod pk;
 pub mod sha1;
 pub mod vq;
 pub mod westwood_audio;
@@ -98,6 +99,39 @@ mod ffi {
 
         /// Compresses into one LCW stream; see lcw::compress.
         fn lcw_compress(input: &[u8]) -> Vec<u8>;
+
+        /// Decodes a DER integer into a 2048-bit register, or leaves the
+        /// register alone if it is malformed; see pk::der_decode.
+        fn pk_der_decode(input: &[u8], number: &mut [u8; 256]);
+
+        /// Encodes a register as a DER integer at the front of `output` and
+        /// returns its length, at most 67; see pk::der_encode. Aborts if
+        /// `output` is too short.
+        fn pk_der_encode(number: &[u8; 256], output: &mut [u8]) -> usize;
+
+        /// Returns the number of significant bits of a register.
+        fn pk_bit_count(number: &[u8; 256]) -> usize;
+
+        /// Raises the block in `input` to `exponent` under `modulus` and
+        /// fills `output` with the low bytes of the result; see
+        /// pk::crypt_block.
+        fn pk_crypt_block(
+            exponent: &[u8; 256],
+            modulus: &[u8; 256],
+            input: &[u8],
+            output: &mut [u8],
+        );
+
+        /// Makes a key pair from two primes of `prime_bits` bits, with all
+        /// its randomness derived from `seed`; see pk::generate. Aborts if
+        /// `prime_bits` is outside 32..=1024.
+        fn pk_generate(
+            seed: &[u8],
+            prime_bits: usize,
+            modulus: &mut [u8; 256],
+            fast_exponent: &mut [u8; 256],
+            slow_exponent: &mut [u8; 256],
+        );
 
         /// Compresses whole 64-byte blocks into a SHA-1 state; see
         /// sha1::compress.
@@ -252,4 +286,35 @@ fn blowfish_decrypt(cipher: &Blowfish, source: &[u8], dest: &mut [u8]) {
 
 fn blowfish_decrypt_in_place(cipher: &Blowfish, data: &mut [u8]) {
     cipher.decrypt_in_place(data);
+}
+
+fn pk_der_decode(input: &[u8], number: &mut [u8; 256]) {
+    pk::der_decode(input, number);
+}
+
+fn pk_der_encode(number: &[u8; 256], output: &mut [u8]) -> usize {
+    let (encoded, len) = pk::der_encode(number);
+    output[..len].copy_from_slice(&encoded[..len]);
+    len
+}
+
+fn pk_bit_count(number: &[u8; 256]) -> usize {
+    pk::bit_count(number)
+}
+
+fn pk_crypt_block(exponent: &[u8; 256], modulus: &[u8; 256], input: &[u8], output: &mut [u8]) {
+    pk::crypt_block(exponent, modulus, input, output);
+}
+
+fn pk_generate(
+    seed: &[u8],
+    prime_bits: usize,
+    modulus: &mut [u8; 256],
+    fast_exponent: &mut [u8; 256],
+    slow_exponent: &mut [u8; 256],
+) {
+    let pair = pk::generate(seed, prime_bits).expect("primes of 32 to 1024 bits");
+    *modulus = pair.modulus;
+    *fast_exponent = pair.fast_exponent;
+    *slow_exponent = pair.slow_exponent;
 }

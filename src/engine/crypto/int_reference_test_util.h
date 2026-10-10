@@ -37,8 +37,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_INT_H_
-#define CNC_RED_ALERT_ENGINE_CRYPTO_INT_H_
+// Part of the C++ bignum and public-key code that engine_rs's pk module
+// replaced (src/rust/src/pk), kept so that a differential test and
+// kernel_bench can hold the Rust one to it. Not built into the engine.
+
+#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_INT_REFERENCE_TEST_UTIL_H_
+#define CNC_RED_ALERT_ENGINE_CRYPTO_INT_REFERENCE_TEST_UTIL_H_
 
 #include <climits>
 #include <cstdint>
@@ -48,7 +52,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "base/array.h"
-#include "engine/crypto/mp.h"
+#include "engine/crypto/mp_reference_test_util.h"
 #include "engine/stream/byte_source.h"
 
 template <class T>
@@ -335,7 +339,7 @@ class Int {
   }
   [[nodiscard]] int Encode(DigitCursor<unsigned char> output,
                            unsigned length) const {
-    return XMP_Encode(output, length, reg, PRECISION);
+    return static_cast<int>(XMP_Encode(output, length, reg, PRECISION));
   }
   void Signed_Decode(DigitCursor<const unsigned char> from, int frombytes) {
     XMP_Signed_Decode(reg, from, frombytes, PRECISION);
@@ -468,4 +472,4 @@ using BigInt = Int<MAX_UNIT_PRECISION>;
 // BigInt Generate_Prime(RandomNumberGenerator & rng, int pbits, BigInt const *
 // dummy);
 
-#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_INT_H_
+#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_INT_REFERENCE_TEST_UTIL_H_

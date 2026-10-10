@@ -1,6 +1,10 @@
 // Bounds-carrying cursors for the multi-precision arithmetic's digit walks.
-#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_H_
-#define CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_H_
+// Part of the C++ bignum and public-key code that engine_rs's pk module
+// replaced (src/rust/src/pk), kept so that a differential test and
+// kernel_bench can hold the Rust one to it. Not built into the engine.
+
+#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_REFERENCE_TEST_UTIL_H_
+#define CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_REFERENCE_TEST_UTIL_H_
 
 #include <array>
 #include <cstddef>
@@ -196,4 +200,4 @@ class DigitCursor {
   std::ptrdiff_t position_ = 0;
 };
 
-#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_H_
+#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_DIGIT_CURSOR_REFERENCE_TEST_UTIL_H_

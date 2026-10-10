@@ -4,6 +4,7 @@
 // Usage: kernel_bench
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -19,6 +20,9 @@
 #include "engine/codec/xor_delta_reference_test_util.h"
 #include "engine/crypto/blowfish.h"
 #include "engine/crypto/blowfish_reference_test_util.h"
+#include "engine/crypto/pk.h"
+#include "engine/crypto/pk_reference_test_util.h"
+#include "engine/crypto/random_source.h"
 #include "engine/crypto/sha1_compress.h"
 #include "engine/crypto/sha1_compress_reference_test_util.h"
 #include "engine/video/vqa/adpcm_decoders.h"
@@ -51,8 +55,8 @@ double MegabytesPerSecond(const std::size_t bytes, const Function& function) {
 }
 
 void Report(const char* const what, const double rust, const double cpp) {
-  absl::PrintF("%-26s Rust %8.1f MB/s   C++ %8.1f MB/s   %+.0f%%\n", what,
-               rust, cpp, ((rust / cpp) - 1.0) * 100.0);
+  absl::PrintF("%-26s Rust %8.2f MB/s   C++ %8.2f MB/s   %+.0f%%\n", what, rust,
+               cpp, ((rust / cpp) - 1.0) * 100.0);
 }
 
 // A delta over `pixels` pixels shaped like an animation frame's: short and
@@ -244,6 +248,52 @@ void BenchBlowfish() {
          MegabytesPerSecond(kTableBytes, [&] { reference.Submit_Key(key); }));
 }
 
+// The same key into both implementations, by way of its DER encoding.
+template <typename Key>
+void CopyKey(const PKey& from, Key& to) {
+  std::array<std::byte, PKey::kMaxEncodedBytes> der{};
+  to.Decode_Modulus(
+      std::span(der).first(static_cast<std::size_t>(from.Encode_Modulus(der))));
+  to.Decode_Exponent(std::span(der).first(
+      static_cast<std::size_t>(from.Encode_Exponent(der))));
+}
+
+// A pair of 256-bit primes, the largest whose modulus Encode_Modulus() can
+// carry; megabytes are of plain text. The fast key is what opening a MIX
+// archive uses, the slow one what making it does.
+void BenchPublicKey() {
+  RandomSource rng;
+  for (int32_t value = 1; rng.Seed_Bits_Needed() > 0; ++value) {
+    rng.Seed_Long(value * 40503);
+  }
+  PKey fast;
+  PKey slow;
+  PKey::Generate(rng, 256, fast, slow);
+  pk_reference::PKey reference_fast;
+  pk_reference::PKey reference_slow;
+  CopyKey(fast, reference_fast);
+  CopyKey(slow, reference_slow);
+
+  base::Lcg lcg(6);
+  const auto plain = lcg.Bytes(fast.Plain_Block_Size() * 16);
+  std::vector<std::byte> cipher(
+      static_cast<std::size_t>(fast.Crypt_Block_Size()) * 16);
+  Report("public key, fast exponent",
+         MegabytesPerSecond(
+             plain.size(),
+             [&] { static_cast<void>(fast.Encrypt(plain, cipher)); }),
+         MegabytesPerSecond(plain.size(), [&] {
+           static_cast<void>(reference_fast.Encrypt(plain, cipher));
+         }));
+  Report("public key, slow exponent",
+         MegabytesPerSecond(
+             plain.size(),
+             [&] { static_cast<void>(slow.Encrypt(plain, cipher)); }),
+         MegabytesPerSecond(plain.size(), [&] {
+           static_cast<void>(reference_slow.Encrypt(plain, cipher));
+         }));
+}
+
 }  // namespace
 
 int main() {
@@ -252,5 +302,6 @@ int main() {
   BenchVq();
   BenchSha1();
   BenchBlowfish();
+  BenchPublicKey();
   return 0;
 }

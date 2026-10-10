@@ -85,7 +85,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "engine/crypto/mp.h"
+#include "engine/crypto/mp_reference_test_util.h"
 
 #include <algorithm>
 #include <cctype>
@@ -103,7 +103,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "engine/crypto/digit_cursor.h"
+#include "engine/crypto/digit_cursor_reference_test_util.h"
 #include "engine/stream/byte_source.h"
 
 namespace {
