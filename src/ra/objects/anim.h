@@ -64,7 +64,7 @@ namespace ra {
 *animation objects are *	displayed over the top of the game map.
 *Typically, they are used for explosion and fire *	effects.
 */
-class AnimClass final : public ObjectClass, public StageClass {
+class AnimClass final : public ObjectClass {
   /*
   **	This points to the type of animation object this is.
   */
@@ -122,6 +122,15 @@ class AnimClass final : public ObjectClass, public StageClass {
   /*
   **	File I/O.
   */
+  // The frame counter of the animation.
+  [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+  [[nodiscard]] const StageClass& animation() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -184,6 +193,9 @@ class AnimClass final : public ObjectClass, public StageClass {
   *the attached object.
   */
   Fixed Accum;
+
+  // Which frame is shown and when the next one is due.
+  StageClass animation_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   AnimClass() = default;

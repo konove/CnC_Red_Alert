@@ -282,7 +282,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
     const auto shapefile = Get_Image_Data();
     if (!shapefile.empty()) {
       std::span<const unsigned char> transtable;
-      const int shapenum = Class->Start + Fetch_Stage();
+      const int shapenum = Class->Start + animation_.Fetch_Stage();
       const std::span<const unsigned char> remap;
 
       /*
@@ -503,11 +503,11 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
     Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
-    Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
+    animation_.Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
   } else {
-    Set_Rate(Class->Delay);
+    animation_.Set_Rate(Class->Delay);
   }
-  Set_Stage(0);
+  animation_.Set_Stage(0);
 
   if (Class->IsGroundLayer) {
     Height = kFlightLevel;
@@ -683,8 +683,8 @@ void AnimClass::AI() {
     */
     Mark(MARK_CHANGE);
 
-    if (Graphic_Logic()) {
-      const int stage = Fetch_Stage();
+    if (animation_.Graphic_Logic()) {
+      const int stage = animation_.Fetch_Stage();
 
       /*
       **	If this animation is attached to another object and it is a
@@ -734,7 +734,7 @@ void AnimClass::AI() {
           Loops--;
         }
         if (Loops) {
-          Set_Stage(Class->LoopStart);
+          animation_.Set_Stage(Class->LoopStart);
         } else {
           /*
           **	The animation should end now, but first check to see if
@@ -757,11 +757,11 @@ void AnimClass::AI() {
             Loops = static_cast<unsigned char>(Class->Loops);
             Accum = Fixed(0);
             if (Class->IsNormalized) {
-              Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
+              animation_.Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
             } else {
-              Set_Rate(Class->Delay);
+              animation_.Set_Rate(Class->Delay);
             }
-            Set_Stage(Class->Start);
+            animation_.Set_Stage(Class->Start);
             Start();
           } else {
             delete this;

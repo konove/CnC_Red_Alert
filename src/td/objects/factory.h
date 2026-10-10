@@ -54,10 +54,10 @@ class ArchiveWriter;
 
 namespace td {
 
-class FactoryClass : StageClass {
+class FactoryClass {
  public:
   FactoryClass() = default;
-  ~FactoryClass() override;
+  ~FactoryClass();
   FactoryClass(const FactoryClass&) = delete;
   FactoryClass& operator=(const FactoryClass&) = delete;
   FactoryClass(FactoryClass&&) = delete;
@@ -82,7 +82,7 @@ class FactoryClass : StageClass {
   bool Completed();
   bool Has_Changed();
   bool Has_Completed();
-  [[nodiscard]] bool Is_Building() const { return Fetch_Rate() != 0; }
+  [[nodiscard]] bool Is_Building() const { return progress_.Fetch_Rate() != 0; }
   bool Set(const TechnoTypeClass& object, HouseClass& house);
   bool Set(const int& type, HouseClass& house);
   bool Start();
@@ -162,6 +162,10 @@ class FactoryClass : StageClass {
   ** for.
   */
   HousesType House = HOUSE_NONE;
+
+  // Counts the production steps done, up to kStepCount; its rate is the
+  // number of frames a step takes, 0 while production is suspended.
+  StageClass progress_;
 };
 
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);

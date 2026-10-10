@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -118,7 +119,7 @@ class SidebarClass : public PowerClass {
   **	Each side strip is managed by this class. It handles all strip specific
   **	actions.
   */
-  class StripClass : public StageClass {
+  class StripClass {
     class SelectClass : public game::ControlClass {
      public:
       SelectClass() noexcept;
@@ -141,7 +142,7 @@ class SidebarClass : public PowerClass {
 
     StripClass() = default;
     explicit StripClass(const InitClass& /*unused*/);
-    ~StripClass() override;
+    ~StripClass();
     StripClass(const StripClass&) = delete;
     StripClass& operator=(const StripClass&) = delete;
     StripClass(StripClass&&) = delete;
@@ -166,6 +167,15 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
+    // The frame counter of the flashing cameo.
+    [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+      return animation_;
+    }
+    [[nodiscard]] const StageClass& animation() const
+        ABSL_ATTRIBUTE_LIFETIME_BOUND {
+      return animation_;
+    }
+
     template <class Archive>
     void Serialize(Archive& ar);
 
@@ -338,6 +348,9 @@ class SidebarClass : public PowerClass {
     */
     static unsigned char ClockTranslucentTable[(1 + 1) * 256];
 
+   private:
+    // Which flash frame is shown and when the next one is due.
+    StageClass animation_;
   } Column[kColumns];
 
   /*

@@ -61,7 +61,7 @@ namespace ra {
 **	Each type of terrain has certain pieces of static information associated
 **	with it. This class elaborates this data.
 */
-class TerrainClass final : public ObjectClass, public StageClass {
+class TerrainClass final : public ObjectClass {
  public:
   /*
   **	This points to the constant terrain data (for this type) that gives this
@@ -160,6 +160,16 @@ class TerrainClass final : public ObjectClass, public StageClass {
   static void Read_INI(engine::file::IniFile& ini);
   static void Write_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "TERRAIN"; }
+  // The frame counter of the crumbling (and, for a blossom tree, growing)
+  // animation.
+  [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+  [[nodiscard]] const StageClass& animation() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -175,6 +185,9 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	in fact crumbling at this time?
   */
   bool IsCrumbling : 1 = false;
+
+  // Which frame is shown and when the next one is due.
+  StageClass animation_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TerrainClass() = default;

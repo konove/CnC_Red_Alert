@@ -283,7 +283,7 @@ template void SmudgeClass::Serialize(ArchiveReader&);
 template <class Archive>
 void AnimClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  StageClass::Serialize(ar);
+  animation_.Serialize(ar);
   bool is_to_delete = IsToDelete;
   bool is_brand_new = IsBrandNew;
   bool is_invisible = IsInvisible;
@@ -299,7 +299,7 @@ template void AnimClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TerrainClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  StageClass::Serialize(ar);
+  animation_.Serialize(ar);
   bool is_on_fire = IsOnFire;
   bool is_crumbling = IsCrumbling;
   ar(game::HeapSlotPtr(Class, TheTypeHeaps().terrain()), is_on_fire,
@@ -540,7 +540,7 @@ template void VesselClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {
-  StageClass::Serialize(ar);
+  progress_.Serialize(ar);
   bool is_active = IsActive;
   bool is_suspended = IsSuspended;
   bool is_different = IsDifferent;

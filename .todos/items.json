@@ -12800,12 +12800,14 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T22:23:36Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "8c93acff",
+      "resolution": "`BulletClass` holds `fuse_` behind `fuse()` in both games; the functions are `Arm()`, `Checkup()` and `ImpactPoint()` (not `Target()`, which is a type name). `Timer` is private without an accessor: nothing outside the class read it. Red Alert got `fuse_test.cc`.",
       "anchors": [
         {
           "path": "src/ra/objects/bullet.h",
@@ -12854,12 +12856,14 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T22:23:36Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
+      "fixedIn": "8c93acff",
+      "resolution": "`AircraftClass` and `BulletClass` hold `flight_` behind `flight()` in both games; `Fly_Speed()` is `Set_Speed()`. Same commit as T-375.",
       "anchors": [
         {
           "path": "src/ra/objects/aircraft.h",
@@ -12964,7 +12968,7 @@
             "  **\tThis points to the type of animation object this is.",
             "  */"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/terrain.h",
@@ -12981,7 +12985,7 @@
             "  /*",
             "  **\tThis points to the constant terrain data (for this type) that gives this"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/factory.h",
@@ -12998,7 +13002,7 @@
             "  RTTIType RTTI{RTTI_FACTORY};",
             "  int ID;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/map/sidebar.h",
@@ -13015,7 +13019,7 @@
             "     public:",
             "      SelectClass() noexcept;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/anim.h",
@@ -13032,7 +13036,7 @@
             "  void* operator new(std::size_t size) noexcept;",
             "  void* operator new(std::size_t /*unused*/,"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/terrain.h",
@@ -13049,7 +13053,7 @@
             "  const TerrainTypeClass* Class = nullptr;",
             "  // objects compare directly against their type ID."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/factory.h",
@@ -13066,7 +13070,7 @@
             "  FactoryClass() = default;",
             "  ~FactoryClass() override;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/sidebar.h",
@@ -13083,7 +13087,7 @@
             "     public:",
             "      SelectClass() noexcept;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

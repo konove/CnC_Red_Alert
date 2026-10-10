@@ -62,7 +62,7 @@ namespace td {
 *animation objects are *	displayed over the top of the game map.
 *Typically, they are used for explosion and fire *	effects.
 */
-class AnimClass final : public ObjectClass, private StageClass {
+class AnimClass final : public ObjectClass {
  public:
   void* operator new(std::size_t size) noexcept;
   void* operator new(std::size_t /*unused*/,
@@ -196,6 +196,9 @@ class AnimClass final : public ObjectClass, private StageClass {
   *the attached object.
   */
   unsigned char Accum = 0;
+
+  // Which frame is shown and when the next one is due.
+  StageClass animation_;
 };
 
 void Shorten_Attached_Anims(const ObjectClass* obj);

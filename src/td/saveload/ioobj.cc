@@ -93,7 +93,7 @@ namespace td {
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {
-  StageClass::Serialize(ar);
+  progress_.Serialize(ar);
   bool active = IsActive;
   bool suspended = IsSuspended;
   bool different = IsDifferent;
@@ -387,7 +387,7 @@ template void SmudgeClass::Serialize(ArchiveReader&);
 template <class Archive>
 void AnimClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  StageClass::Serialize(ar);
+  animation_.Serialize(ar);
   bool to_delete = IsToDelete;
   bool brand_new = IsBrandNew;
   bool alternate = IsAlternate;
@@ -410,7 +410,7 @@ template void AnimClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TerrainClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  StageClass::Serialize(ar);
+  animation_.Serialize(ar);
   bool fire = IsOnFire;
   bool crumbling = IsCrumbling;
   bool blossoming = IsBlossoming;

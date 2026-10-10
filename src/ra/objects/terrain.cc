@@ -259,7 +259,7 @@ TerrainClass::TerrainClass(TerrainType type, Cell cell)
     delete this;
   }
 
-  Set_Rate(0);  // turn off animation
+  animation_.Set_Rate(0);  // turn off animation
 }
 
 /***********************************************************************************************
@@ -343,7 +343,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
     *crumbling, then *	it will display the crumbling animation.
     */
     if (IsCrumbling) {
-      shapenum = Fetch_Stage() + IsCrumbling;
+      shapenum = animation_.Fetch_Stage() + IsCrumbling;
     } else {
       if (Strength < 2) {
         shapenum++;
@@ -520,7 +520,7 @@ void TerrainClass::AI() {
       game::CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
     TheMap().at(As_Target().AsCell()).Spread_Tiberium(true);
   }
-  if (Graphic_Logic()) {
+  if (animation_.Graphic_Logic()) {
     Mark();
 
     /*
@@ -528,7 +528,7 @@ void TerrainClass::AI() {
     **	last stage of the crumbling animation, delete the terrain object.
     */
     if (IsCrumbling &&
-        Fetch_Stage() ==
+        animation_.Fetch_Stage() ==
             engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       delete this;
 
@@ -591,8 +591,8 @@ void TerrainClass::Start_To_Crumble() {
 
   if (!IsCrumbling) {
     IsCrumbling = true;
-    Set_Rate(2);
-    Set_Stage(0);
+    animation_.Set_Rate(2);
+    animation_.Set_Stage(0);
   }
 }
 

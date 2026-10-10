@@ -293,8 +293,8 @@ void SidebarClass::ResetTransientUiState() {
     column.IsToRedraw = true;
     column.IsScrolling = column.IsScrollingDown = false;
     column.Scroller = column.Slid = column.LastSlid = 0;
-    column.Set_Stage(0);
-    column.Set_Rate(0);
+    column.animation().Set_Stage(0);
+    column.animation().Set_Rate(0);
   }
 }
 

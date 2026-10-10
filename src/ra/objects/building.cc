@@ -4880,7 +4880,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kLaunchUp: {
         const AnimClass* sput = AnimToTrack.AsAnimation();
-        if (sput && (sput->Fetch_Stage() >= 19)) {
+        if (sput && (sput->animation().Fetch_Stage() >= 19)) {
           const Cell center = Cell::Containing(Center_Coord());
           const Cell cell = Cell::FromXY(center.x(), 1);
           const Target targ = Target::FromCell(cell);

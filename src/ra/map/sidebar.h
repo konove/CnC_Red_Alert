@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <span>
 
+#include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -117,7 +118,7 @@ class SidebarClass : public PowerClass {
   **	Each side strip is managed by this class. It handles all strip specific
   **	actions.
   */
-  class StripClass : public StageClass {
+  class StripClass {
     class SelectClass : public game::ControlClass {
      public:
       SelectClass() noexcept;
@@ -156,6 +157,15 @@ class SidebarClass : public PowerClass {
     /*
     **	File I/O.
     */
+    // The frame counter of the flashing cameo.
+    [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+      return animation_;
+    }
+    [[nodiscard]] const StageClass& animation() const
+        ABSL_ATTRIBUTE_LIFETIME_BOUND {
+      return animation_;
+    }
+
     // Saves production state; scrolling animation is reset on load.
     template <class Archive>
     void Serialize(Archive& ar);
@@ -316,6 +326,9 @@ class SidebarClass : public PowerClass {
     */
     static TranslucencyTable<1> ClockTranslucentTable;
 
+   private:
+    // Which flash frame is shown and when the next one is due.
+    StageClass animation_;
   } Column[kColumns];
 
   /*

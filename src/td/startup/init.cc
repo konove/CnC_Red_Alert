@@ -1797,8 +1797,8 @@ bool Select_Game(bool fade) {
       overlay->Next = ground;
       smudge->Next = terrain;
       terrain->Next = owner;
-      terrain->Set_Stage(2);
-      terrain->Set_Rate(7);
+      terrain->animation().Set_Stage(2);
+      terrain->animation().Set_Rate(7);
       bullet->Next = ground;
       bullet->Payback = owner;
       bullet->PrimaryFacing.SnapTo(game::Direction::kSouthEast);

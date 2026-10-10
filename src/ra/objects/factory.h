@@ -53,7 +53,7 @@ class ArchiveWriter;
 
 namespace ra {
 
-class FactoryClass : private StageClass {
+class FactoryClass {
  public:
   RTTIType RTTI{RTTI_FACTORY};
   int ID;
@@ -84,7 +84,7 @@ class FactoryClass : private StageClass {
   bool Completed();
   bool Has_Changed();
   bool Has_Completed();
-  [[nodiscard]] bool Is_Building() const { return Fetch_Rate() != 0; }
+  [[nodiscard]] bool Is_Building() const { return progress_.Fetch_Rate() != 0; }
   bool Set(const TechnoTypeClass& object, HouseClass& house);
   bool Set(const int& type, HouseClass& house);
   bool Start();
@@ -160,6 +160,10 @@ class FactoryClass : private StageClass {
   ** for.
   */
   HouseClass* House = nullptr;
+
+  // Counts the production steps done, up to kStepCount; its rate is the
+  // number of frames a step takes, 0 while production is suspended.
+  StageClass progress_;
 };
 
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
