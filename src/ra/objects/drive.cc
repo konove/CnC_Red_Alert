@@ -335,7 +335,7 @@ bool DriveClass::Stop_Driver() {
 void DriveClass::Do_Turn(game::Direction dir) {
   DCHECK(IsActive);
 
-  if (dir != PrimaryFacing) {
+  if (dir != PrimaryFacing.current()) {
     PrimaryFacing.set_desired(dir);
   }
 }

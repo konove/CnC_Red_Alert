@@ -126,7 +126,7 @@ DriveClass::DriveClass() = default;
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Do_Turn(game::Direction dir) {
-  if (dir != PrimaryFacing) {
+  if (dir != PrimaryFacing.current()) {
     /*
     **	Special rotation track is needed for units that
     **	cannot rotate in place.
@@ -136,11 +136,11 @@ void DriveClass::Do_Turn(game::Direction dir) {
       // Signed difference between current and desired facing, in eighths;
       // the shift floors negative differences as the original did.
       // NOLINTNEXTLINE(bugprone-signed-bitwise)
-      int facediff = game::ShortestTurn(PrimaryFacing, dir) >> 5;
+      int facediff = game::ShortestTurn(PrimaryFacing.current(), dir) >> 5;
       facediff = std::clamp(facediff, -2, 2);
       if (facediff) {
         const game::Facing face = game::NearestFacing(
-            PrimaryFacing);  // Current facing (ordinal value).
+            PrimaryFacing.current());  // Current facing (ordinal value).
 
         IsOnShortTrack = true;
         Force_Track((static_cast<int>(face) *
@@ -1365,15 +1365,16 @@ void DriveClass::Fixup_Path(PathType* path) {
   const auto first_direction = game::DirectionOf(base::At(path->Command, 0));
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
+  const int turn = game::ShortestTurn(PrimaryFacing.current(), first_direction);
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
-  int facediff = game::ShortestTurn(PrimaryFacing, first_direction) >> 5;
+  int facediff = turn >> 5;
 
   if (!facediff) {
     return;
   }
 
   // The diagonal facings are the odd ones.
-  if (static_cast<int>(game::NearestFacing(PrimaryFacing)) % 2 != 0) {
+  if (static_cast<int>(game::NearestFacing(PrimaryFacing.current())) % 2 != 0) {
     ptr = base::Suffix(base::At(_dpath, std::abs(facediff) - 1),
                        1);  // Pointer to path adjust list.
     counter =
@@ -1391,7 +1392,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   Cell cell = Cell::Containing(
       Coord);  // Working cell value.              // Starting cell.
   game::Facing nextpath = game::NearestFacing(
-      PrimaryFacing);  // Next path value.  // Starting path.
+      PrimaryFacing.current());  // Next path value.  // Starting path.
   for (int index = 0; index < counter; index++) {
     /*
     **	Determine next path element and add it to the
@@ -1427,7 +1428,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.
     cell = Cell::Containing(Coord);        // Starting cell.
-    nextpath = game::NearestFacing(PrimaryFacing);  // Starting path.
+    nextpath = game::NearestFacing(PrimaryFacing.current());  // Starting path.
     for (int index = 0; index < counter; index++) {
       /*
       **	Determine next path element and add it to the

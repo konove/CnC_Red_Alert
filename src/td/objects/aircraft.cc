@@ -386,7 +386,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
   int shapenum = 0;
-  const int facing = game::BodyFrame32(SecondaryFacing);
+  const int facing = game::BodyFrame32(SecondaryFacing.current());
 
   /*
   **	Verify the legality of the unit class.
@@ -470,7 +470,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       */
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
-      const game::Facing face = game::NearestFacing(SecondaryFacing);
+      const game::Facing face = game::NearestFacing(SecondaryFacing.current());
       base::MovePoint(xx, yy,
                       static_cast<uint8_t>(SecondaryFacing.current().value()),
                       static_cast<int16_t>(_stretch.at(face)));
@@ -746,7 +746,7 @@ void AircraftClass::AI() {
     Mark();
   }
 
-  if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
+  if (Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
     Mark();
   }
 
@@ -2443,7 +2443,8 @@ Target AircraftClass::New_LZ(Target oldlz) const {
  *=============================================================================================*/
 Coordinate AircraftClass::Fire_Coord(int /*unused*/) const {
   Validate();
-  return Coord_Move(XYP_Coord(0, -Altitude) + Coord, SecondaryFacing, 0x040);
+  return Coord_Move(XYP_Coord(0, -Altitude) + Coord, SecondaryFacing.current(),
+                    0x040);
 }
 
 Coordinate AircraftClass::Target_Coord() const {

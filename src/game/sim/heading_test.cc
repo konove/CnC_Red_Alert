@@ -20,12 +20,10 @@ TEST(HeadingTest, StartsAtNorthAndStill) {
   EXPECT_FALSE(heading.IsRotating());
 }
 
-TEST(HeadingTest, ReadsAsItsCurrentDirection) {
+TEST(HeadingTest, KeepsItsCurrentDirectionWhileTurning) {
   Heading heading(Direction::kEast);
   heading.set_desired(Direction::kSouth);
-  const Direction direction = heading;
-  EXPECT_EQ(direction, Direction::kEast);
-  EXPECT_TRUE(heading == Direction::kEast);
+  EXPECT_EQ(heading.current(), Direction::kEast);
 
   heading.SnapTo(Direction::kWest);
   EXPECT_EQ(heading.current(), Direction::kWest);
@@ -56,7 +54,7 @@ TEST(HeadingTest, TurnsAreMeasuredTheShortWayRound) {
   EXPECT_EQ(heading.RemainingTurn(), 64);
   heading.set_desired(Direction::kWest);
   EXPECT_EQ(heading.RemainingTurn(), -64);
-  EXPECT_EQ(ShortestTurn(heading, Direction(200)), -56);
+  EXPECT_EQ(ShortestTurn(heading.current(), Direction(200)), -56);
 }
 
 TEST(HeadingTest, RotatesClockwiseByTheRate) {

@@ -264,19 +264,19 @@ game::FireErrorType TurretClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = game::ShortestTurn(SecondaryFacing, dir);
+      diff = game::ShortestTurn(SecondaryFacing.current(), dir);
     } else {
-      diff = game::ShortestTurn(PrimaryFacing, dir);
+      diff = game::ShortestTurn(PrimaryFacing.current(), dir);
     }
     diff = std::abs(diff);
 
     /*
     **	Special flame tank logic.
     */
-    if (weapon->Fires == BULLET_FLAME) {
-      if (game::NearestFacing(dir) == game::NearestFacing(PrimaryFacing)) {
-        diff = 0;
-      }
+    if (weapon->Fires == BULLET_FLAME &&
+        game::NearestFacing(dir) ==
+            game::NearestFacing(PrimaryFacing.current())) {
+      diff = 0;
     }
 
     if (BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
@@ -441,18 +441,20 @@ bool TurretClass::Unlimbo(Coordinate coord, game::Direction dir) {
 game::Direction TurretClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_MSAM) {
-      int diff1 = game::ShortestTurn(SecondaryFacing, game::Direction::kEast);
-      int diff2 = game::ShortestTurn(SecondaryFacing, game::Direction::kWest);
+      int diff1 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kEast);
+      int diff2 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kWest);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
-      const int to_north =
-          game::ShortestTurn(SecondaryFacing, game::Direction::kNorth);
+      const int to_north = game::ShortestTurn(SecondaryFacing.current(),
+                                              game::Direction::kNorth);
       const int adj = base::FixedToCardinal(std::abs(to_north), 64 - diff);
       if (to_north < 0) {
         return SecondaryFacing.current() - adj;
       }
-      return SecondaryFacing + game::Direction(adj);
+      return SecondaryFacing.current() + game::Direction(adj);
     }
     return SecondaryFacing.current();
   }

@@ -382,7 +382,7 @@ void BulletClass::AI() {
     PrimaryFacing.Turn(Class->ROT);
   }
 
-  switch (Physics(coord, PrimaryFacing)) {
+  switch (Physics(coord, PrimaryFacing.current())) {
     /*
     **	When a projectile reaches the edge of the world, it
     **	vanishes from existence -- presumed to explode off
@@ -513,7 +513,7 @@ void BulletClass::AI() {
 void BulletClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
   Validate();
-  const int facing = game::BodyFrame32(PrimaryFacing);
+  const int facing = game::BodyFrame32(PrimaryFacing.current());
 
   /*
   **	Certain projectiles aren't visible. This includes small bullets (which

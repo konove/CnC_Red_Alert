@@ -576,7 +576,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_BACKUP_NOW:
       TarComClass::Receive_Message(from, message, param);
-      if (!IsRotating && PrimaryFacing != game::Direction::kSouthWest) {
+      if (!IsRotating &&
+          PrimaryFacing.current() != game::Direction::kSouthWest) {
         Do_Turn(game::Direction::kSouthWest);
       } else {
         if (!IsDriving) {
@@ -2020,12 +2021,12 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
           *will work.
           */
           if (!Is_Door_Closed() &&
-              (PrimaryFacing == game::Direction::kNorthWest ||
-               PrimaryFacing == game::Direction::kNorthEast)) {
-            if (PrimaryFacing == game::Direction::kNorthEast) {
+              (PrimaryFacing.current() == game::Direction::kNorthWest ||
+               PrimaryFacing.current() == game::Direction::kNorthEast)) {
+            if (PrimaryFacing.current() == game::Direction::kNorthEast) {
               shapenum = 32;
             } else {
-              if (PrimaryFacing == game::Direction::kNorthWest) {
+              if (PrimaryFacing.current() == game::Direction::kNorthWest) {
                 shapenum = 35;
               }
             }
@@ -2095,7 +2096,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       ** on the facing of the vehicle.
       */
       if (*this == UNIT_MSAM || *this == UNIT_MLRS) {
-        Turret_Adjust(PrimaryFacing, x1, y1);
+        Turret_Adjust(PrimaryFacing.current(), x1, y1);
       }
       if (*this == UNIT_JEEP || *this == UNIT_BUGGY) {
         y1 -= 4;
@@ -2353,7 +2354,7 @@ int UnitClass::Mission_Unload() {
 
             if (passenger) {
               const game::Direction toface =
-                  game::Direction::kSouth + PrimaryFacing;
+                  game::Direction::kSouth + PrimaryFacing.current();
               bool placed = false;
 
               for (const game::Facing face :
@@ -2650,7 +2651,7 @@ int UnitClass::Mission_Hunt() {
   } else {
     if (*this == UNIT_GUNBOAT) {
       if (!NavCom) {
-        if (PrimaryFacing == game::Direction::kWest) {
+        if (PrimaryFacing.current() == game::Direction::kWest) {
           Assign_Destination(Target::FromCellIndex(Cell::FromXY(
               TheMap().MapCellX - 1, Cell::Containing(Coord).y())));
         } else {
@@ -2972,10 +2973,11 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const game::Facing face = game::NearestFacing(PrimaryFacing);
+          const game::Facing face =
+              game::NearestFacing(PrimaryFacing.current());
           const game::Facing techface =
-              game::NearestFacing(
-                  dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
+              game::NearestFacing(dynamic_cast<const FootClass*>(obj)
+                                      ->PrimaryFacing.current()) +
               4;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return game::MOVE_NO;
@@ -4009,8 +4011,8 @@ void UnitClass::APC_Close_Door() {
 void UnitClass::APC_Open_Door() {
   Validate();
   if (!IsDriving && !IsRotating) {
-    if (PrimaryFacing == game::Direction::kNorthWest ||
-        PrimaryFacing == game::Direction::kNorthEast) {
+    if (PrimaryFacing.current() == game::Direction::kNorthWest ||
+        PrimaryFacing.current() == game::Direction::kNorthEast) {
       Open_Door(10, 2);
     } else {
       Open_Door(1, 2);

@@ -31,8 +31,8 @@ namespace game {
 // The direction something points in, together with the direction it is
 // turning toward. Objects keep one for the body and, when they have one, one
 // for the turret; callers set the desired direction and call Turn() each game
-// frame until IsRotating() is false. It reads as its current direction, so the
-// turning stays out of the code that only draws or aims.
+// frame until IsRotating() is false. Code that only draws or aims reads
+// current().
 //
 // Example:
 //   Heading turret(Direction::kNorth);
@@ -49,11 +49,6 @@ class Heading {
   // heading somewhere at once, call SnapTo().
   constexpr explicit Heading(Direction direction)
       : current_(direction), desired_(direction) {}
-
-  // The current direction. Implicit, so a heading compares with a direction
-  // and passes where one is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  constexpr operator Direction() const { return current_; }
 
   // The direction pointed in now, and the one being turned toward. They are
   // equal when not turning.
@@ -85,7 +80,7 @@ class Heading {
 
   // The shortest turn from the current direction to the desired one: -128..127
   // direction steps, positive clockwise. For the turn to any other direction,
-  // pass the heading to game::ShortestTurn().
+  // pass current() to game::ShortestTurn().
   [[nodiscard]] int RemainingTurn() const {
     return ShortestTurn(current_, desired_);
   }

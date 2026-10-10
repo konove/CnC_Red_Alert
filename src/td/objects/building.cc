@@ -3694,7 +3694,8 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
         return game::FIRE_ROTATING;
       }
 
-      const int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
+      const int diff =
+          game::ShortestTurn(PrimaryFacing.current(), DirectionTo(TarCom));
       if (std::abs(diff) > 8) {
         return game::FIRE_FACING;
       }
@@ -4525,7 +4526,7 @@ int BuildingClass::Mission_Attack() {
       */
       case kSamLocking:
         if (!PrimaryFacing.IsRotating()) {
-          if (PrimaryFacing == game::Direction::kNorth) {
+          if (PrimaryFacing.current() == game::Direction::kNorth) {
             Set_Rate(2);
             Set_Stage(48);
             Status = kSamLowering;

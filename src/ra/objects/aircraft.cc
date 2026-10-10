@@ -432,12 +432,13 @@ int AircraftClass::Shape_Number() const {
 
   switch (Class->Rotation) {
     case 32:
-      shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
+      shapenum =
+          base::At(BodyShape, game::BodyFrame32(SecondaryFacing.current()));
       break;
 
     case 16:
-      shapenum = base::At(BodyShape, static_cast<base::ssize>(
-                                         game::BodyFrame16(SecondaryFacing)) *
+      shapenum = base::At(BodyShape, static_cast<base::ssize>(game::BodyFrame16(
+                                         SecondaryFacing.current())) *
                                          2) /
                  2;
       break;
@@ -580,7 +581,7 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
     */
     auto xx = static_cast<int16_t>(x);
     auto yy = static_cast<int16_t>(y - Lepton_To_Pixel(Height));
-    const game::Facing face = game::NearestFacing(SecondaryFacing);
+    const game::Facing face = game::NearestFacing(SecondaryFacing.current());
     base::MovePoint(xx, yy,
                     static_cast<uint8_t>(SecondaryFacing.current().value()),
                     static_cast<int16_t>(_stretch.at(face)));
@@ -817,7 +818,7 @@ int AircraftClass::Mission_Hunt() {
         switch (Can_Fire(TarCom, 0)) {
           case game::FIRE_OK:
             targ = Target::FromCoordinate(
-                Coord_Move(Center_Coord(), SecondaryFacing,
+                Coord_Move(Center_Coord(), SecondaryFacing.current(),
                            static_cast<uint16_t>(Weapon_Range(0) - 0x0200)));
             if (Class->PrimaryWeapon != nullptr) {
               if (Class->PrimaryWeapon->IsCamera) {
@@ -4095,7 +4096,8 @@ game::FireErrorType AircraftClass::Can_Fire(Target target, int which) const {
   **	temporarily postponed.
   */
   if ((canfire == game::FIRE_OK) && Class->IsFixedWing) {
-    const int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
+    const int diff =
+        game::ShortestTurn(PrimaryFacing.current(), DirectionTo(TarCom));
     if (std::abs(diff) > (fudge ? 16 : 8)) {
       return game::FIRE_FACING;
     }
@@ -4327,11 +4329,11 @@ void AircraftClass::Movement_AI() {
   if (Speed != 0) {
     if (In_Which_Layer() == LAYER_GROUND) {
       Mark(MARK_UP);
-      Physics(Coord, PrimaryFacing);
+      Physics(Coord, PrimaryFacing.current());
       Mark(MARK_DOWN);
     } else {
       Mark(MARK_CHANGE_REDRAW);
-      if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
+      if (Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
         Mark(MARK_CHANGE_REDRAW);
       }
     }

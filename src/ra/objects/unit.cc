@@ -735,7 +735,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_BACKUP_NOW:
       DriveClass::Receive_Message(from, message, param);
-      if (!IsRotating && PrimaryFacing != game::Direction::kWest) {
+      if (!IsRotating && PrimaryFacing.current() != game::Direction::kWest) {
         Do_Turn(game::Direction::kWest);
       } else {
         if (!IsDriving) {
@@ -1958,7 +1958,7 @@ int UnitClass::Shape_Number() const {
   DCHECK(IsActive);
 
   int shapenum = 0;  // Working shape number.
-  const int facing = game::BodyFrame32(PrimaryFacing);
+  const int facing = game::BodyFrame32(PrimaryFacing.current());
 
   /*
   **	This handles the ant case.
@@ -2030,12 +2030,12 @@ int UnitClass::Shape_Number() const {
         *will work.
         */
         if (!Is_Door_Closed() &&
-            (PrimaryFacing == game::Direction::kNorthWest ||
-             PrimaryFacing == game::Direction::kNorthEast)) {
-          if (PrimaryFacing == game::Direction::kNorthEast) {
+            (PrimaryFacing.current() == game::Direction::kNorthWest ||
+             PrimaryFacing.current() == game::Direction::kNorthEast)) {
+          if (PrimaryFacing.current() == game::Direction::kNorthEast) {
             shapenum = 32;
           } else {
-            if (PrimaryFacing == game::Direction::kNorthWest) {
+            if (PrimaryFacing.current() == game::Direction::kNorthWest) {
               shapenum = 35;
             }
           }
@@ -2084,7 +2084,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  const int tfacing = game::BodyFrame32(SecondaryFacing);
+  const int tfacing = game::BodyFrame32(SecondaryFacing.current());
   const game::Direction rotation = game::Direction::kNorth;
   const int scale = 0x0100;
 
@@ -2125,7 +2125,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
         int x2 = x;
         int y2 = y;
         shapenum = static_cast<int>(32 + (game::CurrentFrame() % 8));
-        Class->Turret_Adjust(PrimaryFacing, x2, y2);
+        Class->Turret_Adjust(PrimaryFacing.current(), x2, y2);
         Techno_Draw_Object(view, shapefile, shapenum, x2, y2, window);
       } else {
         shapenum = static_cast<int>(32 + (game::CurrentFrame() % 32));
@@ -2157,10 +2157,10 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       **	A recoiling turret moves "backward" one pixel.
       */
       if (IsInRecoilState) {
-        Recoil_Adjust(SecondaryFacing, xx, yy);
+        Recoil_Adjust(SecondaryFacing.current(), xx, yy);
       }
 
-      Class->Turret_Adjust(PrimaryFacing, xx, yy);
+      Class->Turret_Adjust(PrimaryFacing.current(), xx, yy);
 
       /*
       **	Actually perform the draw. Overlay an optional shimmer effect as
@@ -2439,7 +2439,7 @@ int UnitClass::Mission_Unload() {
 
   switch (Class->Type) {
     case UNIT_HARVESTER:
-      if (PrimaryFacing != game::Direction::kWest) {
+      if (PrimaryFacing.current() != game::Direction::kWest) {
         if (!IsRotating) {
           Do_Turn(game::Direction::kWest);
         }
@@ -2493,7 +2493,7 @@ int UnitClass::Mission_Unload() {
 
             if (passenger != nullptr) {
               const game::Direction toface =
-                  game::Direction::kSouth + PrimaryFacing;
+                  game::Direction::kSouth + PrimaryFacing.current();
               bool placed = false;
 
               for (const game::Facing face :
@@ -2579,7 +2579,7 @@ int UnitClass::Mission_Unload() {
 
             if (passenger != nullptr) {
               const game::Direction toface =
-                  game::Direction::kSouth + PrimaryFacing;
+                  game::Direction::kSouth + PrimaryFacing.current();
               bool placed = false;
 
               for (const game::Facing face :
@@ -2764,7 +2764,7 @@ int UnitClass::Mission_Unload() {
 
         if (crew != nullptr) {
           const game::Direction toface =
-              game::Direction::kSouth + PrimaryFacing;
+              game::Direction::kSouth + PrimaryFacing.current();
 
           for (const game::Facing face :
                magic_enum::enum_values<game::Facing>()) {
@@ -3279,12 +3279,13 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const int face = static_cast<int>(game::NearestFacing(PrimaryFacing));
-          const int techface =
-              (static_cast<int>(game::NearestFacing(
-                   dynamic_cast<const FootClass*>(obj)->PrimaryFacing)) +
-               4) %
-              8;
+          const int face =
+              static_cast<int>(game::NearestFacing(PrimaryFacing.current()));
+          const int techface = (static_cast<int>(game::NearestFacing(
+                                    dynamic_cast<const FootClass*>(obj)
+                                        ->PrimaryFacing.current())) +
+                                4) %
+                               8;
           if (face == techface && Distance(obj) <= 0x1FF) {
             return game::MOVE_NO;
           }
@@ -4057,8 +4058,8 @@ void UnitClass::APC_Open_Door() {
   DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
-    if (PrimaryFacing == game::Direction::kNorthWest ||
-        PrimaryFacing == game::Direction::kNorthEast) {
+    if (PrimaryFacing.current() == game::Direction::kNorthWest ||
+        PrimaryFacing.current() == game::Direction::kNorthEast) {
       Open_Door(10, 2);
     } else {
       Open_Door(1, 2);
@@ -4171,18 +4172,20 @@ game::Direction UnitClass::Fire_Direction() const {
 
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_V2_LAUNCHER) {
-      int diff1 = game::ShortestTurn(SecondaryFacing, game::Direction::kEast);
-      int diff2 = game::ShortestTurn(SecondaryFacing, game::Direction::kWest);
+      int diff1 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kEast);
+      int diff2 =
+          game::ShortestTurn(SecondaryFacing.current(), game::Direction::kWest);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
-      const int to_north =
-          game::ShortestTurn(SecondaryFacing, game::Direction::kNorth);
+      const int to_north = game::ShortestTurn(SecondaryFacing.current(),
+                                              game::Direction::kNorth);
       const int adj = base::FixedToCardinal(std::abs(to_north), 64 - diff);
       if (to_north < 0) {
-        return SecondaryFacing - game::Direction(adj);
+        return SecondaryFacing.current() - game::Direction(adj);
       }
-      return SecondaryFacing + game::Direction(adj);
+      return SecondaryFacing.current() + game::Direction(adj);
     }
     return SecondaryFacing.current();
   }
@@ -4276,9 +4279,9 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = game::ShortestTurn(SecondaryFacing, dir);
+      diff = game::ShortestTurn(SecondaryFacing.current(), dir);
     } else {
-      diff = game::ShortestTurn(PrimaryFacing, dir);
+      diff = game::ShortestTurn(PrimaryFacing.current(), dir);
     }
     diff = std::abs(diff);
 

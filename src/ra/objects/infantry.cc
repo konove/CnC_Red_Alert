@@ -775,7 +775,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
 
         Stop_Driver();
-        Scatter(AdjacentCell(Coord, PrimaryFacing), true, true);
+        Scatter(AdjacentCell(Coord, PrimaryFacing.current()), true, true);
         Assign_Mission(MISSION_MOVE);
 
         if (!NavCom || TheMap().at(NavCom.AsCell()).Land_Type() == LAND_WATER) {

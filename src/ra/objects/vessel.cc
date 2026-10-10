@@ -387,10 +387,10 @@ int VesselClass::Shape_Number() const {
   /*
   **	For eight facing units, adjust the facing number accordingly.
   */
-  int shapenum =
-      base::At(BodyShape,
-               static_cast<base::ssize>(game::BodyFrame16(PrimaryFacing)) * 2) /
-      2;
+  int shapenum = base::At(BodyShape, static_cast<base::ssize>(game::BodyFrame16(
+                                         PrimaryFacing.current())) *
+                                         2) /
+                 2;
 
   /*
   **	Special case code for transport. The north/south facing is in frame
@@ -470,30 +470,35 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
       **	is any firing animation in progress.
       */
       int shapenum = 0;
-      auto turdir = game::Direction(game::BodyFrame16(PrimaryFacing) * 16);
+      auto turdir =
+          game::Direction(game::BodyFrame16(PrimaryFacing.current()) * 16);
 
       switch (Class->Type) {
         case VESSEL_CA:
           shapefile = TechnoTypeClass::TurretShapes;
-          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
+          shapenum =
+              base::At(BodyShape, game::BodyFrame32(SecondaryFacing.current()));
           Class->Turret_Adjust(turdir, xx, yy);
           Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
           xx = x;
           yy = y;
-          turdir = game::Direction(
-              game::BodyFrame16(PrimaryFacing + game::Direction::kSouth) * 16);
+          turdir = game::Direction(game::BodyFrame16(PrimaryFacing.current() +
+                                                     game::Direction::kSouth) *
+                                   16);
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_DD:
           shapefile = TechnoTypeClass::SamShapes;
-          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
+          shapenum =
+              base::At(BodyShape, game::BodyFrame32(SecondaryFacing.current()));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
         case VESSEL_PT:
           shapefile = TechnoTypeClass::MGunShapes;
-          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
+          shapenum =
+              base::At(BodyShape, game::BodyFrame32(SecondaryFacing.current()));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
 
@@ -503,7 +508,8 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
         case VesselType::VESSEL_MISSILESUB:
         case VesselType::VESSEL_CARRIER:
         default:
-          shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));
+          shapenum =
+              base::At(BodyShape, game::BodyFrame32(SecondaryFacing.current()));
           Class->Turret_Adjust(turdir, xx, yy);
           break;
       }
@@ -1113,9 +1119,9 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
     **	Determine if the turret facing isn't too far off of facing the target.
     */
     if (Class->IsTurretEquipped) {
-      diff = game::ShortestTurn(SecondaryFacing, dir);
+      diff = game::ShortestTurn(SecondaryFacing.current(), dir);
     } else {
-      diff = game::ShortestTurn(PrimaryFacing, dir);
+      diff = game::ShortestTurn(PrimaryFacing.current(), dir);
     }
     diff = std::abs(diff);
 
@@ -1154,15 +1160,15 @@ Coordinate VesselClass::Fire_Coord(int which) const {
 
   if (*this == VESSEL_CA) {
     if (IsSecondShot) {
-      coord =
-          Coord_Move(coord, PrimaryFacing + game::Direction::kSouth, 0x0100);
+      coord = Coord_Move(
+          coord, PrimaryFacing.current() + game::Direction::kSouth, 0x0100);
     } else {
-      coord = Coord_Move(coord, PrimaryFacing, 0x0100);
+      coord = Coord_Move(coord, PrimaryFacing.current(), 0x0100);
     }
     coord = Coord_Move(coord, game::Direction::kNorth, 0x0030);
     coord = Coord_Move(coord, Turret_Facing(), 0x0040);
   } else if (*this == VESSEL_PT) {
-    coord = Coord_Move(coord, PrimaryFacing, 0x0080);
+    coord = Coord_Move(coord, PrimaryFacing.current(), 0x0080);
     coord = Coord_Move(coord, game::Direction::kNorth, 0x0020);
     coord = Coord_Move(coord, Turret_Facing(), 0x0010);
   } else {
@@ -1754,7 +1760,7 @@ int VesselClass::Mission_Unload() {
 
           if (passenger != nullptr) {
             const game::Direction toface =
-                game::Direction::kSouth + PrimaryFacing;
+                game::Direction::kSouth + PrimaryFacing.current();
             bool placed = false;
 
             for (const game::Facing face :

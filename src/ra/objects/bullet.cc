@@ -195,7 +195,7 @@ BulletClass::~BulletClass() {
             newcoord = AdjacentCell(Coord, static_cast<game::Facing>(i));
           }
           TheWorld().scenario_init()++;
-          if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {
+          if (dog->Unlimbo(newcoord, dog->PrimaryFacing.current())) {
             dog->Mark(MARK_DOWN);
             dog->Do_Action(DO_DOG_MAUL, true);
             if (dog->WasSelected) {
@@ -438,7 +438,7 @@ void BulletClass::AI() {
   if (PrimaryFacing.IsRotating()) {
     PrimaryFacing.Turn(Class->ROT);
   }
-  switch (Physics(coord, PrimaryFacing)) {
+  switch (Physics(coord, PrimaryFacing.current())) {
     /*
     **	When a projectile reaches the edge of the world, it
     **	vanishes from existence -- presumed to explode off
@@ -530,7 +530,8 @@ int BulletClass::Shape_Number() const {
   int shapenum = 0;
 
   if (!Class->IsFaceless) {
-    shapenum = base::At(UnitClass::BodyShape, game::BodyFrame32(PrimaryFacing));
+    shapenum = base::At(UnitClass::BodyShape,
+                        game::BodyFrame32(PrimaryFacing.current()));
   }
 
   /*

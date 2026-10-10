@@ -3608,7 +3608,8 @@ game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
     **	temporarily postponed.
     */
     if (Class->IsTurretEquipped) {
-      const int diff = game::ShortestTurn(PrimaryFacing, DirectionTo(TarCom));
+      const int diff =
+          game::ShortestTurn(PrimaryFacing.current(), DirectionTo(TarCom));
       if (std::abs(diff) > (*this == STRUCT_SAM ? 64 : 8)) {
         return game::FIRE_FACING;
       }
