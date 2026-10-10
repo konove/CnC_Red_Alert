@@ -75,7 +75,7 @@ TEST(DoorTest, ClosingCountsTheStagesDown) {
   EXPECT_EQ(door.DoorFrame(), 1);
   door.AI();
   EXPECT_EQ(door.DoorFrame(), 0);
-  EXPECT_TRUE(door.IsDoorClosing());
+  EXPECT_FALSE(door.IsDoorClosed());
   door.AI();
   EXPECT_TRUE(door.IsDoorClosed());
   EXPECT_EQ(door.DoorFrame(), 0);

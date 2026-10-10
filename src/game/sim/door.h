@@ -90,7 +90,6 @@ class Door {
   }
 
   [[nodiscard]] bool IsDoorOpening() const { return state_ == kIsOpening; }
-  [[nodiscard]] bool IsDoorClosing() const { return state_ == kIsClosing; }
 
   // Starts opening a closed or closing door, advancing one stage every
   // `frames_per_stage` game frames; it is open `frames_per_stage` *
