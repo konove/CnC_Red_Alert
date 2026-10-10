@@ -64,6 +64,7 @@
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -1164,8 +1165,9 @@ int MapEditClass::Load_Scenario() {
           **	Draw the map border
           */
           if (view.Lock()) {
-            view.DrawRect(kDBordX1, kDBordY1, kDBordX2, kDBordY2,
-                          scheme->Shadow);
+            view.DrawRect(
+                Rect::FromCorners(kDBordX1, kDBordY1, kDBordX2, kDBordY2),
+                scheme->Shadow);
 
             /*
             **	Draw the map "key"
@@ -1264,7 +1266,8 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Erase the map interior
           */
-          view.FillRect(kDBordX1 + 1, kDBordY1 + 1, kDBordX2 - 1, kDBordY2 - 1,
+          view.FillRect(Rect::FromCorners(kDBordX1 + 1, kDBordY1 + 1,
+                                          kDBordX2 - 1, kDBordY2 - 1),
                         game::kBlack);
 
           /*
@@ -1283,7 +1286,8 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw the actual map location
           */
-          view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kWhite);
+          view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                        game::kWhite);
           switch (grabbed) {
             case 1:
               view.DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, game::kBlue);
@@ -1306,7 +1310,8 @@ int MapEditClass::Load_Scenario() {
               break;
 
             case 5:
-              view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kBlue);
+              view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                            game::kBlue);
               break;
 
             default:

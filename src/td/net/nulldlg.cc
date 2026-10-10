@@ -79,6 +79,7 @@
 #include "engine/crypto/crc.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "engine/platform/random_seed.h"
@@ -3571,9 +3572,10 @@ int Com_Scenario_Dialog() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           view.FillRect(
-              base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
-              base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
-              d_color_y + (1 * factor) + d_color_h - (2 * factor),
+              Rect::FromCorners(
+                  base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
+                  base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
+                  d_color_y + (1 * factor) + d_color_h - (2 * factor)),
               static_cast<unsigned char>(
                   base::At(TheSession().graphic_colors(), i)));
 
@@ -3596,9 +3598,10 @@ int Com_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(d_dialog_x + (2 * factor), d_opponent_y,
-                      d_dialog_x + d_dialog_w - (4 * factor),
-                      d_opponent_y + d_txt6_h, game::kBlack);
+        view.FillRect(Rect::FromCorners(d_dialog_x + (2 * factor), d_opponent_y,
+                                        d_dialog_x + d_dialog_w - (4 * factor),
+                                        d_opponent_y + d_txt6_h),
+                      game::kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {
@@ -4861,9 +4864,10 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           view.FillRect(
-              base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
-              base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
-              d_color_y + (1 * factor) + d_color_h - (2 * factor),
+              Rect::FromCorners(
+                  base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
+                  base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
+                  d_color_y + (1 * factor) + d_color_h - (2 * factor)),
               static_cast<unsigned char>(
                   base::At(TheSession().graphic_colors(), i)));
 
@@ -4886,9 +4890,10 @@ int Com_Show_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(d_dialog_x + (2 * factor), d_opponent_y,
-                      d_dialog_x + d_dialog_w - (4 * factor),
-                      d_ghosts_y + d_txt6_h, game::kBlack);
+        view.FillRect(Rect::FromCorners(d_dialog_x + (2 * factor), d_opponent_y,
+                                        d_dialog_x + d_dialog_w - (4 * factor),
+                                        d_ghosts_y + d_txt6_h),
+                      game::kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {

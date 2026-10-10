@@ -60,6 +60,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/window/display.h"
@@ -686,32 +687,42 @@ void Map_Selection() {
 
       case 16:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(score_font,
-                                 Text_String(TXT_READING_IMAGE_DATA)),
-            2 * (10 + 12), game::kBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_READING_IMAGE_DATA)),
+                2 * (10 + 12)),
+            game::kBlack);
         break;
 
       case 17:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(score_font,
-                                 Text_String(TXT_READING_IMAGE_DATA)),
-            2 * (10 + 12), game::kTransparentBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_READING_IMAGE_DATA)),
+                2 * (10 + 12)),
+            game::kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, "ANALYZING", 0, 10, _othergreenpal));
         break;
 
       case 33:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
-            2 * (10 + 12), game::kBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
+                2 * (10 + 12)),
+            game::kBlack);
         break;
 
       case 34:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
-            2 * (10 + 12), game::kTransparentBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
+                2 * (10 + 12)),
+            game::kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10,
             _othergreenpal));
@@ -719,18 +730,22 @@ void Map_Selection() {
 
       case 44:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(score_font,
-                                 Text_String(TXT_ENHANCING_IMAGE_DATA)),
-            2 * (10 + 12), game::kBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_ENHANCING_IMAGE_DATA)),
+                2 * (10 + 12)),
+            game::kBlack);
         break;
 
       case 45:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(score_font,
-                                 Text_String(TXT_ENHANCING_IMAGE_DATA)),
-            2 * (10 + 12), game::kTransparentBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_ENHANCING_IMAGE_DATA)),
+                2 * (10 + 12)),
+            game::kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
             _othergreenpal));
@@ -738,18 +753,24 @@ void Map_Selection() {
 
       case 70:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(
-                    score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
-            2 * (10 + 12), game::kBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(
+                        score_font,
+                        Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
+                2 * (10 + 12)),
+            game::kBlack);
         break;
 
       case 71:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * StringPixelWidth(
-                    score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
-            2 * (10 + 12), game::kTransparentBlack);
+            Rect::FromCorners(
+                0, 20,
+                2 * StringPixelWidth(
+                        score_font,
+                        Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
+                2 * (10 + 12)),
+            game::kTransparentBlack);
         Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
             _othergreenpal));
@@ -769,16 +790,22 @@ void Map_Selection() {
   }
 
   show.text_page().view().FillRect(
-      0, 20,
-      2 * StringPixelWidth(
-              score_font, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-      2 * (10 + 24), game::kBlack);
+      Rect::FromCorners(
+          0, 20,
+          2 * StringPixelWidth(
+                  score_font,
+                  Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+          2 * (10 + 24)),
+      game::kBlack);
   Call_Back_Delay(show, 1);
   show.text_page().view().FillRect(
-      0, 20,
-      2 * StringPixelWidth(
-              score_font, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-      2 * (10 + 24), game::kTransparentBlack);
+      Rect::FromCorners(
+          0, 20,
+          2 * StringPixelWidth(
+                  score_font,
+                  Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+          2 * (10 + 24)),
+      game::kTransparentBlack);
   Call_Back_Delay(show, 1);
 
   anim.Close();
@@ -817,8 +844,8 @@ void Map_Selection() {
   ** Now dissolve in first advance of territories
   */
   const int xcoord = house == HOUSE_GOOD ? 0 : 204;
-  TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
-                                           20 * 6, 8);
+  TheScreen().sys_mem_page().view().BlitTo(backpage.view(),
+                                           Rect{xcoord, 1, 20 * 6, 8}, 0, 0);
   engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
     Alloc_Object(
@@ -835,27 +862,31 @@ void Map_Selection() {
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 1);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
             true);
-  backpage.view().BlitTo(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 1,
-                         20 * 6, 8);
+  backpage.view().BlitTo(TheScreen().sys_mem_page().view(),
+                         Rect{0, 0, 20 * 6, 8}, xcoord, 1);
   Call_Back_Delay(show, 85);
 
   /*
   ** Now dissolve in second advance of territories
   */
 #ifdef FRENCH
-  show.page().view().FillRect(xcoord, 0, xcoord + 6 * 16 + 10, 8, game::kBlack);
-  show.text_page().view().FillRect(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10),
-                                   16, game::kBlack);
+  show.page().view().FillRect(
+      Rect::FromCorners(xcoord, 0, xcoord + 6 * 16 + 10, 8), game::kBlack);
+  show.text_page().view().FillRect(
+      Rect::FromCorners(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10), 16),
+      game::kBlack);
 #else
-  show.page().view().FillRect(xcoord, 0, xcoord + (6 * 16), 8, game::kBlack);
-  show.text_page().view().FillRect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16,
-                                   game::kBlack);
+  show.page().view().FillRect(
+      Rect::FromCorners(xcoord, 0, xcoord + (6 * 16), 8), game::kBlack);
+  show.text_page().view().FillRect(
+      Rect::FromCorners(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16),
+      game::kBlack);
 #endif
 
   show.ShowPage();
 
-  TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
-                                           20 * 6, 8);
+  TheScreen().sys_mem_page().view().BlitTo(backpage.view(),
+                                           Rect{xcoord, 1, 20 * 6, 8}, 0, 0);
   if (!lastscenario) {
     engine::audio::TheAudio().Play(text2, 255,
                                    TheOptions().Normalize_Sound(90));
@@ -874,20 +905,23 @@ void Map_Selection() {
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 2);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
             true);
-  backpage.view().BlitTo(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 11,
-                         20 * 6, 8);
+  backpage.view().BlitTo(TheScreen().sys_mem_page().view(),
+                         Rect{0, 0, 20 * 6, 8}, xcoord, 11);
   if (!lastscenario) {
     Call_Back_Delay(show, 85);
   }
 #ifdef FRENCH
-  show.page().view().FillRect(xcoord, 12, xcoord + 6 * 16 + 10, 20,
-                              game::kBlack);
-  show.text_page().view().FillRect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10),
-                                   40, game::kBlack);
+  show.page().view().FillRect(
+      Rect::FromCorners(xcoord, 12, xcoord + 6 * 16 + 10, 20), game::kBlack);
+  show.text_page().view().FillRect(
+      Rect::FromCorners(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10), 40),
+      game::kBlack);
 #else
-  show.page().view().FillRect(xcoord, 12, xcoord + (6 * 16), 20, game::kBlack);
-  show.text_page().view().FillRect(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40,
-                                   game::kBlack);
+  show.page().view().FillRect(
+      Rect::FromCorners(xcoord, 12, xcoord + (6 * 16), 20), game::kBlack);
+  show.text_page().view().FillRect(
+      Rect::FromCorners(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40),
+      game::kBlack);
 #endif
 
   show.ShowPage();
@@ -916,22 +950,26 @@ void Map_Selection() {
   */
   if (lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186,
+    TheScreen().sys_mem_page().FillRect(Rect::FromCorners(0, 160, 20 * 6, 186),
                                         game::kTransparentBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 186, game::kTransparentBlack);
-    show.text_page().view().FillRect(0, 320, 40 * 6, 372, game::kBlack);
-    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 372,
+    show.page().view().FillRect(Rect::FromCorners(0, 160, 20 * 6, 186),
+                                game::kTransparentBlack);
+    show.text_page().view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 372),
+                                     game::kBlack);
+    TheScreen().visible_view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 372),
                                         game::kTransparentBlack);
-    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 372,
+    TheScreen().hidden_view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 372),
                                        game::kTransparentBlack);
 #else
-    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176,
-                                               game::kTransparentBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 176, game::kTransparentBlack);
-    show.text_page().view().FillRect(0, 320, 40 * 6, 352, game::kBlack);
-    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 352,
+    TheScreen().sys_mem_page().view().FillRect(
+        Rect::FromCorners(0, 160, 20 * 6, 176), game::kTransparentBlack);
+    show.page().view().FillRect(Rect::FromCorners(0, 160, 20 * 6, 176),
+                                game::kTransparentBlack);
+    show.text_page().view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 352),
+                                     game::kBlack);
+    TheScreen().visible_view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 352),
                                         game::kTransparentBlack);
-    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 352,
+    TheScreen().hidden_view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 352),
                                        game::kTransparentBlack);
 #endif
     show.ClearTextRects();
@@ -984,23 +1022,31 @@ void Map_Selection() {
         case 35:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20,
-                2 * StringPixelWidth(score_font,
-                                     Text_String(TXT_ENHANCING_IMAGE)),
-                2 * (10 + 12), game::kBlack);
+                Rect::FromCorners(
+                    0, 20,
+                    2 * StringPixelWidth(score_font,
+                                         Text_String(TXT_ENHANCING_IMAGE)),
+                    2 * (10 + 12)),
+                game::kBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
-                360, 20,
-                2 * (180 + StringPixelWidth(score_font,
-                                            Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), game::kBlack);
+                Rect::FromCorners(
+                    360, 20,
+                    2 * (180 +
+                         StringPixelWidth(score_font,
+                                          Text_String(TXT_ENHANCING_IMAGE))),
+                    2 * (10 + 12)),
+                game::kBlack);
 #else
             show.text_page().view().FillRect(
-                420, 20,
-                2 * (210 + StringPixelWidth(score_font,
-                                            Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), game::kBlack);
+                Rect::FromCorners(
+                    420, 20,
+                    2 * (210 +
+                         StringPixelWidth(score_font,
+                                          Text_String(TXT_ENHANCING_IMAGE))),
+                    2 * (10 + 12)),
+                game::kBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1008,23 +1054,31 @@ void Map_Selection() {
         case 36:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20,
-                2 * StringPixelWidth(score_font,
-                                     Text_String(TXT_ENHANCING_IMAGE)),
-                2 * (10 + 12), game::kTransparentBlack);
+                Rect::FromCorners(
+                    0, 20,
+                    2 * StringPixelWidth(score_font,
+                                         Text_String(TXT_ENHANCING_IMAGE)),
+                    2 * (10 + 12)),
+                game::kTransparentBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
-                360, 20,
-                2 * (180 + StringPixelWidth(score_font,
-                                            Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), game::kTransparentBlack);
+                Rect::FromCorners(
+                    360, 20,
+                    2 * (180 +
+                         StringPixelWidth(score_font,
+                                          Text_String(TXT_ENHANCING_IMAGE))),
+                    2 * (10 + 12)),
+                game::kTransparentBlack);
 #else
             show.text_page().view().FillRect(
-                420, 20,
-                2 * (210 + StringPixelWidth(score_font,
-                                            Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), game::kTransparentBlack);
+                Rect::FromCorners(
+                    420, 20,
+                    2 * (210 +
+                         StringPixelWidth(score_font,
+                                          Text_String(TXT_ENHANCING_IMAGE))),
+                    2 * (10 + 12)),
+                game::kTransparentBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1048,15 +1102,19 @@ void Map_Selection() {
   engine::audio::TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186,
+    TheScreen().sys_mem_page().FillRect(Rect::FromCorners(0, 160, 20 * 6, 186),
                                         game::kTransparentBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 186, game::kTransparentBlack);
-    show.text_page().view().FillRect(0, 320, 40 * 6, 372, game::kBlack);
+    show.page().view().FillRect(Rect::FromCorners(0, 160, 20 * 6, 186),
+                                game::kTransparentBlack);
+    show.text_page().view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 372),
+                                     game::kBlack);
 #else
-    TheScreen().sys_mem_page().view().FillRect(0, 160, 20 * 6, 176,
-                                               game::kTransparentBlack);
-    show.page().view().FillRect(0, 160, 20 * 6, 176, game::kTransparentBlack);
-    show.text_page().view().FillRect(0, 320, 40 * 6, 352, game::kBlack);
+    TheScreen().sys_mem_page().view().FillRect(
+        Rect::FromCorners(0, 160, 20 * 6, 176), game::kTransparentBlack);
+    show.page().view().FillRect(Rect::FromCorners(0, 160, 20 * 6, 176),
+                                game::kTransparentBlack);
+    show.text_page().view().FillRect(Rect::FromCorners(0, 320, 40 * 6, 352),
+                                     game::kBlack);
 #endif
   }
 
@@ -1151,17 +1209,21 @@ void Map_Selection() {
 
     game::TheMouse().Hide();
     // erase "Select country to attack"
-    show.page().view().FillRect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
-                                game::kBlack);
-    show.text_page().view().FillRect(2 * attackxcoord, 320,
-                                     2 * (attackxcoord + (17 * 6)), 2 * 178,
-                                     game::kBlack);
+    show.page().view().FillRect(
+        Rect::FromCorners(attackxcoord, 160, attackxcoord + (17 * 6), 178),
+        game::kBlack);
+    show.text_page().view().FillRect(
+        Rect::FromCorners(2 * attackxcoord, 320, 2 * (attackxcoord + (17 * 6)),
+                          2 * 178),
+        game::kBlack);
 #if (defined(GERMAN) || defined(FRENCH))
-    show.page().view().FillRect(attackxcoord + (17 * 6), 160,
-                                attackxcoord + (21 * 6), 178, game::kBlack);
-    show.text_page().view().FillRect(2 * attackxcoord + (17 * 6 * 2), 320,
-                                     2 * (attackxcoord + (21 * 6)), 2 * 178,
-                                     game::kBlack);
+    show.page().view().FillRect(Rect::FromCorners(attackxcoord + (17 * 6), 160,
+                                                  attackxcoord + (21 * 6), 178),
+                                game::kBlack);
+    show.text_page().view().FillRect(
+        Rect::FromCorners(2 * attackxcoord + (17 * 6 * 2), 320,
+                          2 * (attackxcoord + (21 * 6)), 2 * 178),
+        game::kBlack);
 #endif  // GERMAN
 
     show.ShowPage();
@@ -1217,17 +1279,18 @@ void Map_Selection() {
     game::TheMouse().Hide();
 #if (defined(GERMAN) || defined(FRENCH))
     show.page().view().FillRect(
-        attackxcoord, 160, 319, 178,
+        Rect::FromCorners(attackxcoord, 160, 319, 178),
         game::kBlack);  // erase "Select country to attack"
     show.text_page().view().FillRect(
-        2 * attackxcoord, 320, 639, 356,
+        Rect::FromCorners(2 * attackxcoord, 320, 639, 356),
         game::kBlack);  // erase "Select country to attack"
 #else
     show.page().view().FillRect(
-        attackxcoord, 160, attackxcoord + (17 * 6), 199,
+        Rect::FromCorners(attackxcoord, 160, attackxcoord + (17 * 6), 199),
         game::kBlack);  // erase "Select country to attack"
     show.text_page().view().FillRect(
-        2 * attackxcoord, 320, 2 * (attackxcoord + (17 * 6)), 398,
+        Rect::FromCorners(2 * attackxcoord, 320, 2 * (attackxcoord + (17 * 6)),
+                          398),
         game::kBlack);  // erase "Select country to attack"
 #endif
     show.ShowPage();
@@ -1589,8 +1652,8 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
       if (tempy >= h) {
         tempy = 0;
       }
-      src->BlitTo(*dest, (srcx + x) << 3, srcy + (y << 1), (destx + x) << 3,
-                  desty + (y << 1), 1 << 3, 2);
+      src->BlitTo(*dest, Rect{(srcx + x) << 3, srcy + (y << 1), 1 << 3, 2},
+                  (destx + x) << 3, desty + (y << 1));
     }
   }
 }

@@ -42,6 +42,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "game/ui/control.h"
 #include "game/ui/standard_colors.h"
 #include "game/ui/toggle.h"
@@ -115,7 +116,9 @@ class TextButtonClass final : public ToggleClass {
  protected:
   void Draw_Background(PixelView& view) {
     if (IsBlackBorder) {
-      view.DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
+      view.DrawRect(
+          Rect::FromCorners(X - 1, Y - 1, X + Width + 2, Y + Height + 2),
+          kBlack);
     }
     Skin::Draw_Button_Box(view, X, Y, Width, Height, TextFont, PrintFlags,
                           IsDisabled, IsPressed);

@@ -9,6 +9,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/ico_image.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/net/nullconn.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
@@ -82,15 +83,15 @@ void ShakeScreen(int shakes) {
     } while (newyoff == oldyoff);
     switch (newyoff) {
       case -1:
-        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 2, 0, 0,
-                                         640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                         Rect{0, 2, 640, 398}, 0, 0);
         break;
       case 0:
         TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
         break;
       case 1:
-        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 2,
-                                         640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                         Rect{0, 0, 640, 398}, 0, 2);
         break;
       default:
         break;

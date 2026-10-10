@@ -48,6 +48,7 @@
 #include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -481,8 +482,7 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                    Get_Color_Scheme()->Shadow);
+      view.FillRect(Rect{x, y, width, LineHeight}, Get_Color_Scheme()->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

@@ -16,46 +16,47 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/RECT.H 1     3/03/97 10:25a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : RECT.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 07/21/96 *
- *                                                                                             *
- *                  Last Update : July 21, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Rect: an axis-aligned rectangle of pixels.
 
 #ifndef CNC_RED_ALERT_ENGINE_GFX_RECT_H_
 #define CNC_RED_ALERT_ENGINE_GFX_RECT_H_
 
-class Rect {
- public:
-  explicit Rect(int x = 0, int y = 0, int w = 0, int h = 0);
+#include <algorithm>
 
-  Rect Intersect(const Rect& rectangle, int* x = nullptr,
-                 int* y = nullptr) const;
-  friend Rect Union(const Rect& rect1, const Rect& rect2);
+// A rectangle given by its top left corner and its size. What the corner is
+// relative to (a view, a shape's center, a clip window) is up to the function
+// that takes it.
+//
+// Example:
+//   view.FillRect(Rect{x, y, width, height}, color);
+//   view.DrawRect(Rect::FromCorners(band_x, band_y, mouse_x, mouse_y), color);
+struct Rect {
+  // The rectangle that spans two opposite corners, both inclusive and in
+  // either order, so it is never empty: equal corners give one pixel.
+  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,
+                                                  const int x2, const int y2) {
+    const int left = std::min(x1, x2);
+    const int top = std::min(y1, y2);
+    return Rect{left, top, std::max(x1, x2) - left + 1,
+                std::max(y1, y2) - top + 1};
+  }
 
-  [[nodiscard]] bool Is_Valid() const;
-  [[nodiscard]] int Size() const { return Width * Height; }
+  // Whether the rectangle holds at least one pixel. A default-constructed
+  // Rect does not, which makes it the "no rectangle" value.
+  [[nodiscard]] constexpr bool IsValid() const {
+    return width > 0 && height > 0;
+  }
 
-  //	private:
-  int X;
-  int Y;
-  int Width;
-  int Height;
+  // One past the last column and row.
+  [[nodiscard]] constexpr int right() const { return x + width; }
+  [[nodiscard]] constexpr int bottom() const { return y + height; }
+
+  friend constexpr bool operator==(const Rect&, const Rect&) = default;
+
+  int x = 0;
+  int y = 0;
+  int width = 0;
+  int height = 0;
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_RECT_H_

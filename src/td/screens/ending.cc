@@ -55,6 +55,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pcx_file.h"  // IWYU pragma: keep (the DEMO build)
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -257,8 +258,8 @@ void Nod_Ending() {
   /* get rid of all the animating objects */
   Clear_Score_Objects();
   // erase the "choose a target" text
-  TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
-  show.text_page().view().FillRect(0, 360, 638, 398, 0);
+  TheScreen().visible_view().FillRect(Rect{0, 360, 639, 39}, 0);
+  show.text_page().view().FillRect(Rect{0, 360, 639, 39}, 0);
 
   game::TheMouse().Hide();
   game::TheKeyboard().Clear();

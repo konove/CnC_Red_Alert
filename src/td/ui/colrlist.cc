@@ -69,6 +69,7 @@
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/data/text.h"
@@ -259,7 +260,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      view.DrawRect(x, y, x + width - 2, y + LineHeight - 2,
+      view.DrawRect(Rect{x, y, width - 1, LineHeight - 1},
                     static_cast<unsigned char>(color));
       item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
@@ -269,12 +270,12 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_BAR:
       if (HasGradientFontBits(TextFont)) {
-        view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+        view.FillRect(Rect{x, y, width, LineHeight},
                       static_cast<unsigned char>(SelectColor));
         item.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
+        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
                       static_cast<unsigned char>(SelectColor));
         item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
@@ -285,14 +286,14 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_INVERT:
       if (HasGradientFontBits(TextFont)) {
-        view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+        view.FillRect(Rect{x, y, width, LineHeight},
                       static_cast<unsigned char>(base::At(Colors, index)));
         // Black text on the transparent color; the names only look swapped.
         TextPrinter(
             view, {game::kBlack, game::kTransparentBlack, TextFont, TextFlags})
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
+        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
                       static_cast<unsigned char>(base::At(Colors, index)));
         TextPrinter(view, {game::kLightGrey, game::kTransparentBlack, TextFont,
                            TextFlags})

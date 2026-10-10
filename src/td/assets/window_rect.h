@@ -16,9 +16,9 @@ enum class WindowNumberType;
 inline Rect WindowRect(const WindowNumberType window) {
   constexpr int kWindowUnit = 8;
   const auto& row = base::At(WindowList, static_cast<int>(window));
-  return Rect(base::At(row, kWindowX) * kWindowUnit, base::At(row, kWindowY),
+  return Rect{base::At(row, kWindowX) * kWindowUnit, base::At(row, kWindowY),
               base::At(row, kWindowWidth) * kWindowUnit,
-              base::At(row, kWindowHeight));
+              base::At(row, kWindowHeight)};
 }
 
 }  // namespace td

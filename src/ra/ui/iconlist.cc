@@ -52,6 +52,7 @@
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -438,8 +439,7 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
     if (bShowSelected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(xText, y, xText + width - 1, y + LineHeight - 1,
-                    pRemap->Shadow);
+      view.FillRect(Rect{xText, y, width, LineHeight}, pRemap->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

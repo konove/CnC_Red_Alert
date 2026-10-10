@@ -43,6 +43,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/gfx/rect.h"
 
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
@@ -52,7 +53,6 @@ inline constexpr int kDefaultScreenHeight = 200;
 struct FontStyle;
 class PixelBuffer;
 class PixelView;
-class Rect;
 
 // A rectangular window onto a PixelBuffer. Coordinates passed to the
 // drawing members are relative to the window's top left corner and are
@@ -140,35 +140,32 @@ class PixelView {
   void Clear(uint8_t color = 0);
   void ClearLocked(uint8_t color);
 
-  // Copies the width x height rectangle at src_x,src_y in the view out to
-  // plain memory, packed with no padding. The rectangle is clipped to the
-  // view first, and a rectangle that misses the view entirely copies
-  // nothing.
-  void CopyToBuffer(int src_x, int src_y, int width, int height,
-                    std::span<uint8_t> dest);
-  void CopyToBufferLocked(int src_x, int src_y, int width, int height,
-                          std::span<uint8_t> dest);
+  // Copies the rectangle `source` of the view out to plain memory, packed
+  // with no padding. The rectangle is clipped to the view first, and a
+  // rectangle that misses the view entirely copies nothing.
+  void CopyToBuffer(const Rect& source, std::span<uint8_t> dest);
+  void CopyToBufferLocked(const Rect& source, std::span<uint8_t> dest);
 
-  // The other direction: copies a width x height image from plain memory
-  // into the view at dst_x,dst_y, clipping it to the view. `source` is
-  // packed with no padding.
-  void CopyFromBuffer(int dst_x, int dst_y, int width, int height,
-                      std::span<const uint8_t> source);
-  void CopyFromBufferLocked(int dst_x, int dst_y, int width, int height,
-                            std::span<const uint8_t> source);
+  // The other direction: copies an image from plain memory into the
+  // rectangle `dest` of the view, clipping it to the view. `source` is
+  // dest.width x dest.height pixels, packed with no padding.
+  void CopyFromBuffer(const Rect& dest, std::span<const uint8_t> source);
+  void CopyFromBufferLocked(const Rect& dest, std::span<const uint8_t> source);
 
-  // Copies width x height pixels from src_x,src_y in this view to
-  // dst_x,dst_y in `dest`, clipping to both. With `transparent`,
-  // pixel 0 is left alone in the destination instead of being copied.
-  // Copies nothing if either view cannot be locked.
-  void BlitTo(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-              int width, int height, bool transparent = false);
+  // Copies the rectangle `source` of this view to dst_x,dst_y in `dest`,
+  // clipping to both. With `transparent`, pixel 0 is left alone in the
+  // destination instead of being copied. Copies nothing if either view cannot
+  // be locked.
+  void BlitTo(PixelView& dest, const Rect& source, int dst_x, int dst_y,
+              bool transparent = false);
   // Copies the whole view to the top left corner of `dest`.
-  void BlitTo(PixelView& dest) { BlitTo(dest, 0, 0, 0, 0, width_, height_); }
+  void BlitTo(PixelView& dest) {
+    BlitTo(dest, Rect{0, 0, width_, height_}, 0, 0);
+  }
   // Both views must be locked. Overlapping source and destination are
   // handled, so this also serves as a scroll within one view.
-  void BlitToLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-                    int width, int height, bool transparent);
+  void BlitToLocked(PixelView& dest, const Rect& source, int dst_x, int dst_y,
+                    bool transparent);
 
   // Stretches or shrinks the src_width x src_height rectangle at src_x,src_y
   // in this view onto the dst_width x dst_height rectangle at dst_x,dst_y in
@@ -196,24 +193,25 @@ class PixelView {
   void PrintLocked(const FontStyle& style, const char* text, int x, int y,
                    int fore_color, int back_color);
 
-  // x1,y1 and x2,y2 are the two corners, both inclusive, so DrawRect and
-  // FillRect cover x2 - x1 + 1 pixels per row.
+  // Draws the line from x1,y1 to x2,y2, both ends inclusive.
   void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
-  void DrawRect(int x1, int y1, int x2, int y2, uint8_t color);
-  void FillRect(int x1, int y1, int x2, int y2, uint8_t color);
   void DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color);
-  void FillRectLocked(int x1, int y1, int x2, int y2, uint8_t color);
 
-  // Replaces every pixel in the rectangle with remap_table[pixel].
-  // `remap_table` is a 256-entry table; the shorter overload covers the whole
-  // view.
-  void Remap(int x1, int y1, int width, int height,
-             std::span<const uint8_t> remap_table);
+  // DrawRect draws the one pixel wide outline of `rect`, along its inside
+  // edge; FillRect fills all of it. Both clip to the view and draw nothing
+  // for a rectangle with no width or no height. A caller that holds two
+  // inclusive corners passes Rect::FromCorners(x1, y1, x2, y2).
+  void DrawRect(const Rect& rect, uint8_t color);
+  void FillRect(const Rect& rect, uint8_t color);
+  void FillRectLocked(const Rect& rect, uint8_t color);
+
+  // Replaces every pixel in `rect` with remap_table[pixel]. `remap_table` is
+  // a 256-entry table; the shorter overload covers the whole view.
+  void Remap(const Rect& rect, std::span<const uint8_t> remap_table);
   void Remap(const std::span<const uint8_t> remap_table) {
-    Remap(0, 0, width_, height_, remap_table);
+    Remap(Rect{0, 0, width_, height_}, remap_table);
   }
-  void RemapLocked(int x1, int y1, int width, int height,
-                   std::span<const uint8_t> remap_table);
+  void RemapLocked(const Rect& rect, std::span<const uint8_t> remap_table);
 
   // Draws cell `cell` of an icon set (a terrain template) at x,y, clipped to
   // `clip` (in view coordinates) rather than to the view - the map draws its

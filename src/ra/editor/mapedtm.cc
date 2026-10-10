@@ -49,6 +49,7 @@
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -752,8 +753,10 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           game::TheMouse().Hide();
-          view.FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
-                        msg_y + kTxt6H, game::kBlack);
+          view.FillRect(
+              Rect::FromCorners(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
+                                msg_y + kTxt6H),
+              game::kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             TextPrinter(view, {scheme, game::kTransparentBlack,

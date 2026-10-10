@@ -156,6 +156,7 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/random_seed.h"
@@ -1881,13 +1882,14 @@ static int Net_Join_Dialog() {
       //..................................................................
       if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          view.FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                        base::At(cbox_x, i) + 1 + d_color_w - 4,
-                        d_color_y + 1 + d_color_h - 2,
-                        ThePalettes()
-                            .color_remaps()
-                            .at(static_cast<PlayerColorType>(i))
-                            .Box);
+          view.FillRect(
+              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
+                                base::At(cbox_x, i) + 1 + d_color_w - 4,
+                                d_color_y + 1 + d_color_h - 2),
+              ThePalettes()
+                  .color_remaps()
+                  .at(static_cast<PlayerColorType>(i))
+                  .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[i].Box);
@@ -5686,9 +5688,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     const int time_width = StringPixelWidth(font, time_allowed.c_str());
 
     const int fillx = 320 - (time_width / 2) - 6;
-    view.FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                  fillx + time_width + 12,
-                  y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
+    view.FillRect(Rect::FromCorners(
+                      fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+                      fillx + time_width + 12,
+                      y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2),
                   game::kBlack);
 
     TextPrinter(view,

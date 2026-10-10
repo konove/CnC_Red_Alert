@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 342,
+  "nextId": 348,
   "items": [
     {
       "id": "T-2",
@@ -10968,26 +10968,33 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-10T01:12:45Z",
       "parent": "T-140",
       "source": "7eeaf347..cd29efc1",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T01:12:45Z",
+          "text": "`Conquer_Clip_Text_Print()` is `TextPrinter::PrintClipped()` since efa8abb8 (T-185); `Print()` also takes a `const std::string&` now. The string_view work applies to TextPrinter's `const char*` parameters."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ui/dialog.h",
-          "startLine": 33,
-          "endLine": 33,
-          "text": "void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,",
+          "startLine": 111,
+          "endLine": 112,
+          "text": "  void PrintClipped(const char* text, game::Point at, int width,\n                    std::span<const int> tabs = {}) const;",
           "before": [
-            "int Format_Window_String(const FontStyle& font, std::span<char> string,",
-            "                         int max_line_len, int& width, int& height);",
-            "extern void Dialog_Box(int x, int y, int w, int h);"
+            "  // Prints `text` cut off `width` pixels right of `at`: a list box's row. A",
+            "  // tab in the text moves on to the next of `tabs`, which are pixel offsets",
+            "  // from `at.x`, or to the next multiple of 50 when there are none."
           ],
           "after": [
-            "                             int y, RemapControlType* fore,",
-            "                             int back = game::kTransparentBlack,",
-            "                             FontType font = FontType::k8Point,"
+            "",
+            " private:",
+            "  [[nodiscard]] const RemapControlType* scheme() const"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/ai/trigger_action.cc",
@@ -11413,6 +11420,374 @@
             "      title_palette = *palette;",
             "    }",
             "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-342",
+      "title": "Print the edit boxes' \"_\" cursor, which a width of -1 leaves out",
+      "details": "The edit boxes print their \"_\" cursor with `PrintClipped(\"_\", at, -1)`. The original `Conquer_Clip_Text_Print` took `unsigned width`, so -1 meant no limit; with `int width` the loop `while (offset < width ...)` never runs and nothing is printed, so a focused edit box shows no cursor.\n\nPrint the cursor with `Print()` (no clipping), or give PrintClipped a real width, and drop the -1 convention. This changes what edit boxes look like: run `tools/ui_check.py` and `--accept` the hashes that were meant to change. Add a test of a focused edit box drawing its cursor.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:12:45Z",
+      "updated": "2026-10-10T01:12:45Z",
+      "source": "efa8abb8",
+      "anchors": [
+        {
+          "path": "src/ra/ui/ui_skin.cc",
+          "startLine": 114,
+          "endLine": 115,
+          "text": "    printer.PrintClipped(\"_\", {x + 1 + StringPixelWidth(style, text), y + 1},\n                         -1);",
+          "before": [
+            "  if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&",
+            "      StringPixelWidth(style, text) + StringPixelWidth(style, \"_\") <",
+            "          width - 2) {"
+          ],
+          "after": [
+            "  }",
+            "}",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/ui/ui_skin.cc",
+          "startLine": 131,
+          "endLine": 132,
+          "text": "      printer.PrintClipped(\"_\", {x + 1 + StringPixelWidth(style, text), y + 1},\n                           -1);",
+          "before": [
+            "    if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&",
+            "        StringPixelWidth(style, text) + StringPixelWidth(style, \"_\") <",
+            "            width - 2) {"
+          ],
+          "after": [
+            "    }",
+            "  } else {",
+            "    const TextPrinter printer(view, {focused ? game::kBlue : game::kWhite,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/ui/ui_skin.cc",
+          "startLine": 143,
+          "endLine": 144,
+          "text": "      printer.PrintClipped(\"_\", {x + 1 + StringPixelWidth(style, text), y + 1},\n                           -1);",
+          "before": [
+            "        StringPixelWidth(style, text) + StringPixelWidth(style, \"_\") <",
+            "            width - 2) {",
+            "      // `focused` holds here, so the printer is the blue one."
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "}"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/wol/woledit.cc",
+          "startLine": 59,
+          "endLine": 59,
+          "text": "    printer.PrintClipped(\"_\", {X + 1 + text_width, Y + 1}, -1);",
+          "before": [
+            "  const int text_width = StringPixelWidth(font, text);",
+            "  if (Has_Focus() &&  //\tstrlen(text) < MaxLength &&",
+            "      text_width + StringPixelWidth(font, \"_\") < Width - 2) {"
+          ],
+          "after": [
+            "  }",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-343",
+      "title": "Give the remaining rectangle-taking drawing functions a Rect",
+      "details": "`PixelView`'s `FillRect`, `DrawRect`, `Remap`, `CopyToBuffer`, `CopyFromBuffer` and `BlitTo` take a `Rect` (`engine/gfx/rect.h`) now. What still passes loose x, y, width, height:\n\n- `PixelView::Scale` / `ScaleLocked` (`src/engine/gfx/pixel_buffer.h`): a source and a destination rectangle as eight ints. Becomes `Scale(dest, const Rect& source, const Rect& target, ...)`.\n- `PixelView::DrawStampLocked`: `clip_x, clip_y, clip_width, clip_height`, although `DrawStamp` already takes `const Rect& clip` and only unpacks it (`src/engine/gfx/stamp.cc`).\n- `Draw_Box(view, x, y, w, h, ...)` and `Draw_Beveled_Box(left, top, right, bottom)` in `src/ra/ui/dialog.cc`, and their Tiberian Dawn twins in `src/td/ui/dialog.cc`.\n- `Coordinate_Remap(PixelView*, x, y, width, height, table)` in `src/ra/map/vortex.cc`.\n- `Rect` and `PixelView` are still in the global namespace; `/migrate-namespaces` would put them in `engine::gfx`.\n\nCallers that hold two inclusive corners use `Rect::FromCorners`; keep the pixels identical and check with `tools/ui_check.py`.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "engine",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T01:58:28Z",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pixel_buffer.h",
+          "startLine": 174,
+          "endLine": 174,
+          "text": "  void Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,",
+          "before": [
+            "  // in this view onto the dst_width x dst_height rectangle at dst_x,dst_y in",
+            "  // `dest`, clipping to both. With `transparent`, pixel 0 is left alone in the",
+            "  // destination; a non-empty `remap_table` translates every pixel through it."
+          ],
+          "after": [
+            "             int src_width, int src_height, int dst_width, int dst_height,",
+            "             bool transparent = false,",
+            "             std::span<const uint8_t> remap_table = {});"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-344",
+      "title": "Decide which one-pixel-too-large fills are bugs",
+      "details": "The sweep that gave `PixelView::FillRect` / `DrawRect` a `Rect` kept every call's pixels. 128 calls now read `Rect::FromCorners(...)`; many of them are `FromCorners(x, y, x + w, y + h)`, the legacy inclusive-corner call written without the `- 1`, so the box is one pixel wider and taller than `w` x `h`. Find them with `grep -rn \"Rect::FromCorners\" src`. Examples:\n\n- `src/td/ui/dialog.cc`: `Draw_Box` fills and outlines `x + w`, `y + h`.\n- `src/td/editor/mapedit.cc`: `Rect{0, 0, 641, 17}` on a 640 pixel wide view (was `FillRect(0, 0, 640, 16)`).\n- `src/td/screens/ending.cc`: `Rect{0, 360, 639, 39}` stops at column 638 and leaves column 639.\n- `src/td/screens/mapsel.cc` and `src/td/screens/score.cc`: the text-erase fills, and the casualty bars `FromCorners(0, y, min(i, killed), y + 1)` that draw one column for a count of 0.\n- `src/ra/editor/mapedtm.cc`, `src/ra/editor/mapedplc.cc`, `src/ra/map/help.cc` (`DrawX + Width + 1`).\n\nRelated change of behaviour to know about: the old `FillRect` swapped its corners, so a width of 0 drew a two-pixel column; `Rect{x, y, 0, h}` draws nothing. No `ui_check` screenshot changed.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T01:58:28Z",
+      "toDecide": "For each group: is the extra pixel what the screen should look like (then write it as `Rect{x, y, w + 1, h + 1}` or leave `FromCorners`), or a bug to fix to `Rect{x, y, w, h}`? Fixing changes screenshots and needs a look at the dialogs, the map selection and the score screen.",
+      "anchors": [
+        {
+          "path": "src/td/ui/dialog.cc",
+          "startLine": 168,
+          "endLine": 175,
+          "text": "      view.FillRect(Rect::FromCorners(x, y, x + w, y + h),\n                    static_cast<unsigned char>(style.Filler));\n    }\n  }\n\n  switch (up) {\n    case BOXSTYLE_GREEN_BOX:\n      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h),",
+          "before": [
+            "      CC_Texture_Fill(view, MixArchive::RetrieveData(\"BTEXTURE.SHP\"),",
+            "                      TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);",
+            "    } else {"
+          ],
+          "after": [
+            "                    static_cast<unsigned char>(style.Highlight));",
+            "      break;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/editor/mapedit.cc",
+          "startLine": 1426,
+          "endLine": 1426,
+          "text": "  view.FillRect(Rect{0, 0, 641, 17}, game::kBlack);",
+          "before": [
+            "  //",
+            "  // Erase scrags at top of screen",
+            "  //"
+          ],
+          "after": [
+            "",
+            "  /*",
+            "  **\tDisplay the total value of all Tiberium on the map."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/screens/ending.cc",
+          "startLine": 261,
+          "endLine": 262,
+          "text": "  TheScreen().visible_view().FillRect(Rect{0, 360, 639, 39}, 0);\n  show.text_page().view().FillRect(Rect{0, 360, 639, 39}, 0);",
+          "before": [
+            "  /* get rid of all the animating objects */",
+            "  Clear_Score_Objects();",
+            "  // erase the \"choose a target\" text"
+          ],
+          "after": [
+            "",
+            "  game::TheMouse().Hide();",
+            "  game::TheKeyboard().Clear();"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-345",
+      "title": "Guard the health bar's clamp against objects narrower than three pixels",
+      "details": "Both games draw the health pip bar with `pwidth = std::clamp(pwidth, 1, width - 2);`. When `width` is below 3 the upper bound is below the lower one, which is undefined behaviour for `std::clamp` (libstdc++ asserts in debug mode). With such a width the bar's `Remap(Rect{xx + 1, yy + 1, width - 1, 2}, ...)` and `DrawRect(Rect{xx, yy, width, 4}, ...)` are degenerate as well. Skip the bar, or clamp `width` first, when it cannot hold a pip; add a test that draws a one-pixel-wide object's health bar.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T01:58:28Z",
+      "anchors": [
+        {
+          "path": "src/td/objects/techno.cc",
+          "startLine": 953,
+          "endLine": 953,
+          "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
+          "before": [
+            "      int pwidth = base::FixedToCardinal(",
+            "          width - 2, ratio);  // Pixel width of bar interior.",
+            ""
+          ],
+          "after": [
+            "",
+            "      int color =",
+            "          game::kLightGreen;  // The color to give the interior of the bargraph."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 1245,
+          "endLine": 1245,
+          "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
+          "before": [
+            "      */",
+            "      int pwidth = (width - 2) * ratio;  // Pixel width of bar interior.",
+            ""
+          ],
+          "after": [
+            "",
+            "      int color =",
+            "          game::kLightGreen;  // The color to give the interior of the bargraph."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-346",
+      "title": "Delete or repair Tiberian Dawn's Win32-only screen clear in init",
+      "details": "Under `#ifdef _WIN32`, `src/td/startup/init.cc` calls `TheScreen().visible_page().FillRect(0, 0, 639, 40, 0)` and `...FillRect(0, 440, 639, 479, 0)`. `visible_page()` is a `PixelBuffer`, which has no `FillRect`, and `PixelView::FillRect` takes a `Rect` now, so the block cannot compile on Windows. Either delete it, or write it as `TheScreen().visible_view().FillRect(Rect{0, 0, 640, 41}, 0)` and `Rect{0, 440, 640, 40}`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T01:58:28Z",
+      "anchors": [
+        {
+          "path": "src/td/startup/init.cc",
+          "startLine": 874,
+          "endLine": 875,
+          "text": "            TheScreen().visible_page().FillRect(0, 0, 639, 40, 0);\n            TheScreen().visible_page().FillRect(0, 440, 639, 479, 0);",
+          "before": [
+            "          ** Make sure top and bottom of screen are clear in 640x480 mode",
+            "          */",
+            "          if (TheScreen().mode_height() == 480) {"
+          ],
+          "after": [
+            "          }",
+            "        }",
+            "      }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-347",
+      "title": "Decide whether the serial dialog's color boxes should match the other three",
+      "details": "Four copies of the player-color box drawing fill each box with `Rect::FromCorners(cbox_x[i] + 1, ..., cbox_x[i] + 1 + d_color_w - 4, ...)`. Two differ: `src/ra/net/nulldlg.cc:3187` uses `d_color_w - 2`, so its boxes are two pixels wider, and `src/ra/net/nulldlg.cc:4931` insets by 2 where the others inset by 1. The four copies are also a candidate for one shared function.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T01:58:28Z",
+      "toDecide": "Are the two null-modem dialogs meant to look different from the network and Westwood Online ones? If not, make all four the same (which changes how those dialogs look) and share the code.",
+      "anchors": [
+        {
+          "path": "src/ra/net/nulldlg.cc",
+          "startLine": 3187,
+          "endLine": 3187,
+          "text": "                                  base::At(cbox_x, i) + 1 + d_color_w - 2,",
+          "before": [
+            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "            view.FillRect(",
+            "                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                  d_color_y + 1 + d_color_h - 2),",
+            "                ThePalettes()",
+            "                    .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/nulldlg.cc",
+          "startLine": 4931,
+          "endLine": 4931,
+          "text": "                                base::At(cbox_x, i) + 2 + d_color_w - 4,",
+          "before": [
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,"
+          ],
+          "after": [
+            "                                d_color_y + 2 + d_color_h - 4),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/netdlg.cc",
+          "startLine": 1887,
+          "endLine": 1887,
+          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "before": [
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                d_color_y + 1 + d_color_h - 2),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/wol/wol_gsup.cc",
+          "startLine": 1124,
+          "endLine": 1124,
+          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "before": [
+            "        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          view.FillRect(",
+            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+          ],
+          "after": [
+            "                                d_color_y + 1 + d_color_h - 2),",
+            "              ThePalettes()",
+            "                  .color_remaps()"
           ],
           "lost": false
         }

@@ -15,6 +15,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 
 namespace td {
 
@@ -98,7 +99,7 @@ FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
 
 void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color,
                    int size) {
-  view.FillRect(x, y, x + size - 1, y + size - 1, color);
+  view.FillRect(Rect{x, y, size, size}, color);
 }
 
 // from RA readline.cpp

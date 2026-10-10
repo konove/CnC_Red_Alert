@@ -95,6 +95,7 @@
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -498,19 +499,21 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
               RadarHeight < RadIHeight - 1) {
             view.DrawRect(
-                RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
-                RadX + RadOffX + BaseX + RadarWidth,
-                //													RadX
-                //+ RadOffX + BaseX + RadarWidth +1,
-                RadY + RadOffY + BaseY + RadarHeight,
-                //													RadY
-                //+ RadOffY + BaseY + RadarHeight +1,
+                Rect::FromCorners(
+                    RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
+                    RadX + RadOffX + BaseX + RadarWidth,
+                    //													RadX
+                    //+ RadOffX + BaseX + RadarWidth +1,
+                    RadY + RadOffY + BaseY + RadarHeight
+                    //													RadY
+                    //+ RadOffY + BaseY + RadarHeight +1,
+                    ),
                 game::kWhite);
           }
         } else {
-          view.FillRect(RadX + RadOffX, RadY + RadOffY,
-                        RadX + RadOffX + RadIWidth - 1,
-                        RadY + RadOffY + RadIHeight - 1, game::kBlack);
+          view.FillRect(
+              Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
+              game::kBlack);
         }
 
         /*
@@ -540,8 +543,8 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
         if (TheScreen().IsVisible(&view)) {
           game::TheMouse().Hide();
-          view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
-                      RadWidth, RadHeight);
+          view.BlitTo(TheScreen().visible_view(),
+                      Rect{RadX, RadY, RadWidth, RadHeight}, RadX, RadY);
           game::TheMouse().Show();
         }
       }
@@ -654,7 +657,7 @@ void RadarClass::Render_Terrain(PixelView& view, Cell cell, int x, int y,
     if (icon.empty()) {
       continue;
     }
-    IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
+    IconStage.view().CopyFromBuffer(Rect{0, 0, 3, 3}, icon);
     IconStage.view().Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                            FadingBrighten);
   }
@@ -715,14 +718,13 @@ void RadarClass::Render_Infantry(PixelView& view, Cell cell, int x, int y,
             color =
                 ThePalettes().color_remaps().at(ThePlayer()->RemapColor).Bar;
           }
-          view.FillRect(x + xoff, y + yoff, x + xoff + (subsize - 1),
-                        y + yoff + (subsize - 1), color);
+          view.FillRect(Rect{x + xoff, y + yoff, subsize, subsize}, color);
           break;
 
         case RTTI_UNIT:
         case RTTI_VESSEL:
         case RTTI_AIRCRAFT:
-          view.FillRect(x, y, x + size - 1, y + size - 1, color);
+          view.FillRect(Rect{x, y, size, size}, color);
           break;
 
         case RTTIType::RTTI_NONE:
@@ -786,7 +788,7 @@ void RadarClass::Render_Overlay(PixelView& view, Cell cell, int x, int y,
       if (icon.empty()) {
         return;
       }
-      IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
+      IconStage.view().CopyFromBuffer(Rect{0, 0, 3, 3}, icon);
       if (otype->IsTiberium) {
         if (size == 1) {
           view.PutPixel(x, y, DKGREY);
@@ -1042,7 +1044,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
           return;
         }
         const auto data = icondata.subspan(offset, size_t{24} * 24);
-        TileStage.view().CopyFromBuffer(0, 0, 24, 24, data);
+        TileStage.view().CopyFromBuffer(Rect{0, 0, 24, 24}, data);
         TileStage.view().Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                                true);
       } else {
@@ -1050,7 +1052,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
             x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
       }
     } else {
-      view.FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
+      view.FillRect(Rect{x, y, ZoomFactor, ZoomFactor},
                     static_cast<unsigned char>(color));
     }
     if (color != game::kBlack) {
@@ -1925,11 +1927,11 @@ void RadarClass::Set_Radar_Position(Cell cell) {
         */
         TheScreen().hidden_view().BlitTo(
             TheScreen().hidden_view(),
-            ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-            ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+            Rect{((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+                 ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+                 radw * ZoomFactor, radh * ZoomFactor},
             ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-            ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
-            radw * ZoomFactor, radh * ZoomFactor);
+            ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY);
 
         /*
         ** Now we need to flag the section of the map that is going to redraw.

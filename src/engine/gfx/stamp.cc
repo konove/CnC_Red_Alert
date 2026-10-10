@@ -104,8 +104,8 @@ void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
                           const std::span<const uint8_t> remap_table,
                           const Rect& clip) {
   if (Lock()) {
-    DrawStampLocked(icon_set, cell, x, y, remap_table, clip.X, clip.Y,
-                    clip.Width, clip.Height);
+    DrawStampLocked(icon_set, cell, x, y, remap_table, clip.x, clip.y,
+                    clip.width, clip.height);
     Unlock();
   }
 }

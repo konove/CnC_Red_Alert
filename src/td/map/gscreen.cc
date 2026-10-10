@@ -62,6 +62,7 @@
 #include "base/array.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
@@ -441,9 +442,10 @@ extern bool CanVblankSync;
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
-                                   TheScreen().hidden_view().width(),
-                                   TheScreen().hidden_view().height());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                   Rect{0, 0, TheScreen().hidden_view().width(),
+                                        TheScreen().hidden_view().height()},
+                                   0, 0);
   if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }

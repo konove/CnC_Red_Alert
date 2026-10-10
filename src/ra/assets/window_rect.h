@@ -15,8 +15,8 @@ enum class WindowNumberType;
 // stores every column of the row in pixels already.
 inline Rect WindowRect(const WindowNumberType window) {
   const auto& row = base::At(WindowList, static_cast<int>(window));
-  return Rect(base::At(row, kWindowX), base::At(row, kWindowY),
-              base::At(row, kWindowWidth), base::At(row, kWindowHeight));
+  return Rect{base::At(row, kWindowX), base::At(row, kWindowY),
+              base::At(row, kWindowWidth), base::At(row, kWindowHeight)};
 }
 
 }  // namespace ra

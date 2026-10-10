@@ -67,6 +67,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "game/core/point.h"
@@ -171,8 +172,8 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(view, shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL,
                 ShapeFlags::kNone);
 
-  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), x, y, x, y, w,
-                                   h);
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), Rect{x, y, w, h},
+                                   x, y);
 }
 
 // Draws the beveled edges shared by the button box styles: "Shadow" along the
@@ -183,7 +184,7 @@ static void Draw_Beveled_Box(PixelView& view, const int left, const int top,
                              const int right, const int bottom,
                              const bool filled, const BoxStyleType& colors) {
   if (filled) {
-    view.FillRect(left, top, right, bottom, colors.Filler);
+    view.FillRect(Rect::FromCorners(left, top, right, bottom), colors.Filler);
   }
 
   view.DrawLine(left, bottom, right, bottom, colors.Shadow);
@@ -214,18 +215,18 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
     // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
       if (filled) {
-        view.FillRect(x, y, right, bottom, game::kBlack);
+        view.FillRect(Rect{x, y, w, h}, game::kBlack);
       }
-      view.DrawRect(x, y, right, bottom, scheme->Box);
+      view.DrawRect(Rect{x, y, w, h}, scheme->Box);
       break;
 
     // Same outline, inset one pixel, which leaves a filled margin around the
     // frame of a dialog.
     case BOXSTYLE_BORDER:
       if (filled) {
-        view.FillRect(x, y, right, bottom, game::kBlack);
+        view.FillRect(Rect{x, y, w, h}, game::kBlack);
       }
-      view.DrawRect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
+      view.DrawRect(Rect{x + 1, y + 1, w - 2, h - 2}, scheme->Box);
       break;
 
     case BOXSTYLE_DOWN:

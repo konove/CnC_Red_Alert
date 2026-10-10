@@ -9,6 +9,7 @@
 #include "base/numeric.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
@@ -160,7 +161,7 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
     TextPrintType state = flags;
     if (selected) {
       state = state | TPF_BRIGHT_COLOR;
-      view.FillRect(x, y, x + width - 1, y + line_height - 1, kCcGreenShadow);
+      view.FillRect(Rect{x, y, width, line_height}, kCcGreenShadow);
     } else if (!base::Any(state & TPF_USE_GRAD_PAL)) {
       state = state | TPF_MEDIUM_COLOR;
     }
@@ -190,7 +191,7 @@ void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,
                             const int width, const int height, const bool on) {
   Draw_Box(view, x, y, width, height, BOXSTYLE_GREEN_DOWN, false);
-  view.FillRect(x + 1, y + 1, x + width - 2, y + height - 2, game::kGrey);
+  view.FillRect(Rect{x + 1, y + 1, width - 2, height - 2}, game::kGrey);
   if (on) {
     view.DrawLine(x + 1, y + 1, x + width - 2, y + height - 2, game::kBlack);
     view.DrawLine(x + width - 2, y + 1, x + 1, y + height - 2, game::kBlack);

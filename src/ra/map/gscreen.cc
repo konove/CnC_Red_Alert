@@ -55,6 +55,7 @@
 #include <cstdint>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -392,9 +393,10 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
-                                   TheScreen().hidden_view().width(),
-                                   TheScreen().hidden_view().height());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                   Rect{0, 0, TheScreen().hidden_view().width(),
+                                        TheScreen().hidden_view().height()},
+                                   0, 0);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a
@@ -417,12 +419,12 @@ void Shake_The_Screen(int shakes) {
     old_y_off = new_y_off;
     switch (new_y_off) {
       case -1:
-        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 2, 0, 0,
-                                         640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                         Rect{0, 2, 640, 398}, 0, 0);
         break;
       case 1:
-        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 2,
-                                         640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                         Rect{0, 0, 640, 398}, 0, 2);
         break;
       default:
         TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

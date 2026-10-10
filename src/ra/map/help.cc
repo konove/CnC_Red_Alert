@@ -61,6 +61,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
@@ -280,7 +281,8 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
     help.Print(Text, {DrawX, DrawY});
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int font_height = FontMaxHeight(font);
-    view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + font_height,
+    view.DrawRect(Rect::FromCorners(DrawX - 1, DrawY - 1, DrawX + Width + 1,
+                                    DrawY + font_height),
                   static_cast<unsigned char>(Color));
 
     if (Cost) {
@@ -289,9 +291,10 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       const int width = StringPixelWidth(font, buffer);
 
       help.Print(buffer, {DrawX, DrawY + font_height});
-      view.DrawRect(DrawX - 1, DrawY + font_height, DrawX + width + 1,
-                    DrawY + font_height + font_height - 1,
-                    static_cast<unsigned char>(Color));
+      view.DrawRect(
+          Rect::FromCorners(DrawX - 1, DrawY + font_height, DrawX + width + 1,
+                            DrawY + font_height + font_height - 1),
+          static_cast<unsigned char>(Color));
       view.DrawLine(DrawX, DrawY + font_height,
                     DrawX + std::min(width + 1, Width) - 1, DrawY + font_height,
                     game::kBlack);

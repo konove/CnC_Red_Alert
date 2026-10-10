@@ -55,6 +55,7 @@
 #include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
@@ -353,7 +354,7 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    view.FillRect(x, y, x + width - 1, y + LineHeight - 1, 1);
+    view.FillRect(Rect{x, y, width, LineHeight}, 1);
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;

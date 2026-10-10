@@ -47,6 +47,7 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/standard_colors.h"
@@ -118,7 +119,8 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
 
   if (complete || IsTabToRedraw) {
     if (view.Lock()) {
-      view.FillRect(0, 0, rightx, Tab_Height - 2, game::kBlack);
+      view.FillRect(Rect::FromCorners(0, 0, rightx, Tab_Height - 2),
+                    game::kBlack);
       CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
       CC_Draw_Shape(view, TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
                     ShapeFlags::kNone);

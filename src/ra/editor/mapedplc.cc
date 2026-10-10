@@ -64,6 +64,7 @@
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -406,9 +407,10 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Erase the grid
       */
-      view.FillRect(kGridX - (kGridblockW * 2), kGridY,
-                    kGridX + (kGridsize * kGridblockW),
-                    kGridY + (kGridsize * kGridblockH), game::kBlack);
+      view.FillRect(Rect::FromCorners(kGridX - (kGridblockW * 2), kGridY,
+                                      kGridX + (kGridsize * kGridblockW),
+                                      kGridY + (kGridsize * kGridblockH)),
+                    game::kBlack);
 
       /*
       **	Draw a box for every cell occupied
@@ -420,8 +422,7 @@ int MapEditClass::Placement_Dialog() {
         occupy = occupy.subspan(1);
         x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
         y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
-        view.FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
-                      scheme->Bright);
+        view.FillRect(Rect{x, y, kGridblockW, kGridblockH}, scheme->Bright);
       }
 
       /*

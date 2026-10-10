@@ -33,6 +33,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/video/game_file_vqa_io.h"
 #include "engine/video/mixer_vqa_audio.h"
 #include "engine/video/vqa/vqa_player.h"
@@ -66,9 +67,10 @@ class MovieScreen final : public VqaClient {
       SetPalette(frame.palette);
     }
     PixelView& page = Page().view();
-    page.CopyFromBuffer((page.width() - frame.width) / 2,
-                        (page.height() - frame.height) / 2, frame.width,
-                        frame.height, frame.pixels);
+    page.CopyFromBuffer(
+        Rect{(page.width() - frame.width) / 2,
+             (page.height() - frame.height) / 2, frame.width, frame.height},
+        frame.pixels);
     return Present();
   }
 

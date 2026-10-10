@@ -65,6 +65,7 @@
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "game/core/cell_size.h"
 #include "game/core/object_heap.h"
@@ -2107,9 +2108,9 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
 
       } else {
         TheScreen().hidden_view().BlitTo(
-            view, 0, 0, x + ((index % w) * game::kCellWidthPixels),
-            y + ((index / w) * game::kCellHeightPixels), game::kCellWidthPixels,
-            game::kCellHeightPixels);
+            view, Rect{0, 0, game::kCellWidthPixels, game::kCellHeightPixels},
+            x + ((index % w) * game::kCellWidthPixels),
+            y + ((index / w) * game::kCellHeightPixels));
       }
     }
   }

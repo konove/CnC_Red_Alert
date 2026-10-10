@@ -40,6 +40,7 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -206,7 +207,7 @@ void CreditLine::Erase(PixelView& view, PixelView& background) const {
   }
 
   // One pixel wider on each side for the shadow.
-  background.BlitTo(view, x - 1, y_, x - 1, y_, width + 2, height);
+  background.BlitTo(view, Rect{x - 1, y_, width + 2, height}, x - 1, y_);
 }
 
 // The slideshow behind the text: the pictures, the page the text is erased
@@ -390,7 +391,7 @@ void SlideShow::SetSlideColors(engine::gfx::Palette& palette,
 
 void SlideShow::CopyStrip(PixelView& from, PixelView& to, const int strip) {
   const int y = strip * kStripHeight;
-  from.BlitTo(to, 0, y, 0, y, from.width(), kStripHeight);
+  from.BlitTo(to, Rect{0, y, from.width(), kStripHeight}, 0, y);
 }
 
 // Waits until `frame` frames of scrolling have passed since `start_ticks`.
@@ -492,8 +493,9 @@ void ShowCredits() {
     ServiceRealTime();
     WaitForFrame(start_ticks, frame);
 
-    view.BlitTo(TheScreen().visible_view(), 0, kMarginRows, 0, kMarginRows,
-                width, height - (2 * kMarginRows));
+    view.BlitTo(TheScreen().visible_view(),
+                Rect{0, kMarginRows, width, height - (2 * kMarginRows)}, 0,
+                kMarginRows);
 
     if (game::TheKeyboard().Peek()) {
       escaped = game::TheKeyboard().Read().key == engine::window::KN_ESC;

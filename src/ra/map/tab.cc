@@ -50,6 +50,7 @@
 #include "base/fixed.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/standard_colors.h"
@@ -125,7 +126,7 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
-    view.FillRect(0, 0, rightx, tab_height - 1, game::kBlack);
+    view.FillRect(Rect{0, 0, width, tab_height}, game::kBlack);
 
     /*
     ** Use the new sidebar art for 640x400

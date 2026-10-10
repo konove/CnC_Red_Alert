@@ -68,6 +68,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "game/core/point.h"
 #include "game/ui/standard_colors.h"
@@ -164,19 +165,19 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
       CC_Texture_Fill(view, MixArchive::RetrieveData("BTEXTURE.SHP"),
                       TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
-      view.FillRect(x, y, x + w, y + h,
+      view.FillRect(Rect::FromCorners(x, y, x + w, y + h),
                     static_cast<unsigned char>(style.Filler));
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      view.DrawRect(x, y, x + w, y + h,
+      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h),
                     static_cast<unsigned char>(style.Highlight));
       break;
 
     case BOXSTYLE_GREEN_BORDER:
-      view.DrawRect(x + 1, y + 1, x + w - 1, y + h - 1,
+      view.DrawRect(Rect::FromCorners(x + 1, y + 1, x + w - 1, y + h - 1),
                     static_cast<unsigned char>(style.Highlight));
       break;
 

@@ -83,6 +83,7 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "engine/platform/platform.h"
@@ -3181,13 +3182,14 @@ int Com_Scenario_Dialog(bool skirmish) {
         ..................................................................*/
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            view.FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                          base::At(cbox_x, i) + 1 + d_color_w - 2,
-                          d_color_y + 1 + d_color_h - 2,
-                          ThePalettes()
-                              .color_remaps()
-                              .at(static_cast<PlayerColorType>(i))
-                              .Box);
+            view.FillRect(
+                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
+                                  base::At(cbox_x, i) + 1 + d_color_w - 2,
+                                  d_color_y + 1 + d_color_h - 2),
+                ThePalettes()
+                    .color_remaps()
+                    .at(static_cast<PlayerColorType>(i))
+                    .Box);
             //						(i ==
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -4924,13 +4926,14 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          view.FillRect(base::At(cbox_x, i) + 2, d_color_y + 2,
-                        base::At(cbox_x, i) + 2 + d_color_w - 4,
-                        d_color_y + 2 + d_color_h - 4,
-                        ThePalettes()
-                            .color_remaps()
-                            .at(static_cast<PlayerColorType>(i))
-                            .Box);
+          view.FillRect(
+              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,
+                                base::At(cbox_x, i) + 2 + d_color_w - 4,
+                                d_color_y + 2 + d_color_h - 4),
+              ThePalettes()
+                  .color_remaps()
+                  .at(static_cast<PlayerColorType>(i))
+                  .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);

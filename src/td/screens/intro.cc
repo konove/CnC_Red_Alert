@@ -53,6 +53,7 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
 #include "engine/video/game_file_vqa_io.h"
@@ -221,8 +222,8 @@ void Choose_Side() {
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
-    TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 22, 0, 22,
-                                             320, 156);
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
+                                             Rect{0, 22, 320, 156}, 0, 22);
 
     /*
     ** If the sample has stopped or is about to then restart it
@@ -281,8 +282,9 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  show.page().view().FillRect(0, 180, 319, 199, 0);
-  TheScreen().visible_view().FillRect(0, 180 * 2, 319 * 2, 199 * 2, 0);
+  show.page().view().FillRect(Rect{0, 180, 320, 20}, 0);
+  TheScreen().visible_view().FillRect(
+      Rect::FromCorners(0, 180 * 2, 319 * 2, 199 * 2), 0);
   show.ShowPage();
   TheScreen().sys_mem_page().view().Clear();
 

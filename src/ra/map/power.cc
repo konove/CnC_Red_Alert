@@ -57,6 +57,7 @@
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
@@ -233,10 +234,12 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         drain_height = drain_height * (152 + 1) / (106 + 1);
         bottom = 350 + 1;
 
-        view.FillRect(490, bottom - power_height, 490 + 1, bottom,
-                      static_cast<unsigned char>(color2));
-        view.FillRect(492, bottom - power_height, 492 + 1, bottom,
-                      static_cast<unsigned char>(color1));
+        view.FillRect(
+            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),
+            static_cast<unsigned char>(color2));
+        view.FillRect(
+            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),
+            static_cast<unsigned char>(color1));
       }
 
       /*

@@ -14,6 +14,7 @@
 #include "base/unaligned.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_surface_test_util.h"
+#include "engine/gfx/rect.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -36,7 +37,7 @@ TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
   view.Clear();
   view.PutPixel(0, 0, 1);
   view.DrawLine(0, 0, 1, 1, 1);
-  view.FillRect(0, 0, 1, 1, 1);
+  view.FillRect(Rect{0, 0, 2, 2}, 1);
 
   EXPECT_EQ(view.GetPixel(0, 0), 0);
 }
@@ -185,7 +186,7 @@ TEST(CopyFromBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  dest.view().CopyFromBuffer(-1, -1, 2, 3, image);
+  dest.view().CopyFromBuffer(Rect{-1, -1, 2, 3}, image);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{4, 0, 0, 0,  //
                                         6, 0, 0, 0,  //
@@ -203,7 +204,7 @@ TEST(CopyToBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   out.fill(0xff);
 
   // The part of the 3x3 rectangle that lies off the view is left alone.
-  dest.view().CopyToBuffer(-1, -1, 3, 3, out);
+  dest.view().CopyToBuffer(Rect{-1, -1, 3, 3}, out);
 
   EXPECT_EQ(out, (std::array<uint8_t, 9>{0xff, 0xff, 0xff,  //
                                          0xff, 1, 2,        //
@@ -219,7 +220,7 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheTopLeft) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  source.view().BlitTo(dest.view(), 0, 0, -1, -1, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, -1, -1);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{5, 6, 0, 0,  //
                                         8, 9, 0, 0,  //
@@ -235,7 +236,7 @@ TEST(BlitTest, SourceClippedAtTopLeftKeepsItsPlaceInTheDestination) {
 
   // The rectangle's first row and column lie off the source, so the pixels
   // that do exist belong one row down and one column right of (1, 1).
-  source.view().BlitTo(dest.view(), -1, -1, 1, 1, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{-1, -1, 3, 3}, 1, 1);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -249,7 +250,7 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  source.view().BlitTo(dest.view(), 0, 0, 2, 2, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, 2, 2);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -264,13 +265,13 @@ TEST(BlitTest, RectangleWhollyOffTheDestinationDrawsNothing) {
   std::vector<uint8_t> page = blank;
   PixelBuffer dest(4, 4, page);
 
-  source.view().BlitTo(dest.view(), 0, 0, -3, 0, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, -3, 0);
   EXPECT_EQ(page, blank);
-  source.view().BlitTo(dest.view(), 0, 0, 4, 0, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, 4, 0);
   EXPECT_EQ(page, blank);
-  source.view().BlitTo(dest.view(), 0, 0, 0, -3, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, 0, -3);
   EXPECT_EQ(page, blank);
-  source.view().BlitTo(dest.view(), 0, 0, 0, 4, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, 0, 4);
   EXPECT_EQ(page, blank);
 }
 
@@ -306,15 +307,15 @@ TEST(EmptyRectangleTest, AViewWithNoPixelsDrawsNothing) {
   std::array<uint8_t, 256> remap{};
   std::array<uint8_t, 16> out{};
 
-  empty.CopyToBuffer(0, 0, 4, 4, out);
-  empty.CopyFromBuffer(0, 0, 4, 4, original);
-  empty.FillRect(0, 0, 3, 3, 9);
+  empty.CopyToBuffer(Rect{0, 0, 4, 4}, out);
+  empty.CopyFromBuffer(Rect{0, 0, 4, 4}, original);
+  empty.FillRect(Rect{0, 0, 4, 4}, 9);
   empty.DrawLine(0, 0, 0, 3, 9);
-  empty.DrawRect(0, 0, 3, 3, 9);
-  empty.Remap(0, 0, 4, 4, remap);
+  empty.DrawRect(Rect{0, 0, 4, 4}, 9);
+  empty.Remap(Rect{0, 0, 4, 4}, remap);
   for (const bool transparent : {false, true}) {
-    empty.BlitTo(page.view(), 0, 0, 0, 0, 4, 4, transparent);
-    page.view().BlitTo(empty, 0, 0, 0, 0, 4, 4, transparent);
+    empty.BlitTo(page.view(), Rect{0, 0, 4, 4}, 0, 0, transparent);
+    page.view().BlitTo(empty, Rect{0, 0, 4, 4}, 0, 0, transparent);
     empty.Scale(page.view(), 0, 0, 0, 0, 4, 4, 2, 2, transparent);
     page.view().Scale(empty, 0, 0, 0, 0, 4, 4, 2, 2, transparent);
     empty.Scale(page.view(), 0, 0, 0, 0, 4, 4, 2, 2, transparent, remap);
@@ -339,13 +340,15 @@ TEST(EmptyRectangleTest, ARectangleWithNoWidthOrHeightDrawsNothing) {
 
   // {width, height}
   for (const auto [width, height] : {std::pair{0, 2}, std::pair{2, 0}}) {
-    view.CopyToBuffer(1, 1, width, height, out);
-    view.CopyFromBuffer(1, 1, width, height, fill);
-    view.Remap(1, 1, width, height, remap);
+    view.CopyToBuffer(Rect{1, 1, width, height}, out);
+    view.CopyFromBuffer(Rect{1, 1, width, height}, fill);
+    view.Remap(Rect{1, 1, width, height}, remap);
+    view.FillRect(Rect{1, 1, width, height}, 0);
+    view.DrawRect(Rect{1, 1, width, height}, 0);
     for (const bool transparent : {false, true}) {
-      source.view().BlitTo(view, 0, 0, 1, 1, width, height, transparent);
+      source.view().BlitTo(view, Rect{0, 0, width, height}, 1, 1, transparent);
       // Within one view, where the copy runs bottom to top.
-      view.BlitTo(view, 0, 0, 1, 1, width, height, transparent);
+      view.BlitTo(view, Rect{0, 0, width, height}, 1, 1, transparent);
       source.view().Scale(view, 0, 0, 1, 1, width, height, 2, 2, transparent);
       source.view().Scale(view, 0, 0, 1, 1, 2, 2, width, height, transparent);
       source.view().Scale(view, 0, 0, 1, 1, 2, 2, width, height, transparent,
@@ -355,6 +358,60 @@ TEST(EmptyRectangleTest, ARectangleWithNoWidthOrHeightDrawsNothing) {
 
   EXPECT_EQ(image, original);
   EXPECT_EQ(out, (std::array<uint8_t, 16>{}));
+}
+
+TEST(FillRectTest, FillsTheRectangleAndNothingElse) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+
+  dest.view().FillRect(Rect{1, 1, 2, 3}, 7);
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                        0, 7, 7, 0,  //
+                                        0, 7, 7, 0,  //
+                                        0, 7, 7, 0}));
+}
+
+TEST(FillRectTest, ClipsToTheView) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+
+  dest.view().FillRect(Rect{-2, -2, 4, 3}, 7);
+  dest.view().FillRect(Rect{3, 2, 5, 5}, 9);
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{7, 7, 0, 0,  //
+                                        0, 0, 0, 0,  //
+                                        0, 0, 0, 9,  //
+                                        0, 0, 0, 9}));
+}
+
+TEST(DrawRectTest, OutlinesTheRectangleAlongItsInsideEdge) {
+  std::vector<uint8_t> page(size_t{5} * 4, 0);
+  PixelBuffer dest(5, 4, page);
+
+  dest.view().DrawRect(Rect{1, 0, 4, 3}, 7);
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 7, 7, 7, 7,  //
+                                        0, 7, 0, 0, 7,  //
+                                        0, 7, 7, 7, 7,  //
+                                        0, 0, 0, 0, 0}));
+}
+
+// A rubber band is dragged in any direction, so its corners arrive unordered.
+TEST(DrawRectTest, DrawsTheSameOutlineFromEitherPairOfCorners) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+  std::vector<uint8_t> mirrored_page(size_t{4} * 4, 0);
+  PixelBuffer mirrored(4, 4, mirrored_page);
+
+  dest.view().DrawRect(Rect::FromCorners(0, 1, 2, 3), 7);
+  mirrored.view().DrawRect(Rect::FromCorners(2, 3, 0, 1), 7);
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                        7, 7, 7, 0,  //
+                                        7, 0, 7, 0,  //
+                                        7, 7, 7, 0}));
+  EXPECT_EQ(mirrored_page, page);
 }
 
 // Clipping can leave a rectangle that only touches the edge of the view,
@@ -373,13 +430,13 @@ TEST(EmptyRectangleTest, ARectangleClippedToNothingDrawsNothing) {
   // {x, y} of a 2x2 rectangle that ends, or starts, exactly on an edge.
   for (const auto [x, y] :
        {std::pair{-2, 0}, std::pair{0, -2}, std::pair{4, 0}, std::pair{0, 4}}) {
-    view.CopyToBuffer(x, y, 2, 2, out);
-    view.CopyFromBuffer(x, y, 2, 2, fill);
-    view.Remap(x, y, 2, 2, remap);
-    view.FillRect(x, y, x + 1, y + 1, 0);
+    view.CopyToBuffer(Rect{x, y, 2, 2}, out);
+    view.CopyFromBuffer(Rect{x, y, 2, 2}, fill);
+    view.Remap(Rect{x, y, 2, 2}, remap);
+    view.FillRect(Rect{x, y, 2, 2}, 0);
     for (const bool transparent : {false, true}) {
-      source.view().BlitTo(view, 0, 0, x, y, 2, 2, transparent);
-      source.view().BlitTo(view, x, y, 0, 0, 2, 2, transparent);
+      source.view().BlitTo(view, Rect{0, 0, 2, 2}, x, y, transparent);
+      source.view().BlitTo(view, Rect{x, y, 2, 2}, 0, 0, transparent);
       source.view().Scale(view, 0, 0, x, y, 2, 2, 2, 2, transparent);
       source.view().Scale(view, x, y, 0, 0, 2, 2, 2, 2, transparent);
     }
@@ -398,7 +455,7 @@ TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
   PixelBuffer dest(4, 4, page);
 
   // Off the left by one and off the bottom by one.
-  source.view().BlitTo(dest.view(), 0, 0, -1, 2, 3, 3);
+  source.view().BlitTo(dest.view(), Rect{0, 0, 3, 3}, -1, 2);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //

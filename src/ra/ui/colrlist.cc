@@ -49,6 +49,7 @@
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 #include "ra/data/text.h"
@@ -262,7 +263,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      view.DrawRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
+      view.DrawRect(Rect{x, y, width - 1, LineHeight - 1}, color->Color);
       item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
 
@@ -271,11 +272,11 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_BAR:
       if (HasGradientFontBits(TextFont)) {
-        view.FillRect(x, y, x + width - 1, y + LineHeight - 1, color->Color);
+        view.FillRect(Rect{x, y, width, LineHeight}, color->Color);
         item.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        view.FillRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
+        view.FillRect(Rect{x, y, width - 1, LineHeight - 1}, color->Color);
         item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
       break;
@@ -284,7 +285,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	INVERT: Draw text as the background color on foreground color
     */
     case SELECT_INVERT:
-      view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+      view.FillRect(Rect{x, y, width, LineHeight},
                     base::At(Colors, index)->Color);
       break;
     default:

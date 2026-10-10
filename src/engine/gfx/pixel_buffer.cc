@@ -44,6 +44,7 @@
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/gfx/rect.h"
 
 PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
                      const int width, const int height) {
@@ -187,25 +188,25 @@ void PixelView::ClearLocked(const uint8_t color) {
   }
 }
 
-void PixelView::CopyToBuffer(const int src_x, const int src_y, const int width,
-                             const int height, const std::span<uint8_t> dest) {
+void PixelView::CopyToBuffer(const Rect& source,
+                             const std::span<uint8_t> dest) {
   if (Lock()) {
-    CopyToBufferLocked(src_x, src_y, width, height, dest);
+    CopyToBufferLocked(source, dest);
     Unlock();
   }
 }
 
-void PixelView::CopyToBufferLocked(const int src_x, const int src_y,
-                                   const int width, const int height,
+void PixelView::CopyToBufferLocked(const Rect& source,
                                    std::span<uint8_t> dest) {
+  const int width = source.width;
   int dst_x0 = 0;
   int dst_y0 = 0;
 
   // clip src
-  int src_x0 = src_x;
-  int src_y0 = src_y;
-  int src_x1 = src_x + width;
-  int src_y1 = src_y + height;
+  int src_x0 = source.x;
+  int src_y0 = source.y;
+  int src_x1 = source.right();
+  int src_y1 = source.bottom();
 
   const OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
   const OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
@@ -258,26 +259,25 @@ void PixelView::CopyToBufferLocked(const int src_x, const int src_y,
   } while (--line_count);
 }
 
-void PixelView::CopyFromBuffer(const int dst_x, const int dst_y,
-                               const int width, const int height,
+void PixelView::CopyFromBuffer(const Rect& dest,
                                const std::span<const uint8_t> source) {
   if (Lock()) {
-    CopyFromBufferLocked(dst_x, dst_y, width, height, source);
+    CopyFromBufferLocked(dest, source);
     Unlock();
   }
 }
 
-void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
-                                     const int width, const int height,
+void PixelView::CopyFromBufferLocked(const Rect& dest,
                                      std::span<const uint8_t> source) {
+  const int width = dest.width;
   int src_x0 = 0;
   int src_y0 = 0;
 
   // clip dest
-  int dst_x0 = dst_x;
-  int dst_y0 = dst_y;
-  int dst_x1 = dst_x + width;
-  int dst_y1 = dst_y + height;
+  int dst_x0 = dest.x;
+  int dst_y0 = dest.y;
+  int dst_x1 = dest.right();
+  int dst_y1 = dest.bottom();
 
   const OutCode code0 = OutCodeOf(dst_x0, dst_y0, width_, height_);
   const OutCode code1 = OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
@@ -330,29 +330,29 @@ void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
   } while (--line_count);
 }
 
-void PixelView::BlitTo(PixelView& dest, const int src_x, const int src_y,
-                       const int dst_x, const int dst_y, const int width,
-                       const int height, const bool transparent) {
+void PixelView::BlitTo(PixelView& dest, const Rect& source, const int dst_x,
+                       const int dst_y, const bool transparent) {
   if (Lock()) {
     if (dest.Lock()) {
-      BlitToLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
-                   transparent);
+      BlitToLocked(dest, source, dst_x, dst_y, transparent);
       dest.Unlock();
     }
     Unlock();
   }
 }
 
-void PixelView::BlitToLocked(PixelView& dest, const int src_x, const int src_y,
-                             const int dst_x, const int dst_y, const int width,
-                             const int height, const bool transparent) {
+void PixelView::BlitToLocked(PixelView& dest, const Rect& source,
+                             const int dst_x, const int dst_y,
+                             const bool transparent) {
   // Only Tiberian Dawn asks for a transparent blit.
 
   // clip source
+  const int src_x = source.x;
+  const int src_y = source.y;
   int src_x0 = src_x;
   int src_y0 = src_y;
-  int src_width = width;
-  int src_height = height;
+  int src_width = source.width;
+  int src_height = source.height;
   if (!ClipRect(src_x0, src_y0, src_width, src_height, width_, height_)) {
     return;
   }
@@ -822,11 +822,14 @@ void PixelView::DrawLine(const int x1, const int y1, const int x2, const int y2,
   }
 }
 
-void PixelView::DrawRect(const int x1, const int y1, const int x2, const int y2,
-                         const uint8_t color) {
-  if (!Lock()) {
+void PixelView::DrawRect(const Rect& rect, const uint8_t color) {
+  if (!rect.IsValid() || !Lock()) {
     return;
   }
+  const int x1 = rect.x;
+  const int y1 = rect.y;
+  const int x2 = rect.right() - 1;
+  const int y2 = rect.bottom() - 1;
   DrawLineLocked(x1, y1, x2, y1, color);
   DrawLineLocked(x1, y2, x2, y2, color);
   DrawLineLocked(x1, y1, x1, y2, color);
@@ -834,10 +837,9 @@ void PixelView::DrawRect(const int x1, const int y1, const int x2, const int y2,
   Unlock();
 }
 
-void PixelView::FillRect(const int x1, const int y1, const int x2, const int y2,
-                         const uint8_t color) {
+void PixelView::FillRect(const Rect& rect, const uint8_t color) {
   if (Lock()) {
-    FillRectLocked(x1, y1, x2, y2, color);
+    FillRectLocked(rect, color);
     Unlock();
   }
 }
@@ -992,27 +994,14 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   }
 }
 
-void PixelView::FillRectLocked(int x1, int y1, int x2, int y2,
-                               const uint8_t color) {
-  if (x1 > x2) {
-    std::swap(x1, x2);
-  }
-  if (y1 > y2) {
-    std::swap(y1, y2);
-  }
+void PixelView::FillRectLocked(const Rect& rect, const uint8_t color) {
+  // Clamp to the view; x2,y2 are the last column and row filled.
+  const int x1 = std::max(rect.x, 0);
+  const int y1 = std::max(rect.y, 0);
+  const int x2 = std::min(rect.right(), width_) - 1;
+  const int y2 = std::min(rect.bottom(), height_) - 1;
 
-  // clamp to bounds
-  x1 = std::max(x1, 0);
-  y1 = std::max(y1, 0);
-
-  if (x2 >= width_) {
-    x2 = width_ - 1;
-  }
-  if (y2 >= height_) {
-    y2 = height_ - 1;
-  }
-
-  // nothing to fill
+  // An empty rectangle, or one that misses the view.
   if (x2 < x1 || y2 < y1) {
     return;
   }
@@ -1030,27 +1019,25 @@ void PixelView::FillRectLocked(int x1, int y1, int x2, int y2,
   } while (--line_count);
 }
 
-void PixelView::Remap(const int x1, const int y1, const int width,
-                      const int height,
+void PixelView::Remap(const Rect& rect,
                       const std::span<const uint8_t> remap_table) {
   if (Lock()) {
-    RemapLocked(x1, y1, width, height, remap_table);
+    RemapLocked(rect, remap_table);
     Unlock();
   }
 }
 
-void PixelView::RemapLocked(const int x1, const int y1, const int width,
-                            const int height,
+void PixelView::RemapLocked(const Rect& rect,
                             const std::span<const uint8_t> remap_table) {
   if (remap_table.empty()) {
     return;
   }
 
   // clip
-  int dst_x0 = x1;
-  int dst_y0 = y1;
-  int pixel_count = width;
-  int line_count = height;
+  int dst_x0 = rect.x;
+  int dst_y0 = rect.y;
+  int pixel_count = rect.width;
+  int line_count = rect.height;
   if (!ClipRect(dst_x0, dst_y0, pixel_count, line_count, width_, height_)) {
     return;
   }

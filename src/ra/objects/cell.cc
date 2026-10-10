@@ -104,6 +104,7 @@
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
 #include "game/core/cell_size.h"
@@ -974,9 +975,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
     **	Draw debug cell visualization instead of normal terrain.
     */
     const Cell cell = Cell_Number();
-    view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                  TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
-                  TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
+    view.FillRect(Rect{TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                       game::kCellWidthPixels, game::kCellHeightPixels},
                   static_cast<unsigned char>(LocalRandomPick(1, 254)));
     TextPrinter(view, {&ThePalettes().grey_scheme(), game::kTransparentBlack,
                        FontType::kEditor,
@@ -1015,8 +1015,9 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
       view.DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
                      WindowRect(WINDOW_TACTICAL));
       if (!remap.empty()) {
-        view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                   game::kCellWidthPixels, game::kCellHeightPixels, remap);
+        view.Remap(Rect{x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                        game::kCellWidthPixels, game::kCellHeightPixels},
+                   remap);
       }
     }
 
@@ -1029,9 +1030,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
       */
       if (TheDebugState().map_editor_active() &&
           TheWorld().current_cell() == Cell_Number()) {
-        view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                      TheMap().TacPixelX + x + game::kCellWidthPixels - 1,
-                      TheMap().TacPixelY + y + game::kCellHeightPixels - 1,
+        view.DrawRect(Rect{x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                           game::kCellWidthPixels, game::kCellHeightPixels},
                       game::kYellow);
       }
     }

@@ -46,7 +46,7 @@ namespace ra {
 std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
                                              const Rect& rect,
                                              const bool no_center) {
-  if (!rect.Is_Valid()) {
+  if (!rect.IsValid()) {
     static constexpr int16_t _list[] = {kRefreshEol};
     return _list;
   }
@@ -59,13 +59,13 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
   // is a 16-bit lepton word, so a rect reaching past the world's left or top
   // edge wraps, as it always has.
   const int left =
-      static_cast<uint16_t>(x + static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
+      static_cast<uint16_t>(x + static_cast<int16_t>(Pixel_To_Lepton(rect.x)));
   const int top =
-      static_cast<uint16_t>(y + static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
+      static_cast<uint16_t>(y + static_cast<int16_t>(Pixel_To_Lepton(rect.y)));
   const int right =
-      static_cast<uint16_t>(left + Pixel_To_Lepton(rect.Width - 1));
+      static_cast<uint16_t>(left + Pixel_To_Lepton(rect.width - 1));
   const int bottom =
-      static_cast<uint16_t>(top + Pixel_To_Lepton(rect.Height - 1));
+      static_cast<uint16_t>(top + Pixel_To_Lepton(rect.height - 1));
 
   const int cell_left = Lepton_Cell(left);
   const int cell_right = Lepton_Cell(right);

@@ -82,6 +82,7 @@
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/archive.h"
@@ -768,7 +769,7 @@ void ChronalVortexClass::Coordinate_Remap(
     base::At(output, i) = base::At(base::At(VortexRemapTables, remap_color),
                                    base::At(input, source));
   }
-  inbuffer->CopyFromBufferLocked(x, y, width, height, output);
+  inbuffer->CopyFromBufferLocked(Rect{x, y, width, height}, output);
   inbuffer->Unlock();
 }
 
@@ -960,9 +961,9 @@ void ChronalVortexClass::Render(PixelView& view) {
       // Blit the freshly drawn cells and vortex into place on the hid page.
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
-      RenderBuffer.view().BlitTo(target, 0, 0, Lepton_To_Pixel(xoff),
-                                 Lepton_To_Pixel(yoff), RenderBuffer.width(),
-                                 RenderBuffer.height());
+      RenderBuffer.view().BlitTo(
+          target, Rect{0, 0, RenderBuffer.width(), RenderBuffer.height()},
+          Lepton_To_Pixel(xoff), Lepton_To_Pixel(yoff));
     }
   }
 }

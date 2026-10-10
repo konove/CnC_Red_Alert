@@ -211,8 +211,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Four scans, one per edge, each narrowing the search area for the next:
   // the top scan also gives a first guess at the left edge, the bottom scan
   // hands the right scan a starting column, and so on.
-  rect.X = 0;
-  rect.Y = 0;
+  rect.x = 0;
+  rect.y = 0;
   int x_limit = width - 1;
   const int y_limit = height - 1;
 
@@ -220,8 +220,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.Y = y;
-        rect.X = x;
+        rect.y = y;
+        rect.x = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
         // holding any pixel is the top edge, so there is nothing left to scan.
         y = y_limit + 1;
@@ -231,23 +231,23 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   }
 
   // Find bottom edge of the shape.
-  for (int y = y_limit; y >= rect.Y; y--) {
+  for (int y = y_limit; y >= rect.y; y--) {
     for (int x = x_limit; x >= 0; x--) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.Height = y - rect.Y + 1;
+        rect.height = y - rect.y + 1;
         x_limit = x;
-        y = rect.Y - 1;
+        y = rect.y - 1;
         break;
       }
     }
   }
 
   // Find left edge of the shape.
-  for (int x = 0; x < rect.X; x++) {
-    for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
+  for (int x = 0; x < rect.x; x++) {
+    for (int y = rect.y; y < rect.y + rect.height; y++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.X = x;
-        x = rect.X;
+        rect.x = x;
+        x = rect.x;
         break;
       }
     }
@@ -255,9 +255,9 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
 
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
-    for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
+    for (int y = rect.y; y < rect.y + rect.height; y++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.Width = x - rect.X + 1;
+        rect.width = x - rect.x + 1;
         x = x_limit - 1;
         break;
       }
@@ -265,8 +265,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   }
 
   // Normalize the rectangle around the center of the shape.
-  rect.X -= width / 2;
-  rect.Y -= height / 2;
+  rect.x -= width / 2;
+  rect.y -= height / 2;
 
   // Return with the minimum rectangle that encloses the shape.
   return rect;

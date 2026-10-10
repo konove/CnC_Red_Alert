@@ -62,6 +62,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "game/core/object_heap.h"
 #include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
@@ -181,7 +182,7 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
   if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

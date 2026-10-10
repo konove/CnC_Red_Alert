@@ -1519,7 +1519,7 @@ std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
    *infantry *	can be.
    */
 
-  static const Rect rect(-16, -24, 32, 36);
+  static constexpr Rect rect{-16, -24, 32, 36};
   return Coord_Spillage_List(Coord, rect, true);
 
   //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||

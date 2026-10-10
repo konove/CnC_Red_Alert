@@ -72,6 +72,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
@@ -1032,7 +1033,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ..................... Draw the map border .......................
         */
         view.Lock();
-        view.DrawRect(kBordX1, kBordY1, kBordX2, kBordY2, kCcGreenShadow);
+        view.DrawRect(Rect::FromCorners(kBordX1, kBordY1, kBordX2, kBordY2),
+                      kCcGreenShadow);
         for (int index = kBordX1; index < kBordX2;
              index += (320 / game::kCellWidthPixels)) {
           view.PutPixel(index, kBordY1 - 1, kCcGreenShadow);
@@ -1120,7 +1122,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .................... Erase the map interior .....................
         */
-        view.FillRect(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1, kBordY2 - 1,
+        view.FillRect(Rect::FromCorners(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1,
+                                        kBordY2 - 1),
                       game::kBlack);
 
         /*...............................................................
@@ -1141,7 +1144,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ................. Draw the actual map location ..................
         */
-        view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kWhite);
+        view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                      game::kWhite);
         switch (grabbed) {
           case 1:
             view.DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, game::kBlue);
@@ -1164,7 +1168,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             break;
 
           case 5:
-            view.DrawRect(map_x1, map_y1, map_x2, map_y2, game::kBlue);
+            view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                          game::kBlue);
             break;
 
           default:
@@ -1200,9 +1205,11 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Erase old coordinates .....................
         */
-        view.FillRect(kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
-                      kDialogX + kDialogW - 7,
-                      kDialogY + kDialogH - kOkH - 10 - 22 + 10, game::kBlack);
+        view.FillRect(Rect::FromCorners(
+                          kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
+                          kDialogX + kDialogW - 7,
+                          kDialogY + kDialogH - kOkH - 10 - 22 + 10),
+                      game::kBlack);
 
         /*
         ..................... Draw the coordinates ......................

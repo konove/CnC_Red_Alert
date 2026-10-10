@@ -80,6 +80,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
@@ -593,15 +594,18 @@ void ScoreScaleClass::Update() {
     AnimTimer.Set(1);
     if (Stage != 5) {
       show_.text_page().view().BlitTo(
-          TheScreen().hidden_view(), base::At(_destx, Stage + 1) * 2, YPos * 2,
-          base::At(_destx, Stage + 1) * 2, YPos * 2,
-          base::At(_destw, Stage + 1) * 2, base::At(_destw, Stage + 1) * 2);
+          TheScreen().hidden_view(),
+          Rect{base::At(_destx, Stage + 1) * 2, YPos * 2,
+               base::At(_destw, Stage + 1) * 2,
+               base::At(_destw, Stage + 1) * 2},
+          base::At(_destx, Stage + 1) * 2, YPos * 2);
       // SysMemPage.Blit(*PseudoSeenBuff, _destx[Stage+1], YPos,
       // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
     }
     if (Stage) {
       const FontStyle font = ScoreFontStyle(Palette);
-      show_.text_page().view().FillRect(0, 0, 14, 14, game::kTransparentBlack);
+      show_.text_page().view().FillRect(Rect{0, 0, 15, 15},
+                                        game::kTransparentBlack);
       show_.text_page().view().Print(
           font, Text(), 0, 0, game::kTransparentBlack, game::kTransparentBlack);
       show_.text_page().view().Scale(TheScreen().hidden_view(), 0, 0,
@@ -1256,9 +1260,9 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
   ** Here's the animation/draw loop for blowing up the factory
   */
   for (int i = 0; i < 98; i++) {
-    TheScreen().sys_mem_page().view().BlitTo(TheScreen().sys_mem_page().view(),
-                                             BUILDING_X, BUILDING_Y, 0, 0,
-                                             320 - BUILDING_X, 48);
+    TheScreen().sys_mem_page().view().BlitTo(
+        TheScreen().sys_mem_page().view(),
+        Rect{BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48}, 0, 0);
     int shapenum = 0;  // no damage
     if (i >= 60) {
       shapenum = engine::gfx::CountShapeFrames(factptr) - 2;  // some damage
@@ -1313,8 +1317,9 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
         i + 32, 40, WINDOW_MAIN,
         ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
         ScoreRemapYellow, MouseClass::UnitShadow);
-    TheScreen().sys_mem_page().view().BlitTo(
-        show.page().view(), 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
+                                             Rect{0, 0, 320 - BUILDING_X, 48},
+                                             BUILDING_X, BUILDING_Y);
 
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
@@ -1385,7 +1390,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   }
 
   // Draw the white-flash shape on the hidpage
-  TheScreen().sys_mem_page().view().FillRect(0, 0, 124, 9,
+  TheScreen().sys_mem_page().view().FillRect(Rect{0, 0, 125, 10},
                                              game::kTransparentBlack);
   CC_Draw_Shape(TheScreen().sys_mem_page().view(), redptr, 120, 0, 0,
                 WINDOW_MAIN, ShapeFlags::kNone, {}, {});
@@ -1400,8 +1405,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
       CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN,
                     ShapeFlags::kNone, {}, {});
     } else {
-      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
-                                               ypos, 3 + gdikilled, 9);
+      TheScreen().sys_mem_page().view().BlitTo(
+          show.page().view(), Rect{0, 0, 3 + gdikilled, 9}, 172, ypos);
     }
 
     Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
@@ -1424,8 +1429,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
       CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN,
                     ShapeFlags::kNone, {}, {});
     } else {
-      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
-                                               ypos + 12, 3 + nodkilled, 9);
+      TheScreen().sys_mem_page().view().BlitTo(
+          show.page().view(), Rect{0, 0, 3 + nodkilled, 9}, 172, ypos + 12);
     }
 
     Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
@@ -1514,8 +1519,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
   ** Draw the infantrymen and pause briefly before running the graph
   */
   Draw_InfantryMen();
-  TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, BARGRAPH_X,
-                                           CASUALTY_Y, 320 - BARGRAPH_X, 34);
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
+                                           Rect{0, 0, 320 - BARGRAPH_X, 34},
+                                           BARGRAPH_X, CASUALTY_Y);
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
@@ -1538,9 +1544,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
       Draw_InfantryMen();
       Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), i, gdikilled,
                       nodkilled, civkilled);
-      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0,
-                                               BARGRAPH_X, CASUALTY_Y,
-                                               320 - BARGRAPH_X, 34);
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
+                                               Rect{0, 0, 320 - BARGRAPH_X, 34},
+                                               BARGRAPH_X, CASUALTY_Y);
       Count_Up_Print(show, font, "%d", i * GKilled / max, GKilled,
                      SCORETEXT_X + 64, CASUALTY_Y + 2);
       Count_Up_Print(show, font, "%d", i * NKilled / max, NKilled,
@@ -1583,8 +1589,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
     }
     Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), max, gdikilled,
                     nodkilled, civkilled);
-    TheScreen().sys_mem_page().view().BlitTo(
-        show.page().view(), 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
+                                             Rect{0, 0, 320 - BARGRAPH_X, 34},
+                                             BARGRAPH_X, CASUALTY_Y);
     Call_Back_Delay(show, 1);
   }
 }
@@ -1714,8 +1721,9 @@ void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
       base::FormatRuntime(str, percent <= max ? percent : max);
   const int width = static_cast<int>(text.size()) * 7;
 
-  show.text_page().view().FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
-                                   (ypos + 7) * 2, game::kBlack);
+  show.text_page().view().FillRect(
+      Rect::FromCorners(xpos * 2, ypos * 2, (xpos + width) * 2, (ypos + 7) * 2),
+      game::kBlack);
   show.text_page().view().Print(font, text.c_str(), xpos * 2, ypos * 2,
                                 game::kWhite, game::kTransparentBlack);
 
@@ -1792,14 +1800,16 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
           const int xposindex6 = xpos + (index * 6);
 
-          show.page().view().FillRect(xposindex6, ypos, xposindex6 + 6,
-                                      ypos + 6, game::kTransparentBlack);
-          TheScreen().sys_mem_page().view().FillRect(xposindex6, ypos,
-                                                     xposindex6 + 6, ypos + 6,
-                                                     game::kTransparentBlack);
-          show.text_page().view().FillRect(xposindex6 * 2, ypos * 2,
-                                           (xposindex6 + 6) * 2, (ypos + 6) * 2,
-                                           game::kBlack);
+          show.page().view().FillRect(
+              Rect::FromCorners(xposindex6, ypos, xposindex6 + 6, ypos + 6),
+              game::kTransparentBlack);
+          TheScreen().sys_mem_page().view().FillRect(
+              Rect::FromCorners(xposindex6, ypos, xposindex6 + 6, ypos + 6),
+              game::kTransparentBlack);
+          show.text_page().view().FillRect(
+              Rect::FromCorners(xposindex6 * 2, ypos * 2, (xposindex6 + 6) * 2,
+                                (ypos + 6) * 2),
+              game::kBlack);
         }
 
       } else if (key != '\r') {  // else if (key != KN_RETURN &&
@@ -1807,15 +1817,18 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
         ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
-          show.page().view().FillRect(xpos + (index * 6), ypos,
-                                      xpos + (index * 6) + 6, ypos + 5,
-                                      game::kTransparentBlack);
-          TheScreen().sys_mem_page().view().FillRect(
-              xpos + (index * 6), ypos, xpos + (index * 6) + 6, ypos + 5,
+          show.page().view().FillRect(
+              Rect::FromCorners(xpos + (index * 6), ypos,
+                                xpos + (index * 6) + 6, ypos + 5),
               game::kTransparentBlack);
-          show.text_page().view().FillRect(2 * (xpos + (index * 6)), ypos * 2,
-                                           2 * (xpos + (index * 6) + 6),
-                                           2 * (ypos + 6), game::kBlack);
+          TheScreen().sys_mem_page().view().FillRect(
+              Rect::FromCorners(xpos + (index * 6), ypos,
+                                xpos + (index * 6) + 6, ypos + 5),
+              game::kTransparentBlack);
+          show.text_page().view().FillRect(
+              Rect::FromCorners(2 * (xpos + (index * 6)), ypos * 2,
+                                2 * (xpos + (index * 6) + 6), 2 * (ypos + 6)),
+              game::kBlack);
           base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
 
@@ -1852,8 +1865,10 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
                                 HALLFAME_X + (_lastpos * 6) + 5, ypos,
                                 game::kTransparentBlack);
     show.text_page().view().FillRect(
-        2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
-        2 * (HALLFAME_X + (_lastpos * 6) + 5), (2 * ypos) + 1, game::kBlack);
+        Rect::FromCorners(2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
+                          2 * (HALLFAME_X + (_lastpos * 6) + 5),
+                          (2 * ypos) + 1),
+        game::kBlack);
     _lastpos = pos;
     _state = false;
   }
@@ -1862,8 +1877,9 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
       HALLFAME_X + (pos * 6), ypos, HALLFAME_X + (pos * 6) + 5, ypos,
       _state ? game::kLightBlue : game::kTransparentBlack);
   show.text_page().view().FillRect(
-      2 * (HALLFAME_X + (pos * 6)), 2 * ypos, 2 * (HALLFAME_X + (pos * 6) + 5),
-      (2 * ypos) + 1, _state ? game::kLightBlue : game::kBlack);
+      Rect::FromCorners(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
+                        2 * (HALLFAME_X + (pos * 6) + 5), (2 * ypos) + 1),
+      _state ? game::kLightBlue : game::kBlack);
 
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
@@ -1898,7 +1914,7 @@ void Draw_InfantryMen() {
   /*
   ** First restore the background
   */
-  view.BlitTo(view, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
+  view.BlitTo(view, Rect{BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34}, 0, 0);
   /*
   ** Then draw all the infantrymen on the clean SysMemPage
   */
@@ -2009,7 +2025,8 @@ void New_Infantry_Anim(int index, int anim) {
 void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
                      int ckilled) {
   if (gkilled) {
-    view.FillRect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, game::kLightCyan);
+    view.FillRect(Rect::FromCorners(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5),
+                  game::kLightCyan);
     view.DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
                   game::kTransparentBlack);
     view.DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
@@ -2029,7 +2046,9 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
     }
   }
   if (nkilled) {
-    view.FillRect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, game::kRed);
+    view.FillRect(
+        Rect::FromCorners(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17),
+        game::kRed);
     view.DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
                   game::kTransparentBlack);
     view.DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
@@ -2053,7 +2072,9 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
   }
 
   if (ckilled) {
-    view.FillRect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, game::kRed);
+    view.FillRect(
+        Rect::FromCorners(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29),
+        game::kRed);
     view.DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
                   game::kTransparentBlack);
     view.DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,

@@ -119,6 +119,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/hardware_cursor.h"
@@ -1724,17 +1725,18 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   CellRedraw.set();
 
   if (view.Lock()) {
-    view.FillRect(
-        TacPixelX, TacPixelY, TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
-        TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, game::kBlack);
+    view.FillRect(Rect{TacPixelX, TacPixelY, Lepton_To_Pixel(TacLeptonWidth),
+                       Lepton_To_Pixel(TacLeptonHeight)},
+                  game::kBlack);
     Redraw_Icons(view, 0);
     RenderObjects(view);
     Redraw_Shadow(view);
     Redraw_Shadow_Rects(view);
 
     if (IsRubberBand) {
-      view.DrawRect(BandX + TacPixelX, BandY + TacPixelY, NewX + TacPixelX,
-                    NewY + TacPixelY, game::kWhite);
+      view.DrawRect(Rect::FromCorners(BandX + TacPixelX, BandY + TacPixelY,
+                                      NewX + TacPixelX, NewY + TacPixelY),
+                    game::kWhite);
     }
     view.Unlock();
   }
@@ -1945,9 +1947,9 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
               if (ClipRect(xpixel, ypixel, ww, hh,
                            Lepton_To_Pixel(TacLeptonWidth),
                            Lepton_To_Pixel(TacLeptonHeight))) {
-                view.FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
-                              TacPixelX + xpixel + ww - 1,
-                              TacPixelY + ypixel + hh - 1, game::kBlack);
+                view.FillRect(
+                    Rect{TacPixelX + xpixel, TacPixelY + ypixel, ww, hh},
+                    game::kBlack);
               }
             }
           }
