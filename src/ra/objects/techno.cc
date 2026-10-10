@@ -1227,8 +1227,10 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
     // under three pixels wide has no room for it. A vehicle whose shape is not
     // loaded has no width at all.
     constexpr int kMinHealthBarWidth = 3;
-    if (width >= kMinHealthBarWidth && Strength &&
-        (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar)) {
+    const bool shows_health_bar =
+        width >= kMinHealthBarWidth && Strength != 0 &&
+        (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar);
+    if (shows_health_bar) {
       const Fixed ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
@@ -1269,8 +1271,8 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       const int ly = height / 2;
       const int dx = width / 5;
       const int dy = height / 5;
-      const int fudge =
-          House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar ? 4 : 0;
+      // The top corners make room for the health bar.
+      const int fudge = shows_health_bar ? 4 : 0;
       if (What_Am_I() == RTTI_VESSEL) {
         lx = width / 2;
       }

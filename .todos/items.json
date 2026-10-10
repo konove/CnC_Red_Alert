@@ -12132,17 +12132,18 @@
         "td",
         "ui"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T02:38:02Z",
-      "updated": "2026-10-10T02:38:02Z",
+      "updated": "2026-10-10T05:11:57Z",
       "source": "48565e48",
+      "resolution": "`TechnoClass::Draw_It()` in both games computes `shows_health_bar` once and uses it for the bar and for `fudge`, so the top corners of the selection box move down only when a bar is drawn. The tests' new `DrawSelected()` helper reports the box's top and bottom rows; `TheSelectionBoxStaysPutWithoutAHealthBar` covers a one-pixel-wide object, one with no shape and one with no strength.",
       "anchors": [
         {
           "path": "src/ra/objects/techno.cc",
-          "startLine": 1272,
-          "endLine": 1273,
-          "text": "      const int fudge =\n          House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar ? 4 : 0;",
+          "startLine": 1274,
+          "endLine": 1275,
+          "text": "      // The top corners make room for the health bar.\n      const int fudge = shows_health_bar ? 4 : 0;",
           "before": [
             "      const int ly = height / 2;",
             "      const int dx = width / 5;",
@@ -12157,9 +12158,9 @@
         },
         {
           "path": "src/td/objects/techno.cc",
-          "startLine": 979,
+          "startLine": 981,
           "endLine": 982,
-          "text": "      const int fudge =\n          House->Is_Ally(ThePlayer()) || TheSpecialFlags().enemy_health_bars\n              ? 4\n              : 0;",
+          "text": "      // The top corners make room for the health bar.\n      const int fudge = shows_health_bar ? 4 : 0;",
           "before": [
             "      const int ly = height / 2;",
             "      const int dx = width / 5;",

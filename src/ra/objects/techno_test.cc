@@ -41,37 +41,65 @@ class TechnoTest : public GameFixture {
     return *unit;
   }
 
-  // Draws a selected, undamaged enemy ranger whose shape is `max_size` pixels
-  // across onto a page of kBackground and returns how many pixels the health
-  // bar's black frame or green interior painted.
-  static int HealthBarPixels(const int max_size) {
+  // What drawing a selected object painted.
+  struct Drawn {
+    // Pixels of the health bar's black frame and green interior.
+    int health_bar_pixels = 0;
+    // The first and last rows holding a white pixel of the selection box,
+    // measured down from the row the object was drawn at.
+    int box_top = 0;
+    int box_bottom = 0;
+  };
+
+  // Draws a selected enemy ranger whose shape is `max_size` pixels across
+  // onto a page of kBackground. It is undamaged, or has no strength left
+  // when `alive` is false.
+  static Drawn DrawSelected(const int max_size, const bool alive = true) {
     UnitTypeClass& type = UnitTypeClass::As_Reference(UNIT_JEEP);
     type.MaxSize = max_size;
     // Without rules a ranger has no strength, and nothing that weak has a bar.
     type.MaxStrength = 100;
     TechnoClass& unit = MakeUnit(HOUSE_USSR);
     unit.IsSelected = true;
+    if (!alive) {
+      unit.Strength = 0;
+    }
 
     PixelBuffer page(kPageWidth, kPageHeight);
     page.view().Clear(kBackground);
     // The vehicle's own Draw_It() stops early without a shape to draw.
-    unit.TechnoClass::Draw_It(page.view(), kPageWidth / 2, kPageHeight / 2,
+    unit.TechnoClass::Draw_It(page.view(), kPageWidth / 2, kCenterRow,
                               WINDOW_MAIN);
 
-    int painted = 0;
+    Drawn drawn;
+    bool has_box = false;
     for (int y = 0; y < kPageHeight; ++y) {
       for (int x = 0; x < kPageWidth; ++x) {
         const int color = page.view().GetPixel(x, y);
         if (color == game::kBlack || color == game::kLightGreen) {
-          ++painted;
+          ++drawn.health_bar_pixels;
+        }
+        if (color == game::kWhite) {
+          if (!has_box) {
+            drawn.box_top = y - kCenterRow;
+            has_box = true;
+          }
+          drawn.box_bottom = y - kCenterRow;
         }
       }
     }
-    return painted;
+    EXPECT_TRUE(has_box);
+    return drawn;
+  }
+
+  // How many pixels the health bar of an undamaged object paints.
+  static int HealthBarPixels(const int max_size) {
+    return DrawSelected(max_size).health_bar_pixels;
   }
 
   static constexpr int kPageWidth = 640;
   static constexpr int kPageHeight = 400;
+  static constexpr int kCenterRow = kPageHeight / 2;
   // A colour that neither the bar nor the selection box uses.
   static constexpr unsigned char kBackground = 100;
 };
@@ -141,6 +169,22 @@ TEST_F(TechnoTest, ASelectedObjectShowsItsHealthBar) {
 TEST_F(TechnoTest, AnObjectTooNarrowForAPipGetsNoHealthBar) {
   EXPECT_EQ(HealthBarPixels(2), 0);  // One pixel wide.
   EXPECT_EQ(HealthBarPixels(0), 0);  // No shape loaded.
+}
+
+// The top corners of the selection box move down four rows to clear the bar,
+// and only then.
+TEST_F(TechnoTest, TheSelectionBoxMakesRoomForTheHealthBar) {
+  const Drawn drawn = DrawSelected(24);
+  EXPECT_GT(drawn.health_bar_pixels, 0);
+  EXPECT_EQ(drawn.box_top, 4 - drawn.box_bottom);
+}
+
+TEST_F(TechnoTest, TheSelectionBoxStaysPutWithoutAHealthBar) {
+  for (const Drawn& drawn :
+       {DrawSelected(2), DrawSelected(0), DrawSelected(24, /*alive=*/false)}) {
+    EXPECT_EQ(drawn.health_bar_pixels, 0);
+    EXPECT_EQ(drawn.box_top, -drawn.box_bottom);
+  }
 }
 
 }  // namespace
