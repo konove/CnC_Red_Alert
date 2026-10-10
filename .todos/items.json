@@ -11559,10 +11559,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T02:20:18Z",
+      "updated": "2026-10-10T02:31:36Z",
       "resolution": "The 70 text-erase fills (TD `mapsel.cc`, `score.cc`, the editor and network dialogs, RA `netdlg.cc`/`mapedtm.cc`) are now exact `Rect{x, y, w, h}`; the ending, intro and editor strip fills cover 640x40 / 640x16; the tooltip border hugs its text on the right, the Nod casualty bars are exactly `killed` wide (new `Draw_Bar`), and the text button's black border hugs the button. `Draw_Box`, the placement grid, gauges, colour swatches and the other true inclusive corners keep `FromCorners`. New UI scripts `tooltip` (both games), `gdi_casualties` and `nod_casualties` pin the changed screens; the only pixel changes are the tooltip edge, the bars, and score-screen grid art no longer blacked out beside the numbers.",
       "toDecide": "For each group: is the extra pixel what the screen should look like (then write it as `Rect{x, y, w + 1, h + 1}` or leave `FromCorners`), or a bug to fix to `Rect{x, y, w, h}`? Fixing changes screenshots and needs a look at the dialogs, the map selection and the score screen.",
       "decisions": [
@@ -11662,15 +11662,16 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T02:35:59Z",
+      "resolution": "`TechnoClass::Draw_It()` in both games now skips the health bar when the object is under three pixels wide (`kMinHealthBarWidth`), so the clamp never sees an upper bound below 1 and no degenerate rectangle is drawn. The width is really reachable: a vehicle whose shape is not loaded has `MaxSize` 0 and so width 0. `ra/objects/techno_test.cc` and the new `td/objects/techno_test.cc` draw a one-pixel-wide and a zero-width vehicle (7 stray pixels before the fix, none after) and an 18-pixel one as the control.",
       "anchors": [
         {
           "path": "src/td/objects/techno.cc",
-          "startLine": 953,
-          "endLine": 953,
+          "startLine": 957,
+          "endLine": 957,
           "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
           "before": [
             "      int pwidth = base::FixedToCardinal(",
@@ -11686,8 +11687,8 @@
         },
         {
           "path": "src/ra/objects/techno.cc",
-          "startLine": 1245,
-          "endLine": 1245,
+          "startLine": 1250,
+          "endLine": 1250,
           "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
           "before": [
             "      */",

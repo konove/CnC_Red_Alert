@@ -1223,7 +1223,12 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
     int height = 0;
     Class_Of().Dimensions(width, height);
 
-    if (Strength && (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar)) {
+    // The bar's interior is two pixels narrower than the object, so an object
+    // under three pixels wide has no room for it. A vehicle whose shape is not
+    // loaded has no width at all.
+    constexpr int kMinHealthBarWidth = 3;
+    if (width >= kMinHealthBarWidth && Strength &&
+        (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar)) {
       const Fixed ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
