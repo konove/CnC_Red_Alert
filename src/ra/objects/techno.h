@@ -70,9 +70,7 @@ namespace ra {
 /****************************************************************************
 **	This is the common data between building and units.
 */
-class TechnoClass : public RadioClass,
-                    public StageClass,
-                    public CargoClass {
+class TechnoClass : public RadioClass, public StageClass {
  public:
   /*
   **	If this techno object has detected that it has outlived its
@@ -383,6 +381,14 @@ class TechnoClass : public RadioClass,
     return flasher_;
   }
 
+  // The passengers this object carries; empty for one that carries none.
+  [[nodiscard]] CargoClass& cargo() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return cargo_;
+  }
+  [[nodiscard]] const CargoClass& cargo() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return cargo_;
+  }
+
   // The door this object opens to load and unload: an APC's or a transport's
   // hatch, a war factory's door. One that has none leaves it closed.
   [[nodiscard]] game::Door& door() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -498,6 +504,7 @@ class TechnoClass : public RadioClass,
   uint16_t kills_{0};
 
   game::FlasherClass flasher_;
+  CargoClass cargo_;
   game::Door door_;
 };
 

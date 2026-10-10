@@ -71,7 +71,7 @@ static bool SendGroupOutOf(FootClass* group, TechnoClass* host) {
   while (FootClass* member = PopHead(group)) {
     if (!is_building) {
       // Nothing checks that the transport has room.
-      host->Attach(member);
+      host->cargo().Attach(member);
       host->Assign_Mission(MISSION_UNLOAD);
       any_emerged = true;
     } else if (host->Exit_Object(member) == 2) {
@@ -185,7 +185,7 @@ static FootClass* CreateGroup(TeamType* team_type) {
 
   if (riders != nullptr) {
     // Everything else rides in the first transport.
-    transports->Attach(riders);
+    transports->cargo().Attach(riders);
 
     // HACK ALERT! A flying or sailing transport that the team's missions unload
     // is a loaner: it leaves the map once it has unloaded.

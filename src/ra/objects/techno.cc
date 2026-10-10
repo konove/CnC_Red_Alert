@@ -2585,7 +2585,7 @@ void TechnoClass::AI() {
     Mark(MARK_CHANGE_REDRAW);
   }
 
-  CargoClass::AI();
+  cargo_.AI();
   RadioClass::AI();
 
   if (!IsActive || (Height > 0 && What_Am_I() != RTTI_AIRCRAFT)) {
@@ -4794,8 +4794,8 @@ void TechnoClass::Detach(Target target, bool all) {
 void TechnoClass::Kill_Cargo(TechnoClass* source) {
   DCHECK(IsActive);
 
-  while (Is_Something_Attached()) {
-    FootClass* foot = Detach_Object();
+  while (cargo().Is_Something_Attached()) {
+    FootClass* foot = cargo().Detach_Object();
     if (foot != nullptr) {
       foot->Record_The_Kill(source);
       base::DeletePooled(foot);
@@ -4875,8 +4875,8 @@ int TechnoClass::Value() const {
   */
   if ((TheRules().Diff.at(House->Difficulty).IsContentScan ||
        House->IQ >= TheRules().IQContentScan) &&
-      Is_Something_Attached()) {
-    const FootClass* object = Attached_Object();
+      cargo().Is_Something_Attached()) {
+    const FootClass* object = cargo().Attached_Object();
 
     while (object != nullptr) {
       value += object->Value();
@@ -5788,7 +5788,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
   *pips. The *	pip color represents the type of occupant.
   */
   if (Techno_Type_Class()->Max_Passengers() > 0) {
-    const ObjectClass* object = Attached_Object();
+    const ObjectClass* object = cargo().Attached_Object();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       PipEnum pip = PIP_EMPTY;
 

@@ -1280,7 +1280,7 @@ int TeamClass::Recruit(int typeindex) {
             **	If a transport is added to the team, the occupants
             **	are added by default.
             */
-            FootClass* f = best->Attached_Object();
+            FootClass* f = best->cargo().Attached_Object();
             while (f) {
               Add(f);
               f = dynamic_cast<FootClass*>(f->Next);
@@ -1317,7 +1317,7 @@ int TeamClass::Recruit(int typeindex) {
             **	If a transport is added to the team, the occupants
             **	are added by default.
             */
-            FootClass* f = best->Attached_Object();
+            FootClass* f = best->cargo().Attached_Object();
             while (f) {
               Add(f);
               f = dynamic_cast<FootClass*>(f->Next);
@@ -2172,12 +2172,12 @@ int TeamClass::TMission_Unload() {
       ** on doesn't have a building (read: mine) in it already.
       */
       /* Also, allow unload if it's a MAD Tank. */
-      if (unit->Is_Something_Attached() ||
+      if (unit->cargo().Is_Something_Attached() ||
           (unit->What_Am_I() == RTTI_UNIT &&
            *dynamic_cast<UnitClass*>(unit) == UNIT_MINELAYER && unit->Ammo) ||
           (unit->What_Am_I() == RTTI_UNIT &&
            *dynamic_cast<UnitClass*>(unit) == UNIT_MAD)) {
-        if (unit->Is_Something_Attached()) {
+        if (unit->cargo().Is_Something_Attached()) {
           /*
           ** Passenger-carrying vehicles will always return false until
           ** they've unloaded all passengers.

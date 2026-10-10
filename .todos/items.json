@@ -12326,18 +12326,18 @@
       "status": "fixed",
       "author": "user",
       "created": "2026-10-10T20:25:45Z",
-      "updated": "2026-10-10T21:29:35Z",
+      "updated": "2026-10-10T21:37:00Z",
       "resolution": "`TechnoClass` in both games no longer inherits `game::Door`; it holds a private `door_` reached through `door()`, and all callers go through it. With the owner no longer inheriting the names, Door's methods lost their redundant \"Door\": `Open`, `Close`, `IsOpen`, `IsClosed`, `IsOpening`, `Frame`, `NeedsRedraw`, `ClearRedraw`. The saved-game field order is unchanged.",
       "anchors": [
         {
           "path": "src/ra/objects/techno.h",
           "startLine": 74,
-          "endLine": 76,
-          "text": "                    public StageClass,\n                    public CargoClass {\n public:",
+          "endLine": 74,
+          "text": " public:",
           "before": [
             "**\tThis is the common data between building and units.",
             "*/",
-            "class TechnoClass : public RadioClass,"
+            "class TechnoClass : public RadioClass, public StageClass {"
           ],
           "after": [
             "  /*",

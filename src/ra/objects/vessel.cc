@@ -210,8 +210,8 @@ VesselClass::~VesselClass() {
     /*
     **	If there are any cargo members, delete them.
     */
-    while (Is_Something_Attached()) {
-      base::DeletePooled(Detach_Object());
+    while (cargo().Is_Something_Attached()) {
+      base::DeletePooled(cargo().Detach_Object());
     }
 
     Limbo();
@@ -606,10 +606,10 @@ void VesselClass::AI() {
 #endif
 
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
-  if (*this == VESSEL_CARRIER && How_Many()) {
+  if (*this == VESSEL_CARRIER && cargo().How_Many()) {
     if (MoebiusCountDown.IsFinished()) {
       MoebiusCountDown.Set(TheRules().ReloadRate * kTicksPerMinute);
-      ObjectClass* obj = Attached_Object();
+      ObjectClass* obj = cargo().Attached_Object();
       while (obj) {
         int32_t bogus = 0;
         dynamic_cast<AircraftClass*>(obj)->Receive_Message(this, RADIO_RELOAD,
@@ -756,7 +756,7 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
   ActionType action = DriveClass::What_Action(object);
 
   if (action == ACTION_SELF) {
-    if (Class->Max_Passengers() == 0 || !How_Many()) {
+    if (Class->Max_Passengers() == 0 || !cargo().How_Many()) {
       action = ACTION_NONE;
     } else {
       // check to see if the transporter can unload.
@@ -954,8 +954,8 @@ game::ResultType VesselClass::Take_Damage(int& damage, int distance,
     **	Possibly have the crew member run away.
     */
     Mark(MARK_UP);
-    while (Is_Something_Attached()) {
-      FootClass* object = Detach_Object();
+    while (cargo().Is_Something_Attached()) {
+      FootClass* object = cargo().Detach_Object();
 
       /*
       **	Only infantry can run from a destroyed vehicle. Even then, it is
@@ -1013,7 +1013,7 @@ game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
   int diff = 0;
 
   if (*this == VESSEL_CARRIER) {
-    if (!How_Many() || Arm.HasTimeLeft()) {
+    if (!cargo().How_Many() || Arm.HasTimeLeft()) {
       return game::FIRE_REARM;
     }
     return game::FIRE_OK;
@@ -1282,8 +1282,8 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
     order = MISSION_MOVE;
   } else {
     if (Class->PrimaryWeapon == nullptr) {
-      if (IsALoaner && Class->Max_Passengers() > 0 && Is_Something_Attached() &&
-          !Team) {
+      if (IsALoaner && Class->Max_Passengers() > 0 &&
+          cargo().Is_Something_Attached() && !Team) {
         order = MISSION_UNLOAD;
       } else {
         order = MISSION_GUARD;
@@ -1348,7 +1348,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           !House->Is_Ally(from->Owner())) {
         return RADIO_STATIC;
       }
-      if (How_Many() < Class->Max_Passengers()) {
+      if (cargo().How_Many() < Class->Max_Passengers()) {
         if (*this == VESSEL_CARRIER && from->What_Am_I() == RTTI_AIRCRAFT) {
           return RADIO_ROGER;
         }
@@ -1370,7 +1370,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
     */
     case RADIO_IM_IN:
       if (*this != VESSEL_CARRIER) {
-        if (How_Many() == Class->Max_Passengers()) {
+        if (cargo().How_Many() == Class->Max_Passengers()) {
           LST_Close_Door();
         } else {
           DoorShutCountDown.Set(kTicksPerSecond);
@@ -1404,7 +1404,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         /*
         **	Can't ever load up so tell the passenger to bug off.
         */
-        if (How_Many() >= Class->Max_Passengers()) {
+        if (cargo().How_Many() >= Class->Max_Passengers()) {
           return RADIO_NEGATIVE;
         }
 
@@ -1428,7 +1428,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       **
       */
       if (Class->Max_Passengers() > 0 && *this == VESSEL_TRANSPORT &&
-          How_Many() < Class->Max_Passengers()) {
+          cargo().How_Many() < Class->Max_Passengers()) {
         DriveClass::Receive_Message(from, message, param);
 
         //				if (!IsDriving && !IsRotating &&
@@ -1483,7 +1483,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         return RADIO_ROGER;
       }
       if (Class->Max_Passengers() > 0 && *this == VESSEL_CARRIER &&
-          How_Many() < Class->Max_Passengers()) {
+          cargo().How_Many() < Class->Max_Passengers()) {
         // FootClass::Receive_Message has no RADIO_DOCKING case and would only
         // forward this on, so the carrier asks TechnoClass directly.
         // NOLINTNEXTLINE(bugprone-parent-virtual-call)
@@ -1717,12 +1717,13 @@ int VesselClass::Mission_Unload() {
     switch (Status) {
       case kInitialCheck:
         dir = Desired_Load_Dir(nullptr, cell);
-        if (How_Many() > 0 && cell.index() != 0) {
+        if (cargo().How_Many() > 0 && cell.index() != 0) {
           Do_Turn(dir);
           Status = kManeuvering;
           return 1;
         }
-        if (!How_Many()) {  // don't break out if still carrying passengers
+        // Don't break out if still carrying passengers.
+        if (!cargo().How_Many()) {
           Assign_Mission(MISSION_GUARD);
         }
         break;
@@ -1748,7 +1749,7 @@ int VesselClass::Mission_Unload() {
         break;
 
       case kUnloading:
-        if (How_Many()) {
+        if (cargo().How_Many()) {
           /*
           **	Don't do anything if still in radio contact.
           */
@@ -1756,7 +1757,7 @@ int VesselClass::Mission_Unload() {
             return kTicksPerSecond;
           }
 
-          FootClass* passenger = Detach_Object();
+          FootClass* passenger = cargo().Detach_Object();
 
           if (passenger != nullptr) {
             const game::Direction toface =
@@ -1793,7 +1794,7 @@ int VesselClass::Mission_Unload() {
             **	it and then bail out of this deploy process.
             */
             if (!placed) {
-              Attach(passenger);
+              cargo().Attach(passenger);
 
               /*
               **	Tell everyone around the transport to scatter.
@@ -2337,7 +2338,7 @@ BulletClass* VesselClass::Fire_At(Target target, int which) {
 
   if (*this == VESSEL_CARRIER) {
     Arm.Set(TheRules().CarrierLaunchDelay);
-    FootClass* passenger = Detach_Object();
+    FootClass* passenger = cargo().Detach_Object();
     if (passenger != nullptr) {
       TheWorld().scenario_init()++;
       passenger->Unlimbo(Center_Coord());
@@ -2346,7 +2347,7 @@ BulletClass* VesselClass::Fire_At(Target target, int which) {
       passenger->Assign_Target(TarCom);
       passenger->Commence();
       // If we've launched our last aircraft, discontinue attacking.
-      if (!How_Many()) {
+      if (!cargo().How_Many()) {
         Assign_Target(Target{});
       }
     }

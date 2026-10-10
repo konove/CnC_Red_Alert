@@ -747,7 +747,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
         techno == NavCom.AsTechno()) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
         Limbo();
-        techno->Attach(this);
+        techno->cargo().Attach(this);
       }
       return false;
     }

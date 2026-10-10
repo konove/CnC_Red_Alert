@@ -347,7 +347,7 @@ TEST_F(ReinforcementTest,
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
-  EXPECT_EQ(jeep->How_Many(), 0);
+  EXPECT_EQ(jeep->cargo().How_Many(), 0);
   ASSERT_EQ(TheObjectHeaps().infantry().Count(), 1);
   const InfantryClass* soldier = TheObjectHeaps().infantry().ActiveAt(0);
   EXPECT_FALSE(soldier->IsInLimbo);
@@ -366,7 +366,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportOnItsOrigin) {
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
-  EXPECT_EQ(apc->How_Many(), 2);
+  EXPECT_EQ(apc->cargo().How_Many(), 2);
   EXPECT_EQ(apc->MissionQueue, MISSION_UNLOAD);
 }
 
@@ -412,7 +412,7 @@ TEST_F(ReinforcementTest, AnInfantryTeamIsLoadedIntoTheTransportAtItsOrigin) {
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
-  EXPECT_EQ(apc->How_Many(), 2);
+  EXPECT_EQ(apc->cargo().How_Many(), 2);
   // Queued: the mission starts on the transport's next turn.
   EXPECT_EQ(apc->MissionQueue, MISSION_UNLOAD);
   ASSERT_EQ(TheObjectHeaps().infantry().Count(), 2);
@@ -434,7 +434,7 @@ TEST_F(ReinforcementTest, AVehicleTeamIgnoresTheTransportAtItsOrigin) {
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
-  EXPECT_EQ(apc->How_Many(), 0);
+  EXPECT_EQ(apc->cargo().How_Many(), 0);
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 2);
   const UnitClass* jeep = TheObjectHeaps().unit().ActiveAt(1);
   EXPECT_FALSE(jeep->IsInLimbo);
@@ -457,7 +457,7 @@ TEST_F(ReinforcementTest, ATeamWithATransportArrivesLoaded) {
   const UnitClass* apc = TheObjectHeaps().unit().ActiveAt(0);
   EXPECT_FALSE(apc->IsInLimbo);
   EXPECT_EQ(Cell::Containing(apc->Coord).x(), 0);
-  EXPECT_EQ(apc->How_Many(), 2);
+  EXPECT_EQ(apc->cargo().How_Many(), 2);
   EXPECT_EQ(apc->Team, team);
   ASSERT_EQ(TheObjectHeaps().infantry().Count(), 2);
   for (int index = 0; index < 2; index++) {
@@ -479,7 +479,7 @@ TEST_F(ReinforcementTest, AGroundTransportThatUnloadsIsNotALoaner) {
 
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
   const UnitClass* apc = TheObjectHeaps().unit().ActiveAt(0);
-  EXPECT_EQ(apc->How_Many(), 1);
+  EXPECT_EQ(apc->cargo().How_Many(), 1);
   // Only a flying or sailing transport leaves the map after unloading.
   EXPECT_FALSE(apc->IsALoaner);
 }
@@ -499,7 +499,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterIsALoanerOnlyWhenTheTeamUnloads) {
 
   EXPECT_TRUE(DeliverReinforcements(&unloading));
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
-  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->How_Many(), 1);
+  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->cargo().How_Many(), 1);
   EXPECT_EQ(KeptAircraftCount(), 0);
 
   EXPECT_TRUE(DeliverReinforcements(&empty));

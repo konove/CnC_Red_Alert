@@ -487,7 +487,7 @@ void TechnoClass::Serialize(Archive& ar) {
   RadioClass::Serialize(ar);
   flasher_.Serialize(ar);
   StageClass::Serialize(ar);
-  CargoClass::Serialize(ar);
+  cargo_.Serialize(ar);
   door_.Serialize(ar);
   ar(kills_);
   bool ticked = IsTickedOff;

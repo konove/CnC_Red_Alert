@@ -564,8 +564,9 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     **	Asks if the passenger can load on this transport.
     */
     case RADIO_CAN_LOAD:
-      if (Class->IsTransporter && How_Many() < Class->Max_Passengers() &&
-          from && House->Class->House == from->Owner()) {
+      if (Class->IsTransporter &&
+          cargo().How_Many() < Class->Max_Passengers() && from &&
+          House->Class->House == from->Owner()) {
         return RADIO_ROGER;
       }
       return RADIO_NEGATIVE;
@@ -593,7 +594,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     **	entered the transport.
     */
     case RADIO_IM_IN:
-      if (How_Many() == Class->Max_Passengers()) {
+      if (cargo().How_Many() == Class->Max_Passengers()) {
         APC_Close_Door();
       }
       return RADIO_ATTACH;
@@ -604,7 +605,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_DOCKING:
       if (Class->IsTransporter && *this == UNIT_APC &&
-          How_Many() < Class->Max_Passengers()) {
+          cargo().How_Many() < Class->Max_Passengers()) {
         TarComClass::Receive_Message(from, message, param);
 
         /*
@@ -907,8 +908,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
       }
     } else {
       if (*this != UNIT_HOVER) {
-        while (Is_Something_Attached()) {
-          FootClass* object = Detach_Object();
+        while (cargo().Is_Something_Attached()) {
+          FootClass* object = cargo().Detach_Object();
 
           if (!object) {
             break;  // How can this happen?
@@ -1099,8 +1100,8 @@ UnitClass::~UnitClass() {
     /*
     **	If there are any cargo members, delete them.
     */
-    while (Is_Something_Attached()) {
-      base::DeletePooled(Detach_Object());
+    while (cargo().Is_Something_Attached()) {
+      base::DeletePooled(cargo().Detach_Object());
     }
 
     Limbo();
@@ -1254,8 +1255,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         return;
       }
     } else {
-      if (IsALoaner && Class->IsTransporter && Is_Something_Attached() &&
-          !Team) {
+      if (IsALoaner && Class->IsTransporter &&
+          cargo().Is_Something_Attached() && !Team) {
         order = MISSION_UNLOAD;
       } else {
         order = MISSION_GUARD;
@@ -1306,7 +1307,7 @@ void UnitClass::Find_LZ() {
   Validate();
 
   if (*this == UNIT_HOVER) {
-    if (!IsRotating && Is_Something_Attached() && !NavCom) {
+    if (!IsRotating && cargo().Is_Something_Attached() && !NavCom) {
       const Cell cell = TheMap().Calculated_Cell(
           SOURCE_BEACH, House->Class->House);  // Map exit cell number.
       Assign_Destination(Target::FromCellIndex(cell));
@@ -1346,7 +1347,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
     return false;
   }
 
-  if (Is_Something_Attached()) {
+  if (cargo().Is_Something_Attached()) {
     /*
     **	Only unload if the hovercraft has reached the beach.
     */
@@ -1355,7 +1356,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
           Coord,
           game::NearestFacing(PrimaryFacing.current())));  // Cell to unload to.
 
-      FootClass* unit = Attached_Object();  // The unit to be unloaded.
+      FootClass* unit = cargo().Attached_Object();  // The unit to be unloaded.
 
       Mark(MARK_UP);
       if (TheMap().In_Radar(cell) && !TheMap().at(cell).Cell_Unit()) {
@@ -1366,8 +1367,8 @@ bool UnitClass::Unload_Hovercraft_Process() {
           int count = 0;
           bool first = true;
           FootClass* secondary = nullptr;
-          while (Attached_Object()) {
-            FootClass* u = Detach_Object();
+          while (cargo().Attached_Object()) {
+            FootClass* u = cargo().Detach_Object();
 
             if (!first && !secondary) {
               secondary = u;
@@ -1634,7 +1635,7 @@ void UnitClass::Per_Cell_Process(bool center) {
         TheGameState().special_flag() = true;
         Limbo();
         TheGameState().special_flag() = false;
-        whom->Attach(this);
+        whom->cargo().Attach(this);
         return;
 
       case RadioMessageType::RADIO_STATIC:
@@ -1764,7 +1765,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   *not be eliminated.
   */
   if (center && IsALoaner && !TheMap().In_Radar(cell)) {
-    if (IsReturning || !Is_Something_Attached()) {
+    if (IsReturning || !cargo().Is_Something_Attached()) {
       if (*this == UNIT_GUNBOAT) {
         const Cell current_cell = Cell::Containing(Coord);
         if (current_cell.x() <= TheMap().MapCellX) {
@@ -2112,8 +2113,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     /*
     **	If this unit has "piggy back" unit(s), then render it at the same time.
     */
-    if (*this == UNIT_HOVER && Is_Something_Attached()) {
-      TechnoClass* u = Attached_Object();
+    if (*this == UNIT_HOVER && cargo().Is_Something_Attached()) {
+      TechnoClass* u = cargo().Attached_Object();
 
       int counter = 0;
       for (;;) {
@@ -2320,7 +2321,7 @@ int UnitClass::Mission_Unload() {
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell.index() != 0) {
+          if (cargo().How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2349,8 +2350,8 @@ int UnitClass::Mission_Unload() {
           break;
 
         case kUnloading:
-          if (How_Many()) {
-            FootClass* passenger = Detach_Object();
+          if (cargo().How_Many()) {
+            FootClass* passenger = cargo().Detach_Object();
 
             if (passenger) {
               const game::Direction toface =
@@ -2380,7 +2381,7 @@ int UnitClass::Mission_Unload() {
               **	it and then bail out of this deploy process.
               */
               if (!placed) {
-                Attach(passenger);
+                cargo().Attach(passenger);
                 Status = kClosingDoor;
               }
             }
@@ -3427,7 +3428,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   */
   if (action == ACTION_SELF) {
     if (*this != UNIT_MCV) {
-      if (!Class->IsTransporter || !How_Many()) {
+      if (!Class->IsTransporter || !cargo().How_Many()) {
         action = ACTION_NONE;
       }
     } else {
@@ -3459,7 +3460,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       object->What_Am_I() == RTTI_BUILDING) {
     const auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
-        !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
+        !building->In_Radio_Contact() &&
+        !building->cargo().Is_Something_Attached()) {
       action = ACTION_MOVE;
     }
   }
@@ -3687,7 +3689,7 @@ void UnitClass::Exit_Repair() {
 int UnitClass::Mission_Guard() {
   Validate();
   if (*this == UNIT_HOVER) {
-    if (Is_Something_Attached()) {
+    if (cargo().Is_Something_Attached()) {
       Assign_Mission(MISSION_UNLOAD);
       Find_LZ();
     } else {
@@ -3968,7 +3970,7 @@ void UnitClass::Stun() {
 int UnitClass::Pip_Count() const {
   Validate();
   if (Class->IsTransporter) {
-    return How_Many();
+    return cargo().How_Many();
   }
   if (Class->IsToHarvest) {
     return base::FixedToCardinal(UnitTypeClass::kFullLoadCredits / 100,

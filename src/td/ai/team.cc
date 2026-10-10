@@ -936,7 +936,7 @@ int TeamClass::Recruit(int typeindex) {
           **	If a transport is added to the team, the occupants
           **	are added by default.
           */
-          FootClass* f = unit->Attached_Object();
+          FootClass* f = unit->cargo().Attached_Object();
           while (f) {
             Add(f);
             f = dynamic_cast<FootClass*>(f->Next);
@@ -1372,7 +1372,7 @@ void TeamClass::Coordinate_Unload() {
     Coordinate_Conscript(unit);
 
     if ((unit->IsInitiated && !unit->IsInLimbo) &&
-        unit->Is_Something_Attached()) {
+        unit->cargo().Is_Something_Attached()) {
       /*
       **	Loaner transports will break off of the team at this time. The
       *normal *	unload logic for the transport will proceed normally.

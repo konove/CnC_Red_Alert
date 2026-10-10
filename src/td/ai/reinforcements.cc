@@ -191,8 +191,8 @@ static bool FlyIn(FootClass* group, const SourceType edge,
     if (aircraft->Class->IsFixedWing) {
       aircraft->Assign_Mission(MISSION_HUNT);
     } else {
-      const bool is_loaded =
-          aircraft->Class->IsTransporter && aircraft->Is_Something_Attached();
+      const bool is_loaded = aircraft->Class->IsTransporter &&
+                             aircraft->cargo().Is_Something_Attached();
       aircraft->Assign_Mission(is_loaded ? MISSION_UNLOAD : MISSION_MOVE);
       aircraft->Assign_Destination(
           Target::FromCellIndex(TheMap().Calculated_Cell(SOURCE_AIR, house)));
@@ -332,7 +332,7 @@ bool DeliverReinforcements(const TeamTypeClass* team_type) {
   // loaded into the first one, or the members themselves when the type has no
   // transport.
   if (transports != nullptr && riders != nullptr) {
-    transports->Attach(riders);
+    transports->cargo().Attach(riders);
   }
   FootClass* group = transports != nullptr ? transports : riders;
 

@@ -875,8 +875,8 @@ void AircraftClass::AI() {
     if (Mission == MISSION_RETREAT) {
       // Check to see if there are any civilians aboard. If so, then flag the
       // house that the civilian evacuation trigger event has been fulfilled.
-      while (Is_Something_Attached()) {
-        FootClass* obj = Detach_Object();
+      while (cargo().Is_Something_Attached()) {
+        FootClass* obj = cargo().Detach_Object();
         if (obj->What_Am_I() == RTTI_INFANTRY &&
             dynamic_cast<InfantryClass*>(obj)->Class->IsCivilian &&
             !dynamic_cast<InfantryClass*>(obj)->IsTechnician) {
@@ -905,7 +905,7 @@ void AircraftClass::AI() {
     **	Transport helicopters must ensure that their passengers are properly
     **	considered "alive" by setting the appropriate scan bits.
     */
-    const FootClass* foot = Attached_Object();
+    const FootClass* foot = cargo().Attached_Object();
     while (foot) {
       switch (foot->What_Am_I()) {
         case RTTI_UNIT:
@@ -1087,7 +1087,7 @@ int AircraftClass::Mission_Unload() {
           /*
           **	If, for some reason, there is no cargo, then don't stick around.
           */
-          if (!Is_Something_Attached()) {
+          if (!cargo().Is_Something_Attached()) {
             Status = kBugOut;
             return 1;
           }
@@ -1106,14 +1106,14 @@ int AircraftClass::Mission_Unload() {
           }
 
           if (navdist < 0x0080) {
-            FootClass* unit = Detach_Object();
+            FootClass* unit = cargo().Detach_Object();
 
             if (unit) {
               const Cell cell = Contact_With_Whom()->Find_Exit_Cell(unit);
               if (cell.index() != 0) {
                 TheWorld().scenario_init()++;
                 if (!unit->Unlimbo(cell.Center())) {
-                  Attach(unit);
+                  cargo().Attach(unit);
                 } else {
                   /*
                   **	Cargo planes announce reinforcements when they unload
@@ -1131,7 +1131,7 @@ int AircraftClass::Mission_Unload() {
                 Transmit_Message(RADIO_OVER_OUT);
                 Assign_Target(Target{});
               } else {
-                Attach(unit);
+                cargo().Attach(unit);
               }
               Status = kBugOut;
             } else {
@@ -1220,8 +1220,8 @@ int AircraftClass::Mission_Unload() {
       */
       case kUnloadPassengers:
         if (!IsTethered) {
-          if (Is_Something_Attached()) {
-            FootClass* unit = Detach_Object();
+          if (cargo().Is_Something_Attached()) {
+            FootClass* unit = cargo().Detach_Object();
 
             /*
             **	First thing is to lift the transport off of the map so that the
@@ -1238,7 +1238,7 @@ int AircraftClass::Mission_Unload() {
             */
             TheMap().Place_Down(Cell::Containing(Coord), this);
 
-            if (!Is_Something_Attached()) {
+            if (!cargo().Is_Something_Attached()) {
               Enter_Idle_Mode();
             }
 
@@ -1255,7 +1255,7 @@ int AircraftClass::Mission_Unload() {
       */
       case kTakeOff: {
         if (Process_Take_Off()) {
-          if (Is_Something_Attached()) {
+          if (cargo().Is_Something_Attached()) {
             Status = kSearchForLz;
 
             /*
@@ -1655,7 +1655,7 @@ int AircraftClass::Mission_Move() {
         /*
         **	If, for some reason, there is no cargo, then don't stick around.
         */
-        if (!Is_Something_Attached()) {
+        if (!cargo().Is_Something_Attached()) {
           Status = kBugOut;
           return 1;
         }
@@ -1665,12 +1665,12 @@ int AircraftClass::Mission_Move() {
         }
         SecondaryFacing.set_desired(PrimaryFacing.desired());
         if (Distance(NavCom) < 0x0080) {
-          FootClass* unit = Detach_Object();
+          FootClass* unit = cargo().Detach_Object();
 
           if (unit) {
             TheWorld().scenario_init()++;
             if (!unit->Unlimbo(Contact_With_Whom()->Coord.Snapped())) {
-              Attach(unit);
+              cargo().Attach(unit);
             }
             TheWorld().scenario_init()--;
 
@@ -1805,7 +1805,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
   MissionType mission = MISSION_GUARD;
   if (In_Which_Layer() == LAYER_GROUND) {
     if (IsALoaner) {
-      if (Is_Something_Attached()) {
+      if (cargo().Is_Something_Attached()) {
         mission = MISSION_UNLOAD;
       } else {
         if (Team) {
@@ -1826,7 +1826,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
       mission = MISSION_GUARD;
     }
   } else {
-    if (Is_Something_Attached()) {
+    if (cargo().Is_Something_Attached()) {
       if (IsALoaner) {
         if (Team) {
           mission = MISSION_GUARD;
@@ -2073,7 +2073,7 @@ ActionType AircraftClass::What_Action(ObjectClass* target) {
   Validate();
   ActionType action = FootClass::What_Action(target);
 
-  if (action == ACTION_SELF && !How_Many()) {
+  if (action == ACTION_SELF && !cargo().How_Many()) {
     action = ACTION_NONE;
   }
 
@@ -2539,7 +2539,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     **	entered the transport.
     */
     case RADIO_IM_IN:
-      if (How_Many() == Class->Max_Passengers()) {
+      if (cargo().How_Many() == Class->Max_Passengers()) {
         door().Close(5, 4);
       }
 
@@ -2559,7 +2559,8 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     *be given *	to the impatient unit.
     */
     case RADIO_DOCKING:
-      if (Class->IsTransporter && How_Many() < Class->Max_Passengers()) {
+      if (Class->IsTransporter &&
+          cargo().How_Many() < Class->Max_Passengers()) {
         FootClass::Receive_Message(from, message, param);
 
         if (!IsTethered && !IsLanding && !IsTakingOff && Altitude == 0) {
@@ -2610,7 +2611,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
     */
     case RADIO_CAN_LOAD:
       if (!In_Radio_Contact() && Class->IsTransporter &&
-          How_Many() < Class->Max_Passengers() && from &&
+          cargo().How_Many() < Class->Max_Passengers() && from &&
           House->Class->House == from->Owner()) {
         return RADIO_ROGER;
       }
@@ -2949,7 +2950,7 @@ int AircraftClass::Pip_Count() const {
   int retval = 0;
 
   if (Class->IsTransporter) {
-    retval = How_Many();
+    retval = cargo().How_Many();
   } else {
     if (Ammo) {
       retval = base::CardinalToFixed(Class->MaxAmmo, Ammo);
@@ -3070,7 +3071,7 @@ int AircraftClass::Mission_Enter() {
 
           case RADIO_ATTACH:
             Limbo();
-            Contact_With_Whom()->Attach(this);
+            Contact_With_Whom()->cargo().Attach(this);
             break;
 
           case RadioMessageType::RADIO_STATIC:
@@ -3231,8 +3232,8 @@ AircraftClass::~AircraftClass() {
     /*
     **	If there are any cargo members, delete them.
     */
-    while (Is_Something_Attached()) {
-      base::DeletePooled(Detach_Object());
+    while (cargo().Is_Something_Attached()) {
+      base::DeletePooled(cargo().Detach_Object());
     }
 
     Limbo();

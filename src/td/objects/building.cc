@@ -337,7 +337,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         case STRUCT_REFINERY:
           if (from->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(from) == UNIT_HARVESTER &&
-              (TheWorld().scenario_init() || !Is_Something_Attached())) {
+              (TheWorld().scenario_init() ||
+               !cargo().Is_Something_Attached())) {
             return RADIO_ROGER;
           }
           break;
@@ -562,7 +563,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     *the current *	state of the building.
     */
     case RADIO_ARE_REFINERY:
-      if (Is_Something_Attached() || In_Radio_Contact() || IsInLimbo ||
+      if (cargo().Is_Something_Attached() || In_Radio_Contact() || IsInLimbo ||
           House->Class->House != from->Owner() ||
           *this != STRUCT_REFINERY /* && *this != STRUCT_REPAIR*/) {
         return RADIO_NEGATIVE;
@@ -1822,8 +1823,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         /*
         **	Destroy all attached objects.
         */
-        while (Attached_Object()) {
-          const FootClass* obj = Detach_Object();
+        while (cargo().Attached_Object()) {
+          const FootClass* obj = cargo().Detach_Object();
 
           Detach_All(true);
           base::DeletePooled(obj);
@@ -3823,7 +3824,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     /*
     **	If there is something loaded, then it gets captured as well.
     */
-    TechnoClass* tech = Attached_Object();
+    TechnoClass* tech = cargo().Attached_Object();
     if (tech) {
       tech->Captured(newowner);
     }
@@ -4055,7 +4056,7 @@ bool BuildingClass::Can_Demolish() const {
   if (!Class->Get_Buildup_Data().empty() &&
       BState != game::BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
-    return *this != STRUCT_REFINERY || !Is_Something_Attached();
+    return *this != STRUCT_REFINERY || !cargo().Is_Something_Attached();
   }
   return false;
 }
@@ -4640,7 +4641,7 @@ int BuildingClass::Mission_Harvest() {
             .Incoming(Coordinate{}, true);
         TheSpecialFlags().scatter = old;
 
-        FootClass* techno = Attached_Object();
+        FootClass* techno = cargo().Attached_Object();
         if (techno) {
           const int bail = techno->Offload_Tiberium_Bail();
 
@@ -4661,7 +4662,7 @@ int BuildingClass::Mission_Harvest() {
         /*
         **	Detach harvester and go back into idle state.
         */
-        Exit_Object(Detach_Object());
+        Exit_Object(cargo().Detach_Object());
         Assign_Mission(MISSION_GUARD);
       }
       break;

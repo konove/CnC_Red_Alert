@@ -1650,7 +1650,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       // Non-default limbo state supplements the campaign's moving/firing units.
-      vehicle->Attach(passenger);
+      vehicle->cargo().Attach(passenger);
       vehicle->set_kills(51);
       passenger->set_kills(73);
       plane->set_kills(95);
@@ -1724,7 +1724,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       building->Factory = factory;
-      building->Attach(passenger);
+      building->cargo().Attach(passenger);
       building->set_kills(75);
       building->PurchasePrice = 1234;
       building->Mission = MISSION_REPAIR;

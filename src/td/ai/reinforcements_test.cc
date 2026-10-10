@@ -277,7 +277,7 @@ TEST_F(ReinforcementTest, AHovercraftStartsBelowTheBeachItLandsOn) {
   EXPECT_FALSE(hovercraft->IsInLimbo);
   EXPECT_EQ(Cell::Containing(hovercraft->Coord),
             Cell::FromXY(30, MAP_CELL_H - 1));
-  EXPECT_EQ(hovercraft->How_Many(), 2);
+  EXPECT_EQ(hovercraft->cargo().How_Many(), 2);
   EXPECT_EQ(hovercraft->Mission, MISSION_UNLOAD);
   EXPECT_EQ(hovercraft->NavCom, Target::FromCellIndex(kBeach));
   // UnitClass::Unlimbo() makes every hovercraft a loaner, so that it can
@@ -360,7 +360,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterUnloadsAtTheReinforcementWaypoint) {
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   const AircraftClass* helicopter = TheObjectHeaps().aircraft().ActiveAt(0);
   EXPECT_FALSE(helicopter->IsInLimbo);
-  EXPECT_EQ(helicopter->How_Many(), 2);
+  EXPECT_EQ(helicopter->cargo().How_Many(), 2);
   // It only delivers the soldiers and then leaves.
   EXPECT_TRUE(helicopter->IsALoaner);
   EXPECT_EQ(helicopter->Mission, MISSION_UNLOAD);
@@ -418,7 +418,7 @@ TEST_F(ReinforcementTest, ACargoPlaneEntersInTheRowOfItsAirstrip) {
   // One cell east of the visible map.
   EXPECT_EQ(Cell::Containing(plane->Coord),
             Cell::FromXY(MAP_CELL_W - 1, airstrip.Docking_Coord().cell_y()));
-  EXPECT_EQ(plane->How_Many(), 1);
+  EXPECT_EQ(plane->cargo().How_Many(), 1);
   EXPECT_TRUE(plane->IsALoaner);
 }
 
@@ -510,7 +510,7 @@ TEST_F(ReinforcementTest, ASpecialTransportUnloadsAtTheReinforcementWaypoint) {
   EXPECT_EQ(team_type.MissionList[0].Mission, TMISSION_UNLOAD);
   EXPECT_EQ(team_type.MissionList[0].Argument, kWayptReinf);
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
-  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->How_Many(), 1);
+  EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->cargo().How_Many(), 1);
 }
 
 TEST_F(ReinforcementTest, ASpecialTransportKeepsTheMissionAskedFor) {

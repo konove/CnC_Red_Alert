@@ -292,8 +292,8 @@ UnitClass::~UnitClass() {
     /*
     **	If there are any cargo members, delete them.
     */
-    while (Is_Something_Attached()) {
-      base::DeletePooled(Detach_Object());
+    while (cargo().Is_Something_Attached()) {
+      base::DeletePooled(cargo().Detach_Object());
     }
 
     Limbo();
@@ -724,7 +724,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           !House->Is_Ally(from->Owner())) {
         return RADIO_STATIC;
       }
-      if (How_Many() < Class->Max_Passengers()) {
+      if (cargo().How_Many() < Class->Max_Passengers()) {
         return RADIO_ROGER;
       }
       return RADIO_NEGATIVE;
@@ -757,7 +757,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     **	entered the transport.
     */
     case RADIO_IM_IN:
-      if (How_Many() == Class->Max_Passengers()) {
+      if (cargo().How_Many() == Class->Max_Passengers()) {
         APC_Close_Door();
       }
       return RADIO_ATTACH;
@@ -788,7 +788,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         /*
         **	Can't ever load up so tell the passenger to bug off.
         */
-        if (How_Many() >= Class->Max_Passengers()) {
+        if (cargo().How_Many() >= Class->Max_Passengers()) {
           return RADIO_NEGATIVE;
         }
 
@@ -806,7 +806,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         }
       }
 
-      if (Class->Max_Passengers() > 0 && How_Many() < Class->Max_Passengers()) {
+      if (Class->Max_Passengers() > 0 &&
+          cargo().How_Many() < Class->Max_Passengers()) {
         DriveClass::Receive_Message(from, message, param);
 
         /*
@@ -1093,8 +1094,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
         }
       }
     } else {
-      while (Is_Something_Attached()) {
-        FootClass* object = Detach_Object();
+      while (cargo().Is_Something_Attached()) {
+        FootClass* object = cargo().Detach_Object();
 
         if (object == nullptr) {
           break;  // How can this happen?
@@ -1374,7 +1375,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         }
       } else {
         if (IsALoaner && Class->Max_Passengers() > 0 &&
-            Is_Something_Attached() && Team == nullptr) {
+            cargo().Is_Something_Attached() && Team == nullptr) {
           order = MISSION_UNLOAD;
         } else {
           if (*this == UNIT_MAD && Mission == MISSION_UNLOAD) {
@@ -1716,7 +1717,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
         techno == NavCom.AsTechno()) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
         Limbo();
-        techno->Attach(this);
+        techno->cargo().Attach(this);
       }
       return false;
     }
@@ -2472,7 +2473,7 @@ int UnitClass::Mission_Unload() {
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell.index() != 0) {
+          if (cargo().How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2488,8 +2489,8 @@ int UnitClass::Mission_Unload() {
           break;
 
         case kUnloading:
-          if (How_Many()) {
-            FootClass* passenger = Detach_Object();
+          if (cargo().How_Many()) {
+            FootClass* passenger = cargo().Detach_Object();
 
             if (passenger != nullptr) {
               const game::Direction toface =
@@ -2520,7 +2521,7 @@ int UnitClass::Mission_Unload() {
               **	it and then bail out of this deploy process.
               */
               if (!placed) {
-                Attach(passenger);
+                cargo().Attach(passenger);
                 Status = kClosingDoor;
               }
             }
@@ -2545,7 +2546,7 @@ int UnitClass::Mission_Unload() {
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell.index() != 0) {
+          if (cargo().How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2574,8 +2575,8 @@ int UnitClass::Mission_Unload() {
           break;
 
         case kUnloading:
-          if (How_Many()) {
-            FootClass* passenger = Detach_Object();
+          if (cargo().How_Many()) {
+            FootClass* passenger = cargo().Detach_Object();
 
             if (passenger != nullptr) {
               const game::Direction toface =
@@ -2606,7 +2607,7 @@ int UnitClass::Mission_Unload() {
               **	it and then bail out of this deploy process.
               */
               if (!placed) {
-                Attach(passenger);
+                cargo().Attach(passenger);
                 Status = kClosingDoor;
               }
             }
@@ -3557,7 +3558,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
           *cannot *	perform any self action.
           */
           if (Class->Max_Passengers() > 0) {
-            if (How_Many() == 0) {
+            if (cargo().How_Many() == 0) {
               action = ACTION_NO_DEPLOY;
             }
           } else {
@@ -3587,7 +3588,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
     auto* building = dynamic_cast<BuildingClass*>(object);
     if (building->Class->Type == STRUCT_REPAIR &&
         Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER &&
-        !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
+        !building->In_Radio_Contact() &&
+        !building->cargo().Is_Something_Attached()) {
       action = ACTION_MOVE;
     }
   }
@@ -3994,7 +3996,7 @@ int UnitClass::Pip_Count() const {
   DCHECK(IsActive);
 
   if (Class->Max_Passengers() > 0) {
-    return How_Many();
+    return cargo().How_Many();
   }
 
   if (*this == UNIT_MINELAYER) {
@@ -5078,7 +5080,7 @@ int UnitClass::Mission_Guard_Area() {
       (*this == UNIT_APC || *this == UNIT_PHASE) && !TarCom &&
       !In_Radio_Contact() && House->Which_Zone(this) != ZONE_NONE &&
       !House->IsHuman) {
-    int needed = Class->Max_Passengers() - How_Many();
+    int needed = Class->Max_Passengers() - cargo().How_Many();
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
       if (needed == 0) {
         break;

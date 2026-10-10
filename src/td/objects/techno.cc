@@ -1728,7 +1728,7 @@ void TechnoClass::Clicked_As_Target(int count) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::AI() {
-  CargoClass::AI();
+  cargo_.AI();
   RadioClass::AI();
   door_.AI();
 
@@ -3393,8 +3393,8 @@ void TechnoClass::Detach(Target target, bool all) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::Kill_Cargo(TechnoClass* source) {
-  while (Is_Something_Attached()) {
-    FootClass* foot = Detach_Object();
+  while (cargo().Is_Something_Attached()) {
+    FootClass* foot = cargo().Detach_Object();
     if (foot) {
       foot->Record_The_Kill(source);
       base::DeletePooled(foot);
@@ -3456,8 +3456,8 @@ int TechnoClass::Value() const {
   **	into the total value. - 8/16/95
   */
   if ((TheWorld().build_level() > 8 || TheSession().type() != GAME_NORMAL) &&
-      Is_Something_Attached()) {
-    const FootClass* object = Attached_Object();
+      cargo().Is_Something_Attached()) {
+    const FootClass* object = cargo().Attached_Object();
 
     while (object) {
       value += object->Value();
@@ -4090,7 +4090,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
   *pips. The *	pip color represents the type of occupant.
   */
   if (Techno_Type_Class()->IsTransporter) {
-    const ObjectClass* object = Attached_Object();
+    const ObjectClass* object = cargo().Attached_Object();
 
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       PipEnum pip = PIP_EMPTY;
