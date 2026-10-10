@@ -81,6 +81,29 @@ TEST(DoorTest, ClosingCountsTheStagesDown) {
   EXPECT_FALSE(door.CloseDoor(1, 3));  // Already closed.
 }
 
+TEST(DoorTest, TurningRoundRestartsFromTheEndFrame) {
+  TestDoor door;
+  door.OpenDoor(1, 4);
+  door.AI();
+  ASSERT_EQ(door.DoorFrame(), 1);
+  // Closing a door that is only part-way open starts from the fully open
+  // frame, not from the one it had reached.
+  ASSERT_TRUE(door.CloseDoor(1, 4));
+  EXPECT_FALSE(door.IsDoorOpening());
+  EXPECT_EQ(door.DoorFrame(), 2);
+  EXPECT_FALSE(door.CloseDoor(1, 4));  // Already closing.
+  door.AI();
+  EXPECT_EQ(door.DoorFrame(), 1);
+  // And opening one that is part-way closed starts from the closed frame.
+  ASSERT_TRUE(door.OpenDoor(1, 4));
+  EXPECT_TRUE(door.IsDoorOpening());
+  EXPECT_EQ(door.DoorFrame(), 0);
+  for (int step = 0; step < 3; ++step) {
+    door.AI();
+  }
+  EXPECT_TRUE(door.IsDoorOpen());
+}
+
 TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   TestDoor door;
   door.OpenDoor(1, 5);
