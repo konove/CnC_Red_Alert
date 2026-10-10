@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 358,
+  "nextId": 359,
   "items": [
     {
       "id": "T-2",
@@ -12057,22 +12057,22 @@
         "ui",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T03:03:44Z",
+      "updated": "2026-10-10T05:12:09Z",
       "source": "T-344",
       "resolution": "Not a slip, so the fill is unchanged and a comment now says why. Screenshots with forced heights show the scale beside the bar has its zero tick on row 351 (`bottom`) and a tick every 9 rows up to row 198, 153 rows above: a height is a position on that scale, and the fill runs from the zero tick to the tick of its height, both included. `Rect{490, bottom - power_height, 2, power_height}` would drop the zero-tick row. Zero power draws nothing already (`if (power_height)`), and heights 1-2 are hidden behind the drain marker.",
       "anchors": [
         {
           "path": "src/ra/map/power.cc",
-          "startLine": 241,
-          "endLine": 246,
+          "startLine": 247,
+          "endLine": 252,
           "text": "        view.FillRect(\n            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),\n            static_cast<unsigned char>(color2));\n        view.FillRect(\n            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),\n            static_cast<unsigned char>(color1));",
           "before": [
-            "        // zero tick is the row `bottom` and whose top tick is 153 rows above",
-            "        // it. The fill runs from the zero tick to the tick of its height, both",
-            "        // included, so it is `power_height + 1` rows."
+            "        // zero tick is the row `bottom` and whose top tick is `kScaleRows`",
+            "        // above it. The fill runs from the zero tick to the tick of its",
+            "        // height, both included, so it is `power_height + 1` rows."
           ],
           "after": [
             "      }",
@@ -12095,10 +12095,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T03:13:34Z",
+      "updated": "2026-10-10T05:12:39Z",
       "source": "T-344",
       "resolution": "Added `editor_dialogs.script` for both games (top strip, map size dialog with its box dragged, team members names) and a `side_chosen` shot to TD `new_game.script`. They turned up two bugs, both fixed: dragging in `Size_Map()` closed the dialog in both games (a `break` left from a former `switch`), and TD's coordinate erase was 10 rows under a 12-row font, leaving the old digits' bottom rows. The network, serial and ending fills cannot be reached by a script; that is the follow-up item.",
       "anchors": [
@@ -12132,10 +12132,10 @@
         "td",
         "ui"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T02:38:02Z",
-      "updated": "2026-10-10T05:11:57Z",
+      "updated": "2026-10-10T05:12:12Z",
       "source": "48565e48",
       "resolution": "`TechnoClass::Draw_It()` in both games computes `shows_health_bar` once and uses it for the bar and for `fudge`, so the top corners of the selection box move down only when a bar is drawn. The tests' new `DrawSelected()` helper reports the box's top and bottom rows; `TheSelectionBoxStaysPutWithoutAHealthBar` covers a one-pixel-wide object, one with no shape and one with no strength.",
       "anchors": [
@@ -12186,11 +12186,12 @@
         "ui",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T03:03:52Z",
-      "updated": "2026-10-10T03:03:52Z",
+      "updated": "2026-10-10T05:14:19Z",
       "source": "da3e1218",
+      "resolution": "The scaled power and drain heights are now held to the scale's 153 rows (`kScaleRows`), so a height of 108 lands on the top tick and not one row above it. No game reaches it: `Power_Height()` stops at 104 and the bounce adds at most 2, so nothing changes on screen for reachable heights. No test added; checked with the strict build of `power.cc` only.",
       "anchors": [
         {
           "path": "src/ra/map/power.cc",
@@ -12212,8 +12213,8 @@
         {
           "path": "src/ra/map/power.cc",
           "startLine": 233,
-          "endLine": 234,
-          "text": "        power_height = power_height * (152 + 1) / (106 + 1);\n        drain_height = drain_height * (152 + 1) / (106 + 1);",
+          "endLine": 240,
+          "text": "        // The clamp above allows 108, one more than the 107 this scales from,\n        // so the result is held to the top tick. Power_Height() stops at 104\n        // and the bounce adds 2 at most, so no game reaches it.\n        constexpr int kScaleRows = 152 + 1;\n        power_height =\n            std::min(power_height * kScaleRows / (106 + 1), kScaleRows);\n        drain_height =\n            std::min(drain_height * kScaleRows / (106 + 1), kScaleRows);",
           "before": [
             "        **",
             "        ** ST - 5/2/96 11:23AM",
@@ -12384,6 +12385,41 @@
             "  const char* _menus[kMaxAiMenuNum + 1];",
             "",
             "  /*"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-358",
+      "title": "RA power drain marker is drawn off the scale when the player has no power",
+      "details": "`PowerClass::Draw_It` scales `drain_height` to the 153-row scale and sets `bottom = 351` inside `if (power_height)`. With a power height of 0 (no power plants) and a drain above 0, the marker is drawn with the unscaled height from `bottom = (kPowerY + kPowerHeight - 1) * 2` = 398, near the bottom of the screen and not on the bar. Found by reading the code, not seen on screen. Move the scaling and `bottom` out of the `if`, so that only the two fills depend on the power height, and check it with a screenshot of a base with buildings and no power plant.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ui",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T05:14:19Z",
+      "updated": "2026-10-10T05:14:19Z",
+      "anchors": [
+        {
+          "path": "src/ra/map/power.cc",
+          "startLine": 213,
+          "endLine": 241,
+          "text": "      if (power_height) {\n        int color1 = 3;\n        int color2 = 4;\n\n        if (ThePlayer()->Drain > ThePlayer()->Power) {\n          color1 = 214;\n          color2 = 211;\n        }\n        if (ThePlayer()->Drain > ThePlayer()->Power * 2) {\n          color1 = 235;\n          color2 = 230;\n        }\n\n        /*\n        ** New power bar is in slightly different place\n        **\n        ** Old power bar was 107 pixels high. New bar is 153 pixels high.\n        **\n        ** ST - 5/2/96 11:23AM\n        */\n        // The clamp above allows 108, one more than the 107 this scales from,\n        // so the result is held to the top tick. Power_Height() stops at 104\n        // and the bounce adds 2 at most, so no game reaches it.\n        constexpr int kScaleRows = 152 + 1;\n        power_height =\n            std::min(power_height * kScaleRows / (106 + 1), kScaleRows);\n        drain_height =\n            std::min(drain_height * kScaleRows / (106 + 1), kScaleRows);\n        bottom = 350 + 1;",
+          "before": [
+            "      /*",
+            "      **\tDraw the power output graphic on top of the power bar framework.",
+            "      */"
+          ],
+          "after": [
+            "",
+            "        // The heights are positions on the scale drawn beside the bar, whose",
+            "        // zero tick is the row `bottom` and whose top tick is `kScaleRows`"
           ],
           "lost": false
         }

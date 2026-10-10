@@ -230,14 +230,20 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         **
         ** ST - 5/2/96 11:23AM
         */
-        power_height = power_height * (152 + 1) / (106 + 1);
-        drain_height = drain_height * (152 + 1) / (106 + 1);
+        // The clamp above allows 108, one more than the 107 this scales from,
+        // so the result is held to the top tick. Power_Height() stops at 104
+        // and the bounce adds 2 at most, so no game reaches it.
+        constexpr int kScaleRows = 152 + 1;
+        power_height =
+            std::min(power_height * kScaleRows / (106 + 1), kScaleRows);
+        drain_height =
+            std::min(drain_height * kScaleRows / (106 + 1), kScaleRows);
         bottom = 350 + 1;
 
         // The heights are positions on the scale drawn beside the bar, whose
-        // zero tick is the row `bottom` and whose top tick is 153 rows above
-        // it. The fill runs from the zero tick to the tick of its height, both
-        // included, so it is `power_height + 1` rows.
+        // zero tick is the row `bottom` and whose top tick is `kScaleRows`
+        // above it. The fill runs from the zero tick to the tick of its
+        // height, both included, so it is `power_height + 1` rows.
         view.FillRect(
             Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),
             static_cast<unsigned char>(color2));
