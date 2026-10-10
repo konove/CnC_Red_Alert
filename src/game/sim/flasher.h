@@ -44,24 +44,14 @@
 
 namespace game {
 
+// Makes an object flash when it is clicked as a target: for a number of game
+// frames it is drawn brightened on every other one.
+//
+// Example:
+//   flasher.Start(7);
+//   if (flasher.Process()) { /* redraw, brightened if IsBrightened() */ }
 class FlasherClass {
  public:
-  /*
-  **	When this object is targeted, it will flash a number of times. This is
-  *the *	flash control number. It counts down to zero and then stops. Odd
-  *values *	cause the object to be rendered in a lighter color.
-  */
-  uint8_t FlashCount : 7 {0};
-
-  /*
-  **	When an object is targeted, it flashes several times to give visual
-  *feedback *	to the player. Every other game "frame", this flag is true until
-  *the flashing *	is determined to be completed.
-  */
-  bool IsBlushing : 1 {false};
-
-  FlasherClass() = default;
-
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
@@ -78,13 +68,32 @@ class FlasherClass {
       IsBlushing = is_blushing;
     }
   }
-  virtual ~FlasherClass();
-  FlasherClass(const FlasherClass&) = delete;
-  FlasherClass& operator=(const FlasherClass&) = delete;
-  FlasherClass(FlasherClass&&) = delete;
-  FlasherClass& operator=(FlasherClass&&) = delete;
 
+  // Starts flashing for `count` calls of Process(), replacing what was left
+  // of an earlier flash. Only the low seven bits of `count` are kept.
+  void Start(int count) { FlashCount = static_cast<uint8_t>(count) & 0x7F; }
+
+  // Steps the flash by one game frame. Returns true when the object has to
+  // be redrawn: on every frame of the flash, the one that ends it included.
   bool Process();
+
+  // Whether the object is to be drawn brightened on this frame.
+  [[nodiscard]] bool IsBrightened() const { return IsBlushing; }
+
+ private:
+  /*
+  **	When this object is targeted, it will flash a number of times. This is
+  *the *	flash control number. It counts down to zero and then stops. Odd
+  *values *	cause the object to be rendered in a lighter color.
+  */
+  uint8_t FlashCount : 7 {0};
+
+  /*
+  **	When an object is targeted, it flashes several times to give visual
+  *feedback *	to the player. Every other game "frame", this flag is true until
+  *the flashing *	is determined to be completed.
+  */
+  bool IsBlushing : 1 {false};
 };
 
 }  // namespace game

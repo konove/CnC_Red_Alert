@@ -77,11 +77,6 @@ class StageClass {
     ar(Stage, StageTimer, Rate);
   }
 
-  virtual ~StageClass();
-  StageClass(const StageClass&) = delete;
-  StageClass& operator=(const StageClass&) = delete;
-  StageClass(StageClass&&) = delete;
-  StageClass& operator=(StageClass&&) = delete;
   StageClass() = default;
 
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
@@ -92,7 +87,6 @@ class StageClass {
   void Set_Rate(int rate) const {
     Rate = StageTimer = static_cast<unsigned char>(rate);
   }
-  void AI() {}
   bool Graphic_Logic() {
     if (Rate) {
       StageTimer--;
@@ -108,8 +102,6 @@ class StageClass {
   /*
   **	File I/O.
   */
-  void Code_Pointers() {}
-  void Decode_Pointers() {}
 };
 
 }  // namespace td

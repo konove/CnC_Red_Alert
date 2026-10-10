@@ -142,7 +142,7 @@ class SidebarClass : public PowerClass {
 
     StripClass() = default;
     explicit StripClass(const InitClass& /*unused*/);
-    ~StripClass();
+    ~StripClass() = default;
     StripClass(const StripClass&) = delete;
     StripClass& operator=(const StripClass&) = delete;
     StripClass(StripClass&&) = delete;

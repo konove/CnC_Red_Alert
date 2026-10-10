@@ -82,7 +82,6 @@ class StageClass {
     StageTimer.Set(rate);
     Rate = rate;
   }
-  void AI() {}
   [[nodiscard]] bool About_To_Change() const {
     return StageTimer.IsFinished() && Rate != 0;
   }

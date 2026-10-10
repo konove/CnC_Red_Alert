@@ -42,8 +42,6 @@
 
 namespace game {
 
-FlasherClass::~FlasherClass() = default;
-
 /***********************************************************************************************
  * FlasherClass::Process -- Performs the logic processing for the flashing
  *ability.            *

@@ -62,17 +62,11 @@ class CargoClass {
   void Serialize(Archive& ar);
 
   CargoClass() = default;
-  virtual ~CargoClass();
-  CargoClass(const CargoClass&) = delete;
-  CargoClass& operator=(const CargoClass&) = delete;
-  CargoClass(CargoClass&&) = delete;
-  CargoClass& operator=(CargoClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
 
-  void AI() {}
 
   [[nodiscard]] int How_Many() const { return Quantity; }
   [[nodiscard]] bool Is_Something_Attached() const {

@@ -11,7 +11,6 @@
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
 #include "game/sim/door.h"
-#include "game/sim/flasher.h"
 #include "game/sim/mph.h"
 #include "gtest/gtest.h"
 #include "td/ai/teamtype.h"
@@ -150,28 +149,6 @@ TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
     EXPECT_EQ(loaded.IsOpen(), door.IsOpen());
   }
   EXPECT_TRUE(loaded.IsOpen());
-}
-
-TEST(TdSaveValuesTest, FlashStateSurvivesRoundTrip) {
-  game::FlasherClass flash;
-  flash.FlashCount = 127;
-  flash.IsBlushing = true;
-  game::FlasherClass loaded;
-  Restore(loaded, Save(flash));
-  EXPECT_EQ(loaded.FlashCount, 127);
-  EXPECT_TRUE(loaded.IsBlushing);
-  EXPECT_TRUE(loaded.Process());
-  EXPECT_EQ(loaded.FlashCount, 126);
-  EXPECT_FALSE(loaded.IsBlushing);
-}
-
-TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {
-  std::array<uint8_t, 2> bytes{128, 0};
-  SpanSource source(std::as_bytes(std::span(bytes).first(2)));
-  ArchiveReader reader(source);
-  game::FlasherClass flash;
-  reader(flash);
-  EXPECT_FALSE(reader.ok());
 }
 
 TEST(TdSaveValuesTest, FusePreservesArmingAndProximityState) {

@@ -46,8 +46,6 @@
 
 namespace ra {
 
-CargoClass::~CargoClass() { CargoHold = nullptr; }
-
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *
  *                                                                                             *

@@ -1709,9 +1709,7 @@ HousesType TechnoClass::Owner() const { return House->Class->House; }
  *                                                                                             *
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Clicked_As_Target(int count) {
-  flasher_.FlashCount = static_cast<uint8_t>(count);
-}
+void TechnoClass::Clicked_As_Target(int count) { flasher_.Start(count); }
 
 /***********************************************************************************************
  * TechnoClass::AI -- Handles AI processing for techno object. *
@@ -1728,7 +1726,6 @@ void TechnoClass::Clicked_As_Target(int count) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void TechnoClass::AI() {
-  cargo_.AI();
   RadioClass::AI();
   door_.AI();
 
@@ -3329,7 +3326,7 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const unsigned char> TechnoClass::Remap_Table() {
-  return House->Remap_Table(flasher().IsBlushing, true);
+  return House->Remap_Table(flasher().IsBrightened(), true);
 }
 
 /***********************************************************************************************

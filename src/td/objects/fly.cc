@@ -71,8 +71,6 @@
 
 namespace td {
 
-FlyClass::~FlyClass() = default;
-
 ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
   if (SpeedAdd != game::kMphImmobile) {
     int actual = SpeedAdd + SpeedAccum;

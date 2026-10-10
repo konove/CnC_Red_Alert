@@ -60,17 +60,11 @@ class CargoClass {
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
-  virtual ~CargoClass();
-  CargoClass(const CargoClass&) = delete;
-  CargoClass& operator=(const CargoClass&) = delete;
-  CargoClass(CargoClass&&) = delete;
-  CargoClass& operator=(CargoClass&&) = delete;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
 
-  void AI() {}
 
   [[nodiscard]] int How_Many() const { return Quantity; }
   [[nodiscard]] bool Is_Something_Attached() const {

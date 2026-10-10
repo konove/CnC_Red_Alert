@@ -75,9 +75,8 @@ target_compile_definitions(td_text_style_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_text_style_test)
 
 # The serializers' value tests. They derive from and construct AbstractClass,
-# FlyClass and StageClass, whose vtables live with their out-of-line
-# destructors in the engine, so the test links the engine without its entry
-# point.
+# whose vtable lives with its out-of-line destructor in the engine, so the
+# test links the engine without its entry point.
 add_gtest(
     NAME td_saveload_test
     SOURCES saveload/savevalues_test.cc startup/startup.cc
