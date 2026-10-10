@@ -8,7 +8,7 @@
 
 namespace ra {
 
-using DoorClass = game::DoorClass<StageClass>;
+using DoorClass = game::Door<StageClass>;
 
 }  // namespace ra
 

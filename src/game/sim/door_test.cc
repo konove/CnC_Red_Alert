@@ -39,10 +39,10 @@ class FakeStage {
   int32_t rate_ = 0;
 };
 
-using Door = DoorClass<FakeStage>;
+using TestDoor = Door<FakeStage>;
 
 TEST(DoorTest, OpensThroughEveryStageThenStops) {
-  Door door;
+  TestDoor door;
   EXPECT_TRUE(door.Is_Door_Closed());
   ASSERT_TRUE(door.Open_Door(1, 4));
   EXPECT_TRUE(door.Is_Door_Opening());
@@ -66,7 +66,7 @@ TEST(DoorTest, OpensThroughEveryStageThenStops) {
 }
 
 TEST(DoorTest, ClosingCountsTheStagesDown) {
-  Door door;
+  TestDoor door;
   door.Open_Door(1, 3);
   door.AI();
   door.AI();
@@ -83,7 +83,7 @@ TEST(DoorTest, ClosingCountsTheStagesDown) {
 }
 
 TEST(DoorTest, SerializeRoundTripsTheAnimation) {
-  Door door;
+  TestDoor door;
   door.Open_Door(1, 5);
   door.AI();
   std::array<std::byte, 64> bytes{};
@@ -92,7 +92,7 @@ TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   door.Serialize(writer);
   ASSERT_TRUE(writer.ok());
 
-  Door loaded;
+  TestDoor loaded;
   SpanSource source{std::span<const std::byte>(bytes)};
   ArchiveReader reader(source);
   loaded.Serialize(reader);

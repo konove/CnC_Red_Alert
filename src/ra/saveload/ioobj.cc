@@ -38,7 +38,6 @@
 #include <cstdint>
 
 #include "game/core/heap_slot_ptr.h"
-#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/carryover.h"
@@ -58,6 +57,7 @@
 #include "ra/objects/building.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
+#include "ra/objects/door.h"
 #include "ra/objects/drive.h"
 #include "ra/objects/factory.h"
 #include "ra/objects/fly.h"

@@ -1,4 +1,4 @@
-// File: DoorClass, the opening and closing animation of a building's door.
+// File: Door, the opening and closing animation of a building's door.
 
 #ifndef CNC_RED_ALERT_GAME_SIM_DOOR_H_
 #define CNC_RED_ALERT_GAME_SIM_DOOR_H_
@@ -8,7 +8,7 @@ namespace game {
 // The state of a door that opens and closes over a number of animation
 // stages, driven by the game's StageClass. Each game has its own StageClass,
 // whose saved layout differs, so the door is a template over it; a game names
-// its door as `using DoorClass = game::DoorClass<StageClass>;`.
+// its door as `using DoorClass = game::Door<StageClass>;`.
 //
 // Stage must provide Graphic_Logic(), Fetch_Stage(), Set_Stage(int) and
 // Set_Rate(int), and be serializable.
@@ -27,9 +27,9 @@ namespace game {
 //   door.Open_Door(/*rate=*/2, /*stages=*/10);
 //   while (!door.Is_Door_Open()) door.AI();
 template <class Stage>
-class DoorClass {
+class Door {
  public:
-  DoorClass() = default;
+  Door() = default;
 
   // Saved-game support.
   template <class Archive>
