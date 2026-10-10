@@ -53,6 +53,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <span>
@@ -272,6 +273,14 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
                        });
       break;
   }
+}
+
+void DrawColorBox(PixelView& view, const Rect& box, const uint8_t color,
+                  const bool selected) {
+  view.FillRect(Rect{box.x + 1, box.y + 1, box.width - 2, box.height - 2},
+                color);
+  Draw_Box(view, box.x, box.y, box.width, box.height,
+           selected ? BOXSTYLE_DOWN : BOXSTYLE_RAISED, false);
 }
 
 // Returns true for the characters that terminate a line: the carriage return

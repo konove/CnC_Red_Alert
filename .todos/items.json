@@ -11715,10 +11715,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T02:42:37Z",
+      "updated": "2026-10-10T02:43:02Z",
       "resolution": "Repaired rather than deleted, because the WChat/DDE code around it is still live on Windows: the two fills now go through `TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0)` and `Rect{0, 440, 640, 40}`, and `engine/gfx/rect.h` is included inside the file's `#ifdef _WIN32` include block. The top band is 40 rows, not the 41 the inclusive legacy corners covered, so it no longer blanks the first row of the picture. Not compiled on Windows; the Linux strict check of `init.cc` passes.",
       "anchors": [
         {
@@ -11748,80 +11748,110 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T01:58:28Z",
-      "updated": "2026-10-10T01:58:28Z",
+      "updated": "2026-10-10T02:50:05Z",
+      "resolution": "The four copies now call one `DrawColorBox()` in `ra/ui/dialog.h`, which fills exactly the inside of the one-pixel bevel (`Rect{x+1, y+1, w-2, h-2}`). The network and Westwood Online boxes gain the uncoloured column on the right, the second null-modem dialog the column on the left and the row on top; the first null-modem dialog looks as before. The differences were EA's uneven `RESFACTOR` scaling. Covered by `ra/ui/color_box_test.cc`.",
       "toDecide": "Are the two null-modem dialogs meant to look different from the network and Westwood Online ones? If not, make all four the same (which changes how those dialogs look) and share the code.",
+      "decisions": [
+        {
+          "question": "T-347: how should the player-color boxes be filled in the four multiplayer setup dialogs?",
+          "options": [
+            "Fill the interior (Recommended)",
+            "Match network/WOL",
+            "Share code, keep looks",
+            "Leave as is"
+          ],
+          "answer": "Fill the interior (Recommended)",
+          "time": "2026-10-10T02:47:04Z"
+        }
+      ],
       "anchors": [
         {
-          "path": "src/ra/net/nulldlg.cc",
-          "startLine": 3187,
-          "endLine": 3187,
-          "text": "                                  base::At(cbox_x, i) + 1 + d_color_w - 2,",
+          "path": "src/ra/ui/dialog.h",
+          "startLine": 49,
+          "endLine": 49,
+          "text": "void DrawColorBox(PixelView& view, const Rect& box, uint8_t color,",
           "before": [
-            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "            view.FillRect(",
-            "                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+            "// Draws the swatch a setup dialog shows for one player colour: `box` with a",
+            "// one-pixel bevel, sunken when `selected` and raised otherwise, and everything",
+            "// inside the bevel in the palette index `color`."
           ],
           "after": [
-            "                                  d_color_y + 1 + d_color_h - 2),",
-            "                ThePalettes()",
-            "                    .color_remaps()"
+            "                  bool selected);",
+            "void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);",
+            "// What a text print draws with: its adjusted flags, colour and font."
           ],
           "lost": false
         },
         {
           "path": "src/ra/net/nulldlg.cc",
-          "startLine": 4931,
-          "endLine": 4931,
-          "text": "                                base::At(cbox_x, i) + 2 + d_color_w - 4,",
+          "startLine": 3186,
+          "endLine": 3186,
+          "text": "            DrawColorBox(",
           "before": [
-            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,"
+            "        if (display >= REDRAW_COLORS) {",
+            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "            const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "                                d_color_y + 2 + d_color_h - 4),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
+            "                view,",
+            "                Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "                ThePalettes().color_remaps().at(color).Box,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/net/nulldlg.cc",
+          "startLine": 4917,
+          "endLine": 4917,
+          "text": "          DrawColorBox(",
+          "before": [
+            "      if (display >= REDRAW_COLORS) {",
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          const auto color = static_cast<PlayerColorType>(i);"
+          ],
+          "after": [
+            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,",
+            "              color == TheSession().ColorIdx);"
           ],
           "lost": false
         },
         {
           "path": "src/ra/net/netdlg.cc",
-          "startLine": 1887,
-          "endLine": 1887,
-          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "startLine": 1886,
+          "endLine": 1886,
+          "text": "          DrawColorBox(",
           "before": [
+            "      if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {",
             "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+            "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "                                d_color_y + 1 + d_color_h - 2),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
+            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,",
+            "              color == TheSession().ColorIdx);"
           ],
           "lost": false
         },
         {
           "path": "src/ra/wol/wol_gsup.cc",
-          "startLine": 1124,
-          "endLine": 1124,
-          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
+          "startLine": 1123,
+          "endLine": 1123,
+          "text": "          DrawColorBox(",
           "before": [
+            "      if (display >= REDRAW_COLORS) {",
             "        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+            "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "                                d_color_y + 1 + d_color_h - 2),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
+            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,",
+            "              color == TheSession().ColorIdx);"
           ],
           "lost": false
         }
@@ -11897,7 +11927,7 @@
             "              ThePalettes()",
             "                  .color_remaps()"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/net/nulldlg.cc",
@@ -11914,7 +11944,7 @@
             "                ThePalettes()",
             "                    .color_remaps()"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/net/nulldlg.cc",
@@ -11931,7 +11961,7 @@
             "              ThePalettes()",
             "                  .color_remaps()"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/wol/wol_gsup.cc",
@@ -11948,7 +11978,7 @@
             "              ThePalettes()",
             "                  .color_remaps()"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/netdlg.cc",

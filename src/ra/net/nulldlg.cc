@@ -3182,25 +3182,12 @@ int Com_Scenario_Dialog(bool skirmish) {
         ..................................................................*/
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            view.FillRect(
-                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
-                                  base::At(cbox_x, i) + 1 + d_color_w - 2,
-                                  d_color_y + 1 + d_color_h - 2),
-                ThePalettes()
-                    .color_remaps()
-                    .at(static_cast<PlayerColorType>(i))
-                    .Box);
-            //						(i ==
-            // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-            // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
-
-            if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-              Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w,
-                       d_color_h, BOXSTYLE_DOWN, false);
-            } else {
-              Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w,
-                       d_color_h, BOXSTYLE_RAISED, false);
-            }
+            const auto color = static_cast<PlayerColorType>(i);
+            DrawColorBox(
+                view,
+                Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
+                ThePalettes().color_remaps().at(color).Box,
+                color == TheSession().ColorIdx);
           }
         }
 
@@ -4926,25 +4913,11 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          view.FillRect(
-              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,
-                                base::At(cbox_x, i) + 2 + d_color_w - 4,
-                                d_color_y + 2 + d_color_h - 4),
-              ThePalettes()
-                  .color_remaps()
-                  .at(static_cast<PlayerColorType>(i))
-                  .Box);
-          //						(i ==
-          // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
-          // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
-
-          if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_DOWN, false);
-          } else {
-            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_RAISED, false);
-          }
+          const auto color = static_cast<PlayerColorType>(i);
+          DrawColorBox(
+              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
+              ThePalettes().color_remaps().at(color).Box,
+              color == TheSession().ColorIdx);
         }
       }
 

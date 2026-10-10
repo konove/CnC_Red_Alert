@@ -264,6 +264,17 @@ target_compile_definitions(ra_text_printer_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_text_printer_test)
 apply_language_setting(ra_text_printer_test)
 
+# Draws a player colour swatch onto a page of its own.
+add_gtest(
+    NAME ra_color_box_test
+    SOURCES ui/color_box_test.cc ${RA_GAME_TEST_UTIL} ${RA_UI_TEST_UTIL}
+            startup/startup.cc
+    LIBS ra_engine
+)
+target_compile_definitions(ra_color_box_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_color_box_test)
+apply_language_setting(ra_color_box_test)
+
 add_gtest(
     NAME ra_shape_draw_test
     SOURCES assets/shape_draw_test.cc startup/startup.cc
