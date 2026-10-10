@@ -56,15 +56,10 @@ class Door {
     if (animation_.Graphic_Logic()) {
       if (animation_.Fetch_Stage() >= final_stage_) {
         animation_.Set_Rate(0);
-        switch (state_) {
-          case kIsOpening:
-            state_ = kIsOpen;
-            break;
-          case kIsClosing:
-            state_ = kIsClosed;
-            break;
-          default:
-            break;
+        if (state_ == State::kOpening) {
+          state_ = State::kOpen;
+        } else if (state_ == State::kClosing) {
+          state_ = State::kClosed;
         }
       }
       needs_redraw_ = true;
@@ -75,13 +70,13 @@ class Door {
   // `stage_count` - 2 when open (see the class comment).
   [[nodiscard]] int DoorFrame() const {
     switch (state_) {
-      case kIsClosing:
+      case State::kClosing:
         return final_stage_ - 1 - animation_.Fetch_Stage();
-      case kIsClosed:
+      case State::kClosed:
         return 0;
-      case kIsOpening:
+      case State::kOpening:
         return animation_.Fetch_Stage();
-      case kIsOpen:
+      case State::kOpen:
         return final_stage_ - 1;
       default:
         break;
@@ -89,7 +84,7 @@ class Door {
     return 0;
   }
 
-  [[nodiscard]] bool IsDoorOpening() const { return state_ == kIsOpening; }
+  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }
 
   // Starts opening a closed or closing door, advancing one stage every
   // `frames_per_stage` game frames; it is open `frames_per_stage` *
@@ -97,45 +92,40 @@ class Door {
   // `frames_per_stage` nonzero, or the door never opens. Returns false, and
   // changes nothing, if it is already open or opening.
   bool OpenDoor(int frames_per_stage, int stage_count) {
-    switch (state_) {
-      case kIsClosed:
-      case kIsClosing:
-        state_ = kIsOpening;
-        final_stage_ = static_cast<unsigned char>(stage_count - 1);
-        animation_.Set_Stage(0);
-        animation_.Set_Rate(frames_per_stage);
-        return true;
-      default:
-        break;
+    if (state_ != State::kClosed && state_ != State::kClosing) {
+      return false;
     }
-    return false;
+    state_ = State::kOpening;
+    final_stage_ = static_cast<unsigned char>(stage_count - 1);
+    animation_.Set_Stage(0);
+    animation_.Set_Rate(frames_per_stage);
+    return true;
   }
 
   // Starts closing an open or opening door, as OpenDoor() opens one. Returns
   // false if it is already closed or closing.
   bool CloseDoor(int frames_per_stage, int stage_count) {
-    switch (state_) {
-      case kIsOpen:
-      case kIsOpening:
-        state_ = kIsClosing;
-        final_stage_ = static_cast<unsigned char>(stage_count - 1);
-        animation_.Set_Stage(0);
-        animation_.Set_Rate(frames_per_stage);
-        return true;
-      default:
-        break;
+    if (state_ != State::kOpen && state_ != State::kOpening) {
+      return false;
     }
-    return false;
+    state_ = State::kClosing;
+    final_stage_ = static_cast<unsigned char>(stage_count - 1);
+    animation_.Set_Stage(0);
+    animation_.Set_Rate(frames_per_stage);
+    return true;
   }
 
-  [[nodiscard]] bool IsDoorOpen() const { return state_ == kIsOpen; }
-  [[nodiscard]] bool IsDoorClosed() const { return state_ == kIsClosed; }
+  [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }
+  [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }
 
  private:
-  static constexpr int kIsClosed = 0;   // Door is closed.
-  static constexpr int kIsOpening = 1;  // Door is in the process of opening.
-  static constexpr int kIsOpen = 2;     // Door is fully open.
-  static constexpr int kIsClosing = 3;  // Door is in the process of closing.
+  // What the door is doing. A saved game stores the number.
+  enum class State {
+    kClosed = 0,
+    kOpening = 1,
+    kOpen = 2,
+    kClosing = 3,
+  };
 
   // Counts the stages of the opening or closing in progress, from 0; stopped
   // (rate 0) while the door is open or closed.
@@ -145,8 +135,7 @@ class Door {
   // at which the opening or closing is finished.
   unsigned char final_stage_{0};
 
-  // One of the kIs... values above.
-  int state_ = kIsClosed;
+  State state_ = State::kClosed;
 
   // Whether the animation moved on, so the object the door belongs to should
   // be redrawn. Drawing clears it from const draw routines, so it is redraw
