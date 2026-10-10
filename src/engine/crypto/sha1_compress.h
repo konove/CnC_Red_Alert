@@ -17,15 +17,9 @@ using Sha1State = std::array<uint32_t, 5>;
 inline constexpr int kSha1BlockSize = 64;
 
 // Compresses `blocks`, whose size must be a multiple of kSha1BlockSize, into
-// `state`. Uses the x86 SHA extensions when the CPU has them, which are about
-// ten times faster than the portable code; the result is identical.
+// `state`. Uses the SHA extensions of x86 and ARM CPUs that have them, which
+// are several times faster than the portable code; the result is identical.
 void Sha1Compress(Sha1State& state, std::span<const std::byte> blocks);
-
-// The two implementations Sha1Compress chooses between, exposed so tests can
-// compare them. Sha1CompressHardware requires Sha1HardwareAvailable().
-void Sha1CompressPortable(Sha1State& state, std::span<const std::byte> blocks);
-[[nodiscard]] bool Sha1HardwareAvailable();
-void Sha1CompressHardware(Sha1State& state, std::span<const std::byte> blocks);
 
 }  // namespace engine::crypto
 

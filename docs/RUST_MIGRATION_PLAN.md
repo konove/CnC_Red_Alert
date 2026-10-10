@@ -127,14 +127,12 @@ With LCW and Phase 2 this makes the VQA decode path Rust end to end. Effort: s.
 
 ### Phase 4: SHA-1 compression
 
-`SHAEngine` keeps padding and partial blocks; only `Sha1Compress` and its portable and hardware
-variants move. The hardware path needs `unsafe` for the `core::arch` SHA intrinsics behind
-`is_x86_feature_detected!`, so this module is the exception to `forbid(unsafe_code)`: the `unsafe`
-is confined to one function. Effort: s.
+`SHAEngine` keeps padding and partial blocks; only `Sha1Compress` moves, to the `sha1` crate's block
+function; its portable and hardware variants, which only a test called, are gone. Effort: s.
 
 - [x] Task-level plan, including whether a vetted crate (`sha1`) replaces a port
 - [x] `src/rust/src/sha1.rs`, shims in `sha1_compress.cc`
-- [x] `sha1_compress_test` unchanged; benchmark both paths
+- [x] `sha1_compress_test` passes, less the one test of the variants; benchmark
 
 ### Phase 5: Blowfish
 
@@ -165,9 +163,10 @@ loops are split into clip and kernel.
 
 ## Open questions
 
-- **Crates or ports.** SHA-1, Blowfish, base64, LZO and the bignum all have maintained crates. A
-  crate is less code to own; a port is the point of a learning project and keeps the dependency list
-  at `cxx` alone. Decided per phase: SHA-1 and Blowfish are ports (`docs/RUST_SHA1_PLAN.md`).
+- **Crates or ports.** Decided per phase by building the crate and timing it against a port: SHA-1
+  uses the `sha1` crate (`docs/RUST_SHA1_PLAN.md`), the bignum `num-bigint`, Blowfish stays a port
+  (`docs/RUST_BLOWFISH_PLAN.md`). Base64, LZO and LZW are not evaluated yet; `lzo1x` is GPL-2.0 and
+  needs a licence check against this tree first.
 - **Where a blit kernel's bridge call stops paying.** Phases 1 to 5 are called per frame, block or
   file. A blit runs per object per frame; measure one before planning the pixel loops.
 - ~~Whether `vq_decoder` and `xor_delta` have in-place callers.~~ Neither has

@@ -99,19 +99,9 @@ mod ffi {
         /// Compresses into one LCW stream; see lcw::compress.
         fn lcw_compress(input: &[u8]) -> Vec<u8>;
 
-        /// Compresses whole 64-byte blocks into a SHA-1 state with the
-        /// fastest code the CPU runs; see sha1::compress.
+        /// Compresses whole 64-byte blocks into a SHA-1 state; see
+        /// sha1::compress.
         fn sha1_compress(state: &mut [u32; 5], blocks: &[u8]);
-
-        /// As sha1_compress, in portable code.
-        fn sha1_compress_portable(state: &mut [u32; 5], blocks: &[u8]);
-
-        /// Returns whether sha1_compress_hardware can run on this CPU.
-        fn sha1_hardware_available() -> bool;
-
-        /// As sha1_compress, with the x86 SHA extensions. Aborts unless
-        /// sha1_hardware_available().
-        fn sha1_compress_hardware(state: &mut [u32; 5], blocks: &[u8]);
 
         /// Decodes a VQ movie frame; see vq::decode_frame.
         #[allow(clippy::too_many_arguments)]
@@ -238,18 +228,6 @@ fn vq_decode_frame(
 
 fn sha1_compress(state: &mut [u32; 5], blocks: &[u8]) {
     sha1::compress(state, blocks);
-}
-
-fn sha1_compress_portable(state: &mut [u32; 5], blocks: &[u8]) {
-    sha1::compress_portable(state, blocks);
-}
-
-fn sha1_hardware_available() -> bool {
-    sha1::hardware_available()
-}
-
-fn sha1_compress_hardware(state: &mut [u32; 5], blocks: &[u8]) {
-    sha1::compress_hardware(state, blocks);
 }
 
 fn blowfish_new(key: &[u8]) -> Box<Blowfish> {

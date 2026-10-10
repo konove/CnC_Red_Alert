@@ -1,6 +1,6 @@
 // Holds the Rust SHA-1 block compression in src/rust to the C++ one it
 // replaced: the same state from any starting state, for one block and for
-// many, in the portable code and with the SHA extensions.
+// many.
 
 #include <cstddef>
 #include <cstdint>
@@ -24,38 +24,21 @@ Sha1State RandomState(base::Lcg& lcg) {
   return state;
 }
 
-TEST(Sha1CompressDifferentialTest, PortableMatchesReference) {
+// Whichever code the sha1 crate runs on this CPU, against the portable C++.
+TEST(Sha1CompressDifferentialTest, MatchesPortableReference) {
   base::Lcg lcg(1);
   for (int round = 0; round < 2000; ++round) {
     const auto blocks = lcg.Bytes(lcg.Below(9) * kSha1BlockSize);
     Sha1State want = RandomState(lcg);
     Sha1State got = want;
     sha1_reference::Sha1CompressPortable(want, blocks);
-    engine::crypto::Sha1CompressPortable(got, blocks);
+    engine::crypto::Sha1Compress(got, blocks);
     ASSERT_EQ(got, want) << "round " << round;
   }
 }
 
-TEST(Sha1CompressDifferentialTest, HardwareMatchesReference) {
-  if (!engine::crypto::Sha1HardwareAvailable()) {
-    GTEST_SKIP() << "CPU has no SHA extensions";
-  }
-  base::Lcg lcg(2);
-  for (int round = 0; round < 2000; ++round) {
-    const auto blocks = lcg.Bytes(lcg.Below(9) * kSha1BlockSize);
-    Sha1State want = RandomState(lcg);
-    Sha1State got = want;
-    // The portable reference, so that this also runs where the C++ hardware
-    // path cannot.
-    sha1_reference::Sha1CompressPortable(want, blocks);
-    engine::crypto::Sha1CompressHardware(got, blocks);
-    ASSERT_EQ(got, want) << "round " << round;
-  }
-}
-
-TEST(Sha1CompressDifferentialTest, DispatchMatchesReference) {
-  EXPECT_EQ(engine::crypto::Sha1HardwareAvailable(),
-            sha1_reference::Sha1HardwareAvailable());
+// And against whichever code the C++ ran on it, over longer inputs.
+TEST(Sha1CompressDifferentialTest, MatchesDispatchingReference) {
   base::Lcg lcg(3);
   for (int round = 0; round < 500; ++round) {
     const auto blocks = lcg.Bytes(lcg.Below(40) * kSha1BlockSize);

@@ -1,4 +1,5 @@
-#include "engine/crypto/sha1_compress.h"
+// SHA-1 through SHAEngine, which pads and buffers around Sha1Compress()
+// (engine/crypto/sha1_compress.h).
 
 #include <algorithm>
 #include <cstddef>
@@ -47,22 +48,6 @@ TEST(Sha1CompressTest, KnownDigests) {
             "84983e441c3bd26ebaae4aa1f95129e5e54670f1");
   EXPECT_EQ(ShaHex(std::string(1'000'000, 'a')),
             "34aa973cd4c4daa4f61eeb2bdbad27316534016f");
-}
-
-TEST(Sha1CompressTest, HardwareMatchesPortable) {
-  if (!engine::crypto::Sha1HardwareAvailable()) {
-    GTEST_SKIP() << "CPU has no SHA extensions";
-  }
-  for (const int blocks : {1, 2, 3, 17, 1000}) {
-    const std::vector<std::byte> input =
-        TestBytes(blocks * engine::crypto::kSha1BlockSize);
-    engine::crypto::Sha1State portable = {0x67452301U, 0xefcdab89U, 0x98badcfeU,
-                                          0x10325476U, 0xc3d2e1f0U};
-    engine::crypto::Sha1State hardware = portable;
-    engine::crypto::Sha1CompressPortable(portable, input);
-    engine::crypto::Sha1CompressHardware(hardware, input);
-    EXPECT_EQ(hardware, portable) << blocks << " blocks";
-  }
 }
 
 // Hash() splits input into a partial head, whole blocks and a partial tail;

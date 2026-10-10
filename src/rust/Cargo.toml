@@ -15,6 +15,9 @@ doctest = false
 
 [dependencies]
 cxx = "1.0.202"
+# SHA-1 block compression, with the x86 and aarch64 SHA extensions. Without
+# the default features, which only add object identifiers.
+sha1 = { version = "0.11.0", default-features = false }
 
 # Debug builds keep the kernels fast, as optimize_in_debug() does for C++
 # (cmake/OptimizeInDebug.cmake). A panic must not unwind into C++.

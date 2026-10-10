@@ -11,8 +11,12 @@ public functions, their return values and the copy-through behavior without a ke
 
 ## Decisions
 
-- **A port,** as decided in `docs/RUST_SHA1_PLAN.md`. The S-boxes and sub-keys in
-  `src/rust/src/blowfish/tables.rs` were generated from the C++ tables by script, not retyped.
+- **A port, not the `blowfish` crate** (decided 2026-10-09). Built and timed against the port, the
+  crate (0.10) gives identical output at the same speed: 373 against 381 MB/s, a key set up in 20.0
+  against 18.5 microseconds. It refuses keys of 1 to 3 bytes, which the C++ engine accepted, and
+  would add `cipher`, `inout` and `byteorder`. With nothing gained, the port stays. Its S-boxes and
+  sub-keys in `src/rust/src/blowfish/tables.rs` were generated from the C++ tables by script, not
+  retyped.
 - **The opaque type is `engine_rs::Blowfish`,** the 4,168 bytes of tables a key expands to. C++
   holds it as `rust::Box<Blowfish>` inside `BlowfishEngine::Key`, a struct defined in `blowfish.cc`,
   so `blowfish.h` does not include the generated bridge header and its includers (`pk_sink.cc`, Red
