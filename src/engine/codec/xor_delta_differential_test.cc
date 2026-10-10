@@ -26,7 +26,7 @@ void AppendCommand(base::Lcg& lcg, std::vector<std::byte>& delta,
   const int kind = lcg.Below(6);
   const bool is_long = kind >= 3;
   const auto count = static_cast<uint32_t>(
-      1 + lcg.Below(std::min(max_count, is_long ? 600 : 127)));
+      1 + lcg.Below(std::min(max_count, is_long ? 3000 : 127)));
   switch (kind) {
     case 0:  // Short run.
       Append(delta, 0);
@@ -123,6 +123,15 @@ TEST(XorDeltaDifferentialTest, ValidDeltasMatchReference) {
   for (int round = 0; round < 3000; ++round) {
     const int size = lcg.Below(2000);
     ExpectMatch(lcg, ValidDelta(lcg, size / 8), size);
+  }
+}
+
+// Targets large enough for the long commands' counts to need their high byte.
+TEST(XorDeltaDifferentialTest, LongCommandsMatchReference) {
+  base::Lcg lcg(5);
+  for (int round = 0; round < 300; ++round) {
+    const int size = 20000 + lcg.Below(50000);
+    ExpectMatch(lcg, ValidDelta(lcg, size / 4), size);
   }
 }
 

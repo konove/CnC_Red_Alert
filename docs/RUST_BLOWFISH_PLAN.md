@@ -17,7 +17,7 @@ public functions, their return values and the copy-through behavior without a ke
   would add `cipher`, `inout` and `byteorder`. With nothing gained, the port stays. Its S-boxes and
   sub-keys in `src/rust/src/blowfish/tables.rs` were generated from the C++ tables by script, not
   retyped.
-- **The opaque type is `engine_rs::Blowfish`,** the 4,168 bytes of tables a key expands to. C++
+- **The opaque type is `engine_rs::Blowfish`,** the 4,240 bytes of tables a key expands to. C++
   holds it as `rust::Box<Blowfish>` inside `BlowfishEngine::Key`, a struct defined in `blowfish.cc`,
   so `blowfish.h` does not include the generated bridge header and its includers (`pk_sink.cc`, Red
   Alert's `saveload.cc`, ...) need not link `engine_rs_cxx`.
@@ -27,9 +27,10 @@ public functions, their return values and the copy-through behavior without a ke
   block as both arguments. The shim sends spans that do not overlap to `blowfish_encrypt` /
   `blowfish_decrypt` and spans that start at the same byte to the `_in_place` forms; any other
   overlap `CHECK`-fails, as no caller has a use for it.
-- **Key material is wiped on drop.** The C++ destructor reset the tables to their constants; the
-  Rust type's `Drop` zeroes them. Submitting a second key re-keys the tables where they are
-  (`blowfish_set_key`).
+- **The tables are wiped on drop.** The C++ destructor reset them to their constants; the Rust
+  type's `Drop` zeroes them. That covers the boxed tables, not the copies the compiler may make
+  while a new cipher is moved into its box, which the C++ engine, expanding in place, did not have.
+  Submitting a second key re-keys the tables where they are (`blowfish_set_key`).
 - **`Encrypt()` and `Decrypt()` stay non-const.** They could be const now, but clang-tidy then wants
   them `[[nodiscard]]`, which `BlowfishCodec` would fail; the suppression says so.
 

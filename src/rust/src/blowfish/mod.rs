@@ -100,7 +100,9 @@ impl Blowfish {
 }
 
 impl Drop for Blowfish {
-    /// Leaves no key material behind. The black box keeps the compiler from
+    /// Wipes these tables, so that the key does not outlive the cipher in
+    /// its allocation. Copies the compiler made while a new cipher was moved
+    /// into place are not reached. The black box keeps the compiler from
     /// dropping the writes as dead.
     fn drop(&mut self) {
         self.p_encrypt.fill(0);

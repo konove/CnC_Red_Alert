@@ -59,8 +59,10 @@ run in Rust. `SHAEngine` keeps padding and partial blocks and does not change.
 `sha1_compress_test`'s other tests pass unchanged. `kernel_bench` at `RelWithDebInfo` (GCC 13 for
 the C++ reference), 64 KiB of random blocks, both sides using the SHA extensions: 2,703 MB/s each.
 
-The crate's portable code cannot be timed on a CPU with the extensions. The port's, which is no
-longer in the tree, ran at 534 MB/s against the C++'s 291.
+The crate's portable code cannot be timed on a CPU with the extensions, and the ctests here never
+run it. It was run once by hand, and passes the module's vectors:
+`RUSTFLAGS='--cfg sha1_backend="soft"' cargo test --locked sha1`. The port's, which is no longer in
+the tree, ran at 534 MB/s against the C++'s 291.
 
 `sha1_compress.cc` no longer needs `optimize_in_debug()`: the Rust crate is built at `opt-level = 2`
 in Debug.

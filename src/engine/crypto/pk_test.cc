@@ -138,6 +138,21 @@ TEST(PKeyTest, GeneratedKeysUndoEachOther) {
             24 * 2);
 }
 
+// The slow key wins, as it did in C++.
+TEST(PKeyTest, GeneratingBothHalvesIntoOneKeyKeepsTheSlowOne) {
+  RandomSource rng;
+  Seed(rng);
+  PKey fast;
+  PKey slow;
+  PKey::Generate(rng, 64, fast, slow);
+  RandomSource same_rng;
+  Seed(same_rng);
+  PKey both;
+  PKey::Generate(same_rng, 64, both, both);
+  EXPECT_EQ(Encoded(both, /*modulus=*/true), Encoded(slow, /*modulus=*/true));
+  EXPECT_EQ(Encoded(both, /*modulus=*/false), Encoded(slow, /*modulus=*/false));
+}
+
 TEST(PKeyTest, DecryptsInTheBufferTheBlocksAreIn) {
   RandomSource rng;
   Seed(rng);

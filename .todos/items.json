@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 359,
+  "nextId": 362,
   "items": [
     {
       "id": "T-2",
@@ -12420,6 +12420,135 @@
             "",
             "        // The heights are positions on the scale drawn beside the bar, whose",
             "        // zero tick is the row `bottom` and whose top tick is `kScaleRows`"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-359",
+      "title": "Decide whether PKey should encode keys longer than 512 bits in full",
+      "details": "`PKey::Encode_Modulus()` and `PKey::Encode_Exponent()` (`src/engine/crypto/pk.h`) write only the low 64 bytes of a 2048-bit number: `der_encode()` in `src/rust/src/pk/mod.rs` searches for the top byte from byte 63, not 255. A modulus of more than 512 bits (two primes above 256 bits) comes out cut short, and decoding it back gives a different key.\n\nThe behavior is inherited on purpose. The C++ `XMP_Encode()` (now `src/engine/crypto/mp_reference_test_util.cc`) started its scan at the register's length in 32-bit digits instead of in bytes, and the Rust port keeps it so that `pk_differential_test` can compare encodings byte for byte. The cargo test `der_encode_sees_only_the_low_512_bits` pins it.\n\nNothing in the games calls the two functions; only the tests and `kernel_bench` do, to copy a key between the two implementations. The games' MIX key is 319 bits.\n\nA fix is small: scan all `NUMBER_BYTES`, use the long form of the DER length above 127 bytes, raise `MAX_DER_BYTES` and `PKey::kMaxEncodedBytes` (67) to 261, and restrict the differential test's encoding comparison to numbers of at most 512 bits, where the reference is right.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "engine",
+        "crypto",
+        "rust",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T07:25:39Z",
+      "updated": "2026-10-10T07:25:39Z",
+      "source": "f8694ec5",
+      "toDecide": "Fix the encoder so that it writes the whole number, or keep it identical to the C++ one?\n\n- **Fix:** about an hour. Keys of up to 2048 bits round-trip through `Encode_*`/`Decode_*`; the differential test can no longer compare encodings above 512 bits with the reference.\n- **Keep:** nothing to do now; it becomes free to fix once the C++ reference is deleted (see the item about removing the reference kernels).",
+      "anchors": [
+        {
+          "path": "src/rust/src/pk/mod.rs",
+          "startLine": 77,
+          "endLine": 101,
+          "text": "pub fn der_encode(number: &Number) -> ([u8; MAX_DER_BYTES], usize) {\n    const ENCODED_BYTES: usize = NUMBER_BYTES / 4;\n    let negative = number[NUMBER_BYTES - 1] & 0x80 != 0;\n    let filler = if negative { 0xff } else { 0 };\n    // The top byte that is not just sign extension; byte 0 if none is.\n    let top = (1..ENCODED_BYTES)\n        .rev()\n        .find(|&at| number[at] != filler)\n        .unwrap_or(0);\n    let mut encoded = [0; MAX_DER_BYTES];\n    let mut len = 2;\n    // A byte of sign in front if the top byte's own top bit says otherwise.\n    if (number[top] & 0x80 != 0) != negative {\n        encoded[len] = filler;\n        len += 1;\n    }\n    for &digit in number[..=top].iter().rev() {\n        encoded[len] = digit;\n        len += 1;\n    }\n    encoded[0] = 2;\n    // At most 65, so the length is always the short form.\n    encoded[1] = (len - 2) as u8;\n    (encoded, len)\n}",
+          "before": [
+            "/// whole register: the C++ encoder started its search for the top byte at",
+            "/// the register's length in 32-bit digits instead of in bytes. A number of",
+            "/// more than 512 bits comes out cut short."
+          ],
+          "after": [
+            "",
+            "/// The number of bits in `number` up to and including the highest one set.",
+            "pub fn bit_count(number: &Number) -> usize {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-360",
+      "title": "Delete the C++ reference kernels of the Rust migration",
+      "details": "Phases 1 to 6 of `docs/RUST_MIGRATION_PLAN.md` kept each C++ kernel that moved to Rust as a test-only reference, so that a differential test and `kernel_bench` could hold the Rust one to it. That is about 5,000 lines the engine no longer runs, most of them the old bignum. The LCW reference was deleted the same way five days after its migration (d13c4a8a).\n\nTo delete:\n\n- `src/engine/codec/`: `xor_delta_reference_test_util.*`, `xor_delta_differential_test.cc`, `aud_decoder_reference_test_util.*`, `aud_decoder_differential_test.cc`\n- `src/engine/video/vqa/`: `adpcm_decoders_reference_test_util.*`, `adpcm_decoders_differential_test.cc`, `vq_decoder_reference_test_util.*`, `vq_decoder_differential_test.cc`\n- `src/engine/crypto/`: `sha1_compress_reference_test_util.*`, `sha1_compress_differential_test.cc`, `blowfish_reference_test_util.*`, `blowfish_differential_test.cc`, `mp_reference_test_util.*`, `int_reference_test_util.h`, `digit_cursor_reference_test_util.h`, `pk_reference_test_util.*`, `pk_differential_test.cc`\n- `src/tools/kernel_bench.cc` and its target in `src/tools/CMakeLists.txt`\n- the entries in the three `add_gtest` source lists\n- `src/base/lcg_test_util.h`, if nothing else uses it by then\n\nBefore deleting, move to the tests that stay whatever only a differential test covers, as was done for LCW's two in-place cases: the overlap death tests of each shim, the in-place ADPCM layouts (`adpcm_decoders_test.cc`), Blowfish with every key length and re-keying (`blowfish_test.cc`), and `TheReferenceGetsThisPowerWrong`'s vector as a plain expected-value test in `pk_test.cc`. Record the last `kernel_bench` numbers in the plan documents, which already hold them, and note the deletion in each `docs/RUST_*_PLAN.md` outcome.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "engine",
+        "rust",
+        "cleanup",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T07:25:39Z",
+      "updated": "2026-10-10T07:25:39Z",
+      "source": "d3623d18..f8694ec5",
+      "toDecide": "When has the migration settled enough to drop the references? They cost build time and strict-check time on every full build, and they are the only thing that would show a regression against the original C++ if a Rust kernel is changed. Say when (for example after the branch `rust-migration` is merged and the real-device sound check is done) and an agent can do the deletion."
+    },
+    {
+      "id": "T-361",
+      "title": "Fix the division by zero for a public key with no usable modulus",
+      "details": "`PKey::Block_Count()` (`src/engine/crypto/pk.h`) divides by `Plain_Block_Size()`, which is 0 for a key whose modulus is zero or has fewer than 10 bits: a default-constructed `PKey`, or the one `IniFile::GetPublicKey()` returns when the INI has no usable `[PublicKey]` section, since malformed DER leaves the modulus as it was.\n\n`MakePkDecryptSource()` (`src/engine/crypto/pk_source.cc:40`) and `MakePkEncryptSink()` (`src/engine/crypto/pk_sink.cc:48`) call it unconditionally, so opening an encrypted MIX archive with such a key is an integer division by zero (SIGFPE on x86), not a failed open.\n\nThe formula is the original one; the C++ `PKey` before the Rust migration behaved the same. Found by reading, not reproduced.\n\nFix: have both factories return `nullptr` when `key.Plain_Block_Size() <= 0` (the decrypt one already returns `nullptr` for a short header, and `MixArchive::Open()` handles it), and make `Block_Count()` return 0 for such a key instead of dividing. Add a test to `pk_stream_test.cc` with a default `PKey`, and one to `mix_archive_test.cc` that an encrypted archive opened with a default key fails to open.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "engine",
+        "crypto"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T07:31:41Z",
+      "updated": "2026-10-10T07:31:41Z",
+      "source": "f8694ec5",
+      "anchors": [
+        {
+          "path": "src/engine/crypto/pk.h",
+          "startLine": 92,
+          "endLine": 92,
+          "text": "  [[nodiscard]] int Block_Count(int plaintext_length) const {",
+          "before": [
+            "    return (bit_precision_ - 1) / 8;",
+            "  }",
+            "  [[nodiscard]] int Crypt_Block_Size() const { return Plain_Block_Size() + 1; }"
+          ],
+          "after": [
+            "    return ((plaintext_length - 1) / Plain_Block_Size()) + 1;",
+            "  }",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/crypto/pk_source.cc",
+          "startLine": 40,
+          "endLine": 40,
+          "text": "      key.Block_Count(kBlowfishKeySize) * key.Crypt_Block_Size();",
+          "before": [
+            "                                                    const PKey& key) {",
+            "  // Calculate how many bytes the encrypted blowfish key occupies.",
+            "  const int encrypted_len ="
+          ],
+          "after": [
+            "",
+            "  // Read the encrypted key header.",
+            "  char encrypted_key[kMaxKeyBlockSize];"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/crypto/pk_sink.cc",
+          "startLine": 48,
+          "endLine": 48,
+          "text": "      key.Block_Count(kBlowfishKeySize) * key.Plain_Block_Size();",
+          "before": [
+            "",
+            "  // Calculate plain key length (padded to PK block size).",
+            "  const int plain_len ="
+          ],
+          "after": [
+            "",
+            "  // Encrypt the blowfish key with the public key.",
+            "  char encrypted_key[kMaxKeyBlockSize];"
           ],
           "lost": false
         }

@@ -126,7 +126,9 @@ With LCW and Phase 2 this makes the VQA decode path Rust end to end. Effort: s.
 
 - [x] Task-level plan
 - [x] `src/rust/src/vq.rs`, shim in `vq_decoder.cc`
-- [x] Differential test; frame dumps of `REDINTRO` and `SOVIET1` identical before and after
+- [x] Differential test
+- [x] `REDINTRO` and `SOVIET1` decode identically: checked by a temporary build that ran the C++
+      beside every Rust call, not by frame dumps (`docs/RUST_VQ_DECODER_PLAN.md`)
 
 ### Phase 4: SHA-1 compression
 

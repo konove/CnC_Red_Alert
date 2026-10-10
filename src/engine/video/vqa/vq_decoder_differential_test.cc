@@ -30,36 +30,49 @@ bool ExpectMatch(base::Lcg& lcg, const int slack) {
   const BlockShape shape =
       lcg.Below(2) == 0 ? BlockShape::k4x2 : BlockShape::k4x4;
   const int height = shape == BlockShape::k4x2 ? 2 : 4;
+  // With slack, one size in three is off, so that a good share of the
+  // frames still fit and draw.
   const auto vary = [&](const int size) {
-    return slack == 0 ? size
-                      : std::max(0, size + lcg.Below((2 * slack) + 1) - slack);
+    return slack == 0 || lcg.Below(3) != 0
+               ? size
+               : std::max(0, size + lcg.Below((2 * slack) + 1) - slack);
   };
   const int columns = 1 + lcg.Below(12);
   const int rows = 1 + lcg.Below(8);
   const int stride = vary((columns * 4) + lcg.Below(6));
-  const int codebook_blocks = 1 + lcg.Below(40);
+  // One time in three past 256 blocks, so that entries need their high byte.
+  const int codebook_blocks =
+      lcg.Below(3) == 0 ? 257 + lcg.Below(3000) : 1 + lcg.Below(40);
   const auto codebook = RandomBuffer(lcg, vary(codebook_blocks * 4 * height));
   // Mostly entries inside the codebook or solid; with slack, any high byte.
   auto pointers = RandomBuffer(lcg, vary(columns * rows * 2));
+  // An entry inside the codebook, or a solid one, for most blocks; with
+  // slack, now and then whatever the random bytes hold.
   const auto blocks = base::ToSize(columns * rows);
-  for (std::size_t block = 0; block < pointers.size(); ++block) {
-    if (block >= blocks && (slack == 0 || lcg.Below(20) != 0)) {
-      const bool solid = lcg.Below(5) == 0;
-      const int marker = shape == BlockShape::k4x2 ? 0x0f : 0xff;
-      pointers.at(block) =
-          static_cast<uint8_t>(solid ? marker : codebook_blocks / 256);
-    } else if (block < blocks && codebook_blocks < 256) {
-      pointers.at(block) = static_cast<uint8_t>(
-          lcg.Below(slack == 0 ? codebook_blocks : codebook_blocks + 2));
+  const int marker = shape == BlockShape::k4x2 ? 0x0f : 0xff;
+  for (std::size_t block = 0; block < blocks; ++block) {
+    if (pointers.size() < blocks * 2 || (slack != 0 && lcg.Below(20) == 0)) {
+      continue;
     }
+    const auto entry = static_cast<uint32_t>(
+        lcg.Below(slack == 0 ? codebook_blocks : codebook_blocks + 2));
+    const bool solid = lcg.Below(5) == 0;
+    // An entry whose high byte happens to be the marker is solid too.
+    pointers.at(block) = static_cast<uint8_t>(entry & 0xffU);
+    pointers.at(blocks + block) = solid ? static_cast<uint8_t>(marker)
+                                        : static_cast<uint8_t>(entry >> 8U);
   }
   const auto image = RandomBuffer(
       lcg, vary((std::max(stride, 1) * ((rows * height) - 1)) + (columns * 4)));
 
   auto want = image;
   auto got = image;
-  const int given_columns = slack == 0 ? columns : columns + lcg.Below(3) - 1;
-  const int given_rows = slack == 0 ? rows : rows + lcg.Below(3) - 1;
+  // The counts the decoder is told may be one off as well.
+  const auto nudge = [&](const int count) {
+    return slack == 0 || lcg.Below(3) != 0 ? count : count + lcg.Below(3) - 1;
+  };
+  const int given_columns = nudge(columns);
+  const int given_rows = nudge(rows);
   vq_decoder_reference::DecodeVqFrame(shape, codebook, pointers, want,
                                       given_columns, given_rows, stride);
   DecodeVqFrame(shape, codebook, pointers, got, given_columns, given_rows,
@@ -82,18 +95,26 @@ TEST(VqDecoderDifferentialTest, FramesThatFitMatchReference) {
   EXPECT_GT(drawn, 3900);
 }
 
+// Of the frames whose sizes are off, enough must still pass the size checks
+// and draw for the comparison to mean something.
 TEST(VqDecoderDifferentialTest, SizesOffByALittleMatchReference) {
   base::Lcg lcg(2);
+  int drawn = 0;
   for (int round = 0; round < 8000; ++round) {
-    ExpectMatch(lcg, 1 + lcg.Below(3));
+    drawn += ExpectMatch(lcg, 1 + lcg.Below(3)) ? 1 : 0;
   }
+  EXPECT_GT(drawn, 800);
+  EXPECT_LT(drawn, 7200);
 }
 
 TEST(VqDecoderDifferentialTest, SizesFarOffMatchReference) {
   base::Lcg lcg(3);
+  int drawn = 0;
   for (int round = 0; round < 8000; ++round) {
-    ExpectMatch(lcg, 40);
+    drawn += ExpectMatch(lcg, 40) ? 1 : 0;
   }
+  EXPECT_GT(drawn, 400);
+  EXPECT_LT(drawn, 7600);
 }
 
 TEST(VqDecoderDeathTest, RejectsAnImageThatHoldsItsPointers) {

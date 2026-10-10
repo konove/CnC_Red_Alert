@@ -97,14 +97,22 @@ void PKey::Generate(ByteSource& random, const int bits, PKey& fastkey,
                     PKey& slowkey) {
   CHECK(bits >= 32 && bits <= 1024) << "Primes of " << bits << " bits";
   std::array<std::byte, kSeedBytes> seed{};
-  random.Read(seed);
+  // A source that runs dry would leave zeros in the seed, and a key anyone
+  // could repeat.
+  CHECK_EQ(random.Read(seed), kSeedBytes) << "Random source ran short";
+  // Into numbers of its own: `fastkey` and `slowkey` may be one object, and
+  // Rust may not be handed two mutable references to the same bytes.
   Number modulus{};
+  Number fast_exponent{};
+  Number slow_exponent{};
   engine_rs::pk_generate(AsRustSlice(std::span<const std::byte>(seed)),
-                         base::ToSize(bits), modulus, fastkey.exponent_,
-                         slowkey.exponent_);
+                         base::ToSize(bits), modulus, fast_exponent,
+                         slow_exponent);
   // The modulus is the same for both keys, and the fast exponent is always
   // Fast_Exponent(): a fast key is fully described by its modulus.
+  fastkey.exponent_ = fast_exponent;
   fastkey.set_modulus(modulus);
+  slowkey.exponent_ = slow_exponent;
   slowkey.set_modulus(modulus);
 }
 
