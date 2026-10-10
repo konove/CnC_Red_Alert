@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 384,
+  "nextId": 385,
   "items": [
     {
       "id": "T-2",
@@ -13374,6 +13374,29 @@
       "anchors": [
         {
           "path": "tools/ra_saveload_smoke.sh",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-384",
+      "title": "Test the turret code folded into Tiberian Dawn's UnitClass",
+      "details": "`UnitClass::Rotate_Turret()`, `Engage_Target()` and `Turret_Can_Fire()` came from `TurretClass` and `TarComClass` in 30853b48 without unit tests; only the save/load fixtures and reading cover them, and `tools/net_check.py` plays Red Alert only. Add tests in `src/td/objects/techno_test.cc` style (a real `Game`, hand-built vehicles): a turret turns towards its target and reports `FIRE_FACING` until it faces it, a locked turret refuses `Ok_To_Move()` until it has swung round, a unit without a free turret reports `FIRE_MOVING` while it has a `NavCom`, the radar dish keeps turning.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "testing",
+        "td",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T23:32:19Z",
+      "updated": "2026-10-10T23:32:19Z",
+      "source": "30853b48",
+      "anchors": [
+        {
+          "path": "src/td/objects/unit.h",
           "lost": false
         }
       ]
