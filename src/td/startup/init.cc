@@ -1802,10 +1802,10 @@ bool Select_Game(bool fade) {
       bullet->Next = ground;
       bullet->Payback = owner;
       bullet->PrimaryFacing.SnapTo(game::Direction::kSouthEast);
-      bullet->Fly_Speed(127, game::kMphFast);
-      bullet->Arm_Fuse(owner->Coord,
-                       Coordinate::FromPacked(owner->Coord.packed() + 0x200),
-                       95, 5);
+      bullet->flight().Set_Speed(127, game::kMphFast);
+      bullet->fuse().Arm(owner->Coord,
+                         Coordinate::FromPacked(owner->Coord.packed() + 0x200),
+                         95, 5);
       bullet->Assign_Target(owner->As_Target());
       auto* missile = base::NewPooled<BulletClass>(BULLET_SSM);
       const Coordinate destination =
@@ -1820,8 +1820,8 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;
       }
-      missile->Fly_Speed(127, game::kMphSlow);
-      missile->Arm_Fuse(owner->Coord, destination, 95, 5);
+      missile->flight().Set_Speed(127, game::kMphSlow);
+      missile->fuse().Arm(owner->Coord, destination, 95, 5);
       missile->Strength = 0;
       anim->Attach_To(owner);
       anim->Owner = owner->House->Class->House;

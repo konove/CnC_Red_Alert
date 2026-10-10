@@ -60,7 +60,7 @@ class ArchiveWriter;
 
 namespace td {
 
-class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
+class BulletClass : public ObjectClass {
  public:
   /*
   **	This specifies exactly what kind of bullet this is. All of the static
@@ -134,6 +134,22 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	File I/O.
   */
+  // The speed and the distance not yet moved; see FlyClass.
+  [[nodiscard]] FlyClass& flight() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+  [[nodiscard]] const FlyClass& flight() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+
+  // Decides when the projectile detonates; see FuseClass.
+  [[nodiscard]] FuseClass& fuse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return fuse_;
+  }
+  [[nodiscard]] const FuseClass& fuse() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return fuse_;
+  }
+
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -180,6 +196,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   ** Is this missle allowed to come in from out of bounds?
   */
   bool IsLocked : 1 = true;
+
+  FlyClass flight_;
+  FuseClass fuse_;
 };
 
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -382,7 +382,7 @@ void BulletClass::AI() {
     PrimaryFacing.Turn(Class->ROT);
   }
 
-  switch (Physics(coord, PrimaryFacing.current())) {
+  switch (flight_.Physics(coord, PrimaryFacing.current())) {
     /*
     **	When a projectile reaches the edge of the world, it
     **	vanishes from existence -- presumed to explode off
@@ -429,7 +429,7 @@ void BulletClass::AI() {
         }
       }
 
-      if (!forced && (Class->IsDropping || !Fuse_Checkup(coord))) {
+      if (!forced && (Class->IsDropping || !fuse_.Checkup(coord))) {
         Coord = coord;
         Mark();
 
@@ -451,8 +451,9 @@ void BulletClass::AI() {
         *in line of *	flight logic.
         */
         Mark();
-        if (!forced && !Class->IsArcing && !Class->IsHoming && Fuse_Target()) {
-          Coord = Fuse_Target();
+        if (!forced && !Class->IsArcing && !Class->IsHoming &&
+            fuse_.ImpactPoint()) {
+          Coord = fuse_.ImpactPoint();
         }
 
         /*
@@ -745,14 +746,14 @@ bool BulletClass::Unlimbo(Coordinate coord, game::Direction dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, speed);
+      flight_.Set_Speed(255, speed);
     }
 
     /*
     **	Arm the fuse.
     */
-    Arm_Fuse(Coord, tcoord, range,
-             TarCom.AsAircraft() != nullptr ? 0 : Class->Arming);
+    fuse_.Arm(Coord, tcoord, range,
+              TarCom.AsAircraft() != nullptr ? 0 : Class->Arming);
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine

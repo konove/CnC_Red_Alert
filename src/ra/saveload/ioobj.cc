@@ -217,8 +217,8 @@ template void TriggerType::Serialize(ArchiveReader&);
 template <class Archive>
 void BulletClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  FlyClass::Serialize(ar);
-  FuseClass::Serialize(ar);
+  flight_.Serialize(ar);
+  fuse_.Serialize(ar);
   bool is_inaccurate = IsInaccurate;
   bool is_to_animate = IsToAnimate;
   bool is_locked = IsLocked;
@@ -473,7 +473,7 @@ template void InfantryClass::Serialize(ArchiveReader&);
 template <class Archive>
 void AircraftClass::Serialize(Archive& ar) {
   FootClass::Serialize(ar);
-  FlyClass::Serialize(ar);
+  flight_.Serialize(ar);
   bool is_landing = IsLanding;
   bool is_taking_off = IsTakingOff;
   bool is_homing = IsHoming;

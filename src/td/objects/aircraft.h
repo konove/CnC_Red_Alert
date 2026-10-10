@@ -47,8 +47,16 @@ class IniFile;
 
 namespace td {
 
-class AircraftClass : public FootClass, public FlyClass {
+class AircraftClass : public FootClass {
  public:
+  // The speed and the distance not yet moved; see FlyClass.
+  [[nodiscard]] FlyClass& flight() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+  [[nodiscard]] const FlyClass& flight() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+
   // Field-wise state and checked references; load shells have no scenario effects.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -236,6 +244,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   char AttacksRemaining = 3;
 
+  FlyClass flight_;
 };
 
 extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);

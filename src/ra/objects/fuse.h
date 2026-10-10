@@ -66,18 +66,18 @@ class FuseClass {
   FuseClass(FuseClass&&) = delete;
   FuseClass& operator=(FuseClass&&) = delete;
 
-  void Arm_Fuse(Coordinate location, Coordinate target, int time = 0xFF,
-                int arming = 0);
-  bool Fuse_Checkup(Coordinate newlocation);
-  [[nodiscard]] Coordinate Fuse_Target() const;
+  void Arm(Coordinate location, Coordinate target, int time = 0xFF,
+           int arming = 0);
+  bool Checkup(Coordinate newlocation);
+  [[nodiscard]] Coordinate ImpactPoint() const;
 
+ private:
   /*
   **	Fuses can detonate if enough time has elapsed. This value counts
   **	down. When it reaches zero, detonation occurs.
   */
   unsigned char Timer = 0;
 
- private:
   /*
   **	Some fuses need a certain amount of time before detonation can
   **	occur. This counts down and when it reaches zero, normal fuse
@@ -99,7 +99,7 @@ class FuseClass {
   int16_t Proximity = 0;
 };
 
-inline Coordinate FuseClass::Fuse_Target() const { return HeadTo; }
+inline Coordinate FuseClass::ImpactPoint() const { return HeadTo; }
 
 }  // namespace ra
 

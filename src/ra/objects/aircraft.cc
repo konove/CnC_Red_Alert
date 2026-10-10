@@ -507,7 +507,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	Helicopters that are flying have a "bobbing" effect.
   */
   int jitter = 0;
-  if (Height == kFlightLevel && Get_Speed() < 3) {
+  if (Height == kFlightLevel && flight_.Get_Speed() < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
     jitter = base::At(_jitter, game::CurrentFrame() % 16);
@@ -1599,7 +1599,7 @@ BulletClass* AircraftClass::Fire_At(Target target, int which) {
   **	Falling bullets move at a speed proportionate to the delivery craft.
   */
   if (bullet && bullet->Class->IsDropping) {
-    bullet->Fly_Speed(40, game::kMphMediumSlow);  // TCTC To fix.
+    bullet->flight().Set_Speed(40, game::kMphMediumSlow);  // TCTC To fix.
   }
 
   return bullet;
@@ -3669,7 +3669,7 @@ void AircraftClass::Set_Speed(int speed) {
 
   const int sp = std::min(Class->MaxSpeed * SpeedBias * House->AirspeedBias,
                           game::kMphLightSpeed);
-  Fly_Speed(speed, sp);
+  flight_.Set_Speed(speed, sp);
 }
 
 /***********************************************************************************************
@@ -4333,11 +4333,11 @@ void AircraftClass::Movement_AI() {
   if (Speed != 0) {
     if (In_Which_Layer() == LAYER_GROUND) {
       Mark(MARK_UP);
-      Physics(Coord, PrimaryFacing.current());
+      flight_.Physics(Coord, PrimaryFacing.current());
       Mark(MARK_DOWN);
     } else {
       Mark(MARK_CHANGE_REDRAW);
-      if (Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
+      if (flight_.Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
         Mark(MARK_CHANGE_REDRAW);
       }
     }

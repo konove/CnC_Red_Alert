@@ -35,7 +35,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * FlyClass::Physics -- Performs vector physics (movement). *
- *   FlyClass::Fly_Speed -- Sets the flying object to the speed specified. *
+ *   FlyClass::Set_Speed -- Sets the flying object to the speed specified. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -121,7 +121,7 @@ ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
 }
 
 /***********************************************************************************************
- * FlyClass::Fly_Speed -- Sets the flying object to the speed specified. *
+ * FlyClass::Set_Speed -- Sets the flying object to the speed specified. *
  *                                                                                             *
  *    This sets the speed of the projectile. It basically functions like a
  *throttle value      * where 0 equals stop and 255 equals maximum speed
@@ -138,7 +138,7 @@ ImpactType FlyClass::Physics(Coordinate& coord, game::Direction facing) {
  * HISTORY: * 07/26/1994 JLB : Created. * 07/26/1994 JLB : Added maximum speed
  *as guiding value.                                    *
  *=============================================================================================*/
-void FlyClass::Fly_Speed(int speed, int maximum) {
+void FlyClass::Set_Speed(int speed, int maximum) {
   SpeedAdd = base::FixedToCardinal(maximum, speed);
 }
 

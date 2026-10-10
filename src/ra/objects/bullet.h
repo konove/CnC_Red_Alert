@@ -60,7 +60,7 @@ class ArchiveWriter;
 
 namespace ra {
 
-class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
+class BulletClass : public ObjectClass {
  public:
   /*
   **	This specifies exactly what kind of bullet this is. All of the static
@@ -135,6 +135,22 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	File I/O.
   */
+  // The speed and the distance not yet moved; see FlyClass.
+  [[nodiscard]] FlyClass& flight() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+  [[nodiscard]] const FlyClass& flight() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+
+  // Decides when the projectile detonates; see FuseClass.
+  [[nodiscard]] FuseClass& fuse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return fuse_;
+  }
+  [[nodiscard]] const FuseClass& fuse() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return fuse_;
+  }
+
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -169,6 +185,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	The warhead of this projectile.
   */
   WarheadType Warhead = WARHEAD_NONE;
+
+  FlyClass flight_;
+  FuseClass fuse_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   BulletClass() = default;

@@ -176,17 +176,17 @@ TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {
 
 TEST(TdSaveValuesTest, FusePreservesArmingAndProximityState) {
   FuseClass fuse;
-  fuse.Arm_Fuse(Coordinate{}, Coordinate::FromLeptons(0, 0x40), 12, 3);
-  EXPECT_FALSE(fuse.Fuse_Checkup(Coordinate::FromLeptons(0, 0x10)));
+  fuse.Arm(Coordinate{}, Coordinate::FromLeptons(0, 0x40), 12, 3);
+  EXPECT_FALSE(fuse.Checkup(Coordinate::FromLeptons(0, 0x10)));
   FuseClass loaded;
   const auto bytes = Save(fuse);
   Restore(loaded, bytes);
   EXPECT_EQ(Save(loaded), bytes);
-  EXPECT_EQ(loaded.Fuse_Target(), fuse.Fuse_Target());
+  EXPECT_EQ(loaded.ImpactPoint(), fuse.ImpactPoint());
   for (int frame = 0; frame < 12; ++frame) {
-    EXPECT_EQ(loaded.Fuse_Checkup(Coordinate::FromLeptons(0, 0x20)),
-              fuse.Fuse_Checkup(Coordinate::FromLeptons(0, 0x20)));
-    EXPECT_EQ(loaded.Timer, fuse.Timer);
+    EXPECT_EQ(loaded.Checkup(Coordinate::FromLeptons(0, 0x20)),
+              fuse.Checkup(Coordinate::FromLeptons(0, 0x20)));
+    EXPECT_EQ(Save(loaded), Save(fuse));
   }
 }
 

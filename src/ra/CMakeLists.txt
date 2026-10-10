@@ -133,7 +133,8 @@ apply_language_setting(ra_trigger_type_test)
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(
     NAME ra_game_test
-    SOURCES startup/game_test.cc objects/target_test.cc startup/startup.cc
+    SOURCES startup/game_test.cc objects/target_test.cc objects/fuse_test.cc
+            startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_game_test PRIVATE RA_NO_ENTRY_POINT=1)

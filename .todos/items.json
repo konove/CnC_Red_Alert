@@ -12323,10 +12323,10 @@
       "details": "",
       "priority": "p3",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-10T20:25:45Z",
-      "updated": "2026-10-10T21:37:00Z",
+      "updated": "2026-10-10T21:56:30Z",
       "resolution": "`TechnoClass` in both games no longer inherits `game::Door`; it holds a private `door_` reached through `door()`, and all callers go through it. With the owner no longer inheriting the names, Door's methods lost their redundant \"Door\": `Open`, `Close`, `IsOpen`, `IsClosed`, `IsOpening`, `Frame`, `NeedsRedraw`, `ClearRedraw`. The saved-game field order is unchanged.",
       "anchors": [
         {
@@ -12822,7 +12822,7 @@
             "  /*",
             "  **\tThis specifies exactly what kind of bullet this is. All of the static"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/bullet.h",
@@ -12839,7 +12839,7 @@
             "  /*",
             "  **\tThis specifies exactly what kind of bullet this is. All of the static"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12876,7 +12876,7 @@
             "  /*",
             "  **\tThis is a pointer to the class control structure for the aircraft."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/bullet.h",
@@ -12893,7 +12893,7 @@
             "  /*",
             "  **\tThis specifies exactly what kind of bullet this is. All of the static"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/aircraft.h",
@@ -12910,7 +12910,7 @@
             "  // Field-wise state and checked references; load shells have no scenario effects.",
             "  template <class Archive>"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/bullet.h",
@@ -12927,7 +12927,7 @@
             "  /*",
             "  **\tThis specifies exactly what kind of bullet this is. All of the static"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13309,16 +13309,27 @@
       "effort": "m",
       "tags": [
         "refactoring",
-        "td",
-        "needs-decision"
+        "td"
       ],
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:58:01Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "toDecide": "Fold `TurretClass` and `TarComClass` into `UnitClass`, as Red Alert did, or make them members of it, or leave them?\n\n- Fold: the simplest result and it brings the two games' `UnitClass` closer, but it is the largest diff in `src/td/objects/unit.cc`.\n- Members: matches the rest of the plan, but only worth it if they hold state with its own functions and do not mostly override `DriveClass` virtuals.\n- Leave: nothing to do; they are single inheritance already, just deeper than they need to be.",
+      "decisions": [
+        {
+          "question": "Fold TurretClass and TarComClass into UnitClass, make them members, or leave them?",
+          "options": [
+            "Fold into UnitClass (Recommended)",
+            "Members",
+            "Leave"
+          ],
+          "answer": "Fold into UnitClass (Recommended)",
+          "time": "2026-10-10T21:58:01Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/td/objects/turret.h",

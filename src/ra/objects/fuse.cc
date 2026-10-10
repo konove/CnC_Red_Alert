@@ -33,8 +33,8 @@
  *                  Last Update : October 17, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
- *   FuseClass::Fuse_Checkup -- Determines if the fuse triggers. *
+ * Functions: * FuseClass::Arm -- Sets up fuse for detonation check. *
+ *   FuseClass::Checkup -- Determines if the fuse triggers. *
  *   FuseClass::Fuse_Read -- Reads the fuse class data from the save game file.
  ** FuseClass::Fuse_Write -- Writes the fuse data to the save game file. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,7 +52,7 @@
 namespace ra {
 
 /***********************************************************************************************
- * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
+ * FuseClass::Arm -- Sets up fuse for detonation check. *
  *                                                                                             *
  *    This starts a fuse. Fuses are proximity detonation variety but * can be
  *modified to have a minimum time to elapse before detonation * and a maximum
@@ -78,8 +78,8 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 04/24/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Arm_Fuse(Coordinate location, Coordinate target, int timeto,
-                         int arming) {
+void FuseClass::Arm(Coordinate location, Coordinate target, int timeto,
+                    int arming) {
   timeto = std::max(timeto, arming);
   Timer = static_cast<unsigned char>(std::min(timeto, 0xFF));
   Arming = static_cast<unsigned char>(std::min(arming, 0xFF));
@@ -88,7 +88,7 @@ void FuseClass::Arm_Fuse(Coordinate location, Coordinate target, int timeto,
 }
 
 /***********************************************************************************************
- * FuseClass::Fuse_Checkup -- Determines if the fuse triggers. *
+ * FuseClass::Checkup -- Determines if the fuse triggers. *
  *                                                                                             *
  *    This will process the fuse and update the internal clocks as well * as
  *check to see if the fuse should trigger (explode) or not. *
@@ -102,7 +102,7 @@ void FuseClass::Arm_Fuse(Coordinate location, Coordinate target, int timeto,
  *                                                                                             *
  * HISTORY: * 04/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool FuseClass::Fuse_Checkup(Coordinate newlocation) {
+bool FuseClass::Checkup(Coordinate newlocation) {
   /*
   **	Always decrement the fuse timer.
   */

@@ -434,8 +434,8 @@ template void TerrainClass::Serialize(ArchiveReader&);
 template <class Archive>
 void BulletClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  FlyClass::Serialize(ar);
-  FuseClass::Serialize(ar);
+  flight_.Serialize(ar);
+  fuse_.Serialize(ar);
   bool inaccurate = IsInaccurate;
   bool animate = IsToAnimate;
   bool locked = IsLocked;
@@ -717,7 +717,7 @@ template void InfantryClass::Serialize(ArchiveReader&);
 template <class Archive>
 void AircraftClass::Serialize(Archive& ar) {
   FootClass::Serialize(ar);
-  FlyClass::Serialize(ar);
+  flight_.Serialize(ar);
   bool landing = IsLanding;
   bool taking_off = IsTakingOff;
   bool homing = IsHoming;

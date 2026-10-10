@@ -71,7 +71,7 @@ namespace ra {
 *even though some bullets might *	be considered to be "flying" in a loose
 *interpretatin of the word.
 */
-class AircraftClass : public FootClass, public FlyClass {
+class AircraftClass : public FootClass {
  public:
   /*
   **	This is a pointer to the class control structure for the aircraft.
@@ -212,6 +212,14 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   static void Read_INI(engine::file::IniFile& ini);
   static const char* INI_Name() { return "AIRCRAFT"; }
+  // The speed and the distance not yet moved; see FlyClass.
+  [[nodiscard]] FlyClass& flight() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+  [[nodiscard]] const FlyClass& flight() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return flight_;
+  }
+
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -283,6 +291,8 @@ class AircraftClass : public FootClass, public FlyClass {
   *reaches *	zero then the aircraft is technically out of ammo.
   */
   char AttacksRemaining = 1;
+
+  FlyClass flight_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   AircraftClass() = default;

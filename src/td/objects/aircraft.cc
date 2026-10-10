@@ -403,7 +403,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	The orca attack helicopter uses a special shape set when it is
   *travelling *	forward above a certain speed.
   */
-  if (*this == AIRCRAFT_ORCA && Get_Speed() >= game::kMphMediumFast) {
+  if (*this == AIRCRAFT_ORCA && flight_.Get_Speed() >= game::kMphMediumFast) {
     shapenum += 32;
   }
 
@@ -747,7 +747,7 @@ void AircraftClass::AI() {
     Mark();
   }
 
-  if (Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
+  if (flight_.Physics(Coord, PrimaryFacing.current()) != IMPACT_NONE) {
     Mark();
   }
 
@@ -1545,7 +1545,7 @@ BulletClass* AircraftClass::Fire_At(Target target, int which) {
     **	Falling bullets move at a speed proportionate to the delivery craft.
     */
     if (bullet->Class->IsDropping) {
-      bullet->Fly_Speed(40, bullet->Class->MaxSpeed);
+      bullet->flight().Set_Speed(40, bullet->Class->MaxSpeed);
     }
   }
   return bullet;
@@ -3189,7 +3189,7 @@ Target AircraftClass::Good_LZ() const {
  *=============================================================================================*/
 void AircraftClass::Set_Speed(int speed) {
   Validate();
-  Fly_Speed(speed, Class->MaxSpeed);
+  flight_.Set_Speed(speed, Class->MaxSpeed);
 }
 
 /***********************************************************************************************
