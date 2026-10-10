@@ -21,30 +21,15 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/hardware_cursor.h"
-#include "ra/assets/theme.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/startup/winstub.h"
 
 namespace ra {
 
-/***********************************************************************************************
- * Focus_Loss -- this function is called when a library function detects focus
- *loss            *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 2/1/96 2:10PM ST : Created *
- *=============================================================================================*/
-
+// Pausing the mixer holds every sound, the score included, where it is, so
+// the music carries on from the same note when the focus comes back.
 void Focus_Loss() {
-  TheTheme().Suspend();
   engine::audio::TheAudio().Pause();
   engine::window::HardwareCursor::ReleaseMouse();
 }

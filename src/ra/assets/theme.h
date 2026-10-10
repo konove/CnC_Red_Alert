@@ -92,7 +92,6 @@ class ThemeClass {
   void Queue_Song(ThemeType theme);
   static void Set_Theme_Data(ThemeType theme, int scenario, uint32_t owners);
   void Stop();
-  void Suspend();
 };
 
 // Returns the music player that Game installed. CHECK-fails outside a

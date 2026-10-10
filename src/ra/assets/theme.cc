@@ -446,16 +446,6 @@ void ThemeClass::Stop() {
   }
 }
 
-void ThemeClass::Suspend() {
-  if (TheGameState().scores_present() && engine::audio::TheAudio().is_open() &&
-      !TheDebugState().quiet() && Current != -1) {
-    engine::audio::TheAudio().Stop(Current);
-    Current = -1;
-    Pending = Score;
-    Score = THEME_NONE;
-  }
-}
-
 /***********************************************************************************************
  * ThemeClass::Still_Playing -- Determines if music is still playing. *
  *                                                                                             *

@@ -150,6 +150,16 @@ target_compile_definitions(ra_carryover_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_carryover_test)
 apply_language_setting(ra_carryover_test)
 
+# Plays a score through SDL's dummy audio device in a real Game.
+add_gtest(
+    NAME ra_focus_test
+    SOURCES startup/focus_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_focus_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_focus_test)
+apply_language_setting(ra_focus_test)
+
 # Reads warhead sections into the type heap of a real Game.
 add_gtest(
     NAME ra_warhead_test
