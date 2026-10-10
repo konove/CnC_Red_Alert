@@ -7,11 +7,14 @@
 //! return the vector (engine/codec/lcw.h, lcw_uncompress.h).
 
 pub mod adpcm;
+pub mod blowfish;
 pub mod lcw;
 pub mod sha1;
 pub mod vq;
 pub mod westwood_audio;
 pub mod xor_delta;
+
+use blowfish::Blowfish;
 
 #[cxx::bridge(namespace = "engine_rs")]
 mod ffi {
@@ -22,6 +25,30 @@ mod ffi {
     }
 
     extern "Rust" {
+        /// The tables a Blowfish key expands to; see blowfish::Blowfish.
+        type Blowfish;
+
+        /// Expands a key of 1 to 56 bytes. Aborts on any other length.
+        fn blowfish_new(key: &[u8]) -> Box<Blowfish>;
+
+        /// Replaces the key of `cipher`, which saves allocating new tables
+        /// and wiping the old. Aborts as blowfish_new does.
+        fn blowfish_set_key(cipher: &mut Blowfish, key: &[u8]);
+
+        /// Encrypts whole 8-byte blocks and copies a trailing partial one.
+        /// Aborts if `dest` is shorter than `source`.
+        fn blowfish_encrypt(cipher: &Blowfish, source: &[u8], dest: &mut [u8]);
+
+        /// As blowfish_encrypt, in the buffer the data is in.
+        fn blowfish_encrypt_in_place(cipher: &Blowfish, data: &mut [u8]);
+
+        /// Decrypts whole 8-byte blocks and copies a trailing partial one.
+        /// Aborts if `dest` is shorter than `source`.
+        fn blowfish_decrypt(cipher: &Blowfish, source: &[u8], dest: &mut [u8]);
+
+        /// As blowfish_decrypt, in the buffer the data is in.
+        fn blowfish_decrypt_in_place(cipher: &Blowfish, data: &mut [u8]);
+
         /// Decodes IMA ADPCM into two samples per byte; see
         /// adpcm::decode_samples.
         fn ima_adpcm_decode_samples(state: &mut ImaAdpcmState, source: &[u8], dest: &mut [i16]);
@@ -223,4 +250,28 @@ fn sha1_hardware_available() -> bool {
 
 fn sha1_compress_hardware(state: &mut [u32; 5], blocks: &[u8]) {
     sha1::compress_hardware(state, blocks);
+}
+
+fn blowfish_new(key: &[u8]) -> Box<Blowfish> {
+    Box::new(Blowfish::new(key).expect("a Blowfish key is 1 to 56 bytes"))
+}
+
+fn blowfish_set_key(cipher: &mut Blowfish, key: &[u8]) {
+    assert!(cipher.set_key(key), "a Blowfish key is 1 to 56 bytes");
+}
+
+fn blowfish_encrypt(cipher: &Blowfish, source: &[u8], dest: &mut [u8]) {
+    cipher.encrypt(source, dest);
+}
+
+fn blowfish_encrypt_in_place(cipher: &Blowfish, data: &mut [u8]) {
+    cipher.encrypt_in_place(data);
+}
+
+fn blowfish_decrypt(cipher: &Blowfish, source: &[u8], dest: &mut [u8]) {
+    cipher.decrypt(source, dest);
+}
+
+fn blowfish_decrypt_in_place(cipher: &Blowfish, data: &mut [u8]) {
+    cipher.decrypt_in_place(data);
 }

@@ -142,10 +142,10 @@ The first kernel with keyed state. `BlowfishEngine` becomes a wrapper around a `
 opaque Rust type; `Submit_Key`, `Encrypt` and `Decrypt` forward. Completes the MIX-open path with
 Phase 4. Effort: m.
 
-- [ ] Task-level plan: the opaque type, the in-place entry point, the unkeyed copy-through behavior
-- [ ] `src/rust/src/blowfish.rs`, `BlowfishEngine` as a wrapper
-- [ ] `blowfish_test`, `blowfish_stream_test`, `mix_archive_test` unchanged
-- [ ] Both games start from the real MIX files; `tools/ra_saveload_smoke.sh`
+- [x] Task-level plan: the opaque type, the in-place entry point, the unkeyed copy-through behavior
+- [x] `src/rust/src/blowfish.rs`, `BlowfishEngine` as a wrapper
+- [x] `blowfish_test`, `blowfish_stream_test`, `mix_archive_test` unchanged
+- [x] Both games start from the real MIX files; `tools/ra_saveload_smoke.sh`
 
 ### Phase 6: the bignum and `PKey`
 

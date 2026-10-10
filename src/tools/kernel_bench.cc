@@ -17,6 +17,8 @@
 #include "engine/codec/aud_decoder_reference_test_util.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/codec/xor_delta_reference_test_util.h"
+#include "engine/crypto/blowfish.h"
+#include "engine/crypto/blowfish_reference_test_util.h"
 #include "engine/crypto/sha1_compress.h"
 #include "engine/crypto/sha1_compress_reference_test_util.h"
 #include "engine/video/vqa/adpcm_decoders.h"
@@ -228,6 +230,29 @@ void BenchSha1() {
   }
 }
 
+void BenchBlowfish() {
+  base::Lcg lcg(5);
+  const auto key = lcg.Bytes(BlowfishEngine::kMaxKeyLength);
+  auto data = lcg.Bytes(64 * 1024);
+  BlowfishEngine engine;
+  blowfish_reference::BlowfishEngine reference;
+  engine.Submit_Key(key);
+  reference.Submit_Key(key);
+  Report(
+      "blowfish, encrypt",
+      MegabytesPerSecond(data.size(), [&] { engine.Encrypt(data, data); }),
+      MegabytesPerSecond(data.size(), [&] { reference.Encrypt(data, data); }));
+  Report(
+      "blowfish, decrypt",
+      MegabytesPerSecond(data.size(), [&] { engine.Decrypt(data, data); }),
+      MegabytesPerSecond(data.size(), [&] { reference.Decrypt(data, data); }));
+  // A key set-up costs what encrypting 4,168 bytes of tables does.
+  constexpr std::size_t kTableBytes = 4168;
+  Report("blowfish, key set-up",
+         MegabytesPerSecond(kTableBytes, [&] { engine.Submit_Key(key); }),
+         MegabytesPerSecond(kTableBytes, [&] { reference.Submit_Key(key); }));
+}
+
 }  // namespace
 
 int main() {
@@ -235,5 +260,6 @@ int main() {
   BenchAudio();
   BenchVq();
   BenchSha1();
+  BenchBlowfish();
   return 0;
 }

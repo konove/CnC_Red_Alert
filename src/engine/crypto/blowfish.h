@@ -40,9 +40,8 @@
 #ifndef CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_H_
 #define CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_H_
 
-#include <climits>
 #include <cstddef>
-#include <cstdint>
+#include <memory>
 #include <span>
 
 // Whether a Blowfish link encrypts or decrypts what passes it.
@@ -60,7 +59,7 @@ enum class CipherMode { kEncrypt, kDecrypt };
 */
 class BlowfishEngine {
  public:
-  BlowfishEngine() = default;
+  BlowfishEngine();
   ~BlowfishEngine();
 
   BlowfishEngine(const BlowfishEngine&) = delete;
@@ -68,6 +67,7 @@ class BlowfishEngine {
   BlowfishEngine(BlowfishEngine&&) = delete;
   BlowfishEngine& operator=(BlowfishEngine&&) = delete;
 
+  // Sets the key, of at most kMaxKeyLength bytes. An empty key removes it.
   void Submit_Key(std::span<const std::byte> key);
 
   // Encrypts (decrypts) all bytes from the source buffer into the
@@ -86,37 +86,15 @@ class BlowfishEngine {
   static constexpr int kMaxKeyLength = 56;
 
  private:
-  bool IsKeyed = false;
+  // The tables a key expands to, which live in Rust (src/rust/src/blowfish).
+  struct Key;
 
-  void Sub_Key_Encrypt(uint32_t& left, uint32_t& right);
+  // Runs `source` through the cipher into `dest`, or copies it without a key,
+  // and returns what Encrypt() and Decrypt() do.
+  [[nodiscard]] int Process(std::span<const std::byte> source,
+                            std::span<std::byte> dest, CipherMode mode) const;
 
-  void Process_Block(std::span<const std::byte> plaintext,
-                     std::span<std::byte> cyphertext,
-                     std::span<const uint32_t> ptable);
-  void Initialize_Tables();
-
-  static constexpr int kRounds = 16;
-  static constexpr int kBytesPerBlock =
-      8;  // Feistal round count (16 is standard).
-
-  /*
-  **	Initialization data for sub keys. The initial values are constant and
-  **	filled with a number generated from pi. Thus they are not random but
-  **	they don't hold a weak pattern either.
-  */
-  static const uint32_t P_Init[static_cast<int>(kRounds) + 2];
-  static const uint32_t S_Init[4][UCHAR_MAX + 1];
-
-  /*
-  **	Permutation tables for encryption and decryption.
-  */
-  uint32_t P_Encrypt[static_cast<int>(kRounds) + 2]{};
-  uint32_t P_Decrypt[static_cast<int>(kRounds) + 2]{};
-
-  /*
-  **	S-Box tables (four).
-  */
-  uint32_t bf_S[4][UCHAR_MAX + 1]{};
+  std::unique_ptr<Key> key_;  // nullptr without a key
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_H_

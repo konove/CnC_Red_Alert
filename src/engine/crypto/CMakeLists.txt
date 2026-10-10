@@ -28,13 +28,14 @@ target_link_libraries(engine_crypto
 
 # Byte- and pixel-crunching kernels: keep them fast when debugging
 # everything else (cmake/OptimizeInDebug.cmake).
-optimize_in_debug(blowfish.cc mp.cc)
+optimize_in_debug(mp.cc)
 
 # Tests
 include(Testing)
 add_gtest(
         NAME engine_crypto_test
-        SOURCES blowfish_stream_test.cc blowfish_test.cc key_phrase_hash_test.cc mp_test.cc
+        SOURCES blowfish_differential_test.cc blowfish_reference_test_util.cc
+            blowfish_stream_test.cc blowfish_test.cc key_phrase_hash_test.cc mp_test.cc
             pk_stream_test.cc random_source_test.cc sha1_compress_differential_test.cc
             sha1_compress_reference_test_util.cc sha1_compress_test.cc
         LIBS engine_crypto base absl::str_format
