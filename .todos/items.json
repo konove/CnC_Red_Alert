@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 374,
+  "nextId": 383,
   "items": [
     {
       "id": "T-2",
@@ -12761,6 +12761,597 @@
         },
         {
           "path": "src/td/objects/stage.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-374",
+      "title": "Replace the mix-in and single-child bases of the game objects with members",
+      "details": "Implement `docs/OBJECT_COMPOSITION_PLAN.md` in both games: the object hierarchy keeps only its real levels (`AbstractClass → ObjectClass → TechnoClass → FootClass → DriveClass` and the leaves), and every base that is a slice of one class (`FuseClass`, `FlyClass`, `StageClass`, `RadioClass`, `MissionClass`) becomes a private member behind an accessor, with two small pure-virtual interfaces (`RadioPeer`, `MissionHandler`) where a slice calls back into its owner.\n\n`TechnoClass` already holds its door, flasher, cargo hold and stage counter as members. The parts are the plan's steps 1 to 7, in order; the plan's \"Rules for every step\" (saved games and network play unchanged, how to name the accessor, when to fix callers from compiler errors, what to verify) apply to each.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "game"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:53:48Z",
+      "updated": "2026-10-10T21:53:48Z",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "docs/OBJECT_COMPOSITION_PLAN.md",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-375",
+      "title": "Make the fuse a member of BulletClass",
+      "details": "Step 1 of `docs/OBJECT_COMPOSITION_PLAN.md`. `BulletClass` inherits `FuseClass` (`src/ra/objects/fuse.h`, `src/td/objects/fuse.h`) in both games. Remove the base, hold it as a private `fuse_` behind `fuse()` (const and non-const, `ABSL_ATTRIBUTE_LIFETIME_BOUND`), and call `fuse_.Serialize(ar)` where `FuseClass::Serialize(ar)` was, in the same place. Through the accessor `Arm_Fuse()`, `Fuse_Checkup()` and `Fuse_Target()` become `Arm()`, `Checkup()` and `Target()`; the public `Timer` field the bullet code reads gets an accessor. Follow the plan's \"Rules for every step\" for verification.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/bullet.h",
+          "startLine": 63,
+          "endLine": 63,
+          "text": "class BulletClass : public ObjectClass, public FlyClass, public FuseClass {",
+          "before": [
+            "",
+            "namespace ra {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis specifies exactly what kind of bullet this is. All of the static"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/bullet.h",
+          "startLine": 63,
+          "endLine": 63,
+          "text": "class BulletClass : public ObjectClass, public FlyClass, public FuseClass {",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis specifies exactly what kind of bullet this is. All of the static"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-376",
+      "title": "Make the flight physics a member of AircraftClass and BulletClass",
+      "details": "Step 2 of `docs/OBJECT_COMPOSITION_PLAN.md`. `AircraftClass` and `BulletClass` inherit `FlyClass` (`src/ra/objects/fly.h`, `src/td/objects/fly.h`) in both games. Remove the base from both, hold it as a private `flight_` behind `flight()`, and keep the `Serialize()` order. Callers of `Fly_Speed()`, `Physics()` and `Get_Speed()` go through the accessor (about 20 sites in Red Alert and 28 in Tiberian Dawn together with the fuse). Follow the plan's \"Rules for every step\".",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/aircraft.h",
+          "startLine": 74,
+          "endLine": 74,
+          "text": "class AircraftClass : public FootClass, public FlyClass {",
+          "before": [
+            "*even though some bullets might *\tbe considered to be \"flying\" in a loose",
+            "*interpretatin of the word.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis is a pointer to the class control structure for the aircraft."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/bullet.h",
+          "startLine": 63,
+          "endLine": 63,
+          "text": "class BulletClass : public ObjectClass, public FlyClass, public FuseClass {",
+          "before": [
+            "",
+            "namespace ra {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis specifies exactly what kind of bullet this is. All of the static"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/aircraft.h",
+          "startLine": 50,
+          "endLine": 50,
+          "text": "class AircraftClass : public FootClass, public FlyClass {",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  // Field-wise state and checked references; load shells have no scenario effects.",
+            "  template <class Archive>"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/bullet.h",
+          "startLine": 63,
+          "endLine": 63,
+          "text": "class BulletClass : public ObjectClass, public FlyClass, public FuseClass {",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis specifies exactly what kind of bullet this is. All of the static"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-377",
+      "title": "Make the stage counter a member of its four remaining inheritors",
+      "details": "Step 3 of `docs/OBJECT_COMPOSITION_PLAN.md`. `AnimClass`, `TerrainClass`, `FactoryClass` and the sidebar's `StripClass` still inherit `StageClass` in both games, as `TechnoClass` did before 9e23f36c. Give each a private member and an accessor: `animation()` where the counter drives a drawn animation, `progress()` for `FactoryClass`, where it counts production steps. `StageClass`'s method names are shared between these classes, so fix the callers from compiler errors (remove the base, build with `-- -k 0`, prefix the reported sites) and not by text replace. About 43 sites in Red Alert and 54 in Tiberian Dawn. Keep each `Serialize()` order.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/anim.h",
+          "startLine": 67,
+          "endLine": 67,
+          "text": "class AnimClass final : public ObjectClass, public StageClass {",
+          "before": [
+            "*animation objects are *\tdisplayed over the top of the game map.",
+            "*Typically, they are used for explosion and fire *\teffects.",
+            "*/"
+          ],
+          "after": [
+            "  /*",
+            "  **\tThis points to the type of animation object this is.",
+            "  */"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/terrain.h",
+          "startLine": 64,
+          "endLine": 64,
+          "text": "class TerrainClass final : public ObjectClass, public StageClass {",
+          "before": [
+            "**\tEach type of terrain has certain pieces of static information associated",
+            "**\twith it. This class elaborates this data.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis points to the constant terrain data (for this type) that gives this"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/factory.h",
+          "startLine": 56,
+          "endLine": 56,
+          "text": "class FactoryClass : private StageClass {",
+          "before": [
+            "",
+            "namespace ra {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  RTTIType RTTI{RTTI_FACTORY};",
+            "  int ID;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/sidebar.h",
+          "startLine": 120,
+          "endLine": 120,
+          "text": "  class StripClass : public StageClass {",
+          "before": [
+            "  **\tEach side strip is managed by this class. It handles all strip specific",
+            "  **\tactions.",
+            "  */"
+          ],
+          "after": [
+            "    class SelectClass : public game::ControlClass {",
+            "     public:",
+            "      SelectClass() noexcept;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/anim.h",
+          "startLine": 65,
+          "endLine": 65,
+          "text": "class AnimClass final : public ObjectClass, private StageClass {",
+          "before": [
+            "*animation objects are *\tdisplayed over the top of the game map.",
+            "*Typically, they are used for explosion and fire *\teffects.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  void* operator new(std::size_t size) noexcept;",
+            "  void* operator new(std::size_t /*unused*/,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/terrain.h",
+          "startLine": 70,
+          "endLine": 70,
+          "text": "class TerrainClass final : public ObjectClass, public StageClass {",
+          "before": [
+            "**\tEach type of terrain has certain pieces of static information associated",
+            "**\twith it. This class elaborates this data.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  const TerrainTypeClass* Class = nullptr;",
+            "  // objects compare directly against their type ID."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/factory.h",
+          "startLine": 57,
+          "endLine": 57,
+          "text": "class FactoryClass : StageClass {",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  FactoryClass() = default;",
+            "  ~FactoryClass() override;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/sidebar.h",
+          "startLine": 121,
+          "endLine": 121,
+          "text": "  class StripClass : public StageClass {",
+          "before": [
+            "  **\tEach side strip is managed by this class. It handles all strip specific",
+            "  **\tactions.",
+            "  */"
+          ],
+          "after": [
+            "    class SelectClass : public game::ControlClass {",
+            "     public:",
+            "      SelectClass() noexcept;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-378",
+      "title": "Make the former mix-in classes plain values",
+      "details": "Step 4 of `docs/OBJECT_COMPOSITION_PLAN.md`. `game::FlasherClass`, `CargoClass` (both games), Tiberian Dawn's `StageClass` and `FlyClass` still carry what a base needed. Once nothing inherits them:\n\n- remove the virtual destructors and their out-of-line definitions, and the note in `src/td/CMakeLists.txt` (around line 78) about where the `FlyClass` and `StageClass` vtables live;\n- remove the deleted copy and move operations where the owner already forbids copying;\n- remove the empty `AI()`, `Code_Pointers()` and `Decode_Pointers()` and their calls (`cargo_.AI()`, `animation_.AI()` in `TechnoClass::AI()`);\n- make `FlasherClass`'s `FlashCount` and `IsBlushing` private behind functions that say what the callers do (start flashing with a count, ask whether to draw brightened), and add `src/game/sim/flasher_test.cc`: the class has no test file of its own.\n\nSaved games must not change: the fields written stay the same.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "game",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "blockedBy": [
+        "T-376",
+        "T-377"
+      ],
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/game/sim/flasher.h",
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/cargo.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/cargo.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/stage.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/fly.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-379",
+      "title": "Make the radio a member of TechnoClass behind a RadioPeer interface",
+      "details": "Step 5 of `docs/OBJECT_COMPOSITION_PLAN.md`. Only `TechnoClass` derives from `RadioClass`, which holds the contact and the last three messages. Add a pure-virtual `RadioPeer` with `Receive_Message()`, which `TechnoClass` implements and whose pointer replaces the `RadioClass* from` parameter (declared on `ObjectClass`, 8 declarations a game); turn `RadioClass` into the member `radio_` behind `radio()`, holding its contact as a `RadioPeer*`; keep `Contact_With_Whom()` on `TechnoClass`, where the downcast belongs, and move `RadioClass::Limbo()`'s breaking of contact into `TechnoClass::Limbo()`. About 292 call sites in Red Alert and 226 in Tiberian Dawn. Add a unit test of the handshake with a `RadioPeer` test double. Run the save/load smoke scripts and `tools/net_check.py`.\n\nThe plan leaves two details to settle while doing it: whether `ObjectClass` keeps the `Receive_Message()` declaration, and whether `Transmit_Message()` stays callable on the techno (it passes `this` as the sender). If either turns out to change behaviour, set `toDecide` rather than guessing.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "net-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/radio.h",
+          "startLine": 61,
+          "endLine": 61,
+          "text": "class RadioClass : public MissionClass {",
+          "before": [
+            "**\tto the receiving radio. Radio contact is primarily used when one object",
+            "**\tis in \"command\" of another.",
+            "*/"
+          ],
+          "after": [
+            " private:",
+            "  /*",
+            "  **\tThis is a record of the last message received by this receiver."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/radio.h",
+          "startLine": 61,
+          "endLine": 61,
+          "text": "class RadioClass : public MissionClass {",
+          "before": [
+            "**\tto the receiving radio. Radio contact is primarily used when one object",
+            "**\tis in \"command\" of another.",
+            "*/"
+          ],
+          "after": [
+            " private:",
+            "  /*",
+            "  **\tThis is a record of the last message received by this receiver."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-380",
+      "title": "Put the mission fields behind accessors",
+      "details": "Step 6a of `docs/OBJECT_COMPOSITION_PLAN.md`. `MissionClass`'s public fields `Mission`, `SuspendedMission`, `MissionQueue` and `Status` are read and written directly all over the object code (about 420 uses in Red Alert, 306 in Tiberian Dawn). Make them private behind accessors while `MissionClass` is still a base, one commit a game. `Status` is the step of the current mission's state machine: name the accessor for that. No structural change and no change to what is saved.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/mission.h",
+          "startLine": 58,
+          "endLine": 58,
+          "text": "class MissionClass : public ObjectClass {",
+          "before": [
+            "**\tThis handles order assignment and tracking. The order is used to guide",
+            "**\toverall AI processing.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/mission.h",
+          "startLine": 61,
+          "endLine": 61,
+          "text": "class MissionClass : public ObjectClass {",
+          "before": [
+            "**\tThis handles order assignment and tracking. The order is used to guide",
+            "**\toverall AI processing.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-381",
+      "title": "Make the mission state a member of TechnoClass behind a MissionHandler interface",
+      "details": "Steps 6b and 6c of `docs/OBJECT_COMPOSITION_PLAN.md`. Add a pure-virtual `MissionHandler` with the 18 `Mission_*()` functions; `TechnoClass` implements it with the default bodies `MissionClass` has today, and the overrides in the building, foot, unit, infantry, aircraft and vessel code do not move. What is left of `MissionClass` (the state, the timer, `Assign_Mission()`, `Set_Mission()`, `Override_Mission()`, `Restore_Mission()`, the dispatch in `AI()`) becomes the member `mission_`, whose `AI()` takes the handler; the functions subclasses override stay virtual on `TechnoClass` and call the member. Afterwards `TechnoClass` derives from `ObjectClass` directly. Run the save/load smoke scripts and `tools/net_check.py`: the mission state machine is where a reordering would desync.",
+      "priority": "p3",
+      "effort": "l",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "net-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "blockedBy": [
+        "T-380",
+        "T-379"
+      ],
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "anchors": [
+        {
+          "path": "src/ra/objects/mission.h",
+          "startLine": 58,
+          "endLine": 58,
+          "text": "class MissionClass : public ObjectClass {",
+          "before": [
+            "**\tThis handles order assignment and tracking. The order is used to guide",
+            "**\toverall AI processing.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/mission.h",
+          "startLine": 61,
+          "endLine": 61,
+          "text": "class MissionClass : public ObjectClass {",
+          "before": [
+            "**\tThis handles order assignment and tracking. The order is used to guide",
+            "**\toverall AI processing.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  /*",
+            "  **\tThis the tactical strategy to use. It is used by the unit script. This"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-382",
+      "title": "Decide what to do with Tiberian Dawn's TurretClass and TarComClass levels",
+      "details": "Step 7 of `docs/OBJECT_COMPOSITION_PLAN.md`. Tiberian Dawn has `DriveClass → TurretClass → TarComClass → UnitClass`: two levels with one child each, which Red Alert no longer has. Read what they hold and which virtuals they override before sizing it.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-10T21:54:21Z",
+      "updated": "2026-10-10T21:54:21Z",
+      "parent": "T-374",
+      "source": "420fe870..9e23f36c",
+      "toDecide": "Fold `TurretClass` and `TarComClass` into `UnitClass`, as Red Alert did, or make them members of it, or leave them?\n\n- Fold: the simplest result and it brings the two games' `UnitClass` closer, but it is the largest diff in `src/td/objects/unit.cc`.\n- Members: matches the rest of the plan, but only worth it if they hold state with its own functions and do not mostly override `DriveClass` virtuals.\n- Leave: nothing to do; they are single inheritance already, just deeper than they need to be.",
+      "anchors": [
+        {
+          "path": "src/td/objects/turret.h",
+          "startLine": 56,
+          "endLine": 56,
+          "text": "class TurretClass : public DriveClass {",
+          "before": [
+            "",
+            "namespace td {",
+            ""
+          ],
+          "after": [
+            " public:",
+            "  // Field-wise state and checked references; load shells have no scenario effects.",
+            "  template <class Archive>"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/tarcom.h",
+          "startLine": 57,
+          "endLine": 57,
+          "text": "class TarComClass : public TurretClass {",
+          "before": [
+            "**\tsuch operations as determining threat value down to actually launching",
+            "*the *\tprojectile.",
+            "*/"
+          ],
+          "after": [
+            " public:",
+            "  // Field-wise state and checked references; load shells have no scenario effects.",
+            "  template <class Archive>"
+          ],
           "lost": false
         }
       ]
