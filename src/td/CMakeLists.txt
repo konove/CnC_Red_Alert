@@ -118,6 +118,15 @@ add_gtest(
 target_compile_definitions(td_scenario_objects_ini_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_scenario_objects_ini_test)
 
+# Plays a score through SDL's dummy audio device in a real Game.
+add_gtest(
+    NAME td_focus_test
+    SOURCES startup/focus_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_focus_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_focus_test)
+
 # Draws the health bar of a vehicle in a real Game.
 add_gtest(
     NAME td_techno_test

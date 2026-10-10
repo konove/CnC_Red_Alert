@@ -22,38 +22,15 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/hardware_cursor.h"
-#include "td/assets/theme.h"
-#include "td/core/defines.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
-#include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
 
 namespace td {
 
-static ThemeType OldTheme = THEME_NONE;
-
-/***********************************************************************************************
- * Focus_Loss -- this function is called when a library function detects focus
- *loss            *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 2/1/96 2:10PM ST : Created *
- *=============================================================================================*/
-
+// Pausing the mixer holds every sound, the score included, where it is, so
+// the music carries on from the same note when the focus comes back.
 void Focus_Loss() {
-  if (TheGameState().sound_on() && (OldTheme == THEME_NONE)) {
-    OldTheme = TheTheme().What_Is_Playing();
-  }
-
-  TheTheme().Stop();
   engine::audio::TheAudio().Pause();
   engine::window::HardwareCursor::ReleaseMouse();
 }
@@ -61,12 +38,6 @@ void Focus_Loss() {
 void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
-
-  if (!TheGameState().in_movie()) {
-    TheTheme().Queue_Song(OldTheme);
-    OldTheme = THEME_NONE;
-  }
-
   engine::window::HardwareCursor::GrabMouse();
 }
 
