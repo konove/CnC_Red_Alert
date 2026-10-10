@@ -1,68 +1,12 @@
 #include "engine/video/vqa/vq_decoder.h"
 
-#include <algorithm>
-#include <iterator>
 #include <optional>
 #include <span>
 
-#include "base/array.h"
+#include "absl/log/check.h"
 #include "base/numeric.h"
-#include "base/types.h"
-
-namespace {
-// Decodes blocks 4 pixels wide and block_height lines high. The sizes are
-// checked against the spans before anything is drawn. A pointer past the end
-// of the codebook shows only when decoding reaches it, so it stops the decode
-// there and leaves the rest of the buffer as it was.
-void DecodeBlocks(std::span<const unsigned char> codebook,
-                  std::span<const unsigned char> pointers,
-                  std::span<unsigned char> buffer, int blocks_per_row,
-                  int block_rows, int stride, int block_height) {
-  if (blocks_per_row <= 0 || block_rows <= 0 || stride <= 0 ||
-      blocks_per_row > stride / 4) {
-    return;
-  }
-  const base::ssize columns = blocks_per_row;
-  const base::ssize rows = block_rows;
-  const base::ssize width = stride;
-  const base::ssize height = block_height;
-  const base::ssize buffer_bytes = std::ssize(buffer);
-  const base::ssize codebook_bytes = std::ssize(codebook);
-  // Two pointer bytes per block, and pixel rows for every block row; the
-  // last pixel row needs only its blocks' width, not a whole stride.
-  if (rows > std::ssize(pointers) / 2 / columns || buffer_bytes < columns * 4 ||
-      rows > (((buffer_bytes - (columns * 4)) / width) + 1) / height) {
-    return;
-  }
-  const base::ssize block_count = rows * columns;
-  for (base::ssize row = 0; row < rows; ++row) {
-    for (base::ssize col = 0; col < columns; ++col) {
-      const base::ssize block = (row * columns) + col;
-      const auto low_byte = base::At(pointers, block);
-      const auto high_byte = base::At(pointers, block_count + block);
-      // A reserved high byte marks a solid block of the color in the low
-      // byte.
-      const bool solid = high_byte == (block_height == 2 ? 0x0f : 0xff);
-      const base::ssize code_offset =
-          ((base::ssize{high_byte} * 256) + low_byte) * 4 * height;
-      if (!solid && code_offset + (4 * height) > codebook_bytes) {
-        return;
-      }
-      for (base::ssize line = 0; line < height; ++line) {
-        const auto destination = buffer.subspan(
-            base::ToSize((((row * height) + line) * width) + (col * 4)), 4);
-        if (solid) {
-          std::ranges::fill(destination, low_byte);
-        } else {
-          std::ranges::copy(
-              codebook.subspan(base::ToSize(code_offset + (line * 4)), 4),
-              destination.begin());
-        }
-      }
-    }
-  }
-}
-}  // namespace
+#include "engine/codec/rust_bytes.h"
+#include "engine_rs_cxx/lib.h"
 
 std::optional<BlockShape> BlockShapeFor(const int width, const int height) {
   if (width == 4 && height == 2) {
@@ -74,12 +18,29 @@ std::optional<BlockShape> BlockShapeFor(const int width, const int height) {
   return std::nullopt;
 }
 
+// The decoder is engine_rs's vq::decode_frame (src/rust/src/vq.rs), which
+// checks the sizes against the spans.
 void DecodeVqFrame(const BlockShape shape,
                    const std::span<const unsigned char> codebook,
                    const std::span<const unsigned char> pointers,
                    const std::span<unsigned char> buffer,
                    const int blocks_per_row, const int block_rows,
                    const int stride) {
-  DecodeBlocks(codebook, pointers, buffer, blocks_per_row, block_rows, stride,
-               shape == BlockShape::k4x2 ? 2 : 4);
+  if (blocks_per_row <= 0 || block_rows <= 0 || stride <= 0) {
+    return;
+  }
+  const auto codebook_bytes = std::as_bytes(codebook);
+  const auto pointer_bytes = std::as_bytes(pointers);
+  const auto pixels = std::as_writable_bytes(buffer);
+  // Rust may not see one byte through a shared and a mutable slice at once.
+  // A movie's codebook, pointers and image are separate buffers.
+  CHECK(!Overlaps(codebook_bytes, pixels) && !Overlaps(pointer_bytes, pixels))
+      << "VQ frame decoded onto its own codebook or pointers";
+  // A reserved high byte marks a solid block of the color in the low byte.
+  const bool is_4x2 = shape == BlockShape::k4x2;
+  engine_rs::vq_decode_frame(AsRustSlice(codebook_bytes),
+                             AsRustSlice(pointer_bytes), AsRustSlice(pixels),
+                             base::ToSize(blocks_per_row),
+                             base::ToSize(block_rows), base::ToSize(stride),
+                             is_4x2 ? 2 : 4, is_4x2 ? 0x0f : 0xff);
 }

@@ -8,6 +8,7 @@
 
 pub mod adpcm;
 pub mod lcw;
+pub mod vq;
 pub mod westwood_audio;
 pub mod xor_delta;
 
@@ -69,6 +70,19 @@ mod ffi {
 
         /// Compresses into one LCW stream; see lcw::compress.
         fn lcw_compress(input: &[u8]) -> Vec<u8>;
+
+        /// Decodes a VQ movie frame; see vq::decode_frame.
+        #[allow(clippy::too_many_arguments)]
+        fn vq_decode_frame(
+            codebook: &[u8],
+            pointers: &[u8],
+            buffer: &mut [u8],
+            blocks_per_row: usize,
+            block_rows: usize,
+            stride: usize,
+            block_height: usize,
+            solid_marker: u8,
+        );
 
         /// Applies an XOR delta to the rows of an image; see
         /// xor_delta::apply.
@@ -155,4 +169,27 @@ fn westwood_audio_decoded_len(block: &[u8]) -> isize {
 
 fn westwood_audio_decode(block: &[u8], dest: &mut [u8]) -> bool {
     westwood_audio::decode_into(block, dest) == Some(dest.len())
+}
+
+#[allow(clippy::too_many_arguments)]
+fn vq_decode_frame(
+    codebook: &[u8],
+    pointers: &[u8],
+    buffer: &mut [u8],
+    blocks_per_row: usize,
+    block_rows: usize,
+    stride: usize,
+    block_height: usize,
+    solid_marker: u8,
+) {
+    vq::decode_frame(
+        codebook,
+        pointers,
+        buffer,
+        blocks_per_row,
+        block_rows,
+        stride,
+        block_height,
+        solid_marker,
+    );
 }

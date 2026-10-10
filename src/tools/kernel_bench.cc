@@ -19,6 +19,8 @@
 #include "engine/codec/xor_delta_reference_test_util.h"
 #include "engine/video/vqa/adpcm_decoders.h"
 #include "engine/video/vqa/adpcm_decoders_reference_test_util.h"
+#include "engine/video/vqa/vq_decoder.h"
+#include "engine/video/vqa/vq_decoder_reference_test_util.h"
 
 namespace {
 
@@ -169,10 +171,44 @@ void BenchAudio() {
          }));
 }
 
+// A 320x200 movie frame of 4x2 blocks, one in eight of them solid.
+void BenchVq() {
+  constexpr int kColumns = 80;
+  constexpr int kRows = 100;
+  constexpr int kStride = 320;
+  constexpr int kCodebookBlocks = 2000;
+  base::Lcg lcg(3);
+  std::vector<uint8_t> codebook(std::size_t{kCodebookBlocks} * 8);
+  std::ranges::generate(codebook, [&lcg] { return lcg.Byte(); });
+  constexpr std::size_t kBlocks = std::size_t{kColumns} * kRows;
+  std::vector<uint8_t> pointers(kBlocks * 2);
+  for (std::size_t block = 0; block < kBlocks; ++block) {
+    const bool solid = lcg.Below(8) == 0;
+    const auto code = static_cast<uint32_t>(lcg.Below(kCodebookBlocks));
+    pointers.at(block) = static_cast<uint8_t>(code & 0xffU);
+    pointers.at(kBlocks + block) =
+        solid ? uint8_t{0x0f} : static_cast<uint8_t>(code >> 8U);
+  }
+  std::vector<uint8_t> image(std::size_t{kStride} * kRows * 2);
+  Report("vq frame, 4x2 blocks",
+         MegabytesPerSecond(image.size(),
+                            [&] {
+                              DecodeVqFrame(BlockShape::k4x2, codebook,
+                                            pointers, image, kColumns, kRows,
+                                            kStride);
+                            }),
+         MegabytesPerSecond(image.size(), [&] {
+           vq_decoder_reference::DecodeVqFrame(BlockShape::k4x2, codebook,
+                                               pointers, image, kColumns, kRows,
+                                               kStride);
+         }));
+}
+
 }  // namespace
 
 int main() {
   BenchXorDelta();
   BenchAudio();
+  BenchVq();
   return 0;
 }

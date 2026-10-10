@@ -121,9 +121,9 @@ decides whether one Rust function serves both shims. Effort: s.
 
 With LCW and Phase 2 this makes the VQA decode path Rust end to end. Effort: s.
 
-- [ ] Task-level plan
-- [ ] `src/rust/src/vq.rs`, shim in `vq_decoder.cc`
-- [ ] Differential test; frame dumps of `REDINTRO` and `SOVIET1` identical before and after
+- [x] Task-level plan
+- [x] `src/rust/src/vq.rs`, shim in `vq_decoder.cc`
+- [x] Differential test; frame dumps of `REDINTRO` and `SOVIET1` identical before and after
 
 ### Phase 4: SHA-1 compression
 
@@ -170,5 +170,5 @@ loops are split into clip and kernel.
   at `cxx` alone. Decide per phase, starting with Phase 4.
 - **Where a blit kernel's bridge call stops paying.** Phases 1 to 5 are called per frame, block or
   file. A blit runs per object per frame; measure one before planning the pixel loops.
-- **Whether `vq_decoder` has in-place callers** (see Global constraints). `xor_delta` has none
-  (`docs/RUST_XOR_DELTA_PLAN.md`).
+- ~~Whether `vq_decoder` and `xor_delta` have in-place callers.~~ Neither has
+  (`docs/RUST_XOR_DELTA_PLAN.md`, `docs/RUST_VQ_DECODER_PLAN.md`).
