@@ -3941,24 +3941,11 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-07T00:49:05Z",
+      "updated": "2026-10-10T20:52:39Z",
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 277,
-          "endLine": 280,
-          "text": "  // TODO: the house and the mission numbers below are taken from the file\n  // unchecked; an out-of-range one CHECK-fails later, where the team type is\n  // used.\n  house_ = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));",
-          "before": [
-            "  Set_Name(name);",
-            "",
-            "  base::Tokenizer tokens(entry);"
-          ],
-          "after": [
-            "",
-            "  // The scenario's NewINIFormat: 0 and 1 list each option and end the entry",
-            "  // with the trigger; the later ones pack the options into one bit field and"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -4554,7 +4541,7 @@
       "status": "done",
       "author": "user",
       "created": "2026-10-07T07:31:53Z",
-      "updated": "2026-10-07T22:25:28Z",
+      "updated": "2026-10-10T20:52:39Z",
       "fixedIn": "4009d949",
       "resolution": "Done with T-170: the two directions left `game::DirType` and are now `DriveClass::kRefineryApproach` and `DriveClass::kRefineryDock` in each game's `objects/drive.h` (936ef467, 4009d949).",
       "comments": [
@@ -4567,20 +4554,7 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 81,
-          "endLine": 84,
-          "text": "  // Two directions a little south of south-west that a harvester turns\n  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.\n  kSouthWestX1 = (5 << 5) - 8,\n  kSouthWestX2 = (5 << 5) - 16,",
-          "before": [
-            "  kSouthEast = 3 << 5,",
-            "  kSouth = 4 << 5,",
-            "  kSouthWest = 5 << 5,"
-          ],
-          "after": [
-            "  kWest = 6 << 5,",
-            "  kNorthWest = 7 << 5",
-            "};"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -4658,7 +4632,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T08:01:13Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "a94bbcc0",
@@ -4678,20 +4652,7 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.cc",
-          "startLine": 135,
-          "endLine": 136,
-          "text": "  const int rounded_up = (scaled + bigger - 1) / bigger;\n  return AsDirection(quadrant + 0x40 - rounded_up);",
-          "before": [
-            "  // original subtracted one from the rounded-down ratio instead, which is the",
-            "  // same thing except when the division is exact: then it landed one step",
-            "  // short, due east and due south included."
-          ],
-          "after": [
-            "}",
-            "",
-            "int BodyFrame32(const DirType dir) {"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -4709,7 +4670,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T08:10:37Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "fa3bac41",
@@ -4730,20 +4691,7 @@
       "anchors": [
         {
           "path": "src/ra/objects/aircraft.cc",
-          "startLine": 430,
-          "endLine": 448,
-          "text": "int AircraftClass::Shape_Number() const {\n  int shapenum = 0;\n\n  switch (Class->Rotation) {\n    case 32:\n      shapenum = base::At(BodyShape, game::BodyFrame32(SecondaryFacing));\n      break;\n\n    case 16:\n      shapenum = base::At(BodyShape, static_cast<base::ssize>(\n                                         game::BodyFrame16(SecondaryFacing)) *\n                                         2) /\n                 2;\n      break;\n\n    default:\n      break;\n  }\n",
-          "before": [
-            " *                                                                                             *",
-            " * HISTORY: * 07/26/1996 JLB : Created. *",
-            " *=============================================================================================*/"
-          ],
-          "after": [
-            "  /*",
-            "  **\tIf there is a door on this aircraft (Chinook), then adjust the",
-            "  **\tshape number to match the door open state."
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -4761,7 +4709,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T08:25:00Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "42bbd735",
@@ -4782,8 +4730,8 @@
       "anchors": [
         {
           "path": "src/td/objects/unit.cc",
-          "startLine": 3820,
-          "endLine": 3820,
+          "startLine": 3822,
+          "endLine": 3822,
           "text": "    value -= std::abs(game::ShortestTurn(game::DirectionOf(face), faceto));",
           "before": [
             "    **\tGive more weight to the cells that require the least rotation of the",
@@ -4799,20 +4747,7 @@
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 181,
-          "endLine": 181,
-          "text": "constexpr int ShortestTurn(const DirType from, const DirType to) {",
-          "before": [
-            "",
-            "// Returns the shortest turn from `from` to `to`, -128..127: positive is",
-            "// clockwise, and the two opposite directions are -128 apart."
-          ],
-          "after": [
-            "  return static_cast<int8_t>((to - from).value());",
-            "}",
-            ""
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -4957,7 +4892,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:43:36Z",
-      "updated": "2026-10-07T22:26:39Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-165",
       "source": "2b13f371..929cac0e",
       "fixedIn": "4009d949",
@@ -4988,20 +4923,7 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 81,
-          "endLine": 84,
-          "text": "  // Two directions a little south of south-west that a harvester turns\n  // through as it backs onto the refinery pad; it unloads at kSouthWestX2.\n  kSouthWestX1 = (5 << 5) - 8,\n  kSouthWestX2 = (5 << 5) - 16,",
-          "before": [
-            "  kSouthEast = 3 << 5,",
-            "  kSouth = 4 << 5,",
-            "  kSouthWest = 5 << 5,"
-          ],
-          "after": [
-            "  kWest = 6 << 5,",
-            "  kNorthWest = 7 << 5",
-            "};"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -5436,7 +5358,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:49:09Z",
-      "updated": "2026-10-08T06:21:06Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-179",
       "source": "8a04d474..1f244fe5",
       "fixedIn": "dd06163e..9486c474",
@@ -5444,20 +5366,7 @@
       "anchors": [
         {
           "path": "src/game/sim/heading.h",
-          "startLine": 91,
-          "endLine": 93,
-          "text": "  [[nodiscard]] int ShortestTurnTo(Direction direction) const {\n    return ShortestTurn(current_, direction);\n  }",
-          "before": [
-            "  [[nodiscard]] int RemainingTurn() const {",
-            "    return ShortestTurn(current_, desired_);",
-            "  }"
-          ],
-          "after": [
-            "",
-            "  // Turns the current direction toward the desired one by up to `max_steps`",
-            "  // direction steps, the short way round, stopping at the desired direction."
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -5728,14 +5637,14 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
       "anchors": [
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2428,
-          "endLine": 2434,
+          "startLine": 2426,
+          "endLine": 2432,
           "text": "inline constexpr int kCcGdiColor = game::kYellow;\ninline constexpr int kCcNodColor = game::kRed;\ninline constexpr int kCcBlueGreen = game::kCyan;\ninline constexpr int kCcBlueGrey = game::kLightBlue;\ninline constexpr int kCcOrange = game::kPurple;\ninline constexpr int kCcGreen = game::kGreen;\ninline constexpr int kCcTan = game::kBrown;",
           "before": [
             "};",
@@ -5751,42 +5660,42 @@
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
-          "startLine": 1065,
-          "endLine": 1065,
-          "text": "        Fancy_Text_Print(view, \"Rock/Wall/Road\", txt_x, txt_y, game::kBrown,",
+          "startLine": 1067,
+          "endLine": 1067,
+          "text": "        TextPrinter(view, {game::kBrown, game::kTransparentBlack,",
           "before": [
-            "                         game::kTransparentBlack, FontType::k6Point,",
-            "                         TPF_DROPSHADOW);",
+            "                           FontType::k6Point, TPF_DROPSHADOW})",
+            "            .Print(\"Tiberium\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
           "after": [
-            "                         game::kTransparentBlack, FontType::k6Point,",
-            "                         TPF_DROPSHADOW);",
+            "                           FontType::k6Point, TPF_DROPSHADOW})",
+            "            .Print(\"Rock/Wall/Road\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
-          "startLine": 1077,
-          "endLine": 1077,
-          "text": "        Fancy_Text_Print(view, \"Neutral Unit\", txt_x, txt_y, game::kPurple,",
+          "startLine": 1079,
+          "endLine": 1079,
+          "text": "        TextPrinter(view, {game::kPurple, game::kTransparentBlack,",
           "before": [
-            "                         game::kTransparentBlack, FontType::k6Point,",
-            "                         TPF_DROPSHADOW);",
+            "                           FontType::k6Point, TPF_DROPSHADOW})",
+            "            .Print(\"Nod Unit\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
           "after": [
-            "                         game::kTransparentBlack, FontType::k6Point,",
-            "                         TPF_DROPSHADOW);",
+            "                           FontType::k6Point, TPF_DROPSHADOW})",
+            "            .Print(\"Neutral Unit\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 313,
-          "endLine": 313,
+          "startLine": 314,
+          "endLine": 314,
           "text": "        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);",
           "before": [
             "        dir = base::At(path->Command, base::ToSize(list - 1));",
@@ -5802,8 +5711,8 @@
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 1151,
-          "endLine": 1151,
+          "startLine": 1148,
+          "endLine": 1148,
           "text": "                      forcefail ? game::kBrown : 0);",
           "before": [
             "        }",
@@ -5819,8 +5728,8 @@
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 1616,
-          "endLine": 1616,
+          "startLine": 1613,
+          "endLine": 1613,
           "text": "          color = game::kBrown;",
           "before": [
             "          color = game::kYellow;",
@@ -5940,7 +5849,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-10T18:57:39Z",
+      "updated": "2026-10-10T20:52:39Z",
       "source": "37ea18f9..323cb376",
       "comments": [
         {
@@ -5952,6 +5861,11 @@
           "author": "agent",
           "time": "2026-10-10T18:57:39Z",
           "text": "Seen again 2026-10-10 running `tools/strict_tu.py` over the 18 files of the `Heading` conversion-operator removal: the `-Wlifetime-safety-lifetimebound-violation` lines from `base/array.h:40,70,77,96` and `engine/gfx/palette.h:73,77` (both carry a `NOLINT` for the clang-tidy alias, which does not silence the compiler's own warning), and a diagnostic not listed above: `-Wnested-anon-types` at `src/td/core/defines.h:2368-2395`, the anonymous structs inside the anonymous union of `GlobalPacketType`, printed once per TD translation unit."
+        },
+        {
+          "author": "agent",
+          "time": "2026-10-10T20:52:39Z",
+          "text": "`engine/crypto/digit_cursor.h` no longer exists (the Rust migration left only `digit_cursor_reference_test_util.h`), so its `-Wnullability-extension` lines and that anchor are gone. The `base/array.h` lifetime-bound warnings were still printed by `tools/strict_tu.py` on 2026-10-10 (70 per RA translation unit)."
         }
       ],
       "anchors": [
@@ -6005,23 +5919,6 @@
             "// UnsignedBytes (the same unsigned-char view, for any trivially copyable T,"
           ],
           "lost": false
-        },
-        {
-          "path": "src/engine/crypto/digit_cursor.h",
-          "startLine": 114,
-          "endLine": 114,
-          "text": "    CHECK_EQ(bytes.size() % sizeof(Value), 0);",
-          "before": [
-            "      : bytes_(other.bytes_), position_(other.position_) {}",
-            "",
-            "  static DigitCursor FromBytes(std::span<Byte> bytes) {"
-          ],
-          "after": [
-            "    DigitCursor result;",
-            "    result.bytes_ = bytes;",
-            "    return result;"
-          ],
-          "lost": true
         }
       ]
     },
@@ -6099,7 +5996,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T19:33:26Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "8b1945aa..66912554",
@@ -6116,53 +6013,15 @@
       "anchors": [
         {
           "path": "src/td/startup/nondosstub.cc",
-          "startLine": 139,
-          "endLine": 260,
-          "text": "class BufferedFileReader {\n public:\n  static constexpr size_t kBufferSize = 2048;\n\n  explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)\n      : file_(file) {}\n\n  // Delete copy/move to prevent accidental state duplication.\n  ~BufferedFileReader() = default;\n  BufferedFileReader(const BufferedFileReader&) = delete;\n  BufferedFileReader& operator=(const BufferedFileReader&) = delete;\n  BufferedFileReader(BufferedFileReader&&) = delete;\n  BufferedFileReader& operator=(BufferedFileReader&&) = delete;\n\n  // Returns the next byte, or nullopt at end of file.\n  std::optional<uint8_t> ReadByte() {\n    if ((cursor_ >= bytes_in_buffer_) && (!RefillBuffer())) {\n      return std::nullopt;\n    }\n\n    return buffer_.at(cursor_++);\n  }\n\n private:\n  // Returns true if data was successfully read, false on EOF.\n  bool RefillBuffer() {\n    cursor_ = 0;\n    // Track exactly how many bytes were read.\n    bytes_in_buffer_ =\n        base::ToSize(file_.Read(std::as_writable_bytes(std::span(buffer_))));\n    return bytes_in_buffer_ > 0;\n  }\n\n  ByteStream& file_;\n\n  // Use std::array for standard compliance and bounds awareness.\n  std::array<uint8_t, kBufferSize> buffer_{};\n\n  // cursor_ tracks current position; bytes_in_buffer_ tracks valid data range.\n  size_t cursor_ = 0;\n  size_t bytes_in_buffer_ = 0;\n};\n\nstd::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,\n                                           engine::gfx::Palette* palette,\n                                           std::span<uint8_t> buff,\n                                           int32_t size) {\n  const auto file_handle = OpenGameFile(name);\n  if (!file_handle) {\n    return nullptr;\n  }\n  engine::gfx::PcxHeader header{};\n  if (!file_handle->ReadObject(header) || header.id != 10 ||\n      header.version != 5 || header.bits_per_pixel != 8 ||\n      header.color_planes != 1 || header.encoding != 1) {\n    return nullptr;\n  }\n  const int width = header.right - header.left + 1;\n  int height = header.bottom - header.top + 1;\n  if (width <= 0 || height <= 0 || header.bytes_per_line < width || size < 0 ||\n      static_cast<int64_t>(width) * height > INT32_MAX) {\n    return nullptr;\n  }\n  if (!buff.empty()) {\n    const auto available =\n        size == 0 ? buff.size() : std::min(buff.size(), base::ToSize(size));\n    height =\n        std::min(height, static_cast<int>(available / base::ToSize(width)));\n    if (height <= 0) {\n      return nullptr;\n    }\n  }\n  // Every exit below returns `pic`, emptied on failure, so the return is\n  // elided.\n  auto pic = std::make_unique<PixelBuffer>(width, height, buff);\n  const auto pixels = pic->bytes();\n  BufferedFileReader reader(*file_handle);\n  for (int row = 0; row < height; ++row) {\n    int column = 0;\n    while (column < header.bytes_per_line) {\n      const auto code = reader.ReadByte();\n      if (!code) {\n        pic.reset();\n        return pic;\n      }\n      int count = 1;\n      uint8_t color = *code;\n      if ((color & 0xc0U) == 0xc0U) {\n        count = color & 0x3fU;\n        const auto value = reader.ReadByte();\n        if (!value || count == 0) {\n          pic.reset();\n          return pic;\n        }\n        color = *value;\n      }\n      if (count > header.bytes_per_line - column) {\n        pic.reset();\n        return pic;\n      }\n      const int visible = std::min(count, std::max(0, width - column));\n      if (visible > 0) {\n        std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),\n                                         base::ToSize(visible)),\n                          color);\n      }\n      column += count;\n    }\n  }\n  if (palette != nullptr) {\n    // The file's palette is 8 bits a component.\n    std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};\n    file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);\n    if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kFileSize) {\n      pic.reset();\n      return pic;\n    }\n    *palette = engine::gfx::Palette::FromRgb(rgb);\n  }\n  return pic;\n}\n",
-          "before": [
-            " *   04/30/1996 ST : Tidied up and modified to use GameFile             *",
-            " *=========================================================================*/",
-            ""
-          ],
-          "after": [
-            "}  // namespace td",
-            ""
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/startup/nondosstub.cc",
-          "startLine": 88,
-          "endLine": 88,
-          "text": "class BufferedFileReader {",
-          "before": [
-            "",
-            "// Reads a stream a byte at a time through a buffer of its own, so that",
-            "// decoding a picture does not cost a file read a byte."
-          ],
-          "after": [
-            " public:",
-            "  static constexpr base::ssize kBufferSize = 2048;",
-            ""
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/startup/winstub.h",
-          "startLine": 51,
-          "endLine": 51,
-          "text": "std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,",
-          "before": [
-            "// not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette` with",
-            "// the file's palette when `palette` is not nullptr. Returns null if the file",
-            "// is missing, malformed or does not fit."
-          ],
-          "after": [
-            "                                           engine::gfx::Palette* palette,",
-            "                                           std::span<uint8_t> buff,",
-            "                                           int32_t size);"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -6179,7 +6038,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:25:09Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "02c5d9e8",
@@ -6200,20 +6059,7 @@
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.h",
-          "startLine": 53,
-          "endLine": 58,
-          "text": "bool WritePcx(ByteStream& out, PixelView& view, const Palette& palette);\n\n// Writes the same picture to the game file `file_name`, which OpenGameFile()\n// creates as a loose file. A view without pixels creates no file.\nbool WritePcxFile(std::string_view file_name, PixelView& view,\n                  const Palette& palette);",
-          "before": [
-            "// position, and leaves `out` open. Returns whether all of it was written;",
-            "// nothing is for a view without pixels (unattached, or of a surface that will",
-            "// not lock)."
-          ],
-          "after": [
-            "",
-            "// Reads the PCX picture that `in` holds from its current position to its end.",
-            "// Returns nothing if that is not a run-length encoded 8-bit picture ending in"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -6231,7 +6077,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T19:33:30Z",
+      "updated": "2026-10-10T20:52:39Z",
       "blockedBy": [
         "T-196"
       ],
@@ -6241,21 +6087,8 @@
       "resolution": "Deleted `ra/assets/writepcx.cc` and its test, plus `PCX_HEADER`, `RGB` and `Write_PCX_File()` from `filepcx.h`; the four callers call `engine::gfx::WritePcx()` on the stream they opened and `Read_PCX_File()` reads `engine::gfx::PcxHeader`. The ten RA `ui_check` hash files are re-recorded: all 47 screenshots decode to the same pixels and palette as before, only the file bytes differ.",
       "anchors": [
         {
-          "path": "src/ra/assets/writepcx.cc",
-          "startLine": 102,
-          "endLine": 102,
-          "text": "int Write_PCX_File(ByteStream& file, PixelBuffer& pic,",
-          "before": [
-            " *                                                                                             *",
-            " * HISTORY: * 06/03/1996 JLB : Created. *",
-            " *=============================================================================================*/"
-          ],
-          "after": [
-            "                   const engine::gfx::Palette& palette) {",
-            "  // A surface's buffer has pixels only while it is locked.",
-            "  PixelView& view = pic.view();"
-          ],
-          "lost": true
+          "path": "src/engine/gfx/pcx_file.h",
+          "lost": false
         }
       ]
     },
@@ -6272,30 +6105,11 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T17:25:06Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "fixedIn": "e9e5a80f",
-      "resolution": "`ra::Write_PCX_File()` now locks the buffer's view for the duration (writing nothing if it will not lock) and steps rows by `stride()`. New `ra_writepcx_test` (`src/ra/assets/writepcx_test.cc`) covers a memory buffer, a padded surface and a surface that refuses to lock; the surface test crashes against the old code.",
-      "anchors": [
-        {
-          "path": "src/ra/assets/writepcx.cc",
-          "startLine": 137,
-          "endLine": 144,
-          "text": "  const int stride = view.stride();\n  const auto pixels = view.pixels();\n  for (int line = 0; line < header.height + 1; line++) {\n    Write_Pcx_ScanLine(file, header.byte_per_line,\n                       pixels.subspan(static_cast<size_t>(line) *\n                                      static_cast<size_t>(stride)));\n  }\n  view.Unlock();",
-          "before": [
-            "  **\tWrite out the picture, line by line. A surface's rows can be further",
-            "  **\tapart than the picture is wide.",
-            "  */"
-          ],
-          "after": [
-            "",
-            "  /*",
-            "  **\tSpecial marker for end of RLE data."
-          ],
-          "lost": true
-        }
-      ]
+      "resolution": "`ra::Write_PCX_File()` now locks the buffer's view for the duration (writing nothing if it will not lock) and steps rows by `stride()`. New `ra_writepcx_test` (`src/ra/assets/writepcx_test.cc`) covers a memory buffer, a padded surface and a surface that refuses to lock; the surface test crashes against the old code."
     },
     {
       "id": "T-199",
@@ -6457,27 +6271,14 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:46:43Z",
-      "updated": "2026-10-08T23:35:03Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-194",
       "source": "b82abfc1..f63eabc6",
       "resolution": "`LockedScanlines()` now asks `FitsHeader(view)` first, so `WritePcx()` and `WritePcxFile()` return false and write nothing (no file is created) for a view wider than 32767 or taller than 32768 pixels. Four tests cover the largest size that is still written and the rejection of a wider and a taller one, through the stream and the file.",
       "anchors": [
         {
           "path": "src/engine/gfx/pcx_file.cc",
-          "startLine": 135,
-          "endLine": 140,
-          "text": "// Returns whether the header's 16-bit fields hold the size of `view`: its\n// width as it is, in bytes_per_line, and its height less one, in bottom.\nbool FitsHeader(const PixelView& view) {\n  constexpr int kMaxField = std::numeric_limits<int16_t>::max();\n  return view.width() <= kMaxField && view.height() - 1 <= kMaxField;\n}",
-          "before": [
-            "  return encoded;",
-            "}",
-            ""
-          ],
-          "after": [
-            "",
-            "// Returns the scanlines of the picture in `view`, or nothing for a view too",
-            "// large for a header or without pixels: a surface's page has them only while"
-          ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -6691,27 +6492,14 @@
       "status": "done",
       "author": "user",
       "created": "2026-10-08T17:27:04Z",
-      "updated": "2026-10-08T19:33:21Z",
+      "updated": "2026-10-10T20:52:39Z",
       "duplicateOf": "T-195",
       "fixedIn": "8b1945aa..66912554",
       "resolution": "Yes: moved through `/modernize-file` as `engine::gfx::ReadPcxFile()`; see T-195.",
       "anchors": [
         {
-          "path": "src/ra/assets/filepcx.h",
-          "startLine": 35,
-          "endLine": 42,
-          "text": "// Reads the PCX picture `name` into a new buffer, backed by `backing` when it\n// is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`\n// with the file's palette when `palette` is not nullptr. Returns null if the\n// file is missing, malformed or does not fit.\nstd::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,\n                                           engine::gfx::Palette* palette,\n                                           std::span<uint8_t> backing,\n                                           int32_t size);",
-          "before": [
-            "",
-            "namespace ra {",
-            ""
-          ],
-          "after": [
-            "",
-            "}  // namespace ra",
-            ""
-          ],
-          "lost": true
+          "path": "src/engine/gfx/pcx_file.h",
+          "lost": false
         }
       ]
     },
@@ -7054,7 +6842,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-09T01:50:57Z",
-      "updated": "2026-10-09T16:06:01Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-222",
       "source": "26da3baa..97e3f608",
       "resolution": "`InsertAfter()`, `AppendTo()` and `PrependTo()` now `DCHECK` that the node is in no list (after the already-in-place early returns); the ring guards stay because the normal `NDEBUG` build still lets it through. A sweep of the gtests and `tools/ui_check.py` in a build with DCHECKs on found three callers, all fixed: `ListClass`/`TListClass` unlink their scroll gadgets before re-adding them (`UnlinkScrollGadgets()`), and `SliderClass` no longer chains its ± buttons behind itself in the constructor, which every dialog's `AppendTo()` cut off again.",
@@ -7070,25 +6858,6 @@
           ],
           "answer": "DCHECK + one sweep (Recommended)",
           "time": "2026-10-09T02:05:03Z"
-        }
-      ],
-      "anchors": [
-        {
-          "path": "src/game/ui/link.cc",
-          "startLine": 42,
-          "endLine": 99,
-          "text": "Link& Link::InsertAfter(Link& predecessor) {\n  // A node cannot follow itself: linking it would make previous_ point at this\n  // node and cut the list off in front of it.\n  if (&predecessor == this) {\n    return HeadOfList();\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  Link* old_next = predecessor.next_;\n\n  // Link this node in after `predecessor`.\n  predecessor.next_ = this;\n  previous_ = &predecessor;\n\n  // Link it to the node that used to follow `predecessor`, if there was one.\n  next_ = old_next;\n  if (old_next) {\n    old_next->previous_ = this;\n  }\n\n  return HeadOfList();\n}\n\nLink& Link::AppendTo(Link& list) {\n  Link* old_tail = &list.TailOfList();\n\n  // Already the tail. Linking it behind itself would make previous_ point at\n  // this node and lose every node in front of it.\n  if (old_tail == this) {\n    return HeadOfList();\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  // Link this node in behind the old tail.\n  old_tail->next_ = this;\n  previous_ = old_tail;\n  next_ = nullptr;\n\n  return HeadOfList();\n}\n\nLink& Link::PrependTo(Link& list) {\n  Link* old_head = &list.HeadOfList();\n\n  // Already the head. Linking it in front of itself would make next_ point at\n  // this node, and a walk down the list would never end.\n  if (old_head == this) {\n    return *this;\n  }\n  DCHECK(next_ == nullptr && previous_ == nullptr) << kStillLinked;\n\n  // Link this node in front of the old head.\n  old_head->previous_ = this;\n  next_ = old_head;\n  previous_ = nullptr;\n\n  return *this;\n}",
-          "before": [
-            "",
-            "Link* Link::Previous() const { return previous_; }",
-            ""
-          ],
-          "after": [
-            "",
-            "const Link& Link::HeadOfList() const { return HeadOf(*this); }",
-            ""
-          ],
-          "lost": true
         }
       ]
     },
@@ -7440,7 +7209,7 @@
       "status": "done",
       "author": "agent",
       "created": "2026-10-09T07:36:41Z",
-      "updated": "2026-10-09T16:25:39Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-222",
       "source": "4f1ad716..cfc8a308",
       "resolution": "Reworded the stale comments (`nullmgr.cc` and `control.cc`) and deleted the commented-out `Is_List_To_Redraw()` in both `gscreen.cc`. `DropListClass::Expand()` and `TDropListClass::Expand()` now do nothing outside a gadget list (two new tests). `gadget_list.h` and `docs/GADGET_LIST_PLAN.md` say that a composite's parts lose focus and the mouse hold on a re-add and that dropping `StuckOn` in `Remove()` is new. `mapedsel.cc` unchanged: by reading, `GScreenClass::Render()` draws every button forced while the map editor is active and `Remove()`/`Add_A_Button()` drop the focus of the buttons that move, so the old head-change redraw is covered; not run, the editor being an internal build.",
@@ -7451,20 +7220,7 @@
         },
         {
           "path": "src/ra/net/nullmgr.cc",
-          "startLine": 601,
-          "endLine": 602,
-          "text": "  // cancelbtn is a local of this function: empty the static list before the\n  // button goes.",
-          "before": [
-            "  }",
-            "",
-            "  Remove_Abort_Modem();"
-          ],
-          "after": [
-            "  Commands.Clear();",
-            "",
-            "  return dialstatus;"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/net/nullmgr.cc",
@@ -11927,7 +11683,7 @@
       "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-10T02:21:28Z",
-      "updated": "2026-10-10T03:01:08Z",
+      "updated": "2026-10-10T20:52:39Z",
       "source": "T-344",
       "resolution": "Closed without a change. Red Alert's four dialogs were already settled by T-347 (`DrawColorBox()` fills exactly the inside of the bevel). In Tiberian Dawn the fill is not lopsided: `Rect::FromCorners` is inclusive and TD's `Draw_Box()` puts its bevel on columns `x` and `x + w`, so the fill from `x + factor` to `x + w - factor` is symmetric, leaving an even one-pixel background ring inside the bevel at 640 wide. The user chose to keep that look.",
       "toDecide": "Keep the original look (fill flush right and bottom), or inset the swatch evenly as `Rect{x + 1, y + 1, w - 2, h - 2}`? Changing it needs a look at the network and skirmish dialogs.",
@@ -11946,71 +11702,15 @@
       "anchors": [
         {
           "path": "src/ra/net/netdlg.cc",
-          "startLine": 1887,
-          "endLine": 1887,
-          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
-          "before": [
-            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
-          ],
-          "after": [
-            "                                d_color_y + 1 + d_color_h - 2),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/net/nulldlg.cc",
-          "startLine": 3187,
-          "endLine": 3187,
-          "text": "                                  base::At(cbox_x, i) + 1 + d_color_w - 2,",
-          "before": [
-            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "            view.FillRect(",
-            "                Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
-          ],
-          "after": [
-            "                                  d_color_y + 1 + d_color_h - 2),",
-            "                ThePalettes()",
-            "                    .color_remaps()"
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/ra/net/nulldlg.cc",
-          "startLine": 4931,
-          "endLine": 4931,
-          "text": "                                base::At(cbox_x, i) + 2 + d_color_w - 4,",
-          "before": [
-            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 2, d_color_y + 2,"
-          ],
-          "after": [
-            "                                d_color_y + 2 + d_color_h - 4),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/wol/wol_gsup.cc",
-          "startLine": 1124,
-          "endLine": 1124,
-          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 4,",
-          "before": [
-            "        for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
-          ],
-          "after": [
-            "                                d_color_y + 1 + d_color_h - 2),",
-            "              ThePalettes()",
-            "                  .color_remaps()"
-          ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/net/netdlg.cc",
@@ -12626,13 +12326,13 @@
       "status": "open",
       "author": "user",
       "created": "2026-10-10T20:25:45Z",
-      "updated": "2026-10-10T20:25:45Z",
+      "updated": "2026-10-10T20:52:39Z",
       "anchors": [
         {
           "path": "src/ra/objects/techno.h",
           "startLine": 73,
           "endLine": 77,
-          "text": "class TechnoClass : public RadioClass,\n                    public game::FlasherClass,\n                    public StageClass,\n                    public CargoClass,\n                    public DoorClass {",
+          "text": "class TechnoClass : public RadioClass,\n                    public game::FlasherClass,\n                    public StageClass,\n                    public CargoClass,\n                    public game::Door {",
           "before": [
             "/****************************************************************************",
             "**\tThis is the common data between building and units.",
@@ -12643,7 +12343,7 @@
             "  /*",
             "  **\tIf this techno object has detected that it has outlived its"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12739,27 +12439,27 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Leave the jump, or start the reversed animation from the mirrored stage (`final_stage_ - 1 - current`)?\n\nContinuing from the reached frame makes the reversed door finish sooner than a full animation, so everything that waits on `IsDoorOpen()` / `IsDoorClosed()` (weapons factory exit, transport unloading) happens earlier: a simulation change in both games.",
       "anchors": [
         {
-          "path": "src/game/sim/door.h",
-          "startLine": 120,
-          "endLine": 130,
-          "text": "                      const int stage_count) {\n    // Fewer than two stages would leave an open door on frame -1, and more\n    // than 256 do not fit the saved byte.\n    DCHECK(stage_count >= 2 && stage_count <= 256);\n    DCHECK_GT(frames_per_stage, 0);\n    state_ = state;\n    final_stage_ = static_cast<unsigned char>(stage_count - 1);\n    animation_.Set_Stage(0);\n    animation_.Set_Rate(frames_per_stage);\n  }\n",
+          "path": "src/game/sim/door.cc",
+          "startLine": 58,
+          "endLine": 68,
+          "text": "void Door::StartAnimation(const State state, const int frames_per_stage,\n                          const int stage_count) {\n  // Fewer than two stages would leave an open door on frame -1.\n  DCHECK_GE(stage_count, 2);\n  DCHECK_GT(frames_per_stage, 0);\n  state_ = state;\n  final_stage_ = stage_count - 1;\n  stage_ = 0;\n  countdown_ = frames_per_stage;\n  frames_per_stage_ = frames_per_stage;\n}",
           "before": [
-            "",
-            "  // Restarts the animation from stage 0 on the way to `state`.",
-            "  void StartAnimation(const State state, const int frames_per_stage,"
+            "  return true;",
+            "}",
+            ""
           ],
           "after": [
-            "  // Counts the stages of the opening or closing in progress, from 0; stopped",
-            "  // (rate 0) while the door is open or closed.",
-            "  Stage animation_;"
+            "",
+            "}  // namespace game",
+            ""
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12778,26 +12478,33 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T20:52:39Z",
+          "text": "Since d87f0c26 (T-362) `Door` is a plain class with the bodies in `door.cc`, `final_stage_` is an `int32_t` and the `DCHECK` in `StartAnimation()` is `stage_count >= 2`; with a frame count it becomes `frame_count >= 1`, with no upper limit."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 84,
-          "endLine": 104,
-          "text": "  // `frames_per_stage` game frames; it is open `frames_per_stage` *\n  // (`stage_count` - 1) frames later. `stage_count` must be at least 2 and\n  // `frames_per_stage` nonzero, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool OpenDoor(const int frames_per_stage, const int stage_count) {\n    if (state_ != State::kClosed && state_ != State::kClosing) {\n      return false;\n    }\n    StartAnimation(State::kOpening, frames_per_stage, stage_count);\n    return true;\n  }\n\n  // Starts closing an open or opening door, as OpenDoor() opens one. Returns\n  // false if it is already closed or closing.\n  bool CloseDoor(const int frames_per_stage, const int stage_count) {\n    if (state_ != State::kOpen && state_ != State::kOpening) {\n      return false;\n    }\n    StartAnimation(State::kClosing, frames_per_stage, stage_count);\n    return true;\n  }",
+          "startLine": 54,
+          "endLine": 63,
+          "text": "  // Starts opening a closed or closing door, advancing one stage every\n  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *\n  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and\n  // `frames_per_stage` positive, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool OpenDoor(int frames_per_stage, int stage_count);\n\n  // Starts closing an open or opening door, as OpenDoor() opens one. Returns\n  // false if it is already closed or closing.\n  bool CloseDoor(int frames_per_stage, int stage_count);",
           "before": [
-            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
             "",
-            "  // Starts opening a closed or closing door, advancing one stage every"
+            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
+            ""
           ],
           "after": [
             "",
             "  [[nodiscard]] bool IsDoorOpen() const { return state_ == State::kOpen; }",
             "  [[nodiscard]] bool IsDoorClosed() const { return state_ == State::kClosed; }"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12812,22 +12519,24 @@
         "game",
         "needs-decision"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "fixedIn": "d87f0c26",
+      "resolution": "Done as part of T-362: the door's saved layout changed anyway when it took over its own counters, so `final_stage_` is an `int32_t` there, like the other three counters.",
       "toDecide": "Retype it to `int` (four bytes in the save, a `kSaveGameVersion` bump in both games and the save/load smoke tests), or leave the byte? Nothing but tidiness is gained; the largest count any caller passes is 18.",
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 135,
-          "endLine": 137,
-          "text": "  // The number of stages of the current door animation, less one: the stage\n  // at which the opening or closing is finished.\n  unsigned char final_stage_ = 0;",
+          "startLine": 90,
+          "endLine": 92,
+          "text": "  // The number of stages of the current door animation, less one: the stage\n  // at which the opening or closing is finished.\n  int32_t final_stage_ = 0;",
           "before": [
-            "  // (rate 0) while the door is open or closed.",
-            "  Stage animation_;",
+            "  // nothing is animating.",
+            "  int32_t frames_per_stage_ = 0;",
             ""
           ],
           "after": [
@@ -12835,7 +12544,7 @@
             "  State state_ = State::kClosed;",
             ""
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12911,16 +12620,23 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Leave it (a damaged save is not otherwise defended against field by field), fail the load through the archive's error, or clamp to `State::kClosed`? The first costs nothing; the others need a look at how the other saved enums are treated so the door is not a special case.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-10T20:52:39Z",
+          "text": "Since d87f0c26 (T-362) the door saves its own `stage_`, `countdown_`, `frames_per_stage_` and `final_stage_`; the question is unchanged, but the unreached branches are now in `door.cc` and the coverage numbers above are out of date."
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 36,
-          "endLine": 40,
-          "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(animation_, final_stage_, state_, needs_redraw_);\n  }",
+          "startLine": 30,
+          "endLine": 35,
+          "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(stage_, countdown_, frames_per_stage_, final_stage_, state_,\n       needs_redraw_);\n  }",
           "before": [
             " public:",
             "  Door() = default;",
@@ -12931,7 +12647,7 @@
             "  // Returns whether the animation has moved on since the flag was last",
             "  // cleared, so the door's owner needs redrawing."
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12946,48 +12662,14 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
-      "anchors": [
-        {
-          "path": "src/ra/objects/door.h",
-          "startLine": 11,
-          "endLine": 11,
-          "text": "using DoorClass = game::Door<StageClass>;",
-          "before": [
-            "",
-            "namespace ra {",
-            ""
-          ],
-          "after": [
-            "",
-            "}  // namespace ra",
-            ""
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/td/objects/door.h",
-          "startLine": 11,
-          "endLine": 11,
-          "text": "using DoorClass = game::Door<StageClass>;",
-          "before": [
-            "",
-            "namespace td {",
-            ""
-          ],
-          "after": [
-            "",
-            "}  // namespace td",
-            ""
-          ],
-          "lost": true
-        }
-      ]
+      "fixedIn": "d87f0c26",
+      "resolution": "Done as part of T-362: the `DoorClass` aliases and both `objects/door.h` headers are deleted, and the games use `game::Door` directly."
     },
     {
       "id": "T-372",
@@ -13003,34 +12685,34 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "toDecide": "Keep these three, or prefer `DoorStage()` (the original's word, though it returns the frame to draw and not the animation's stage), and `door_needs_redraw()` / `clear_door_redraw()` in accessor style? A rename is a scripted replace over about 15 call sites in both games.",
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 44,
-          "endLine": 66,
-          "text": "  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }\n\n  // Advances the animation one game frame; finishes opening or closing, and\n  // stops the animation, once the last stage is reached.\n  void AI() {\n    if (animation_.Graphic_Logic()) {\n      if (animation_.Fetch_Stage() >= final_stage_) {\n        animation_.Set_Rate(0);\n        if (state_ == State::kOpening) {\n          state_ = State::kOpen;\n        } else if (state_ == State::kClosing) {\n          state_ = State::kClosed;\n        }\n      }\n      needs_redraw_ = true;\n    }\n  }\n\n  // Returns the frame of the door's animation to draw: 0 when closed, up to\n  // `stage_count` - 2 when open (see the class comment).",
+          "startLine": 37,
+          "endLine": 50,
+          "text": "  // Returns whether the animation has moved on since the flag was last\n  // cleared, so the door's owner needs redrawing.\n  [[nodiscard]] bool DoorNeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearDoorRedraw() const { needs_redraw_ = false; }\n\n  // Advances the animation one game frame; finishes opening or closing, and\n  // stops the animation, once the last stage is reached.\n  void AI();\n\n  // Returns the frame of the door's animation to draw: 0 when closed, up to\n  // `stage_count` - 2 when open (see the class comment).\n  [[nodiscard]] int DoorFrame() const;",
           "before": [
-            "",
-            "  // Returns whether the animation has moved on since the flag was last",
-            "  // cleared, so the door's owner needs redrawing."
+            "       needs_redraw_);",
+            "  }",
+            ""
           ],
           "after": [
-            "  [[nodiscard]] int DoorFrame() const {",
-            "    switch (state_) {",
-            "      case State::kClosing:"
+            "",
+            "  [[nodiscard]] bool IsDoorOpening() const { return state_ == State::kOpening; }",
+            ""
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
     {
       "id": "T-373",
       "title": "Rename StageClass's methods in both games to the Google style",
-      "details": "`game::Door<Stage>` requires `Graphic_Logic()`, `Fetch_Stage()`, `Set_Stage(int)` and `Set_Rate(int)` of its `Stage`, the legacy names of `StageClass` in `src/ra/objects/stage.h` and `src/td/objects/stage.h`. `FakeStage` in `door_test.cc` has to spell them the same way, and CLion shows four warnings there (empty messages, on those four names) that the door's IDE pass could not clear. Run `/modernize-file` on both `stage.h` files; the two games must end up with the same method names because the template calls them, and `door.h`'s class comment and `FakeStage` follow.",
+      "details": "`StageClass` in `src/ra/objects/stage.h` and `src/td/objects/stage.h` still has the legacy method names `Graphic_Logic()`, `Fetch_Stage()`, `Set_Stage(int)`, `Set_Rate(int)` and `Fetch_Rate()`. Run `/modernize-file` on both `stage.h` files. Since d87f0c26 (T-362) `game::Door` no longer uses `StageClass`, so the two games' names need not match for the door's sake, and `FakeStage` in `door_test.cc` is gone; keeping them the same is still sensible if the two classes are ever to be merged.",
       "priority": "p3",
       "effort": "m",
       "tags": [
@@ -13042,7 +12724,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:29:36Z",
+      "updated": "2026-10-10T20:52:39Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "anchors": [
@@ -13053,23 +12735,6 @@
         {
           "path": "src/td/objects/stage.h",
           "lost": false
-        },
-        {
-          "path": "src/game/sim/door_test.cc",
-          "startLine": 21,
-          "endLine": 30,
-          "text": "  bool Graphic_Logic() {\n    if (rate_ == 0) {\n      return false;\n    }\n    ++stage_;\n    return true;\n  }\n  [[nodiscard]] int Fetch_Stage() const { return stage_; }\n  void Set_Stage(const int stage) { stage_ = stage; }\n  void Set_Rate(const int rate) { rate_ = rate; }",
-          "before": [
-            "// rate is nonzero, like the games' StageClass with a rate of 1.",
-            "class FakeStage {",
-            " public:"
-          ],
-          "after": [
-            "",
-            "  template <class Archive>",
-            "  void Serialize(Archive& ar) {"
-          ],
-          "lost": true
         }
       ]
     }
