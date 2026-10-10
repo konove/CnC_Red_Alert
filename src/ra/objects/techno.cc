@@ -2639,10 +2639,10 @@ void TechnoClass::AI() {
   **	if the current animation process needs to change.
   */
   if (What_Am_I() != RTTI_BUILDING) {
-    if (About_To_Change()) {
+    if (animation().About_To_Change()) {
       Mark(MARK_CHANGE_REDRAW);
     }
-    if (Graphic_Logic() || door().NeedsRedraw()) {
+    if (animation().Graphic_Logic() || door().NeedsRedraw()) {
       Mark(MARK_CHANGE_REDRAW);
     }
   }
@@ -3499,8 +3499,8 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
     if (weapon->IsElectric) {
       const bool gonnadraw = Electric_Zap(target, which);
       if (What_Am_I() != RTTI_INFANTRY) {
-        Set_Stage(0);
-        Set_Rate(0);
+        animation().Set_Stage(0);
+        animation().Set_Rate(0);
       }
       if (Ammo <= 1 && What_Am_I() == RTTI_BUILDING) {
         dynamic_cast<BuildingClass*>(this)->IsCharged = false;

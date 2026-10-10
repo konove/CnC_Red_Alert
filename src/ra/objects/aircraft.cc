@@ -393,8 +393,8 @@ bool AircraftClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	Start rotor animation.
     */
     if (!Class->IsFixedWing) {
-      Set_Rate(1);
-      Set_Stage(0);
+      animation().Set_Rate(1);
+      animation().Set_Stage(0);
     }
 
     /*
@@ -566,10 +566,10 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
   **	or not. A landed helicopter uses slow moving "idling" blades.
   */
   if (Height == 0) {
-    shapenum = (Fetch_Stage() % 8) + 4;
+    shapenum = (animation().Fetch_Stage() % 8) + 4;
     flags = flags | ShapeFlags::kGhost;
   } else {
-    shapenum = Fetch_Stage() % 4;
+    shapenum = animation().Fetch_Stage() % 4;
     flags = flags | ShapeFlags::kShadow;
   }
 

@@ -681,7 +681,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
   Validate();
   std::span<const std::byte> shapefile;  // Pointer to loaded shape file.
 
-  int shapenum = Fetch_Stage();
+  int shapenum = animation().Fetch_Stage();
 
   /*
   **	The shape file to use for rendering depends on whether the building
@@ -711,7 +711,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
         shapenum = 3;
       } else {
         if (IsCharging) {
-          shapenum = Fetch_Stage();
+          shapenum = animation().Fetch_Stage();
         } else {
           shapenum = 0;
         }
@@ -737,7 +737,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
             Status == kSamLocking) {
           shapenum += 16;
         } else {
-          shapenum = Fetch_Stage();
+          shapenum = animation().Fetch_Stage();
         }
       } else {
         if (IsInRecoilState) {
@@ -1089,8 +1089,8 @@ BulletClass* BuildingClass::Fire_At(Target target, int which) {
           Coordinate dest = target.AsCoordinate();
           IsCharging = false;
           IsCharged = false;
-          Set_Stage(0);
-          Set_Rate(0);
+          animation().Set_Stage(0);
+          animation().Set_Rate(0);
 
           if (TheMap().Push_Onto_TacMap(source, dest) &&
               TheGameState().special_dialog() == SDLG_NONE) {
@@ -1146,7 +1146,7 @@ void BuildingClass::AI() {
   *relies on *	the bstate change to occur immediately before the
   *MissionClass::AI.
   */
-  const bool stagechange = Graphic_Logic();
+  const bool stagechange = animation().Graphic_Logic();
   bool toloop = false;
 
   /*
@@ -1172,9 +1172,10 @@ void BuildingClass::AI() {
       *occur, it will have a chance to change *	the building graphic before the
       *last frame is replaced by the first frame of *	the loop.
       */
-      if (Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
+      if (animation().Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
           (TheSpecialFlags().mcv_deploy && *this == STRUCT_CONST &&
-           Mission == MISSION_DECONSTRUCTION && Fetch_Stage() == 42 - 19)) {
+           Mission == MISSION_DECONSTRUCTION &&
+           animation().Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
 
@@ -1182,12 +1183,12 @@ void BuildingClass::AI() {
       **	If the animation advances beyond the last frame, then start the
       *animation *	sequence over from the beginning.
       */
-      if (Fetch_Stage() >= ctrl->Start + ctrl->Count) {
+      if (animation().Fetch_Stage() >= ctrl->Start + ctrl->Count) {
         toloop = true;
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == game::BSTATE_NONE || Fetch_Rate() == 0) {
+      if (BState == game::BSTATE_NONE || animation().Fetch_Rate() == 0) {
         IsReadyToCommence = true;
       }
     }
@@ -1211,12 +1212,12 @@ void BuildingClass::AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-      Set_Rate(
+      animation().Set_Rate(
           static_cast<unsigned char>(TheOptions().Normalize_Delay(ctrl->Rate)));
     } else {
-      Set_Rate(static_cast<unsigned char>(ctrl->Rate));
+      animation().Set_Rate(static_cast<unsigned char>(ctrl->Rate));
     }
-    Set_Stage(ctrl->Start);
+    animation().Set_Stage(ctrl->Start);
     Mark(MARK_CHANGE);
   }
 
@@ -1278,12 +1279,12 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-        Set_Rate(static_cast<unsigned char>(
+        animation().Set_Rate(static_cast<unsigned char>(
             TheOptions().Normalize_Delay(ctrl->Rate)));
       } else {
-        Set_Rate(static_cast<unsigned char>(ctrl->Rate));
+        animation().Set_Rate(static_cast<unsigned char>(ctrl->Rate));
       }
-      Set_Stage(ctrl->Start);
+      animation().Set_Stage(ctrl->Start);
     }
     QueueBState = game::BSTATE_NONE;
   }
@@ -1323,17 +1324,17 @@ void BuildingClass::AI() {
         if (IsCharging) {
           if (stagechange) {
             Mark(MARK_CHANGE);
-            if (Fetch_Stage() >= 4) {
+            if (animation().Fetch_Stage() >= 4) {
               IsCharged = true;
               IsCharging = false;
-              Set_Rate(0);
+              animation().Set_Rate(0);
             }
           }
         } else {
           IsCharged = false;
           IsCharging = true;
-          Set_Stage(0);
-          Set_Rate(OBELISK_ANIMATION_RATE);
+          animation().Set_Stage(0);
+          animation().Set_Rate(OBELISK_ANIMATION_RATE);
           Sound_Effect(VOC_LASER_POWER, Coord);
         }
       }
@@ -1342,8 +1343,8 @@ void BuildingClass::AI() {
         Mark(MARK_CHANGE);
         IsCharging = false;
         IsCharged = false;
-        Set_Stage(0);
-        Set_Rate(0);
+        animation().Set_Stage(0);
+        animation().Set_Rate(0);
       }
     }
   }
@@ -1866,7 +1867,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         Sound_Effect(VOC_CRUMBLE, Coord);
         if (Mission == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
-          Set_Rate(0);
+          animation().Set_Rate(0);
         } else {
           CountDown.Set(8);
         }
@@ -3473,8 +3474,8 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
     if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
-    Set_Rate(static_cast<unsigned char>(rate));
-    Set_Stage(ctrl->Start);
+    animation().Set_Rate(static_cast<unsigned char>(rate));
+    animation().Set_Stage(ctrl->Start);
   }
 }
 
@@ -4407,8 +4408,8 @@ int BuildingClass::Mission_Attack() {
       case kSamUnderground:
         IsReadyToCommence = true;
         if (TarCom) {
-          Set_Rate(2);
-          Set_Stage(0);
+          animation().Set_Rate(2);
+          animation().Set_Stage(0);
           Status = kSamRising;
           return 1;
         }
@@ -4420,8 +4421,8 @@ int BuildingClass::Mission_Attack() {
       **	may rotate to face the target.
       */
       case kSamRising:
-        if (Fetch_Stage() == 15) {
-          Set_Rate(0);
+        if (animation().Fetch_Stage() == 15) {
+          animation().Set_Rate(0);
           PrimaryFacing.SnapTo(game::Direction::kNorth);
           if (!TarCom) {
             Status = kSamLowering;
@@ -4528,8 +4529,8 @@ int BuildingClass::Mission_Attack() {
       case kSamLocking:
         if (!PrimaryFacing.IsRotating()) {
           if (PrimaryFacing.current() == game::Direction::kNorth) {
-            Set_Rate(2);
-            Set_Stage(48);
+            animation().Set_Rate(2);
+            animation().Set_Stage(48);
             Status = kSamLowering;
           } else {
             PrimaryFacing.set_desired(game::Direction::kNorth);
@@ -4541,14 +4542,14 @@ int BuildingClass::Mission_Attack() {
       **	Lowering into the ground in order to reload.
       */
       case kSamLowering:
-        if (Fetch_Stage() >= 63) {
-          Set_Rate(0);
-          Set_Stage(0);
+        if (animation().Fetch_Stage() >= 63) {
+          animation().Set_Rate(0);
+          animation().Set_Stage(0);
           Status = kSamUnderground;
           return kTicksPerSecond;
         }
-        if (Fetch_Rate() == 0) {
-          Set_Rate(2);
+        if (animation().Fetch_Rate() == 0) {
+          animation().Set_Rate(2);
         }
         return 1;
 

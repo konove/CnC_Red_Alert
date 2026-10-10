@@ -1766,8 +1766,8 @@ bool Select_Game(bool fade) {
       building->Ammo = 11;
       building->flasher().FlashCount = 23;
       building->flasher().IsBlushing = true;
-      building->Set_Stage(7);
-      building->Set_Rate(13);
+      building->animation().Set_Stage(7);
+      building->animation().Set_Rate(13);
       building->door().Open(7, 18);
     }
     if (TheStartupOptions().world_test) {

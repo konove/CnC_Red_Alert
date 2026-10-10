@@ -12337,7 +12337,7 @@
           "before": [
             "**\tThis is the common data between building and units.",
             "*/",
-            "class TechnoClass : public RadioClass, public StageClass {"
+            "class TechnoClass : public RadioClass {"
           ],
           "after": [
             "  /*",

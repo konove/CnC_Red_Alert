@@ -329,7 +329,7 @@ template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
   RadioClass::Serialize(ar);
   flasher_.Serialize(ar);
-  StageClass::Serialize(ar);
+  animation_.Serialize(ar);
   cargo_.Serialize(ar);
   door_.Serialize(ar);
   bool is_useless = IsUseless;

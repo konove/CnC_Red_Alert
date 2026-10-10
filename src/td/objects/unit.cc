@@ -456,13 +456,13 @@ void UnitClass::AI() {
   ** stages here
   */
   if (Class->IsAnimating) {
-    if (!Fetch_Rate()) {
-      Set_Rate(2);
+    if (!animation().Fetch_Rate()) {
+      animation().Set_Rate(2);
     }
-    Graphic_Logic();
-    if (Fetch_Stage() >=
+    animation().Graphic_Logic();
+    if (animation().Fetch_Stage() >=
         engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
-      Set_Stage(0);
+      animation().Set_Stage(0);
     }
   }
 
@@ -473,16 +473,17 @@ void UnitClass::AI() {
   if ((Class->IsPieceOfEight && TheSpecialFlags().jurassic &&
        TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
-    if (!Fetch_Rate()) {
-      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
-      Set_Stage(0);
+    if (!animation().Fetch_Rate()) {
+      animation().Set_Rate(
+          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
+      animation().Set_Stage(0);
     }
-    Graphic_Logic();
-    if (Fetch_Stage() >=
+    animation().Graphic_Logic();
+    if (animation().Fetch_Stage() >=
         (IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12)) {
-      Set_Stage(0);
+      animation().Set_Stage(0);
       if (IsFiring) {
-        Set_Rate(0);
+        animation().Set_Rate(0);
         IsFiring = false;
       }
     }
@@ -521,12 +522,13 @@ game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
   */
   if ((cf == game::FIRE_OK) && Class->IsFireAnim) {
     if (!IsFiring) {
-      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
-      Set_Stage(0);
+      animation().Set_Rate(
+          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
+      animation().Set_Stage(0);
       IsFiring = true;
       cf = game::FIRE_BUSY;
     } else {
-      if (Fetch_Stage() < 4) {
+      if (animation().Fetch_Stage() < 4) {
         cf = game::FIRE_BUSY;
       }
     }
@@ -754,8 +756,8 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     /*
     **	Units default to no special animation.
     */
-    Set_Rate(0);
-    Set_Stage(0);
+    animation().Set_Rate(0);
+    animation().Set_Stage(0);
 
     /*
     **	A gun boat and a hover craft are allowed to exit the map thus we
@@ -770,8 +772,8 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     **	Start the gunboat animating when it is unlimboed.
     */
     if (*this == UNIT_GUNBOAT) {
-      Set_Rate(2);
-      Set_Stage(0);
+      animation().Set_Rate(2);
+      animation().Set_Stage(0);
     }
     return true;
   }
@@ -1134,7 +1136,8 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(3)));
+    animation().Set_Rate(
+        static_cast<unsigned char>(TheOptions().Normalize_Delay(3)));
   }
 
   /*
@@ -1969,8 +1972,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
         }
 
         CC_Draw_Shape(view, UnitTypeClass::WakeShapes,
-                      shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
-                      ShapeFlags::kCentered);
+                      shapestart + (animation().Fetch_Stage() % 6), xx - 1,
+                      yy + 3, window, ShapeFlags::kCentered);
 
         if (Health_Ratio() < 0x0080) {
           shapenum += 32;
@@ -1995,12 +1998,13 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       if (IsHarvesting && !PrimaryFacing.IsRotating() && !NavCom &&
           !IsDriving) {
         static const char _hstage[6] = {0, 1, 2, 3, 2, 1};
-        shapenum = 32 + ((base::At(BodyShape, facing) + 2) / 4 * 4) +
-                   base::At(_hstage, Fetch_Stage() % std::ssize(_hstage));
+        shapenum =
+            32 + ((base::At(BodyShape, facing) + 2) / 4 * 4) +
+            base::At(_hstage, animation().Fetch_Stage() % std::ssize(_hstage));
       } else {
         shapenum = base::At(BodyShape, facing);
         if (Class->IsAnimating) {
-          shapenum = Fetch_Stage();
+          shapenum = animation().Fetch_Stage();
         }
         if (Class->IsPieceOfEight) {
           shapenum = 0;
@@ -2008,10 +2012,10 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
             shapenum = base::At(BodyShape, 24 + facing);
           }
           if (IsDriving) {
-            shapenum = Fetch_Stage() + 16 + (shapenum * 8);
+            shapenum = animation().Fetch_Stage() + 16 + (shapenum * 8);
           }
           if (IsFiring) {
-            shapenum = Fetch_Stage() + 80 +
+            shapenum = animation().Fetch_Stage() + 80 +
                        (shapenum *
                         (*this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12));
           }
@@ -2275,8 +2279,8 @@ bool UnitClass::Harvesting() {
     reducer = ptr->Reduce_Tiberium(
         std::min(reducer, UnitTypeClass::kStepCount - Tiberium));
     Tiberium += reducer;
-    Set_Stage(0);
-    Set_Rate(2);
+    animation().Set_Stage(0);
+    animation().Set_Rate(2);
 
   } else {
     /*
@@ -2285,8 +2289,8 @@ bool UnitClass::Harvesting() {
     **	by this logic routine. Bail with a failure and thus cause a branch to
     **	a better suited logic processor.
     */
-    Set_Stage(0);
-    Set_Rate(0);
+    animation().Set_Stage(0);
+    animation().Set_Rate(0);
     return false;
   }
   return true;
@@ -2521,8 +2525,8 @@ int UnitClass::Mission_Harvest() {
       IsHarvesting = false;
       if (Goto_Tiberium()) {
         IsHarvesting = true;
-        Set_Rate(2);
-        Set_Stage(0);
+        animation().Set_Rate(2);
+        animation().Set_Stage(0);
         Status = kHarvesting;
         return 1;
       }

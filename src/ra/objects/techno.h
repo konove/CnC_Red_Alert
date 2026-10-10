@@ -70,7 +70,7 @@ namespace ra {
 /****************************************************************************
 **	This is the common data between building and units.
 */
-class TechnoClass : public RadioClass, public StageClass {
+class TechnoClass : public RadioClass {
  public:
   /*
   **	If this techno object has detected that it has outlived its
@@ -381,6 +381,16 @@ class TechnoClass : public RadioClass, public StageClass {
     return flasher_;
   }
 
+  // The stage counter that drives this object's animation: the frame of a
+  // building's or a unit's art, stepped at the rate that was set.
+  [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+  [[nodiscard]] const StageClass& animation() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return animation_;
+  }
+
   // The passengers this object carries; empty for one that carries none.
   [[nodiscard]] CargoClass& cargo() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return cargo_;
@@ -504,6 +514,7 @@ class TechnoClass : public RadioClass, public StageClass {
   uint16_t kills_{0};
 
   game::FlasherClass flasher_;
+  StageClass animation_;
   CargoClass cargo_;
   game::Door door_;
 };

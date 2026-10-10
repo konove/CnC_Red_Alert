@@ -327,7 +327,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    Set_Rate(TheOptions().Normalize_Delay(3));
+    animation().Set_Rate(TheOptions().Normalize_Delay(3));
   }
 
   /*
@@ -961,8 +961,8 @@ bool UnitClass::Unlimbo(Coordinate coord, game::Direction dir) {
     /*
     **	Units default to no special animation.
     */
-    Set_Rate(0);
-    Set_Stage(0);
+    animation().Set_Rate(0);
+    animation().Set_Stage(0);
 
     return true;
   }
@@ -1993,7 +1993,7 @@ int UnitClass::Shape_Number() const {
     if (IsHarvesting && !PrimaryFacing.IsRotating() && !NavCom && !IsDriving) {
       //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
       // 0};
-      int stage = Fetch_Stage();
+      int stage = animation().Fetch_Stage();
       if (stage >= std::ssize(UnitTypeClass::Harvester_Load_List)) {
         stage = std::ssize(UnitTypeClass::Harvester_Load_List) - 1;
       }
@@ -2006,7 +2006,7 @@ int UnitClass::Shape_Number() const {
       ** If the harvester's dumping a load of ore, show that animation
       */
       if (IsDumping) {
-        int stage = Fetch_Stage();
+        int stage = animation().Fetch_Stage();
         if (*this == UNIT_MAD) {
           if (stage >= 8) {
             stage = 7;
@@ -2022,7 +2022,7 @@ int UnitClass::Shape_Number() const {
         shapenum = base::At(BodyShape, facing);
 
         if (Class->IsAnimating) {
-          shapenum = Fetch_Stage();
+          shapenum = animation().Fetch_Stage();
         }
 
         /*
@@ -2395,8 +2395,8 @@ bool UnitClass::Harvesting() {
       default:
         break;
     }
-    Set_Stage(0);
-    Set_Rate(TheRules().OreDumpRate);
+    animation().Set_Stage(0);
+    animation().Set_Rate(TheRules().OreDumpRate);
 
   } else {
     /*
@@ -2405,8 +2405,8 @@ bool UnitClass::Harvesting() {
     **	by this logic routine. Bail with a failure and thus cause a branch to
     **	a better suited logic processor.
     */
-    Set_Stage(0);
-    Set_Rate(0);
+    animation().Set_Stage(0);
+    animation().Set_Rate(0);
     return false;
   }
   return true;
@@ -2449,11 +2449,12 @@ int UnitClass::Mission_Unload() {
 
       if (!IsDumping) {
         IsDumping = true;
-        Set_Stage(0);
-        Set_Rate(TheRules().OreDumpRate);
+        animation().Set_Stage(0);
+        animation().Set_Rate(TheRules().OreDumpRate);
         break;
       }
-      if (Fetch_Stage() < std::ssize(UnitTypeClass::Harvester_Dump_List) - 1) {
+      if (animation().Fetch_Stage() <
+          std::ssize(UnitTypeClass::Harvester_Dump_List) - 1) {
         break;
       }
 
@@ -2753,8 +2754,8 @@ int UnitClass::Mission_Unload() {
         } else {
           PlaySoundEffectAt(VOC_BUZZY1, Center_Coord());
         }
-        Set_Stage(0);
-        Set_Rate(TheRules().OreDumpRate * 2);
+        animation().Set_Stage(0);
+        animation().Set_Rate(TheRules().OreDumpRate * 2);
         IsDumping = true;
 
         auto* crew =
@@ -2784,18 +2785,18 @@ int UnitClass::Mission_Unload() {
       }
 
       if ((Arm.HasTimeLeft() && !Gold) || IronCurtainCountDown.HasTimeLeft()) {
-        Set_Stage(Fetch_Stage() % 2);
+        animation().Set_Stage(animation().Fetch_Stage() % 2);
         return 1;
       }
 
       if (!Gold) {
         PlaySoundEffectAt(VOC_MAD_CHARGE, Center_Coord());
-        Set_Stage(0);
+        animation().Set_Stage(0);
         Gold = 1;
         return 1;
       }
 
-      if (Fetch_Stage() < 7) {
+      if (animation().Fetch_Stage() < 7) {
         return 1;
       }
 
@@ -2909,8 +2910,8 @@ int UnitClass::Mission_Harvest() {
       if (Goto_Tiberium(TheRules().TiberiumLongScan /
                         game::kCellWidthLeptons)) {
         IsHarvesting = true;
-        Set_Rate(2);
-        Set_Stage(0);
+        animation().Set_Rate(2);
+        animation().Set_Stage(0);
         Status = kHarvesting;
         return 1;
       }
@@ -2948,12 +2949,13 @@ int UnitClass::Mission_Harvest() {
       // std::ssize(UnitTypeClass::Harvester_Load_List)) {
       // Set_Stage(0);
       //			}
-      if (Fetch_Rate() == 0) {
-        Set_Stage(0);
-        Set_Rate(TheRules().OreDumpRate);
+      if (animation().Fetch_Rate() == 0) {
+        animation().Set_Stage(0);
+        animation().Set_Rate(TheRules().OreDumpRate);
       }
 
-      if (Fetch_Stage() < std::ssize(UnitTypeClass::Harvester_Load_List)) {
+      if (animation().Fetch_Stage() <
+          std::ssize(UnitTypeClass::Harvester_Load_List)) {
         return 1;
       }
       if (!Harvesting()) {

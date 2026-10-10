@@ -1862,7 +1862,7 @@ void TechnoClass::AI() {
   **	if the current animation process needs to change.
   */
   if ((What_Am_I() != RTTI_BUILDING) &&
-      (Graphic_Logic() || door().NeedsRedraw())) {
+      (animation().Graphic_Logic() || door().NeedsRedraw())) {
     Mark(MARK_CHANGE);
   }
 
