@@ -7,6 +7,7 @@
 //! return the vector (engine/codec/lcw.h, lcw_uncompress.h).
 
 pub mod lcw;
+pub mod xor_delta;
 
 #[cxx::bridge(namespace = "engine_rs")]
 mod ffi {
@@ -29,6 +30,16 @@ mod ffi {
 
         /// Compresses into one LCW stream; see lcw::compress.
         fn lcw_compress(input: &[u8]) -> Vec<u8>;
+
+        /// Applies an XOR delta to the rows of an image; see
+        /// xor_delta::apply.
+        fn xor_delta_apply(
+            target: &mut [u8],
+            delta: &[u8],
+            width: usize,
+            stride: usize,
+            copy: bool,
+        );
     }
 }
 
@@ -54,4 +65,8 @@ fn lcw_uncompress_bounded(source: &[u8], dest: &mut [u8]) -> i32 {
 
 fn lcw_compress(input: &[u8]) -> Vec<u8> {
     lcw::compress(input)
+}
+
+fn xor_delta_apply(target: &mut [u8], delta: &[u8], width: usize, stride: usize, copy: bool) {
+    xor_delta::apply(target, delta, width, stride, copy);
 }

@@ -2,8 +2,8 @@
 
 Written 2026-10-09, on the tree at aa739494. Answers T-210.
 
-**Status: proposed.** Nothing is implemented. Each phase below gets its own task-level plan
-(`docs/RUST_<NAME>_PLAN.md`, in the form of `docs/RUST_LCW_PLAN.md`) before its code is written.
+**Status: in progress.** Each phase below gets its own task-level plan (`docs/RUST_<NAME>_PLAN.md`,
+in the form of `docs/RUST_LCW_PLAN.md`) before its code is written.
 
 **Goal:** Move the remaining byte- and pixel-crunching kernels of `src/engine` into the `engine_rs`
 crate, one kernel per phase, without changing a byte of any kernel's output or any C++ caller.
@@ -99,11 +99,11 @@ Ordered by value over effort. Phases 1 to 3 complete a path that is already half
 Every shape and WSA frame is an LCW decode followed by an XOR delta; after this phase the whole
 decode is Rust. Two functions, two callers, three test files already covering them. Effort: s.
 
-- [ ] Task-level plan `docs/RUST_XOR_DELTA_PLAN.md`
-- [ ] `src/rust/src/xor_delta.rs` with the crate's own tests
-- [ ] Bridge functions and shims in `engine/codec/xor_delta.cc`
-- [ ] Differential test against the C++ reference
-- [ ] `tools/ui_check.py` for both games (shapes and WSA are on every screen)
+- [x] Task-level plan `docs/RUST_XOR_DELTA_PLAN.md`
+- [x] `src/rust/src/xor_delta.rs` with the crate's own tests
+- [x] Bridge functions and shims in `engine/codec/xor_delta.cc`
+- [x] Differential test against the C++ reference
+- [x] `tools/ui_check.py` for both games (shapes and WSA are on every screen)
 
 ### Phase 2: the audio decoders
 
@@ -169,4 +169,5 @@ loops are split into clip and kernel.
   at `cxx` alone. Decide per phase, starting with Phase 4.
 - **Where a blit kernel's bridge call stops paying.** Phases 1 to 5 are called per frame, block or
   file. A blit runs per object per frame; measure one before planning the pixel loops.
-- **Whether `vq_decoder` and `xor_delta` have in-place callers** (see Global constraints).
+- **Whether `vq_decoder` has in-place callers** (see Global constraints). `xor_delta` has none
+  (`docs/RUST_XOR_DELTA_PLAN.md`).
