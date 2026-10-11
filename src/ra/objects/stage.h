@@ -59,17 +59,6 @@ namespace ra {
 //   animation.SetRate(3);
 //   if (animation.AI()) { /* the stage went up: redraw */ }
 class StageCounter {
-  // The animation stage of the object, counted from 0.
-  int stage_{0};
-
-  // Counts down the game frames to the next stage. When it is finished the
-  // stage goes up by one and it starts over.
-  engine::platform::Timer<game::FrameTickSource> countdown_;
-
-  // The game frames a stage lasts, which the countdown is restarted with; 0
-  // when the stage is not animating.
-  int rate_{0};
-
  public:
   StageCounter() : countdown_(0) {}
 
@@ -103,6 +92,18 @@ class StageCounter {
     }
     return false;
   }
+
+ private:
+  // The animation stage of the object, counted from 0.
+  int stage_{0};
+
+  // Counts down the game frames to the next stage. When it is finished the
+  // stage goes up by one and it starts over.
+  engine::platform::Timer<game::FrameTickSource> countdown_;
+
+  // The game frames a stage lasts, which the countdown is restarted with; 0
+  // when the stage is not animating.
+  int rate_{0};
 };
 
 }  // namespace ra
