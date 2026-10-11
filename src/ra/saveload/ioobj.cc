@@ -70,7 +70,7 @@
 #include "ra/objects/overlay.h"
 #include "ra/objects/radio.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/stage.h"
+#include "ra/objects/stage_counter.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/template.h"
 #include "ra/objects/terrain.h"

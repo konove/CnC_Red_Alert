@@ -1,4 +1,4 @@
-#include "ra/objects/stage.h"
+#include "ra/objects/stage_counter.h"
 
 #include <array>
 #include <cstddef>

@@ -39,8 +39,8 @@
 
 // File: StageCounter, the frame counter behind an object's looping animation.
 
-#ifndef CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
-#define CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
+#ifndef CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_
+#define CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_
 
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
@@ -108,4 +108,4 @@ class StageCounter {
 
 }  // namespace ra
 
-#endif  // CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
+#endif  // CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_

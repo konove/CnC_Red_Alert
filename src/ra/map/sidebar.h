@@ -53,7 +53,7 @@
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/map/power.h"
-#include "ra/objects/stage.h"
+#include "ra/objects/stage_counter.h"
 #include "ra/ui/shapebtn.h"
 
 class ArchiveReader;

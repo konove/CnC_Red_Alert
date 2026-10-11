@@ -48,7 +48,7 @@
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
-#include "ra/objects/stage.h"
+#include "ra/objects/stage_counter.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
