@@ -370,6 +370,12 @@ hanging.
 hashes; `--accept` records a change that was meant. It needs the game data, so it is not a ctest:
 run it after changing what a screen looks like. `docs/TEST_HARNESS_PLAN.md` has the design.
 
+The `ra_save_fixture_test` and `td_save_fixture_test` ctests each load their game's
+`src/<game>/testdata/SAVEGAME.SCG01EA`, a save an earlier binary wrote
+(`tools/<game>_saveload_smoke.sh --load-fixture`); they are skipped where there is no game data. One
+fails when a change to what a save holds comes without a new `kSaveGameVersion`: bump the version
+and regenerate the file as `src/<game>/testdata/README.md` says.
+
 `tools/net_check.py` plays a two-player Red Alert network game between two instances on this machine
 (`-NETGAME<1|2>`, no lobby) and requires their per-frame logs of object positions to be identical.
 Run it after touching `ra/net/`, `EventClass` or anything a packet carries.

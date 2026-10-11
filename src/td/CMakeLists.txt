@@ -55,6 +55,17 @@ target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
 
+# Loads the save in testdata/ that an earlier binary wrote: a change to what a
+# save holds without a new kSaveGameVersion fails here. The script exits with
+# 77 where there is no game data (CI), which ctest reports as skipped.
+if (UNIX)
+    add_test(NAME td_save_fixture_test
+            COMMAND "${CMAKE_SOURCE_DIR}/tools/td_saveload_smoke.sh"
+            --load-fixture $<TARGET_FILE:tdsdl>)
+    set_tests_properties(td_save_fixture_test
+            PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120)
+endif ()
+
 # Tests
 include(Testing)
 # Real engine serializers, with startup helpers but no game entry point.
