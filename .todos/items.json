@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 385,
+  "nextId": 386,
   "items": [
     {
       "id": "T-2",
@@ -12777,10 +12777,10 @@
         "td",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:53:48Z",
-      "updated": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-10T23:58:27Z",
       "source": "420fe870..9e23f36c",
       "fixedIn": "92621dcf",
       "resolution": "All seven steps of `docs/OBJECT_COMPOSITION_PLAN.md` are implemented in both games on the `object-composition` branch (8c93acff..92621dcf); the plan's status paragraph lists what was settled along the way.",
@@ -12802,10 +12802,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T22:23:36Z",
+      "updated": "2026-10-10T23:58:09Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "8c93acff",
@@ -12858,10 +12858,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T22:23:36Z",
+      "updated": "2026-10-10T23:58:10Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "8c93acff",
@@ -12948,10 +12948,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T22:55:33Z",
+      "updated": "2026-10-10T23:58:12Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "f06cd1d3",
@@ -13108,10 +13108,10 @@
         "game",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T22:55:33Z",
+      "updated": "2026-10-10T23:58:13Z",
       "blockedBy": [
         "T-376",
         "T-377"
@@ -13155,10 +13155,10 @@
         "td",
         "net-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T22:55:33Z",
+      "updated": "2026-10-10T23:58:16Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "0644b53e",
@@ -13211,10 +13211,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-10T23:58:18Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "215a7e2b",
@@ -13268,10 +13268,10 @@
         "td",
         "net-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-10T23:58:19Z",
       "blockedBy": [
         "T-380",
         "T-379"
@@ -13327,10 +13327,10 @@
         "refactoring",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T21:54:21Z",
-      "updated": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-10T23:58:15Z",
       "parent": "T-374",
       "source": "420fe870..9e23f36c",
       "fixedIn": "30853b48",
@@ -13366,11 +13366,12 @@
         "ra",
         "saveload"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T23:28:31Z",
-      "updated": "2026-10-10T23:28:31Z",
+      "updated": "2026-10-11T00:02:35Z",
       "source": "100ef036",
+      "resolution": "Bumped `kSaveGameVersion` to 19 and regenerated `src/ra/testdata/SAVEGAME.SCG01EA` with that binary; `--load-fixture` and the round-trip mode both pass. The old fixture failed in block `AIRC` (\"saved slot index outside its heap\"), so the v18 layout had changed; at the user's suggestion the commit that changed it was not bisected.",
       "anchors": [
         {
           "path": "tools/ra_saveload_smoke.sh",
@@ -13397,6 +13398,29 @@
       "anchors": [
         {
           "path": "src/td/objects/unit.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-385",
+      "title": "Run the Red Alert old-save fixture check as a ctest",
+      "details": "Nothing runs `tools/ra_saveload_smoke.sh --load-fixture` automatically, so a change to what a save holds without a `kSaveGameVersion` bump goes unnoticed: that is how T-383 happened (the version-18 fixture stopped loading in block `AIRC` and nobody saw it for days).\n\nAdd a ctest in `src/ra/CMakeLists.txt` that runs `tools/ra_saveload_smoke.sh --load-fixture $<TARGET_FILE:rasdl>` and is skipped (`SKIP_RETURN_CODE`) when the game data directory (`RA_CD`, default the Steam path in the script) is absent, so CI without the data stays green. The script needs a distinct exit code for \"no game data\". A load takes about 5 s; a failed one waits at the menu until the script's 300 s `timeout`, so shorten that for the fixture mode (the error is logged within a second).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "ra",
+        "tools",
+        "saveload"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T00:04:36Z",
+      "updated": "2026-10-11T00:04:36Z",
+      "anchors": [
+        {
+          "path": "tools/ra_saveload_smoke.sh",
           "lost": false
         }
       ]
