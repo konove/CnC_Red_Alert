@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 386,
+  "nextId": 391,
   "items": [
     {
       "id": "T-2",
@@ -12300,12 +12300,12 @@
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 26,
-          "endLine": 26,
+          "startLine": 25,
+          "endLine": 25,
           "text": "class Door {",
           "before": [
             "//   game::Door door;",
-            "//   door.Open(/*frames_per_stage=*/2, /*stage_count=*/10);",
+            "//   door.Open(/*frames_per_stage=*/2, /*frame_count=*/9);",
             "//   while (!door.IsOpen()) door.AI();"
           ],
           "after": [
@@ -12358,11 +12358,12 @@
         "game",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:04Z",
-      "updated": "2026-10-10T20:29:04Z",
+      "updated": "2026-10-11T01:12:18Z",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "All nine parts are closed: T-367 (frame count), T-366 (reversal continues), T-365 (APC door frames), T-369 (`AI()` reports the redraw; save versions 20/11), T-370 (inconsistent load is closed) and T-373 (`StageCounter`) fixed in b7fe08a3..8395342a; T-372 closed as moot; T-368 and T-371 were done earlier.",
       "anchors": [
         {
           "path": "src/game/sim/door.h",
@@ -12380,15 +12381,28 @@
         "bugs",
         "ra",
         "td",
-        "needs-decision"
+        "manual-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T21:06:55Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "Both games open and close the APC door with `kApcDoorFrames` 3 at `kApcDoorRate` 3 (9 game frames, was 10; 3 instead of 1 at the facings where it is not drawn). `APC.SHP` has 38 frames in both games, so shapes 32-37 are the door frames. Needs a look on a real display.",
       "toDecide": "Keep the shipped look, or pass 4 so frames 0-2 are shown?\n\n- Keep: nothing to do; close as wont_fix.\n- Pass 4 with the same rates: the door takes 30 frames to open instead of 10 (3 instead of 1 for the fast case), which delays unloading - a simulation change, so multiplayer against an unfixed peer desyncs.\n- Pass 4 and lower the rate to keep roughly the same duration: 10 frames cannot be split into 3 equal stages (rate 3 gives 9), so the timing still shifts by a frame.\n\nEither change needs a look at the APC art to confirm shapes 33-34 and 36-37 are door frames.",
+      "decisions": [
+        {
+          "question": "The APC door only ever draws its first frame (APC.SHP has 38 frames: 3 door frames per facing). Show all three?",
+          "options": [
+            "Show 3 frames, same rate",
+            "Show 3 frames, rate 3",
+            "Keep shipped look"
+          ],
+          "answer": "Show 3 frames, rate 3",
+          "time": "2026-10-11T00:18:24Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -12399,36 +12413,10 @@
       "anchors": [
         {
           "path": "src/ra/objects/unit.cc",
-          "startLine": 4040,
-          "endLine": 4065,
-          "text": "  door().Close(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);\n  DCHECK(IsActive);\n\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      door().Open(10, 2);\n    } else {\n      door().Open(1, 2);",
-          "before": [
-            "  DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);",
-            "  DCHECK(IsActive);",
-            ""
-          ],
-          "after": [
-            "    }",
-            "  }",
-            "}"
-          ],
           "lost": false
         },
         {
           "path": "src/td/objects/unit.cc",
-          "startLine": 3995,
-          "endLine": 4018,
-          "text": "  door().Close(10, 2);\n}\n\n/***********************************************************************************************\n * UnitClass::APC_Open_Door -- Opens an APC door. *\n *                                                                                             *\n *    This routine will initiate opening of the APC door. *\n *                                                                                             *\n * INPUT:   none *\n *                                                                                             *\n * OUTPUT:  none *\n *                                                                                             *\n * WARNINGS:   none *\n *                                                                                             *\n * HISTORY: * 06/25/1995 JLB : Created. *\n *=============================================================================================*/\nvoid UnitClass::APC_Open_Door() {\n  Validate();\n  if (!IsDriving && !IsRotating) {\n    if (PrimaryFacing.current() == game::Direction::kNorthWest ||\n        PrimaryFacing.current() == game::Direction::kNorthEast) {\n      door().Open(10, 2);\n    } else {\n      door().Open(1, 2);",
-          "before": [
-            " *=============================================================================================*/",
-            "void UnitClass::APC_Close_Door() {",
-            "  Validate();"
-          ],
-          "after": [
-            "    }",
-            "  }",
-            "}"
-          ],
           "lost": false
         }
       ]
@@ -12441,32 +12429,30 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "`Door::StartAnimation()` starts at the stage that shows the frame the door has reached, clamped to the new frame count; `DoorTest.TurningRoundCarriesOnFromTheFrameItShows` and `TurningRoundWithFewerFramesStaysWithinThem` pin it.",
       "toDecide": "Leave the jump, or start the reversed animation from the mirrored stage (`final_stage_ - 1 - current`)?\n\nContinuing from the reached frame makes the reversed door finish sooner than a full animation, so everything that waits on `IsDoorOpen()` / `IsDoorClosed()` (weapons factory exit, transport unloading) happens earlier: a simulation change in both games.",
+      "decisions": [
+        {
+          "question": "A door that reverses mid-animation jumps to the fully open (or closed) frame. Continue from the frame it reached instead?",
+          "options": [
+            "Continue from reached frame",
+            "Keep the jump"
+          ],
+          "answer": "Continue from reached frame",
+          "time": "2026-10-11T00:18:24Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/sim/door.cc",
-          "startLine": 58,
-          "endLine": 68,
-          "text": "void Door::StartAnimation(const State state, const int frames_per_stage,\n                          const int stage_count) {\n  // Fewer than two stages would leave an open door on frame -1.\n  DCHECK_GE(stage_count, 2);\n  DCHECK_GT(frames_per_stage, 0);\n  state_ = state;\n  final_stage_ = stage_count - 1;\n  stage_ = 0;\n  countdown_ = frames_per_stage;\n  frames_per_stage_ = frames_per_stage;\n}",
-          "before": [
-            "  return true;",
-            "}",
-            ""
-          ],
-          "after": [
-            "",
-            "}  // namespace game",
-            ""
-          ],
           "lost": false
         }
       ]
@@ -12483,12 +12469,13 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T21:06:55Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "`Door::Open()`/`Close()` take `frame_count` and store it as `frame_count_`; every caller passes one less than before (RA war factory `kDoorFrames` 4). Behaviour unchanged.",
       "comments": [
         {
           "author": "agent",
@@ -12504,19 +12491,6 @@
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 54,
-          "endLine": 63,
-          "text": "  // Starts opening a closed or closing door, advancing one stage every\n  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *\n  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and\n  // `frames_per_stage` positive, or the door never opens. Returns false, and\n  // changes nothing, if it is already open or opening.\n  bool Open(int frames_per_stage, int stage_count);\n\n  // Starts closing an open or opening door, as Open() opens one. Returns\n  // false if it is already closed or closing.\n  bool Close(int frames_per_stage, int stage_count);",
-          "before": [
-            "",
-            "  [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }",
-            ""
-          ],
-          "after": [
-            "",
-            "  [[nodiscard]] bool IsOpen() const { return state_ == State::kOpen; }",
-            "  [[nodiscard]] bool IsClosed() const { return state_ == State::kClosed; }"
-          ],
           "lost": false
         }
       ]
@@ -12557,7 +12531,7 @@
             "  State state_ = State::kClosed;",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12572,16 +12546,27 @@
         "game",
         "ra",
         "td",
-        "manual-check",
-        "needs-decision"
+        "manual-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T21:06:55Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "`Door::AI()` returns whether the door moved a stage and `TechnoClass::AI()` marks the object in both games; `needs_redraw_`, `NeedsRedraw()` and `ClearRedraw()` are gone. Save version 20 (RA) and 11 (TD), fixtures regenerated. Units now mark themselves once, not every frame until drawn: needs a look on a real display.",
       "toDecide": "Make the change or keep the flag?\n\nIt is not behaviour-exact: today a non-building re-marks itself every frame until it is drawn, and the change would mark it once, so it needs a look at a real display (APC, transport, war factory doors). The saved byte either stays as an unused placeholder or goes with a `kSaveGameVersion` bump.",
+      "decisions": [
+        {
+          "question": "Replace Door's mutable, saved needs_redraw_ flag by having AI() return whether the animation moved?",
+          "options": [
+            "Return it from AI()",
+            "Keep the flag"
+          ],
+          "answer": "Return it from AI()",
+          "time": "2026-10-11T00:18:24Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -12592,36 +12577,6 @@
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 39,
-          "endLine": 42,
-          "text": "  [[nodiscard]] bool NeedsRedraw() const { return needs_redraw_; }\n  // Called by the owner once it has drawn the door (or marked itself to be\n  // redrawn); const because the draw routines are.\n  void ClearRedraw() const { needs_redraw_ = false; }",
-          "before": [
-            "",
-            "  // Returns whether the animation has moved on since the flag was last",
-            "  // cleared, so the door's owner needs redrawing."
-          ],
-          "after": [
-            "",
-            "  // Advances the animation one game frame; finishes opening or closing, and",
-            "  // stops the animation, once the last stage is reached."
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/game/sim/door.h",
-          "startLine": 96,
-          "endLine": 99,
-          "text": "  // Whether the animation moved on, so the object the door belongs to should\n  // be redrawn. Drawing clears it from const draw routines, so it is redraw\n  // bookkeeping rather than logical state.\n  mutable bool needs_redraw_ = false;",
-          "before": [
-            "",
-            "  State state_ = State::kClosed;",
-            ""
-          ],
-          "after": [
-            "};",
-            "",
-            "}  // namespace game"
-          ],
           "lost": false
         }
       ]
@@ -12634,16 +12589,28 @@
       "effort": "s",
       "tags": [
         "bugs",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "`Door::Serialize()` resets a door that fails `IsConsistent()` (unknown state, an open door without frames, a moving door with impossible counters) to a closed, still one; `AI()` goes by the state, so the unreachable branches are gone and `door.cc` is at 100% lines.",
       "toDecide": "Leave it (a damaged save is not otherwise defended against field by field), fail the load through the archive's error, or clamp to `State::kClosed`? The first costs nothing; the others need a look at how the other saved enums are treated so the door is not a special case.",
+      "decisions": [
+        {
+          "question": "What should loading a Door with an impossible state (damaged save) do?",
+          "options": [
+            "Leave it",
+            "Clamp to closed",
+            "Fail the load"
+          ],
+          "answer": "Clamp to closed",
+          "time": "2026-10-11T00:18:24Z"
+        }
+      ],
       "comments": [
         {
           "author": "agent",
@@ -12654,19 +12621,6 @@
       "anchors": [
         {
           "path": "src/game/sim/door.h",
-          "startLine": 30,
-          "endLine": 35,
-          "text": "  // Saved-game support.\n  template <class Archive>\n  void Serialize(Archive& ar) {\n    ar(stage_, countdown_, frames_per_stage_, final_stage_, state_,\n       needs_redraw_);\n  }",
-          "before": [
-            " public:",
-            "  Door() = default;",
-            ""
-          ],
-          "after": [
-            "",
-            "  // Returns whether the animation has moved on since the flag was last",
-            "  // cleared, so the door's owner needs redrawing."
-          ],
           "lost": false
         }
       ]
@@ -12702,12 +12656,13 @@
         "game",
         "needs-decision"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T21:06:55Z",
+      "updated": "2026-10-11T00:49:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "resolution": "Moot: T-369 removed `NeedsRedraw()` and `ClearRedraw()`, and `Frame()`, the one query left, is a function that computes its result, so the PascalCase name stands.",
       "toDecide": "Keep these three, or prefer `DoorStage()` (the original's word, though it returns the frame to draw and not the animation's stage), and `door_needs_redraw()` / `clear_door_redraw()` in accessor style? A rename is a scripted replace over about 15 call sites in both games.",
       "comments": [
         {
@@ -12732,7 +12687,7 @@
             "  [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12748,19 +12703,21 @@
         "td",
         "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-11T01:12:18Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
+      "fixedIn": "8395342a",
+      "resolution": "`/modernize-file` on both headers (e53328fa..8395342a): `StageClass` is `StageCounter` in `objects/stage_counter.h`, with `stage()`, `rate()`, `set_stage()`, `SetRate()`, `IsAboutToChange()` (RA) and `AI()` for `Graphic_Logic()`; members private and last, TD's counters `uint8_t`; RA's header covered by `stage_counter_test.cc` (100%), TD's already was.",
       "anchors": [
         {
-          "path": "src/ra/objects/stage.h",
+          "path": "src/ra/objects/stage_counter.h",
           "lost": false
         },
         {
-          "path": "src/td/objects/stage.h",
+          "path": "src/td/objects/stage_counter.h",
           "lost": false
         }
       ]
@@ -13135,7 +13092,7 @@
         },
         {
           "path": "src/td/objects/stage.h",
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/fly.h",
@@ -13422,6 +13379,183 @@
       "anchors": [
         {
           "path": "tools/ra_saveload_smoke.sh",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-386",
+      "title": "Leftovers from the stage_counter.h modernization",
+      "details": "What the `/modernize-file` run on `src/ra/objects/stage.h` and `src/td/objects/stage.h` (now `stage_counter.h`, class `StageCounter`) found and did not do.",
+      "priority": "p3",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T01:12:18Z",
+      "source": "c7463461..8395342a",
+      "anchors": [
+        {
+          "path": "src/ra/objects/stage_counter.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-387",
+      "title": "Decide whether the two games' StageCounter should become one game::StageCounter",
+      "details": "`ra::StageCounter` and `td::StageCounter` have the same interface. They differ in the countdown: Red Alert's is an `engine::platform::Timer<game::FrameTickSource>`, so it keeps time in frames where `AI()` is not called; Tiberian Dawn's is a `uint8_t` decremented per `AI()` call, with a `uint16_t` stage, and those widths are the save layout. TD's narrow fields carry two latent defects: `SetRate()` keeps the low byte (a rate of 256 would stop the animation; every caller passes less), and `AI()` with a rate but a countdown of 0 (a damaged save only) wraps to 255 calls. Red Alert has `IsAboutToChange()`, TD does not.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "game",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T01:12:18Z",
+      "parent": "T-386",
+      "source": "c7463461..8395342a",
+      "toDecide": "Merge them into `src/game/sim/stage_counter.h`, or leave one per game?\n\n- Merge on the frame-clock timer: TD's stage then advances by game frames, not by `AI()` calls. That is a simulation change wherever TD skips `AI()` for an object, and a `kSaveGameVersion` bump for TD with a new fixture; check with `tools/td_saveload_smoke.sh`.\n- Merge as a template over the countdown: exact, but keeps both mechanisms.\n- Leave them: nothing to do; the latent defects could still be closed by widening TD's fields to `int32_t` (save bump only).",
+      "anchors": [
+        {
+          "path": "src/ra/objects/stage_counter.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/stage_counter.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-388",
+      "title": "Stop Tiberian Dawn's UnitClass::Can_Fire() restarting the animation from a const query",
+      "details": "`td::StageCounter`'s three members are `mutable` and `set_stage()` / `SetRate()` are `const` only because `UnitClass::Can_Fire() const` (`src/td/objects/unit.cc`, around line 536) calls `animation().SetRate(...)` and `set_stage(0)` when a fire-animated unit (the dinosaurs, `IsFireAnim`) is cleared to fire; it sets `IsFiring` the same way. Move the restart to the non-const caller that acts on `FIRE_OK` (or make the hook non-const through the hierarchy), then drop the `mutable`s and the `const`s. Removing them today fails to compile at exactly those two lines. CLion's hint that `td::StageCounter::AI()` can be made const goes away with it. Behaviour must stay exactly as it is; the dinosaurs need the Covert Operations data to see on screen.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T01:12:18Z",
+      "parent": "T-386",
+      "source": "c7463461..8395342a",
+      "anchors": [
+        {
+          "path": "src/td/objects/stage_counter.h",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/unit.cc",
+          "startLine": 527,
+          "endLine": 545,
+          "text": "game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {\n  Validate();\n\n  game::FireErrorType cf = Turret_Can_Fire(target, which);\n  /*\n  ** If it's a dinosaur, when it's OK to fire we should start the firing\n  ** animation, but wait for the proper attack stage before starting the\n  ** bullet, so things won't die prematurely.\n  */\n  if ((cf == game::FIRE_OK) && Class->IsFireAnim) {\n    if (!IsFiring) {\n      animation().SetRate(\n          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));\n      animation().set_stage(0);\n      IsFiring = true;\n      cf = game::FIRE_BUSY;\n    } else {\n      if (animation().stage() < 4) {\n        cf = game::FIRE_BUSY;",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 05/08/1995 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "      }",
+            "    }",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-389",
+      "title": "Remove the commented-out stage code in td/map/mouse.h and ra/objects/unit.cc",
+      "details": "`src/td/map/mouse.h` line 140 has `//\t\tStageClass Control;` and `src/ra/objects/unit.cc` around line 2971 a commented-out block calling `Fetch_Stage()` / `Set_Stage(0)`: names that no longer exist. Sweep both with `/remove-dead-code`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "cleanup",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T01:12:18Z",
+      "parent": "T-386",
+      "source": "c7463461..8395342a",
+      "anchors": [
+        {
+          "path": "src/td/map/mouse.h",
+          "startLine": 140,
+          "endLine": 140,
+          "text": "  //\t\tStageCounter Control;",
+          "before": [
+            "  */",
+            "  static engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;",
+            "  int Frame = 0;"
+          ],
+          "after": [
+            "};",
+            "",
+            "extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/unit.cc",
+          "startLine": 2971,
+          "endLine": 2973,
+          "text": "      //\t\t\tif (Fetch_Stage() >\n      // std::ssize(UnitTypeClass::Harvester_Load_List)) {\n      // Set_Stage(0);",
+          "before": [
+            "    **\tHarvest at current location until full or Tiberium exhausted.",
+            "    */",
+            "    case kHarvesting:"
+          ],
+          "after": [
+            "      //\t\t\t}",
+            "      if (animation().rate() == 0) {",
+            "        animation().set_stage(0);"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-390",
+      "title": "Test the APC door's frames through a UnitClass fixture",
+      "details": "T-365 made `UnitClass::APC_Open_Door()` / `APC_Close_Door()` run the door through `kApcDoorFrames` (3) at `kApcDoorRate` (3) in both games, and the draw code add `door().Frame()` to shape 32 or 35. Nothing tests it: there is no unit test that builds a `UnitClass`. With a fixture that places an APC (see T-384 for the Tiberian Dawn turret tests, which need the same), check that the door opens in 9 frames facing north-east or north-west and in 3 otherwise, and that the shape number stays within 32-37.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "testing",
+        "ra",
+        "td",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T01:12:18Z",
+      "parent": "T-386",
+      "source": "44fde377..fe08cb4f",
+      "anchors": [
+        {
+          "path": "src/ra/objects/unit.cc",
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/unit.cc",
           "lost": false
         }
       ]
