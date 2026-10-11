@@ -4007,7 +4007,7 @@ int UnitClass::Pip_Count() const {
  *=============================================================================================*/
 void UnitClass::APC_Close_Door() {
   Validate();
-  door().Close(10, 2);
+  door().Close(10, 1);
 }
 
 /***********************************************************************************************
@@ -4028,9 +4028,9 @@ void UnitClass::APC_Open_Door() {
   if (!IsDriving && !IsRotating) {
     if (PrimaryFacing.current() == game::Direction::kNorthWest ||
         PrimaryFacing.current() == game::Direction::kNorthEast) {
-      door().Open(10, 2);
+      door().Open(10, 1);
     } else {
-      door().Open(1, 2);
+      door().Open(1, 1);
     }
   }
 }

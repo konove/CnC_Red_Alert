@@ -1768,7 +1768,7 @@ bool Select_Game(bool fade) {
       building->flasher().Process();  // 23 left, brightened.
       building->animation().Set_Stage(7);
       building->animation().Set_Rate(13);
-      building->door().Open(7, 18);
+      building->door().Open(7, 17);
     }
     if (TheStartupOptions().world_test) {
       if (TheObjectHeaps().unit().Count() == 0) {

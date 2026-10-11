@@ -1671,7 +1671,7 @@ void VesselClass::LST_Open_Door() {
   DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
-    door().Open(5, 6);
+    door().Open(5, 5);
   }
 }
 
@@ -1692,7 +1692,7 @@ void VesselClass::LST_Close_Door() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  door().Close(5, 6);
+  door().Close(5, 5);
 }
 
 /***********************************************************************************************

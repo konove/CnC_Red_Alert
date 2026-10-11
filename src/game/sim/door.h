@@ -8,12 +8,11 @@
 namespace game {
 
 // The state of a door that opens and closes over a number of animation
-// stages. It counts its own game frames: AI() must be called once a frame.
+// frames. It counts its own game frames: AI() must be called once a frame.
 //
-// The `stage_count` a door is opened or closed with is one more than the
-// number of frames its animation shows: with 4, Frame() runs 0, 1, 2 while
-// opening and stays at 2 once open. The callers' counts allow for it (the war
-// factory's door art has one frame fewer than the count it passes).
+// A door opened with a `frame_count` of 3 shows Frame() 0, 1, 2 while opening
+// and stays at 2 once open. Each frame is a stage of the animation; the last
+// one is shown for a stage before the door counts as open.
 //
 // A door that turns round part-way does not continue from the frame it had
 // reached: closing always starts from the fully open frame, and opening from
@@ -21,7 +20,7 @@ namespace game {
 //
 // Example:
 //   game::Door door;
-//   door.Open(/*frames_per_stage=*/2, /*stage_count=*/10);
+//   door.Open(/*frames_per_stage=*/2, /*frame_count=*/9);
 //   while (!door.IsOpen()) door.AI();
 class Door {
  public:
@@ -30,7 +29,7 @@ class Door {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(stage_, countdown_, frames_per_stage_, final_stage_, state_,
+    ar(stage_, countdown_, frames_per_stage_, frame_count_, state_,
        needs_redraw_);
   }
 
@@ -46,21 +45,21 @@ class Door {
   void AI();
 
   // Returns the frame of the door's animation to draw: 0 when closed, up to
-  // `stage_count` - 2 when open (see the class comment).
+  // `frame_count` - 1 when open.
   [[nodiscard]] int Frame() const;
 
   [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }
 
   // Starts opening a closed or closing door, advancing one stage every
   // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *
-  // (`stage_count` - 1) calls later. `stage_count` must be at least 2 and
-  // `frames_per_stage` positive, or the door never opens. Returns false, and
-  // changes nothing, if it is already open or opening.
-  bool Open(int frames_per_stage, int stage_count);
+  // `frame_count` calls later. Both must be positive, or the door never
+  // opens. Returns false, and changes nothing, if it is already open or
+  // opening.
+  bool Open(int frames_per_stage, int frame_count);
 
   // Starts closing an open or opening door, as Open() opens one. Returns
   // false if it is already closed or closing.
-  bool Close(int frames_per_stage, int stage_count);
+  bool Close(int frames_per_stage, int frame_count);
 
   [[nodiscard]] bool IsOpen() const { return state_ == State::kOpen; }
   [[nodiscard]] bool IsClosed() const { return state_ == State::kClosed; }
@@ -75,7 +74,7 @@ class Door {
   };
 
   // Restarts the animation from stage 0 on the way to `state`.
-  void StartAnimation(State state, int frames_per_stage, int stage_count);
+  void StartAnimation(State state, int frames_per_stage, int frame_count);
 
   // The stage the opening or closing in progress has reached, from 0.
   int32_t stage_ = 0;
@@ -87,9 +86,9 @@ class Door {
   // nothing is animating.
   int32_t frames_per_stage_ = 0;
 
-  // The number of stages of the current door animation, less one: the stage
-  // at which the opening or closing is finished.
-  int32_t final_stage_ = 0;
+  // The number of frames the current door animation shows, which is also the
+  // stage at which the opening or closing is finished.
+  int32_t frame_count_ = 0;
 
   State state_ = State::kClosed;
 

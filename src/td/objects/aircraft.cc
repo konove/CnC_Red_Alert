@@ -2543,7 +2543,7 @@ RadioMessageType AircraftClass::Receive_Message(TechnoClass* from,
     */
     case RADIO_IM_IN:
       if (cargo().How_Many() == Class->Max_Passengers()) {
-        door().Close(5, 4);
+        door().Close(5, 3);
       }
 
       /*
@@ -2567,7 +2567,7 @@ RadioMessageType AircraftClass::Receive_Message(TechnoClass* from,
         FootClass::Receive_Message(from, message, param);
 
         if (!IsTethered && !IsLanding && !IsTakingOff && Altitude == 0) {
-          door().Open(5, 4);
+          door().Open(5, 3);
 
           /*
           **	If the potential passenger needs someplace to go, then figure
@@ -2721,7 +2721,7 @@ bool AircraftClass::Process_Take_Off() {
   IsTakingOff = true;
   switch (Altitude) {
     case 0:
-      door().Close(5, 4);
+      door().Close(5, 3);
       PrimaryFacing = SecondaryFacing;
       break;
 

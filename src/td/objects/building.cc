@@ -5197,7 +5197,7 @@ int BuildingClass::Mission_Unload() {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
         }
-        door().Open(2, 11);
+        door().Open(2, 10);
         mission_state().set_step(kOpen);
         break;
 
@@ -5212,7 +5212,7 @@ int BuildingClass::Mission_Unload() {
             unit->Set_Speed(128);
             mission_state().set_step(kLeave);
           } else {
-            door().Close(2, 11);
+            door().Close(2, 10);
             mission_state().set_step(kClose);
           }
         }
@@ -5220,7 +5220,7 @@ int BuildingClass::Mission_Unload() {
 
       case kLeave:
         if (!IsTethered) {
-          door().Close(2, 11);
+          door().Close(2, 10);
           mission_state().set_step(kClose);
         }
         break;

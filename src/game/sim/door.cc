@@ -14,7 +14,7 @@ void Door::AI() {
   }
   ++stage_;
   countdown_ = frames_per_stage_;
-  if (stage_ >= final_stage_) {
+  if (stage_ >= frame_count_) {
     frames_per_stage_ = 0;
     if (state_ == State::kOpening) {
       state_ = State::kOpen;
@@ -28,40 +28,40 @@ void Door::AI() {
 int Door::Frame() const {
   switch (state_) {
     case State::kClosing:
-      return final_stage_ - 1 - stage_;
+      return frame_count_ - 1 - stage_;
     case State::kOpening:
       return stage_;
     case State::kOpen:
-      return final_stage_ - 1;
+      return frame_count_ - 1;
     case State::kClosed:
     default:
       return 0;
   }
 }
 
-bool Door::Open(const int frames_per_stage, const int stage_count) {
+bool Door::Open(const int frames_per_stage, const int frame_count) {
   if (state_ != State::kClosed && state_ != State::kClosing) {
     return false;
   }
-  StartAnimation(State::kOpening, frames_per_stage, stage_count);
+  StartAnimation(State::kOpening, frames_per_stage, frame_count);
   return true;
 }
 
-bool Door::Close(const int frames_per_stage, const int stage_count) {
+bool Door::Close(const int frames_per_stage, const int frame_count) {
   if (state_ != State::kOpen && state_ != State::kOpening) {
     return false;
   }
-  StartAnimation(State::kClosing, frames_per_stage, stage_count);
+  StartAnimation(State::kClosing, frames_per_stage, frame_count);
   return true;
 }
 
 void Door::StartAnimation(const State state, const int frames_per_stage,
-                          const int stage_count) {
-  // Fewer than two stages would leave an open door on frame -1.
-  DCHECK_GE(stage_count, 2);
+                          const int frame_count) {
+  // Without a frame an open door would be on frame -1.
+  DCHECK_GE(frame_count, 1);
   DCHECK_GT(frames_per_stage, 0);
   state_ = state;
-  final_stage_ = stage_count - 1;
+  frame_count_ = frame_count;
   stage_ = 0;
   countdown_ = frames_per_stage;
   frames_per_stage_ = frames_per_stage;

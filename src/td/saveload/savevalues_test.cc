@@ -136,7 +136,7 @@ TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
 
 TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
   game::Door door;
-  ASSERT_TRUE(door.Open(2, 4));
+  ASSERT_TRUE(door.Open(2, 3));
   door.AI();
   game::Door loaded;
   Restore(loaded, Save(door));

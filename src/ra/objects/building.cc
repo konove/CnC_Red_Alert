@@ -5221,7 +5221,7 @@ int BuildingClass::Mission_Unload() {
     constexpr int kOpen = 2;
     constexpr int kLeave = 3;
     constexpr int kClose = 4;
-    constexpr int kDoorStages = 5;
+    constexpr int kDoorFrames = 4;
     constexpr int kDoorRate = 8;
     UnitClass* unit = nullptr;
     switch (mission_state().step()) {
@@ -5237,7 +5237,7 @@ int BuildingClass::Mission_Unload() {
           unit->Assign_Mission(MISSION_GUARD);
           unit->Commence();
         }
-        door().Open(kDoorRate, kDoorStages);
+        door().Open(kDoorRate, kDoorFrames);
         mission_state().set_step(kClearBib);
         break;
 
@@ -5285,7 +5285,7 @@ int BuildingClass::Mission_Unload() {
             unit->Set_Speed(128);
             mission_state().set_step(kLeave);
           } else {
-            door().Close(kDoorRate, kDoorStages);
+            door().Close(kDoorRate, kDoorFrames);
             mission_state().set_step(kClose);
           }
         }
@@ -5296,7 +5296,7 @@ int BuildingClass::Mission_Unload() {
       */
       case kLeave:
         if (!IsTethered) {
-          door().Close(kDoorRate, kDoorStages);
+          door().Close(kDoorRate, kDoorFrames);
           mission_state().set_step(kClose);
         } else {
           //					if (radio().InContact() &&
