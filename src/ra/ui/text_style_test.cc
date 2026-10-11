@@ -161,20 +161,5 @@ TEST_F(TextStyleTest, ThreePointFontDropsTheShadowsItHasNoRoomFor) {
   EXPECT_TRUE(base::Any(style.flag & TPF_CENTER));
 }
 
-TEST(HasGradientFontBitsTest, MatchesWhatTheLegacyMaskMatched) {
-  // `flags & TPF_6PT_GRAD` (6) was true for every font index with bit 1 or 2
-  // set: 2-7, 10 and 11.
-  for (const FontType font :
-       {FontType::k8Point, FontType::k3Point, FontType::kLed, FontType::kVcr,
-        FontType::k6PointGradient, FontType::kMap, FontType::kType,
-        FontType::kScore}) {
-    EXPECT_TRUE(HasGradientFontBits(font)) << magic_enum::enum_name(font);
-  }
-  for (const FontType font :
-       {FontType::k6Point, FontType::kMetal12, FontType::kEditor}) {
-    EXPECT_FALSE(HasGradientFontBits(font)) << magic_enum::enum_name(font);
-  }
-}
-
 }  // namespace
 }  // namespace ra

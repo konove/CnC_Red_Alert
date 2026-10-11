@@ -249,7 +249,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	be set)
     */
     case SELECT_HIGHLIGHT:
-      if (HasGradientFontBits(TextFont)) {
+      if (TextFont == FontType::k6PointGradient) {
         TextPrinter(view, {color, game::kTransparentBlack, TextFont,
                            TextFlags | TPF_BRIGHT_COLOR})
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
@@ -271,7 +271,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BAR: draw a color bar under the text
     */
     case SELECT_BAR:
-      if (HasGradientFontBits(TextFont)) {
+      if (TextFont == FontType::k6PointGradient) {
         view.FillRect(Rect{x, y, width, LineHeight}, color->Color);
         item.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);

@@ -1205,8 +1205,9 @@ colour flags, so a font passed as a flag no longer compiles.
 - **The `& TPF_6PT_GRAD` quirk.** Nine widget and skin sites tested `TextFlags & TPF_6PT_GRAD`,
   which is 6 and so matched every font index with bit 1 or 2 set (RA: 8-point, 3-point, LED, VCR,
   gradient, map, typewriter, score; TD: the first six). `HasGradientFontBits()` keeps exactly that
-  set, so Tiberian Dawn's buttons and both games' colour and music lists draw as before. Whether the
-  original authors meant only the gradient font is open.
+  set, so Tiberian Dawn's buttons and both games' colour and music lists draw as before. T-46
+  (2026-10-10) narrowed the test to `font == FontType::k6PointGradient` and removed the helper: no
+  widget was built with another font of the set, and the `tools/ui_check.py` hashes did not move.
 - **Rewriter lessons.** Matching calls in raw text swallowed code after a commented-out call; the
   tool now matches in comment- and literal-blanked text. It also needed `make_unique<Widget>(` and
   idempotence (skip calls already passing a `FontType`).
