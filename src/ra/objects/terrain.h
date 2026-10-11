@@ -162,10 +162,10 @@ class TerrainClass final : public ObjectClass {
   static const char* INI_Name() { return "TERRAIN"; }
   // The frame counter of the crumbling (and, for a blossom tree, growing)
   // animation.
-  [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageClass& animation() const
+  [[nodiscard]] const StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -187,7 +187,7 @@ class TerrainClass final : public ObjectClass {
   bool IsCrumbling : 1 = false;
 
   // Which frame is shown and when the next one is due.
-  StageClass animation_;
+  StageCounter animation_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TerrainClass() = default;

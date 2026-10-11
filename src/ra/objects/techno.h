@@ -218,7 +218,7 @@ class TechnoClass : public ObjectClass,
   **	This records the current cloak state for this vehicle.
   */
   game::CloakType Cloak;
-  StageClass CloakingDevice;
+  StageCounter CloakingDevice;
   engine::platform::Timer<game::FrameTickSource> CloakDelay;
 
   /* (Targeting Computer)
@@ -406,10 +406,10 @@ class TechnoClass : public ObjectClass,
 
   // The stage counter that drives this object's animation: the frame of a
   // building's or a unit's art, stepped at the rate that was set.
-  [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageClass& animation() const
+  [[nodiscard]] const StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -603,7 +603,7 @@ class TechnoClass : public ObjectClass,
   MissionClass mission_state_;
   RadioClass radio_;
   game::FlasherClass flasher_;
-  StageClass animation_;
+  StageCounter animation_;
   CargoClass cargo_;
   game::Door door_;
 };

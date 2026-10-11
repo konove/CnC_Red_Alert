@@ -199,7 +199,7 @@ void FactoryClass::AI() {
 
   if (!IsSuspended && (Object != nullptr || SpecialItem != SPC_NONE)) {
     for (int index = 0; index < 1; index++) {
-      if (!Has_Completed() && progress_.Graphic_Logic()) {
+      if (!Has_Completed() && progress_.AI()) {
         IsDifferent = true;
 
         int cost = Cost_Per_Tick();
@@ -214,7 +214,7 @@ void FactoryClass::AI() {
         *funds available.
         */
         if (cost > House->Available_Money()) {
-          progress_.Set_Stage(progress_.Fetch_Stage() - 1);
+          progress_.set_stage(progress_.stage() - 1);
         } else {
           House->Spend_Money(cost);
           Balance -= cost;
@@ -224,9 +224,9 @@ void FactoryClass::AI() {
         **	If the production has completed, then suspend further
         *production.
         */
-        if (progress_.Fetch_Stage() == kStepCount) {
+        if (progress_.stage() == kStepCount) {
           IsSuspended = true;
-          progress_.Set_Rate(0);
+          progress_.SetRate(0);
           House->Spend_Money(Balance);
           Balance = 0;
         }
@@ -296,8 +296,8 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   */
   IsDifferent = true;
   IsSuspended = true;
-  progress_.Set_Rate(0);
-  progress_.Set_Stage(0);
+  progress_.SetRate(0);
+  progress_.set_stage(0);
 
   /*
   **	Create an object of the type requested.
@@ -351,8 +351,8 @@ void FactoryClass::Set(TechnoClass& object) {
   Object = &object;
   House = Object->House;
   Balance = 0;
-  progress_.Set_Rate(0);
-  progress_.Set_Stage(kStepCount);
+  progress_.SetRate(0);
+  progress_.set_stage(kStepCount);
   IsDifferent = true;
   IsSuspended = true;
 }
@@ -379,7 +379,7 @@ bool FactoryClass::Suspend() {
 
   if (!IsSuspended) {
     IsSuspended = true;
-    progress_.Set_Rate(0);
+    progress_.SetRate(0);
     return true;
   }
   return false;
@@ -436,7 +436,7 @@ bool FactoryClass::Start() {
     rate /= kStepCount;
     rate = std::clamp(rate, 1, 255);
 
-    progress_.Set_Rate(rate);
+    progress_.SetRate(rate);
     IsSuspended = false;
     return true;
   }
@@ -489,8 +489,8 @@ bool FactoryClass::Abandon() {
     /*
     **	Set the factory back to the idle and empty state.
     */
-    progress_.Set_Rate(0);
-    progress_.Set_Stage(0);
+    progress_.SetRate(0);
+    progress_.set_stage(0);
     IsSuspended = true;
     IsDifferent = true;
 
@@ -517,7 +517,7 @@ bool FactoryClass::Abandon() {
 int FactoryClass::Completion() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().factory(), this);
 
-  return progress_.Fetch_Stage();
+  return progress_.stage();
 }
 
 /***********************************************************************************************
@@ -540,10 +540,10 @@ int FactoryClass::Completion() {
 bool FactoryClass::Has_Completed() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().factory(), this);
 
-  if (Object && progress_.Fetch_Stage() == kStepCount) {
+  if (Object && progress_.stage() == kStepCount) {
     return true;
   }
-  if (SpecialItem != SPC_NONE && progress_.Fetch_Stage() == kStepCount) {
+  if (SpecialItem != SPC_NONE && progress_.stage() == kStepCount) {
     return true;
   }
   return false;
@@ -604,7 +604,7 @@ int FactoryClass::Cost_Per_Tick() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().factory(), this);
 
   if (Object) {
-    const int steps = kStepCount - progress_.Fetch_Stage();
+    const int steps = kStepCount - progress_.stage();
     if (steps) {
       return Balance / steps;
     }
@@ -634,21 +634,21 @@ int FactoryClass::Cost_Per_Tick() {
 bool FactoryClass::Completed() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().factory(), this);
 
-  if (Object && progress_.Fetch_Stage() == kStepCount) {
+  if (Object && progress_.stage() == kStepCount) {
     Object = nullptr;
     IsSuspended = true;
     IsDifferent = true;
-    progress_.Set_Stage(0);
-    progress_.Set_Rate(0);
+    progress_.set_stage(0);
+    progress_.SetRate(0);
     return true;
   }
 
-  if (SpecialItem != SPC_NONE && progress_.Fetch_Stage() == kStepCount) {
+  if (SpecialItem != SPC_NONE && progress_.stage() == kStepCount) {
     SpecialItem = SPC_NONE;
     IsSuspended = true;
     IsDifferent = true;
-    progress_.Set_Stage(0);
-    progress_.Set_Rate(0);
+    progress_.set_stage(0);
+    progress_.SetRate(0);
     return true;
   }
   return false;

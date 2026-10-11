@@ -1448,11 +1448,11 @@ bool SidebarClass::StripClass::AI(engine::window::KeyNumber& input,
   *object *	and provides the visual feedback of a recognized and legal
   *selection.
   */
-  if ((Flasher != -1) && animation_.Graphic_Logic()) {
+  if ((Flasher != -1) && animation_.AI()) {
     redraw = true;
-    if (animation_.Fetch_Stage() >= 7) {
-      animation_.Set_Rate(0);
-      animation_.Set_Stage(0);
+    if (animation_.stage() >= 7) {
+      animation_.SetRate(0);
+      animation_.set_stage(0);
       Flasher = -1;
     }
   }

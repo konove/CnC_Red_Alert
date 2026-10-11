@@ -912,7 +912,7 @@ int BuildingClass::Shape_Number() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
-  int shapenum = animation().Fetch_Stage();
+  int shapenum = animation().stage();
 
   /*
   **	The shape file to use for rendering depends on whether the building
@@ -946,7 +946,7 @@ int BuildingClass::Shape_Number() const {
         shapenum = 3;
       } else {
         if (IsCharging) {
-          shapenum = animation().Fetch_Stage();
+          shapenum = animation().stage();
         } else {
           shapenum = 0;
         }
@@ -1335,11 +1335,11 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-        animation().Set_Rate(TheOptions().Normalize_Delay(ctrl->Rate));
+        animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
       } else {
-        animation().Set_Rate(ctrl->Rate);
+        animation().SetRate(ctrl->Rate);
       }
-      animation().Set_Stage(ctrl->Start);
+      animation().set_stage(ctrl->Start);
     }
     QueueBState = game::BSTATE_NONE;
   }
@@ -1801,7 +1801,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         PlaySoundEffectAt(VOC_CRUMBLE, Coord);
         if (mission_state().current() == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
-          animation().Set_Rate(0);
+          animation().SetRate(0);
         } else {
           CountDown.Set(8);
         }
@@ -3515,8 +3515,8 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
     if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
-    animation().Set_Rate(rate);
-    animation().Set_Stage(ctrl->Start);
+    animation().SetRate(rate);
+    animation().set_stage(ctrl->Start);
   }
 }
 
@@ -4896,7 +4896,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kLaunchUp: {
         const AnimClass* sput = AnimToTrack.AsAnimation();
-        if (sput && (sput->animation().Fetch_Stage() >= 19)) {
+        if (sput && (sput->animation().stage() >= 19)) {
           const Cell center = Cell::Containing(Center_Coord());
           const Cell cell = Cell::FromXY(center.x(), 1);
           const Target targ = Target::FromCell(cell);
@@ -6207,17 +6207,17 @@ void BuildingClass::Charging_AI() {
         if (IsCharging) {
           //					if (stagechange) {
           Mark(MARK_CHANGE);
-          if (animation().Fetch_Stage() >= 9) {
+          if (animation().stage() >= 9) {
             IsCharged = true;
             IsCharging = false;
-            animation().Set_Rate(0);
+            animation().SetRate(0);
           }
           //					}
         } else if (Arm.IsFinished()) {
           IsCharged = false;
           IsCharging = true;
-          animation().Set_Stage(0);
-          animation().Set_Rate(3);
+          animation().set_stage(0);
+          animation().SetRate(3);
           PlaySoundEffectAt(VOC_TESLA_POWER_UP, Coord);
         }
       }
@@ -6226,8 +6226,8 @@ void BuildingClass::Charging_AI() {
         Mark(MARK_CHANGE);
         IsCharging = false;
         IsCharged = false;
-        animation().Set_Stage(0);
-        animation().Set_Rate(0);
+        animation().set_stage(0);
+        animation().SetRate(0);
       }
     }
   }
@@ -6328,7 +6328,7 @@ void BuildingClass::Repair_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Animation_AI() {
-  const bool stagechange = animation().Graphic_Logic();
+  const bool stagechange = animation().AI();
   bool toloop = false;
 
   /*
@@ -6355,10 +6355,10 @@ void BuildingClass::Animation_AI() {
       *occur, it will have a chance to change *	the building graphic before the
       *last frame is replaced by the first frame of *	the loop.
       */
-      if (animation().Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
+      if (animation().stage() == ctrl->Start + ctrl->Count - 1 ||
           (!ArchiveTarget /*Special.IsMCVDeploy*/ && *this == STRUCT_CONST &&
            mission_state().current() == MISSION_DECONSTRUCTION &&
-           animation().Fetch_Stage() == 42 - 19)) {
+           animation().stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
 
@@ -6366,12 +6366,12 @@ void BuildingClass::Animation_AI() {
       **	If the animation advances beyond the last frame, then start the
       *animation *	sequence over from the beginning.
       */
-      if (animation().Fetch_Stage() >= ctrl->Start + ctrl->Count) {
+      if (animation().stage() >= ctrl->Start + ctrl->Count) {
         toloop = true;
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == game::BSTATE_NONE || animation().Fetch_Rate() == 0) {
+      if (BState == game::BSTATE_NONE || animation().rate() == 0) {
         IsReadyToCommence = true;
       }
     }
@@ -6386,11 +6386,11 @@ void BuildingClass::Animation_AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-      animation().Set_Rate(TheOptions().Normalize_Delay(ctrl->Rate));
+      animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
     } else {
-      animation().Set_Rate(ctrl->Rate);
+      animation().SetRate(ctrl->Rate);
     }
-    animation().Set_Stage(ctrl->Start);
+    animation().set_stage(ctrl->Start);
     Mark(MARK_CHANGE);
   }
 }

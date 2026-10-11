@@ -521,7 +521,7 @@ int InfantryClass::Shape_Number() const {
   **	of the action stage that the infantry is doing.
   */
   int shapenum =
-      animation().Fetch_Stage() %
+      animation().stage() %
       std::max(static_cast<int>(base::At(Class->DoControls,
                                          base::ToSize(static_cast<int>(doit)))
                                     .Count),
@@ -1098,7 +1098,7 @@ void InfantryClass::AI() {
   **	Special hack to make sure that if this infantry is in firing animation,
   *but the *	stage class isn't set, then abort the firing flag.
   */
-  if (IsFiring && animation().Fetch_Rate() == 0) {
+  if (IsFiring && animation().rate() == 0) {
     Mark(MARK_OVERLAP_UP);
     IsFiring = false;
     Do_Action(DO_STAND_READY);
@@ -1935,12 +1935,12 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      animation().Set_Rate(
+      animation().SetRate(
           TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate));
     } else {
-      animation().Set_Rate(MasterDoControls.at(Doing).Rate);
+      animation().SetRate(MasterDoControls.at(Doing).Rate);
     }
-    animation().Set_Stage(0);
+    animation().set_stage(0);
 
     /*
     **	Kludge to make sure that if infantry is in the dying animation, it isn't
@@ -3636,7 +3636,7 @@ void InfantryClass::Firing_AI() {
       firestage = Class->ProneLaunch;
     }
 
-    if (IsFiring && animation().Fetch_Stage() == firestage) {
+    if (IsFiring && animation().stage() == firestage) {
       Fire_At(TarCom, primary);
 
       /*
@@ -3684,7 +3684,7 @@ void InfantryClass::Firing_AI() {
  *=============================================================================================*/
 bool InfantryClass::Doing_AI() {
   if (Doing == DO_NOTHING ||
-      animation().Fetch_Stage() >=
+      animation().stage() >=
           base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
               .Count) {
     switch (Doing) {
@@ -3744,7 +3744,7 @@ bool InfantryClass::Doing_AI() {
       case DO_EXPLOSION2_DEATH:
       case DO_GRENADE_DEATH:
       case DO_FIRE_DEATH:
-        if (animation().Fetch_Stage() >=
+        if (animation().stage() >=
             base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
                 .Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
