@@ -13414,10 +13414,11 @@
         "tools",
         "saveload"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-11T00:04:36Z",
-      "updated": "2026-10-11T00:04:36Z",
+      "updated": "2026-10-11T00:08:36Z",
+      "resolution": "Added the `ra_save_fixture_test` ctest in `src/ra/CMakeLists.txt` (Unix only), which runs `tools/ra_saveload_smoke.sh --load-fixture` on the built `rasdl`. The script now exits with 77 when the game data directory is absent (ctest shows it as skipped), gives a failed fixture load 60 s instead of 300 s, and prints the loader's error lines on failure.",
       "anchors": [
         {
           "path": "tools/ra_saveload_smoke.sh",

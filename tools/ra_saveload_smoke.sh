@@ -9,12 +9,14 @@
 #
 # With --load-fixture it instead loads src/ra/testdata/SAVEGAME.SCG01EA, a save
 # written by an older binary, and checks that it loads and runs to END_AT:
-# the proof that saves already on players' disks still decode.
+# the proof that saves already on players' disks still decode. The
+# ra_save_fixture_test ctest runs this mode.
 #
 # Usage: tools/ra_saveload_smoke.sh [--load-fixture] [rasdl] [scenario]
 #   rasdl     path to the binary (default: cmake-build-strict-ra-clang/src/ra/rasdl)
 #   scenario  scenario name without .INI (default: SCG01EA)
 # Set RA_CD to the game data directory if it is not the Steam default.
+# Exits with 77 when there is no game data; ctest reports that as a skip.
 
 set -euo pipefail
 
@@ -32,6 +34,13 @@ RA_CD=${RA_CD:-"$HOME/.local/share/Steam/steamapps/common/Command & Conquer Red 
 SAVE_AT=60
 END_AT=120
 SLOT=99
+# A failed load waits at the menu until this many seconds have passed.
+TIMEOUT=300
+
+if [ ! -d "$RA_CD" ]; then
+  echo "SKIP: $RA_CD: no game data; set RA_CD"
+  exit 77
+fi
 
 RASDL=$(realpath "$RASDL")
 WORK=$(mktemp -d)
@@ -39,8 +48,9 @@ trap 'rm -rf "$WORK"' EXIT
 cd "$(dirname "$RASDL")"
 
 run() {
-  timeout 300 env SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
-    "$RASDL" -NOMOVIES "$@" -CD"$RA_CD" 2>&1 | grep -o 'frame .*' || true
+  timeout "$TIMEOUT" env SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+    "$RASDL" -NOMOVIES "$@" -CD"$RA_CD" > "$WORK/raw.log" 2>&1 || true
+  grep -o 'frame .*' "$WORK/raw.log" || true
 }
 
 if [ "$LOAD_FIXTURE" = 1 ]; then
@@ -54,12 +64,15 @@ if [ "$LOAD_FIXTURE" = 1 ]; then
       "regenerate it (src/ra/testdata/README.md)"
     exit 1
   fi
+  # A good load reaches END_AT in about five seconds.
+  TIMEOUT=60
   cp "$FIXTURE" "SAVEGAME.0$SLOT"
   run "-LOADGAME$SLOT" "-QUITFRAME$END_AT" > "$WORK/fixture.log"
   rm -f "SAVEGAME.0$SLOT"
   positions=$(awk -v at="$END_AT" '$2 == at && ($3 == "unit" || $3 == "vessel")' "$WORK/fixture.log" | wc -l)
   if [ "$positions" -eq 0 ]; then
     echo "FAIL: fixture save did not load and run to frame $END_AT"
+    grep -v 'frame [0-9]' "$WORK/raw.log" | head -5 || true
     exit 1
   fi
   echo "OK: fixture save loaded and ran to frame $END_AT ($positions object positions)"

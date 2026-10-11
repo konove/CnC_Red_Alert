@@ -84,6 +84,17 @@ target_link_libraries(rasdl PRIVATE ra_engine)
 
 install(TARGETS rasdl)
 
+# Loads the save in testdata/ that an earlier binary wrote: a change to what a
+# save holds without a new kSaveGameVersion fails here. The script exits with
+# 77 where there is no game data (CI), which ctest reports as skipped.
+if (UNIX)
+    add_test(NAME ra_save_fixture_test
+            COMMAND "${CMAKE_SOURCE_DIR}/tools/ra_saveload_smoke.sh"
+            --load-fixture $<TARGET_FILE:rasdl>)
+    set_tests_properties(ra_save_fixture_test
+            PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120)
+endif ()
+
 # What a test that builds a real Game compiles in: GameFixture and the text
 # table it can install; a test of a dialog adds UiFixture and its font.
 set(RA_GAME_TEST_UTIL

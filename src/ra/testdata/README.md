@@ -9,9 +9,10 @@ version to 19:
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./rasdl -NOMOVIES -NEWGAMESCG01EA -QUITFRAME60 -SAVESLOT98 -CD"<game data>"
 ```
 
-`tools/ra_saveload_smoke.sh --load-fixture` loads it and runs to frame 120. It is the only check
-that saves written before a change to the save streams (LZO blocks, Blowfish, the SHA-1 digest and
-its position) still load after it.
+`tools/ra_saveload_smoke.sh --load-fixture` loads it and runs to frame 120; the
+`ra_save_fixture_test` ctest runs that, and is skipped where there is no game data. It is the only
+check that saves written before a change to the save streams (LZO blocks, Blowfish, the SHA-1 digest
+and its position) still load after it.
 
 The fixture is valid only while `kSaveGameVersion` in `src/ra/saveload/saveload.h` is unchanged:
 `Load_Game` rightly rejects any other version. When the version is bumped, regenerate the file with
