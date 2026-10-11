@@ -17,7 +17,7 @@ namespace {
 class StageCounterTest : public testing::Test {
  protected:
   // Moves the game on `frames` frames without calling AI().
-  void Skip(int frames) { clock_.set_frame(clock_.frame() + frames); }
+  void Skip(const int frames) { clock_.set_frame(clock_.frame() + frames); }
 
   // Moves the game on a frame and runs the counter's frame logic.
   bool Tick(StageCounter& counter) {

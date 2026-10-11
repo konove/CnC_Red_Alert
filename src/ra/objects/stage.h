@@ -70,10 +70,10 @@ class StageCounter {
 
   [[nodiscard]] int stage() const { return stage_; }
   [[nodiscard]] int rate() const { return rate_; }
-  void set_stage(int stage) { stage_ = stage; }
+  void set_stage(const int stage) { stage_ = stage; }
   // Sets the game frames a stage lasts and restarts the countdown to the next
   // one; 0 stops the animation.
-  void SetRate(int rate) {
+  void SetRate(const int rate) {
     countdown_.Set(rate);
     rate_ = rate;
   }
