@@ -49,7 +49,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/defines.h"
 #include "td/objects/object.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/type.h"
 
 class ArchiveReader;

@@ -22,7 +22,7 @@
 #include "td/objects/cell.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/super.h"
 #include "td/saveload/serialize.h"
 #include "td/screens/score.h"

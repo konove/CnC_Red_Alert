@@ -220,7 +220,7 @@
 #include "td/objects/mission.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 #include "td/startup/conquer.h"

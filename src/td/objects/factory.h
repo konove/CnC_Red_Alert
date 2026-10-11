@@ -45,7 +45,7 @@
 
 #include "absl/base/attributes.h"
 #include "td/objects/house.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 

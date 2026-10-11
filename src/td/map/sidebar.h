@@ -52,7 +52,7 @@
 #include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/map/power.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/ui/shapebtn.h"
 
 class ArchiveReader;

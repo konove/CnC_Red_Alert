@@ -40,8 +40,8 @@
 
 // File: StageCounter, the frame counter behind an object's looping animation.
 
-#ifndef CNC_RED_ALERT_TD_OBJECTS_STAGE_H_
-#define CNC_RED_ALERT_TD_OBJECTS_STAGE_H_
+#ifndef CNC_RED_ALERT_TD_OBJECTS_STAGE_COUNTER_H_
+#define CNC_RED_ALERT_TD_OBJECTS_STAGE_COUNTER_H_
 
 #include <cstdint>
 
@@ -115,4 +115,4 @@ class StageCounter {
 
 }  // namespace td
 
-#endif  // CNC_RED_ALERT_TD_OBJECTS_STAGE_H_
+#endif  // CNC_RED_ALERT_TD_OBJECTS_STAGE_COUNTER_H_

@@ -77,7 +77,7 @@
 #include "td/objects/overlay.h"
 #include "td/objects/radio.h"
 #include "td/objects/smudge.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/techno.h"
 #include "td/objects/template.h"
 #include "td/objects/terrain.h"

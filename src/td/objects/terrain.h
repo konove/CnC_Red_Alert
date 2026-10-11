@@ -50,7 +50,7 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/objects/object.h"
-#include "td/objects/stage.h"
+#include "td/objects/stage_counter.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 
