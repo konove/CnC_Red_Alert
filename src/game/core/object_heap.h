@@ -131,7 +131,9 @@ class ObjectHeapBase {
 
   // Returns the position of `pointer` in the in-use list, or -1 when the list
   // does not hold it. Scenario INI files number team and trigger types this
-  // way.
+  // way: the types are written in list order, so the position is the place
+  // of the type's entry and, read into an empty heap, its slot. The slot it
+  // has now is not, once a type was deleted.
   [[nodiscard]] int PositionOf(const void* pointer) const;
 
   // Returns slot `slot_index`, which must be in [0, Capacity()).

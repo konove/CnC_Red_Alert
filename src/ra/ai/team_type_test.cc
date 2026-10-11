@@ -20,6 +20,7 @@
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/ai/trigger_action.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/assets/palettes.h"
 #include "ra/core/config.h"
@@ -314,6 +315,90 @@ TEST_F(TeamTypeTest, ReadIniDropsTheEntriesItRejects) {
   EXPECT_NE(TeamType::FromName("wave"), nullptr);
   EXPECT_EQ(TeamType::FromName("lost"), nullptr);
   EXPECT_NE(TeamType::FromName("dawn"), nullptr);
+}
+
+// A scenario numbers its team types by their place in the section, so an
+// entry that is dropped must not move the later ones down a slot.
+TEST_F(TeamTypeTest, ReadIniLeavesTheSlotOfARejectedEntryEmpty) {
+  TeamType::FreeAll();
+  engine::file::IniFile ini;
+  ASSERT_TRUE(ini.PutString(kIniSection, "wave", SovietEntry(0, 2)));
+  ASSERT_TRUE(ini.PutString(kIniSection, "lost", "99,0,7,0,1,-1,-1,0,0"));
+  ASSERT_TRUE(ini.PutString(kIniSection, "dawn", SovietEntry(4, 5)));
+
+  TeamType::ReadIni(ini);
+
+  const auto& heap = TheObjectHeaps().team_type();
+  EXPECT_EQ(heap.SlotIndexOf(TeamType::FromName("wave")), 0);
+  EXPECT_FALSE(heap.IsAllocated(1));
+  EXPECT_EQ(heap.SlotIndexOf(TeamType::FromName("dawn")), 2);
+}
+
+// The scenario editor leaves a hole in a heap when it deletes a type, and the
+// next type it creates fills the hole but is listed last. The references are
+// written as places in the list, which is the order of the entries and so the
+// slots a scenario is read into.
+TEST_F(TeamTypeTest, ReferencesSurviveWritingAndReadingHeapsWithHoles) {
+  TeamType::FreeAll();
+  auto* const gone_team = base::NewPooled<TeamType>();
+  auto* const boats = base::NewPooled<TeamType>();
+  auto* const tanks = base::NewPooled<TeamType>();
+  auto* const gone_trigger = base::NewPooled<TriggerType>();
+  auto* const alarm = base::NewPooled<TriggerType>();
+  auto* const siren = base::NewPooled<TriggerType>();
+  base::DeletePooled(gone_team);
+  base::DeletePooled(gone_trigger);
+  // These take slot 0 of their heaps and the last place in the lists.
+  auto* const jeeps = base::NewPooled<TeamType>();
+  auto* const flare = base::NewPooled<TriggerType>();
+  ASSERT_EQ(TheObjectHeaps().team_type().SlotIndexOf(jeeps), 0);
+  ASSERT_EQ(TheObjectHeaps().trigger_type().SlotIndexOf(flare), 0);
+
+  ASSERT_TRUE(boats->ReadIniEntry("boats", SovietEntry(0, 1)));
+  ASSERT_TRUE(tanks->ReadIniEntry("tanks", SovietEntry(0, 1)));
+  ASSERT_TRUE(jeeps->ReadIniEntry("jeeps", SovietEntry(0, 1)));
+  alarm->Set_Name("alrm");
+  siren->Set_Name("sirn");
+  flare->Set_Name("flar");
+  boats->set_trigger(flare);
+  tanks->set_trigger(alarm);
+  jeeps->set_trigger(siren);
+  alarm->event1.Team = jeeps;
+  siren->event1.Team = boats;
+  flare->event1.Team = tanks;
+  alarm->action1 = MakeTriggerAction(
+      {.type = TriggerActionType::kCreateTeam, .team_type = tanks});
+  alarm->action2 = MakeTriggerAction(
+      {.type = TriggerActionType::kForceTrigger, .trigger_type = flare});
+  flare->action1 = MakeTriggerAction(
+      {.type = TriggerActionType::kCreateTeam, .team_type = jeeps});
+  flare->action2 = MakeTriggerAction(
+      {.type = TriggerActionType::kForceTrigger, .trigger_type = siren});
+
+  engine::file::IniFile ini;
+  TeamType::WriteIni(ini);
+  TriggerType::WriteIni(ini);
+  TeamType::FreeAll();
+  TriggerType::DestroyAll();
+  TeamType::ReadIni(ini);
+  TriggerType::ReadIni(ini);
+
+  const auto team = [](const char* name) { return TeamType::FromName(name); };
+  const auto trigger = [](const char* name) {
+    return TriggerType::FromName(name);
+  };
+  ASSERT_EQ(TheObjectHeaps().team_type().Count(), 3);
+  ASSERT_EQ(TheObjectHeaps().trigger_type().Count(), 3);
+  EXPECT_EQ(team("boats")->trigger(), trigger("flar"));
+  EXPECT_EQ(team("tanks")->trigger(), trigger("alrm"));
+  EXPECT_EQ(team("jeeps")->trigger(), trigger("sirn"));
+  EXPECT_EQ(trigger("alrm")->event1.Team, team("jeeps"));
+  EXPECT_EQ(trigger("sirn")->event1.Team, team("boats"));
+  EXPECT_EQ(trigger("flar")->event1.Team, team("tanks"));
+  EXPECT_EQ(trigger("alrm")->action1->ToRecord().team_type, team("tanks"));
+  EXPECT_EQ(trigger("alrm")->action2->ToRecord().trigger_type, trigger("flar"));
+  EXPECT_EQ(trigger("flar")->action1->ToRecord().team_type, team("jeeps"));
+  EXPECT_EQ(trigger("flar")->action2->ToRecord().trigger_type, trigger("sirn"));
 }
 
 TEST_F(TeamTypeTest, ReadIniDropsTheEntriesTheHeapHasNoRoomFor) {

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 391,
+  "nextId": 392,
   "items": [
     {
       "id": "T-2",
@@ -956,10 +956,11 @@
         "ra",
         "editor"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z"
+      "updated": "2026-10-11T07:09:24Z",
+      "resolution": "The pairing is right as it stands: types are written in in-use-list order, so `PositionOf()` is the place of the entry, which is the slot the type gets when the scenario is read into empty heaps; `SlotIndexOf()` would break after a deletion. `ReferencesSurviveWritingAndReadingHeapsWithHoles` pins that. The one real mismatch was on the read side: `TeamType::ReadIni()` freed a rejected entry at once, moving every later team type down a slot; it now frees the rejects after all entries are read (`ReadIniLeavesTheSlotOfARejectedEntryEmpty`)."
     },
     {
       "id": "T-33",
@@ -1395,10 +1396,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-11T06:46:27Z",
+      "updated": "2026-10-11T06:56:33Z",
       "parent": "T-124",
       "resolution": "Narrowed the test: the 12 call sites (TD skin, colour, music and expansion lists; RA colour and music lists) now compare `font == FontType::k6PointGradient`, and `HasGradientFontBits()` with its two tests is removed from both games. No widget was built with another font of the old set, so nothing changes on screen: all `tools/ui_check.py` hashes hold, 2006 ctests pass.",
       "toDecide": "Decide on a real display, together with T-15:\n\n- **Keep** the set of fonts `& TPF_6PT_GRAD` used to match: Tiberian Dawn's 8-point buttons stay in the green gradient style.\n- **Narrow it to `font == FontType::k6PointGradient`**: changes what those buttons and lists look like in both games; record the new screenshots with `tools/ui_check.py --accept`.",
@@ -13569,6 +13570,58 @@
         },
         {
           "path": "src/td/objects/unit.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-391",
+      "title": "Keep two Red Alert team or trigger types of the same name from corrupting a saved scenario",
+      "details": "`TeamType::WriteIni()` and `TriggerType::WriteIni()` store each type with `ini.PutString(section, IniName, ...)`, which replaces an entry of the same name. Two types with one name therefore leave a single entry, while the references in the file are still numbered by position in the in-use list (`PositionOf()`), so every reference to a type after the lost one reads back one slot off, and the lost type is gone. Nothing in the editor checks for a taken name: `trigger_type_dialog.cc` (~1384) names every trigger type left blank `____`, so two unnamed ones already collide. Either refuse a taken name in the team and trigger dialogs, or make the writers fail loudly on a duplicate. Seen while fixing T-32.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "editor"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-11T07:09:31Z",
+      "updated": "2026-10-11T07:09:31Z",
+      "anchors": [
+        {
+          "path": "src/ra/ai/trigger_type.cc",
+          "startLine": 238,
+          "endLine": 251,
+          "text": "void TriggerType::WriteIni(engine::file::IniFile& ini) {\n  // [Triggers] is where older formats kept them; a file with both would\n  // describe the triggers twice.\n  ini.Clear(\"Triggers\");\n  ini.Clear(kIniSection);\n\n  for (int index = 0; index < TheObjectHeaps().trigger_type().Count();\n       index++) {\n    const TriggerType* trigger_type =\n        TheObjectHeaps().trigger_type().ActiveAt(index);\n    ini.PutString(kIniSection, trigger_type->IniName,\n                  trigger_type->ToIniEntry());\n  }\n}",
+          "before": [
+            "  action2 = MakeTriggerAction(ReadTriggerActionRecord(tokens));",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "std::string TriggerType::ToIniEntry() const {",
+            "  // The enums are stored as their numbers, which ReadIniEntry() casts back."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/ai/team_type.cc",
+          "startLine": 380,
+          "endLine": 387,
+          "text": "void TeamType::WriteIni(engine::file::IniFile& ini) {\n  ini.Clear(kIniSection);\n\n  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {\n    const TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(index);\n    ini.PutString(kIniSection, team_type->IniName, team_type->ToIniEntry());\n  }\n}",
+          "before": [
+            "  return true;",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "TeamClass* TeamType::CreateTeam() {",
+            "  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {"
+          ],
           "lost": false
         }
       ]

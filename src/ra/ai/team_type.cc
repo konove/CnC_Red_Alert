@@ -261,11 +261,19 @@ std::string TeamType::ToIniEntry() const {
 }
 
 void TeamType::ReadIni(const engine::file::IniFile& ini) {
+  // The scenario refers to a team type by the place of its entry, which is
+  // its slot only while every earlier entry holds one. A rejected entry
+  // therefore keeps its slot until all are read; freed at once, it would
+  // move the later team types down a slot.
+  std::vector<TeamType*> rejected;
   for (const auto& [entry, value] : ini.Entries(kIniSection)) {
     auto* team_type = base::NewPooled<TeamType>();
     if (team_type != nullptr && !team_type->ReadIniEntry(entry, value)) {
-      base::DeletePooled(team_type);
+      rejected.push_back(team_type);
     }
+  }
+  for (TeamType* const team_type : rejected) {
+    base::DeletePooled(team_type);
   }
 }
 
