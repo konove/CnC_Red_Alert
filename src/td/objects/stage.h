@@ -72,11 +72,13 @@ class StageCounter {
   [[nodiscard]] int stage() const { return stage_; }
   [[nodiscard]] int rate() const { return rate_; }
   // Keeps the low 16 bits of `stage`.
-  void set_stage(int stage) const { stage_ = static_cast<uint16_t>(stage); }
+  void set_stage(const int stage) const {
+    stage_ = static_cast<uint16_t>(stage);
+  }
   // Sets the calls of AI() a stage lasts and restarts the
   // countdown to the next one; 0 stops the animation. Keeps the low byte of
   // `rate`, as the original's unsigned char parameter did.
-  void SetRate(int rate) const {
+  void SetRate(const int rate) const {
     rate_ = countdown_ = static_cast<uint8_t>(rate);
   }
   // Counts down a game frame and moves on a stage when the countdown runs
