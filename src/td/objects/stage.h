@@ -69,11 +69,11 @@ class StageClass {
 
   // The calls of Graphic_Logic() left until the next stage. At zero the
   // stage goes up by one and the countdown starts over.
-  mutable unsigned char StageTimer{0};
+  mutable uint8_t StageTimer{0};
 
   // The calls of Graphic_Logic() a stage lasts, which the countdown is
   // restarted with; 0 when the stage is not animating.
-  mutable unsigned char Rate{0};
+  mutable uint8_t Rate{0};
 
  public:
   // Field-wise saved-game support.
@@ -92,7 +92,7 @@ class StageClass {
   // countdown to the next one; 0 stops the animation. Keeps the low byte of
   // `rate`, as the original's unsigned char parameter did.
   void Set_Rate(int rate) const {
-    Rate = StageTimer = static_cast<unsigned char>(rate);
+    Rate = StageTimer = static_cast<uint8_t>(rate);
   }
   // Counts down a game frame and moves on a stage when the countdown runs
   // out. Call it once a game frame. Returns whether the stage changed, so the
