@@ -145,7 +145,8 @@ apply_language_setting(ra_trigger_type_test)
 add_gtest(
     NAME ra_game_test
     SOURCES startup/game_test.cc objects/target_test.cc objects/fuse_test.cc
-            objects/mission_test.cc objects/radio_test.cc startup/startup.cc
+            objects/mission_test.cc objects/radio_test.cc objects/stage_test.cc
+            startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_game_test PRIVATE RA_NO_ENTRY_POINT=1)
