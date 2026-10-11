@@ -1,5 +1,7 @@
 #include "game/sim/door.h"
 
+#include <algorithm>
+
 #include "absl/log/check.h"
 
 namespace game {
@@ -60,9 +62,12 @@ void Door::StartAnimation(const State state, const int frames_per_stage,
   // Without a frame an open door would be on frame -1.
   DCHECK_GE(frame_count, 1);
   DCHECK_GT(frames_per_stage, 0);
+  // Read the frame before the state it depends on changes. The clamp only
+  // matters when a door turns round with a different frame count.
+  const int frame = std::clamp(Frame(), 0, frame_count - 1);
+  stage_ = state == State::kOpening ? frame : frame_count - 1 - frame;
   state_ = state;
   frame_count_ = frame_count;
-  stage_ = 0;
   countdown_ = frames_per_stage;
   frames_per_stage_ = frames_per_stage;
 }

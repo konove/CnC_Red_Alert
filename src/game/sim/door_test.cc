@@ -68,27 +68,50 @@ TEST(DoorTest, ClosingCountsTheStagesDown) {
   EXPECT_FALSE(door.Close(1, 2));  // Already closed.
 }
 
-TEST(DoorTest, TurningRoundRestartsFromTheEndFrame) {
+TEST(DoorTest, TurningRoundCarriesOnFromTheFrameItShows) {
   Door door;
-  door.Open(1, 3);
+  door.Open(1, 4);
   door.AI();
   ASSERT_EQ(door.Frame(), 1);
-  // Closing a door that is only part-way open starts from the fully open
-  // frame, not from the one it had reached.
-  ASSERT_TRUE(door.Close(1, 3));
+  ASSERT_TRUE(door.Close(1, 4));
   EXPECT_FALSE(door.IsOpening());
-  EXPECT_EQ(door.Frame(), 2);
-  EXPECT_FALSE(door.Close(1, 3));  // Already closing.
-  door.AI();
   EXPECT_EQ(door.Frame(), 1);
-  // And opening one that is part-way closed starts from the closed frame.
-  ASSERT_TRUE(door.Open(1, 3));
+  EXPECT_FALSE(door.Close(1, 4));  // Already closing.
+  door.AI();
+  EXPECT_EQ(door.Frame(), 0);
+  ASSERT_TRUE(door.Open(1, 4));
   EXPECT_TRUE(door.IsOpening());
   EXPECT_EQ(door.Frame(), 0);
-  for (int step = 0; step < 3; ++step) {
+  door.AI();
+  door.AI();
+  ASSERT_EQ(door.Frame(), 2);
+  // Frames 2, 1 and 0 are left to close: a stage each, where a whole
+  // animation takes four.
+  ASSERT_TRUE(door.Close(1, 4));
+  for (int frame = 1; frame >= 0; --frame) {
+    door.AI();
+    EXPECT_EQ(door.Frame(), frame);
+    EXPECT_FALSE(door.IsClosed());
+  }
+  door.AI();
+  EXPECT_TRUE(door.IsClosed());
+}
+
+TEST(DoorTest, TurningRoundWithFewerFramesStaysWithinThem) {
+  Door door;
+  door.Open(1, 5);
+  for (int step = 0; step < 5; ++step) {
     door.AI();
   }
-  EXPECT_TRUE(door.IsOpen());
+  ASSERT_TRUE(door.IsOpen());
+  ASSERT_EQ(door.Frame(), 4);
+  ASSERT_TRUE(door.Close(1, 2));
+  EXPECT_EQ(door.Frame(), 1);
+  door.AI();
+  ASSERT_EQ(door.Frame(), 0);
+  // And with more frames it carries on from the one it shows.
+  ASSERT_TRUE(door.Open(1, 5));
+  EXPECT_EQ(door.Frame(), 0);
 }
 
 TEST(DoorTest, SerializeRoundTripsTheAnimation) {

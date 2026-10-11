@@ -14,9 +14,8 @@ namespace game {
 // and stays at 2 once open. Each frame is a stage of the animation; the last
 // one is shown for a stage before the door counts as open.
 //
-// A door that turns round part-way does not continue from the frame it had
-// reached: closing always starts from the fully open frame, and opening from
-// the closed one.
+// A door that turns round part-way carries on from the frame it shows, so it
+// is closed or open again sooner than after a whole animation.
 //
 // Example:
 //   game::Door door;
@@ -51,10 +50,11 @@ class Door {
   [[nodiscard]] bool IsOpening() const { return state_ == State::kOpening; }
 
   // Starts opening a closed or closing door, advancing one stage every
-  // `frames_per_stage` calls of AI(); it is open `frames_per_stage` *
-  // `frame_count` calls later. Both must be positive, or the door never
-  // opens. Returns false, and changes nothing, if it is already open or
-  // opening.
+  // `frames_per_stage` calls of AI(). A closed door is open
+  // `frames_per_stage` * `frame_count` calls later, a closing one sooner by
+  // the frames it has not yet closed. Both arguments must be positive, or the
+  // door never opens. Returns false, and changes nothing, if it is already
+  // open or opening.
   bool Open(int frames_per_stage, int frame_count);
 
   // Starts closing an open or opening door, as Open() opens one. Returns
@@ -73,7 +73,8 @@ class Door {
     kClosing = 3,
   };
 
-  // Restarts the animation from stage 0 on the way to `state`.
+  // Starts the animation towards `state` (opening or closing) at the stage
+  // that shows the frame the door shows now.
   void StartAnimation(State state, int frames_per_stage, int frame_count);
 
   // The stage the opening or closing in progress has reached, from 0.
