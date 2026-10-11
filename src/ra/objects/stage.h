@@ -37,6 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+// File: StageClass, the frame counter behind an object's looping animation.
+
 #ifndef CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
 #define CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
 
@@ -45,25 +47,27 @@
 
 namespace ra {
 
+// An animation stage that counts up by one every `rate` game frames: what
+// drives an object's smoke, walking, flapping and rocket flames, a cloak
+// fading in and out, and a factory's progress. The owner decides what a stage
+// means (usually a shape number) and when to wrap it; the stage itself only
+// ever counts up. The countdown runs on the game's frame clock, so a stage
+// keeps time even in a frame where Graphic_Logic() is not called.
+//
+// Example:
+//   StageClass animation;
+//   animation.Set_Rate(3);
+//   if (animation.Graphic_Logic()) { /* the stage went up: redraw */ }
 class StageClass {
-  /*
-  **	This handles the animation stage of the object. This includes smoke,
-  *walking, *	flapping, and rocket flames.
-  */
+  // The animation stage of the object, counted from 0.
   int Stage{0};
 
-  /*
-  **	This is the countdown timer for stage animation. When this counts down
-  **	to zero, then the stage increments by one and the time cycle starts
-  **	over again.
-  */
+  // Counts down the game frames to the next stage. When it is finished the
+  // stage goes up by one and it starts over.
   engine::platform::Timer<game::FrameTickSource> StageTimer;
 
-  /*
-  **	This is the value to assign the StageTimer whenever it needs to be
-  *reset. Thus, *	this value is the control of how fast the stage value
-  *increments.
-  */
+  // The game frames a stage lasts, which the countdown is restarted with; 0
+  // when the stage is not animating.
   int Rate{0};
 
  public:
@@ -78,13 +82,19 @@ class StageClass {
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
   [[nodiscard]] int Fetch_Rate() const { return Rate; }
   void Set_Stage(int stage) { Stage = stage; }
+  // Sets the game frames a stage lasts and restarts the countdown to the next
+  // one; 0 stops the animation.
   void Set_Rate(int rate) {
     StageTimer.Set(rate);
     Rate = rate;
   }
+  // Returns whether the next Graphic_Logic() will move on a stage.
   [[nodiscard]] bool About_To_Change() const {
     return StageTimer.IsFinished() && Rate != 0;
   }
+  // Moves on a stage when the countdown has run out, and restarts it. Call it
+  // once a game frame. Returns whether the stage changed, so the owner knows
+  // to redraw.
   bool Graphic_Logic() {
     if (About_To_Change()) {
       Stage++;
