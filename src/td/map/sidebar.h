@@ -168,10 +168,10 @@ class SidebarClass : public PowerClass {
     **	File I/O.
     */
     // The frame counter of the flashing cameo.
-    [[nodiscard]] StageClass& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
       return animation_;
     }
-    [[nodiscard]] const StageClass& animation() const
+    [[nodiscard]] const StageCounter& animation() const
         ABSL_ATTRIBUTE_LIFETIME_BOUND {
       return animation_;
     }
@@ -350,7 +350,7 @@ class SidebarClass : public PowerClass {
 
    private:
     // Which flash frame is shown and when the next one is due.
-    StageClass animation_;
+    StageCounter animation_;
   } Column[kColumns];
 
   /*

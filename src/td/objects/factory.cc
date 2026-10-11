@@ -280,7 +280,7 @@ void FactoryClass::AI() {
     }
 
     for (int index = 0; index < stages; index++) {
-      if (!Has_Completed() && progress_.Graphic_Logic()) {
+      if (!Has_Completed() && progress_.AI()) {
         IsDifferent = true;
 
         int cost = Cost_Per_Tick();
@@ -295,21 +295,21 @@ void FactoryClass::AI() {
         *funds available.
         */
         if (cost > Get_House()->Available_Money()) {
-          progress_.Set_Stage(progress_.Fetch_Stage() - 1);
+          progress_.set_stage(progress_.stage() - 1);
         } else {
           Get_House()->Spend_Money(cost);
           Balance -= cost;
         }
         if (TheDebugState().instant_build()) {
-          progress_.Set_Stage(kStepCount);
+          progress_.set_stage(kStepCount);
         }
         /*
         **	If the production has completed, then suspend further
         *production.
         */
-        if (progress_.Fetch_Stage() == kStepCount) {
+        if (progress_.stage() == kStepCount) {
           IsSuspended = true;
-          progress_.Set_Rate(0);
+          progress_.SetRate(0);
           Get_House()->Spend_Money(Balance);
           Balance = 0;
         }
@@ -377,8 +377,8 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
   */
   IsDifferent = true;
   IsSuspended = true;
-  progress_.Set_Rate(0);
-  progress_.Set_Stage(0);
+  progress_.SetRate(0);
+  progress_.set_stage(0);
 
   /*
   **	Create an object of the type requested.
@@ -426,8 +426,8 @@ bool FactoryClass::Set(const int& type, HouseClass& house) {
   */
   IsDifferent = true;
   IsSuspended = true;
-  progress_.Set_Rate(0);
-  progress_.Set_Stage(0);
+  progress_.SetRate(0);
+  progress_.set_stage(0);
 
   /*
   **	Create an object of the type requested.
@@ -464,8 +464,8 @@ void FactoryClass::Set(TechnoClass& object) {
   Object = &object;
   House = Object->House->Class->House;
   Balance = 0;
-  progress_.Set_Rate(0);
-  progress_.Set_Stage(kStepCount);
+  progress_.SetRate(0);
+  progress_.set_stage(kStepCount);
   IsDifferent = true;
   IsSuspended = true;
 }
@@ -491,7 +491,7 @@ bool FactoryClass::Suspend() {
   Validate();
   if (!IsSuspended) {
     IsSuspended = true;
-    progress_.Set_Rate(0);
+    progress_.SetRate(0);
     return true;
   }
   return false;
@@ -534,7 +534,7 @@ bool FactoryClass::Start() {
     rate /= kStepCount;
     rate = std::clamp(rate, 1, 255);
 
-    progress_.Set_Rate(static_cast<unsigned char>(rate));
+    progress_.SetRate(static_cast<unsigned char>(rate));
     IsSuspended = false;
     return true;
   }
@@ -585,8 +585,8 @@ bool FactoryClass::Abandon() {
     /*
     **	Set the factory back to the idle and empty state.
     */
-    progress_.Set_Rate(0);
-    progress_.Set_Stage(0);
+    progress_.SetRate(0);
+    progress_.set_stage(0);
     IsSuspended = true;
     IsDifferent = true;
 
@@ -612,7 +612,7 @@ bool FactoryClass::Abandon() {
  *=============================================================================================*/
 int FactoryClass::Completion() {
   Validate();
-  return progress_.Fetch_Stage();
+  return progress_.stage();
 }
 
 /***********************************************************************************************
@@ -634,10 +634,10 @@ int FactoryClass::Completion() {
  *=============================================================================================*/
 bool FactoryClass::Has_Completed() {
   Validate();
-  if (Object && progress_.Fetch_Stage() == kStepCount) {
+  if (Object && progress_.stage() == kStepCount) {
     return true;
   }
-  if (SpecialItem != SPC_NONE && progress_.Fetch_Stage() == kStepCount) {
+  if (SpecialItem != SPC_NONE && progress_.stage() == kStepCount) {
     return true;
   }
   return false;
@@ -695,7 +695,7 @@ int FactoryClass::Get_Special_Item() const {
 int FactoryClass::Cost_Per_Tick() {
   Validate();
   if (Object) {
-    const int steps = kStepCount - progress_.Fetch_Stage();
+    const int steps = kStepCount - progress_.stage();
     if (steps) {
       return Balance / steps;
     }
@@ -724,21 +724,21 @@ int FactoryClass::Cost_Per_Tick() {
  *=============================================================================================*/
 bool FactoryClass::Completed() {
   Validate();
-  if (Object && progress_.Fetch_Stage() == kStepCount) {
+  if (Object && progress_.stage() == kStepCount) {
     Object = nullptr;
     IsSuspended = true;
     IsDifferent = true;
-    progress_.Set_Stage(0);
-    progress_.Set_Rate(0);
+    progress_.set_stage(0);
+    progress_.SetRate(0);
     return true;
   }
 
-  if (SpecialItem != SPC_NONE && progress_.Fetch_Stage() == kStepCount) {
+  if (SpecialItem != SPC_NONE && progress_.stage() == kStepCount) {
     SpecialItem = SPC_NONE;
     IsSuspended = true;
     IsDifferent = true;
-    progress_.Set_Stage(0);
-    progress_.Set_Rate(0);
+    progress_.set_stage(0);
+    progress_.SetRate(0);
     return true;
   }
   return false;

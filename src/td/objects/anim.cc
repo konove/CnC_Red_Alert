@@ -266,7 +266,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
     const auto shapefile = Class->Get_Image_Data();
     if (!shapefile.empty()) {
       std::span<const uint8_t> transtable;
-      const int shapenum = Class->Start + animation_.Fetch_Stage();
+      const int shapenum = Class->Start + animation_.stage();
       std::span<const unsigned char> remap;
 
       /*
@@ -742,12 +742,12 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
                      int loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
   if (Class->IsNormalized) {
-    animation_.Set_Rate(
+    animation_.SetRate(
         static_cast<unsigned char>(TheOptions().Normalize_Delay(Class->Delay)));
   } else {
-    animation_.Set_Rate(Class->Delay);
+    animation_.SetRate(Class->Delay);
   }
-  animation_.Set_Stage(0);
+  animation_.set_stage(0);
 
   Accum = 0;
   coord = Adjust_Coord(coord);
@@ -907,8 +907,8 @@ void AnimClass::AI() {
     */
     Mark(MARK_CHANGE);
 
-    if (animation_.Graphic_Logic()) {
-      const int stage = animation_.Fetch_Stage();
+    if (animation_.AI()) {
+      const int stage = animation_.stage();
 
       /*
       **	If this animation is attached to another object and it is a
@@ -961,7 +961,7 @@ void AnimClass::AI() {
           Loops--;
         }
         if (Loops) {
-          animation_.Set_Stage(Class->LoopStart);
+          animation_.set_stage(Class->LoopStart);
         } else {
           /*
           **	The animation should end now, but first check to see if
@@ -976,12 +976,12 @@ void AnimClass::AI() {
             Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->IsNormalized) {
-              animation_.Set_Rate(static_cast<unsigned char>(
+              animation_.SetRate(static_cast<unsigned char>(
                   TheOptions().Normalize_Delay(Class->Delay)));
             } else {
-              animation_.Set_Rate(Class->Delay);
+              animation_.SetRate(Class->Delay);
             }
-            animation_.Set_Stage(Class->Start);
+            animation_.set_stage(Class->Start);
           } else {
             delete this;
           }

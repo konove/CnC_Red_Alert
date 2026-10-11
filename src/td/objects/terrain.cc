@@ -318,7 +318,7 @@ TerrainClass::TerrainClass(TerrainType type, Cell cell)
     delete this;
   }
 
-  animation_.Set_Rate(0);  // turn off animation
+  animation_.SetRate(0);  // turn off animation
 }
 
 /***********************************************************************************************
@@ -400,7 +400,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
     *crumbling, then *	it will display the crumbling animation.
     */
     if (IsCrumbling || Class->IsTransformable) {
-      shapenum = animation_.Fetch_Stage() + IsCrumbling;
+      shapenum = animation_.stage() + IsCrumbling;
     } else {
       if (Strength < 2) {
         shapenum++;
@@ -554,7 +554,7 @@ void TerrainClass::AI() {
   Validate();
   ObjectClass::AI();
 
-  if (animation_.Graphic_Logic()) {
+  if (animation_.AI()) {
     Mark();
 
     /*
@@ -562,7 +562,7 @@ void TerrainClass::AI() {
     **	last stage of the crumbling animation, delete the terrain object.
     */
     if (IsCrumbling &&
-        animation_.Fetch_Stage() ==
+        animation_.stage() ==
             engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       delete this;
     }
@@ -576,28 +576,28 @@ void TerrainClass::AI() {
     if (IsBlossoming) {
       // if it's not barnacled yet, check if we're at that stage
       if (!IsBarnacled) {
-        if (animation_.Fetch_Stage() == BARNACLE_STAGE) {
+        if (animation_.stage() == BARNACLE_STAGE) {
           IsBarnacled = true;
-          animation_.Set_Rate(0);  // turn off animation
+          animation_.SetRate(0);  // turn off animation
         }
       } else {
         /*
         ** If it's barnacled, see if it's pulsing and spore-ing
         */
         if (IsSporing) {
-          if (animation_.Fetch_Stage() >=
+          if (animation_.stage() >=
               engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
             Explosion_Damage(Sort_Y(), 5, nullptr, WARHEAD_SPORE);
-            animation_.Set_Stage(FIRST_SPORE_STAGE);
+            animation_.set_stage(FIRST_SPORE_STAGE);
             if (Random() & 1) {
               IsSporing = false;
-              animation_.Set_Rate(0);
+              animation_.SetRate(0);
             }
           }
         } else {
           if (Random() == 255) {  // is it time to start sporing?
             IsSporing = true;
-            animation_.Set_Rate(
+            animation_.SetRate(
                 static_cast<unsigned char>(TheOptions().Normalize_Delay(1)));
           }
         }
@@ -606,8 +606,8 @@ void TerrainClass::AI() {
       // If it hasn't tried to blossom yet, can it do so now?
       if (Random_Picky(1, 5000, nullptr, 0) == 1) {
         IsBlossoming = true;
-        animation_.Set_Stage(1);
-        animation_.Set_Rate(
+        animation_.set_stage(1);
+        animation_.SetRate(
             static_cast<unsigned char>(TheOptions().Normalize_Delay(1)));
       }
     }
@@ -663,8 +663,8 @@ void TerrainClass::Start_To_Crumble() {
   Validate();
   if (!IsCrumbling) {
     IsCrumbling = true;
-    animation_.Set_Rate(2);
-    animation_.Set_Stage(0);
+    animation_.SetRate(2);
+    animation_.set_stage(0);
   }
 }
 

@@ -485,8 +485,8 @@ TechnoClass::TechnoClass()
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
-  CloakingDevice.Set_Stage(1);
-  CloakingDevice.Set_Rate(0);
+  CloakingDevice.set_stage(1);
+  CloakingDevice.SetRate(0);
 
   PrimaryFacing.SnapTo(game::Direction::kNorth);
 }
@@ -867,8 +867,8 @@ TechnoClass::TechnoClass(HousesType house)
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
-  CloakingDevice.Set_Stage(1);
-  CloakingDevice.Set_Rate(0);
+  CloakingDevice.set_stage(1);
+  CloakingDevice.SetRate(0);
 
   PrimaryFacing.SnapTo(game::Direction::kNorth);
 
@@ -1800,8 +1800,8 @@ void TechnoClass::AI() {
       if (IsOwnedByPlayer) {
         Mark(MARK_CHANGE);
       }
-      CloakingDevice.Graphic_Logic();
-      if (!Arm && CloakingDevice.Fetch_Stage()) {
+      CloakingDevice.AI();
+      if (!Arm && CloakingDevice.stage()) {
         if (Health_Ratio() > 0x0040) {
           Do_Cloak();
         } else {
@@ -1811,7 +1811,7 @@ void TechnoClass::AI() {
         }
       }
     } else {
-      CloakingDevice.Graphic_Logic();
+      CloakingDevice.AI();
       switch (Cloak) {
         /*
         **	Handle the uncloaking process. Always mark to redraw
@@ -1821,8 +1821,8 @@ void TechnoClass::AI() {
         case game::UNCLOAKING:
           Mark(MARK_CHANGE);
           if (Visual_Character(true) == game::VISUAL_NORMAL) {
-            CloakingDevice.Set_Rate(UNCLOAK_VIS_TIME);
-            CloakingDevice.Set_Stage(0);  // re-start the stage counter
+            CloakingDevice.SetRate(UNCLOAK_VIS_TIME);
+            CloakingDevice.set_stage(0);  // re-start the stage counter
             Cloak = game::UNCLOAKED;
           }
           break;
@@ -1854,7 +1854,7 @@ void TechnoClass::AI() {
 
             case game::VISUAL_HIDDEN:
               Cloak = game::CLOAKED;
-              CloakingDevice.Set_Rate(0);
+              CloakingDevice.SetRate(0);
 
               /*
               **	Special check to ensure that if the unit is carring a
@@ -1912,8 +1912,7 @@ void TechnoClass::AI() {
   **	changes, then flag the object to be redrawn as well as  determine
   **	if the current animation process needs to change.
   */
-  const bool animated =
-      What_Am_I() != RTTI_BUILDING && animation().Graphic_Logic();
+  const bool animated = What_Am_I() != RTTI_BUILDING && animation().AI();
   if (animated || door_moved) {
     Mark(MARK_CHANGE);
   }
@@ -3238,8 +3237,8 @@ void TechnoClass::Do_Uncloak() {
   if (IsCloakable && (Cloak == game::CLOAKED || Cloak == game::CLOAKING)) {
     Sound_Effect(VOC_CLOAK, Coord);
     Cloak = game::UNCLOAKING;
-    CloakingDevice.Set_Stage(0);
-    CloakingDevice.Set_Rate(1);
+    CloakingDevice.set_stage(0);
+    CloakingDevice.SetRate(1);
   }
 }
 
@@ -3261,8 +3260,8 @@ void TechnoClass::Do_Cloak() {
     Sound_Effect(VOC_CLOAK, Coord);
     Detach_All(false);
     Cloak = game::CLOAKING;
-    CloakingDevice.Set_Stage(0);
-    CloakingDevice.Set_Rate(1);
+    CloakingDevice.set_stage(0);
+    CloakingDevice.SetRate(1);
   }
 }
 
@@ -3284,8 +3283,8 @@ void TechnoClass::Do_Cloak() {
 void TechnoClass::Do_Shimmer() {
   if (IsCloakable && Cloak == game::CLOAKED) {
     Cloak = game::CLOAKING;
-    CloakingDevice.Set_Stage(MAX_UNCLOAK_STAGE / 2);
-    CloakingDevice.Set_Rate(1);
+    CloakingDevice.set_stage(MAX_UNCLOAK_STAGE / 2);
+    CloakingDevice.SetRate(1);
   }
 }
 
@@ -3327,7 +3326,7 @@ game::VisualType TechnoClass::Visual_Character(bool raw) const {
     return game::VISUAL_HIDDEN;
   }
 
-  int stage = CloakingDevice.Fetch_Stage();
+  int stage = CloakingDevice.stage();
   if (Cloak == game::UNCLOAKING) {
     stage = MAX_UNCLOAK_STAGE - stage;
   }

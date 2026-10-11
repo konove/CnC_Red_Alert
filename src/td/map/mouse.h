@@ -137,8 +137,7 @@ class MouseClass : public ScrollClass {
   */
   static engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
   int Frame = 0;
-  //		StageClass Control;
-
+  //		StageCounter Control;
 };
 
 extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);

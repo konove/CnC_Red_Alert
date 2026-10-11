@@ -1757,8 +1757,8 @@ bool Select_Game(bool fade) {
       building->IsALemon = true;
       building->IsSecondShot = true;
       building->Cloak = game::CLOAKING;
-      building->CloakingDevice.Set_Stage(4);
-      building->CloakingDevice.Set_Rate(9);
+      building->CloakingDevice.set_stage(4);
+      building->CloakingDevice.SetRate(9);
       building->TarCom = peer->As_Target();
       building->SuspendedTarCom = passenger->As_Target();
       building->PrimaryFacing.SnapTo(game::Direction::kSouthWest);
@@ -1766,8 +1766,8 @@ bool Select_Game(bool fade) {
       building->Ammo = 11;
       building->flasher().Start(24);
       building->flasher().Process();  // 23 left, brightened.
-      building->animation().Set_Stage(7);
-      building->animation().Set_Rate(13);
+      building->animation().set_stage(7);
+      building->animation().SetRate(13);
       building->door().Open(7, 17);
     }
     if (TheStartupOptions().world_test) {
@@ -1797,8 +1797,8 @@ bool Select_Game(bool fade) {
       overlay->Next = ground;
       smudge->Next = terrain;
       terrain->Next = owner;
-      terrain->animation().Set_Stage(2);
-      terrain->animation().Set_Rate(7);
+      terrain->animation().set_stage(2);
+      terrain->animation().SetRate(7);
       bullet->Next = ground;
       bullet->Payback = owner;
       bullet->PrimaryFacing.SnapTo(game::Direction::kSouthEast);

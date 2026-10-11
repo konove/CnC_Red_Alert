@@ -628,7 +628,7 @@ void InfantryClass::Draw_It(PixelView& view, int x, int y,
   }
 
   int shapenum = Class->DoControls.at(doit).Count;
-  shapenum = animation().Fetch_Stage() % std::max(shapenum, 1);
+  shapenum = animation().stage() % std::max(shapenum, 1);
   if (Class->DoControls.at(doit).Jump) {
     shapenum += facenum * Class->DoControls.at(doit).Jump;
   }
@@ -1020,7 +1020,7 @@ void InfantryClass::AI() {
   **	Special hack to make sure that if this infantry is in firing animation,
   *but the *	stage class isn't set, then abort the firing flag.
   */
-  if (IsFiring && !animation().Fetch_Rate()) {
+  if (IsFiring && !animation().rate()) {
     IsFiring = false;
   }
 
@@ -1207,7 +1207,7 @@ void InfantryClass::AI() {
   }
 #endif
 
-  if (IsFiring && animation().Fetch_Stage() == firestage) {
+  if (IsFiring && animation().stage() == firestage) {
     Fire_At(TarCom, 0);
 
     if (Class->Primary == WEAPON_GRENADE) {
@@ -1220,7 +1220,7 @@ void InfantryClass::AI() {
   */
 
   if (Doing == DO_NOTHING ||
-      animation().Fetch_Stage() >= Class->DoControls.at(Doing).Count) {
+      animation().stage() >= Class->DoControls.at(Doing).Count) {
     switch (Doing) {
       case DoType::DO_NOTHING:
       case DoType::DO_STAND_READY:
@@ -2185,12 +2185,12 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      animation().Set_Rate(static_cast<unsigned char>(
+      animation().SetRate(static_cast<unsigned char>(
           TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate)));
     } else {
-      animation().Set_Rate(MasterDoControls.at(Doing).Rate);
+      animation().SetRate(MasterDoControls.at(Doing).Rate);
     }
-    animation().Set_Stage(0);
+    animation().set_stage(0);
 
     /*
     **	Kludge to make sure that if infantry is in the dying animation, it isn't

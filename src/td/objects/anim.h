@@ -198,7 +198,7 @@ class AnimClass final : public ObjectClass {
   unsigned char Accum = 0;
 
   // Which frame is shown and when the next one is due.
-  StageClass animation_;
+  StageCounter animation_;
 };
 
 void Shorten_Attached_Anims(const ObjectClass* obj);

@@ -38,7 +38,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-// File: StageClass, the frame counter behind an object's looping animation.
+// File: StageCounter, the frame counter behind an object's looping animation.
 
 #ifndef CNC_RED_ALERT_TD_OBJECTS_STAGE_H_
 #define CNC_RED_ALERT_TD_OBJECTS_STAGE_H_
@@ -48,7 +48,7 @@
 namespace td {
 
 // An animation stage that counts up by one every `rate` calls of
-// Graphic_Logic(): what drives an object's smoke, walking, flapping and
+// AI(): what drives an object's smoke, walking, flapping and
 // rocket flames, a cloak fading in and out, and a factory's progress. The
 // owner decides what a stage means (usually a shape number) and when to wrap
 // it; the stage itself only ever counts up.
@@ -56,53 +56,53 @@ namespace td {
 // The members' types are the saved game's layout.
 //
 // Example:
-//   StageClass animation;
-//   animation.Set_Rate(3);
-//   if (animation.Graphic_Logic()) { /* the stage went up: redraw */ }
-class StageClass {
+//   StageCounter animation;
+//   animation.SetRate(3);
+//   if (animation.AI()) { /* the stage went up: redraw */ }
+class StageCounter {
   // The animation state is mutable because a firing animation restarts from
   // const queries: UnitClass::Can_Fire() const resets the stage and rate when
   // a fire-animated unit is cleared to fire (precedent: FootClass::IsFiring).
 
   // The animation stage of the object, counted from 0.
-  mutable uint16_t Stage{0};
+  mutable uint16_t stage_{0};
 
-  // The calls of Graphic_Logic() left until the next stage. At zero the
+  // The calls of AI() left until the next stage. At zero the
   // stage goes up by one and the countdown starts over.
-  mutable uint8_t StageTimer{0};
+  mutable uint8_t countdown_{0};
 
-  // The calls of Graphic_Logic() a stage lasts, which the countdown is
+  // The calls of AI() a stage lasts, which the countdown is
   // restarted with; 0 when the stage is not animating.
-  mutable uint8_t Rate{0};
+  mutable uint8_t rate_{0};
 
  public:
   // Field-wise saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(Stage, StageTimer, Rate);
+    ar(stage_, countdown_, rate_);
   }
 
-  StageClass() = default;
+  StageCounter() = default;
 
-  [[nodiscard]] int Fetch_Stage() const { return Stage; }
-  [[nodiscard]] int Fetch_Rate() const { return Rate; }
+  [[nodiscard]] int stage() const { return stage_; }
+  [[nodiscard]] int rate() const { return rate_; }
   // Keeps the low 16 bits of `stage`.
-  void Set_Stage(int stage) const { Stage = static_cast<uint16_t>(stage); }
-  // Sets the calls of Graphic_Logic() a stage lasts and restarts the
+  void set_stage(int stage) const { stage_ = static_cast<uint16_t>(stage); }
+  // Sets the calls of AI() a stage lasts and restarts the
   // countdown to the next one; 0 stops the animation. Keeps the low byte of
   // `rate`, as the original's unsigned char parameter did.
-  void Set_Rate(int rate) const {
-    Rate = StageTimer = static_cast<uint8_t>(rate);
+  void SetRate(int rate) const {
+    rate_ = countdown_ = static_cast<uint8_t>(rate);
   }
   // Counts down a game frame and moves on a stage when the countdown runs
   // out. Call it once a game frame. Returns whether the stage changed, so the
   // owner knows to redraw.
-  bool Graphic_Logic() {
-    if (Rate) {
-      StageTimer--;
-      if (!StageTimer) {
-        Stage++;
-        StageTimer = Rate;
+  bool AI() {
+    if (rate_) {
+      countdown_--;
+      if (!countdown_) {
+        stage_++;
+        countdown_ = rate_;
         return true;
       }
     }

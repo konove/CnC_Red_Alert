@@ -121,17 +121,17 @@ TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
 }
 
 TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
-  StageClass stage;
-  stage.Set_Stage(12);
-  stage.Set_Rate(3);
-  EXPECT_FALSE(stage.Graphic_Logic());
-  StageClass loaded;
+  StageCounter stage;
+  stage.set_stage(12);
+  stage.SetRate(3);
+  EXPECT_FALSE(stage.AI());
+  StageCounter loaded;
   Restore(loaded, Save(stage));
-  EXPECT_EQ(loaded.Fetch_Stage(), 12);
-  EXPECT_EQ(loaded.Fetch_Rate(), 3);
-  EXPECT_FALSE(loaded.Graphic_Logic());
-  EXPECT_TRUE(loaded.Graphic_Logic());
-  EXPECT_EQ(loaded.Fetch_Stage(), 13);
+  EXPECT_EQ(loaded.stage(), 12);
+  EXPECT_EQ(loaded.rate(), 3);
+  EXPECT_FALSE(loaded.AI());
+  EXPECT_TRUE(loaded.AI());
+  EXPECT_EQ(loaded.stage(), 13);
 }
 
 TEST(TdSaveValuesTest, DoorResumesOpening) {

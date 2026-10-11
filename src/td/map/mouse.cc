@@ -193,9 +193,9 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
     Frame = 0;
 
 #ifdef OBSOLETE
-    Control.Set_Stage(0);
+    Control.set_stage(0);
     int rate = TheOptions().Normalize_Delay(control->FrameRate);
-    Control.Set_Rate(std::max(rate, 1));
+    Control.SetRate(std::max(rate, 1));
 #endif
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
@@ -242,7 +242,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
     AnimTimer.Set(control->FrameRate);
 
 #ifdef OBSOLETE
-    Control.Set_Stage(Control.Fetch_Stage() % control->FrameCount);
+    Control.set_stage(Control.stage() % control->FrameCount);
 #endif
 
     if (!IsSmall || control->SmallFrame != -1) {
