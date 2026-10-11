@@ -189,6 +189,16 @@
 
 namespace td {
 
+namespace {
+
+// The APC's door art has three frames for each of the two facings it is
+// drawn at (shapes 32-34 and 35-37). A rate of 3 opens the door in 9 game
+// frames; the original took 10 and only ever showed the first frame.
+constexpr int kApcDoorFrames = 3;
+constexpr int kApcDoorRate = 3;
+
+}  // namespace
+
 using engine::gfx::ShapeFlags;
 
 /*
@@ -4007,7 +4017,7 @@ int UnitClass::Pip_Count() const {
  *=============================================================================================*/
 void UnitClass::APC_Close_Door() {
   Validate();
-  door().Close(10, 1);
+  door().Close(kApcDoorRate, kApcDoorFrames);
 }
 
 /***********************************************************************************************
@@ -4028,9 +4038,10 @@ void UnitClass::APC_Open_Door() {
   if (!IsDriving && !IsRotating) {
     if (PrimaryFacing.current() == game::Direction::kNorthWest ||
         PrimaryFacing.current() == game::Direction::kNorthEast) {
-      door().Open(10, 1);
+      door().Open(kApcDoorRate, kApcDoorFrames);
     } else {
-      door().Open(1, 1);
+      // The door is not drawn at the other facings, so do not wait for it.
+      door().Open(1, kApcDoorFrames);
     }
   }
 }
