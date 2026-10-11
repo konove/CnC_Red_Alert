@@ -2291,7 +2291,8 @@ Target InfantryClass::Greatest_Threat(ThreatType threat)  // const
   *threat. Such *	weapon types would be the dog jaw and the medic first
   *aid kit.
   */
-  if (Is_Weapon_Equipped() && Class->PrimaryWeapon->WarheadPtr->IsOrganic) {
+  if (Class->PrimaryWeapon != nullptr &&
+      Class->PrimaryWeapon->WarheadPtr->IsOrganic) {
     threat = threat &
              ~(THREAT_BUILDINGS | THREAT_VEHICLES | THREAT_BOATS | THREAT_AIR);
   }
