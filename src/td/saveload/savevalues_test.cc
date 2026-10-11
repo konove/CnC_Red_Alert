@@ -134,17 +134,15 @@ TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
   EXPECT_EQ(loaded.Fetch_Stage(), 13);
 }
 
-TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
+TEST(TdSaveValuesTest, DoorResumesOpening) {
   game::Door door;
   ASSERT_TRUE(door.Open(2, 3));
   door.AI();
   game::Door loaded;
   Restore(loaded, Save(door));
   EXPECT_TRUE(loaded.IsOpening());
-  EXPECT_EQ(loaded.NeedsRedraw(), door.NeedsRedraw());
   for (int frame = 0; frame < 10; ++frame) {
-    loaded.AI();
-    door.AI();
+    EXPECT_EQ(loaded.AI(), door.AI());
     EXPECT_EQ(loaded.Frame(), door.Frame());
     EXPECT_EQ(loaded.IsOpen(), door.IsOpen());
   }

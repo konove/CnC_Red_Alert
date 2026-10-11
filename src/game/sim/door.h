@@ -8,7 +8,8 @@
 namespace game {
 
 // The state of a door that opens and closes over a number of animation
-// frames. It counts its own game frames: AI() must be called once a frame.
+// frames. It counts its own game frames: AI() must be called once a frame,
+// and says when the owner has to redraw.
 //
 // A door opened with a `frame_count` of 3 shows Frame() 0, 1, 2 while opening
 // and stays at 2 once open. Each frame is a stage of the animation; the last
@@ -28,20 +29,13 @@ class Door {
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(stage_, countdown_, frames_per_stage_, frame_count_, state_,
-       needs_redraw_);
+    ar(stage_, countdown_, frames_per_stage_, frame_count_, state_);
   }
 
-  // Returns whether the animation has moved on since the flag was last
-  // cleared, so the door's owner needs redrawing.
-  [[nodiscard]] bool NeedsRedraw() const { return needs_redraw_; }
-  // Called by the owner once it has drawn the door (or marked itself to be
-  // redrawn); const because the draw routines are.
-  void ClearRedraw() const { needs_redraw_ = false; }
-
   // Advances the animation one game frame; finishes opening or closing, and
-  // stops the animation, once the last stage is reached.
-  void AI();
+  // stops the animation, once the last stage is reached. Returns whether the
+  // door moved on a stage, so its owner needs redrawing.
+  bool AI();
 
   // Returns the frame of the door's animation to draw: 0 when closed, up to
   // `frame_count` - 1 when open.
@@ -92,11 +86,6 @@ class Door {
   int32_t frame_count_ = 0;
 
   State state_ = State::kClosed;
-
-  // Whether the animation moved on, so the object the door belongs to should
-  // be redrawn. Drawing clears it from const draw routines, so it is redraw
-  // bookkeeping rather than logical state.
-  mutable bool needs_redraw_ = false;
 };
 
 }  // namespace game

@@ -6,13 +6,13 @@
 
 namespace game {
 
-void Door::AI() {
+bool Door::AI() {
   if (frames_per_stage_ <= 0) {
-    return;
+    return false;
   }
   --countdown_;
   if (countdown_ > 0) {
-    return;
+    return false;
   }
   ++stage_;
   countdown_ = frames_per_stage_;
@@ -24,7 +24,7 @@ void Door::AI() {
       state_ = State::kClosed;
     }
   }
-  needs_redraw_ = true;
+  return true;
 }
 
 int Door::Frame() const {

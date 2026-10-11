@@ -6378,15 +6378,6 @@ void BuildingClass::Animation_AI() {
   }
 
   /*
-  **	If there is a door that is animating, then it might cause this building
-  **	to be redrawn. Check for and flag to redraw as necessary.
-  */
-  if (door().NeedsRedraw()) {
-    door().ClearRedraw();
-    Mark(MARK_CHANGE);
-  }
-
-  /*
   **	The animation sequence has looped. Restart it and flag this loop
   *condition. *	This is used to tell the mission system that the animation has
   *completed. It *	also signals that now is a good time to act on any

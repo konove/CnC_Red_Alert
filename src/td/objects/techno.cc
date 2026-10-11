@@ -947,7 +947,6 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
  *=============================================================================================*/
 void TechnoClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
-  door().ClearRedraw();
   if (IsSelected || TheSpecialFlags().all_health_bars) {
     PixelView draw_window(
         view.buffer(),
@@ -1782,7 +1781,7 @@ void TechnoClass::Clicked_As_Target(int count) { flasher_.Start(count); }
 void TechnoClass::AI() {
   ObjectClass::AI();
   Run_Mission();
-  door_.AI();
+  const bool door_moved = door_.AI();
 
   if (!IsActive) {
     return;
@@ -1913,8 +1912,9 @@ void TechnoClass::AI() {
   **	changes, then flag the object to be redrawn as well as  determine
   **	if the current animation process needs to change.
   */
-  if ((What_Am_I() != RTTI_BUILDING) &&
-      (animation().Graphic_Logic() || door().NeedsRedraw())) {
+  const bool animated =
+      What_Am_I() != RTTI_BUILDING && animation().Graphic_Logic();
+  if (animated || door_moved) {
     Mark(MARK_CHANGE);
   }
 

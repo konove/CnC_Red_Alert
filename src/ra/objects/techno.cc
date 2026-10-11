@@ -1245,11 +1245,6 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) const {
   DCHECK(IsActive);
 
-  /*
-  **	Tells the door logic that it has been drawn.
-  */
-  door().ClearRedraw();
-
   if (IsSelected) {
     PixelView draw_window(
         view.buffer(),
@@ -2654,7 +2649,7 @@ void TechnoClass::AI() {
     return;
   }
 
-  door_.AI();
+  const bool door_moved = door_.AI();
 
   /*
   **	If this is a vehicle that heals itself (e.g., Mammoth Tank), then it
@@ -2704,9 +2699,11 @@ void TechnoClass::AI() {
     if (animation().About_To_Change()) {
       Mark(MARK_CHANGE_REDRAW);
     }
-    if (animation().Graphic_Logic() || door().NeedsRedraw()) {
+    if (animation().Graphic_Logic() || door_moved) {
       Mark(MARK_CHANGE_REDRAW);
     }
+  } else if (door_moved) {
+    Mark(MARK_CHANGE);
   }
 
   /*

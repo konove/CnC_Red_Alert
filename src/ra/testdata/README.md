@@ -3,7 +3,7 @@
 ## SAVEGAME.SCG01EA
 
 A save of scenario SCG01EA at frame 60, written by `rasdl` built from the commit that moved the save
-version to 19:
+version to 20:
 
 ```
 SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./rasdl -NOMOVIES -NEWGAMESCG01EA -QUITFRAME60 -SAVESLOT98 -CD"<game data>"

@@ -25,13 +25,10 @@ TEST(DoorTest, OpensThroughEveryStageThenStops) {
     EXPECT_EQ(door.Frame(), frame);
     EXPECT_TRUE(door.IsOpening());
   }
-  door.AI();
+  EXPECT_TRUE(door.AI());
   EXPECT_TRUE(door.IsOpen());
   EXPECT_EQ(door.Frame(), 2);
-  EXPECT_TRUE(door.NeedsRedraw());
-  door.ClearRedraw();
-  door.AI();  // The rate dropped to 0 when the door finished.
-  EXPECT_FALSE(door.NeedsRedraw());
+  EXPECT_FALSE(door.AI());  // An open door has stopped.
   EXPECT_EQ(door.Frame(), 2);
 }
 
@@ -39,13 +36,10 @@ TEST(DoorTest, AStageLastsFramesPerStageCalls) {
   Door door;
   ASSERT_TRUE(door.Open(3, 2));
   for (int stage = 1; stage <= 2; ++stage) {
-    door.AI();
-    door.AI();
+    EXPECT_FALSE(door.AI());
+    EXPECT_FALSE(door.AI());
     EXPECT_EQ(door.Frame(), stage - 1);
-    EXPECT_FALSE(door.NeedsRedraw());
-    door.AI();
-    EXPECT_TRUE(door.NeedsRedraw());
-    door.ClearRedraw();
+    EXPECT_TRUE(door.AI());
   }
   EXPECT_TRUE(door.IsOpen());
   EXPECT_EQ(door.Frame(), 1);
@@ -133,9 +127,8 @@ TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   ASSERT_TRUE(reader.ok());
   EXPECT_TRUE(loaded.IsOpening());
   EXPECT_EQ(loaded.Frame(), 1);
-  EXPECT_TRUE(loaded.NeedsRedraw());
   // The loaded door is half-way through its second stage.
-  loaded.AI();
+  EXPECT_TRUE(loaded.AI());
   EXPECT_EQ(loaded.Frame(), 2);
 }
 
