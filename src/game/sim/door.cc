@@ -7,7 +7,7 @@
 namespace game {
 
 bool Door::AI() {
-  if (frames_per_stage_ <= 0) {
+  if (state_ != State::kOpening && state_ != State::kClosing) {
     return false;
   }
   --countdown_;
@@ -17,24 +17,19 @@ bool Door::AI() {
   ++stage_;
   countdown_ = frames_per_stage_;
   if (stage_ >= frame_count_) {
-    frames_per_stage_ = 0;
-    if (state_ == State::kOpening) {
-      state_ = State::kOpen;
-    } else if (state_ == State::kClosing) {
-      state_ = State::kClosed;
-    }
+    state_ = state_ == State::kOpening ? State::kOpen : State::kClosed;
   }
   return true;
 }
 
 int Door::Frame() const {
   switch (state_) {
-    case State::kClosing:
-      return frame_count_ - 1 - stage_;
     case State::kOpening:
       return stage_;
     case State::kOpen:
       return frame_count_ - 1;
+    case State::kClosing:
+      return frame_count_ - 1 - stage_;
     case State::kClosed:
     default:
       return 0;
@@ -55,6 +50,22 @@ bool Door::Close(const int frames_per_stage, const int frame_count) {
   }
   StartAnimation(State::kClosing, frames_per_stage, frame_count);
   return true;
+}
+
+bool Door::IsConsistent() const {
+  switch (state_) {
+    case State::kClosed:
+      return true;
+    case State::kOpen:
+      return frame_count_ >= 1;
+    case State::kOpening:
+    case State::kClosing:
+      return frame_count_ >= 1 && stage_ >= 0 && stage_ < frame_count_ &&
+             frames_per_stage_ >= 1 && countdown_ >= 1 &&
+             countdown_ <= frames_per_stage_;
+    default:
+      return false;
+  }
 }
 
 void Door::StartAnimation(const State state, const int frames_per_stage,

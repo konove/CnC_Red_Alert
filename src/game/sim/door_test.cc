@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <span>
 
 #include "engine/stream/archive.h"
@@ -130,6 +131,73 @@ TEST(DoorTest, SerializeRoundTripsTheAnimation) {
   // The loaded door is half-way through its second stage.
   EXPECT_TRUE(loaded.AI());
   EXPECT_EQ(loaded.Frame(), 2);
+}
+
+// Loads a door from the five numbers a saved game holds for one.
+Door LoadDoor(int32_t stage, int32_t countdown, int32_t frames_per_stage,
+              int32_t frame_count, int32_t state) {
+  std::array<std::byte, 64> bytes{};
+  SpanSink sink(bytes);
+  ArchiveWriter writer(sink);
+  writer(stage, countdown, frames_per_stage, frame_count, state);
+  EXPECT_TRUE(writer.ok());
+  Door door;
+  SpanSource source{std::span<const std::byte>(bytes)};
+  ArchiveReader reader(source);
+  door.Serialize(reader);
+  EXPECT_TRUE(reader.ok());
+  return door;
+}
+
+constexpr int32_t kClosed = 0;
+constexpr int32_t kOpening = 1;
+constexpr int32_t kOpen = 2;
+constexpr int32_t kClosing = 3;
+
+void ExpectClosedAndStill(Door door) {
+  EXPECT_TRUE(door.IsClosed());
+  EXPECT_EQ(door.Frame(), 0);
+  EXPECT_FALSE(door.AI());
+  EXPECT_TRUE(door.IsClosed());
+  // And it opens like a new door.
+  ASSERT_TRUE(door.Open(1, 2));
+  EXPECT_TRUE(door.AI());
+  EXPECT_EQ(door.Frame(), 1);
+}
+
+TEST(DoorTest, LoadsTheStatesADoorCanHave) {
+  Door closing = LoadDoor(1, 2, 2, 3, kClosing);
+  EXPECT_EQ(closing.Frame(), 1);
+  EXPECT_FALSE(closing.AI());
+  EXPECT_TRUE(closing.AI());
+  EXPECT_EQ(closing.Frame(), 0);
+
+  // What the last animation left in an open or closed door does not move it.
+  Door open = LoadDoor(3, 2, 2, 3, kOpen);
+  EXPECT_TRUE(open.IsOpen());
+  EXPECT_EQ(open.Frame(), 2);
+  EXPECT_FALSE(open.AI());
+  EXPECT_FALSE(open.AI());
+  EXPECT_TRUE(open.IsOpen());
+  ExpectClosedAndStill(LoadDoor(3, 1, 1, 3, kClosed));
+}
+
+TEST(DoorTest, ADoorLoadedWithAnUnknownStateIsClosed) {
+  ExpectClosedAndStill(LoadDoor(1, 2, 2, 3, 4));
+  ExpectClosedAndStill(LoadDoor(1, 2, 2, 3, -1));
+}
+
+TEST(DoorTest, AnOpenDoorLoadedWithoutFramesIsClosed) {
+  ExpectClosedAndStill(LoadDoor(0, 0, 0, 0, kOpen));
+}
+
+TEST(DoorTest, AMovingDoorLoadedWithImpossibleCountersIsClosed) {
+  ExpectClosedAndStill(LoadDoor(0, 1, 1, 0, kOpening));   // No frames.
+  ExpectClosedAndStill(LoadDoor(-1, 1, 1, 3, kOpening));  // Before the first.
+  ExpectClosedAndStill(LoadDoor(3, 1, 1, 3, kClosing));   // Past the last.
+  ExpectClosedAndStill(LoadDoor(1, 1, 0, 3, kOpening));   // Would never end.
+  ExpectClosedAndStill(LoadDoor(1, 0, 2, 3, kClosing));   // Stage overdue.
+  ExpectClosedAndStill(LoadDoor(1, 3, 2, 3, kOpening));   // Stage too long.
 }
 
 }  // namespace

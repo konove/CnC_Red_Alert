@@ -26,10 +26,14 @@ class Door {
  public:
   Door() = default;
 
-  // Saved-game support.
+  // Saved-game support. A door loaded with values no door can have (a
+  // damaged save) is closed and still.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(stage_, countdown_, frames_per_stage_, frame_count_, state_);
+    if (Archive::kIsReading && !IsConsistent()) {
+      *this = Door();
+    }
   }
 
   // Advances the animation one game frame; finishes opening or closing, and
@@ -67,6 +71,10 @@ class Door {
     kClosing = 3,
   };
 
+  // Returns whether the members hold what Open(), Close() and AI() can leave
+  // in them. The archive reads `state_` as a number without checking it.
+  [[nodiscard]] bool IsConsistent() const;
+
   // Starts the animation towards `state` (opening or closing) at the stage
   // that shows the frame the door shows now.
   void StartAnimation(State state, int frames_per_stage, int frame_count);
@@ -77,12 +85,11 @@ class Door {
   // The calls of AI() left until the next stage.
   int32_t countdown_ = 0;
 
-  // The calls of AI() a stage lasts; 0 while the door is open or closed and
-  // nothing is animating.
+  // The calls of AI() a stage of the current, or the last, animation lasts.
   int32_t frames_per_stage_ = 0;
 
-  // The number of frames the current door animation shows, which is also the
-  // stage at which the opening or closing is finished.
+  // The number of frames the current, or the last, door animation shows,
+  // which is also the stage at which the opening or closing is finished.
   int32_t frame_count_ = 0;
 
   State state_ = State::kClosed;
