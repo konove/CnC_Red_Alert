@@ -248,7 +248,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	be set)
     */
     case SELECT_HIGHLIGHT:
-      if (HasGradientFontBits(TextFont)) {
+      if (TextFont == FontType::k6PointGradient) {
         highlighted.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
@@ -269,7 +269,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BAR: draw a color bar under the text
     */
     case SELECT_BAR:
-      if (HasGradientFontBits(TextFont)) {
+      if (TextFont == FontType::k6PointGradient) {
         view.FillRect(Rect{x, y, width, LineHeight},
                       static_cast<unsigned char>(SelectColor));
         item.With(TPF_BRIGHT_COLOR)
@@ -285,7 +285,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	INVERT: Draw text as the background color on foreground color
     */
     case SELECT_INVERT:
-      if (HasGradientFontBits(TextFont)) {
+      if (TextFont == FontType::k6PointGradient) {
         view.FillRect(Rect{x, y, width, LineHeight},
                       static_cast<unsigned char>(base::At(Colors, index)));
         // Black text on the transparent color; the names only look swapped.

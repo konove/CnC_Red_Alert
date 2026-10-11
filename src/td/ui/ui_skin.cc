@@ -41,7 +41,7 @@ void UiSkin::Draw_Button_Box(PixelView& view, const int x, const int y,
                              PrintFlags /*flags*/, const bool disabled,
                              const bool pressed) {
   const BoxStyleEnum style = [&] {
-    if (HasGradientFontBits(font)) {
+    if (font == FontType::k6PointGradient) {
       if (disabled) {
         return BOXSTYLE_GREEN_DIS_RAISED;
       }
@@ -59,7 +59,7 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
                                const int y, const Font font,
                                const PrintFlags flags, const bool disabled,
                                const bool pressed, const bool on) {
-  if (HasGradientFontBits(font)) {
+  if (font == FontType::k6PointGradient) {
     const TextPrintType state = [&] {
       if (disabled) {
         return static_cast<TextPrintType>(0);
@@ -157,7 +157,7 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
                              const int line_height, const Font font,
                              PrintFlags flags, const bool selected,
                              std::span<const int> tabs) {
-  if (HasGradientFontBits(font)) {
+  if (font == FontType::k6PointGradient) {
     TextPrintType state = flags;
     if (selected) {
       state = state | TPF_BRIGHT_COLOR;

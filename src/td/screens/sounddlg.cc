@@ -475,7 +475,7 @@ void SoundControlsClass::Process() {
 
 void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                 int width, bool selected) {
-  if (HasGradientFontBits(TextFont)) {
+  if (TextFont == FontType::k6PointGradient) {
     TextPrintType flags = TextFlags;
 
     if (selected) {

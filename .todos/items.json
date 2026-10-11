@@ -1393,30 +1393,42 @@
       "tags": [
         "bugs",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-11T06:46:27Z",
       "parent": "T-124",
+      "resolution": "Narrowed the test: the 12 call sites (TD skin, colour, music and expansion lists; RA colour and music lists) now compare `font == FontType::k6PointGradient`, and `HasGradientFontBits()` with its two tests is removed from both games. No widget was built with another font of the old set, so nothing changes on screen: all `tools/ui_check.py` hashes hold, 2006 ctests pass.",
       "toDecide": "Decide on a real display, together with T-15:\n\n- **Keep** the set of fonts `& TPF_6PT_GRAD` used to match: Tiberian Dawn's 8-point buttons stay in the green gradient style.\n- **Narrow it to `font == FontType::k6PointGradient`**: changes what those buttons and lists look like in both games; record the new screenshots with `tools/ui_check.py --accept`.",
+      "decisions": [
+        {
+          "question": "Should HasGradientFontBits() keep the legacy `& TPF_6PT_GRAD` font set, or mean only the gradient font?",
+          "options": [
+            "Narrow it (Recommended)",
+            "Keep the legacy set",
+            "Narrow, but check on a display first"
+          ],
+          "answer": "Narrow it (Recommended)",
+          "time": "2026-10-11T06:44:17Z"
+        }
+      ],
       "anchors": [
         {
-          "path": "src/ra/ui/dialog.cc",
-          "startLine": 410,
-          "endLine": 410,
-          "text": "bool HasGradientFontBits(const FontType font) {",
+          "path": "src/ra/ui/colrlist.cc",
+          "startLine": 252,
+          "endLine": 252,
+          "text": "      if (TextFont == FontType::k6PointGradient) {",
           "before": [
-            "",
-            "}  // namespace",
-            ""
+            "    **\tbe set)",
+            "    */",
+            "    case SELECT_HIGHLIGHT:"
           ],
           "after": [
-            "  switch (font) {",
-            "    case FontType::k8Point:",
-            "    case FontType::k3Point:"
+            "        TextPrinter(view, {color, game::kTransparentBlack, TextFont,",
+            "                           TextFlags | TPF_BRIGHT_COLOR})",
+            "            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);"
           ],
           "lost": false
         }
@@ -7744,44 +7756,45 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-09T20:35:19Z",
-      "updated": "2026-10-09T20:35:19Z",
+      "updated": "2026-10-11T06:55:48Z",
       "parent": "T-124",
       "source": "a3ebfc78..4e3815dd",
+      "resolution": "Nothing left to do: T-46 removed `HasGradientFontBits()` and its comment from both headers, and neither file has two blank lines in a row any more. The anchors now sit on the `PrintStyle` comment that follows the place the declaration was.",
       "anchors": [
         {
           "path": "src/ra/ui/dialog.h",
-          "startLine": 68,
-          "endLine": 68,
-          "text": "bool HasGradientFontBits(FontType font);",
+          "startLine": 70,
+          "endLine": 70,
+          "text": "// The colours, font and flags a text prints with.",
           "before": [
-            "// `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button",
-            "// skins used that test to pick their gradient look, and it matched every font",
-            "// index with bit 1 or 2 set, not only the gradient font's."
+            "                       const RemapControlType* fore = nullptr,",
+            "                       int back = game::kTransparentBlack);",
+            ""
           ],
           "after": [
-            "",
-            "// The colours, font and flags a text prints with.",
-            "struct PrintStyle {"
+            "struct PrintStyle {",
+            "  const RemapControlType* scheme = nullptr;  // nullptr is the red scheme.",
+            "  int back = game::kTransparentBlack;        // Palette index behind the glyphs."
           ],
           "lost": false
         },
         {
           "path": "src/td/ui/dialog.h",
-          "startLine": 48,
-          "endLine": 48,
-          "text": "bool HasGradientFontBits(FontType font);",
+          "startLine": 43,
+          "endLine": 43,
+          "text": "// The colours, font and flags a text prints with.",
           "before": [
-            "// `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button",
-            "// skins used that test to pick their gradient look, and it matched every font",
-            "// index with bit 1 or 2 set, not only the gradient font's."
+            "                       int fore = game::kTransparentBlack,",
+            "                       int back = game::kTransparentBlack);",
+            ""
           ],
           "after": [
-            "",
-            "// The colours, font and flags a text prints with.",
-            "struct PrintStyle {"
+            "struct PrintStyle {",
+            "  int fore = game::kTransparentBlack;  // Palette index of the glyphs.",
+            "  int back = game::kTransparentBlack;  // Palette index behind the glyphs."
           ],
           "lost": false
         }
@@ -7928,9 +7941,9 @@
             "  which is 6 and so matched every font index with bit 1 or 2 set (RA: 8-point, 3-point, LED, VCR,"
           ],
           "after": [
-            "  set, so Tiberian Dawn's buttons and both games' colour and music lists draw as before. Whether the",
-            "  original authors meant only the gradient font is open.",
-            "- **Rewriter lessons.** Matching calls in raw text swallowed code after a commented-out call; the"
+            "  set, so Tiberian Dawn's buttons and both games' colour and music lists draw as before. T-46",
+            "  (2026-10-10) narrowed the test to `font == FontType::k6PointGradient` and removed the helper: no",
+            "  widget was built with another font of the set, and the `tools/ui_check.py` hashes did not move."
           ],
           "lost": false
         }
@@ -12358,10 +12371,10 @@
         "game",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:04Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T04:29:50Z",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "All nine parts are closed: T-367 (frame count), T-366 (reversal continues), T-365 (APC door frames), T-369 (`AI()` reports the redraw; save versions 20/11), T-370 (inconsistent load is closed) and T-373 (`StageCounter`) fixed in b7fe08a3..8395342a; T-372 closed as moot; T-368 and T-371 were done earlier.",
       "anchors": [
@@ -12383,10 +12396,10 @@
         "td",
         "manual-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T00:49:18Z",
+      "updated": "2026-10-11T04:29:32Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "Both games open and close the APC door with `kApcDoorFrames` 3 at `kApcDoorRate` 3 (9 game frames, was 10; 3 instead of 1 at the facings where it is not drawn). `APC.SHP` has 38 frames in both games, so shapes 32-37 are the door frames. Needs a look on a real display.",
@@ -12431,10 +12444,10 @@
         "bugs",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T00:49:18Z",
+      "updated": "2026-10-11T04:29:33Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "`Door::StartAnimation()` starts at the stage that shows the frame the door has reached, clamped to the new frame count; `DoorTest.TurningRoundCarriesOnFromTheFrameItShows` and `TurningRoundWithFewerFramesStaysWithinThem` pin it.",
@@ -12469,10 +12482,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T00:49:18Z",
+      "updated": "2026-10-11T04:29:43Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "`Door::Open()`/`Close()` take `frame_count` and store it as `frame_count_`; every caller passes one less than before (RA war factory `kDoorFrames` 4). Behaviour unchanged.",
@@ -12548,10 +12561,10 @@
         "td",
         "manual-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T00:49:18Z",
+      "updated": "2026-10-11T04:29:47Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "`Door::AI()` returns whether the door moved a stage and `TechnoClass::AI()` marks the object in both games; `needs_redraw_`, `NeedsRedraw()` and `ClearRedraw()` are gone. Save version 20 (RA) and 11 (TD), fixtures regenerated. Units now mark themselves once, not every frame until drawn: needs a look on a real display.",
@@ -12591,10 +12604,10 @@
         "bugs",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T00:49:18Z",
+      "updated": "2026-10-11T04:29:44Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "resolution": "`Door::Serialize()` resets a door that fails `IsConsistent()` (unknown state, an open door without frames, a moving door with impossible counters) to a closed, still one; `AI()` goes by the state, so the unreachable branches are gone and `door.cc` is at 100% lines.",
@@ -12703,10 +12716,10 @@
         "td",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T20:29:36Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-11T04:29:48Z",
       "parent": "T-364",
       "source": "a7307f0b..8c8a8a33",
       "fixedIn": "8395342a",
@@ -13323,10 +13336,10 @@
         "ra",
         "saveload"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T23:28:31Z",
-      "updated": "2026-10-11T00:02:35Z",
+      "updated": "2026-10-11T04:30:02Z",
       "source": "100ef036",
       "resolution": "Bumped `kSaveGameVersion` to 19 and regenerated `src/ra/testdata/SAVEGAME.SCG01EA` with that binary; `--load-fixture` and the round-trip mode both pass. The old fixture failed in block `AIRC` (\"saved slot index outside its heap\"), so the v18 layout had changed; at the user's suggestion the commit that changed it was not bisected.",
       "anchors": [
@@ -13371,10 +13384,10 @@
         "tools",
         "saveload"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T00:04:36Z",
-      "updated": "2026-10-11T00:08:36Z",
+      "updated": "2026-10-11T04:29:36Z",
       "resolution": "Added the `ra_save_fixture_test` ctest in `src/ra/CMakeLists.txt` (Unix only), which runs `tools/ra_saveload_smoke.sh --load-fixture` on the built `rasdl`. The script now exits with 77 when the game data directory is absent (ctest shows it as skipped), gives a failed fixture load 60 s instead of 300 s, and prints the loader's error lines on failure.",
       "anchors": [
         {

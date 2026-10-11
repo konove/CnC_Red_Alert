@@ -40,12 +40,6 @@ TextStyle TextStyleFor(FontType font, TextPrintType flags,
                        int fore = game::kTransparentBlack,
                        int back = game::kTransparentBlack);
 
-// Whether the packed flags of the old TextPrintType tested true for
-// `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button
-// skins used that test to pick their gradient look, and it matched every font
-// index with bit 1 or 2 set, not only the gradient font's.
-bool HasGradientFontBits(FontType font);
-
 // The colours, font and flags a text prints with.
 struct PrintStyle {
   int fore = game::kTransparentBlack;  // Palette index of the glyphs.
