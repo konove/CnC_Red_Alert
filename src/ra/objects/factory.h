@@ -43,9 +43,9 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "game/sim/stage_counter.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
-#include "ra/objects/stage_counter.h"
 #include "ra/objects/type.h"
 
 class ArchiveReader;
@@ -163,7 +163,7 @@ class FactoryClass {
 
   // Counts the production steps done, up to kStepCount; its rate is the
   // number of frames a step takes, 0 while production is suspended.
-  StageCounter progress_;
+  game::StageCounter progress_;
 };
 
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);

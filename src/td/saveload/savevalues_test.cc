@@ -22,7 +22,6 @@
 #include "td/objects/cell.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"
-#include "td/objects/stage_counter.h"
 #include "td/objects/super.h"
 #include "td/saveload/serialize.h"
 #include "td/screens/score.h"
@@ -118,20 +117,6 @@ TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
   Restore(flight, bytes);
   EXPECT_EQ(flight.Get_Speed(), speed);
   EXPECT_EQ(Save(flight), bytes);
-}
-
-TEST(TdSaveValuesTest, StagePreservesPartialAnimationCountdown) {
-  StageCounter stage;
-  stage.set_stage(12);
-  stage.SetRate(3);
-  EXPECT_FALSE(stage.AI());
-  StageCounter loaded;
-  Restore(loaded, Save(stage));
-  EXPECT_EQ(loaded.stage(), 12);
-  EXPECT_EQ(loaded.rate(), 3);
-  EXPECT_FALSE(loaded.AI());
-  EXPECT_TRUE(loaded.AI());
-  EXPECT_EQ(loaded.stage(), 13);
 }
 
 TEST(TdSaveValuesTest, DoorResumesOpening) {

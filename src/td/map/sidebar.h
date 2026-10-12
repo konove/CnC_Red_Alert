@@ -48,11 +48,11 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/stage_counter.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/map/power.h"
-#include "td/objects/stage_counter.h"
 #include "td/ui/shapebtn.h"
 
 class ArchiveReader;
@@ -168,10 +168,11 @@ class SidebarClass : public PowerClass {
     **	File I/O.
     */
     // The frame counter of the flashing cameo.
-    [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    [[nodiscard]] game::StageCounter& animation()
+        ABSL_ATTRIBUTE_LIFETIME_BOUND {
       return animation_;
     }
-    [[nodiscard]] const StageCounter& animation() const
+    [[nodiscard]] const game::StageCounter& animation() const
         ABSL_ATTRIBUTE_LIFETIME_BOUND {
       return animation_;
     }
@@ -350,7 +351,7 @@ class SidebarClass : public PowerClass {
 
    private:
     // Which flash frame is shown and when the next one is due.
-    StageCounter animation_;
+    game::StageCounter animation_;
   } Column[kColumns];
 
   /*

@@ -487,8 +487,7 @@ void UnitClass::AI() {
        TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
     if (!animation().rate()) {
-      animation().SetRate(
-          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
+      animation().SetRate(TheOptions().Normalize_Delay(2));
       animation().set_stage(0);
     }
     animation().AI();
@@ -1153,8 +1152,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    animation().SetRate(
-        static_cast<unsigned char>(TheOptions().Normalize_Delay(3)));
+    animation().SetRate(TheOptions().Normalize_Delay(3));
   }
 
   /*

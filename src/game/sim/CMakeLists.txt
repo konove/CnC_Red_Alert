@@ -34,6 +34,6 @@ include(Testing)
 add_gtest(
         NAME game_sim_test
         SOURCES direction_test.cc door_test.cc flasher_test.cc heading_test.cc
-                utracker_test.cc
+                stage_counter_test.cc utracker_test.cc
         LIBS game_sim engine_stream
 )

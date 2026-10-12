@@ -39,13 +39,15 @@
 
 // File: StageCounter, the frame counter behind an object's looping animation.
 
-#ifndef CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_
-#define CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_STAGE_COUNTER_H_
+#define CNC_RED_ALERT_GAME_SIM_STAGE_COUNTER_H_
+
+#include <cstdint>
 
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 
-namespace ra {
+namespace game {
 
 // An animation stage that counts up by one every `rate` game frames: what
 // drives an object's smoke, walking, flapping and rocket flames, a cloak
@@ -95,17 +97,17 @@ class StageCounter {
 
  private:
   // The animation stage of the object, counted from 0.
-  int stage_{0};
+  int32_t stage_{0};
 
   // Counts down the game frames to the next stage. When it is finished the
   // stage goes up by one and it starts over.
-  engine::platform::Timer<game::FrameTickSource> countdown_;
+  engine::platform::Timer<FrameTickSource> countdown_;
 
   // The game frames a stage lasts, which the countdown is restarted with; 0
   // when the stage is not animating.
-  int rate_{0};
+  int32_t rate_{0};
 };
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_OBJECTS_STAGE_COUNTER_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_STAGE_COUNTER_H_

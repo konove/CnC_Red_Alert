@@ -2185,8 +2185,8 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      animation().SetRate(static_cast<unsigned char>(
-          TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate)));
+      animation().SetRate(
+          TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate));
     } else {
       animation().SetRate(MasterDoControls.at(Doing).Rate);
     }

@@ -1,4 +1,4 @@
-#include "ra/objects/stage_counter.h"
+#include "game/sim/stage_counter.h"
 
 #include <array>
 #include <cstddef>
@@ -11,7 +11,7 @@
 #include "game/core/game_clock.h"
 #include "gtest/gtest.h"
 
-namespace ra {
+namespace game {
 namespace {
 
 class StageCounterTest : public testing::Test {
@@ -26,8 +26,8 @@ class StageCounterTest : public testing::Test {
   }
 
  private:
-  game::GameClock clock_;
-  base::Installed<game::GameClock>::Scope clock_scope_{clock_};
+  GameClock clock_;
+  base::Installed<GameClock>::Scope clock_scope_{clock_};
 };
 
 TEST_F(StageCounterTest, ANewCounterStandsStill) {
@@ -111,4 +111,4 @@ TEST_F(StageCounterTest, ASavedCounterCarriesOnWhereItWas) {
 }
 
 }  // namespace
-}  // namespace ra
+}  // namespace game

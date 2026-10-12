@@ -534,7 +534,7 @@ bool FactoryClass::Start() {
     rate /= kStepCount;
     rate = std::clamp(rate, 1, 255);
 
-    progress_.SetRate(static_cast<unsigned char>(rate));
+    progress_.SetRate(rate);
     IsSuspended = false;
     return true;
   }

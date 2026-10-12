@@ -47,9 +47,9 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/stage_counter.h"
 #include "td/core/defines.h"
 #include "td/objects/object.h"
-#include "td/objects/stage_counter.h"
 #include "td/objects/type.h"
 
 class ArchiveReader;
@@ -198,7 +198,7 @@ class AnimClass final : public ObjectClass {
   unsigned char Accum = 0;
 
   // Which frame is shown and when the next one is due.
-  StageCounter animation_;
+  game::StageCounter animation_;
 };
 
 void Shorten_Attached_Anims(const ObjectClass* obj);

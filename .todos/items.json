@@ -1497,10 +1497,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T00:49:34Z",
+      "updated": "2026-10-12T00:50:10Z",
       "parent": "T-133",
       "resolution": "`TechnoClass::Captured()` in both games subtracts the object's threat before the owner change and adds it back after, when the object is down in a campaign game (and on the ground layer in Red Alert). `ACapturedObjectMovesItsThreatToTheOtherHouse` and `ACaptureLeavesTheRegionsAloneOutsideTheCampaign` in each game's `techno_test.cc` cover it; the first fails without the fix.",
       "toDecide": "Not traced to the end: first confirm it with a campaign capture and a dump of `HouseClass::Regions`. If it is real:\n\n- **Fix**: adjust the regions around the owner change in `TechnoClass::Captured()`, about 10 lines per game; it changes the computer's path and team choices in the campaign.\n- **Leave** it as shipped.",
@@ -3716,10 +3716,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T00:49:34Z",
+      "updated": "2026-10-12T00:50:20Z",
       "source": "805bd6ba..1ad6409d",
       "resolution": "All three parts done: captures move the threat with the ownership (T-49), the threat is read as `int64_t` throughout with the save unchanged (T-295), and `Adjust_Threat()` has constexpr tables (T-296).",
       "anchors": [
@@ -9570,10 +9570,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T20:36:56Z",
-      "updated": "2026-10-12T00:49:34Z",
+      "updated": "2026-10-12T00:50:08Z",
       "parent": "T-133",
       "source": "805bd6ba..1ad6409d",
       "resolution": "Kept `int64_t` in the save (a saved field is never a plain `int`) and widened the readers instead: `RegionThreatAt()` and `MapClass::Cell_Threat()` return `int64_t` and the regroup distance in `TeamClass::AI()` is computed in 64 bits, in both games. No cast is left and the save format is unchanged.",
@@ -9621,10 +9621,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T20:36:56Z",
-      "updated": "2026-10-12T00:49:34Z",
+      "updated": "2026-10-12T00:50:05Z",
       "parent": "T-133",
       "source": "805bd6ba..1ad6409d",
       "resolution": "`HouseClass::Adjust_Threat()` in both games uses `static constexpr std::array` tables `kNeighborOffsets`/`kNeighborDivisors` and lost its Westwood banner.",
@@ -12769,11 +12769,11 @@
       "anchors": [
         {
           "path": "src/ra/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13449,15 +13449,15 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-12T00:52:00Z",
       "source": "c7463461..8395342a",
       "anchors": [
         {
           "path": "src/ra/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13471,24 +13471,36 @@
         "refactoring",
         "ra",
         "td",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-12T01:02:33Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
       "toDecide": "Merge them into `src/game/sim/stage_counter.h`, or leave one per game?\n\n- Merge on the frame-clock timer: TD's stage then advances by game frames, not by `AI()` calls. That is a simulation change wherever TD skips `AI()` for an object, and a `kSaveGameVersion` bump for TD with a new fixture; check with `tools/td_saveload_smoke.sh`.\n- Merge as a template over the countdown: exact, but keeps both mechanisms.\n- Leave them: nothing to do; the latent defects could still be closed by widening TD's fields to `int32_t` (save bump only).",
+      "decisions": [
+        {
+          "question": "Should ra::StageCounter and td::StageCounter become one game::StageCounter?",
+          "options": [
+            "Keep two, widen TD",
+            "Merge on the frame clock",
+            "Merge as a template",
+            "Leave as they are"
+          ],
+          "answer": "Merge on the frame clock",
+          "time": "2026-10-12T00:54:17Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13502,16 +13514,17 @@
         "refactoring",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-12T01:02:33Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
+      "resolution": "`UnitClass::Can_Fire()` is now a pure query; `Engage_Target()` starts the attack animation through the new non-const `Ready_To_Fire()`. `StageCounter`'s members and `FootClass::IsFiring` are no longer `mutable`, which put the FootClass family under `modernize-use-nodiscard` (55 members marked). TD save/load smoke identical; the dinosaurs were not seen on screen (no Covert Operations data).",
       "anchors": [
         {
           "path": "src/td/objects/stage_counter.h",
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/objects/unit.cc",
@@ -13528,7 +13541,7 @@
             "    }",
             "  }"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13543,12 +13556,13 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-12T01:02:33Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
+      "resolution": "Swept both files: removed 19 commented-out blocks and 4 inline commented-out conditions from `ra/objects/unit.cc` (the `Fetch_Stage()`/`Set_Stage()` block among them) and the `StageCounter Control` line from `td/map/mouse.h`.",
       "anchors": [
         {
           "path": "src/td/map/mouse.h",
@@ -13565,7 +13579,7 @@
             "",
             "extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/unit.cc",
@@ -13582,7 +13596,7 @@
             "      if (animation().rate() == 0) {",
             "        animation().set_stage(0);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

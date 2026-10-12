@@ -53,6 +53,7 @@
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "game/sim/heading.h"
+#include "game/sim/stage_counter.h"
 #include "ra/core/defines.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
@@ -60,7 +61,6 @@
 #include "ra/objects/mission.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/stage_counter.h"
 #include "ra/objects/type.h"
 
 class ArchiveReader;
@@ -218,7 +218,7 @@ class TechnoClass : public ObjectClass,
   **	This records the current cloak state for this vehicle.
   */
   game::CloakType Cloak;
-  StageCounter CloakingDevice;
+  game::StageCounter CloakingDevice;
   engine::platform::Timer<game::FrameTickSource> CloakDelay;
 
   /* (Targeting Computer)
@@ -406,10 +406,10 @@ class TechnoClass : public ObjectClass,
 
   // The stage counter that drives this object's animation: the frame of a
   // building's or a unit's art, stepped at the rate that was set.
-  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] game::StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageCounter& animation() const
+  [[nodiscard]] const game::StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -603,7 +603,7 @@ class TechnoClass : public ObjectClass,
   MissionClass mission_state_;
   RadioClass radio_;
   game::FlasherClass flasher_;
-  StageCounter animation_;
+  game::StageCounter animation_;
   CargoClass cargo_;
   game::Door door_;
 };

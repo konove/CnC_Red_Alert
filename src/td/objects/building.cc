@@ -1205,10 +1205,9 @@ void BuildingClass::AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-      animation().SetRate(
-          static_cast<unsigned char>(TheOptions().Normalize_Delay(ctrl->Rate)));
+      animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
     } else {
-      animation().SetRate(static_cast<unsigned char>(ctrl->Rate));
+      animation().SetRate(ctrl->Rate);
     }
     animation().set_stage(ctrl->Start);
     Mark(MARK_CHANGE);
@@ -1272,10 +1271,9 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
-        animation().SetRate(static_cast<unsigned char>(
-            TheOptions().Normalize_Delay(ctrl->Rate)));
+        animation().SetRate(TheOptions().Normalize_Delay(ctrl->Rate));
       } else {
-        animation().SetRate(static_cast<unsigned char>(ctrl->Rate));
+        animation().SetRate(ctrl->Rate);
       }
       animation().set_stage(ctrl->Start);
     }
@@ -3468,7 +3466,7 @@ void BuildingClass::Begin_Mode(game::BStateType bstate) {
     if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
-    animation().SetRate(static_cast<unsigned char>(rate));
+    animation().SetRate(rate);
     animation().set_stage(ctrl->Start);
   }
 }

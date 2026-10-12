@@ -47,10 +47,10 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/stage_counter.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/objects/object.h"
-#include "td/objects/stage_counter.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 
@@ -164,10 +164,10 @@ class TerrainClass final : public ObjectClass {
   static const char* INI_Name() { return "TERRAIN"; }
   // The frame counter of the crumbling (and, for a blossom tree, growing)
   // animation.
-  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] game::StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageCounter& animation() const
+  [[nodiscard]] const game::StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -212,7 +212,7 @@ class TerrainClass final : public ObjectClass {
   bool IsSporing : 1 = false;
 
   // Which frame is shown and when the next one is due.
-  StageCounter animation_;
+  game::StageCounter animation_;
 };
 
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);

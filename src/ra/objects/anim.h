@@ -49,9 +49,9 @@
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/core/object_heap.h"
+#include "game/sim/stage_counter.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
-#include "ra/objects/stage_counter.h"
 #include "ra/objects/type.h"
 
 class ArchiveReader;
@@ -123,10 +123,10 @@ class AnimClass final : public ObjectClass {
   **	File I/O.
   */
   // The frame counter of the animation.
-  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] game::StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageCounter& animation() const
+  [[nodiscard]] const game::StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -195,7 +195,7 @@ class AnimClass final : public ObjectClass {
   Fixed Accum;
 
   // Which frame is shown and when the next one is due.
-  StageCounter animation_;
+  game::StageCounter animation_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   AnimClass() = default;

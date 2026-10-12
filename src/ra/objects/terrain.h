@@ -46,9 +46,9 @@
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
+#include "game/sim/stage_counter.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
-#include "ra/objects/stage_counter.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
@@ -162,10 +162,10 @@ class TerrainClass final : public ObjectClass {
   static const char* INI_Name() { return "TERRAIN"; }
   // The frame counter of the crumbling (and, for a blossom tree, growing)
   // animation.
-  [[nodiscard]] StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] game::StageCounter& animation() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
-  [[nodiscard]] const StageCounter& animation() const
+  [[nodiscard]] const game::StageCounter& animation() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return animation_;
   }
@@ -187,7 +187,7 @@ class TerrainClass final : public ObjectClass {
   bool IsCrumbling : 1 = false;
 
   // Which frame is shown and when the next one is due.
-  StageCounter animation_;
+  game::StageCounter animation_;
 
   // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TerrainClass() = default;
