@@ -15,7 +15,9 @@
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/editor/mapedit.h"
 #include "td/map/world.h"
+#include "td/net/session.h"
 #include "td/objects/house.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
@@ -135,6 +137,60 @@ TEST_F(TechnoTest, TheSelectionBoxStaysPutWithoutAHealthBar) {
     EXPECT_EQ(drawn.health_bar_pixels, 0);
     EXPECT_EQ(drawn.box_top, -drawn.box_bottom);
   }
+}
+
+// A light tank standing on the map is a threat to the other house in its
+// region; captured, it has to become a threat to the house it was taken from
+// instead, or lifting it later takes the amount from the wrong house.
+TEST_F(TechnoTest, ACapturedObjectMovesItsThreatToTheOtherHouse) {
+  TheSession().type() = GAME_NORMAL;
+  const Cell cell = Cell::FromXY(40, 40);
+  const int region = MapEditClass::Cell_Region(cell);
+  HouseClass& capturer = *HouseClass::As_Pointer(HOUSE_GOOD);
+  const HouseClass& loser = *HouseClass::As_Pointer(HOUSE_BAD);
+
+  TechnoClass& unit = *base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_BAD);
+  const int risk = unit.Risk();
+  ASSERT_GT(risk, 0);
+  unit.Coord = cell.Center();
+  unit.IsInLimbo = false;
+  ASSERT_TRUE(unit.ObjectClass::Mark(MARK_DOWN));
+  ASSERT_EQ(capturer.RegionThreatAt(region), risk);
+  ASSERT_EQ(loser.RegionThreatAt(region), 0);
+
+  EXPECT_TRUE(unit.TechnoClass::Captured(&capturer));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), risk);
+  // The regions beside it got their shares back too.
+  EXPECT_EQ(capturer.RegionThreatAt(region + 1), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region + 1), risk / 2);
+
+  EXPECT_TRUE(unit.ObjectClass::Mark(MARK_UP));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), 0);
+
+  // Back in limbo, as the fixture expects to find it when it ends the game.
+  unit.IsInLimbo = true;
+}
+
+// Multiplayer games keep no threat, so a capture must not invent any.
+TEST_F(TechnoTest, ACaptureLeavesTheRegionsAloneOutsideTheCampaign) {
+  TheSession().type() = GAME_MODEM;
+  const Cell cell = Cell::FromXY(40, 40);
+  const int region = MapEditClass::Cell_Region(cell);
+  HouseClass& capturer = *HouseClass::As_Pointer(HOUSE_GOOD);
+  const HouseClass& loser = *HouseClass::As_Pointer(HOUSE_BAD);
+
+  TechnoClass& unit = *base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_BAD);
+  unit.Coord = cell.Center();
+  unit.IsInLimbo = false;
+  ASSERT_TRUE(unit.ObjectClass::Mark(MARK_DOWN));
+
+  EXPECT_TRUE(unit.TechnoClass::Captured(&capturer));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), 0);
+
+  unit.IsInLimbo = true;
 }
 
 // A vehicle with strength, which an object needs to perform a mission.

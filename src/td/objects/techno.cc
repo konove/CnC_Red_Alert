@@ -2898,8 +2898,20 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     /*
     **	Change ownership now.
     */
+    // The regions hold this object's threat by its owner (ObjectClass::Mark()),
+    // so it moves with the ownership: taken from the houses that feared the
+    // old owner here, given to those that fear the new one. Otherwise lifting
+    // the object later subtracts from houses that were never given the amount.
+    const bool is_threat_counted = IsDown && TheSession().type() == GAME_NORMAL;
+    const Cell threat_cell = Cell::Containing(Coord);
+    if (is_threat_counted) {
+      TheMap().at(threat_cell).Adjust_Threat(Owner(), -Risk());
+    }
     House = newowner;
     IsOwnedByPlayer = House == ThePlayer();
+    if (is_threat_counted) {
+      TheMap().at(threat_cell).Adjust_Threat(Owner(), Risk());
+    }
 
     return true;
   }
