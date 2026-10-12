@@ -137,7 +137,7 @@ class HelpClass : public TabClass {
   *mouse *	remains stationary while this countdown timer expires, then the
   *help text *	will pop up.
   */
-  static engine::platform::Timer<engine::platform::SystemTickSource>
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
       CountDownTimer;
 
   /*

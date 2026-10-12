@@ -94,7 +94,7 @@ class TimerTest : public ::testing::Test {
 };
 
 TEST_F(TimerTest, CountsDownAndStopsAtZero) {
-  const Timer<FakeTickSource> timer(30);
+  const Countdown<FakeTickSource> timer(30);
   EXPECT_TRUE(timer.IsRunning());
   EXPECT_TRUE(timer.HasTimeLeft());
   FakeTickSource::now += 10;
@@ -106,7 +106,7 @@ TEST_F(TimerTest, CountsDownAndStopsAtZero) {
 }
 
 TEST_F(TimerTest, StopFreezesAndStartResumes) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   FakeTickSource::now += 10;
   timer.Stop();
   EXPECT_FALSE(timer.IsRunning());
@@ -119,7 +119,7 @@ TEST_F(TimerTest, StopFreezesAndStartResumes) {
 }
 
 TEST_F(TimerTest, SetWhileStoppedRestartsTheCountdown) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   timer.Stop();
   timer.Set(20);
   EXPECT_TRUE(timer.IsRunning());
@@ -128,7 +128,7 @@ TEST_F(TimerTest, SetWhileStoppedRestartsTheCountdown) {
 }
 
 TEST_F(TimerTest, StoppedAtZeroReadsFinished) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   timer.Set(0);
   timer.Stop();
   EXPECT_FALSE(timer.IsRunning());
@@ -162,11 +162,11 @@ TEST_F(TimerTest, StopwatchResetZeroesAndRuns) {
 using TimerSerializeTest = TimerTest;
 
 TEST_F(TimerSerializeTest, RunningTimerKeepsItsRemainingValue) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   FakeTickSource::now += 20;
   ASSERT_EQ(timer.Remaining(), 30);
 
-  const Timer<FakeTickSource> restored = RoundTrip(timer, 500);
+  const Countdown<FakeTickSource> restored = RoundTrip(timer, 500);
   EXPECT_EQ(restored.Remaining(), 30);
   EXPECT_TRUE(restored.IsRunning());
 
@@ -175,11 +175,11 @@ TEST_F(TimerSerializeTest, RunningTimerKeepsItsRemainingValue) {
 }
 
 TEST_F(TimerSerializeTest, StoppedTimerStaysStopped) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   FakeTickSource::now += 5;
   timer.Stop();
 
-  Timer<FakeTickSource> restored = RoundTrip(timer, 500);
+  Countdown<FakeTickSource> restored = RoundTrip(timer, 500);
   EXPECT_FALSE(restored.IsRunning());
   EXPECT_EQ(restored.Remaining(), 45);
   FakeTickSource::now += 100;
@@ -191,11 +191,11 @@ TEST_F(TimerSerializeTest, StoppedTimerStaysStopped) {
 }
 
 TEST_F(TimerSerializeTest, FinishedTimerStaysFinished) {
-  Timer<FakeTickSource> timer(10);
+  Countdown<FakeTickSource> timer(10);
   FakeTickSource::now += 100;
   ASSERT_TRUE(timer.IsFinished());
 
-  const Timer<FakeTickSource> restored = RoundTrip(timer, 500);
+  const Countdown<FakeTickSource> restored = RoundTrip(timer, 500);
   EXPECT_TRUE(restored.IsFinished());
   EXPECT_EQ(restored.Remaining(), 0);
 }
@@ -224,7 +224,7 @@ TEST_F(TimerSerializeTest, StoppedStopwatchStaysStopped) {
 }
 
 TEST_F(TimerSerializeTest, NegativeRemainingValueIsRejected) {
-  Timer<FakeTickSource> timer(50);
+  Countdown<FakeTickSource> timer(50);
   EXPECT_FALSE(LoadsRaw(timer, -5, true));
   EXPECT_EQ(timer.Remaining(), 50);
   EXPECT_TRUE(timer.IsRunning());

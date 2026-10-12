@@ -283,7 +283,7 @@ class AircraftClass : public FootClass {
   *itself. *	When this timer expires and this aircraft has a sight range,
   *then the *	look around process will occur.
   */
-  engine::platform::Timer<game::FrameTickSource> SightTimer{0};
+  engine::platform::Countdown<game::FrameTickSource> SightTimer{0};
 
   /*
   **	Most attack aircraft can make several attack runs. This value contains

@@ -1844,7 +1844,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 void Animate_Cursor(Presentation& show, int pos, int ypos) {
   static int _lastpos;
   static bool _state;
-  static engine::platform::Timer<engine::platform::SystemTickSource> _timer;
+  static engine::platform::Countdown<engine::platform::SystemTickSource> _timer;
 
   ypos += 7;  // move cursor to bottom of letter
 
@@ -2090,7 +2090,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Call_Back_Delay(Presentation& show, int time) {
-  engine::platform::Timer<engine::platform::SystemTickSource> cd;
+  engine::platform::Countdown<engine::platform::SystemTickSource> cd;
 
   if ((!ControlQ) &&
       (engine::window::IsCtrlDown() &&

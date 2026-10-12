@@ -116,7 +116,7 @@ class PowerClass : public RadarClass {
   **	If the power bar should be rendered with some flash effect then
   **	this specifies the duration that the flash will occur.
   */
-  engine::platform::Timer<game::FrameTickSource> FlashTimer;
+  engine::platform::Countdown<game::FrameTickSource> FlashTimer;
 
   int RecordedDrain{-1};
   int RecordedPower{-1};

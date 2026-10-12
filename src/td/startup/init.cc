@@ -664,7 +664,7 @@ bool Select_Game(bool fade) {
   int selection = 0;        // the default selection
   bool process = true;      // false = break out of while loop
   bool display = true;
-  engine::platform::Timer<engine::platform::SystemTickSource> count;
+  engine::platform::Countdown<engine::platform::SystemTickSource> count;
   int cd_index = 0;
 
   /*
@@ -1157,7 +1157,8 @@ bool Select_Game(bool fade) {
                   std::array<std::byte, 1024> temp_buffer{};
 
                   DLOG(INFO) << "C&C95 - Creating timer class instance.";
-                  engine::platform::Timer<engine::platform::SystemTickSource>
+                  engine::platform::Countdown<
+                      engine::platform::SystemTickSource>
                       ptimer;
 
                   DLOG(INFO) << "C&C95 - Entering read loop.";

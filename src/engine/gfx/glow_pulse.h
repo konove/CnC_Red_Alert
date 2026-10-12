@@ -60,7 +60,7 @@ class GlowPulse {
   [[nodiscard]] int fade() const { return fade_; }
 
  private:
-  engine::platform::Timer<T> timer_;
+  engine::platform::Countdown<T> timer_;
   int64_t period_;
   int fade_ = kMaxFade;
   int step_ = -kFadeStep;  // Signed; flips at either end of the range.

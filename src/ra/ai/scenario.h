@@ -132,13 +132,13 @@ class ScenarioClass {
   *examine *	this timer. The current value of this timer will display on the
   *game *	screen.
   */
-  engine::platform::Timer<game::FrameTickSource> MissionTimer;
+  engine::platform::Countdown<game::FrameTickSource> MissionTimer;
 
   /*
   **	The shroud regrowth (if enabled) is regulated by this timer. When the
   **	timer expires, the shroud will regrow one step.
   */
-  engine::platform::Timer<game::FrameTickSource> ShroudTimer;
+  engine::platform::Countdown<game::FrameTickSource> ShroudTimer;
 
   /*
   **	The scenario number.
@@ -347,13 +347,13 @@ class ScenarioClass {
   **	fading to b&w or color will progress.  This timer represents a
   ** percentage of the Options.Get_Saturation() to fade towards.
   */
-  engine::platform::Timer<game::FrameTickSource> FadeTimer;
+  engine::platform::Countdown<game::FrameTickSource> FadeTimer;
 
   //	For endgame auto-sonar pulse.
   //	Timer to set the period for checking if an auto-sonar pulse should be
   // performed. 	This will take place if a player has nothing but subs
   // left in the game.
-  engine::platform::Timer<game::FrameTickSource> AutoSonarTimer;
+  engine::platform::Countdown<game::FrameTickSource> AutoSonarTimer;
 
   bool bLocalProposesDraw = false;  //	True if the local player in a 2-player game has
                             // a draw offer extended.

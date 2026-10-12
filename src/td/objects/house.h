@@ -186,7 +186,7 @@ class HouseClass {
   */
   bool IsFreeHarvester : 1 = false;
 
-  engine::platform::Timer<game::FrameTickSource> FreeHarvester;
+  engine::platform::Countdown<game::FrameTickSource> FreeHarvester;
 
   /*
   **	These super weapon control objects are used to control the recharge
@@ -215,13 +215,13 @@ class HouseClass {
   *expires *	and the house has been alerted, then it will create a set of
   *attack *	teams.
   */
-  engine::platform::Timer<game::FrameTickSource> AlertTime;
+  engine::platform::Countdown<game::FrameTickSource> AlertTime;
 
   /*
   **	This timer is used to handle the delay between some catastrophic
   **	event trigger and when it is actually carried out.
   */
-  engine::platform::Timer<game::FrameTickSource> BorrowedTime;
+  engine::platform::Countdown<game::FrameTickSource> BorrowedTime;
 
   /*
   **	This is the last working scan bits for buildings. If a building is
@@ -558,13 +558,13 @@ class HouseClass {
   ** now in range.  If the Ion cannon was in range it will toggle out
   ** of range.
   */
-  engine::platform::Timer<game::FrameTickSource> IonControl;
+  engine::platform::Countdown<game::FrameTickSource> IonControl;
   int IonOldStage = 0;
 
-  engine::platform::Timer<game::FrameTickSource> AirControl;
+  engine::platform::Countdown<game::FrameTickSource> AirControl;
   int AirOldStage = 0;
 
-  engine::platform::Timer<game::FrameTickSource> NukeControl;
+  engine::platform::Countdown<game::FrameTickSource> NukeControl;
   int NukeOldStage = 0;
 #endif
 
@@ -572,7 +572,7 @@ class HouseClass {
   ** This timer is for multiplayer mode; for a computer-controlled house,
   ** it determines how long until this player "blitzes" the hapless humans.
   */
-  engine::platform::Timer<game::FrameTickSource> BlitzTime;
+  engine::platform::Countdown<game::FrameTickSource> BlitzTime;
 
   /*
   **	This count down timer class decrements and then changes
@@ -620,27 +620,27 @@ class HouseClass {
   **	General low-power related damaged is doled out whenever this timer
   **	expires.
   */
-  engine::platform::Timer<game::FrameTickSource> DamageTime;
+  engine::platform::Countdown<game::FrameTickSource> DamageTime;
 
   /*
   **	Team creation is done whenever this timer expires.
   */
-  engine::platform::Timer<game::FrameTickSource> TeamTime;
+  engine::platform::Countdown<game::FrameTickSource> TeamTime;
 
   /*
   **	This controls the rate that the trigger time logic is processed.
   */
-  engine::platform::Timer<game::FrameTickSource> TriggerTime;
+  engine::platform::Countdown<game::FrameTickSource> TriggerTime;
 
   /*
   **	At various times, the computer may announce the player's condition. The
   *following *	variables are used as countdown timers so that these
   *announcements are paced *	far enough appart to reduce annoyance.
   */
-  engine::platform::Timer<game::FrameTickSource> SpeakAttackDelay;
-  engine::platform::Timer<game::FrameTickSource> SpeakPowerDelay;
-  engine::platform::Timer<game::FrameTickSource> SpeakMoneyDelay;
-  engine::platform::Timer<game::FrameTickSource> SpeakMaxedDelay;
+  engine::platform::Countdown<game::FrameTickSource> SpeakAttackDelay;
+  engine::platform::Countdown<game::FrameTickSource> SpeakPowerDelay;
+  engine::platform::Countdown<game::FrameTickSource> SpeakMoneyDelay;
+  engine::platform::Countdown<game::FrameTickSource> SpeakMaxedDelay;
 };
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);

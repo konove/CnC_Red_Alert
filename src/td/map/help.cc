@@ -87,7 +87,7 @@ int16_t HelpClass::OverlapList[30] = {REFRESH_EOL};
 
 const char* HelpClass::HelpText;
 
-engine::platform::Timer<engine::platform::SystemTickSource>
+engine::platform::Countdown<engine::platform::SystemTickSource>
     HelpClass::CountDownTimer;
 
 /***********************************************************************************************

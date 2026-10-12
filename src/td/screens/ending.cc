@@ -102,7 +102,7 @@ void GDI_Ending() {
     Play_Movie("GDIEND1");
   }
 
-  engine::platform::Timer<engine::platform::SystemTickSource> count;
+  engine::platform::Countdown<engine::platform::SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
@@ -138,7 +138,7 @@ void GDI_Ending() {
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   game::TheKeyboard().Clear();
-  //	Timer<SystemTickSource> count;
+  //	Countdown<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Remaining()) {
     Call_Back();
@@ -274,7 +274,7 @@ void Nod_Ending() {
   TheGameState().preserve_movie_screen() = true;
   Play_Movie(fname);
 
-  engine::platform::Timer<engine::platform::SystemTickSource> count;
+  engine::platform::Countdown<engine::platform::SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
@@ -310,7 +310,7 @@ void Nod_Ending() {
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   game::TheKeyboard().Clear();
-  //	Timer<SystemTickSource> count;
+  //	Countdown<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Remaining()) {
     Call_Back();

@@ -200,7 +200,7 @@ class FootClass : public TechnoClass {
   **	When there is a complete findpath failure, this timer is initialized so
   **	that a findpath won't be calculated until this timer expires.
   */
-  engine::platform::Timer<game::FrameTickSource> PathDelay;
+  engine::platform::Countdown<game::FrameTickSource> PathDelay;
   static constexpr int kPathDelay = 15;
   static constexpr int kPathRetry = 10;
   int TryTryAgain;  // Number of retry attempts remaining.
@@ -210,7 +210,7 @@ class FootClass : public TechnoClass {
   ** have expired yet.  It is used so a building does not keep calling
   ** for help from the same attacker.
   */
-  engine::platform::Timer<game::FrameTickSource> BaseAttackTimer;
+  engine::platform::Countdown<game::FrameTickSource> BaseAttackTimer;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

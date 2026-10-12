@@ -176,7 +176,7 @@ class MissionClass {
   char step_ = 0;
 
   // Counts down to the next call of the mission function.
-  engine::platform::Timer<game::FrameTickSource> timer_;
+  engine::platform::Countdown<game::FrameTickSource> timer_;
 
   // The mission names, as scenario files spell them.
   static base::EnumArray<MissionType, const char*, kMissionCount> Missions;

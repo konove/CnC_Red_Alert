@@ -2453,15 +2453,28 @@
       "effort": "m",
       "tags": [
         "refactoring",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T05:07:10Z",
       "parent": "T-235",
-      "toDecide": "- **Rename** `Timer<T>` to `Countdown<T>`: 162 uses; `td/map/credits.h` has an `int Countdown` member the new name would shadow, to rename first.\n- **Keep** `Timer`, the name `docs/TIMER_UNIFICATION_PLAN.md` kept."
+      "resolution": "Renamed `engine::platform::Timer<T>` to `Countdown<T>` (163 uses, 70 files; `timer.h` keeps its name) and the `int Countdown` members of both games' `CreditClass` to `tick_delay_`. `docs/TIMER_UNIFICATION_PLAN.md` notes the rename; the strict build and all 2039 tests pass.",
+      "toDecide": "- **Rename** `Timer<T>` to `Countdown<T>`: 162 uses; `td/map/credits.h` has an `int Countdown` member the new name would shadow, to rename first.\n- **Keep** `Timer`, the name `docs/TIMER_UNIFICATION_PLAN.md` kept.",
+      "decisions": [
+        {
+          "question": "Rename engine::platform::Timer<T> to Countdown<T>?",
+          "options": [
+            "Rename to Countdown<T> (Recommended)",
+            "Rename, and rename the Credits members too",
+            "Rename to CountdownTimer<T>",
+            "Keep Timer"
+          ],
+          "answer": "Rename, and rename the Credits members too",
+          "time": "2026-10-12T05:01:36Z"
+        }
+      ]
     },
     {
       "id": "T-87",

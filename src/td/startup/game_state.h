@@ -96,8 +96,8 @@ class GameState {
 
   // Paces the mission briefing: each line stays up until this runs out or
   // the speech over it finishes.
-  engine::platform::Timer<engine::platform::SystemTickSource>& speech_timer()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::platform::Countdown<engine::platform::SystemTickSource>&
+  speech_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return speech_timer_;
   }
 
@@ -152,7 +152,7 @@ class GameState {
   char version_text_[kVersionTextLength]{};
 
   SpecialDialogType special_dialog_ = SDLG_NONE;
-  engine::platform::Timer<engine::platform::SystemTickSource> speech_timer_{
+  engine::platform::Countdown<engine::platform::SystemTickSource> speech_timer_{
       int64_t{0}};
 
   engine::window::InputEvent unknown_input_;

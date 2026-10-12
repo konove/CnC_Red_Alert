@@ -195,7 +195,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  engine::platform::Timer<game::FrameTickSource> SuspendTimer;
+  engine::platform::Countdown<game::FrameTickSource> SuspendTimer;
 
   /*
   **	If there is a trigger that should be attached to every member of this
@@ -256,7 +256,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  engine::platform::Timer<game::FrameTickSource> TimeOut;
+  engine::platform::Countdown<game::FrameTickSource> TimeOut;
 
   int TMission_Formation();
   int TMission_Attack();

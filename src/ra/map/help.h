@@ -134,7 +134,8 @@ class HelpClass : public TabClass {
   *mouse *	remains stationary while this countdown timer expires, then the
   *help text *	will pop up.
   */
-  engine::platform::Timer<engine::platform::SystemTickSource> CountDownTimer;
+  engine::platform::Countdown<engine::platform::SystemTickSource>
+      CountDownTimer;
 
   /*
   **	This is a calculated cell offset list (from the Map.TacticalCell) that

@@ -1040,7 +1040,7 @@ void Animate_Cursor(int pos, int ypos) {
   static int _lastpos = 0;
   // 0 draws the cursor transparent (hidden), 1 draws it blue.
   static int _state;
-  static engine::platform::Timer<engine::platform::SystemTickSource> _timer;
+  static engine::platform::Countdown<engine::platform::SystemTickSource> _timer;
 
   ypos += 6;  // move cursor to bottom of letter
 
@@ -1076,7 +1076,7 @@ void TickScoreScreen(const int ticks) {
 
   // ServiceRealTime() presents the frame, so each pass lasts one display
   // refresh and the objects animate at the refresh rate.
-  const engine::platform::Timer<engine::platform::SystemTickSource> wait{
+  const engine::platform::Countdown<engine::platform::SystemTickSource> wait{
       ControlQ ? 0 : ticks};
   do {
     ServiceRealTime();

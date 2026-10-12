@@ -103,7 +103,7 @@ class SuperClass {
   bool IsReady : 1 = false;
   bool IsSuspended : 1 = false;
 
-  engine::platform::Timer<game::FrameTickSource> Control;
+  engine::platform::Countdown<game::FrameTickSource> Control;
   int OldStage = -1;
   int SuspendTime = 0;
 

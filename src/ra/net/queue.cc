@@ -245,7 +245,7 @@ static int Can_Advance(engine::net::ConnManClass* net, int max_ahead,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv);
 static int Process_Reconnect_Dialog(
-    const engine::platform::Timer<engine::platform::SystemTickSource>*
+    const engine::platform::Countdown<engine::platform::SystemTickSource>*
         timeout_timer,
     std::span<const int64_t> their_frame, int num_conn, bool reconn,
     bool fresh);
@@ -271,7 +271,7 @@ static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, engine::net::ConnManClass* net,
-    const engine::platform::Timer<game::FrameTickSource>* skip_crc,
+    const engine::platform::Countdown<game::FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv);
@@ -683,7 +683,7 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Timing variables
   //........................................................................
-  static engine::platform::Timer<game::FrameTickSource>
+  static engine::platform::Countdown<game::FrameTickSource>
       skip_crc;  // to delay the CRC check
   //	static TCountDownTimerClass skip_crc;	// to delay the CRC check
 
@@ -984,11 +984,11 @@ static RetcodeType Wait_For_Players(
   //........................................................................
   // Timing variables
   //........................................................................
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       retry_timer;  // time between FRAMESYNC packet resends
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       dialog_timer;  // time to pop up a dialog
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       timeout_timer;  // general-purpose timeout
 
   //........................................................................
@@ -2200,7 +2200,7 @@ static int Can_Advance(engine::net::ConnManClass* net, int max_ahead,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(
-    const engine::platform::Timer<engine::platform::SystemTickSource>*
+    const engine::platform::Countdown<engine::platform::SystemTickSource>*
         timeout_timer,
     std::span<const int64_t> their_frame, int num_conn, bool reconn,
     bool fresh) {
@@ -3431,7 +3431,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  *=========================================================================*/
 static int Execute_DoList(
     int max_houses, HousesType base_house, engine::net::ConnManClass* net,
-    const engine::platform::Timer<game::FrameTickSource>* skip_crc,
+    const engine::platform::Countdown<game::FrameTickSource>* skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv) {
   int index = 0;

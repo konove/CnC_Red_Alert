@@ -189,8 +189,8 @@ using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
 // waits it out.
-static engine::platform::Timer<engine::platform::SystemTickSource> frame_timer{
-    int64_t{0}};
+static engine::platform::Countdown<engine::platform::SystemTickSource>
+    frame_timer{int64_t{0}};
 
 // Measures how long one frame's logic takes, for the multiplayer frame rate.
 static engine::platform::Stopwatch<engine::platform::SystemTickSource>
@@ -1214,10 +1214,10 @@ static void Message_Input(engine::window::KeyNumber& input) {
  *text fade color.                                                 *
  *=============================================================================================*/
 bool Color_Cycle() {
-  static engine::platform::Timer<engine::platform::SystemTickSource> _timer(
+  static engine::platform::Countdown<engine::platform::SystemTickSource> _timer(
       int64_t{0});
-  static engine::platform::Timer<engine::platform::SystemTickSource> _ftimer(
-      int64_t{0});
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
+  _ftimer(int64_t{0});
   static bool _up = false;
   bool changed = false;
 

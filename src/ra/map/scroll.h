@@ -59,7 +59,8 @@ class ScrollClass : public HelpClass {
   *reaches zero, *	scroll the map in the direction required and reset this
   *timer.
   */
-  static engine::platform::Timer<engine::platform::SystemTickSource> Counter;
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
+      Counter;
 
   /*
   ** Inertia control for scrolling

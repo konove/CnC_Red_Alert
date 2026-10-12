@@ -186,7 +186,7 @@ void Choose_Side() {
   //}
 
   int statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
-  engine::platform::Timer<engine::platform::SystemTickSource> sample_timer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(
       std::make_unique<ScorePrintClass>(show, TXT_GDI_NAME, 0, 180, yellowpal));

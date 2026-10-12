@@ -642,7 +642,7 @@ void Send_Statistics_Packet() {
   ** Send it.....
   */
 #ifdef _WIN32
-  engine::platform::Timer<engine::platform::SystemTickSource> send_timer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> send_timer;
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
   while (!Send_Data_To_DDE_Server(packet.data(),
                                   static_cast<int>(packet.size()),

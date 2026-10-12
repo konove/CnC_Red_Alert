@@ -80,7 +80,7 @@ class CrateClass {
     CrateTimer.Stop();
   }
 
-  engine::platform::Timer<game::FrameTickSource> CrateTimer;
+  engine::platform::Countdown<game::FrameTickSource> CrateTimer;
   ra::Cell Cell = ra::Cell::None();
 };
 

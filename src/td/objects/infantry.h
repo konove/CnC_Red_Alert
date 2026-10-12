@@ -105,7 +105,7 @@ class InfantryClass final : public FootClass {
   *an *	amount of time has expired subsiquent to an significant event. This is
   *the *	timer the counts down.
   */
-  engine::platform::Timer<game::FrameTickSource> Comment;
+  engine::platform::Countdown<game::FrameTickSource> Comment;
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

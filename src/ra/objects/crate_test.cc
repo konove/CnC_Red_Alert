@@ -60,7 +60,7 @@ TEST(CrateSerializeTest, DefaultCrateHasNoCellOrExpiry) {
 TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
   game::TheGameClock().set_frame(100);
   Cell cell = Cell::FromIndex(42);
-  engine::platform::Timer<game::FrameTickSource> timer(30);
+  engine::platform::Countdown<game::FrameTickSource> timer(30);
   CrateSink fixture;
   ArchiveWriter fixture_writer(fixture);
   fixture_writer(cell, timer);
@@ -91,7 +91,7 @@ TEST(CrateSerializeTest, RejectsCellsOutsideTheMap) {
   for (Cell cell : {Cell::FromIndex(-2), Cell::FromIndex(MAP_CELL_TOTAL)}) {
     CrateSink pipe;
     ArchiveWriter writer(pipe);
-    engine::platform::Timer<game::FrameTickSource> timer(30);
+    engine::platform::Countdown<game::FrameTickSource> timer(30);
     writer(cell, timer);
     CrateClass crate;
     EXPECT_FALSE(ReadCrate(crate, pipe.bytes));

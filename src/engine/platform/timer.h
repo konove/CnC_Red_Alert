@@ -21,13 +21,13 @@
 // SystemTicks()        -- real time in 60 Hz ticks.
 // SystemMilliseconds() -- real time in milliseconds.
 // Stopwatch<T>         -- counts up with stop/start (pause/resume).
-// Timer<T>             -- counts down toward zero with stop/start support.
+// Countdown<T>             -- counts down toward zero with stop/start support.
 //
 // T is a tick source: a class with a static `Tick()` returning a monotonically
 // increasing count. SystemTickSource (below) ticks at 60 Hz of real time; each
 // game's FrameTickSource, in its game_clock.h, ticks once per game frame.
 //
-// Stopwatch and Timer serialize by value through Serialize().
+// Stopwatch and Countdown serialize by value through Serialize().
 
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
@@ -158,10 +158,11 @@ void Stopwatch<T>::Serialize(Archive& ar) {
 // restarts the countdown. It is a Stopwatch measured against a duration, so
 // pausing works the same way in both.
 template <TickSource T>
-class Timer {
+class Countdown {
  public:
   // Starts counting down from `duration` ticks.
-  explicit Timer(const int64_t duration = 0) noexcept : duration_(duration) {}
+  explicit Countdown(const int64_t duration = 0) noexcept
+      : duration_(duration) {}
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
   [[nodiscard]] int64_t Remaining() const {
@@ -208,7 +209,7 @@ class Timer {
 
 template <TickSource T>
 template <class Archive>
-void Timer<T>::Serialize(Archive& ar) {
+void Countdown<T>::Serialize(Archive& ar) {
   int64_t value = Remaining();
   bool running = IsRunning();
   ar(value, running);

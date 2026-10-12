@@ -373,7 +373,7 @@ int Test_Null_Modem() {
   ** Send hangup command
   */
   SerialPort->Write_To_Serial_Port("ATH\r", strlen("ATH\r"));
-  engine::platform::Timer<engine::platform::SystemTickSource> time;
+  engine::platform::Countdown<engine::platform::SystemTickSource> time;
   time.Set(2 * 60);
   while (time.Remaining()) {
   }
@@ -3267,7 +3267,7 @@ int Com_Scenario_Dialog() {
   uint16_t magic_number = 0;
   uint16_t crc = 0;
   bool ready_to_go = false;
-  engine::platform::Timer<engine::platform::SystemTickSource> ready_time;
+  engine::platform::Countdown<engine::platform::SystemTickSource> ready_time;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -6766,7 +6766,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    engine::platform::Timer<engine::platform::SystemTickSource> wait;
+    engine::platform::Countdown<engine::platform::SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
     while (wait.Remaining()) {
@@ -6942,7 +6942,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    engine::platform::Timer<engine::platform::SystemTickSource> wait;
+    engine::platform::Countdown<engine::platform::SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
     while (wait.Remaining()) {

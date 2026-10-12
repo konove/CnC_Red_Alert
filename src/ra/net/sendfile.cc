@@ -144,7 +144,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
 
   engine::net::IPXAddressClass sender_address;
 
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   /*
@@ -540,7 +540,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   // rather than the shared string table.
   std::string info_string(TextString(TXT_SENDING_SCENARIO));
 
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   Format_Window_String(

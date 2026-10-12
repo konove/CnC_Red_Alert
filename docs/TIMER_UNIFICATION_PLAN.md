@@ -6,6 +6,9 @@ Written 2026-09-27.
 b584c2eb (RA) and 4fa8a9cb (TD), step 5 8453f575, step 6 50e051b5 and the commit after it. Both
 games now time everything with `Stopwatch<T>`/`Timer<T>` from `engine/platform/timer.h`.
 
+**Renamed since (2026-10-11, T-86):** `Timer<T>` is now `Countdown<T>`, so that the two names say
+which way each counts. The rest of this plan keeps the name it was written with.
+
 ## Context
 
 The tree has three implementations of the same two ideas (count up with pause, count down to zero),

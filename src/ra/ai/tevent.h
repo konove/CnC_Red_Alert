@@ -127,7 +127,7 @@ struct TDEventClass {
   /*
   **	Timer based events require a special timer control handler.
   */
-  engine::platform::Timer<game::FrameTickSource> EventTimer;
+  engine::platform::Countdown<game::FrameTickSource> EventTimer;
 
   // Saved-game support.
   template <class Archive>

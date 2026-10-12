@@ -197,7 +197,8 @@ static void RecordCarryover(const game::ObjectHeap<T>& heap) {
 
 // Paces the mission briefing: each line is left up for three seconds, or
 // until the speech playing over it finishes. Only this file shows briefings.
-static engine::platform::Timer<engine::platform::SystemTickSource> speech_timer;
+static engine::platform::Countdown<engine::platform::SystemTickSource>
+    speech_timer;
 
 static int build_tech[11] = {
     2, 2,  // Tech level 0 and 1 are the same (tech 0 is never used).
@@ -1164,7 +1165,7 @@ void Do_Restart() {
   /*
   ** Start a timer going, before we restart the scenario
   */
-  engine::platform::Timer<engine::platform::SystemTickSource> timer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> timer;
   timer.Set(int64_t{kTicksPerSecond} * 4);
   TheTheme().Queue_Song(THEME_QUIET);
 
@@ -1459,7 +1460,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
       engine::audio::TheAudio().Play(briefsnd, 255,
                                      TheOptions().Normalize_Volume(135));
-      engine::platform::Timer<engine::platform::SystemTickSource> cd;
+      engine::platform::Countdown<engine::platform::SystemTickSource> cd;
       cd.Set(5);
       do {
         ServiceRealTime();

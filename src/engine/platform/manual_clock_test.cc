@@ -41,7 +41,7 @@ TEST(ManualClockTest, TimeMovesOnlyWhenAdvanced) {
 
 TEST(ManualClockTest, ATimerRunsOutWhenTheClockIsAdvancedPastIt) {
   ManualClock clock;
-  const Timer<SystemTickSource> wait{3};
+  const Countdown<SystemTickSource> wait{3};
 
   clock.Advance(2);
   EXPECT_TRUE(wait.HasTimeLeft());

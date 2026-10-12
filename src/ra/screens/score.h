@@ -152,7 +152,7 @@ class ScoreAnimClass {
   int XPos;
   int YPos;
   // Counts down to the next animation step; Update() does nothing until then.
-  engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> AnimTimer;
   // Shape file, for the shape-style animations; empty otherwise.
   std::span<const std::byte> DataPtr;
   // Text, for the text-style animations; empty otherwise.

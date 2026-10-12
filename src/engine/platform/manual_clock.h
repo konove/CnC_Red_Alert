@@ -12,7 +12,7 @@ namespace engine::platform {
 
 // A Clock that moves only when told to. While one exists it is the clock in
 // use (CurrentClock()), so everything that waits on real time -- a
-// Timer<SystemTickSource>, a fade, a frame limiter -- waits on Advance()
+// Countdown<SystemTickSource>, a fade, a frame limiter -- waits on Advance()
 // instead. A test, or a scripted run of the game, advances it a tick at a
 // time. Sleeping advances it too, instead of blocking: a loop that sleeps
 // until a deadline reaches it at once. Code that waits without sleeping or
@@ -24,7 +24,7 @@ namespace engine::platform {
 //
 // Example:
 //   ManualClock clock;
-//   const Timer<SystemTickSource> wait{3};
+//   const Countdown<SystemTickSource> wait{3};
 //   clock.Advance(3);
 //   EXPECT_FALSE(wait.HasTimeLeft());
 class ManualClock final : public Clock {

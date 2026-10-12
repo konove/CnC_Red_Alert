@@ -73,7 +73,7 @@ class TabClass : public SidebarClass {
 
   CreditClass Credits;
 
-  engine::platform::Timer<game::FrameTickSource> FlasherTimer;
+  engine::platform::Countdown<game::FrameTickSource> FlasherTimer;
 
  protected:
   /*
@@ -84,7 +84,7 @@ class TabClass : public SidebarClass {
  private:
   static void Set_Active(int select);
 
-  engine::platform::Timer<game::FrameTickSource> MoneyFlashTimer;
+  engine::platform::Countdown<game::FrameTickSource> MoneyFlashTimer;
 
   static std::span<const std::byte> TabShape;
 };

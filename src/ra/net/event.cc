@@ -957,8 +957,8 @@ void EventClass::Execute() {
       ** we're not already inside a dialog box routine!)
       */
       if (TheGameState().special_dialog() == SDLG_NONE) {
-        const engine::platform::Timer<engine::platform::SystemTickSource> timer{
-            int64_t{kTicksPerSecond} * 4};
+        const engine::platform::Countdown<engine::platform::SystemTickSource>
+            timer{int64_t{kTicksPerSecond} * 4};
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);
 

@@ -135,7 +135,8 @@ class MouseClass : public ScrollClass {
   /*
   **	For animating mouse shapes, this controls the frame and animation rate.
   */
-  static engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
+      AnimTimer;
   int Frame = 0;
 };
 

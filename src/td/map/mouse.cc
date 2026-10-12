@@ -74,7 +74,7 @@ std::span<const std::byte> MouseClass::MouseShapes;
 **	This is the timer that controls the mouse animation. It is always at a
 *fixed *	rate so it uses the constant system timer.
 */
-engine::platform::Timer<engine::platform::SystemTickSource>
+engine::platform::Countdown<engine::platform::SystemTickSource>
     MouseClass::AnimTimer;
 
 /*

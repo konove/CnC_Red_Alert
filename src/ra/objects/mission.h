@@ -169,7 +169,7 @@ class MissionClass {
   int step_ = 0;
 
   // Counts down to the next call of the mission function.
-  engine::platform::Timer<game::FrameTickSource> timer_{0};
+  engine::platform::Countdown<game::FrameTickSource> timer_{0};
 };
 
 /****************************************************************************

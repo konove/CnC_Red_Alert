@@ -60,7 +60,7 @@ namespace ra {
 
 #define SCROLL_DELAY 1
 
-engine::platform::Timer<engine::platform::SystemTickSource>
+engine::platform::Countdown<engine::platform::SystemTickSource>
     ScrollClass::Counter;
 
 /***********************************************************************************************

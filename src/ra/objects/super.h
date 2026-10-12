@@ -89,7 +89,7 @@ class SuperClass {
   bool IsOneTime : 1 = false;
   bool IsReady : 1 = false;
 
-  engine::platform::Timer<game::FrameTickSource> Control;
+  engine::platform::Countdown<game::FrameTickSource> Control;
   int OldStage = -1;
 
   VoxType VoxRecharge = VOX_NONE;

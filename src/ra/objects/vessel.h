@@ -87,13 +87,13 @@ class VesselClass : public DriveClass {
   /*
   ** If this is an LST, is it time to shut the door?
   */
-  engine::platform::Timer<game::FrameTickSource> DoorShutCountDown{0};
+  engine::platform::Countdown<game::FrameTickSource> DoorShutCountDown{0};
 
   /*
   ** If this is a sub, has the sonar pulse worn off, such that we can
   ** re-submerge?
   */
-  engine::platform::Timer<game::FrameTickSource> PulseCountDown{0};
+  engine::platform::Countdown<game::FrameTickSource> PulseCountDown{0};
 
   VesselClass(VesselType classid, HousesType house);
   void* operator new(std::size_t size) noexcept;

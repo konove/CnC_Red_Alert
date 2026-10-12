@@ -124,7 +124,7 @@ static void CyclePalette() {
   // anew rather than reading the slot back.
   constexpr engine::gfx::PaletteColor kEmberBase(255, 80, 80);
 
-  static engine::platform::Timer<engine::platform::SystemTickSource>
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
       water_timer;
   static GlowPulse<engine::platform::SystemTickSource> pulse(kTimerSecond / 6);
 
@@ -384,7 +384,8 @@ void ServiceRealTime() {
 }
 
 void ServiceRealTimeFor(const int ticks) {
-  const engine::platform::Timer<engine::platform::SystemTickSource> wait{ticks};
+  const engine::platform::Countdown<engine::platform::SystemTickSource> wait{
+      ticks};
   do {
     ServiceRealTime();
   } while (wait.HasTimeLeft());
@@ -416,7 +417,8 @@ void ServiceBackgroundTasks() {
 
 // Holds the end of the current frame; StartFrameTimer() sets it and
 // WaitForNextFrame() waits it out.
-static engine::platform::Timer<engine::platform::SystemTickSource> frame_timer;
+static engine::platform::Countdown<engine::platform::SystemTickSource>
+    frame_timer;
 
 // Spins until the frame timer expires, holding the game to the rate set by the
 // game-speed option.

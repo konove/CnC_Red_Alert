@@ -2761,7 +2761,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   PixelView& view = TheScreen().visible_view();
 
-  engine::platform::Timer<engine::platform::SystemTickSource>
+  engine::platform::Countdown<engine::platform::SystemTickSource>
       kludge_timer;  // Timer to allow a wait after client
                      // joins game before game can start
   bool ok_button_added = false;
@@ -6920,7 +6920,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    engine::platform::Timer<engine::platform::SystemTickSource> wait;
+    engine::platform::Countdown<engine::platform::SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
     while (wait.Remaining()) {
@@ -7093,7 +7093,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    engine::platform::Timer<engine::platform::SystemTickSource> wait;
+    engine::platform::Countdown<engine::platform::SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
     while (wait.Remaining()) {

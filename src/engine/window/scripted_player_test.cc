@@ -226,7 +226,7 @@ TEST_F(ScriptedPlayerTest, IsFinishedOnceEveryStepHasPlayed) {
 
 // What lets a fade or a timed wait finish at once: its timer counts frames.
 TEST_F(ScriptedPlayerTest, TheClockMovesATickAFrame) {
-  const engine::platform::Timer<engine::platform::SystemTickSource> wait{3};
+  const engine::platform::Countdown<engine::platform::SystemTickSource> wait{3};
   int frames = 0;
   while (wait.HasTimeLeft()) {
     display_.EndFrame();

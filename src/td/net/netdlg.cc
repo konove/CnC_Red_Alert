@@ -4319,7 +4319,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
  * HISTORY: * 1/6/97 3:23PM ST : Created *
  *=============================================================================================*/
 static void Wait_For_Focus() {
-  engine::platform::Timer<engine::platform::SystemTickSource> focus_timer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> focus_timer;
   focus_timer.Set(int64_t{5} * 60);
   /*
   ** Process the message loop until we are in focus.
@@ -4389,7 +4389,7 @@ static int Net_Fake_New_Dialog() {
 #endif  // GERMAN | FRENCH
 
   bool player_joined = false;
-  engine::platform::Timer<engine::platform::SystemTickSource> join_timer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> join_timer;
 
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.

@@ -118,7 +118,7 @@ class ScoreAnimClass {
   int XPos;
   int Stage = 0;
   int YPos;
-  engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
+  engine::platform::Countdown<engine::platform::SystemTickSource> AnimTimer;
   std::span<const std::byte> DataPtr;
   const char* TextData = "";
   [[nodiscard]] char Text_At(int index) const {

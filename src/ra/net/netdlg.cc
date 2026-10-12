@@ -3227,11 +3227,11 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   constexpr int kGameQueryTime = 120;
   constexpr int kPlayerQueryTime = 35;
   constexpr int kChatAnnounceTime = 83;
-  static engine::platform::Timer<engine::platform::SystemTickSource>
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
       game_timer;  // time between NET_QUERY_GAME's
-  static engine::platform::Timer<engine::platform::SystemTickSource>
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
       player_timer;  // time between NET_QUERY_PLAYERS's
-  static engine::platform::Timer<engine::platform::SystemTickSource>
+  static engine::platform::Countdown<engine::platform::SystemTickSource>
       chat_timer;  // time between NET_CHAT_ANNOUNCE's
 
   //------------------------------------------------------------------------
@@ -5089,7 +5089,7 @@ static int Net_New_Dialog() {
     DLOG(INFO) << "About to wait for 'GO' response.";
     // timeout timer for waiting for responses
     // Wait for 10 seconds. If we dont hear by then assume someone crashed
-    const engine::platform::Timer<engine::platform::SystemTickSource>
+    const engine::platform::Countdown<engine::platform::SystemTickSource>
         response_timer{static_cast<int64_t>(60) * 10};
 
     do {
@@ -7201,7 +7201,7 @@ static struct WWPerson WWPersons[] = {
      0},
 };
 
-static engine::platform::Timer<engine::platform::SystemTickSource>
+static engine::platform::Countdown<engine::platform::SystemTickSource>
     wwperson_timer;
 
 void Start_WWChat(ColorListClass* playerlist) {

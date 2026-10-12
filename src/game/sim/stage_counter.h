@@ -101,7 +101,7 @@ class StageCounter {
 
   // Counts down the game frames to the next stage. When it is finished the
   // stage goes up by one and it starts over.
-  engine::platform::Timer<FrameTickSource> countdown_;
+  engine::platform::Countdown<FrameTickSource> countdown_;
 
   // The game frames a stage lasts, which the countdown is restarted with; 0
   // when the stage is not animating.
