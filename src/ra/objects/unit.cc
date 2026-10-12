@@ -349,13 +349,6 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   */
   IsSecondShot = !Class->Is_Two_Shooter();
   Strength = Class->MaxStrength;
-
-  /*
-  ** Keep count of the number of units created.
-  */
-  //	if (Session.Type == GAME_INTERNET) {
-  //		House->UnitTotals->Increment_Unit_Total((int)classid);
-  //	}
 }
 
 /***********************************************************************************************
@@ -400,9 +393,7 @@ void UnitClass::AI() {
   /*
   **	Act on new orders if the unit is at a good position to do so.
   */
-  if (Height == 0 && !IsDumping && !IsDriving &&
-      door().IsClosed() /*&& Mission != MISSION_UNLOAD*/) {
-    //		if (MissionQueue == MISSION_NONE) Enter_Idle_Mode();
+  if (Height == 0 && !IsDumping && !IsDriving && door().IsClosed()) {
     Commence();
   }
   DriveClass::AI();
@@ -469,8 +460,7 @@ void UnitClass::AI() {
   **	Don't start a new mission unless the vehicle is in the center of
   **	a cell (not driving) and the door (if any) is closed.
   */
-  if (!IsDumping && !IsDriving &&
-      door().IsClosed() /*&& Mission != MISSION_UNLOAD*/) {
+  if (!IsDumping && !IsDriving && door().IsClosed()) {
     Commence();
   }
 
@@ -724,7 +714,6 @@ RadioMessageType UnitClass::Receive_Message(TechnoClass* from,
         return RADIO_NEGATIVE;
       }
       break;
-      //			return(RADIO_ROGER);
 
     /*
     **	Asks if the passenger can load on this transport.
@@ -1556,7 +1545,6 @@ bool UnitClass::Try_To_Deploy() {
       */
       if (PrimaryFacing.current() != game::Direction::kSouthWest) {
         Do_Turn(game::Direction::kSouthWest);
-        //				PrimaryFacing.set_desired(Direction::kSouthWest);
         IsDeploying = true;
         return true;
       }
@@ -1891,9 +1879,6 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
         const Coordinate blcoord = bldng->Center_Coord();
 
         base::NewPooled<AnimClass>(ANIM_MINE_EXP1, blcoord);
-        //				new
-        // AnimClass(Combat_Anim(Rule.AVMineDamage, WARHEAD_HE,
-        // Map[cell].Land_Type()), blcoord);
 
         /*
         ** Vehicles blow up both mines, but they only take significant damage
@@ -1935,7 +1920,6 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
   */
   CellClass* cellptr = &TheMap().at(cell);
   if (Class->IsCrusher && cellptr->Overlay != OVERLAY_NONE) {
-    //	if (Class->Speed == SPEED_TRACK && cellptr->Overlay != OVERLAY_NONE) {
     const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
@@ -2011,8 +1995,6 @@ int UnitClass::Shape_Number() const {
     **	Fetch the harvesting animation stage as appropriate.
     */
     if (IsHarvesting && !PrimaryFacing.IsRotating() && !NavCom && !IsDriving) {
-      //			static char _hstage[] = {0, 1, 2, 3, 4, 5, 6, 7,
-      // 0};
       int stage = animation().stage();
       if (stage >= std::ssize(UnitTypeClass::Harvester_Load_List)) {
         stage = std::ssize(UnitTypeClass::Harvester_Load_List) - 1;
@@ -2162,7 +2144,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	If there is a turret, then it must be rendered as well. This may include
     **	firing animation if required.
     */
-    if (/*!Class->IsChunkyShape &&*/ Class->IsTurretEquipped) {
+    if (Class->IsTurretEquipped) {
       int xx = x;
       int yy = y;
 
@@ -2361,7 +2343,6 @@ bool UnitClass::Harvesting() {
     **	is a partial level, then lift that instead. Never lift more
     **	than the harvester can carry.
     */
-    //		int reducer = (ptr->OverlayData % 6) + 1;
     int reducer = 1;
     const OverlayType overlay = ptr->Overlay;
     reducer = ptr->Reduce_Tiberium(
@@ -2968,10 +2949,6 @@ int UnitClass::Mission_Harvest() {
     **	Harvest at current location until full or Tiberium exhausted.
     */
     case kHarvesting:
-      //			if (Fetch_Stage() >
-      // std::ssize(UnitTypeClass::Harvester_Load_List)) {
-      // Set_Stage(0);
-      //			}
       if (animation().rate() == 0) {
         animation().set_stage(0);
         animation().SetRate(TheRules().OreDumpRate);
@@ -3000,7 +2977,6 @@ int UnitClass::Mission_Harvest() {
         return 1;
       }
       return 1;
-      //			return(kTicksPerSecond*Rule.OreDumpRate);
 
     /*
     **	Find and head to refinery.
@@ -3303,12 +3279,6 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
           (dynamic_cast<FootClass*>(obj)->NavCom ||
            dynamic_cast<FootClass*>(obj)->PrimaryFacing.IsRotating() ||
            dynamic_cast<FootClass*>(obj)->IsDriving);
-      //						(((FootClass
-      //*)obj)->PrimaryFacing.IsRotating() || ((FootClass *)obj)->IsDriving);
-      //						(((FootClass
-      //*)obj)->IsRotating || ((FootClass *)obj)->IsDriving);
-      //						((((FootClass
-      //*)obj)->NavCom) || ((FootClass *)obj)->IsDriving);
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
@@ -3765,8 +3735,6 @@ void UnitClass::Exit_Repair() {
     }
   }
   if (found) {
-    //		Direction	dir = DirectionTo(cell);
-
     Assign_Mission(MISSION_MOVE);
     Assign_Destination(Target::FromCell(cell));
   }
@@ -3791,12 +3759,10 @@ void UnitClass::Exit_Repair() {
 int UnitClass::Mission_Guard() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
-  if (/*House->IsBaseBuilding &&*/ !House->IsHuman && Class->IsToHarvest &&
+  if (!House->IsHuman && Class->IsToHarvest &&
       House->Get_Quantity(STRUCT_REFINERY) > 0 && !House->IsTiberiumShort) {
     Assign_Mission(MISSION_HARVEST);
     return 1;
-    //		return(MissionControl[Mission].Normal_Delay() + RandomPick(0,
-    // 2));
   }
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
@@ -4538,7 +4504,6 @@ void UnitClass::Overrun_Square(Cell cell, bool threaten) {
           object->Mark(MARK_UP);
           object->Limbo();
           base::DeletePooled(object);
-          // new OverlayClass(OVERLAY_SQUISH, Cell::Containing(Coord));
 
           object = next;
         } else {
@@ -4629,7 +4594,6 @@ void UnitClass::Assign_Destination(Target target) {
           }
           if (*b != STRUCT_REPAIR) {
             ArchiveTarget = target;
-            //	target = Target{};
           }
         }
       } else {
@@ -4671,10 +4635,7 @@ void UnitClass::Assign_Destination(Target target) {
   */
   if (b != nullptr && *b == STRUCT_REPAIR) {
     if (b->radio().InContact() && b->Contact_With_Whom() != this) {
-      //			if (target != NULL) {
       ArchiveTarget = target;
-      //			}
-      //			target = Target{};
     } else {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -5007,7 +4968,6 @@ void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   if (PrimaryFacing.IsRotating()) {
     return;
   }
-  //	if (IsRotating) return;
 
   if (NavCom && !nokidding) {
     return;
@@ -5047,7 +5007,7 @@ bool UnitClass::Limbo() {
 }
 
 void UnitClass::Shroud_Regen() {
-  if (Class->IsGapper /*KO && !House->IsPlayerControl*/) {
+  if (Class->IsGapper) {
     static const int _xtab[] = {-1, 0,  1,  -2, -1, 0, 1,  2,  -2, -1, 0,
                                 1,  2,  -2, -1, 0,  1, 2,  -2, -1, 0,  1,
                                 2,  -2, -1, 0,  1,  2, -1, 0,  1};
@@ -5092,7 +5052,6 @@ void UnitClass::Shroud_Regen() {
 
     if (!House->IsPlayerControl) {
       MapEditClass::Constrained_Look(Coord, 5 * game::kCellWidthLeptons);
-      //			PlayerPtr->IsToLook = true;
     }
   }
 }
