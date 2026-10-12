@@ -11,6 +11,7 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 
 class ByteStream;
 
@@ -76,6 +77,16 @@ class Palette {
   [[nodiscard]] const PaletteColor& at(const int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(std::span(colors_), index);
+  }
+
+  // Returns the entry of slot `index`.
+  [[nodiscard]] PaletteColor& at(const PaletteIndex index)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(std::span(colors_), index.value());
+  }
+  [[nodiscard]] const PaletteColor& at(const PaletteIndex index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(std::span(colors_), index.value());
   }
   // NOLINTEND(clang-diagnostic-lifetime-safety-lifetimebound-violation)
 
