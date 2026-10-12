@@ -72,13 +72,11 @@ class StageCounter {
   [[nodiscard]] int stage() const { return stage_; }
   [[nodiscard]] int rate() const { return rate_; }
   // Keeps the low 16 bits of `stage`.
-  void set_stage(const int stage) const {
-    stage_ = static_cast<uint16_t>(stage);
-  }
+  void set_stage(const int stage) { stage_ = static_cast<uint16_t>(stage); }
   // Sets the calls of AI() a stage lasts and restarts the
   // countdown to the next one; 0 stops the animation. Keeps the low byte of
   // `rate`, as the original's unsigned char parameter did.
-  void SetRate(const int rate) const {
+  void SetRate(const int rate) {
     rate_ = countdown_ = static_cast<uint8_t>(rate);
   }
   // Counts down a game frame and moves on a stage when the countdown runs
@@ -97,20 +95,16 @@ class StageCounter {
   }
 
  private:
-  // The animation state is mutable because a firing animation restarts from
-  // const queries: UnitClass::Can_Fire() const resets the stage and rate when
-  // a fire-animated unit is cleared to fire (precedent: FootClass::IsFiring).
-
   // The animation stage of the object, counted from 0.
-  mutable uint16_t stage_{0};
+  uint16_t stage_{0};
 
   // The calls of AI() left until the next stage. At zero the
   // stage goes up by one and the countdown starts over.
-  mutable uint8_t countdown_{0};
+  uint8_t countdown_{0};
 
   // The calls of AI() a stage lasts, which the countdown is
   // restarted with; 0 when the stage is not animating.
-  mutable uint8_t rate_{0};
+  uint8_t rate_{0};
 };
 
 }  // namespace td

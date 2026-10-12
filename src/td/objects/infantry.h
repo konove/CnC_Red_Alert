@@ -158,7 +158,7 @@ class InfantryClass final : public FootClass {
   InfantryClass& operator=(const InfantryClass&) = delete;
   InfantryClass(InfantryClass&&) = delete;
   InfantryClass& operator=(InfantryClass&&) = delete;
-  RTTIType What_Am_I() const override;
+  [[nodiscard]] RTTIType What_Am_I() const override;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -170,15 +170,15 @@ class InfantryClass final : public FootClass {
   /*
   **	Query functions.
   */
-  bool Is_Infantry() const override;
-  const ObjectTypeClass& Class_Of() const override;
-  int Full_Name() const override;
+  [[nodiscard]] bool Is_Infantry() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
+  [[nodiscard]] int Full_Name() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  Coordinate Fire_Coord(int which) const override;
+  [[nodiscard]] Coordinate Fire_Coord(int which) const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -191,7 +191,7 @@ class InfantryClass final : public FootClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  std::span<const int16_t> Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void Look(bool incremental = false) override;
 
@@ -208,17 +208,18 @@ class InfantryClass final : public FootClass {
   */
   int Made_A_Kill() override;
   ActionType What_Action(ObjectClass* object) override;
-  ActionType What_Action(Cell cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   void Assign_Mission(MissionType order) override;
   BulletClass* Fire_At(Target target, int which) override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
-  Target As_Target() const override;
-  game::FireErrorType Can_Fire(Target target, int which) const override;
+  [[nodiscard]] Target As_Target() const override;
+  [[nodiscard]] game::FireErrorType Can_Fire(Target target,
+                                             int which) const override;
   void Assign_Target(Target /*target*/) override;
   RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
-  int Rearm_Delay(bool second) const override;
+  [[nodiscard]] int Rearm_Delay(bool second) const override;
   void Set_Occupy_Bit(Coordinate coord) {
     Set_Occupy_Bit(Cell::Containing(coord), CellClass::Spot_Index(coord));
   }
@@ -239,7 +240,7 @@ class InfantryClass final : public FootClass {
   **	AI.
   */
   void AI() override;
-  Target Greatest_Threat(ThreatType threat) const override;
+  [[nodiscard]] Target Greatest_Threat(ThreatType threat) const override;
   int Mission_Attack() override;
 
   /*
@@ -254,7 +255,7 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
-  game::MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell /*cell*/ /*unused*/,
       game::Facing /*unused*/ = game::Facing::kNone) const override;
   void Per_Cell_Process(bool center) override;
@@ -264,6 +265,8 @@ class InfantryClass final : public FootClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   /*

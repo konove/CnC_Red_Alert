@@ -125,7 +125,7 @@ class DriveClass : public FootClass {
   int Offload_Tiberium_Bail() override;
   void Do_Turn(game::Direction dir);
   void Approach_Target() override;
-  const ObjectTypeClass& Class_Of() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override;
   virtual void Overrun_Square(Cell cell, bool threaten = true);
   void Assign_Destination(Target target) override;
   void Per_Cell_Process(bool center) override;
@@ -133,7 +133,7 @@ class DriveClass : public FootClass {
   void Fixup_Path(PathType* path) override;
   void AI() override;
   void Force_Track(int track, Coordinate coord);
-  int Tiberium_Load() const override;
+  [[nodiscard]] int Tiberium_Load() const override;
 
   void Exit_Map();
   void Mark_Track(Coordinate headto, MarkType type);

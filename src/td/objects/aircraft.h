@@ -77,7 +77,7 @@ class AircraftClass : public FootClass {
   AircraftClass& operator=(const AircraftClass&) = delete;
   AircraftClass(AircraftClass&&) = delete;
   AircraftClass& operator=(AircraftClass&&) = delete;
-  RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_AIRCRAFT; }
 
   static void Init();
   static constexpr int kFlightLevel = 24;
@@ -97,31 +97,33 @@ class AircraftClass : public FootClass {
   int Process_Fly_To(bool slowdown);
 
   // Query functions.
-  int Threat_Range(int control) const override;
-  int Rearm_Delay(bool second) const override;
-  game::MoveType Can_Enter_Cell(
+  [[nodiscard]] int Threat_Range(int control) const override;
+  [[nodiscard]] int Rearm_Delay(bool second) const override;
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell cell, game::Facing facing = game::Facing::kNone) const override;
-  LayerType In_Which_Layer() const override;
-  const ObjectTypeClass& Class_Of() const override { return *Class; }
+  [[nodiscard]] LayerType In_Which_Layer() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
   ActionType What_Action(ObjectClass* target) override;
-  ActionType What_Action(Cell cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   game::Direction Desired_Load_Dir(ObjectClass* object,
                                    Cell& moveto) const override;
-  int Pip_Count() const override;
-  Target Good_Fire_Location(Target target) const;
-  bool Cell_Seems_Ok(Cell cell, bool strict = false) const;
-  game::Direction Pose_Dir() const;
-  Target Good_LZ() const;
-  game::Direction Fire_Direction() const override;
+  [[nodiscard]] int Pip_Count() const override;
+  [[nodiscard]] Target Good_Fire_Location(Target target) const;
+  [[nodiscard]] bool Cell_Seems_Ok(Cell cell, bool strict = false) const;
+  [[nodiscard]] game::Direction Pose_Dir() const;
+  [[nodiscard]] Target Good_LZ() const;
+  [[nodiscard]] game::Direction Fire_Direction() const override;
 
   // Landing zone support functionality.
-  bool Is_LZ_Clear(Target target) const;
-  Target New_LZ(Target oldlz) const;
+  [[nodiscard]] bool Is_LZ_Clear(Target target) const;
+  [[nodiscard]] Target New_LZ(Target oldlz) const;
 
   // Coordinate inquiry functions. These are used for both display and
-  Coordinate Sort_Y() const override;
-  Coordinate Fire_Coord(int which) const override;
-  Coordinate Target_Coord() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
+  [[nodiscard]] Coordinate Fire_Coord(int which) const override;
+  [[nodiscard]] Coordinate Target_Coord() const override;
 
   // Object entry and exit from the game system.
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
@@ -133,7 +135,7 @@ class AircraftClass : public FootClass {
   */
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  std::span<const int16_t> Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void Set_Speed(int speed) override;
 
@@ -152,7 +154,7 @@ class AircraftClass : public FootClass {
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source) override;
   BulletClass* Fire_At(Target target, int which) override;
-  Target As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
 
   /*
   **	AI.
@@ -171,6 +173,8 @@ class AircraftClass : public FootClass {
   static const char* INI_Name() { return "AIRCRAFT"; }
 
   // Debugging support.
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
   // This is a pointer to the class control structure for the aircraft.

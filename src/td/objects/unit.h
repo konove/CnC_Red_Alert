@@ -114,7 +114,7 @@ class UnitClass final : public DriveClass {
   UnitClass& operator=(const UnitClass&) = delete;
   UnitClass(UnitClass&&) = delete;
   UnitClass& operator=(UnitClass&&) = delete;
-  RTTIType What_Am_I() const override;
+  [[nodiscard]] RTTIType What_Am_I() const override;
 
   /*---------------------------------------------------------------------
   **	Member function prototypes.
@@ -137,15 +137,15 @@ class UnitClass final : public DriveClass {
   /*
   **	Query functions.
   */
-  bool Can_Player_Move() const override;
-  int Pip_Count() const override;
-  InfantryType Crew_Type() const override;
+  [[nodiscard]] bool Can_Player_Move() const override;
+  [[nodiscard]] int Pip_Count() const override;
+  [[nodiscard]] InfantryType Crew_Type() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  Coordinate Sort_Y() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
@@ -160,13 +160,13 @@ class UnitClass final : public DriveClass {
   */
   std::span<const unsigned char> Remap_Table() override;
   void Look(bool incremental = false) override;
-  std::span<const int16_t> Overlap_List() const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
 
   /*
   **	User I/O.
   */
-  ActionType What_Action(Cell cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   ActionType What_Action(ObjectClass* object) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, Cell cell) override;
@@ -177,10 +177,10 @@ class UnitClass final : public DriveClass {
   /*
   **	Combat related.
   */
-  Coordinate Target_Coord() const override;
+  [[nodiscard]] Coordinate Target_Coord() const override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
-  Target As_Target() const override;
+  [[nodiscard]] Target As_Target() const override;
   void Stun() override;
 
   /*
@@ -215,7 +215,8 @@ class UnitClass final : public DriveClass {
   int Mission_Harvest() override;
   int Mission_Hunt() override;
   int Mission_Move() override;
-  game::FireErrorType Can_Fire(Target /*target*/, int which) const override;
+  [[nodiscard]] game::FireErrorType Can_Fire(Target /*target*/,
+                                             int which) const override;
 
   /*
   **	Scenario and debug support.
@@ -225,7 +226,7 @@ class UnitClass final : public DriveClass {
   **	Movement and animation.
   */
   void Enter_Idle_Mode(bool initial = false) override;
-  game::MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell cell, game::Facing facing = game::Facing::kNone) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(Coordinate threat, bool forced = false) override;
@@ -243,6 +244,8 @@ class UnitClass final : public DriveClass {
   /*
   **	Dee-buggin' support.
   */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
  private:
@@ -256,6 +259,10 @@ class UnitClass final : public DriveClass {
   // faces the target.
   [[nodiscard]] game::FireErrorType Turret_Can_Fire(Target target,
                                                     int which) const;
+  // Can_Fire(), and for a unit with a firing animation (the dinosaurs) that is
+  // otherwise cleared to fire, the start of that animation: such a unit
+  // answers FIRE_BUSY until the animation reaches its attack stage.
+  [[nodiscard]] game::FireErrorType Ready_To_Fire(Target target, int which);
 };
 
 extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);

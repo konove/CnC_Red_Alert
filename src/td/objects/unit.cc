@@ -527,27 +527,29 @@ void UnitClass::AI() {
 game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
   Validate();
 
-  game::FireErrorType cf = Turret_Can_Fire(target, which);
+  const game::FireErrorType cf = Turret_Can_Fire(target, which);
   /*
-  ** If it's a dinosaur, when it's OK to fire we should start the firing
-  ** animation, but wait for the proper attack stage before starting the
-  ** bullet, so things won't die prematurely.
+  ** A dinosaur plays its attack animation first and releases the bullet at
+  ** the proper attack stage, so things won't die prematurely.
   */
-  if ((cf == game::FIRE_OK) && Class->IsFireAnim) {
-    if (!IsFiring) {
-      animation().SetRate(
-          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
-      animation().set_stage(0);
-      IsFiring = true;
-      cf = game::FIRE_BUSY;
-    } else {
-      if (animation().stage() < 4) {
-        cf = game::FIRE_BUSY;
-      }
-    }
+  if (cf == game::FIRE_OK && Class->IsFireAnim &&
+      (!IsFiring || animation().stage() < 4)) {
+    return game::FIRE_BUSY;
   }
-
   return cf;
+}
+
+// Checks the turret alone first: Can_Fire() answers FIRE_BUSY for a dinosaur
+// that has yet to start its attack animation.
+game::FireErrorType UnitClass::Ready_To_Fire(Target target, int which) {
+  if (Class->IsFireAnim && !IsFiring &&
+      Turret_Can_Fire(target, which) == game::FIRE_OK) {
+    animation().SetRate(TheOptions().Normalize_Delay(2));
+    animation().set_stage(0);
+    IsFiring = true;
+    return game::FIRE_BUSY;
+  }
+  return Can_Fire(target, which);
 }
 
 /***********************************************************************************************
@@ -4484,8 +4486,8 @@ void UnitClass::Engage_Target() {
     */
     const WeaponTypeClass* weapon = &Weapons.at(Class->Primary);
     int primary = 0;
-    game::FireErrorType ok = Can_Fire(TarCom, 0);
-    if ((ok != game::FIRE_OK) && (Can_Fire(TarCom, 1) == game::FIRE_OK)) {
+    game::FireErrorType ok = Ready_To_Fire(TarCom, 0);
+    if ((ok != game::FIRE_OK) && (Ready_To_Fire(TarCom, 1) == game::FIRE_OK)) {
       ok = game::FIRE_OK;
       primary = 1;
       weapon = &Weapons.at(Class->Secondary);

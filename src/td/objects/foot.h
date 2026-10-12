@@ -110,7 +110,7 @@ class FootClass : public TechnoClass {
   **	This flag tells the system that the unit is doing a firing animation.
   *This is *	critical to the firing logic.
   */
-  mutable bool IsFiring : 1;
+  bool IsFiring : 1;
 
   /*
   **	This unit could be either rotating its body or rotating its turret.
@@ -230,20 +230,20 @@ class FootClass : public TechnoClass {
 
   RadioMessageType Receive_Message(TechnoClass* from, RadioMessageType message,
                                    int32_t& param) override;
-  bool Can_Demolish() const override;
+  [[nodiscard]] bool Can_Demolish() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  Coordinate Sort_Y() const override;
-  virtual Coordinate Likely_Coord() const;
+  [[nodiscard]] Coordinate Sort_Y() const override;
+  [[nodiscard]] virtual Coordinate Likely_Coord() const;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  Coordinate Head_To_Coord() const { return HeadToCoord; }
+  [[nodiscard]] Coordinate Head_To_Coord() const { return HeadToCoord; }
   virtual bool Start_Driver(Coordinate& headto);
   virtual bool Stop_Driver();
   void Assign_Destination(Target target) override;
@@ -276,7 +276,7 @@ class FootClass : public TechnoClass {
   */
   void Sell_Back(int control) override;
   virtual int Offload_Tiberium_Bail();
-  Target Greatest_Threat(ThreatType method) const override;
+  [[nodiscard]] Target Greatest_Threat(ThreatType method) const override;
   void Detach(Target target, bool all) override;
   void Detach_All(bool all = true) override;
   void Assign_Mission(MissionType order) override;
@@ -296,7 +296,7 @@ class FootClass : public TechnoClass {
   virtual void Approach_Target();
   virtual void Fixup_Path(PathType* /*unused*/) {}
   virtual void Set_Speed(int speed);
-  game::MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       Cell /*unused*/,
       game::Facing /*unused*/ = game::Facing::kNone) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
@@ -308,7 +308,7 @@ class FootClass : public TechnoClass {
   **	File I/O.
   */
 
-  Cell Safety_Point(Cell src, Cell dst, int start, int max) const;
+  [[nodiscard]] Cell Safety_Point(Cell src, Cell dst, int start, int max) const;
   int Rescue_Mission(Target tarcom);
 
  private:
