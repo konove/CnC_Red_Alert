@@ -1,0 +1,32 @@
+# Saving a mission under a typed description: letters and digits in the edit
+# box, Backspace, and Return, which the edit box takes for itself the first
+# time (it only gives up the keyboard) so that it is the second that saves.
+# Then the saved game in the load list, loaded with Return, and deleted again.
+at 301 click 320 58
+at 501 click 160 200
+at 3001 key ESC
+at 3041 click 320 170
+at 3080 shot save_dialog
+at 3081 type BEACH1X
+at 3120 shot typed
+at 3121 key BACKSPACE
+at 3140 shot erased
+at 3141 key RETURN
+at 3160 shot edit_box_left
+at 3161 key RETURN
+at 3180 shot game_saved
+at 3300 shot options_menu
+at 3301 click 320 150
+at 3340 shot load_list
+at 3341 key RETURN
+at 3500 shot loaded
+at 3501 key ESC
+at 3541 click 320 190
+at 3580 shot delete_list
+at 3581 key RETURN
+at 3620 shot delete_query
+at 3621 key RETURN
+at 3660 shot deleted
+at 3661 click 320 150
+at 3700 shot no_saved_games
+at 3701 quit

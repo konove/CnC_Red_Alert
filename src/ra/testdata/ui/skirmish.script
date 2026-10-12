@@ -1,0 +1,46 @@
+# The skirmish dialog: the color boxes, which recolor the player's name, the
+# name's edit box, the drop-down list of sides, the scenario list dragged by
+# its scroll bar, the four small sliders, a tick in the options list and the
+# difficulty slider. OK then starts the game that was set up.
+at 300 click 320 279
+at 341 click 320 252
+at 500 shot dialog
+at 501 click 450 38
+at 520 shot color_blue
+at 521 click 550 38
+at 540 shot color_teal
+at 541 click 220 38
+at 545 key BACKSPACE
+at 549 key BACKSPACE
+at 553 key BACKSPACE
+at 560 type AB1
+at 580 shot name_typed
+at 581 click 386 38
+at 600 shot side_list
+at 601 click 300 70
+at 620 shot side_england
+at 621 press 474 90
+at 625 move 474 130
+at 630 move 474 170
+at 635 shot scenarios_dragging
+at 636 release 474 170
+at 641 click 250 126
+at 660 shot scenario_picked
+at 661 press 200 234
+at 665 move 225 236
+at 670 release 232 236
+at 681 press 212 247
+at 685 move 200 249
+at 690 release 195 249
+at 701 press 212 260
+at 705 release 205 262
+at 711 click 230 273
+at 730 shot sliders
+at 731 click 400 275
+at 741 press 320 322
+at 745 move 450 322
+at 750 release 520 324
+at 770 shot hard_shroud_regrows
+at 771 click 105 369
+at 1200 shot game
+at 1201 quit

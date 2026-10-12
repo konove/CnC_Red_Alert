@@ -1,0 +1,46 @@
+# The scenario editor's waypoint keys, each on the cell selected before it:
+# Alt and a letter names the cell as that waypoint, Shift-Home moves the home
+# cell there, Shift-R the reinforcement cell, the full stop asks for a
+# two-letter waypoint name in an edit box, and Alt-Space takes a waypoint off
+# its cell.
+#
+# The map takes a button that is down when it looks, so selecting a cell
+# holds it for a few frames.
+# args: -EDITOR
+at 201 press 250 120
+at 204 release 250 120
+at 220 keydown ALT
+at 221 key C
+at 225 keyup ALT
+at 260 shot waypoint_c
+at 261 press 420 120
+at 264 release 420 120
+at 270 keydown SHIFT
+at 271 key HOME
+at 275 keyup SHIFT
+at 300 shot home_moved
+at 301 press 250 200
+at 304 release 250 200
+at 310 keydown SHIFT
+at 311 key R
+at 315 keyup SHIFT
+at 340 shot reinforcement_moved
+at 341 press 420 200
+at 344 release 420 200
+at 350 key PERIOD
+at 380 shot name_box
+at 381 type BD
+at 385 key BACKSPACE
+at 389 type F
+at 400 shot name_typed
+# Return does nothing while the edit box has the keys; OK it is.
+at 401 key RETURN
+at 420 click 136 116
+at 460 shot waypoint_bf
+at 461 press 250 120
+at 464 release 250 120
+at 470 keydown ALT
+at 471 key SPACE
+at 475 keyup ALT
+at 500 shot waypoint_c_removed
+at 501 quit

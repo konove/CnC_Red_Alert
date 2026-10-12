@@ -1,0 +1,43 @@
+# A new trigger in the scenario editor: the event list scrolled by dragging
+# its scroll bar and by its arrow, a name typed into the edit box, and the
+# trigger, which fires when the player enters a cell, put on two cells of the
+# map with the mouse. Esc ends the placing.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 257 key DOWN
+at 261 key DOWN
+at 271 key RETURN
+at 311 click 145 169
+at 370 shot trigger_list
+at 371 click 240 321
+at 420 shot trigger_editor
+at 421 press 301 110
+at 425 move 301 130
+at 430 move 303 150
+at 440 shot events_dragging
+at 441 release 303 150
+at 460 shot events_scrolled
+at 461 click 301 91
+at 480 shot events_up_one_line
+at 481 click 220 194
+at 491 type GATE
+at 510 shot named
+at 511 click 265 365
+at 560 shot list_with_the_trigger
+at 561 click 560 321
+at 600 shot placing
+# A click on the map has to last: the editor asks whether the button is still
+# down when it gets to the click.
+at 601 press 460 300
+at 605 release 460 300
+at 620 shot on_one_cell
+at 621 press 512 370
+at 625 release 512 370
+at 640 shot on_two_cells
+at 641 key ESC
+at 660 shot placing_ended
+at 661 quit

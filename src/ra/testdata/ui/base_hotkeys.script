@@ -1,0 +1,57 @@
+# The battle hotkeys that need a base, in a skirmish game: the base key finds
+# the construction vehicle, which is moved clear of its escort and deployed, a
+# power plant is built and placed, and then the sidebar keys scroll the build
+# list, the repair key mends the plant (damaged with the developers'
+# Shift-Delete), the sell key sells it, the map key turns the radar into the
+# list of players, and the resign key asks whether to surrender.
+# args: -PLAYTEST
+at 300 click 320 279
+at 341 click 320 252
+at 501 click 105 369
+at 900 move 600 30
+at 1001 key H
+at 1020 shot base_key
+at 1100 click 140 290
+at 1500 key H
+at 1521 click 240 208
+at 1522 move 600 30
+at 1800 shot deployed
+at 1801 click 530 205
+at 1802 move 600 30
+at 2000 shot building
+at 2801 click 530 205
+at 2820 move 270 215
+at 2840 shot placing
+at 2841 click 270 215
+at 2842 move 600 30
+at 3000 shot placed
+at 3001 key DOWN
+at 3020 shot sidebar_down
+at 3021 key UP
+at 3040 shot sidebar_up
+at 3041 click 280 235
+at 3050 keydown SHIFT
+at 3051 key DELETE
+at 3055 key DELETE
+at 3060 keyup SHIFT
+at 3061 rclick 400 100
+at 3062 move 600 30
+at 3080 shot damaged
+at 3081 key T
+at 3090 click 280 235
+at 3091 move 600 30
+at 3130 shot repairing
+at 3131 key T
+at 3140 key Y
+at 3150 click 280 235
+at 3151 move 600 30
+at 3300 shot selling
+at 3301 key Y
+at 3310 key U
+at 3330 shot player_list
+at 3331 key U
+at 3340 key R
+at 3380 shot surrender
+at 3381 key ESC
+at 3420 shot sold_not_surrendered
+at 3421 quit

@@ -1,0 +1,34 @@
+# Dragging the sliders of a mission's options: game speed and scroll rate, a
+# click beside a thumb, which steps it, and the visual controls, which change
+# the palette as they move and go back with Reset Values.
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 key ESC
+at 521 click 320 200
+at 561 press 320 137
+at 565 move 400 137
+at 570 move 470 140
+at 575 shot speed_dragging
+at 576 release 470 140
+at 581 press 320 195
+at 585 move 200 195
+at 590 release 140 195
+at 600 shot speed_up_scroll_down
+at 601 click 150 137
+at 620 shot speed_stepped_down
+at 621 click 320 244
+at 661 press 395 143
+at 665 move 430 143
+at 670 release 450 146
+at 681 press 395 209
+at 685 move 350 209
+at 690 move 320 212
+at 695 shot brighter_tint_dragging
+at 696 release 320 212
+at 710 shot brighter_tinted
+at 711 click 217 290
+at 730 shot visual_reset
+at 731 click 441 290
+at 770 shot game_controls_again
+at 771 quit

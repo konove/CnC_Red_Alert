@@ -1,0 +1,18 @@
+# The end of the Nod campaign, with the last mission won by the developers'
+# Alt-W: after the score and the hall of fame, the four cities to fire the
+# ion cannon at. A click above the pictures chooses nothing, a click on one
+# does; then the picture that announces the next game, and the main menu. The
+# movies between them are off.
+# args: -PLAYTEST -NEWGAMESCB13EA
+at 300 keydown ALT
+at 301 key W
+at 305 keyup ALT
+at 3001 type AB
+at 3020 key RETURN
+at 3300 shot select_a_target
+at 3301 click 480 20
+at 3400 shot still_selecting
+at 3401 click 480 300
+at 3500 shot coming_attraction
+at 4100 shot main_menu
+at 4101 quit

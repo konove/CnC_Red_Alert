@@ -196,6 +196,27 @@ TEST_F(UiFixture, EscClosesSpecialOptionsWithoutApplying) {
     with Shift, Ctrl or Alt held.
   - A screenshot holds the game's page, not the movie frames or backdrops the display stretches
     around it.
+- **Phase 5, the rest of the keys and clicks: done 2026-10-11.** 39 scripts, 268 screenshots, about
+  half a minute for all. What was added:
+  - Red Alert: edit boxes (`save_mission`, `skirmish`), slider and scroll-bar drags (`sliders`,
+    `skirmish`), the skirmish dialog's color boxes and drop-down list, the battle hotkeys
+    (`hotkeys`, and `base_hotkeys` for the ones that need a base), Chronosphere and Iron Curtain
+    targeting (`special_weapons`, with the developers' P key handing the weapons out), and the map
+    editor's object and trigger placement, map-size corners, held member buttons and waypoint keys
+    (`editor_*`).
+  - Tiberian Dawn: `save_mission`, `sliders`, the team and view keys (`team_keys`, `view_keys`), the
+    map editor (`editor_map`, `editor_trigger`) and both endings (`nod_ending`, `gdi_ending`).
+  - `steam_hotkeys` plays the steps of `hotkeys` with a Steam install's `[WinHotkeys]`, which holds
+    Windows key codes, and must show the same pictures. Two comments in a script make that possible:
+    `# file: <name> <source>` puts a file in the game's directory, and `# hashes: <file>` compares
+    with another script's hashes.
+  - `tools/ui_check.py --work-dir <dir>` lets two runs go on at once.
+  - Not scripted: the message line, which only a network game has, and a network game keeps real
+    time; the sound controls, because a scripted run has no sound device; Tiberian Dawn's
+    multiplayer color picker, which sits behind a serial connection; a held right button, which the
+    script format cannot say.
+  - A click on either editor's map has to be a `press` and a `release` some frames apart: the
+    handler reads the button's state when it runs, and a `click` is over by then.
 - **After phase 5: the seams are interfaces, done 2026-10-05.** The harness first reached into
   production code through checks: is a manual clock installed, is the display headless, are scripted
   mouse buttons installed. Each is now an interface with the real thing as one implementation and

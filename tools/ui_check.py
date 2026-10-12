@@ -9,10 +9,15 @@ same thing every time and takes a second or two.
 
 Beside each script sits <name>.hashes, one "<shot> <sha256>" line per
 screenshot. A script that needs the game started with a switch names it in a
-comment: "# args: -EDITOR". The pictures themselves hold the game's art and are not in the
-repository: a run that disagrees with the hashes leaves them, as .pcx and (with
-Pillow installed) .png, in build/ui_check/<game>/<name>/ to look at. When the
-change is intended, --accept rewrites the hashes.
+comment: "# args: -EDITOR". One that needs a file in the game's directory, such
+as a configuration file with other key bindings, names it and the file beside
+the script that holds it: "# file: REDALERT.INI steam_hotkeys.ini". One that
+must show exactly what another script shows names that script's hashes,
+"# hashes: hotkeys.hashes", and has none of its own. The pictures
+themselves hold the game's art and are not in the repository: a run that
+disagrees with the hashes leaves them, as .pcx and (with Pillow installed)
+.png, in build/ui_check/<game>/<name>/ to look at. When the change is intended,
+--accept rewrites the hashes.
 
 The game data is needed (the Steam install by default; RA_CD and TD_CD
 override), so this is a local check, not a ctest.
@@ -21,6 +26,7 @@ Usage:
   tools/ui_check.py                       every script of both games
   tools/ui_check.py src/ra/testdata/ui/main_menu.script
   tools/ui_check.py --accept <script>     record what the game shows now
+  tools/ui_check.py --work-dir <dir> ...  run there, beside another run
 """
 
 from __future__ import annotations
@@ -126,6 +132,32 @@ def extra_args(script_text: str) -> list[str]:
     return args
 
 
+def extra_files(script: Path) -> list[tuple[str, Path]]:
+    """Returns the files a script asks for in the game's directory.
+
+    Each is the name the game reads and the file to copy there, which a
+    '# file: <name> <source>' comment names relative to the script.
+    """
+    files: list[tuple[str, Path]] = []
+    for line in script.read_text().splitlines():
+        if line.startswith("# file:"):
+            name, source = line.removeprefix("# file:").split()
+            files.append((name, script.parent / source))
+    return files
+
+
+def hashes_file(script: Path) -> Path:
+    """Returns the file that holds a script's hashes.
+
+    It is the .hashes file beside the script, unless a '# hashes: <file>'
+    comment names another script's, which this one must then match.
+    """
+    for line in script.read_text().splitlines():
+        if line.startswith("# hashes:"):
+            return script.parent / line.removeprefix("# hashes:").strip()
+    return script.with_suffix(".hashes")
+
+
 def compare(expected: dict[str, str], actual: dict[str, str]) -> list[str]:
     """Returns one line per screenshot that is not as expected."""
     problems = []
@@ -225,6 +257,11 @@ def to_png(pcx: Path) -> None:
     Image.open(pcx).convert("RGB").save(pcx.with_suffix(".png"))
 
 
+def relative(path: Path) -> Path:
+    """Returns `path` from the repository's root, or as it is outside it."""
+    return path.relative_to(REPO) if path.is_relative_to(REPO) else path
+
+
 def check(script: Path, args: argparse.Namespace) -> bool:
     """Runs one script; returns whether its screenshots are as recorded."""
     game = game_of(script)
@@ -235,11 +272,13 @@ def check(script: Path, args: argparse.Namespace) -> bool:
     if not data.is_dir():
         raise SystemExit(f"{data}: no game data; set {game.data_env}")
 
-    work = REPO / "build/ui_check" / game.name
+    work = Path(args.work_dir).resolve() / game.name
     run_dir = work / "run"
     run_dir.mkdir(parents=True, exist_ok=True)
     warm_up(game, binary.resolve(), data, run_dir)
     reset_run_dir(game, run_dir)
+    for name, source in extra_files(script):
+        shutil.copy(source, run_dir / name)
 
     # The game writes its screenshots beside the script it was given.
     shot_dir = work / script.stem
@@ -248,7 +287,7 @@ def check(script: Path, args: argparse.Namespace) -> bool:
     copy = shot_dir / script.name
     shutil.copy(script, copy)
 
-    print(f"{script.relative_to(REPO) if script.is_relative_to(REPO) else script}")
+    print(f"{relative(script)}")
     code = run_game(game, binary.resolve(), data, run_dir, copy)
     if code != 0:
         print(f"  FAIL: the game exited with {code}")
@@ -263,13 +302,13 @@ def check(script: Path, args: argparse.Namespace) -> bool:
         print(f"  FAIL: no screenshot for {', '.join(missing)}")
         return False
 
-    hashes_path = script.with_suffix(".hashes")
-    if args.accept:
+    hashes_path = hashes_file(script)
+    if args.accept and hashes_path == script.with_suffix(".hashes"):
         write_hashes(hashes_path, actual)
         for pcx in shot_dir.glob("*.pcx"):
             to_png(pcx)
         print(f"  recorded {len(actual)} screenshot(s); look at them in "
-              f"{shot_dir.relative_to(REPO)}/")
+              f"{relative(shot_dir)}/")
         return True
 
     problems = compare(read_hashes(hashes_path), actual)
@@ -281,7 +320,7 @@ def check(script: Path, args: argparse.Namespace) -> bool:
         to_png(pcx)
     for problem in problems:
         print(f"  FAIL: {problem}")
-    print(f"  the screenshots are in {shot_dir.relative_to(REPO)}/")
+    print(f"  the screenshots are in {relative(shot_dir)}/")
     return False
 
 
@@ -295,6 +334,12 @@ def main() -> int:
     )
     parser.add_argument(
         "--build-dir", default=str(REPO / "build"), help="default: build/"
+    )
+    parser.add_argument(
+        "--work-dir",
+        default=str(REPO / "build/ui_check"),
+        help="where the game runs and leaves its screenshots; two runs at "
+        "once need one each (default: build/ui_check/)",
     )
     args = parser.parse_args()
 

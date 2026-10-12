@@ -1,0 +1,29 @@
+# The keys that move the map: Ctrl with F7 to F10 remembers the place the map
+# shows, the key alone goes back there, and Home centers the map on what is
+# selected. The second GDI mission, whose map is larger than the screen, with
+# the shroud lifted by the developers' F4 so that the place shows.
+# args: -PLAYTEST -NEWGAMESCG02EA
+at 300 key F4
+at 320 shot start
+at 321 keydown CTRL
+at 322 key F7
+at 325 keyup CTRL
+# The pointer at the bottom edge scrolls the map down.
+at 330 move 240 399
+at 400 shot scrolled_down
+at 401 move 240 300
+at 402 keydown CTRL
+at 403 key F10
+at 406 keyup CTRL
+at 410 key F7
+at 430 shot f7_view
+at 431 key F10
+at 450 shot f10_view
+at 451 key F7
+at 470 click 60 183
+at 490 shot unit_selected
+at 491 key F10
+at 510 shot f10_view_again
+at 511 key HOME
+at 530 shot home_on_the_unit
+at 531 quit

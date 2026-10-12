@@ -1,0 +1,29 @@
+# Typing in an edit box: the description of a saved mission, with a letter
+# taken back and Return to save. The load dialog then lists the mission, and
+# the delete dialog takes it away again.
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 key ESC
+at 521 click 320 160
+at 560 shot save_dialog
+at 561 type ABC
+at 580 shot typed
+at 581 key BACKSPACE
+at 590 type 12
+at 600 shot corrected
+at 601 key RETURN
+at 660 shot saved
+at 661 key ESC
+at 700 shot options_menu
+at 701 click 320 140
+at 740 shot load_dialog
+at 741 key ESC
+at 781 click 320 180
+at 820 shot delete_dialog
+at 821 key RETURN
+at 860 shot delete_confirm
+at 861 key RETURN
+at 901 click 320 140
+at 940 shot nothing_to_load
+at 941 quit

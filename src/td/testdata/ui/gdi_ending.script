@@ -1,0 +1,13 @@
+# The end of the GDI campaign, with the last mission won by the developers'
+# Alt-W: the score, the hall of fame, the picture that announces the next
+# game, and the main menu. The movies between them are off.
+# args: -PLAYTEST -NEWGAMESCG15EA
+at 300 keydown ALT
+at 301 key W
+at 305 keyup ALT
+at 3000 shot hall_of_fame
+at 3001 type AB
+at 3020 key RETURN
+at 3200 shot coming_attraction
+at 3800 shot main_menu
+at 3801 quit

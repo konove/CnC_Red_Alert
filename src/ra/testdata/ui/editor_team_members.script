@@ -1,0 +1,44 @@
+# The scenario editor's team members dialog, where a mouse button held on a
+# picture counts that member up: once at the press, once more after a pause,
+# then faster for as long as it is held. A right click takes one off. Then the
+# team's name box: Backspace, typing and Return.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 257 key DOWN
+at 261 key DOWN
+at 271 key RETURN
+at 311 key DOWN
+at 315 key DOWN
+at 320 key RETURN
+at 361 click 160 225
+# The Members button; the pointer is then on the first picture, the rifle
+# infantry. A press counts only for the picture the pointer already rests on.
+at 401 click 57 43
+at 441 press 57 43
+at 444 shot first_step
+at 460 shot before_repeat
+at 520 shot repeating
+at 521 release 57 43
+at 560 shot released
+at 561 rclick 57 43
+at 600 shot one_less
+at 601 move 250 150
+at 641 press 250 150
+at 700 release 250 150
+at 740 shot second_member
+at 741 click 290 373
+at 800 shot team_with_members
+at 801 click 55 31
+at 820 key BACKSPACE
+at 824 key BACKSPACE
+at 840 shot name_erased
+at 841 type AB7
+at 880 shot name_typed
+at 881 key RETURN
+at 900 click 288 225
+at 940 shot team_list
+at 941 quit

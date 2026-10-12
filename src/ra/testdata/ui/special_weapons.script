@@ -1,0 +1,27 @@
+# Aiming the special weapons, which the developers' P key hands out in the
+# first Allied mission: the Chronosphere takes a jeep and then a place to put
+# it, the down key scrolls the sidebar to the Iron Curtain, and that takes
+# another jeep.
+# args: -PLAYTEST
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+at 500 key P
+at 540 shot weapons_granted
+at 541 click 603 300
+at 571 click 216 150
+at 601 click 250 210
+at 610 shot chronoshifted
+at 700 shot colors_back
+at 701 key DOWN
+at 705 key DOWN
+at 709 key DOWN
+at 740 shot sidebar_scrolled
+at 741 click 603 300
+at 771 click 264 150
+at 800 shot iron_curtain
+at 801 key UP
+at 805 key UP
+at 809 key UP
+at 840 shot sidebar_scrolled_back
+at 841 quit

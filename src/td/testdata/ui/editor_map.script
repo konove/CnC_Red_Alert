@@ -1,0 +1,68 @@
+# The scenario editor's keys and clicks on the map of the first GDI mission.
+# Waypoints: a click picks a cell, Alt with a letter labels it, Shift-R makes
+# it the reinforcement cell and Alt-Space takes its letter away. Objects:
+# Insert starts placing, Right and Page Down go through the objects and their
+# kinds, a click puts one down and Esc stops. The controls that pop up for a
+# selected object: the strength gauge dragged, the facing dial, the mission
+# list scrolled by its arrow, the house buttons; Tab for the next object and
+# Delete. F6 shows where units can go.
+# args: -EDITOR
+# The map scrolls for as long as the pointer rests in the screen's corner.
+at 201 move 300 100
+# A click on the map has to last: the editor asks whether the button is still
+# down when it gets to the click.
+at 211 press 460 300
+at 215 release 460 300
+at 230 shot cell_picked
+at 231 keydown ALT
+at 232 key A
+at 235 keyup ALT
+at 250 shot waypoint_a
+at 251 press 430 270
+at 255 release 430 270
+at 261 keydown SHIFT
+at 262 key R
+at 265 keyup SHIFT
+at 280 shot reinforcement_cell
+at 281 press 460 300
+at 285 release 460 300
+at 291 keydown ALT
+at 292 key SPACE
+at 295 keyup ALT
+at 310 shot waypoint_a_removed
+at 331 key INSERT
+at 341 key RIGHT
+at 360 shot placing_first_kind
+at 361 key PGDN
+at 380 shot placing_next_kind
+at 381 press 480 250
+at 385 release 480 250
+at 391 move 400 150
+at 410 shot object_placed
+at 411 key ESC
+at 430 shot placing_stopped
+at 431 press 508 322
+at 435 release 508 322
+at 450 shot soldier_selected
+at 451 press 480 350
+at 455 move 450 350
+at 460 move 430 362
+at 465 shot strength_dragging
+at 466 release 430 362
+at 480 shot strength_dragged
+at 481 click 372 350
+at 500 shot facing_east
+at 501 click 292 372
+at 505 click 292 372
+at 520 shot missions_scrolled
+at 521 click 200 345
+at 540 shot mission_chosen
+at 541 click 70 347
+at 560 shot house_nod
+at 561 key TAB
+at 580 shot next_object
+at 581 key DELETE
+at 600 shot object_deleted
+at 601 key F6
+at 620 shot passable_cells
+at 621 quit

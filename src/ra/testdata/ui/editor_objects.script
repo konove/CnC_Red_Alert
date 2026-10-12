@@ -1,0 +1,75 @@
+# Placing objects in the scenario editor: a war factory chosen in the Add Game
+# Object dialog, then a soldier, a tank and a tree reached with the keys that
+# change the pending object on the map (PgUp for the category, Right for the
+# next object, H for the house), and ore painted by dragging. Then a placed
+# object's own controls: the tank's health gauge dragged down, its facing
+# dial, mission and house lists clicked, and Delete.
+#
+# The map takes a button that is down when it looks, so a placement holds it
+# for a few frames: a click that ends in the frame it began places nothing.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 263 key RETURN
+# The Building category, and its third building.
+at 301 click 328 92
+at 341 key RIGHT
+at 345 key RIGHT
+at 380 shot dialog_war_factory
+at 381 key RETURN
+at 400 move 375 195
+at 440 shot building_pending
+at 441 press 375 195
+at 444 release 375 195
+at 460 key ESC
+at 500 shot building_placed
+# Insert takes up the last choice again.
+at 501 key INSERT
+at 505 key PGUP
+at 509 key PGUP
+at 513 key H
+at 520 move 420 200
+at 560 shot infantry_pending
+at 561 press 420 200
+at 564 release 420 200
+at 580 key PGUP
+at 584 key RIGHT
+at 600 move 300 80
+at 640 shot unit_pending
+at 641 press 300 80
+at 644 release 300 80
+at 660 key PGUP
+at 680 move 440 100
+at 700 shot terrain_pending
+at 701 press 440 100
+at 704 release 440 100
+at 720 key PGUP
+at 724 key PGUP
+at 740 move 230 100
+at 760 shot overlay_pending
+at 761 press 230 100
+at 765 move 250 100
+at 770 move 270 100
+at 775 release 270 100
+at 790 key ESC
+at 820 shot all_placed
+at 821 press 300 80
+at 824 release 300 80
+at 860 shot unit_selected
+at 861 press 244 173
+at 865 move 230 173
+at 870 move 215 173
+at 875 release 215 173
+at 880 click 186 175
+at 890 click 90 166
+at 900 click 30 116
+at 940 shot unit_edited
+at 941 key DELETE
+at 980 shot unit_deleted
+at 981 press 400 210
+at 984 release 400 210
+at 1020 shot building_selected
+at 1021 quit

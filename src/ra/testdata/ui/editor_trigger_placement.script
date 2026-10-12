@@ -1,0 +1,57 @@
+# Placing triggers in the scenario editor. One that fires when a cell is
+# entered is chosen in the trigger list and put on two cells; one that fires
+# when its object is destroyed is put on a jeep, which then carries its name.
+# Delete takes the trigger off the selected jeep, and off a selected cell.
+#
+# The map takes a button that is down when it looks, so a placement holds it
+# for a few frames.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 253 key DOWN
+at 257 key DOWN
+at 261 key DOWN
+at 271 key RETURN
+at 311 key DOWN
+at 320 key RETURN
+# RNF1, entered by Greece, and OK.
+at 361 click 100 95
+at 380 shot cell_trigger_chosen
+at 381 click 341 225
+at 421 press 300 200
+at 424 release 300 200
+at 430 press 270 200
+at 433 release 270 200
+at 460 shot on_two_cells
+# Esc ends the placement. The menu opens on the line the AI menu was left on,
+# Edit Triggers, the second: five more to AI Options.
+at 461 key ESC
+at 480 rclick 400 150
+at 521 key DOWN
+at 525 key DOWN
+at 529 key DOWN
+at 533 key DOWN
+at 537 key DOWN
+at 547 key RETURN
+at 587 key DOWN
+at 596 key RETURN
+# ELOS, destroyed by anybody.
+at 631 click 100 71
+at 651 click 341 225
+at 671 press 323 150
+at 674 release 323 150
+at 690 key ESC
+at 730 shot on_jeep
+at 731 press 323 150
+at 734 release 323 150
+at 770 shot jeep_selected
+at 771 key DELETE
+at 810 shot off_jeep
+at 811 press 300 200
+at 814 release 300 200
+at 850 shot cell_selected
+at 851 key DELETE
+at 890 shot off_cell
+at 891 quit

@@ -1,0 +1,38 @@
+# The number keys of a mission: Ctrl with a number makes a team of what is
+# selected, the number alone selects that team and nothing else, Shift with
+# it adds the team to the selection, and the number of a team nobody is in
+# lets everything go. Then two of the developers' keys: F4, which lifts the
+# shroud and puts it back, and F3, which numbers and colors the cells.
+# args: -PLAYTEST
+at 301 click 320 58
+at 501 click 160 200
+at 3001 click 499 240
+at 3020 shot one_soldier_selected
+at 3021 keydown CTRL
+at 3022 key 1
+at 3025 keyup CTRL
+at 3031 click 513 240
+at 3041 keydown CTRL
+at 3042 key 0
+at 3045 keyup CTRL
+at 3050 shot other_soldier_selected
+at 3051 rclick 300 300
+at 3061 key 1
+at 3080 shot team_1
+at 3081 keydown SHIFT
+at 3082 key 0
+at 3085 keyup SHIFT
+at 3100 shot team_1_and_team_10
+at 3101 key 2
+at 3120 shot team_2_is_empty
+at 3121 key 0
+at 3140 shot team_10
+at 3141 key F4
+at 3160 shot map_revealed
+at 3161 key F3
+at 3200 shot cell_info
+at 3201 key F3
+at 3220 shot cell_info_off
+at 3221 key F4
+at 3240 shot shroud_back
+at 3241 quit

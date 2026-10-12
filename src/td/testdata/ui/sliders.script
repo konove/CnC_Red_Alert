@@ -1,0 +1,42 @@
+# The sliders of the game controls and visual controls dialogs: a thumb
+# dragged along its track, a click on the track beside the thumb, which moves
+# it a step, and the Reset Values button. The sound controls only say that
+# there is no sound card, which is true of a scripted run.
+at 301 click 320 58
+at 501 click 160 200
+at 3001 key ESC
+at 3041 click 320 210
+at 3080 shot game_controls
+at 3081 press 258 149
+at 3085 move 330 149
+at 3090 move 420 152
+at 3100 shot speed_dragging
+at 3101 release 420 152
+at 3120 shot speed_dragged
+at 3121 click 480 209
+at 3140 shot scroll_rate_stepped
+at 3141 click 320 257
+at 3180 shot visual_controls
+at 3181 press 394 143
+at 3185 move 420 144
+at 3190 move 440 148
+at 3200 shot brightness_dragging
+at 3201 release 440 148
+at 3220 shot brightness_dragged
+at 3221 press 394 209
+at 3225 move 350 209
+at 3230 move 200 230
+at 3240 release 200 230
+at 3260 shot tint_at_the_left_end
+at 3261 click 440 187
+at 3280 shot contrast_stepped
+at 3281 click 178 290
+at 3300 shot values_reset
+at 3301 click 455 290
+at 3340 shot game_controls_again
+at 3341 click 320 285
+at 3380 shot no_sound_card
+at 3381 key RETURN
+at 3401 click 320 321
+at 3440 shot options_menu
+at 3441 quit

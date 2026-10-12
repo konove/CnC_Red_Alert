@@ -1,0 +1,39 @@
+# The corners of the map's rectangle in the scenario editor's map size dialog.
+# Each is dragged in turn, which changes two of the four numbers below the
+# map; editor_dialogs.script drags the rectangle as a whole. OK then gives
+# the scenario its new size, which the dialog shows when it is opened again.
+# args: -EDITOR
+at 201 rclick 400 150
+at 241 key DOWN
+at 245 key DOWN
+at 249 key DOWN
+at 259 key RETURN
+# The map is at 49,45 and 30 by 36 cells, a pixel a cell, in a board whose
+# first cell is at 46,26.
+at 301 press 124 106
+at 310 move 132 110
+at 320 move 140 115
+at 330 shot bottom_right_held
+at 331 release 140 115
+at 360 shot bottom_right_moved
+at 361 press 95 71
+at 370 move 90 66
+at 380 move 85 60
+at 390 release 85 60
+at 420 shot top_left_moved
+at 421 press 140 60
+at 430 move 145 65
+at 440 shot top_right_held
+at 441 release 145 65
+at 470 shot top_right_moved
+at 471 press 85 115
+at 480 move 80 120
+at 490 release 80 120
+at 520 shot bottom_left_moved
+at 521 click 67 203
+at 580 shot map_after_ok
+# The menu opens on Size Map, the line it was left on.
+at 581 rclick 400 150
+at 621 key RETURN
+at 660 shot dialog_again
+at 661 quit

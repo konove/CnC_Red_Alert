@@ -1,0 +1,44 @@
+# The steps of hotkeys.script with the key bindings of a Steam installation,
+# whose REDALERT.INI holds Windows key codes in [WinHotkeys]. The keys are the
+# same ones, so it must show what hotkeys.script shows.
+# file: REDALERT.INI steam_hotkeys.ini
+# hashes: hotkeys.hashes
+at 301 click 320 231
+at 341 key RETURN
+at 401 click 260 228
+# Select everything in view, make it team 1, let it go and call it back.
+at 500 key E
+at 520 shot select_view
+at 521 keydown CTRL
+at 522 key 1
+at 525 keyup CTRL
+at 540 shot team_made
+at 541 rclick 300 200
+at 561 key 1
+at 580 shot team_selected
+# Remember the view, scatter, and step to the next and the previous unit,
+# which centers the view on it.
+at 581 keydown CTRL
+at 582 key F9
+at 585 keyup CTRL
+at 591 key X
+at 650 shot scattered
+at 651 key N
+at 670 shot next
+at 671 key B
+at 690 shot previous
+at 691 key F9
+at 710 shot bookmark
+at 711 key 1
+at 712 key HOME
+at 730 shot home
+# A move order that Stop cuts short, then guard and formation.
+at 731 click 250 250
+at 760 key S
+at 800 shot stopped
+at 801 key G
+at 802 key F
+at 840 shot guard_formation
+at 841 key SPACE
+at 880 shot options
+at 881 quit
