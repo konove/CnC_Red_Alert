@@ -161,7 +161,7 @@ template <TickSource T>
 class Timer {
  public:
   // Starts counting down from `duration` ticks.
-  explicit Timer(int64_t duration = 0) noexcept : duration_(duration) {}
+  explicit Timer(const int64_t duration = 0) noexcept : duration_(duration) {}
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
   [[nodiscard]] int64_t Remaining() const {
@@ -169,7 +169,7 @@ class Timer {
   }
 
   // Resets the countdown to `duration` ticks and restarts it.
-  void Set(int64_t duration) {
+  void Set(const int64_t duration) {
     duration_ = duration;
     watch_.Reset();
   }

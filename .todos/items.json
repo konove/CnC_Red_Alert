@@ -2342,11 +2342,12 @@
         "engine",
         "ide-issues"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
-      "parent": "T-235"
+      "updated": "2026-10-12T04:41:33Z",
+      "parent": "T-235",
+      "resolution": "CLion showed two findings in `timer.h`, both \"parameter can be made const\" on the `duration` parameter of `Timer`'s constructor and `Timer::Set`; both inline definitions now take `const int64_t`. `timer.cc` had none. Both files are clean in the IDE."
     },
     {
       "id": "T-83",
