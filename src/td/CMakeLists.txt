@@ -146,7 +146,7 @@ add_gtest(
 target_compile_definitions(td_techno_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_techno_test)
 
-# Opens and closes an APC's door in a real Game.
+# Opens an APC's door and aims and fires vehicles' turrets in a real Game.
 add_gtest(
     NAME td_unit_test
     SOURCES objects/unit_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc

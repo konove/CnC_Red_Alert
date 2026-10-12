@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 393,
+  "nextId": 394,
   "items": [
     {
       "id": "T-2",
@@ -13402,11 +13402,19 @@
         "td",
         "coverage"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T23:32:19Z",
-      "updated": "2026-10-10T23:32:19Z",
+      "updated": "2026-10-12T02:10:44Z",
       "source": "30853b48",
+      "resolution": "Added 20 tests to `src/td/objects/unit_test.cc` that place hand-built vehicles on an empty map and drive the turret code through `AI()`, `Can_Fire()` and `Ok_To_Move()`: the turret turning to its target (`FIRE_FACING`, then `FIRE_ROTATING`, then `FIRE_OK`), the locked turret holding `Ok_To_Move()`, `FIRE_MOVING` without a free turret, the radar dish, homing and flame aim, the second weapon, the launcher's reload, the dinosaur's attack animation (`Ready_To_Fire()`) and the stealth tank uncloaking. `Rotate_Turret()`, `Turret_Can_Fire()`, `Ready_To_Fire()` and `Ok_To_Move()` are fully covered; each tested line was broken by hand to see a test fail.",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-12T01:21:57Z",
+          "text": "`UnitClass::Ready_To_Fire()` (6f6c4475, T-388) is the non-const half of what `Can_Fire()` did for fire-animated units (the dinosaurs) and has no unit test either; `src/td/objects/unit_test.cc` (17f4fcd0) now has a `UnitClass` fixture these tests can extend."
+        }
+      ],
       "anchors": [
         {
           "path": "src/td/objects/unit.h",
@@ -13449,11 +13457,12 @@
         "td",
         "cleanup"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:19:26Z",
+      "updated": "2026-10-12T01:57:06Z",
       "source": "c7463461..8395342a",
+      "resolution": "All four parts done: T-387 (one `game::StageCounter` on the frame clock, TD save version 12), T-388 (`Can_Fire()` pure, `Ready_To_Fire()` starts the animation), T-389 (dead code swept), T-390 (APC door tests).",
       "anchors": [
         {
           "path": "src/game/sim/stage_counter.h",
@@ -13473,10 +13482,10 @@
         "td",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:19:26Z",
+      "updated": "2026-10-12T01:57:00Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
       "resolution": "Merged on the frame clock, as decided: RA's class is now `game::StageCounter` in `src/game/sim/stage_counter.h` and TD uses it. TD `kSaveGameVersion` 12 with a new fixture; six TD UI script hashes re-recorded (animation timing shifts by up to a frame per `SetRate()`).",
@@ -13511,10 +13520,10 @@
         "refactoring",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:19:26Z",
+      "updated": "2026-10-12T01:57:02Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
       "resolution": "`UnitClass::Can_Fire()` is now a pure query; `Engage_Target()` starts the attack animation through the new non-const `Ready_To_Fire()`. `StageCounter`'s members and `FootClass::IsFiring` are no longer `mutable`, which put the FootClass family under `modernize-use-nodiscard` (55 members marked). TD save/load smoke identical; the dinosaurs were not seen on screen (no Covert Operations data).",
@@ -13549,10 +13558,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:02:33Z",
+      "updated": "2026-10-12T01:56:58Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
       "resolution": "Swept both files: removed 19 commented-out blocks and 4 inline commented-out conditions from `ra/objects/unit.cc` (the `Fetch_Stage()`/`Set_Stage()` block among them) and the `StageCounter Control` line from `td/map/mouse.h`.",
@@ -13605,19 +13614,20 @@
         "td",
         "coverage"
       ],
-      "status": "in_progress",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:19:26Z",
+      "updated": "2026-10-12T01:57:04Z",
       "parent": "T-386",
       "source": "44fde377..fe08cb4f",
+      "resolution": "New `ra_unit_test` and `td_unit_test` build an APC by hand in a real `Game` and check the door: 9 frames to open facing north-east or north-west, 3 otherwise, shut while driving or turning, 9 to close, and `Frame()` always 0-2 (shapes 32-37). The shape number itself is not drawn: `Draw_It()` needs the game's shape data.",
       "anchors": [
         {
-          "path": "src/ra/objects/unit.cc",
+          "path": "src/ra/objects/unit_test.cc",
           "lost": false
         },
         {
-          "path": "src/td/objects/unit.cc",
+          "path": "src/td/objects/unit_test.cc",
           "lost": false
         }
       ]
@@ -13722,6 +13732,40 @@
             "    }",
             "  }",
             "  return false;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-393",
+      "title": "Remove the branches of Tiberian Dawn's UnitClass::Engage_Target() that cannot change anything",
+      "details": "Found while writing the turret tests (T-384), in the `FIRE_FACING` case of `UnitClass::Engage_Target()`:\n\n- `if (!NavCom && !IsDriving)` under `IsLockTurret`: `NavCom` is never set there, because `Turret_Can_Fire()` answers `FIRE_MOVING` for a locked turret with a `NavCom` before it can answer `FIRE_FACING`. Only `!IsDriving` decides.\n- `if (*this == UNIT_FTANK)` in the `else`: it sets `SecondaryFacing` of the flame tank, which has no turret, so nothing reads it; the body is turned by the block at the end of the function. The same holds for every turretless unit that reaches the `else` (the APC).\n- The commented-out `SecondaryFacing.set_desired(Direction256(...))` line below it.\n\n`src/td/objects/unit_test.cc` pins the behaviour around them (`ALockedTurretTurnsWithTheBodyTowardsTheTarget`, `AFlameTankFiresAtWhateverItsBodyFacingCovers`).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "dead-code",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T02:10:43Z",
+      "updated": "2026-10-12T02:10:43Z",
+      "anchors": [
+        {
+          "path": "src/td/objects/unit.cc",
+          "startLine": 4505,
+          "endLine": 4521,
+          "text": "      case game::FIRE_FACING:\n        if (Class->IsLockTurret) {\n          if (!NavCom && !IsDriving) {\n            PrimaryFacing.set_desired(DirectionTo(TarCom));\n            SecondaryFacing.set_desired(PrimaryFacing.desired());\n          }\n        } else {\n          if (*this == UNIT_FTANK) {\n            SecondaryFacing.set_desired(\n                game::DirectionOf(game::NearestFacing(DirectionTo(TarCom))));\n          } else {\n            SecondaryFacing.set_desired(DirectionTo(TarCom));\n          }\n          //\t\t\t\t\tSecondaryFacing.set_desired(Direction256(Center_Coord(),\n          // TarCom.AsCoordinate()));\n        }\n        break;",
+          "before": [
+            "        }",
+            "        break;",
+            ""
+          ],
+          "after": [
+            "",
+            "      case game::FIRE_CLOAKED:",
+            "        IsFiring = false;"
           ],
           "lost": false
         }
