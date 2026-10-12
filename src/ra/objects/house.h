@@ -781,7 +781,7 @@ class HouseClass {
   void Adjust_Threat(int region, int threat);
   // The threat this house sees in `region`; 0 when no enemy object is in or
   // next to it.
-  [[nodiscard]] int RegionThreatAt(int region) const;
+  [[nodiscard]] int64_t RegionThreatAt(int region) const;
   void Tracking_Remove(const TechnoClass* techno);
   void Tracking_Add(const TechnoClass* techno);
   void Active_Remove(const TechnoClass* techno);
@@ -863,7 +863,8 @@ class HouseClass {
   // the same amount when it is lifted, so the two calls must be given equal
   // amounts or a region drifts.
   //
-  // Saved as 64 bits, though the sum of a map's worth of ratings fits an int.
+  // 64 bits wide because it is saved: a save never holds a plain int, whose
+  // size depends on the platform.
   std::array<int64_t, kMapTotalRegions> RegionThreat{};
 
   /*

@@ -555,7 +555,7 @@ void TeamClass::AI() {
       ** its side.
       */
       Cell dest = Zone.AsCell();
-      int max = 0x7FFFFFFF;
+      int64_t max = INT64_MAX;
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
@@ -564,8 +564,9 @@ void TeamClass::AI() {
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
           Cell cell = Cell::Containing(b->Center_Coord());
-          int dist = ra::Distance(b->Center_Coord(), Zone.AsCoordinate()) *
-                     (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
+          int64_t dist =
+              ra::Distance(b->Center_Coord(), Zone.AsCoordinate()) *
+              (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
             dist /= 2;

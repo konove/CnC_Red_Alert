@@ -90,7 +90,7 @@ class MapClass : public GScreenClass {
   [[nodiscard]] ObjectClass* Close_Object(Coordinate coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
   static int Cell_Region(Cell cell);
-  static int Cell_Threat(Cell cell, HousesType house);
+  static int64_t Cell_Threat(Cell cell, HousesType house);
   [[nodiscard]] bool In_Radar(Cell cell) const;
   void Sight_From(Cell cell, int sightrange, HouseClass* house,
                   bool incremental = false);
