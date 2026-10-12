@@ -193,6 +193,16 @@ target_compile_definitions(ra_techno_test PRIVATE RA_NO_ENTRY_POINT=1)
 apply_dotenv_settings(ra_techno_test)
 apply_language_setting(ra_techno_test)
 
+# Opens and closes an APC's door in a real Game.
+add_gtest(
+    NAME ra_unit_test
+    SOURCES objects/unit_test.cc ${RA_GAME_TEST_UTIL} startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_unit_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_unit_test)
+apply_language_setting(ra_unit_test)
+
 # Delivers teams and launches an air strike in a real Game.
 add_gtest(
     NAME ra_reinforcements_test

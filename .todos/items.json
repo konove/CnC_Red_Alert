@@ -13452,12 +13452,12 @@
       "status": "in_progress",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T00:52:00Z",
+      "updated": "2026-10-12T01:19:26Z",
       "source": "c7463461..8395342a",
       "anchors": [
         {
-          "path": "src/ra/objects/stage_counter.h",
-          "lost": true
+          "path": "src/game/sim/stage_counter.h",
+          "lost": false
         }
       ]
     },
@@ -13473,12 +13473,13 @@
         "td",
         "game"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:02:33Z",
+      "updated": "2026-10-12T01:19:26Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
+      "resolution": "Merged on the frame clock, as decided: RA's class is now `game::StageCounter` in `src/game/sim/stage_counter.h` and TD uses it. TD `kSaveGameVersion` 12 with a new fixture; six TD UI script hashes re-recorded (animation timing shifts by up to a frame per `SetRate()`).",
       "toDecide": "Merge them into `src/game/sim/stage_counter.h`, or leave one per game?\n\n- Merge on the frame-clock timer: TD's stage then advances by game frames, not by `AI()` calls. That is a simulation change wherever TD skips `AI()` for an object, and a `kSaveGameVersion` bump for TD with a new fixture; check with `tools/td_saveload_smoke.sh`.\n- Merge as a template over the countdown: exact, but keeps both mechanisms.\n- Leave them: nothing to do; the latent defects could still be closed by widening TD's fields to `int32_t` (save bump only).",
       "decisions": [
         {
@@ -13495,12 +13496,8 @@
       ],
       "anchors": [
         {
-          "path": "src/ra/objects/stage_counter.h",
-          "lost": true
-        },
-        {
-          "path": "src/td/objects/stage_counter.h",
-          "lost": true
+          "path": "src/game/sim/stage_counter.h",
+          "lost": false
         }
       ]
     },
@@ -13517,31 +13514,27 @@
       "status": "fixed",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-12T01:02:33Z",
+      "updated": "2026-10-12T01:19:26Z",
       "parent": "T-386",
       "source": "c7463461..8395342a",
       "resolution": "`UnitClass::Can_Fire()` is now a pure query; `Engage_Target()` starts the attack animation through the new non-const `Ready_To_Fire()`. `StageCounter`'s members and `FootClass::IsFiring` are no longer `mutable`, which put the FootClass family under `modernize-use-nodiscard` (55 members marked). TD save/load smoke identical; the dinosaurs were not seen on screen (no Covert Operations data).",
       "anchors": [
         {
-          "path": "src/td/objects/stage_counter.h",
-          "lost": true
-        },
-        {
           "path": "src/td/objects/unit.cc",
           "startLine": 527,
-          "endLine": 545,
-          "text": "game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {\n  Validate();\n\n  game::FireErrorType cf = Turret_Can_Fire(target, which);\n  /*\n  ** If it's a dinosaur, when it's OK to fire we should start the firing\n  ** animation, but wait for the proper attack stage before starting the\n  ** bullet, so things won't die prematurely.\n  */\n  if ((cf == game::FIRE_OK) && Class->IsFireAnim) {\n    if (!IsFiring) {\n      animation().SetRate(\n          static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));\n      animation().set_stage(0);\n      IsFiring = true;\n      cf = game::FIRE_BUSY;\n    } else {\n      if (animation().stage() < 4) {\n        cf = game::FIRE_BUSY;",
+          "endLine": 552,
+          "text": "  Validate();\n\n  const game::FireErrorType cf = Turret_Can_Fire(target, which);\n  /*\n  ** A dinosaur plays its attack animation first and releases the bullet at\n  ** the proper attack stage, so things won't die prematurely.\n  */\n  if (cf == game::FIRE_OK && Class->IsFireAnim &&\n      (!IsFiring || animation().stage() < 4)) {\n    return game::FIRE_BUSY;\n  }\n  return cf;\n}\n\n// Checks the turret alone first: Can_Fire() answers FIRE_BUSY for a dinosaur\n// that has yet to start its attack animation.\ngame::FireErrorType UnitClass::Ready_To_Fire(Target target, int which) {\n  if (Class->IsFireAnim && !IsFiring &&\n      Turret_Can_Fire(target, which) == game::FIRE_OK) {\n    animation().SetRate(TheOptions().Normalize_Delay(2));\n    animation().set_stage(0);\n    IsFiring = true;\n    return game::FIRE_BUSY;\n  }\n  return Can_Fire(target, which);\n}",
           "before": [
-            " *                                                                                             *",
             " * HISTORY: * 05/08/1995 JLB : Created. *",
-            " *=============================================================================================*/"
+            " *=============================================================================================*/",
+            "game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {"
           ],
           "after": [
-            "      }",
-            "    }",
-            "  }"
+            "",
+            "/***********************************************************************************************",
+            " * UnitClass::Receive_Message -- Handles receiving a radio message. *"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -13612,10 +13605,10 @@
         "td",
         "coverage"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-11T01:12:18Z",
-      "updated": "2026-10-11T01:12:18Z",
+      "updated": "2026-10-12T01:19:26Z",
       "parent": "T-386",
       "source": "44fde377..fe08cb4f",
       "anchors": [
