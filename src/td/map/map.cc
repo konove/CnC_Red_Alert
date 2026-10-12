@@ -1209,8 +1209,8 @@ int MapClass::Cell_Region(Cell cell) {
  * HISTORY:                                                                *
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
-int MapClass::Cell_Threat(Cell cell, HousesType house) {
-  int threat = HouseClass::As_Pointer(house)->RegionThreatAt(
+int64_t MapClass::Cell_Threat(Cell cell, HousesType house) {
+  int64_t threat = HouseClass::As_Pointer(house)->RegionThreatAt(
       MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()));
   if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;

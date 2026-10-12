@@ -126,6 +126,7 @@
 #include "td/objects/house.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -146,6 +147,7 @@
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
+#include "base/types.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/ipxmgr.h"
@@ -2044,41 +2046,27 @@ const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
                                            IsAlerted && alertcheck);
 }
 
-/***********************************************************************************************
- * HouseClass::Adjust_Threat -- Adjust threat for the region specified. *
- *                                                                                             *
- *    This routine is called when the threat rating for a region needs to
- *change. The region   * and threat adjustment are provided. *
- *                                                                                             *
- * INPUT:   region   -- The region that adjustment is to occur on. *
- *                                                                                             *
- *          threat   -- The threat adjustment to perform. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/08/1995 JLB : Created. *
- *=============================================================================================*/
 void HouseClass::Adjust_Threat(int region, int threat) {
   Validate();
-  static const int _val[] = {
+  // Where the region's eight neighbors and the region itself are, row by row.
+  static constexpr std::array<int, 9> kNeighborOffsets = {
       -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,
       MAP_REGION_WIDTH - 1,  MAP_REGION_WIDTH,  MAP_REGION_WIDTH + 1};
-  // Divisor of the threat for each neighbor: quarter diagonally, half
-  // orthogonally, full in the center.
-  static const int _thr[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
+  // Divisor for each of them: a quarter for the corners, half for the edges,
+  // the full threat for the center.
+  static constexpr std::array<int, 9> kNeighborDivisors = {4, 2, 4, 2, 1,
+                                                           2, 4, 2, 4};
 
   // Division truncates toward zero, so lifting an object takes away exactly
   // the shares that placing it added.
-  for (int lp = 0; lp < 9; lp++) {
-    base::At(RegionThreat, region + base::At(_val, lp)) +=
-        threat / base::At(_thr, lp);
+  for (base::ssize i = 0; i < std::ssize(kNeighborOffsets); ++i) {
+    base::At(RegionThreat, region + base::At(kNeighborOffsets, i)) +=
+        threat / base::At(kNeighborDivisors, i);
   }
 }
 
-int HouseClass::RegionThreatAt(const int region) const {
-  return static_cast<int>(base::At(RegionThreat, region));
+int64_t HouseClass::RegionThreatAt(const int region) const {
+  return base::At(RegionThreat, region);
 }
 
 /***********************************************************************************************

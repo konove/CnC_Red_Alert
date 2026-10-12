@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 392,
+  "nextId": 393,
   "items": [
     {
       "id": "T-2",
@@ -956,10 +956,10 @@
         "ra",
         "editor"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-11T07:09:24Z",
+      "updated": "2026-10-11T07:13:06Z",
       "resolution": "The pairing is right as it stands: types are written in in-use-list order, so `PositionOf()` is the place of the entry, which is the slot the type gets when the scenario is read into empty heaps; `SlotIndexOf()` would break after a deletion. `ReferencesSurviveWritingAndReadingHeapsWithHoles` pins that. The one real mismatch was on the read side: `TeamType::ReadIni()` freed a rejected entry at once, moving every later team type down a slot; it now frees the rejects after all entries are read (`ReadIniLeavesTheSlotOfARejectedEntryEmpty`)."
     },
     {
@@ -1495,30 +1495,58 @@
       "tags": [
         "bugs",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T00:49:34Z",
       "parent": "T-133",
+      "resolution": "`TechnoClass::Captured()` in both games subtracts the object's threat before the owner change and adds it back after, when the object is down in a campaign game (and on the ground layer in Red Alert). `ACapturedObjectMovesItsThreatToTheOtherHouse` and `ACaptureLeavesTheRegionsAloneOutsideTheCampaign` in each game's `techno_test.cc` cover it; the first fails without the fix.",
       "toDecide": "Not traced to the end: first confirm it with a campaign capture and a dump of `HouseClass::Regions`. If it is real:\n\n- **Fix**: adjust the regions around the owner change in `TechnoClass::Captured()`, about 10 lines per game; it changes the computer's path and team choices in the campaign.\n- **Leave** it as shipped.",
+      "decisions": [
+        {
+          "question": "A captured object leaves stale threat in the houses' regions (campaign only). Fix it?",
+          "options": [
+            "Fix",
+            "Leave as shipped"
+          ],
+          "answer": "Fix",
+          "time": "2026-10-12T00:37:58Z"
+        }
+      ],
       "anchors": [
         {
-          "path": "src/ra/objects/cell.cc",
-          "startLine": 1711,
-          "endLine": 1711,
-          "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
+          "path": "src/ra/objects/techno.cc",
+          "startLine": 4286,
+          "endLine": 4286,
+          "text": "      TheMap().at(threat_cell).Adjust_Threat(Owner(), -Risk());",
           "before": [
-            " *=========================================================================*/",
-            "// Not const: changes the other houses' threat values.",
-            "// NOLINTNEXTLINE(readability-make-member-function-const)"
+            "                                   In_Which_Layer() == LAYER_GROUND;",
+            "    const Cell threat_cell = Cell::Containing(Coord);",
+            "    if (is_threat_counted) {"
           ],
           "after": [
-            "  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);",
-            "",
-            "  const int region = MapEditClass::Cell_Region(Cell_Number());"
+            "    }",
+            "    House = newowner;",
+            "    IsOwnedByPlayer = House == ThePlayer();"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/objects/techno.cc",
+          "startLine": 2908,
+          "endLine": 2908,
+          "text": "      TheMap().at(threat_cell).Adjust_Threat(Owner(), -Risk());",
+          "before": [
+            "    const bool is_threat_counted = IsDown && TheSession().type() == GAME_NORMAL;",
+            "    const Cell threat_cell = Cell::Containing(Coord);",
+            "    if (is_threat_counted) {"
+          ],
+          "after": [
+            "    }",
+            "    House = newowner;",
+            "    IsOwnedByPlayer = House == ThePlayer();"
           ],
           "lost": false
         }
@@ -3688,21 +3716,22 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:36:56Z",
+      "updated": "2026-10-12T00:49:34Z",
       "source": "805bd6ba..1ad6409d",
+      "resolution": "All three parts done: captures move the threat with the ownership (T-49), the threat is read as `int64_t` throughout with the save unchanged (T-295), and `Adjust_Threat()` has constexpr tables (T-296).",
       "anchors": [
         {
           "path": "src/ra/objects/house.h",
-          "startLine": 867,
-          "endLine": 867,
+          "startLine": 868,
+          "endLine": 868,
           "text": "  std::array<int64_t, kMapTotalRegions> RegionThreat{};",
           "before": [
-            "  // amounts or a region drifts.",
             "  //",
-            "  // Saved as 64 bits, though the sum of a map's worth of ratings fits an int."
+            "  // 64 bits wide because it is saved: a save never holds a plain int, whose",
+            "  // size depends on the platform."
           ],
           "after": [
             "",
@@ -9539,26 +9568,37 @@
       "tags": [
         "refactoring",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:36:56Z",
-      "updated": "2026-10-09T20:36:56Z",
+      "updated": "2026-10-12T00:49:34Z",
       "parent": "T-133",
       "source": "805bd6ba..1ad6409d",
+      "resolution": "Kept `int64_t` in the save (a saved field is never a plain `int`) and widened the readers instead: `RegionThreatAt()` and `MapClass::Cell_Threat()` return `int64_t` and the regroup distance in `TeamClass::AI()` is computed in 64 bits, in both games. No cast is left and the save format is unchanged.",
       "toDecide": "- **Make it `int`**: drops the cast on every read; the save format changes (a `kSaveGameVersion` bump per game).\n- **Keep** `int64_t`.",
+      "decisions": [
+        {
+          "question": "Should HouseClass::RegionThreat be saved as int instead of int64_t?",
+          "options": [
+            "Make it int",
+            "Keep int64_t"
+          ],
+          "answer": "Can you change the type of region threat as int64_t then? Here is the rule - if the underlying type will be used in save format it never should be naked int, since its size varies across platforms. Especially it it important when you do modernize file skill and also migrate types",
+          "time": "2026-10-12T00:37:58Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/objects/house.h",
-          "startLine": 867,
-          "endLine": 867,
+          "startLine": 868,
+          "endLine": 868,
           "text": "  std::array<int64_t, kMapTotalRegions> RegionThreat{};",
           "before": [
-            "  // amounts or a region drifts.",
             "  //",
-            "  // Saved as 64 bits, though the sum of a map's worth of ratings fits an int."
+            "  // 64 bits wide because it is saved: a save never holds a plain int, whose",
+            "  // size depends on the platform."
           ],
           "after": [
             "",
@@ -9581,44 +9621,45 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:36:56Z",
-      "updated": "2026-10-09T20:36:56Z",
+      "updated": "2026-10-12T00:49:34Z",
       "parent": "T-133",
       "source": "805bd6ba..1ad6409d",
+      "resolution": "`HouseClass::Adjust_Threat()` in both games uses `static constexpr std::array` tables `kNeighborOffsets`/`kNeighborDivisors` and lost its Westwood banner.",
       "anchors": [
         {
           "path": "src/ra/objects/house.cc",
-          "startLine": 2182,
-          "endLine": 2182,
+          "startLine": 2168,
+          "endLine": 2168,
           "text": "void HouseClass::Adjust_Threat(int region, int threat) {",
           "before": [
-            " *                                                                                             *",
-            " * HISTORY: * 05/08/1995 JLB : Created. *",
-            " *=============================================================================================*/"
+            "  return TeamType::SuggestNewTeam(this, alertcheck);",
+            "}",
+            ""
           ],
           "after": [
             "  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);",
             "",
-            "  static const int _val[] = {"
+            "  // Where the region's eight neighbors and the region itself are, row by row."
           ],
           "lost": false
         },
         {
           "path": "src/td/objects/house.cc",
-          "startLine": 2063,
-          "endLine": 2063,
+          "startLine": 2049,
+          "endLine": 2049,
           "text": "void HouseClass::Adjust_Threat(int region, int threat) {",
           "before": [
-            " *                                                                                             *",
-            " * HISTORY: * 05/08/1995 JLB : Created. *",
-            " *=============================================================================================*/"
+            "                                           IsAlerted && alertcheck);",
+            "}",
+            ""
           ],
           "after": [
             "  Validate();",
-            "  static const int _val[] = {",
-            "      -MAP_REGION_WIDTH - 1, -MAP_REGION_WIDTH, -MAP_REGION_WIDTH + 1, -1, 0, 1,"
+            "  // Where the region's eight neighbors and the region itself are, row by row.",
+            "  static constexpr std::array<int, 9> kNeighborOffsets = {"
           ],
           "lost": false
         }
@@ -13621,6 +13662,59 @@
             "",
             "TeamClass* TeamType::CreateTeam() {",
             "  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-392",
+      "title": "Stop region threat drifting on alliance changes and airborne lifts",
+      "details": "`TechnoClass::Captured()` now moves an object's threat with its ownership (T-49). Two other ways a house's `RegionThreat` can drift remain, neither traced in a running game:\n\n- **Alliance change, both games.** `CellClass::Adjust_Threat()` reads `Is_Ally()` afresh on every call, so a human house that makes or breaks an alliance while the other house's objects are down gets the lift subtracted without the placement added, or the reverse.\n- **Layer change, Red Alert only.** `ObjectClass::Mark()` tests `In_Which_Layer() == LAYER_GROUND` at `MARK_DOWN` and again at `MARK_UP`. An aircraft placed while on the ground and lifted while airborne never gives its threat back (and the reverse subtracts what was never added). Tiberian Dawn has no layer test.\n\nOnly the campaign tracks threat, so a fix changes computer path and team choices there.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T00:49:34Z",
+      "updated": "2026-10-12T00:49:34Z",
+      "source": "T-49",
+      "anchors": [
+        {
+          "path": "src/ra/objects/cell.cc",
+          "startLine": 1713,
+          "endLine": 1713,
+          "text": "void CellClass::Adjust_Threat(HousesType house, int threat_value) {",
+          "before": [
+            " *=========================================================================*/",
+            "// Not const: changes the other houses' threat values.",
+            "// NOLINTNEXTLINE(readability-make-member-function-const)"
+          ],
+          "after": [
+            "  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);",
+            "",
+            "  const int region = MapEditClass::Cell_Region(Cell_Number());"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/objects/object.cc",
+          "startLine": 1638,
+          "endLine": 1658,
+          "text": "    if (mark == MARK_DOWN && !IsDown) {\n      if (tech && TheSession().Type == GAME_NORMAL &&\n          In_Which_Layer() == LAYER_GROUND) {\n        TheMap().at(cell).Adjust_Threat(house, threat);\n      }\n      IsDown = true;\n      Mark_For_Redraw();\n      return true;\n    }\n\n    /*\n    **\tLifting up is only successful if the object isn't already\n    **\tlifted up from the map.\n    */\n    if (mark == MARK_UP && IsDown) {\n      if (tech && TheSession().Type == GAME_NORMAL &&\n          In_Which_Layer() == LAYER_GROUND) {\n        TheMap().at(cell).Adjust_Threat(house, -threat);\n      }\n      IsDown = false;\n      return true;",
+          "before": [
+            "    **\tMarking down is only successful if the object isn't already",
+            "    **\tplaced down.",
+            "    */"
+          ],
+          "after": [
+            "    }",
+            "  }",
+            "  return false;"
           ],
           "lost": false
         }

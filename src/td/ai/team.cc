@@ -362,7 +362,7 @@ void TeamClass::AI() {
       ** its side.
       */
       Cell dest = Center;
-      int max = 0x7FFFFFFF;
+      int64_t max = INT64_MAX;
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
@@ -371,8 +371,9 @@ void TeamClass::AI() {
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
           Cell cell = Cell::Containing(b->Center_Coord());
-          int dist = MapEditClass::Cell_Distance(cell, Center) *
-                     (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
+          int64_t dist =
+              MapEditClass::Cell_Distance(cell, Center) *
+              (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
             dist /= 2;
