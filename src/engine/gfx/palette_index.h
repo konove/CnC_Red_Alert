@@ -39,13 +39,15 @@ class PaletteIndex {
   }
 
   // The slot as a number, for arithmetic and for indexing a table.
-  [[nodiscard]] constexpr int value() const { return value_; }
+  [[nodiscard]] constexpr int value() const noexcept { return value_; }
 
   // The slot as the byte a pixel or a table entry stores.
-  [[nodiscard]] constexpr uint8_t byte() const { return value_; }
+  [[nodiscard]] constexpr uint8_t byte() const noexcept { return value_; }
 
   // True for slot 0, which a transparent blit and a text background skip.
-  [[nodiscard]] constexpr bool IsTransparent() const { return value_ == 0; }
+  [[nodiscard]] constexpr bool IsTransparent() const noexcept {
+    return value_ == 0;
+  }
 
   // Returns the slot `table`, a remap or fading table, draws in place of this
   // one.
@@ -57,7 +59,7 @@ class PaletteIndex {
   // Transitional (docs/PALETTE_INDEX_PLAN.md): lets a PaletteIndex reach the
   // parameters and variables that are still int. Task 7 of the plan removes it.
   // NOLINTNEXTLINE(google-explicit-constructor,misc-explicit-constructor)
-  constexpr operator int() const { return value_; }
+  constexpr operator int() const noexcept { return value_; }
 
   friend constexpr bool operator==(PaletteIndex, PaletteIndex) = default;
 

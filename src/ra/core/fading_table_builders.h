@@ -32,6 +32,7 @@
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
+#include "engine/gfx/palette_index.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
@@ -89,7 +90,9 @@ TranslucencyTable<N> BuildTranslucencyTable(
     const std::array<TranslucentColor, N>& colors) {
   return BuildTranslucencyTableWith(
       colors, [&palette](const TranslucentColor& entry) {
-        return BuildFadingTable(palette, entry.target_color, entry.fade_ratio);
+        return BuildFadingTable(palette,
+                                engine::gfx::PaletteIndex{entry.target_color},
+                                entry.fade_ratio);
       });
 }
 

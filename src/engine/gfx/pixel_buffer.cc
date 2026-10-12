@@ -43,6 +43,7 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/gfx/rect.h"
 
@@ -147,24 +148,24 @@ void PixelView::PutPixelLocked(const int x, const int y, const uint8_t color) {
   }
 }
 
-int PixelView::GetPixel(const int x, const int y) {
-  int return_code = 0;
+engine::gfx::PaletteIndex PixelView::GetPixel(const int x, const int y) {
+  engine::gfx::PaletteIndex color;
   if (Lock()) {
-    return_code = GetPixelLocked(x, y);
+    color = GetPixelLocked(x, y);
     Unlock();
   }
-  return return_code;
+  return color;
 }
 
-int PixelView::GetPixelLocked(const int x, const int y) {
+engine::gfx::PaletteIndex PixelView::GetPixelLocked(const int x, const int y) {
   if (x < 0 || y < 0 || x >= width() || y >= height()) {
-    return 0;
+    return {};
   }
 
   const base::ssize dst_area = stride();
   const auto dst_offset = pixels().begin() + x + (y * dst_area);
 
-  return *dst_offset;
+  return engine::gfx::PaletteIndex(*dst_offset);
 }
 
 void PixelView::Clear(const uint8_t color) {

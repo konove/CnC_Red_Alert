@@ -4,14 +4,13 @@
 #include <climits>
 #include <cstdint>
 
-#include "absl/log/check.h"
 #include "base/array.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 
-FadingTable BuildFadingTable(const engine::gfx::Palette& palette, int color,
-                             int frac) {
-  CHECK(color >= 0 && color < 256) << "color " << color;
+FadingTable BuildFadingTable(const engine::gfx::Palette& palette,
+                             const engine::gfx::PaletteIndex color, int frac) {
   frac = std::min<int>(frac, 255);
   FadingTable table{};
 
@@ -40,7 +39,7 @@ FadingTable BuildFadingTable(const engine::gfx::Palette& palette, int color,
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.
 
-    auto matchcolor = static_cast<uint8_t>(color);  // Default color (self).
+    uint8_t matchcolor = color.byte();  // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
     for (int color_index = 1; color_index < 256; color_index++) {

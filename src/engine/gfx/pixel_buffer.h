@@ -42,6 +42,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/gfx/rect.h"
 
@@ -128,17 +129,34 @@ class PixelView {
   // fill in "the whole view" for the missing rectangle. The locking form is a
   // one-line wrapper, so a caller that draws many times can take the lock once
   // and call the locked form in a loop.
+  //
+  // A color is a PaletteIndex. The overloads that take a uint8_t or an int are
+  // transitional (docs/PALETTE_INDEX_PLAN.md) and go when their last caller
+  // does.
 
   // Sets one pixel, ignoring coordinates outside the view.
   void PutPixel(int x, int y, uint8_t color);
+  void PutPixel(const int x, const int y,
+                const engine::gfx::PaletteIndex color) {
+    PutPixel(x, y, color.byte());
+  }
   void PutPixelLocked(int x, int y, uint8_t color);
+  void PutPixelLocked(const int x, const int y,
+                      const engine::gfx::PaletteIndex color) {
+    PutPixelLocked(x, y, color.byte());
+  }
 
-  // Returns the palette index at x,y, or 0 outside the view.
-  int GetPixel(int x, int y);
-  int GetPixelLocked(int x, int y);
+  // Returns the color at x,y, or slot 0 outside the view.
+  engine::gfx::PaletteIndex GetPixel(int x, int y);
+  engine::gfx::PaletteIndex GetPixelLocked(int x, int y);
 
+  // Fills the view with `color`.
   void Clear(uint8_t color = 0);
+  void Clear(const engine::gfx::PaletteIndex color) { Clear(color.byte()); }
   void ClearLocked(uint8_t color);
+  void ClearLocked(const engine::gfx::PaletteIndex color) {
+    ClearLocked(color.byte());
+  }
 
   // Copies the rectangle `source` of the view out to plain memory, packed
   // with no padding. The rectangle is clipped to the view first, and a
@@ -192,18 +210,50 @@ class PixelView {
              int back_color);
   void PrintLocked(const FontStyle& style, const char* text, int x, int y,
                    int fore_color, int back_color);
+  void Print(const FontStyle& style, const char* text, const int x, const int y,
+             const engine::gfx::PaletteIndex fore_color,
+             const engine::gfx::PaletteIndex back_color) {
+    Print(style, text, x, y, fore_color.value(), back_color.value());
+  }
+  void Print(const FontStyle& style, const int value, const int x, const int y,
+             const engine::gfx::PaletteIndex fore_color,
+             const engine::gfx::PaletteIndex back_color) {
+    Print(style, value, x, y, fore_color.value(), back_color.value());
+  }
+  void PrintLocked(const FontStyle& style, const char* text, const int x,
+                   const int y, const engine::gfx::PaletteIndex fore_color,
+                   const engine::gfx::PaletteIndex back_color) {
+    PrintLocked(style, text, x, y, fore_color.value(), back_color.value());
+  }
 
   // Draws the line from x1,y1 to x2,y2, both ends inclusive.
   void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
+  void DrawLine(const int x1, const int y1, const int x2, const int y2,
+                const engine::gfx::PaletteIndex color) {
+    DrawLine(x1, y1, x2, y2, color.byte());
+  }
   void DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color);
+  void DrawLineLocked(const int x1, const int y1, const int x2, const int y2,
+                      const engine::gfx::PaletteIndex color) {
+    DrawLineLocked(x1, y1, x2, y2, color.byte());
+  }
 
   // DrawRect draws the one pixel wide outline of `rect`, along its inside
   // edge; FillRect fills all of it. Both clip to the view and draw nothing
   // for a rectangle with no width or no height. A caller that holds two
   // inclusive corners passes Rect::FromCorners(x1, y1, x2, y2).
   void DrawRect(const Rect& rect, uint8_t color);
+  void DrawRect(const Rect& rect, const engine::gfx::PaletteIndex color) {
+    DrawRect(rect, color.byte());
+  }
   void FillRect(const Rect& rect, uint8_t color);
+  void FillRect(const Rect& rect, const engine::gfx::PaletteIndex color) {
+    FillRect(rect, color.byte());
+  }
   void FillRectLocked(const Rect& rect, uint8_t color);
+  void FillRectLocked(const Rect& rect, const engine::gfx::PaletteIndex color) {
+    FillRectLocked(rect, color.byte());
+  }
 
   // Replaces every pixel in `rect` with remap_table[pixel]. `remap_table` is
   // a 256-entry table; the shorter overload covers the whole view.

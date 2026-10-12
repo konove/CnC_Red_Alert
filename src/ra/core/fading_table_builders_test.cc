@@ -10,6 +10,7 @@
 #include "base/array.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "gtest/gtest.h"
 #include "ra/assets/palette.h"
 
@@ -47,7 +48,8 @@ TEST(BuildTranslucencyTableTest, FadesMatchTheEngineFadingTable) {
 
   const TranslucencyTable<1> table = BuildTranslucencyTable(palette, kColors);
 
-  const FadingTable expected = BuildFadingTable(palette, 7, 128);
+  const FadingTable expected =
+      BuildFadingTable(palette, engine::gfx::PaletteIndex{7}, 128);
   EXPECT_TRUE(std::ranges::equal(std::span(table).subspan(256), expected));
 }
 
