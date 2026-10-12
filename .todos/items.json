@@ -2389,26 +2389,27 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T04:52:17Z",
       "parent": "T-235",
+      "resolution": "`FootClass::Mission_Guard` reads `Arm.Remaining()` once into `arm_remaining` and tests that value, instead of calling `HasTimeLeft()` and then `Remaining()`.",
       "anchors": [
         {
           "path": "src/ra/objects/foot.cc",
-          "startLine": 622,
-          "endLine": 622,
-          "text": "  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())",
+          "startLine": 639,
+          "endLine": 640,
+          "text": "  const int arm_remaining = static_cast<int>(Arm.Remaining());\n  return arm_remaining != 0 ? arm_remaining : dtime + RandomPick(0, 2);",
           "before": [
             "    }",
             "  }",
             ""
           ],
           "after": [
-            "                           : dtime + RandomPick(0, 2);",
             "}",
-            ""
+            "",
+            "/***********************************************************************************************"
           ],
           "lost": false
         }
