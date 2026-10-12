@@ -27,13 +27,14 @@
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "ra/assets/palette.h"
 
 namespace ra {
 
-FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
-                                         const int target_color,
-                                         const int ratio) {
+FadingTable BuildClosestColorFadingTable(
+    const PaletteClass& palette, const engine::gfx::PaletteIndex target_color,
+    const int ratio) {
   const engine::gfx::PaletteColor& target = palette.at(target_color);
   FadingTable table{};
   for (int index = 0; index < engine::gfx::Palette::kColorCount; index++) {
@@ -41,13 +42,14 @@ FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
         palette.at(index).FadedToward(ratio, target);
     // Closest_Color() always finds an entry: its starting distance is larger
     // than any two colors can be apart.
-    base::At(table, index) = static_cast<uint8_t>(palette.Closest_Color(faded));
+    base::At(table, index) = palette.Closest_Color(faded).byte();
   }
   return table;
 }
 
 FadingTable BuildShadowFadingTable(const engine::gfx::Palette& palette,
-                                   const int target_color, const int ratio) {
+                                   const engine::gfx::PaletteIndex target_color,
+                                   const int ratio) {
   constexpr int kShadowStart = engine::gfx::Palette::kColorCount - 16;
   // Color 255 is not a candidate.
   constexpr auto kCandidates =

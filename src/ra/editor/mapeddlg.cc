@@ -63,6 +63,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
@@ -1092,7 +1093,7 @@ int MapEditClass::Load_Scenario() {
     int txt_y = 0;                    // for displaying text
                                       //	unsigned index;
                                       //// for drawing map symbology
-    int color = 0;                    // for drawing map symbology
+    engine::gfx::PaletteIndex color;  // for drawing map symbology
     ObjectClass* occupier = nullptr;  // cell's occupier
     const RemapControlType* scheme = Get_Color_Scheme();
 
@@ -1279,7 +1280,7 @@ int MapEditClass::Load_Scenario() {
             if (occupier == nullptr) {
               color = GroundColor.at((*this).at(cell).Land_Type());
               view.PutPixel(kDBordX1 + cell.x() + 1, kDBordY1 + cell.y() + 1,
-                            static_cast<unsigned char>(color));
+                            color);
             }
           }
 
@@ -1336,7 +1337,7 @@ int MapEditClass::Load_Scenario() {
                             .Color;
               }
               view.PutPixel(kDBordX1 + cell.x() + 1, kDBordY1 + cell.y() + 1,
-                            static_cast<unsigned char>(color));
+                            color);
             }
           }
 

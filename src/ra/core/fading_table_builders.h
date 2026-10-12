@@ -40,9 +40,9 @@ namespace ra {
 // One translucent color of a translucency table: shape pixels of source_color
 // are not drawn as that color but fade what is under them toward target_color.
 struct TranslucentColor {
-  uint8_t source_color;  // Palette index that draws translucent.
-  uint8_t target_color;  // Palette index the background fades toward.
-  uint8_t fade_ratio;    // How far it fades: 0 not at all, 255 fully.
+  engine::gfx::PaletteIndex source_color;  // Draws translucent.
+  engine::gfx::PaletteIndex target_color;  // What the background fades toward.
+  uint8_t fade_ratio = 0;  // How far it fades: 0 not at all, 255 fully.
 };
 
 // Returns the table that fades every palette color toward `target_color` by
@@ -51,7 +51,8 @@ struct TranslucentColor {
 // 0 is faded too, a color may map to itself, and closeness is the sum of the
 // component differences, not of their squares.
 FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
-                                         int target_color, int ratio);
+                                         engine::gfx::PaletteIndex target_color,
+                                         int ratio);
 
 // Returns a fading table toward `target_color` by `ratio` (0..255; values
 // outside are clamped) that stays inside the shadow range, the last 16 palette
@@ -59,7 +60,8 @@ FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,
 // colors 241..255 keep their own color. A shadow drawn over a shadow therefore
 // does not darken further, however many shapes overlap.
 FadingTable BuildShadowFadingTable(const engine::gfx::Palette& palette,
-                                   int target_color, int ratio);
+                                   engine::gfx::PaletteIndex target_color,
+                                   int ratio);
 
 // Returns the translucency table in which each `colors` entry's source_color
 // is drawn through `make_fade(entry)`, a FadingTable, and every other color is
@@ -73,7 +75,7 @@ TranslucencyTable<N> BuildTranslucencyTableWith(
   std::ranges::fill(lookup, uint8_t{255});
   for (std::size_t index = 0; index < N; ++index) {
     const TranslucentColor& entry = base::At(colors, index);
-    base::At(lookup, entry.source_color) = static_cast<uint8_t>(index);
+    base::At(lookup, entry.source_color.value()) = static_cast<uint8_t>(index);
     const FadingTable fade_table = make_fade(entry);
     std::ranges::copy(fade_table,
                       std::span(table).subspan((index + 1) * 256).begin());
@@ -90,9 +92,7 @@ TranslucencyTable<N> BuildTranslucencyTable(
     const std::array<TranslucentColor, N>& colors) {
   return BuildTranslucencyTableWith(
       colors, [&palette](const TranslucentColor& entry) {
-        return BuildFadingTable(palette,
-                                engine::gfx::PaletteIndex{entry.target_color},
-                                entry.fade_ratio);
+        return BuildFadingTable(palette, entry.target_color, entry.fade_ratio);
       });
 }
 

@@ -1305,16 +1305,15 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
 
       pwidth = std::clamp(pwidth, 1, width - 2);
 
-      int color =
-          game::kLightGreen;  // The color to give the interior of the bargraph.
+      // The color to give the interior of the bargraph.
+      engine::gfx::PaletteIndex color = game::kLightGreen;
       if (ratio <= TheRules().ConditionYellow) {
         color = game::kYellow;
       }
       if (ratio <= TheRules().ConditionRed) {
         color = game::kRed;
       }
-      draw_window.FillRect(Rect{xx + 1, yy + 1, pwidth, 3 - 1},
-                           static_cast<unsigned char>(color));
+      draw_window.FillRect(Rect{xx + 1, yy + 1, pwidth, 3 - 1}, color);
     }
 
     /*

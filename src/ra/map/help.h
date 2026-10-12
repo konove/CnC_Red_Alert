@@ -54,7 +54,8 @@
 
 namespace ra {
 
-#define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
+// The gold the help text and its frame are drawn in.
+inline constexpr engine::gfx::PaletteIndex kHelpTextColor{80};
 
 class HelpClass : public TabClass {
  public:
@@ -73,7 +74,8 @@ class HelpClass : public TabClass {
   bool Scroll_Map(game::Direction facing, int& distance, bool really) override;
   void Set_Tactical_Position(Coordinate coord) override;
 
-  void Help_Text(int text, int x = -1, int y = -1, int color = game::kLightGrey,
+  void Help_Text(int text, int x = -1, int y = -1,
+                 engine::gfx::PaletteIndex color = game::kLightGrey,
                  bool quick = false) override;
   void Set_Cost(int cost);
   [[nodiscard]] std::span<const int16_t> Overlap_List() const;
@@ -127,7 +129,7 @@ class HelpClass : public TabClass {
   **	This is the background color to use for the help text. It can change
   *according *	to the message displayed.
   */
-  int Color{game::kLightGrey};
+  engine::gfx::PaletteIndex Color{game::kLightGrey};
 
   /*
   **	This countdown timer controls when the help text will pop up. If the

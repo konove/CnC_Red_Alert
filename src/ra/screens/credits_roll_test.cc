@@ -3,7 +3,6 @@
 
 #include "ra/screens/credits_roll.h"
 
-#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "engine/file/file_access.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -30,7 +30,7 @@ namespace {
 
 // The colour every slide in these tests is painted in, and the first of the
 // slideshow's pictures.
-constexpr uint8_t kSlideColor = 200;
+constexpr engine::gfx::PaletteIndex kSlideColor{200};
 constexpr const char* kFirstSlide = "aftr_hi.pcx";
 
 // One credit, on the first line of the file. It starts at the top of the
@@ -40,7 +40,8 @@ constexpr const char* kOneCredit = "Producer\r";
 class CreditsRollTest : public UiFixture {
  protected:
   // The colour the credits are drawn in: the green scheme's.
-  static constexpr int kTextColor = SchemeColor(PCOLOR_GREEN);
+  static constexpr engine::gfx::PaletteIndex kTextColor =
+      SchemeColor(PCOLOR_GREEN);
 
   CreditsRollTest() {
     // A few lines take about 470 frames to scroll off a 400-row screen.
@@ -64,7 +65,7 @@ class CreditsRollTest : public UiFixture {
   void WriteTextPalette() {
     std::string palette(768, '\0');
     for (int gun = 0; gun < 3; ++gun) {
-      palette.at(base::ToSize((kTextColor * 3) + gun)) = 63;
+      palette.at(base::ToSize((kTextColor.value() * 3) + gun)) = 63;
     }
     WriteGameFile("EGOPAL.PAL", palette);
   }
@@ -229,7 +230,7 @@ TEST_F(CreditsRollTest, TheMarginRowsAreNeverDrawnOn) {
     PixelView& view = TheScreen().visible_view();
     for (const int y : {0, 15, view.height() - 16, view.height() - 1}) {
       for (int x = 0; x < view.width(); ++x) {
-        margin_drawn = margin_drawn || view.GetPixel(x, y) != 0;
+        margin_drawn = margin_drawn || !view.GetPixel(x, y).IsTransparent();
       }
     }
   };
@@ -245,7 +246,7 @@ TEST_F(CreditsRollTest, TheMarginRowsAreNeverDrawnOn) {
 TEST_F(CreditsRollTest, ASlideIsBehindTheText) {
   WriteGameFile("credits.txt", kOneCredit);
   WriteSlide(kFirstSlide);
-  int behind = -1;
+  engine::gfx::PaletteIndex behind;
   player().At(100).Do(
       [&behind] { behind = TheScreen().visible_view().GetPixel(5, 200); });
 
@@ -316,7 +317,7 @@ TEST_F(CreditsRollTest, EndsOnABlackScreen) {
   ShowCredits();
 
   EXPECT_EQ(SlideBrightness(), 0);
-  EXPECT_EQ(TheScreen().visible_view().GetPixel(5, 200), 0);
+  EXPECT_TRUE(TheScreen().visible_view().GetPixel(5, 200).IsTransparent());
   EXPECT_TRUE(TextRows().empty());
 }
 
@@ -330,7 +331,7 @@ TEST_F(CreditsRollTest, EscEndsItEarly) {
   // The roll stops at once; what follows is the two-second fade to black.
   EXPECT_LT(player().frame(), 100 + 150);
   EXPECT_EQ(SlideBrightness(), 0);
-  EXPECT_EQ(TheScreen().visible_view().GetPixel(5, 200), 0);
+  EXPECT_TRUE(TheScreen().visible_view().GetPixel(5, 200).IsTransparent());
 }
 
 TEST_F(CreditsRollTest, AnyOtherKeyOnlyHurriesAFrame) {

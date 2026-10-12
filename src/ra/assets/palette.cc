@@ -6,6 +6,7 @@
 #include "base/array.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/palette_fade.h"
@@ -60,8 +61,11 @@ void PaletteClass::Partial_Adjust(
   }
 }
 
-int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
-  int index = -1;
+engine::gfx::PaletteIndex PaletteClass::Closest_Color(
+    const engine::gfx::PaletteColor& col) const {
+  // The first entry is closer than the starting distance, which is larger
+  // than any two colors can be apart.
+  int index = 0;
   int diff = 256 * 3;
 
   for (int i = 0; i < COLOR_COUNT; i++) {
@@ -71,7 +75,7 @@ int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
                          std::abs(col.blue() - entry.blue());
 
     if (new_diff == 0) {
-      return i;
+      return engine::gfx::PaletteIndex::FromInt(i);
     }
 
     if (new_diff < diff) {
@@ -80,7 +84,7 @@ int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
     }
   }
 
-  return index;
+  return engine::gfx::PaletteIndex::FromInt(index);
 }
 
 void Set_Palette(const engine::gfx::Palette& palette) {

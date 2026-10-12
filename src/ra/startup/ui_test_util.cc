@@ -6,6 +6,7 @@
 
 #include "absl/log/check.h"
 #include "engine/gfx/font_test_util.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/window/display.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
@@ -30,11 +31,11 @@ UiFixture::UiFixture()
       continue;
     }
     RemapControlType& remap = ThePalettes().color_remaps().at(scheme);
-    const auto color = static_cast<uint8_t>(SchemeColor(scheme));
+    const engine::gfx::PaletteIndex color = SchemeColor(scheme);
     remap.BrightColor = color;
     remap.Color = color;
     std::ranges::iota(remap.RemapTable, uint8_t{0});
-    std::ranges::fill(remap.FontRemap, color);
+    std::ranges::fill(remap.FontRemap, color.byte());
     remap.Shadow = color;
     remap.Background = color;
     remap.Corners = color;

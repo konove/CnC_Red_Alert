@@ -56,6 +56,7 @@
 #include "base/array.h"
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -211,16 +212,16 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       **	Draw the power output graphic on top of the power bar framework.
       */
       if (power_height) {
-        int color1 = 3;
-        int color2 = 4;
+        engine::gfx::PaletteIndex color1{3};
+        engine::gfx::PaletteIndex color2{4};
 
         if (ThePlayer()->Drain > ThePlayer()->Power) {
-          color1 = 214;
-          color2 = 211;
+          color1 = engine::gfx::PaletteIndex{214};
+          color2 = engine::gfx::PaletteIndex{211};
         }
         if (ThePlayer()->Drain > ThePlayer()->Power * 2) {
-          color1 = 235;
-          color2 = 230;
+          color1 = engine::gfx::PaletteIndex{235};
+          color2 = engine::gfx::PaletteIndex{230};
         }
 
         /*
@@ -246,10 +247,10 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         // height, both included, so it is `power_height + 1` rows.
         view.FillRect(
             Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),
-            static_cast<unsigned char>(color2));
+            color2);
         view.FillRect(
             Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),
-            static_cast<unsigned char>(color1));
+            color1);
       }
 
       /*

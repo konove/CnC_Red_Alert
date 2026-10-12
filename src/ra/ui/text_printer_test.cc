@@ -6,6 +6,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
@@ -34,7 +35,7 @@ class TextPrinterTest : public UiFixture {
   static constexpr int kWidth = 300;
   static constexpr int kHeight = 20;
   static constexpr FontType kFont = FontType::k6Point;
-  static constexpr int kGreen = SchemeColor(PCOLOR_GREEN);
+  static constexpr engine::gfx::PaletteIndex kGreen = SchemeColor(PCOLOR_GREEN);
 
   // The printer the tests start from: left justified, in the green scheme.
   TextPrinter Printer(const TextPrintType flags = TPF_NOSHADOW)
@@ -49,7 +50,7 @@ class TextPrinterTest : public UiFixture {
     return StringPixelWidth(TextFontStyle(kFont, TPF_NOSHADOW), text);
   }
 
-  Extent ExtentOf(const int color) {
+  Extent ExtentOf(const engine::gfx::PaletteIndex color) {
     PixelView& view = page_.view();
     Extent extent;
     for (int y = 0; y < kHeight; ++y) {
@@ -77,7 +78,8 @@ TEST_F(TextPrinterTest, ATextStartsAtThePoint) {
   EXPECT_EQ(text.top, 3);
   // A glyph is a pixel wider than the step to the next one.
   EXPECT_LE(text.right, 10 + WidthOf("AB"));
-  EXPECT_EQ(text.count + ExtentOf(0).count, kWidth * kHeight);
+  EXPECT_EQ(text.count + ExtentOf(game::kTransparentBlack).count,
+            kWidth * kHeight);
 }
 
 TEST_F(TextPrinterTest, ARightJustifiedTextEndsAtThePoint) {
@@ -137,14 +139,14 @@ TEST_F(TextPrinterTest, NoTextPrintsNothing) {
   Printer().Print(TXT_NONE, {10, 3});
   Printer().PrintClipped(none, {10, 3}, 100);
 
-  EXPECT_EQ(ExtentOf(0).count, kWidth * kHeight);
+  EXPECT_EQ(ExtentOf(game::kTransparentBlack).count, kWidth * kHeight);
 }
 
 TEST_F(TextPrinterTest, ATextBeyondThePageIsNotPrinted) {
   Printer().Print("AB", {kWidth, 0});
   Printer().Print("AB", {0, kHeight});
 
-  EXPECT_EQ(ExtentOf(0).count, kWidth * kHeight);
+  EXPECT_EQ(ExtentOf(game::kTransparentBlack).count, kWidth * kHeight);
 }
 
 TEST_F(TextPrinterTest, APrinterWithoutASchemePrintsInTheRedOne) {
@@ -155,7 +157,7 @@ TEST_F(TextPrinterTest, APrinterWithoutASchemePrintsInTheRedOne) {
 }
 
 TEST_F(TextPrinterTest, APlainPrinterPrintsInItsOneColour) {
-  constexpr int kColor = 200;
+  constexpr engine::gfx::PaletteIndex kColor{200};
   // With() copies the printer; the copy must paint from its own scheme, not
   // from the one inside the temporary it was copied from.
   const TextPrinter plain =
@@ -167,7 +169,8 @@ TEST_F(TextPrinterTest, APlainPrinterPrintsInItsOneColour) {
 
   const Extent text = ExtentOf(kColor);
   EXPECT_EQ(text.left, 100 - WidthOf("AB"));
-  EXPECT_EQ(text.count + ExtentOf(0).count, kWidth * kHeight);
+  EXPECT_EQ(text.count + ExtentOf(game::kTransparentBlack).count,
+            kWidth * kHeight);
 }
 
 TEST_F(TextPrinterTest, AClippedTextStopsAtTheWidth) {

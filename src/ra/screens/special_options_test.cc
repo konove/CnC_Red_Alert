@@ -135,7 +135,7 @@ TEST_F(SpecialOptionsDialogTest, DrawsOnTheVisiblePage) {
         PixelView& view = TheScreen().visible_view();
         for (int y = 0; y < Screen::kHeight; ++y) {
           for (int x = 0; x < Screen::kWidth; ++x) {
-            drawn += view.GetPixel(x, y) != 0 ? 1 : 0;
+            drawn += view.GetPixel(x, y).IsTransparent() ? 0 : 1;
           }
         }
       })

@@ -1,7 +1,6 @@
 // Tests DrawColorBox: the colour reaches every pixel inside the bevel and none
 // outside it, and the bevel is sunken for the selected box only.
 
-#include <cstdint>
 
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -15,7 +14,7 @@ namespace {
 
 class ColorBoxTest : public UiFixture {
  protected:
-  static constexpr uint8_t kColor = 200;
+  static constexpr engine::gfx::PaletteIndex kColor{200};
   static constexpr Rect kBox{3, 2, 20, 18};
 
   // The number of pixels of the page that are in the swatch colour.
@@ -23,10 +22,7 @@ class ColorBoxTest : public UiFixture {
     int count = 0;
     for (int y = 0; y < page_.view().height(); ++y) {
       for (int x = 0; x < page_.view().width(); ++x) {
-        count +=
-            page_.view().GetPixel(x, y) == engine::gfx::PaletteIndex{kColor}
-                ? 1
-                : 0;
+        count += page_.view().GetPixel(x, y) == kColor ? 1 : 0;
       }
     }
     return count;
@@ -40,8 +36,7 @@ TEST_F(ColorBoxTest, FillsExactlyTheInsideOfTheBevel) {
 
   for (int y = kBox.y + 1; y < kBox.bottom() - 1; ++y) {
     for (int x = kBox.x + 1; x < kBox.right() - 1; ++x) {
-      ASSERT_EQ(page_.view().GetPixel(x, y), engine::gfx::PaletteIndex{kColor})
-          << x << "," << y;
+      ASSERT_EQ(page_.view().GetPixel(x, y), kColor) << x << "," << y;
     }
   }
   EXPECT_EQ(ColoredPixels(), (kBox.width - 2) * (kBox.height - 2));
@@ -49,8 +44,10 @@ TEST_F(ColorBoxTest, FillsExactlyTheInsideOfTheBevel) {
 
 TEST_F(ColorBoxTest, SelectedBoxSwapsTheBevelColors) {
   DrawColorBox(page_.view(), kBox, kColor, false);
-  const int raised_top = page_.view().GetPixel(kBox.x + 1, kBox.y);
-  const int raised_bottom = page_.view().GetPixel(kBox.x + 1, kBox.bottom() - 1);
+  const engine::gfx::PaletteIndex raised_top =
+      page_.view().GetPixel(kBox.x + 1, kBox.y);
+  const engine::gfx::PaletteIndex raised_bottom =
+      page_.view().GetPixel(kBox.x + 1, kBox.bottom() - 1);
 
   DrawColorBox(page_.view(), kBox, kColor, true);
 

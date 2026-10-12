@@ -48,6 +48,7 @@
 #include "base/fixed.h"
 #include "base/flags.h"  // IWYU pragma: export
 #include "base/numeric.h"
+#include "engine/gfx/palette_index.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1922,10 +1923,10 @@ using enum MouseType;
 **	the Draw_Box() function.
 */
 struct BoxStyleType {
-  uint8_t Filler;     // Center box fill color.
-  uint8_t Shadow;     // Shadow color (darker).
-  uint8_t Highlight;  // Highlight color (lighter).
-  uint8_t Corner;     // Corner color (transition).
+  engine::gfx::PaletteIndex Filler;     // Center box fill color.
+  engine::gfx::PaletteIndex Shadow;     // Shadow color (darker).
+  engine::gfx::PaletteIndex Highlight;  // Highlight color (lighter).
+  engine::gfx::PaletteIndex Corner;     // Corner color (transition).
 };
 
 enum class BoxStyleEnum {
@@ -2566,18 +2567,21 @@ using enum SourceType;
 ** the font remap table, and a color scheme for dialog boxes and buttons.
 */
 struct RemapControlType {
-  unsigned char BrightColor;      // Highlight (bright) color index.
-  unsigned char Color;            // Normal color index.
-  unsigned char RemapTable[256];  // Actual remap table.
-  unsigned char FontRemap[16];    // Remap table for gradient font.
-  unsigned char Shadow;           // Color of shadowed edge of a raised button.
-  unsigned char Background;       // Background fill color for buttons.
-  unsigned char Corners;    // Transition color between shadow and highlight.
-  unsigned char Highlight;  // Bright edge of raised button.
-  unsigned char Box;        // Color for dialog box border.
-  unsigned char Bright;     // Color used for highlighted text.
-  unsigned char Underline;  // Color for underlining dialog box titles.
-  unsigned char Bar;        // Selected entry list box background color.
+  engine::gfx::PaletteIndex BrightColor;  // Highlight (bright) color index.
+  engine::gfx::PaletteIndex Color;        // Normal color index.
+  unsigned char RemapTable[256]{};        // Actual remap table.
+  unsigned char FontRemap[16]{};          // Remap table for gradient font.
+  engine::gfx::PaletteIndex
+      Shadow;  // Color of shadowed edge of a raised button.
+  engine::gfx::PaletteIndex Background;  // Background fill color for buttons.
+  engine::gfx::PaletteIndex
+      Corners;  // Transition color between shadow and highlight.
+  engine::gfx::PaletteIndex Highlight;  // Bright edge of raised button.
+  engine::gfx::PaletteIndex Box;        // Color for dialog box border.
+  engine::gfx::PaletteIndex Bright;     // Color used for highlighted text.
+  engine::gfx::PaletteIndex
+      Underline;                  // Color for underlining dialog box titles.
+  engine::gfx::PaletteIndex Bar;  // Selected entry list box background color.
 };
 
 /****************************************************************************

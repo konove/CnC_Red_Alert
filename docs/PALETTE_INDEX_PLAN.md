@@ -80,6 +80,11 @@ code means them. `Palette::operator[]` gains a `PaletteIndex` overload.
   one-byte form with a `kSaveGameVersion` bump and a regenerated fixture. Decide per field in Task
   5/6; the save-fixture tests catch a miss.
 
+- **Slot ranges.** RA's `kCycleColorStart`/`kCycleColorCount`, `kPulseColor`, `kEmberColor` and
+  `kMouseColor` are compared with loop counters over the palette; they stay `int`.
+- **Legacy `int` records.** The menu table (`menu_list`) and the window list (`WindowList`) are rows
+  of `int` in which two slots are colors. They store `value()` and are read back with `FromInt()`.
+
 ## Approach
 
 Compiler-driven, through one transitional crutch. `PaletteIndex` starts with an implicit

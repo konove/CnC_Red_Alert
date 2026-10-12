@@ -370,27 +370,27 @@ void DisplayClass::Init_Theater(TheaterType theater) {
        {game::kWhite, game::kWhite, 110},
        {game::kLightGrey, game::kLightGrey, 110},
        {DKGREY, DKGREY, 110}});
-  static constexpr auto MagicCols =
-      std::to_array<TranslucentColor>({{32, 32, 110},
-                                       {33, 33, 110},
-                                       {34, 34, 110},
-                                       {35, 35, 110},
-                                       {36, 36, 110},
-                                       {37, 37, 110},
-                                       {38, 38, 110},
-                                       {39, 39, 110},
-                                       {game::kBlack, game::kBlack, 200},
-                                       {game::kWhite, game::kBlack, 40},
-                                       {game::kLightGrey, game::kBlack, 80},
-                                       {DKGREY, game::kBlack, 140},
-                                       {game::kLightGreen, game::kBlack, 130}});
-  static constexpr auto WhiteCols =
-      std::to_array<TranslucentColor>({{1, game::kWhite, 80}});
-  static constexpr auto ShadowCols =
-      std::to_array<TranslucentColor>({{game::kWhite + 1, game::kBlack, 130},
-                                       {game::kWhite, game::kBlack, 170},
-                                       {LTGRAY, game::kBlack, 250},
-                                       {DKGRAY, game::kBlack, 250}});
+  static constexpr auto MagicCols = std::to_array<TranslucentColor>(
+      {{engine::gfx::PaletteIndex{32}, engine::gfx::PaletteIndex{32}, 110},
+       {engine::gfx::PaletteIndex{33}, engine::gfx::PaletteIndex{33}, 110},
+       {engine::gfx::PaletteIndex{34}, engine::gfx::PaletteIndex{34}, 110},
+       {engine::gfx::PaletteIndex{35}, engine::gfx::PaletteIndex{35}, 110},
+       {engine::gfx::PaletteIndex{36}, engine::gfx::PaletteIndex{36}, 110},
+       {engine::gfx::PaletteIndex{37}, engine::gfx::PaletteIndex{37}, 110},
+       {engine::gfx::PaletteIndex{38}, engine::gfx::PaletteIndex{38}, 110},
+       {engine::gfx::PaletteIndex{39}, engine::gfx::PaletteIndex{39}, 110},
+       {game::kBlack, game::kBlack, 200},
+       {game::kWhite, game::kBlack, 40},
+       {game::kLightGrey, game::kBlack, 80},
+       {DKGREY, game::kBlack, 140},
+       {game::kLightGreen, game::kBlack, 130}});
+  static constexpr auto WhiteCols = std::to_array<TranslucentColor>(
+      {{engine::gfx::PaletteIndex{1}, game::kWhite, 80}});
+  static constexpr auto ShadowCols = std::to_array<TranslucentColor>(
+      {{engine::gfx::PaletteIndex{16}, game::kBlack, 130},
+       {game::kWhite, game::kBlack, 170},
+       {LTGRAY, game::kBlack, 250},
+       {DKGRAY, game::kBlack, 250}});
   static constexpr auto UShadowCols =
       std::to_array<TranslucentColor>({{game::kLightGreen, game::kBlack, 130}});
   // Only the source color matters; the fade is the gold remap table.
@@ -3030,7 +3030,7 @@ void DisplayClass::Mouse_Left_Up(Cell cell, bool shadow, ObjectClass* object,
     **	system of the text name for the object under the mouse.
     */
     if (object != nullptr) {
-      int color = game::kLightGrey;
+      engine::gfx::PaletteIndex color = game::kLightGrey;
 
       /*
       **	Fetch the appropriate background color for help text.

@@ -44,7 +44,7 @@ class PaletteClass : public engine::gfx::Palette {
   void Partial_Adjust(int ratio, const engine::gfx::Palette& palette,
                       std::span<const char, kColorCount> lookup);
 
-  [[nodiscard]] int Closest_Color(
+  [[nodiscard]] engine::gfx::PaletteIndex Closest_Color(
       const engine::gfx::PaletteColor& /*col*/) const;
 
   static constexpr int COLOR_COUNT = kColorCount;

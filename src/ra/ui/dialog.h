@@ -8,6 +8,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "game/core/point.h"
@@ -46,13 +47,13 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
 // Draws the swatch a setup dialog shows for one player colour: `box` with a
 // one-pixel bevel, sunken when `selected` and raised otherwise, and everything
 // inside the bevel in the palette index `color`.
-void DrawColorBox(PixelView& view, const Rect& box, uint8_t color,
-                  bool selected);
+void DrawColorBox(PixelView& view, const Rect& box,
+                  engine::gfx::PaletteIndex color, bool selected);
 void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // What a text print draws with: its adjusted flags, colour and font.
 struct TextStyle {
   TextPrintType flag{};  // The style flags after the font's own fixups.
-  int forecolor = 0;     // Palette index the glyphs print in.
+  engine::gfx::PaletteIndex forecolor;  // What the glyphs print in.
   FontStyle font_style;  // The font, spacing and glyph palette.
 };
 
@@ -63,14 +64,15 @@ FontStyle TextFontStyle(FontType font, TextPrintType flags);
 // Returns the style a print in `font` with `flags` in the colours `fore`
 // (PCOLOR_RED if nullptr) and `back` uses: TextFontStyle() plus the glyph
 // palette.
-TextStyle TextStyleFor(FontType font, TextPrintType flags,
-                       const RemapControlType* fore = nullptr,
-                       int back = game::kTransparentBlack);
+TextStyle TextStyleFor(
+    FontType font, TextPrintType flags, const RemapControlType* fore = nullptr,
+    engine::gfx::PaletteIndex back = game::kTransparentBlack);
 
 // The colours, font and flags a text prints with.
 struct PrintStyle {
   const RemapControlType* scheme = nullptr;  // nullptr is the red scheme.
-  int back = game::kTransparentBlack;        // Palette index behind the glyphs.
+  engine::gfx::PaletteIndex back =
+      game::kTransparentBlack;  // Behind the glyphs.
   FontType font = FontType::k8Point;
   TextPrintType flags = TPF_DROPSHADOW;
 };
@@ -91,7 +93,8 @@ class TextPrinter {
   // of a colour scheme. Do not give it TPF_USE_GRAD_PAL: a flat colour has no
   // gradient.
   static TextPrinter Plain(PixelView& view ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                           int fore, int back, FontType font,
+                           engine::gfx::PaletteIndex fore,
+                           engine::gfx::PaletteIndex back, FontType font,
                            TextPrintType flags);
 
   // Returns this printer with `flags` set on top of its own.

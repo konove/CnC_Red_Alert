@@ -53,7 +53,6 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <span>
@@ -275,8 +274,8 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
   }
 }
 
-void DrawColorBox(PixelView& view, const Rect& box, const uint8_t color,
-                  const bool selected) {
+void DrawColorBox(PixelView& view, const Rect& box,
+                  const engine::gfx::PaletteIndex color, const bool selected) {
   view.FillRect(Rect{box.x + 1, box.y + 1, box.width - 2, box.height - 2},
                 color);
   Draw_Box(view, box.x, box.y, box.width, box.height,
@@ -459,7 +458,8 @@ FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
 }
 
 TextStyle TextStyleFor(const FontType font, TextPrintType flags,
-                       const RemapControlType* fore, const int back) {
+                       const RemapControlType* fore,
+                       const engine::gfx::PaletteIndex back) {
   flags = SupportedTextFlags(font, flags);
   unsigned char fontpalette[16];  // Working font palette array.
 
@@ -470,10 +470,10 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
   /*
   ** Init the font palette to the given background color
   */
-  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)), back,
-                  16);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)),
+                  back.byte(), 16);
 
-  int forecolor = fore->Color;
+  engine::gfx::PaletteIndex forecolor = fore->Color;
 
   /*
   **	A gradient font always requires special fixups for the palette
@@ -490,11 +490,11 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
                       base::ObjectBytes(fore->FontRemap), 16);
       forecolor = fore->Color;
       if (font == FontType::kType) {
-        forecolor = base::At(fontpalette, 1);
+        forecolor = engine::gfx::PaletteIndex{base::At(fontpalette, 1)};
       }
     } else {
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                      fore->Color, 12);
+                      fore->Color.byte(), 12);
       forecolor = fore->Color;
     }
 
@@ -505,7 +505,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     if (base::Any(flags & TPF_MEDIUM_COLOR)) {
       forecolor = fore->Color;
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                      fore->Color, 12);
+                      fore->Color.byte(), 12);
     }
 
     /*
@@ -515,7 +515,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     if (base::Any(flags & TPF_BRIGHT_COLOR)) {
       forecolor = fore->Bright;
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                      fore->BrightColor, 12);
+                      fore->BrightColor.byte(), 12);
     }
   }
 
@@ -528,8 +528,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     **	The text is rendered plain.
     */
     case TPF_NOSHADOW:
-      base::At(fontpalette, 2) = static_cast<unsigned char>(back);
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = back.byte();
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -537,8 +537,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      base::At(fontpalette, 2) = game::kBlack;
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = game::kBlack.byte();
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -547,7 +547,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     */
     case TPF_LIGHTSHADOW:
       base::At(fontpalette, 2) = (14 * 16) + 7 + 1;
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -555,8 +555,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      base::At(fontpalette, 2) = game::kBlack;
-      base::At(fontpalette, 3) = game::kBlack;
+      base::At(fontpalette, 2) = game::kBlack.byte();
+      base::At(fontpalette, 3) = game::kBlack.byte();
       break;
 
     case TextPrintType::TPF_NONE:
@@ -569,8 +569,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
       break;
   }
   if (font != FontType::kType) {
-    base::At(fontpalette, 0) = static_cast<unsigned char>(back);
-    base::At(fontpalette, 1) = fore->Color;
+    base::At(fontpalette, 0) = back.byte();
+    base::At(fontpalette, 1) = fore->Color.byte();
   }
 
   FontStyle font_style = TextFontStyle(font, flags);
@@ -582,22 +582,22 @@ namespace {
 
 // The color scheme TextPrinter::Plain() paints with: every slot the same
 // palette index, so the text comes out in one flat color.
-RemapControlType PlainScheme(const int fore) {
+RemapControlType PlainScheme(const engine::gfx::PaletteIndex fore) {
   RemapControlType scheme{};
 
   base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
-                  fore, 12);
+                  fore.byte(), 12);
 
-  scheme.BrightColor = static_cast<unsigned char>(fore);
-  scheme.Color = static_cast<unsigned char>(fore);
-  scheme.Shadow = static_cast<unsigned char>(fore);
-  scheme.Background = static_cast<unsigned char>(fore);
-  scheme.Corners = static_cast<unsigned char>(fore);
-  scheme.Highlight = static_cast<unsigned char>(fore);
-  scheme.Box = static_cast<unsigned char>(fore);
-  scheme.Bright = static_cast<unsigned char>(fore);
-  scheme.Underline = static_cast<unsigned char>(fore);
-  scheme.Bar = static_cast<unsigned char>(fore);
+  scheme.BrightColor = fore;
+  scheme.Color = fore;
+  scheme.Shadow = fore;
+  scheme.Background = fore;
+  scheme.Corners = fore;
+  scheme.Highlight = fore;
+  scheme.Box = fore;
+  scheme.Bright = fore;
+  scheme.Underline = fore;
+  scheme.Bar = fore;
   return scheme;
 }
 
@@ -606,7 +606,9 @@ RemapControlType PlainScheme(const int fore) {
 TextPrinter::TextPrinter(PixelView& view, const PrintStyle& style)
     : view_(&view), style_(style) {}
 
-TextPrinter TextPrinter::Plain(PixelView& view, const int fore, const int back,
+TextPrinter TextPrinter::Plain(PixelView& view,
+                               const engine::gfx::PaletteIndex fore,
+                               const engine::gfx::PaletteIndex back,
                                const FontType font, const TextPrintType flags) {
   TextPrinter printer(view, {.back = back, .font = font, .flags = flags});
   printer.plain_scheme_ = PlainScheme(fore);

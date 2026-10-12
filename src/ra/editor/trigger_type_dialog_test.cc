@@ -16,6 +16,7 @@
 #include "base/unaligned.h"
 #include "engine/crypto/crc.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
@@ -542,8 +543,8 @@ TEST_F(TriggerTypeDialogDropListTest, AnActionPickedFromTheListIsStored) {
 TEST_F(TriggerTypeDialogDropListTest, TheOpenActionListHighlightsTheChoice) {
   RemapControlType* const previous = Get_Color_Scheme();
   Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_RED));
-  int first_row = -1;
-  int second_row = -1;
+  engine::gfx::PaletteIndex first_row;
+  engine::gfx::PaletteIndex second_row;
   // A column past the end of every action's name.
   const int x = kChoiceX + kChoiceWidth - 2;
   const int y = kAction1Y + kChoiceListTop;

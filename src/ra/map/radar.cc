@@ -689,7 +689,7 @@ void RadarClass::Render_Infantry(PixelView& view, Cell cell, int x, int y,
   while (obj) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
-      unsigned char color =
+      engine::gfx::PaletteIndex color =
           ThePalettes()
               .color_remaps()
               .at(dynamic_cast<TechnoClass*>(obj)->House->RemapColor)
@@ -976,7 +976,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = game::kTransparentBlack;  // Color of the pixel to plot.
+    engine::gfx::PaletteIndex color = game::kTransparentBlack;  // What to plot.
     const auto housebit = base::Bit<uint16_t>(ThePlayer()->Class->House);
     const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
@@ -1048,12 +1048,10 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
         TileStage.view().Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                                true);
       } else {
-        /*BG*/ view.PutPixel(
-            x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
+        /*BG*/ view.PutPixel(x, y, cellptr->Cell_Color(false));
       }
     } else {
-      view.FillRect(Rect{x, y, ZoomFactor, ZoomFactor},
-                    static_cast<unsigned char>(color));
+      view.FillRect(Rect{x, y, ZoomFactor, ZoomFactor}, color);
     }
     if (color != game::kBlack) {
       Render_Overlay(view, cell, x, y, ZoomFactor);

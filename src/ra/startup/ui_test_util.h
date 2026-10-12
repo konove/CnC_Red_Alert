@@ -49,8 +49,9 @@ class UiFixture : public GameFixture {
   // The one palette index everything drawn in `scheme` is drawn in: 16 for
   // the first scheme, 17 for the next, and so on. Never 0, which is what a
   // cleared page holds.
-  static constexpr int SchemeColor(const PlayerColorType scheme) {
-    return 16 + static_cast<int>(scheme);
+  static constexpr engine::gfx::PaletteIndex SchemeColor(
+      const PlayerColorType scheme) {
+    return engine::gfx::PaletteIndex::FromInt(16 + static_cast<int>(scheme));
   }
 
   // The player at the keyboard. Queue its whole script before calling the

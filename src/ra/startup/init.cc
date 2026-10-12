@@ -1744,21 +1744,30 @@ static void Init_Color_Remaps() {
     ThePalettes().color_remaps().at(pcolor).BrightColor = game::kWhite;
     //		ColorRemaps[pcolor].BrightColor = hidden_view.GetPixel(1,
     // static_cast<int>(pcolor));
-    ThePalettes().color_remaps().at(pcolor).Color = pixel(4, row);
+    ThePalettes().color_remaps().at(pcolor).Color =
+        engine::gfx::PaletteIndex{pixel(4, row)};
 
-    ThePalettes().color_remaps().at(pcolor).Shadow = pixel(10, row);
-    ThePalettes().color_remaps().at(pcolor).Background = pixel(9, row);
-    ThePalettes().color_remaps().at(pcolor).Corners = pixel(7, row);
-    ThePalettes().color_remaps().at(pcolor).Highlight = pixel(4, row);
-    ThePalettes().color_remaps().at(pcolor).Bright = pixel(0, row);
-    ThePalettes().color_remaps().at(pcolor).Underline = pixel(0, row);
-    ThePalettes().color_remaps().at(pcolor).Bar = pixel(6, row);
+    ThePalettes().color_remaps().at(pcolor).Shadow =
+        engine::gfx::PaletteIndex{pixel(10, row)};
+    ThePalettes().color_remaps().at(pcolor).Background =
+        engine::gfx::PaletteIndex{pixel(9, row)};
+    ThePalettes().color_remaps().at(pcolor).Corners =
+        engine::gfx::PaletteIndex{pixel(7, row)};
+    ThePalettes().color_remaps().at(pcolor).Highlight =
+        engine::gfx::PaletteIndex{pixel(4, row)};
+    ThePalettes().color_remaps().at(pcolor).Bright =
+        engine::gfx::PaletteIndex{pixel(0, row)};
+    ThePalettes().color_remaps().at(pcolor).Underline =
+        engine::gfx::PaletteIndex{pixel(0, row)};
+    ThePalettes().color_remaps().at(pcolor).Bar =
+        engine::gfx::PaletteIndex{pixel(6, row)};
 
     /*
     **	This must grab from column 4 because the multiplayer color dialog
     *palette counts *	on this to be true.
     */
-    ThePalettes().color_remaps().at(pcolor).Box = pixel(4, row);
+    ThePalettes().color_remaps().at(pcolor).Box =
+        engine::gfx::PaletteIndex{pixel(4, row)};
   }
 
   /*
@@ -1775,25 +1784,28 @@ static void Init_Color_Remaps() {
     base::At(ThePalettes().grey_scheme().FontRemap, 10 + index) =
         GreyPixel(9 + index);
   }
-  ThePalettes().grey_scheme().BrightColor = GreyPixel(3);
-  ThePalettes().grey_scheme().Color = GreyPixel(7);
+  const std::span<const uint8_t, 256> grey_remap =
+      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable;
+  ThePalettes().grey_scheme().BrightColor =
+      engine::gfx::PaletteIndex{GreyPixel(3)};
+  ThePalettes().grey_scheme().Color = engine::gfx::PaletteIndex{GreyPixel(7)};
 
-  ThePalettes().grey_scheme().Shadow = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(15));
-  ThePalettes().grey_scheme().Background = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(14));
-  ThePalettes().grey_scheme().Corners = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(13));
-  ThePalettes().grey_scheme().Highlight = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(9));
-  ThePalettes().grey_scheme().Bright = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(5));
-  ThePalettes().grey_scheme().Underline = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(5));
-  ThePalettes().grey_scheme().Bar = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(11));
-  ThePalettes().grey_scheme().Box = base::At(
-      ThePalettes().color_remaps().at(PCOLOR_GREY).RemapTable, GreyPixel(11));
+  ThePalettes().grey_scheme().Shadow =
+      engine::gfx::PaletteIndex{GreyPixel(15)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Background =
+      engine::gfx::PaletteIndex{GreyPixel(14)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Corners =
+      engine::gfx::PaletteIndex{GreyPixel(13)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Highlight =
+      engine::gfx::PaletteIndex{GreyPixel(9)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Bright =
+      engine::gfx::PaletteIndex{GreyPixel(5)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Underline =
+      engine::gfx::PaletteIndex{GreyPixel(5)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Bar =
+      engine::gfx::PaletteIndex{GreyPixel(11)}.RemappedBy(grey_remap);
+  ThePalettes().grey_scheme().Box =
+      engine::gfx::PaletteIndex{GreyPixel(11)}.RemappedBy(grey_remap);
 
   /*
   ** Set up the metallic remap table for the font that prints over the tabs
@@ -1808,9 +1820,9 @@ static void Init_Color_Remaps() {
   ThePalettes().metal_scheme().FontRemap[2] = 12;
   ThePalettes().metal_scheme().FontRemap[3] = 13;
   ThePalettes().metal_scheme().FontRemap[4] = 14;
-  ThePalettes().metal_scheme().Color = 128;
-  ThePalettes().metal_scheme().Background = 0;
-  ThePalettes().metal_scheme().Underline = 128;
+  ThePalettes().metal_scheme().Color = engine::gfx::PaletteIndex{128};
+  ThePalettes().metal_scheme().Background = engine::gfx::PaletteIndex{0};
+  ThePalettes().metal_scheme().Underline = engine::gfx::PaletteIndex{128};
 
   /*
   ** Set up the font remap table for the mission briefing font
@@ -1820,16 +1832,26 @@ static void Init_Color_Remaps() {
         pixel(colr, static_cast<int>(PCOLOR_TYPE));
   }
 
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Shadow = 11;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Background = 10;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Corners = 10;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Highlight = 9;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bright = 15;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Underline = 11;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bar = 11;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Box = 10;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).BrightColor = 15;
-  ThePalettes().color_remaps().at(PCOLOR_TYPE).Color = 9;
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Shadow =
+      engine::gfx::PaletteIndex{11};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Background =
+      engine::gfx::PaletteIndex{10};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Corners =
+      engine::gfx::PaletteIndex{10};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Highlight =
+      engine::gfx::PaletteIndex{9};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bright =
+      engine::gfx::PaletteIndex{15};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Underline =
+      engine::gfx::PaletteIndex{11};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Bar =
+      engine::gfx::PaletteIndex{11};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Box =
+      engine::gfx::PaletteIndex{10};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).BrightColor =
+      engine::gfx::PaletteIndex{15};
+  ThePalettes().color_remaps().at(PCOLOR_TYPE).Color =
+      engine::gfx::PaletteIndex{9};
 
   Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
   //	Set_Color_Scheme(&ColorRemaps[PCOLOR_BLUE]);

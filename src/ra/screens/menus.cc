@@ -50,6 +50,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/hardware_cursor.h"
@@ -111,11 +112,13 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 static int Select_To_Entry(int selection, uint32_t enabled_mask,
                            int start_bit);
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
-                       int nfgc, int hfgc, int bgc);
+                       engine::gfx::PaletteIndex nfgc,
+                       engine::gfx::PaletteIndex hfgc,
+                       engine::gfx::PaletteIndex bgc);
 
 // X, Y, item width, items high, selected, normal color, selected color, zero.
 static int menu_list[][8] = {
-    {1, 3, 12, 3, 0, game::kWhite, game::kPink, 0},
+    {1, 3, 12, 3, 0, game::kWhite.value(), game::kPink.value(), 0},
 };
 
 static int MenuUpdate = 1;
@@ -174,7 +177,9 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
  */
 /*=========================================================================*/
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
-                       int nfgc, int hfgc, int bgc) {
+                       const engine::gfx::PaletteIndex nfgc,
+                       const engine::gfx::PaletteIndex hfgc,
+                       const engine::gfx::PaletteIndex bgc) {
   const TextPrinter highlighted =
       TextPrinter::Plain(view, hfgc, bgc, FontType::k8Point, TPF_DROPSHADOW);
   const TextPrinter normal =
@@ -244,7 +249,9 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * item_height) + (lp * skip);
     TextPrinter::Plain(
-        view, base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
+        view,
+        engine::gfx::PaletteIndex::FromInt(
+            base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol)),
         game::kTransparentBlack, FontType::k8Point, TPF_DROPSHADOW)
         .Print(base::At(text, base::ToSize(idx)), {menux, drawy});
     //		if ((idx==item) && (MenuUpdate ))
@@ -282,8 +289,10 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
       MenuWindowY() + base::At(menuptr, kMenuy); /* get the absolute */
   const int menux =
       MenuWindowX() + base::At(menuptr, kMenux); /* coords of menu */
-  const int normcol = base::At(menuptr, kNormcol);
-  const int litcol = base::At(menuptr, kHilite);
+  const engine::gfx::PaletteIndex normcol =
+      engine::gfx::PaletteIndex::FromInt(base::At(menuptr, kNormcol));
+  const engine::gfx::PaletteIndex litcol =
+      engine::gfx::PaletteIndex::FromInt(base::At(menuptr, kHilite));
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke

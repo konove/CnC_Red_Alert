@@ -19,14 +19,16 @@ namespace ra {
 namespace {
 
 using engine::gfx::PaletteColor;
+using engine::gfx::PaletteIndex;
 
 TEST(BuildTranslucencyTableWithTest, LooksUpEachSourceColorsFade) {
   constexpr auto kColors =
-      std::to_array<TranslucentColor>({{5, 40, 0}, {9, 70, 0}});
+      std::to_array<TranslucentColor>({{PaletteIndex{5}, PaletteIndex{40}, 0},
+                                       {PaletteIndex{9}, PaletteIndex{70}, 0}});
   const TranslucencyTable<2> table =
       BuildTranslucencyTableWith(kColors, [](const TranslucentColor& entry) {
         FadingTable fade{};
-        fade.fill(entry.target_color);
+        fade.fill(entry.target_color.byte());
         return fade;
       });
   const std::span<const uint8_t> view(table);
@@ -44,12 +46,12 @@ TEST(BuildTranslucencyTableTest, FadesMatchTheEngineFadingTable) {
   PaletteClass palette(PaletteColor(30, 30, 30));
   palette.at(7) = PaletteColor(200, 10, 10);
   palette.at(8) = PaletteColor(110, 20, 20);
-  constexpr auto kColors = std::to_array<TranslucentColor>({{3, 7, 128}});
+  constexpr auto kColors = std::to_array<TranslucentColor>(
+      {{PaletteIndex{3}, PaletteIndex{7}, 128}});
 
   const TranslucencyTable<1> table = BuildTranslucencyTable(palette, kColors);
 
-  const FadingTable expected =
-      BuildFadingTable(palette, engine::gfx::PaletteIndex{7}, 128);
+  const FadingTable expected = BuildFadingTable(palette, PaletteIndex{7}, 128);
   EXPECT_TRUE(std::ranges::equal(std::span(table).subspan(256), expected));
 }
 
@@ -59,7 +61,8 @@ TEST(BuildShadowFadingTableTest, StaysInsideTheShadowRange) {
   palette.at(255) = PaletteColor(0, 0, 0);
   palette.at(250) = PaletteColor(20, 20, 20);
 
-  const FadingTable table = BuildShadowFadingTable(palette, 255, 255);
+  const FadingTable table =
+      BuildShadowFadingTable(palette, PaletteIndex{255}, 255);
 
   EXPECT_EQ(table.at(0), 0);
   EXPECT_EQ(table.at(1), 250);
@@ -74,7 +77,7 @@ TEST(BuildShadowFadingTableTest, TiesGoToTheLowerColor) {
   palette.at(245) = PaletteColor(20, 20, 20);
   palette.at(250) = PaletteColor(20, 20, 20);
 
-  const FadingTable table = BuildShadowFadingTable(palette, 0, 0);
+  const FadingTable table = BuildShadowFadingTable(palette, PaletteIndex{0}, 0);
 
   EXPECT_EQ(table.at(1), 240);
   EXPECT_EQ(table.at(245), 245);
@@ -82,7 +85,8 @@ TEST(BuildShadowFadingTableTest, TiesGoToTheLowerColor) {
   // Color 240 is itself a candidate and the first of the equal ones.
   EXPECT_EQ(table.at(240), 240);
 
-  const FadingTable dark = BuildShadowFadingTable(palette, 245, 255);
+  const FadingTable dark =
+      BuildShadowFadingTable(palette, PaletteIndex{245}, 255);
   EXPECT_EQ(dark.at(1), 245);
 }
 

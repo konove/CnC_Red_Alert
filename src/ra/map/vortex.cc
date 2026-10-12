@@ -88,6 +88,7 @@
 #include "engine/stream/archive.h"
 #include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
+#include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
@@ -1034,9 +1035,9 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
       file->ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
-        base::At(VortexRemapTables, i) =
-            BuildShadeTable(ThePalettes().game_palette(), 0,
-                            240 - (i * 256 / MAX_REMAP_SHADES));
+        base::At(VortexRemapTables, i) = BuildShadeTable(
+            ThePalettes().game_palette(), game::kTransparentBlack,
+            240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
       if (const auto out = OpenGameFile(remap_name, FileAccess::kWrite)) {
@@ -1061,8 +1062,9 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   LightningRemap[199] = 215;
 }
 
-FadingTable ChronalVortexClass::BuildShadeTable(const PaletteClass& palette,
-                                                int color, int frac) {
+FadingTable ChronalVortexClass::BuildShadeTable(
+    const PaletteClass& palette, const engine::gfx::PaletteIndex color,
+    int frac) {
   const auto keeps_own_color = [](int index) {
     return index == 0 ||
            (index >= kCycleColorStart &&

@@ -103,6 +103,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -199,7 +200,7 @@ CellClass::CellClass() : ID(static_cast<int16_t>(TheMap().ID(this))) {
  *function.                                            * 05/31/1994 JLB : Takes
  *into account any stealth characteristics of object.                *
  *=============================================================================================*/
-int CellClass::Cell_Color(bool override) const {
+engine::gfx::PaletteIndex CellClass::Cell_Color(bool override) const {
   DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   const BuildingClass* object = Cell_Building();

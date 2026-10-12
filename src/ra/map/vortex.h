@@ -159,8 +159,8 @@ class ChronalVortexClass {
   // (0..255). Color 0 and the colors the palette animates (the cycling range,
   // the pulse and the ember) keep their own color, and nothing fades into
   // them, so shading the vortex never makes it flicker.
-  static FadingTable BuildShadeTable(const PaletteClass& palette, int color,
-                                     int frac);
+  static FadingTable BuildShadeTable(const PaletteClass& palette,
+                                     engine::gfx::PaletteIndex color, int frac);
   void Coordinate_Remap(PixelView* inbuffer, int x, int y, int width,
                         int height, std::span<const uint8_t> remap_table);
 

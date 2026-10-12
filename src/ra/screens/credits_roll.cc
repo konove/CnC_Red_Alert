@@ -38,6 +38,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
@@ -282,11 +283,11 @@ SlideShow::SlideShow(const RemapControlType& text_scheme, const int width,
     base::At(fades_with_slide_, base::At(text_scheme.FontRemap, 10 + index)) =
         0;
   }
-  for (const uint8_t color :
+  for (const engine::gfx::PaletteIndex color :
        {text_scheme.Color, text_scheme.Shadow, text_scheme.Background,
         text_scheme.Corners, text_scheme.Highlight, text_scheme.Bright,
         text_scheme.Underline, text_scheme.Bar, text_scheme.Box}) {
-    base::At(fades_with_slide_, color) = 0;
+    base::At(fades_with_slide_, color.value()) = 0;
   }
 
   // EGOPAL.PAL holds the colours of the text; the slides were drawn to leave

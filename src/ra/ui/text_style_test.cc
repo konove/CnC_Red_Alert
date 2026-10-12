@@ -17,6 +17,7 @@
 #include "base/flags.h"
 #include "base/installed.h"
 #include "base/numeric.h"
+#include "engine/gfx/palette_index.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/assets.h"
@@ -65,7 +66,7 @@ constexpr NamedFlags kColors[] = {
 constexpr NamedFlags kJustify[] = {
     {"-", TPF_NONE}, {"CENTER", TPF_CENTER}, {"RIGHT", TPF_RIGHT}};
 
-constexpr int kBack = 0x0C;
+constexpr engine::gfx::PaletteIndex kBack{0x0C};
 
 // FNV-1a: a stable 64-bit fingerprint of the whole table.
 uint64_t Fingerprint(std::string_view text) {
@@ -86,9 +87,9 @@ class TextStyleTest : public testing::Test {
       font_bytes_.at(type).assign(1, std::byte{0});
       assets_.set_font(type, font_bytes_.at(type));
     }
-    remap_.Color = 0x40;
-    remap_.BrightColor = 0x41;
-    remap_.Bright = 0x42;
+    remap_.Color = engine::gfx::PaletteIndex{0x40};
+    remap_.BrightColor = engine::gfx::PaletteIndex{0x41};
+    remap_.Bright = engine::gfx::PaletteIndex{0x42};
     for (int i = 0; i < 16; ++i) {
       base::At(remap_.FontRemap, i) = static_cast<unsigned char>(0x50 + i);
     }

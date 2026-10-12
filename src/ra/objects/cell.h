@@ -278,7 +278,8 @@ class CellClass {
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
     return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
   }
-  [[nodiscard]] int Cell_Color(bool override = false) const;
+  [[nodiscard]] engine::gfx::PaletteIndex Cell_Color(
+      bool override = false) const;
   [[nodiscard]] int Clear_Icon() const;
   static int Spot_Index(Coordinate coord);
 

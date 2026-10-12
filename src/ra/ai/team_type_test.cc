@@ -14,10 +14,12 @@
 #include "absl/strings/str_cat.h"
 #include "base/pooled.h"
 #include "engine/file/ini_file.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
+#include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/trigger_action.h"
@@ -825,7 +827,7 @@ class TeamTypeDrawTest : public TeamTypeTest {
   }
 
   // The number of the page's pixels that are `color`.
-  int CountOf(const int color) {
+  int CountOf(const engine::gfx::PaletteIndex color) {
     PixelView& view = page_.view();
     int count = 0;
     for (int y = 0; y < kHeight; ++y) {
@@ -837,7 +839,9 @@ class TeamTypeDrawTest : public TeamTypeTest {
   }
 
   // The colour of the scheme the dialogs are set to draw in.
-  static constexpr int DialogColor() { return SchemeColor(PCOLOR_RED); }
+  static constexpr engine::gfx::PaletteIndex DialogColor() {
+    return SchemeColor(PCOLOR_RED);
+  }
 
   PixelBuffer page_{kWidth, kHeight};
   // The scheme to put back, which outlives this test's Game.
@@ -863,7 +867,7 @@ TEST_F(TeamTypeDrawTest, AnUnselectedEntryInAGradientFontHasNoBar) {
   const int text = CountOf(DialogColor());
   EXPECT_GT(text, 0);
   EXPECT_LT(text, kWidth * kHeight);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TeamTypeDrawTest, AnUnselectedEntryThatUsesTheGradientPaletteIsDrawn) {
@@ -872,7 +876,7 @@ TEST_F(TeamTypeDrawTest, AnUnselectedEntryThatUsesTheGradientPaletteIsDrawn) {
   }
   Draw(false, FontType::k6PointGradient, TPF_USE_GRAD_PAL);
 
-  EXPECT_LT(CountOf(0), kWidth * kHeight);
+  EXPECT_LT(CountOf(game::kTransparentBlack), kWidth * kHeight);
 }
 
 TEST_F(TeamTypeDrawTest, ASelectedEntryInAPlainFontIsBlueTextWithoutABar) {
@@ -883,7 +887,7 @@ TEST_F(TeamTypeDrawTest, ASelectedEntryInAPlainFontIsBlueTextWithoutABar) {
 
   const int text = CountOf(SchemeColor(PCOLOR_DIALOG_BLUE));
   EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TeamTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
@@ -894,7 +898,7 @@ TEST_F(TeamTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
 
   const int text = CountOf(SchemeColor(PCOLOR_GREY));
   EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TeamTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
@@ -903,7 +907,7 @@ TEST_F(TeamTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
   }
   Draw(true, FontType::kEditor);
 
-  EXPECT_EQ(CountOf(0), kWidth * kHeight);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), kWidth * kHeight);
 }
 
 TEST_F(TeamTypeDrawTest, AScriptLineIsDrawnAsAListEntryToo) {

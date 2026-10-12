@@ -181,11 +181,11 @@ void TabClass::Hilite_Tab(PixelView& view, int tab) {
   ** Use the new sidebar art for 640x400
   */
   CC_Draw_Shape(view, TabShape, 1, xpos, 0, WINDOW_MAIN, ShapeFlags::kNone);
-  ThePalettes().metal_scheme().Color = 128 + 6;
+  ThePalettes().metal_scheme().Color = engine::gfx::PaletteIndex{128 + 6};
   TextPrinter(view, {&ThePalettes().metal_scheme(), game::kTransparentBlack,
                      FontType::kMetal12, TPF_CENTER | TPF_USE_GRAD_PAL})
       .Print(TXT_TAB_BUTTON_CONTROLS, {EVA_WIDTH, 0});
-  ThePalettes().metal_scheme().Color = 128;
+  ThePalettes().metal_scheme().Color = engine::gfx::PaletteIndex{128};
 }
 
 /***********************************************************************************************

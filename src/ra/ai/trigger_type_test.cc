@@ -17,11 +17,13 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/ini_file.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/env.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
+#include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team_type.h"
@@ -612,7 +614,7 @@ class TriggerTypeDrawTest : public UiFixture {
   }
 
   // The number of the page's pixels that are `color`.
-  int CountOf(const int color) {
+  int CountOf(const engine::gfx::PaletteIndex color) {
     PixelView& view = page_.view();
     int count = 0;
     for (int y = 0; y < kHeight; ++y) {
@@ -624,7 +626,9 @@ class TriggerTypeDrawTest : public UiFixture {
   }
 
   // The colour of the scheme the dialogs are set to draw in.
-  static constexpr int DialogColor() { return SchemeColor(PCOLOR_RED); }
+  static constexpr engine::gfx::PaletteIndex DialogColor() {
+    return SchemeColor(PCOLOR_RED);
+  }
 
   static bool HasDescriptions() {
     return config::kCheatKeysEnabled || config::kScenarioEditorEnabled;
@@ -655,7 +659,7 @@ TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAGradientFontHasNoBar) {
   const int text = CountOf(DialogColor());
   EXPECT_GT(text, 0);
   EXPECT_LT(text, kWidth * kHeight);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TriggerTypeDrawTest, TheEditorFontIsDrawnLikeAGradientFont) {
@@ -675,7 +679,7 @@ TEST_F(TriggerTypeDrawTest, ASelectedEntryInAPlainFontIsBlueTextWithoutABar) {
 
   const int text = CountOf(SchemeColor(PCOLOR_DIALOG_BLUE));
   EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
@@ -686,7 +690,7 @@ TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
 
   const int text = CountOf(SchemeColor(PCOLOR_GREY));
   EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(0), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
 }
 
 TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
@@ -695,7 +699,7 @@ TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {
   }
   Draw(true, FontType::k6PointGradient);
 
-  EXPECT_EQ(CountOf(0), kWidth * kHeight);
+  EXPECT_EQ(CountOf(game::kTransparentBlack), kWidth * kHeight);
 }
 
 }  // namespace
