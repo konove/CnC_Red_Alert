@@ -437,21 +437,6 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         break;
       }
 
-        /*
-                                case( kEditboxPass | KN_BUTTON ):
-                                {
-                                        //	Message with delay so that user
-           has time to read it... Timer<SystemTickSource> timer; timer =
-           kTicksPerSecond*4; WWMessageBox().Process(TXT_WOL_DEBUG2, TXT_NONE);
-                                        while (timer > 0) {
-                                                ServiceRealTime();
-                                        }
-                                        TheKeyboard().Clear();
-
-                                        display = true;
-                                        break;
-                                }
-        */
       case engine::window::ButtonKey(kListboxNicks):
         base::SafeCopy(szNameBuffer,
                        NickList.Get_Item(NickList.Current_Index()));

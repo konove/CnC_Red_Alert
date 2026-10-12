@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 397,
+  "nextId": 398,
   "items": [
     {
       "id": "T-2",
@@ -2424,15 +2424,26 @@
       "tags": [
         "refactoring",
         "ra",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "wont_fix",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T04:53:38Z",
       "parent": "T-235",
-      "toDecide": "Worth it only if `base::Installed` gains a get-or-null accessor.\n\n- **Add one** and use it in `CurrentFrame()` of both games: saves the second pointer check, a few ns per frame-timer tick.\n- **Close** this."
+      "resolution": "Closed without a change: the double check does not exist in an optimized build. `g++ -O2` compiles `game::CurrentFrame()` (now the one copy in `src/game/core/game_clock.h`) to one load of `installed_`, one test and the read of `frame_`, with no `CHECK` call, because `IsInstalled()` and `Get()` are both inline. A get-or-null accessor on `base::Installed` would only help the Debug build.",
+      "toDecide": "Worth it only if `base::Installed` gains a get-or-null accessor.\n\n- **Add one** and use it in `CurrentFrame()` of both games: saves the second pointer check, a few ns per frame-timer tick.\n- **Close** this.",
+      "decisions": [
+        {
+          "question": "T-85: the second pointer check in CurrentFrame() is already gone in the optimized build (g++ -O2 emits one load, one test, no CHECK call). The item is also stale: the two per-game headers are now one, src/game/core/game_clock.h. What should happen to it?",
+          "options": [
+            "Close it (Recommended)",
+            "Add get-or-null"
+          ],
+          "answer": "Close it (Recommended)",
+          "time": "2026-10-12T04:53:35Z"
+        }
+      ]
     },
     {
       "id": "T-86",
@@ -2463,26 +2474,27 @@
         "ra",
         "dead-code"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T04:54:37Z",
       "parent": "T-235",
+      "resolution": "Deleted the commented-out `case (kEditboxPass | KN_BUTTON)` block with its `Timer<SystemTickSource>` delay in `WOL_Login_Dialog()` (`ra/wol/wol_logn.cc`), and the commented-out modal wait loop on `SystemMilliseconds()` in `WolapiObject::UpdateChannels()` (`ra/wol/wolapiob.cc`) together with the three commented-out lines above it that set that wait up. Neither file names the two identifiers unqualified any more; `rasdl` builds.",
       "anchors": [
         {
           "path": "src/ra/wol/wol_logn.cc",
-          "startLine": 441,
-          "endLine": 442,
-          "text": "        /*\n                                case( kEditboxPass | KN_BUTTON ):",
+          "startLine": 440,
+          "endLine": 440,
+          "text": "      case engine::window::ButtonKey(kListboxNicks):",
           "before": [
             "        break;",
             "      }",
             ""
           ],
           "after": [
-            "                                {",
-            "                                        //\tMessage with delay so that user",
-            "           has time to read it... Timer<SystemTickSource> timer; timer ="
+            "        base::SafeCopy(szNameBuffer,",
+            "                       NickList.Get_Item(NickList.Current_Index()));",
+            "        base::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString("
           ],
           "lost": false
         }
@@ -13894,6 +13906,32 @@
             "    }",
             "  }"
           ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-397",
+      "title": "Remove the rest of the commented-out code in the Westwood Online files",
+      "details": "T-87 took only the two timer blocks. Still commented out:\n\n- `ra/wol/wolapiob.cc`: about 150 `// debugprint(...)` lines, the LAN test-server branch at the end of `GetChatServer()` (with the `GetAsyncKeyState` condition and `//{` above it), the `RequestConnection` debug print in `AttemptLogin()`, and smaller blocks further down (`OnEnteringChatChannel()`, `RequestGameStart()`, `SendGo()`, the house parsing near `HouseTypeClass::From_Name`).\n- `ra/wol/wol_logn.cc`: the old `<RETURN>` handling before the `switch` in `WOL_Login_Dialog()`, the old slot loop after the `return` in `bSaveNick()`, and single lines (`LoadShpFile` declaration, `#include \"ra/wol/woldebug.h\"`, `d_save_w`, `ShowMouse()`/`HideMouse()`, `display = true`).\n\nThe other files in `ra/wol/` were not looked at. `/remove-dead-code`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "dead-code"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T04:59:20Z",
+      "updated": "2026-10-12T04:59:20Z",
+      "anchors": [
+        {
+          "path": "src/ra/wol/wolapiob.cc",
+          "lost": false
+        },
+        {
+          "path": "src/ra/wol/wol_logn.cc",
           "lost": false
         }
       ]

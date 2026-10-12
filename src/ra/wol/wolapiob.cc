@@ -788,11 +788,6 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
                                   bool bAutoping) {
   //	This is now non-modal.
   //	Sends off a request for a new channels list.
-
-  //	//	Returns false upon total failure.
-  //	WWMessageBox().Process( TXT_WOL_WAIT, TXT_NONE );
-
-  //	pChatSink->bRequestChannelListWait = true;
   pChatSink->ChannelFilter = ChannelFilter;
 
   //	debugprint( "RequestChannelList(), iChannelType = %i, filter = %i\n",
@@ -801,21 +796,6 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
     //		debugprint( "RequestChannelList() call failed\n" );
     return false;
   }
-  /*
-          int64_t dwTimeStart = SystemMilliseconds();
-          int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
-          while( pChatSink->bRequestChannelListWait && SystemMilliseconds() -
-     dwTimeStart < EMERGENCY_TIMEOUT )
-          {
-                  while( SystemMilliseconds() < dwTimeNextPump )
-                          ServiceRealTime();
-                  pChat->PumpMessages();
-                  dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
-          }
-
-          if( pChatSink->bRequestChannelListWait )
-                  return false;
-  */
   LastUpdateChannelCallLevel = CurrentLevel;
 
   return true;
