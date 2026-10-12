@@ -50,6 +50,7 @@
 #include "base/enum_step.h"  // IWYU pragma: export
 #include "base/flags.h"      // IWYU pragma: export
 #include "base/numeric.h"
+#include "engine/gfx/palette_index.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/standard_colors.h"
@@ -2423,21 +2424,21 @@ enum class SpecialDialogType {
 };
 using enum SpecialDialogType;
 
-inline constexpr int kCcGdiColor = game::kYellow;
-inline constexpr int kCcNodColor = game::kRed;
-inline constexpr int kCcBlueGreen = game::kCyan;
-inline constexpr int kCcBlueGrey = game::kLightBlue;
-inline constexpr int kCcOrange = game::kPurple;
-inline constexpr int kCcGreen = game::kGreen;
-inline constexpr int kCcTan = game::kBrown;
-inline constexpr int kCcGreenShadow = 140;
-inline constexpr int kCcGreenBkgd = 141;
-inline constexpr int kCcGreenCorners = kCcGreenBkgd;
-inline constexpr int kCcLightGreen = 159;
-inline constexpr int kCcGreenBox = kCcLightGreen;
-inline constexpr int kCcBrightGreen = 167;
-inline constexpr int kCcUnderline = kCcBrightGreen;
-inline constexpr int kCcGreenBar = kCcBrightGreen;
+inline constexpr engine::gfx::PaletteIndex kCcGdiColor = game::kYellow;
+inline constexpr engine::gfx::PaletteIndex kCcNodColor = game::kRed;
+inline constexpr engine::gfx::PaletteIndex kCcBlueGreen = game::kCyan;
+inline constexpr engine::gfx::PaletteIndex kCcBlueGrey = game::kLightBlue;
+inline constexpr engine::gfx::PaletteIndex kCcOrange = game::kPurple;
+inline constexpr engine::gfx::PaletteIndex kCcGreen = game::kGreen;
+inline constexpr engine::gfx::PaletteIndex kCcTan = game::kBrown;
+inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};
+inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};
+inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;
+inline constexpr engine::gfx::PaletteIndex kCcLightGreen{159};
+inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcLightGreen;
+inline constexpr engine::gfx::PaletteIndex kCcBrightGreen{167};
+inline constexpr engine::gfx::PaletteIndex kCcUnderline = kCcBrightGreen;
+inline constexpr engine::gfx::PaletteIndex kCcGreenBar = kCcBrightGreen;
 
 /****************************************************************************
 **	These specify the shape numbers in the OPTIONS.SHP file. These shapes

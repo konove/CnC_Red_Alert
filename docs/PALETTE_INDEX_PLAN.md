@@ -108,6 +108,9 @@ compile every TU `-fsyntax-only` (as for earlier member-caller sweeps).
 
 ## Tasks
 
+Tasks 2 and 3 were committed in the opposite order: a `PaletteIndex` constant passed to a `uint8_t`
+parameter narrows from `int` under clang, so the engine overloads had to be there first.
+
 1. **The type.** `engine/gfx/palette_index.h` with the transitional `operator int`,
    `palette_index_test.cc`, the `Palette::operator[]` overload. One commit.
 2. **The constants.** `game::k...` become `inline constexpr engine::gfx::PaletteIndex`; fix what the

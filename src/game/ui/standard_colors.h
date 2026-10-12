@@ -28,28 +28,28 @@
 #ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 #define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 
-namespace game {
+#include "engine/gfx/palette_index.h"
 
-// Palette indices, `int` because that is what the drawing functions take.
+namespace game {
 
 // Index 0 shows as black, but a transparent blit or a text background skips it:
 // "transparent black". kBlack is the black that is always drawn.
-inline constexpr int kTransparentBlack = 0;
-inline constexpr int kPurple = 1;
-inline constexpr int kCyan = 2;
-inline constexpr int kGreen = 3;
-inline constexpr int kLightGreen = 4;
-inline constexpr int kYellow = 5;
-inline constexpr int kPink = 6;
-inline constexpr int kBrown = 7;
-inline constexpr int kRed = 8;
-inline constexpr int kLightCyan = 9;
-inline constexpr int kLightBlue = 10;
-inline constexpr int kBlue = 11;
-inline constexpr int kBlack = 12;
-inline constexpr int kGrey = 13;
-inline constexpr int kLightGrey = 14;
-inline constexpr int kWhite = 15;
+inline constexpr engine::gfx::PaletteIndex kTransparentBlack{0};
+inline constexpr engine::gfx::PaletteIndex kPurple{1};
+inline constexpr engine::gfx::PaletteIndex kCyan{2};
+inline constexpr engine::gfx::PaletteIndex kGreen{3};
+inline constexpr engine::gfx::PaletteIndex kLightGreen{4};
+inline constexpr engine::gfx::PaletteIndex kYellow{5};
+inline constexpr engine::gfx::PaletteIndex kPink{6};
+inline constexpr engine::gfx::PaletteIndex kBrown{7};
+inline constexpr engine::gfx::PaletteIndex kRed{8};
+inline constexpr engine::gfx::PaletteIndex kLightCyan{9};
+inline constexpr engine::gfx::PaletteIndex kLightBlue{10};
+inline constexpr engine::gfx::PaletteIndex kBlue{11};
+inline constexpr engine::gfx::PaletteIndex kBlack{12};
+inline constexpr engine::gfx::PaletteIndex kGrey{13};
+inline constexpr engine::gfx::PaletteIndex kLightGrey{14};
+inline constexpr engine::gfx::PaletteIndex kWhite{15};
 
 }  // namespace game
 
