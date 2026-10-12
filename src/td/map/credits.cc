@@ -162,10 +162,10 @@ void CreditClass::AI(bool forced) {
     IsAudible = false;
     Current = Credits;
   } else {
-    if (Countdown) {
-      Countdown--;
+    if (tick_delay_) {
+      tick_delay_--;
     }
-    if (Countdown) {
+    if (tick_delay_) {
       return;
     }
 
@@ -181,7 +181,7 @@ void CreditClass::AI(bool forced) {
       adder = -adder;
     }
     Current += adder;
-    Countdown = 1;
+    tick_delay_ = 1;
 
     if (Current - adder != Current) {
       IsAudible = true;
