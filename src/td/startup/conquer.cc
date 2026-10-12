@@ -2326,8 +2326,8 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
     for (int x = 0; x < width; ++x) {
       view.PutPixel(
           xpos + x, ypos + y,
-          pixels.at(base::ToSize(((y % source_height) * source_width) +
-                                 (x % source_width))));
+          engine::gfx::PaletteIndex{pixels.at(base::ToSize(
+              ((y % source_height) * source_width) + (x % source_width)))});
     }
   }
   view.Unlock();

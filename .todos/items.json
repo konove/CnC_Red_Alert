@@ -5615,22 +5615,45 @@
       "tags": [
         "refactoring",
         "game",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-12T08:25:24Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
+      "resolution": "Palette slots are now `engine::gfx::PaletteIndex` (`engine/gfx/palette_index.h`), a one-byte class with an explicit constructor and no arithmetic: the `PixelView` drawing functions, both games' text printers, style structs, color schemes and widgets take it, and the `game::k...` colors are of that type. Done in seven steps per `docs/PALETTE_INDEX_PLAN.md` through a transitional `operator int` that the last commit removes; drawing, save files and the network check are unchanged.",
       "toDecide": "Introduce a palette-index type, or keep `int`?\n\n- **Keep `int`**: nothing to do; close this.\n- **A strong type** (an `enum class PaletteIndex : uint8_t` or a small class in `engine/gfx`) taken by the drawing functions: tree-wide, several thousand call sites in both games, a plan of its own (`docs/*_PLAN.md`).\n- **Only an alias** (`using PaletteIndex = int`): documents the parameters, checks nothing; a few hundred signatures.",
+      "decisions": [
+        {
+          "question": "Should palette indices get their own type? (825 uses of the sixteen game::k... constants in 120 files; about 220 color parameters in 87 files, 66 int / 13 uint8_t / 13 unsigned in headers; 24 color data members. PixelView::PutPixel/DrawLine/DrawRect/FillRect/Clear already take uint8_t; Print and the game-side printers and widgets take int.)",
+          "options": [
+            "Strong type (Recommended)",
+            "Unify on uint8_t",
+            "Alias only",
+            "Keep int"
+          ],
+          "answer": "Strong type (Recommended)",
+          "time": "2026-10-12T07:01:05Z"
+        },
+        {
+          "question": "If a strong type: which form?",
+          "options": [
+            "enum class : uint8_t (Recommended)",
+            "Small class",
+            "Not applicable"
+          ],
+          "answer": "Small class",
+          "time": "2026-10-12T07:01:05Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/ui/standard_colors.h",
           "startLine": 37,
           "endLine": 52,
-          "text": "inline constexpr int kTransparentBlack = 0;\ninline constexpr int kPurple = 1;\ninline constexpr int kCyan = 2;\ninline constexpr int kGreen = 3;\ninline constexpr int kLightGreen = 4;\ninline constexpr int kYellow = 5;\ninline constexpr int kPink = 6;\ninline constexpr int kBrown = 7;\ninline constexpr int kRed = 8;\ninline constexpr int kLightCyan = 9;\ninline constexpr int kLightBlue = 10;\ninline constexpr int kBlue = 11;\ninline constexpr int kBlack = 12;\ninline constexpr int kGrey = 13;\ninline constexpr int kLightGrey = 14;\ninline constexpr int kWhite = 15;",
+          "text": "inline constexpr engine::gfx::PaletteIndex kTransparentBlack{0};\ninline constexpr engine::gfx::PaletteIndex kPurple{1};\ninline constexpr engine::gfx::PaletteIndex kCyan{2};\ninline constexpr engine::gfx::PaletteIndex kGreen{3};\ninline constexpr engine::gfx::PaletteIndex kLightGreen{4};\ninline constexpr engine::gfx::PaletteIndex kYellow{5};\ninline constexpr engine::gfx::PaletteIndex kPink{6};\ninline constexpr engine::gfx::PaletteIndex kBrown{7};\ninline constexpr engine::gfx::PaletteIndex kRed{8};\ninline constexpr engine::gfx::PaletteIndex kLightCyan{9};\ninline constexpr engine::gfx::PaletteIndex kLightBlue{10};\ninline constexpr engine::gfx::PaletteIndex kBlue{11};\ninline constexpr engine::gfx::PaletteIndex kBlack{12};\ninline constexpr engine::gfx::PaletteIndex kGrey{13};\ninline constexpr engine::gfx::PaletteIndex kLightGrey{14};\ninline constexpr engine::gfx::PaletteIndex kWhite{15};",
           "before": [
             "",
             "// Index 0 shows as black, but a transparent blit or a text background skips it:",
@@ -5655,10 +5678,10 @@
         "refactoring",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-12T06:56:47Z",
+      "updated": "2026-10-12T06:58:33Z",
       "parent": "T-186",
       "source": "5d374065",
       "resolution": "Decided to keep `game::kTransparentBlack`: one index keeps one name that is true for the text backgrounds, the black fills and the \"no color\" sentinels alike. No code changed; the comment in `standard_colors.h` already explains the name.",
@@ -5692,7 +5715,7 @@
             "inline constexpr int kCyan = 2;",
             "inline constexpr int kGreen = 3;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5729,7 +5752,7 @@
             "inline constexpr int kCcGreenBkgd = 141;",
             "inline constexpr int kCcGreenCorners = kCcGreenBkgd;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
@@ -5767,8 +5790,8 @@
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 314,
-          "endLine": 314,
+          "startLine": 311,
+          "endLine": 311,
           "text": "        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);",
           "before": [
             "        dir = base::At(path->Command, base::ToSize(list - 1));",
@@ -5797,7 +5820,7 @@
             "        forceout = true;",
             "        break;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/findpath.cc",
@@ -5850,12 +5873,12 @@
             "inline constexpr int kPink = 6;",
             "inline constexpr int kBrown = 7;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2438,
-          "endLine": 2438,
+          "startLine": 2436,
+          "endLine": 2436,
           "text": "inline constexpr int kCcLightGreen = 159;",
           "before": [
             "inline constexpr int kCcGreenShadow = 140;",
@@ -5867,7 +5890,7 @@
             "inline constexpr int kCcBrightGreen = 167;",
             "inline constexpr int kCcUnderline = kCcBrightGreen;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -7827,35 +7850,35 @@
       "anchors": [
         {
           "path": "src/ra/ui/dialog.h",
-          "startLine": 70,
-          "endLine": 70,
+          "startLine": 71,
+          "endLine": 71,
           "text": "// The colours, font and flags a text prints with.",
           "before": [
-            "                       const RemapControlType* fore = nullptr,",
-            "                       int back = game::kTransparentBlack);",
+            "    FontType font, TextPrintType flags, const RemapControlType* fore = nullptr,",
+            "    engine::gfx::PaletteIndex back = game::kTransparentBlack);",
             ""
           ],
           "after": [
             "struct PrintStyle {",
             "  const RemapControlType* scheme = nullptr;  // nullptr is the red scheme.",
-            "  int back = game::kTransparentBlack;        // Palette index behind the glyphs."
+            "  engine::gfx::PaletteIndex back ="
           ],
           "lost": false
         },
         {
           "path": "src/td/ui/dialog.h",
-          "startLine": 43,
-          "endLine": 43,
+          "startLine": 44,
+          "endLine": 44,
           "text": "// The colours, font and flags a text prints with.",
           "before": [
-            "                       int fore = game::kTransparentBlack,",
-            "                       int back = game::kTransparentBlack);",
+            "    engine::gfx::PaletteIndex fore = game::kTransparentBlack,",
+            "    engine::gfx::PaletteIndex back = game::kTransparentBlack);",
             ""
           ],
           "after": [
             "struct PrintStyle {",
-            "  int fore = game::kTransparentBlack;  // Palette index of the glyphs.",
-            "  int back = game::kTransparentBlack;  // Palette index behind the glyphs."
+            "  engine::gfx::PaletteIndex fore = game::kTransparentBlack;  // The glyphs.",
+            "  engine::gfx::PaletteIndex back ="
           ],
           "lost": false
         }
@@ -8042,7 +8065,7 @@
             "  int diff = 256 * 3;",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -8104,8 +8127,8 @@
       "anchors": [
         {
           "path": "src/ra/core/fading_table_builders.h",
-          "startLine": 60,
-          "endLine": 60,
+          "startLine": 62,
+          "endLine": 62,
           "text": "FadingTable BuildShadowFadingTable(const engine::gfx::Palette& palette,",
           "before": [
             "// colors: colors 1..240 fade to the closest of colors 240..254, and color 0 and",
@@ -8113,16 +8136,16 @@
             "// does not darken further, however many shapes overlap."
           ],
           "after": [
-            "                                   int target_color, int ratio);",
-            "",
-            "// Returns the translucency table in which each `colors` entry's source_color"
+            "                                   engine::gfx::PaletteIndex target_color,",
+            "                                   int ratio);",
+            ""
           ],
           "lost": false
         },
         {
           "path": "src/td/core/support.cc",
-          "startLine": 21,
-          "endLine": 21,
+          "startLine": 22,
+          "endLine": 22,
           "text": "FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,",
           "before": [
             "",
@@ -8130,9 +8153,9 @@
             ""
           ],
           "after": [
-            "                                    int color, int frac) {",
-            "  const int ALLOWED_COUNT = 16;",
-            "  const int ALLOWED_START = 256 - ALLOWED_COUNT;"
+            "                                    const engine::gfx::PaletteIndex color,",
+            "                                    int frac) {",
+            "  const int ALLOWED_COUNT = 16;"
           ],
           "lost": false
         }
@@ -8250,8 +8273,8 @@
       "anchors": [
         {
           "path": "src/ra/core/fading_table_builders.h",
-          "startLine": 52,
-          "endLine": 52,
+          "startLine": 53,
+          "endLine": 53,
           "text": "FadingTable BuildClosestColorFadingTable(const PaletteClass& palette,",
           "before": [
             "// closest color to the faded one. Unlike the engine's BuildFadingTable(), color",
@@ -8259,9 +8282,9 @@
             "// component differences, not of their squares."
           ],
           "after": [
-            "                                         int target_color, int ratio);",
-            "",
-            "// Returns a fading table toward `target_color` by `ratio` (0..255; values"
+            "                                         engine::gfx::PaletteIndex target_color,",
+            "                                         int ratio);",
+            ""
           ],
           "lost": false
         }
@@ -8286,8 +8309,8 @@
       "anchors": [
         {
           "path": "src/td/core/support.cc",
-          "startLine": 21,
-          "endLine": 21,
+          "startLine": 22,
+          "endLine": 22,
           "text": "FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,",
           "before": [
             "",
@@ -8295,9 +8318,9 @@
             ""
           ],
           "after": [
-            "                                    int color, int frac) {",
-            "  const int ALLOWED_COUNT = 16;",
-            "  const int ALLOWED_START = 256 - ALLOWED_COUNT;"
+            "                                    const engine::gfx::PaletteIndex color,",
+            "                                    int frac) {",
+            "  const int ALLOWED_COUNT = 16;"
           ],
           "lost": false
         },
@@ -8505,7 +8528,7 @@
           "endLine": 50,
           "text": "  static constexpr int COLOR_COUNT = kColorCount;",
           "before": [
-            "  [[nodiscard]] int Closest_Color(",
+            "  [[nodiscard]] engine::gfx::PaletteIndex Closest_Color(",
             "      const engine::gfx::PaletteColor& /*col*/) const;",
             ""
           ],
@@ -11474,12 +11497,12 @@
             "void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,",
             "                     int ckilled) {"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/help.cc",
-          "startLine": 290,
-          "endLine": 290,
+          "startLine": 291,
+          "endLine": 291,
           "text": "    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},",
           "before": [
             "    tip.Print(Text, {DrawX, DrawY});",
@@ -11487,7 +11510,7 @@
             "    const int text_height = FontMaxHeight(font);"
           ],
           "after": [
-            "                  static_cast<unsigned char>(Color));",
+            "                  Color);",
             "",
             "    if (Cost) {"
           ],
@@ -11495,8 +11518,8 @@
         },
         {
           "path": "src/ra/map/help.cc",
-          "startLine": 284,
-          "endLine": 284,
+          "startLine": 286,
+          "endLine": 286,
           "text": "    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, font_height + 2},",
           "before": [
             "    help.Print(Text, {DrawX, DrawY});",
@@ -11504,7 +11527,7 @@
             "    const int font_height = FontMaxHeight(font);"
           ],
           "after": [
-            "                  static_cast<unsigned char>(Color));",
+            "                  Color);",
             "",
             "    if (Cost) {"
           ],
@@ -11531,8 +11554,8 @@
       "anchors": [
         {
           "path": "src/td/objects/techno.cc",
-          "startLine": 957,
-          "endLine": 957,
+          "startLine": 1012,
+          "endLine": 1012,
           "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
           "before": [
             "      int pwidth = base::FixedToCardinal(",
@@ -11541,15 +11564,15 @@
           ],
           "after": [
             "",
-            "      int color =",
-            "          game::kLightGreen;  // The color to give the interior of the bargraph."
+            "      // The color to give the interior of the bargraph.",
+            "      engine::gfx::PaletteIndex color = game::kLightGreen;"
           ],
           "lost": false
         },
         {
           "path": "src/ra/objects/techno.cc",
-          "startLine": 1250,
-          "endLine": 1250,
+          "startLine": 1306,
+          "endLine": 1306,
           "text": "      pwidth = std::clamp(pwidth, 1, width - 2);",
           "before": [
             "      */",
@@ -11558,8 +11581,8 @@
           ],
           "after": [
             "",
-            "      int color =",
-            "          game::kLightGreen;  // The color to give the interior of the bargraph."
+            "      // The color to give the interior of the bargraph.",
+            "      engine::gfx::PaletteIndex color = game::kLightGreen;"
           ],
           "lost": false
         }
@@ -11646,7 +11669,7 @@
             "void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);",
             "// What a text print draws with: its adjusted flags, colour and font."
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/net/nulldlg.cc",
@@ -11810,8 +11833,8 @@
           ],
           "after": [
             "                                d_color_y + 1 + d_color_h - 2),",
-            "              static_cast<unsigned char>(",
-            "                  base::At(TheSession().graphic_colors(), i)));"
+            "              base::At(TheSession().graphic_colors(), i));",
+            ""
           ],
           "lost": false
         },
@@ -11830,7 +11853,7 @@
             "              static_cast<unsigned char>(",
             "                  base::At(TheSession().graphic_colors(), i)));"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/net/nulldlg.cc",
@@ -11847,7 +11870,7 @@
             "              static_cast<unsigned char>(",
             "                  base::At(TheSession().graphic_colors(), i)));"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -11884,7 +11907,7 @@
             "",
             "      /*"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -12233,7 +12256,7 @@
             "        // The heights are positions on the scale drawn beside the bar, whose",
             "        // zero tick is the row `bottom` and whose top tick is `kScaleRows`"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

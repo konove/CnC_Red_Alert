@@ -129,34 +129,18 @@ class PixelView {
   // fill in "the whole view" for the missing rectangle. The locking form is a
   // one-line wrapper, so a caller that draws many times can take the lock once
   // and call the locked form in a loop.
-  //
-  // A color is a PaletteIndex. The overloads that take a uint8_t or an int are
-  // transitional (docs/PALETTE_INDEX_PLAN.md) and go when their last caller
-  // does.
 
   // Sets one pixel, ignoring coordinates outside the view.
-  void PutPixel(int x, int y, uint8_t color);
-  void PutPixel(const int x, const int y,
-                const engine::gfx::PaletteIndex color) {
-    PutPixel(x, y, color.byte());
-  }
-  void PutPixelLocked(int x, int y, uint8_t color);
-  void PutPixelLocked(const int x, const int y,
-                      const engine::gfx::PaletteIndex color) {
-    PutPixelLocked(x, y, color.byte());
-  }
+  void PutPixel(int x, int y, engine::gfx::PaletteIndex color);
+  void PutPixelLocked(int x, int y, engine::gfx::PaletteIndex color);
 
   // Returns the color at x,y, or slot 0 outside the view.
   engine::gfx::PaletteIndex GetPixel(int x, int y);
   engine::gfx::PaletteIndex GetPixelLocked(int x, int y);
 
-  // Fills the view with `color`.
-  void Clear(uint8_t color = 0);
-  void Clear(const engine::gfx::PaletteIndex color) { Clear(color.byte()); }
-  void ClearLocked(uint8_t color);
-  void ClearLocked(const engine::gfx::PaletteIndex color) {
-    ClearLocked(color.byte());
-  }
+  // Fills the view with `color`: slot 0 when none is given.
+  void Clear(engine::gfx::PaletteIndex color = {});
+  void ClearLocked(engine::gfx::PaletteIndex color);
 
   // Copies the rectangle `source` of the view out to plain memory, packed
   // with no padding. The rectangle is clipped to the view first, and a
@@ -198,62 +182,35 @@ class PixelView {
                    bool transparent, std::span<const uint8_t> remap_table);
 
   // Draws text in `style` at x,y, wrapping to a new line when the text runs
-  // past the view's width. `fore_color` and `back_color` are palette indices
-  // that stand in for glyph values 1 and 0, and a `back_color` of 0 leaves the
+  // past the view's width. `fore_color` and `back_color` stand in for glyph
+  // values 1 and 0, and a transparent `back_color` (slot 0) leaves the
   // background untouched; the integer overload prints the number in decimal.
   // Does nothing if `text` is null, the style has no font, or `y` is above
   // the top; stops at the first line that would run past the bottom. Glyph
   // columns left or right of the view are clipped.
   void Print(const FontStyle& style, const char* text, int x, int y,
-             int fore_color, int back_color);
-  void Print(const FontStyle& style, int value, int x, int y, int fore_color,
-             int back_color);
+             engine::gfx::PaletteIndex fore_color,
+             engine::gfx::PaletteIndex back_color);
+  void Print(const FontStyle& style, int value, int x, int y,
+             engine::gfx::PaletteIndex fore_color,
+             engine::gfx::PaletteIndex back_color);
   void PrintLocked(const FontStyle& style, const char* text, int x, int y,
-                   int fore_color, int back_color);
-  void Print(const FontStyle& style, const char* text, const int x, const int y,
-             const engine::gfx::PaletteIndex fore_color,
-             const engine::gfx::PaletteIndex back_color) {
-    Print(style, text, x, y, fore_color.value(), back_color.value());
-  }
-  void Print(const FontStyle& style, const int value, const int x, const int y,
-             const engine::gfx::PaletteIndex fore_color,
-             const engine::gfx::PaletteIndex back_color) {
-    Print(style, value, x, y, fore_color.value(), back_color.value());
-  }
-  void PrintLocked(const FontStyle& style, const char* text, const int x,
-                   const int y, const engine::gfx::PaletteIndex fore_color,
-                   const engine::gfx::PaletteIndex back_color) {
-    PrintLocked(style, text, x, y, fore_color.value(), back_color.value());
-  }
+                   engine::gfx::PaletteIndex fore_color,
+                   engine::gfx::PaletteIndex back_color);
 
   // Draws the line from x1,y1 to x2,y2, both ends inclusive.
-  void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
-  void DrawLine(const int x1, const int y1, const int x2, const int y2,
-                const engine::gfx::PaletteIndex color) {
-    DrawLine(x1, y1, x2, y2, color.byte());
-  }
-  void DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color);
-  void DrawLineLocked(const int x1, const int y1, const int x2, const int y2,
-                      const engine::gfx::PaletteIndex color) {
-    DrawLineLocked(x1, y1, x2, y2, color.byte());
-  }
+  void DrawLine(int x1, int y1, int x2, int y2,
+                engine::gfx::PaletteIndex color);
+  void DrawLineLocked(int x1, int y1, int x2, int y2,
+                      engine::gfx::PaletteIndex color);
 
   // DrawRect draws the one pixel wide outline of `rect`, along its inside
   // edge; FillRect fills all of it. Both clip to the view and draw nothing
   // for a rectangle with no width or no height. A caller that holds two
   // inclusive corners passes Rect::FromCorners(x1, y1, x2, y2).
-  void DrawRect(const Rect& rect, uint8_t color);
-  void DrawRect(const Rect& rect, const engine::gfx::PaletteIndex color) {
-    DrawRect(rect, color.byte());
-  }
-  void FillRect(const Rect& rect, uint8_t color);
-  void FillRect(const Rect& rect, const engine::gfx::PaletteIndex color) {
-    FillRect(rect, color.byte());
-  }
-  void FillRectLocked(const Rect& rect, uint8_t color);
-  void FillRectLocked(const Rect& rect, const engine::gfx::PaletteIndex color) {
-    FillRectLocked(rect, color.byte());
-  }
+  void DrawRect(const Rect& rect, engine::gfx::PaletteIndex color);
+  void FillRect(const Rect& rect, engine::gfx::PaletteIndex color);
+  void FillRectLocked(const Rect& rect, engine::gfx::PaletteIndex color);
 
   // Replaces every pixel in `rect` with remap_table[pixel]. `remap_table` is
   // a 256-entry table; the shorter overload covers the whole view.

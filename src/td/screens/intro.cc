@@ -63,6 +63,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
+#include "game/ui/standard_colors.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/presentation.h"
@@ -282,8 +283,9 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  show.page().view().FillRect(Rect{0, 180, 320, 20}, 0);
-  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40}, 0);
+  show.page().view().FillRect(Rect{0, 180, 320, 20}, game::kTransparentBlack);
+  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40},
+                                      game::kTransparentBlack);
   show.ShowPage();
   TheScreen().sys_mem_page().view().Clear();
 

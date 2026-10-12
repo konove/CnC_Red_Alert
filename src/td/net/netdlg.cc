@@ -3183,7 +3183,8 @@ static int Net_New_Dialog() {
       ** Wipe the background behind the unit count then reprint it
       */
       view.FillRect(
-          Rect{d_count_x + d_count_w + (2 * factor), d_count_y, 20, 12}, 0);
+          Rect{d_count_x + d_count_w + (2 * factor), d_count_y, 20, 12},
+          game::kTransparentBlack);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
       label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
       display = REDRAW_NONE;

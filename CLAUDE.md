@@ -450,6 +450,13 @@ arithmetic. Do not use unsigned merely to indicate a value is non-negative — u
 
 Use `int64_t` for values that could exceed 2^31, including intermediate calculations.
 
+A color that names a palette slot is an `engine::gfx::PaletteIndex` (`engine/gfx/palette_index.h`),
+not an integer: the drawing functions, the text printers and the `game::k...` colors
+(`game/ui/standard_colors.h`) all use it. Write a literal slot as `PaletteIndex{12}`, a computed one
+as `PaletteIndex::FromInt(n)`, and "no color" as `std::optional<PaletteIndex>`, not `-1`. Pixel
+data, remap tables and fading tables stay bytes; a player's color choice (`PlayerColorType`) is an
+id, not a slot.
+
 For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`).
 Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel
 values. Include `"base/types.h"` and link the `base` library.
@@ -485,7 +492,7 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 | Build config    | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt`                                                                                                          |
 | Global state    | `ra/externs.h`                                                                                                                                                      |
 | Streams         | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h`                                                                                                          |
-| Graphics        | `engine/gfx/pixel_buffer.h`                                                                                                                                         |
+| Graphics        | `engine/gfx/pixel_buffer.h`, `engine/gfx/palette_index.h` (the type of a color)                                                                                     |
 | Engine layering | `tools/check_layers.py` (enforces the dependency order and header guards), `tools/engine_layout.py` (the folder/library table it reads), `engine_layers_test` ctest |
 | Video           | `engine/video/vqa/vqa_player.h`                                                                                                                                     |
 

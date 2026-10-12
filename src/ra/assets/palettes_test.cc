@@ -32,8 +32,8 @@ TEST(PalettesTest, BlackAndWhiteAreFilledIn) {
 TEST(PalettesTest, EverythingElseStartsZeroed) {
   Palettes palettes;
   EXPECT_EQ(Packed(palettes.game_palette().at(255)), 0);
-  EXPECT_EQ(palettes.color_remaps().at(PCOLOR_GOLD).Color, 0);
-  EXPECT_EQ(palettes.grey_scheme().BrightColor, 0);
+  EXPECT_TRUE(palettes.color_remaps().at(PCOLOR_GOLD).Color.IsTransparent());
+  EXPECT_TRUE(palettes.grey_scheme().BrightColor.IsTransparent());
   EXPECT_FALSE(palettes.slow_palette());
 }
 

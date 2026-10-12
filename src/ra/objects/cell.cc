@@ -978,7 +978,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
     const Cell cell = Cell_Number();
     view.FillRect(Rect{TheMap().TacPixelX + x, TheMap().TacPixelY + y,
                        game::kCellWidthPixels, game::kCellHeightPixels},
-                  static_cast<unsigned char>(LocalRandomPick(1, 254)));
+                  engine::gfx::PaletteIndex::FromInt(LocalRandomPick(1, 254)));
     TextPrinter(view, {&ThePalettes().grey_scheme(), game::kTransparentBlack,
                        FontType::kEditor,
                        TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW})

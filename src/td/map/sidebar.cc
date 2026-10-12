@@ -112,6 +112,7 @@
 #include "game/core/object_heap.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
+#include "game/ui/standard_colors.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"
@@ -723,7 +724,8 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
       // CC_Draw_Shape(SidebarShape1, (int)complete, SideX, 158, WINDOW_MAIN,
       // ShapeFlags::kNone); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
       // 158+118, WINDOW_MAIN, ShapeFlags::kNone);
-      view.DrawLine(SideX, 157, TheScreen().visible_view().width() - 1, 157, 0);
+      view.DrawLine(SideX, 157, TheScreen().visible_view().width() - 1, 157,
+                    game::kTransparentBlack);
       CC_Draw_Shape(view, SidebarShape1, 0, SideX, 158, WINDOW_MAIN,
                     ShapeFlags::kNone);
       CC_Draw_Shape(view, SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,

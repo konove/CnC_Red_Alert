@@ -945,7 +945,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
   if (TheDebugState().show_cell_info()) {
     view.FillRect(Rect{TheMap().TacPixelX + x, TheMap().TacPixelY + y,
                        game::kCellWidthPixels, game::kCellHeightPixels},
-                  static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+                  engine::gfx::PaletteIndex::FromInt(Sim_Random_Pick(1, 254)));
     TextPrinter(view, {game::kWhite, game::kTransparentBlack, FontType::k6Point,
                        TPF_NOSHADOW | TPF_CENTER})
         .Print(absl::StrFormat("%d\r%2X%c\r%02X.%02X", cell.index(),

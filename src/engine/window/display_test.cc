@@ -188,7 +188,7 @@ TEST_F(DisplayTest, PresentsWhatThePageDrewInThePalette) {
   page.Init(2, 2, display());
   display().SetPalette(PaletteWith(1, 0, 0, 63));
 
-  page.view().Clear(1);
+  page.view().Clear(engine::gfx::PaletteIndex{1});
   display().EndFrame();
 
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 255}));
@@ -202,7 +202,7 @@ TEST_F(DisplayTest, ShowsEveryEightBitComponent) {
   palette.at(1) = engine::gfx::PaletteColor(1, 129, 254);
   display().SetPalette(palette);
 
-  page.view().Clear(1);
+  page.view().Clear(engine::gfx::PaletteIndex{1});
   display().EndFrame();
 
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{1, 129, 254}));
@@ -263,7 +263,7 @@ TEST_F(DisplayTest, TheSurfaceIsDrawnOverABackdrop) {
   display().SetPalette(palette);
   display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
 
-  page.view().Clear(2);
+  page.view().Clear(engine::gfx::PaletteIndex{2});
   EXPECT_TRUE(display().redraw_pending());
   display().EndFrame();
 
@@ -312,7 +312,7 @@ TEST_F(DisplayTest, AMovieFrameReplacesABackdrop) {
   palette.at(3) = engine::gfx::PaletteColor(0, 255, 0);
   display().SetPalette(palette);
   display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
-  page.view().Clear(2);
+  page.view().Clear(engine::gfx::PaletteIndex{2});
 
   display().PresentScaledFrame(std::array<uint8_t, 4>{3, 3, 3, 3}, 2, 2);
 
@@ -345,7 +345,7 @@ TEST_F(ScriptedWindowDisplayTest, ThePumpPresentsWhatWasDrawn) {
   PixelBuffer page;
   page.Init(2, 2, display());
 
-  page.view().Clear(1);
+  page.view().Clear(engine::gfx::PaletteIndex{1});
   EXPECT_TRUE(display().redraw_pending());
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
 
@@ -380,7 +380,7 @@ TEST_F(ScriptedWindowDisplayTest, PresentingDoesNotWait) {
 TEST_F(DisplayTest, CapturesTheSurface) {
   PixelBuffer page;
   page.Init(2, 2, display());
-  page.view().Clear(7);
+  page.view().Clear(engine::gfx::PaletteIndex{7});
 
   const DisplayPicture picture = display().Capture();
 
@@ -393,7 +393,7 @@ TEST_F(DisplayTest, CapturesTheSurface) {
 TEST_F(DisplayTest, CapturesAMovieFrameInsteadOfTheSurface) {
   PixelBuffer page;
   page.Init(2, 2, display());
-  page.view().Clear(7);
+  page.view().Clear(engine::gfx::PaletteIndex{7});
   display().PresentScaledFrame(std::array<uint8_t, 1>{3}, 1, 1);
 
   EXPECT_EQ(display().Capture().pixels, (std::vector<uint8_t>{3, 3, 3, 3}));
@@ -404,8 +404,8 @@ TEST_F(DisplayTest, CapturesABackdropUnderTheSurface) {
   display().PresentBackdrop(std::array<uint8_t, 4>{1, 2, 3, 4}, 2, 2);
   PixelBuffer page;
   page.Init(2, 2, display());
-  page.view().Clear(0);
-  page.view().PutPixel(1, 0, 9);
+  page.view().Clear(engine::gfx::PaletteIndex{0});
+  page.view().PutPixel(1, 0, engine::gfx::PaletteIndex{9});
 
   EXPECT_EQ(display().Capture().pixels, (std::vector<uint8_t>{1, 9, 3, 4}));
 }
@@ -422,8 +422,8 @@ TEST(HeadlessDisplayTest, CapturesItsSurface) {
   ASSERT_TRUE(display.SetVideoMode(3, 2));
   PixelBuffer page;
   page.Init(3, 2, display);
-  page.view().Clear(5);
-  page.view().PutPixel(2, 1, 6);
+  page.view().Clear(engine::gfx::PaletteIndex{5});
+  page.view().PutPixel(2, 1, engine::gfx::PaletteIndex{6});
 
   const DisplayPicture picture = display.Capture();
 
@@ -525,7 +525,7 @@ TEST(HeadlessDisplayTest, KeepsWhatAPageDrawsOnIt) {
   PixelBuffer page;
   page.Init(8, 4, display);
 
-  page.view().Clear(7);
+  page.view().Clear(engine::gfx::PaletteIndex{7});
   display.EndFrame();
 
   const std::optional<PixelSurface::Pixels> pixels = display.Lock();

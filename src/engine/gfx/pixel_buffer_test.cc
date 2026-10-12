@@ -35,11 +35,11 @@ TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
   PixelView view;
 
   view.Clear();
-  view.PutPixel(0, 0, 1);
-  view.DrawLine(0, 0, 1, 1, 1);
-  view.FillRect(Rect{0, 0, 2, 2}, 1);
+  view.PutPixel(0, 0, engine::gfx::PaletteIndex{1});
+  view.DrawLine(0, 0, 1, 1, engine::gfx::PaletteIndex{1});
+  view.FillRect(Rect{0, 0, 2, 2}, engine::gfx::PaletteIndex{1});
 
-  EXPECT_EQ(view.GetPixel(0, 0), 0);
+  EXPECT_TRUE(view.GetPixel(0, 0).IsTransparent());
 }
 
 // Screen constructs its views against pages that Init() has not sized yet,
@@ -57,7 +57,7 @@ TEST(GraphicViewPortLockTest, AttachingToAnEmptyBufferGivesAnEmptyViewport) {
   EXPECT_TRUE(view.pixels().empty());
 
   view.Clear();
-  view.PutPixel(0, 0, 1);
+  view.PutPixel(0, 0, engine::gfx::PaletteIndex{1});
 }
 
 // A plain memory buffer has no surface to lock, so Lock() succeeds without
@@ -116,7 +116,7 @@ TEST(SurfaceBufferTest, DrawsIntoTheSurfaceSkippingItsRowPadding) {
   PixelBuffer page;
   page.Init(3, 2, surface);
 
-  page.view().Clear(7);
+  page.view().Clear(engine::gfx::PaletteIndex{7});
 
   EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{7, 7, 7, 0,  //
                                                     7, 7, 7, 0}));
@@ -132,7 +132,7 @@ TEST(SurfaceBufferTest, AViewLocksThePageAndFindsItsCorner) {
   page.Init(3, 3, surface);
   PixelView view(&page, 1, 1, 2, 2);
 
-  view.PutPixel(0, 0, 5);
+  view.PutPixel(0, 0, engine::gfx::PaletteIndex{5});
 
   EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{0, 0, 0, 0,  //
                                                     0, 5, 0, 0,  //
@@ -149,7 +149,7 @@ TEST(SurfaceBufferTest, ARefusedLockDrawsNothing) {
 
   EXPECT_FALSE(page.LockSurface());
   EXPECT_EQ(page.lock_count(), 0);
-  page.view().Clear(7);
+  page.view().Clear(engine::gfx::PaletteIndex{7});
 
   EXPECT_EQ(surface.unlock_calls(), 0);
   EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{0, 0, 0, 0}));
@@ -163,7 +163,7 @@ TEST(SurfaceBufferTest, InitWithMemoryDetachesTheSurface) {
   std::vector<uint8_t> pixels(size_t{2} * 2, 0);
 
   page.Init(2, 2, pixels, 0);
-  page.view().Clear(3);
+  page.view().Clear(engine::gfx::PaletteIndex{3});
 
   EXPECT_FALSE(page.HasSurface());
   EXPECT_EQ(surface.lock_calls(), 0);
@@ -309,9 +309,9 @@ TEST(EmptyRectangleTest, AViewWithNoPixelsDrawsNothing) {
 
   empty.CopyToBuffer(Rect{0, 0, 4, 4}, out);
   empty.CopyFromBuffer(Rect{0, 0, 4, 4}, original);
-  empty.FillRect(Rect{0, 0, 4, 4}, 9);
-  empty.DrawLine(0, 0, 0, 3, 9);
-  empty.DrawRect(Rect{0, 0, 4, 4}, 9);
+  empty.FillRect(Rect{0, 0, 4, 4}, engine::gfx::PaletteIndex{9});
+  empty.DrawLine(0, 0, 0, 3, engine::gfx::PaletteIndex{9});
+  empty.DrawRect(Rect{0, 0, 4, 4}, engine::gfx::PaletteIndex{9});
   empty.Remap(Rect{0, 0, 4, 4}, remap);
   for (const bool transparent : {false, true}) {
     empty.BlitTo(page.view(), Rect{0, 0, 4, 4}, 0, 0, transparent);
@@ -343,8 +343,8 @@ TEST(EmptyRectangleTest, ARectangleWithNoWidthOrHeightDrawsNothing) {
     view.CopyToBuffer(Rect{1, 1, width, height}, out);
     view.CopyFromBuffer(Rect{1, 1, width, height}, fill);
     view.Remap(Rect{1, 1, width, height}, remap);
-    view.FillRect(Rect{1, 1, width, height}, 0);
-    view.DrawRect(Rect{1, 1, width, height}, 0);
+    view.FillRect(Rect{1, 1, width, height}, engine::gfx::PaletteIndex{0});
+    view.DrawRect(Rect{1, 1, width, height}, engine::gfx::PaletteIndex{0});
     for (const bool transparent : {false, true}) {
       source.view().BlitTo(view, Rect{0, 0, width, height}, 1, 1, transparent);
       // Within one view, where the copy runs bottom to top.
@@ -364,7 +364,7 @@ TEST(FillRectTest, FillsTheRectangleAndNothingElse) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  dest.view().FillRect(Rect{1, 1, 2, 3}, 7);
+  dest.view().FillRect(Rect{1, 1, 2, 3}, engine::gfx::PaletteIndex{7});
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 7, 7, 0,  //
@@ -376,8 +376,8 @@ TEST(FillRectTest, ClipsToTheView) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  dest.view().FillRect(Rect{-2, -2, 4, 3}, 7);
-  dest.view().FillRect(Rect{3, 2, 5, 5}, 9);
+  dest.view().FillRect(Rect{-2, -2, 4, 3}, engine::gfx::PaletteIndex{7});
+  dest.view().FillRect(Rect{3, 2, 5, 5}, engine::gfx::PaletteIndex{9});
 
   EXPECT_EQ(page, (std::vector<uint8_t>{7, 7, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -389,7 +389,7 @@ TEST(DrawRectTest, OutlinesTheRectangleAlongItsInsideEdge) {
   std::vector<uint8_t> page(size_t{5} * 4, 0);
   PixelBuffer dest(5, 4, page);
 
-  dest.view().DrawRect(Rect{1, 0, 4, 3}, 7);
+  dest.view().DrawRect(Rect{1, 0, 4, 3}, engine::gfx::PaletteIndex{7});
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 7, 7, 7, 7,  //
                                         0, 7, 0, 0, 7,  //
@@ -404,8 +404,10 @@ TEST(DrawRectTest, DrawsTheSameOutlineFromEitherPairOfCorners) {
   std::vector<uint8_t> mirrored_page(size_t{4} * 4, 0);
   PixelBuffer mirrored(4, 4, mirrored_page);
 
-  dest.view().DrawRect(Rect::FromCorners(0, 1, 2, 3), 7);
-  mirrored.view().DrawRect(Rect::FromCorners(2, 3, 0, 1), 7);
+  dest.view().DrawRect(Rect::FromCorners(0, 1, 2, 3),
+                       engine::gfx::PaletteIndex{7});
+  mirrored.view().DrawRect(Rect::FromCorners(2, 3, 0, 1),
+                           engine::gfx::PaletteIndex{7});
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         7, 7, 7, 0,  //
@@ -433,7 +435,7 @@ TEST(EmptyRectangleTest, ARectangleClippedToNothingDrawsNothing) {
     view.CopyToBuffer(Rect{x, y, 2, 2}, out);
     view.CopyFromBuffer(Rect{x, y, 2, 2}, fill);
     view.Remap(Rect{x, y, 2, 2}, remap);
-    view.FillRect(Rect{x, y, 2, 2}, 0);
+    view.FillRect(Rect{x, y, 2, 2}, engine::gfx::PaletteIndex{0});
     for (const bool transparent : {false, true}) {
       source.view().BlitTo(view, Rect{0, 0, 2, 2}, x, y, transparent);
       source.view().BlitTo(view, Rect{x, y, 2, 2}, 0, 0, transparent);
@@ -505,7 +507,8 @@ TEST(PrintTest, DrawsThroughTheStylesPaletteAndSpacing) {
   std::vector<uint8_t> pixels(size_t{8} * 2, 0);
   PixelBuffer page(8, 2, pixels);
 
-  page.view().Print(style, "\x01\x02", 0, 0, 7, 0);
+  page.view().Print(style, "\x01\x02", 0, 0, engine::gfx::PaletteIndex{7},
+                    engine::gfx::PaletteIndex{0});
 
   // Glyph 1 at x 0-2, one pixel of spacing, glyph 2 at x 4-5 on row 1.
   EXPECT_EQ(pixels, (std::vector<uint8_t>{7, 50, 60, 0, 0, 0, 0, 0,  //
@@ -519,7 +522,8 @@ TEST(PrintTest, PaintsTheBlankRowsWithTheBackgroundColor) {
   std::vector<uint8_t> pixels(size_t{4} * 2, 0);
   PixelBuffer page(4, 2, pixels);
 
-  page.view().Print(style, "\x02", 0, 0, 7, 9);
+  page.view().Print(style, "\x02", 0, 0, engine::gfx::PaletteIndex{7},
+                    engine::gfx::PaletteIndex{9});
 
   // Glyph 2 has one blank row above its single row of 1 3.
   EXPECT_EQ(pixels, (std::vector<uint8_t>{9, 9, 0, 0,  //
@@ -535,7 +539,8 @@ TEST(PrintTest, DrawsNothingForALineStartingAboveTheTop) {
   std::vector<uint8_t> memory(size_t{8} * 3, 0);
   PixelBuffer page(8, 2, std::span(memory).subspan(8));
 
-  page.view().Print(style, "\x01", 0, -1, 7, 0);
+  page.view().Print(style, "\x01", 0, -1, engine::gfx::PaletteIndex{7},
+                    engine::gfx::PaletteIndex{0});
 
   EXPECT_EQ(memory, std::vector<uint8_t>(size_t{8} * 3, 0));
 }
@@ -549,7 +554,8 @@ TEST(PrintTest, ClipsGlyphColumnsLeftOfTheView) {
   std::vector<uint8_t> memory(size_t{8} * 3, 0);
   PixelBuffer page(8, 2, std::span(memory).subspan(8));
 
-  page.view().Print(style, "\x01", -1, 0, 7, 0);
+  page.view().Print(style, "\x01", -1, 0, engine::gfx::PaletteIndex{7},
+                    engine::gfx::PaletteIndex{0});
 
   // Glyph 1's first column (7 over 0) falls left of x 0.
   EXPECT_EQ(memory, (std::vector<uint8_t>{0,  0,  0, 0, 0, 0, 0, 0,  //
@@ -567,7 +573,8 @@ TEST(PrintTest, ClipsAGlyphWiderThanTheRoomLeftAfterAWrap) {
   PixelBuffer page(2, 4, std::span(memory).first(8));
 
   // Glyph 1 is 3 wide, so it wraps to the second line and loses a column.
-  page.view().Print(style, "\x01", 0, 0, 7, 0);
+  page.view().Print(style, "\x01", 0, 0, engine::gfx::PaletteIndex{7},
+                    engine::gfx::PaletteIndex{0});
 
   EXPECT_EQ(memory, (std::vector<uint8_t>{0, 0,   //
                                           0, 0,   //

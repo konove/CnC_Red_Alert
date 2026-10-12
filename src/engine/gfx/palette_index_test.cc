@@ -61,6 +61,10 @@ TEST(PaletteIndexTest, IndexesAPalette) {
   EXPECT_EQ(read_only.at(15), kWhiteColor);
 }
 
+TEST(PaletteIndexTest, PrintsItsSlotNumberInAFailedExpectation) {
+  EXPECT_EQ(testing::PrintToString(PaletteIndex{171}), "171");
+}
+
 TEST(PaletteIndexTest, IsSavedAsOneByte) {
   // One byte of room: a wider write would fail the sink.
   std::array<std::byte, 1> bytes{};

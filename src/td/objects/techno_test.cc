@@ -109,7 +109,7 @@ class TechnoTest : public GameFixture {
   static constexpr int kPageHeight = 200;
   static constexpr int kCenterRow = kPageHeight / 2;
   // A colour that neither the bar nor the selection box uses.
-  static constexpr unsigned char kBackground = 100;
+  static constexpr engine::gfx::PaletteIndex kBackground{100};
 };
 
 TEST_F(TechnoTest, ASelectedObjectShowsItsHealthBar) {

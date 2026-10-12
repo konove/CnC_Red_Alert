@@ -135,16 +135,18 @@ bool PixelView::NeedsLock() const {
   return buffer_ != nullptr && buffer_->HasSurface();
 }
 
-void PixelView::PutPixel(const int x, const int y, const uint8_t color) {
+void PixelView::PutPixel(const int x, const int y,
+                         const engine::gfx::PaletteIndex color) {
   if (Lock()) {
     PutPixelLocked(x, y, color);
     Unlock();
   }
 }
 
-void PixelView::PutPixelLocked(const int x, const int y, const uint8_t color) {
+void PixelView::PutPixelLocked(const int x, const int y,
+                               const engine::gfx::PaletteIndex color) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
-    base::At(pixels(), base::ToSize(x + (y * stride()))) = color;
+    base::At(pixels(), base::ToSize(x + (y * stride()))) = color.byte();
   }
 }
 
@@ -168,14 +170,15 @@ engine::gfx::PaletteIndex PixelView::GetPixelLocked(const int x, const int y) {
   return engine::gfx::PaletteIndex(*dst_offset);
 }
 
-void PixelView::Clear(const uint8_t color) {
+void PixelView::Clear(const engine::gfx::PaletteIndex color) {
   if (Lock()) {
     ClearLocked(color);
     Unlock();
   }
 }
 
-void PixelView::ClearLocked(const uint8_t color) {
+void PixelView::ClearLocked(const engine::gfx::PaletteIndex color) {
+  const uint8_t pixel = color.byte();
   const base::ssize dst_area = stride();
   auto dst_offset = pixels().begin();
 
@@ -184,7 +187,7 @@ void PixelView::ClearLocked(const uint8_t color) {
   // A view with no lines, such as a page that was never attached, has nothing
   // to fill.
   for (int line = 0; line < height(); line++) {
-    std::fill_n(dst_offset, pixel_count, color);
+    std::fill_n(dst_offset, pixel_count, pixel);
     dst_offset += dst_area;
   }
 }
@@ -685,7 +688,8 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 }
 
 void PixelView::Print(const FontStyle& style, const char* text, const int x,
-                      const int y, const int fore_color, const int back_color) {
+                      const int y, const engine::gfx::PaletteIndex fore_color,
+                      const engine::gfx::PaletteIndex back_color) {
   if (Lock()) {
     PrintLocked(style, text, x, y, fore_color, back_color);
     Unlock();
@@ -693,12 +697,14 @@ void PixelView::Print(const FontStyle& style, const char* text, const int x,
 }
 
 void PixelView::Print(const FontStyle& style, const int value, const int x,
-                      const int y, const int fore_color, const int back_color) {
+                      const int y, const engine::gfx::PaletteIndex fore_color,
+                      const engine::gfx::PaletteIndex back_color) {
   Print(style, absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
 void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
-                            int y, const int fore_color, const int back_color) {
+                            int y, const engine::gfx::PaletteIndex fore_color,
+                            const engine::gfx::PaletteIndex back_color) {
   const FontView& font = style.font;
   if (!text || font.data().empty()) {
     return;
@@ -717,9 +723,9 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
 
   // Glyph pixels are indices into the style's palette, with entry 0 the
   // background (0 also means transparent) and entry 1 the foreground.
-  const auto background = static_cast<uint8_t>(back_color);
+  const uint8_t background = back_color.byte();
   std::array<uint8_t, 16> palette = style.palette;
-  palette.at(1) = static_cast<uint8_t>(fore_color);
+  palette.at(1) = fore_color.byte();
   palette.at(0) = background;
 
   // The line checks keep every row inside the view, but a glyph can still
@@ -816,14 +822,15 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
 }
 
 void PixelView::DrawLine(const int x1, const int y1, const int x2, const int y2,
-                         const uint8_t color) {
+                         const engine::gfx::PaletteIndex color) {
   if (Lock()) {
     DrawLineLocked(x1, y1, x2, y2, color);
     Unlock();
   }
 }
 
-void PixelView::DrawRect(const Rect& rect, const uint8_t color) {
+void PixelView::DrawRect(const Rect& rect,
+                         const engine::gfx::PaletteIndex color) {
   if (!rect.IsValid() || !Lock()) {
     return;
   }
@@ -838,7 +845,8 @@ void PixelView::DrawRect(const Rect& rect, const uint8_t color) {
   Unlock();
 }
 
-void PixelView::FillRect(const Rect& rect, const uint8_t color) {
+void PixelView::FillRect(const Rect& rect,
+                         const engine::gfx::PaletteIndex color) {
   if (Lock()) {
     FillRectLocked(rect, color);
     Unlock();
@@ -846,7 +854,8 @@ void PixelView::FillRect(const Rect& rect, const uint8_t color) {
 }
 
 void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
-                               const uint8_t color) {
+                               const engine::gfx::PaletteIndex color) {
+  const uint8_t pixel = color.byte();
   const int width = width_;
   const int height = height_;
 
@@ -926,7 +935,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
 
     const int count = x2 - x1 + 1;
     const auto page = pixels().begin() + x1 + (bpr * y1);
-    std::fill_n(page, count, color);
+    std::fill_n(page, count, pixel);
 
     return;
   }
@@ -948,7 +957,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
     // vertical
     int count = y_dist + 1;
     do {
-      *page = color;
+      *page = pixel;
       page = page + bpr;
     } while (--count);
     return;
@@ -964,7 +973,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
     int count = y_dist;
     int accum = y_dist / 2;
     while (true) {
-      *page = color;
+      *page = pixel;
       if (--count == 0) {
         break;
       }
@@ -980,7 +989,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
     int count = x_dist;
     int accum = x_dist / 2;
     while (true) {
-      *page = color;
+      *page = pixel;
       if (--count == 0) {
         break;
       }
@@ -995,7 +1004,9 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   }
 }
 
-void PixelView::FillRectLocked(const Rect& rect, const uint8_t color) {
+void PixelView::FillRectLocked(const Rect& rect,
+                               const engine::gfx::PaletteIndex color) {
+  const uint8_t pixel = color.byte();
   // Clamp to the view; x2,y2 are the last column and row filled.
   const int x1 = std::max(rect.x, 0);
   const int y1 = std::max(rect.y, 0);
@@ -1015,7 +1026,7 @@ void PixelView::FillRectLocked(const Rect& rect, const uint8_t color) {
 
   // fill lines
   do {
-    std::fill_n(dst_offset, pixel_count, color);
+    std::fill_n(dst_offset, pixel_count, pixel);
     dst_offset += dst_area;
   } while (--line_count);
 }

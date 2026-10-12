@@ -566,7 +566,7 @@ void RadarClass::Render_Terrain(PixelView& view, Cell cell, int x, int y,
   ** represent it.
   */
   if (size == 1) {
-    view.PutPixel(x, y, 60);
+    view.PutPixel(x, y, engine::gfx::PaletteIndex{60});
     return;
   }
 

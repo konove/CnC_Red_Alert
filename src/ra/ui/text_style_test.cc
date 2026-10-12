@@ -113,7 +113,7 @@ class TextStyleTest : public testing::Test {
     return absl::StrFormat("font=%s x=%d y=%d fore=%d flags=%#x pal=%s",
                            FontName(style.font_style.font.data()),
                            style.font_style.x_spacing,
-                           style.font_style.y_spacing, style.forecolor,
+                           style.font_style.y_spacing, style.forecolor.value(),
                            base::Bits(style.flag), palette);
   }
 

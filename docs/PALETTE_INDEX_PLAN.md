@@ -1,5 +1,10 @@
 # Palette Index Type Plan
 
+**Status:** done 2026-10-12 (`6c824c24`..the commit that removes the transitional conversion). The
+`uint8_t`/`int` drawing overloads and `PaletteIndex::operator int` are gone; both games build with
+the strict checks, `tools/ui_check.py` passes without `--accept`, and the save fixtures and
+`tools/net_check.py` pass.
+
 **Goal:** A color that names a palette slot is an `engine::gfx::PaletteIndex`, not an `int`, a
 `uint8_t` or an `unsigned`. Every drawing function, text printer and widget takes one, and the
 sixteen `game::k...` colors are of that type, so a pixel count, a shape number or a player-color id
@@ -137,9 +142,13 @@ parameter narrows from `int` under clang, so the engine overloads had to be ther
    `Session::graphic_colors_`/`text_colors_`, `ui/dialog.h`, `core/support.h`, menus, help, radar,
    sidebar, the rest.
 7. **Remove the crutch.** Delete `operator int` and the `uint8_t`/`int` engine overloads; fix what
-   the compiler then finds; delete the "`int` because that is what the drawing functions take"
-   comment in `standard_colors.h`; add `PaletteIndex` to CLAUDE.md's Key Files (Graphics) and to the
-   Integer Types section as the type for a color. Close T-187.
+   the compiler then finds (64 error lines: 37 literal colors in the two engine tests, 19 in the
+   games, such as `FillRect(..., 0)`, and 8 inside Abseil and GoogleTest from a formatted or
+   compared value); give the type a `PrintTo()` for failed test expectations; document it in
+   CLAUDE.md (Integer Types, Key Files). Close T-187.
+
+`text_window.h`'s `kWindowFCol`/`kWindowBCol`, named in Task 3, turned out to be column numbers of
+the window list, not colors, and stay `int`.
 
 ## Review focus
 

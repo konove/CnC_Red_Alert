@@ -4,6 +4,7 @@
 // The number of a palette slot, as its own type.
 
 #include <cstdint>
+#include <ostream>
 #include <span>
 
 #include "absl/log/check.h"
@@ -56,12 +57,12 @@ class PaletteIndex {
     return PaletteIndex(base::At(table, int{value_}));
   }
 
-  // Transitional (docs/PALETTE_INDEX_PLAN.md): lets a PaletteIndex reach the
-  // parameters and variables that are still int. Task 7 of the plan removes it.
-  // NOLINTNEXTLINE(google-explicit-constructor,misc-explicit-constructor)
-  constexpr operator int() const noexcept { return value_; }
-
   friend constexpr bool operator==(PaletteIndex, PaletteIndex) = default;
+
+  // Shows the slot number in a failed test expectation.
+  friend void PrintTo(const PaletteIndex index, std::ostream* os) {
+    *os << index.value();
+  }
 
   // Saved as one byte, like the uint8_t it replaces.
   template <class Archive>
