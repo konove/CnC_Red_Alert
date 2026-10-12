@@ -420,16 +420,17 @@
         "tools",
         "ui-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T05:12:38Z",
       "parent": "T-9",
+      "resolution": "Nothing in `help.cc` was at fault: a sidebar button only calls `Help_Text()` when its strip slot holds a buildable (`index < BuildableCount` in `sidebar.cc`), and the first mission of either side has nothing to build. `win_mission.script` now rests the pointer on the Power Plant button of the second Allied mission (`sidebar_help` shot, name and cost), and `tooltip.script` on the power bar, which has a help text in any mission (`power_bar` shot).",
       "anchors": [
         {
           "path": "src/ra/map/help.cc",
-          "startLine": 143,
-          "endLine": 143,
+          "startLine": 144,
+          "endLine": 144,
           "text": "  if (Text == TXT_NONE || CountDownTimer.HasTimeLeft()) {",
           "before": [
             " * HISTORY: * 11/18/1994 JLB : Created. *",
@@ -2342,10 +2343,10 @@
         "engine",
         "ide-issues"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T04:41:33Z",
+      "updated": "2026-10-12T05:10:51Z",
       "parent": "T-235",
       "resolution": "CLion showed two findings in `timer.h`, both \"parameter can be made const\" on the `duration` parameter of `Timer`'s constructor and `Timer::Set`; both inline definitions now take `const int64_t`. `timer.cc` had none. Both files are clean in the IDE."
     },
@@ -2360,10 +2361,10 @@
         "td",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T04:35:22Z",
+      "updated": "2026-10-12T05:10:50Z",
       "parent": "T-235",
       "resolution": "Kept `HasTimeLeft()`: the 6 `!IsFinished()` sites (4 in TD, `ra/objects/mission.cc`, `engine/gfx/glow_pulse.h`) and `Remaining() > 0` in `td/ui/msgbox.cc` now call it, and the 4 TD `Remaining() == 0` sites call `IsFinished()`. `Remaining()` clamps at 0, so behaviour is unchanged.",
       "toDecide": "- **Keep `HasTimeLeft()`** (35 sites) and convert the 10 sites that write `!IsFinished()` or compare `Remaining()` with 0.\n- **Drop `HasTimeLeft()`** and write `!IsFinished()` at its 35 sites.",
@@ -2389,10 +2390,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T04:52:17Z",
+      "updated": "2026-10-12T05:10:54Z",
       "parent": "T-235",
       "resolution": "`FootClass::Mission_Guard` reads `Arm.Remaining()` once into `arm_remaining` and tests that value, instead of calling `HasTimeLeft()` and then `Remaining()`.",
       "anchors": [
@@ -2455,10 +2456,10 @@
         "refactoring",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T05:07:10Z",
+      "updated": "2026-10-12T05:11:01Z",
       "parent": "T-235",
       "resolution": "Renamed `engine::platform::Timer<T>` to `Countdown<T>` (163 uses, 70 files; `timer.h` keeps its name) and the `int Countdown` members of both games' `CreditClass` to `tick_delay_`. `docs/TIMER_UNIFICATION_PLAN.md` notes the rename; the strict build and all 2039 tests pass.",
       "toDecide": "- **Rename** `Timer<T>` to `Countdown<T>`: 162 uses; `td/map/credits.h` has an `int Countdown` member the new name would shadow, to rename first.\n- **Keep** `Timer`, the name `docs/TIMER_UNIFICATION_PLAN.md` kept.",
@@ -2487,10 +2488,10 @@
         "ra",
         "dead-code"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-12T04:54:37Z",
+      "updated": "2026-10-12T05:10:56Z",
       "parent": "T-235",
       "resolution": "Deleted the commented-out `case (kEditboxPass | KN_BUTTON)` block with its `Timer<SystemTickSource>` delay in `WOL_Login_Dialog()` (`ra/wol/wol_logn.cc`), and the commented-out modal wait loop on `SystemMilliseconds()` in `WolapiObject::UpdateChannels()` (`ra/wol/wolapiob.cc`) together with the three commented-out lines above it that set that wait up. Neither file names the two identifiers unqualified any more; `rasdl` builds.",
       "anchors": [
@@ -7342,10 +7343,10 @@
         "ra",
         "td"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T20:33:08Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T05:11:05Z",
       "anchors": [
         {
           "path": "src/engine/platform/timer.h",

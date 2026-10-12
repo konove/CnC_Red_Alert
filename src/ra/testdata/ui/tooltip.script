@@ -1,5 +1,5 @@
 # The help text that pops up when the mouse rests on the map: over the shroud
-# and over a building.
+# over a building and over the power bar.
 at 301 click 320 231
 at 341 key RETURN
 at 401 click 260 228
@@ -7,4 +7,6 @@ at 600 move 60 200
 at 900 shot shroud
 at 901 move 205 330
 at 1200 shot building
-at 1201 quit
+at 1201 move 489 250
+at 1400 shot power_bar
+at 1401 quit

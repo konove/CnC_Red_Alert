@@ -1,6 +1,8 @@
 # Winning the first Allied mission with the developers' Alt-W: the score
 # screen, the hall of fame, the map on which the next mission is chosen, and
-# that mission.
+# that mission, where the pointer rests on a sidebar button until its help
+# text shows. The first missions of both sides have nothing to build, and an
+# empty button has no help text.
 # args: -PLAYTEST
 at 301 click 320 231
 at 341 key RETURN
@@ -17,4 +19,6 @@ at 2600 shot map_selection
 at 2601 click 360 240
 at 3400 shot next_mission_start
 at 4700 shot next_mission_under_way
-at 4701 quit
+at 4701 move 530 215
+at 4800 shot sidebar_help
+at 4801 quit
