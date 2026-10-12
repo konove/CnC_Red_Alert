@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 398,
+  "nextId": 404,
   "items": [
     {
       "id": "T-2",
@@ -231,10 +231,10 @@
         "ra",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:32:46Z",
-      "updated": "2026-10-12T05:57:49Z",
+      "updated": "2026-10-12T06:10:52Z",
       "resolution": "Added 20 scripts (12 Red Alert, 8 Tiberian Dawn; the suite is now 39 scripts, 268 screenshots): edit boxes, slider and scroll-bar drags, the skirmish color boxes, the battle hotkeys with default and Steam `[WinHotkeys]` bindings, Chronosphere and Iron Curtain targeting, TD's team/view keys and both endings, and both map editors' placement, waypoint keys, map-size corners and held member buttons. `tools/ui_check.py` gained `--work-dir`, `# file:` and `# hashes:`. Not scriptable and filed separately: the message line (network only), the sound controls (no sound device), TD's color picker (serial only) and a held right button."
     },
     {
@@ -4384,14 +4384,21 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T05:58:22Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-12T05:58:22Z",
+          "text": "Seen while scripting T-9 (f3bd869d): because `Team_Members()` writes straight into `CurTeam`, Cancel in the team dialog keeps the member changes made in the members dialog (the list still showed `E1:10,EINSTEIN:8`) while dropping the name edit."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/editor/team_type_dialog.cc",
-          "startLine": 660,
-          "endLine": 660,
+          "startLine": 659,
+          "endLine": 659,
           "text": "      case engine::window::ButtonKey(kButtonMembers):",
           "before": [
             "        break;",
@@ -5310,10 +5317,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T04:18:37Z",
-      "updated": "2026-10-12T04:07:50Z",
+      "updated": "2026-10-12T06:10:56Z",
       "resolution": "Removed the `Delete_Swap_Files` and `Move_Point` declarations (no definition or caller in `src/`), the unread `extern bool CC95AlreadyRunning`, the `game/sim/direction.h` include and the \"Setting palette.\" log. Replaced the legacy file and function banners with `//` comments (`Run()` now documents its exit codes), gave `ApplyStartupOptions()` back the comment that had merged into `InitWindowList()`'s, and rewrote the stale in-body comments. `tdsdl` builds and `tools/strict_tu.py` passes on the file.",
       "anchors": [
         {
@@ -5646,16 +5653,29 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "game",
-        "needs-decision"
+        "game"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-12T06:56:47Z",
       "parent": "T-186",
       "source": "5d374065",
+      "resolution": "Decided to keep `game::kTransparentBlack`: one index keeps one name that is true for the text backgrounds, the black fills and the \"no color\" sentinels alike. No code changed; the comment in `standard_colors.h` already explains the name.",
       "toDecide": "Keep `game::kTransparentBlack`, or rename it?\n\n- **Keep**: accurate for both uses, but long at 525 sites.\n- **`game::kTransparent`**: shorter and right for the text-background majority, wrong where it is drawn as black. `kTransparent` already has 8 unrelated uses in the tree to check.\n- **Two names for index 0** (`kTransparent` for backgrounds, `kTransparentBlack` or `kBlack0` for fills): says what each call means; every site has to be read to choose.",
+      "decisions": [
+        {
+          "question": "What should palette index 0 be called? Today: 319 occurrences of game::kTransparentBlack in 85 files; about 300 are a text fore/background ('draw nothing'), about 12 fill or plot it as black, and 7 use it as 'no color yet' in radar.cc/cell.cc.",
+          "options": [
+            "Keep kTransparentBlack (Recommended)",
+            "Rename to kTransparent",
+            "Two names: kTransparent + kTransparentBlack",
+            "Two names: kTransparent + kBlack0"
+          ],
+          "answer": "Keep kTransparentBlack (Recommended)",
+          "time": "2026-10-12T06:56:42Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/game/ui/standard_colors.h",
@@ -12117,8 +12137,15 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T03:13:31Z",
-      "updated": "2026-10-10T03:13:31Z",
+      "updated": "2026-10-12T05:58:22Z",
       "source": "eeda1518",
+      "comments": [
+        {
+          "author": "agent",
+          "time": "2026-10-12T05:58:22Z",
+          "text": "Likely cause, found while scripting T-9 (f3bd869d): `Team_Members()` calls `ptr->Display(view, Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR, house)` (`src/ra/editor/mapedtm.cc:921`), which is (320,200) inside a 64x48 window, so the picture lands outside it. Tiberian Dawn passes `x + kPictureW / 2, y + kPictureH / 2` (`src/td/editor/mapedtm.cc:1952`). The object placement dialog has the same call (`src/ra/editor/mapedplc.cc:404`): its preview box holds only the name, and a stray white square appears on the map near (345..370, 212..237) (shot `dialog_war_factory` of `editor_objects.script`). Not checked against the original source. After a fix the `member_*` shots of `editor_dialogs` and the shots of `editor_team_members` and `editor_objects` need `--accept`."
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/editor/mapedtm.cc",
@@ -13413,10 +13440,10 @@
         "td",
         "coverage"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T23:32:19Z",
-      "updated": "2026-10-12T02:10:44Z",
+      "updated": "2026-10-12T06:12:36Z",
       "source": "30853b48",
       "resolution": "Added 20 tests to `src/td/objects/unit_test.cc` that place hand-built vehicles on an empty map and drive the turret code through `AI()`, `Can_Fire()` and `Ok_To_Move()`: the turret turning to its target (`FIRE_FACING`, then `FIRE_ROTATING`, then `FIRE_OK`), the locked turret holding `Ok_To_Move()`, `FIRE_MOVING` without a free turret, the radar dish, homing and flame aim, the second weapon, the launcher's reload, the dinosaur's attack animation (`Ready_To_Fire()`) and the stealth tank uncloaking. `Rotate_Turret()`, `Turret_Can_Fire()`, `Ready_To_Fire()` and `Ok_To_Move()` are fully covered; each tested line was broken by hand to see a test fail.",
       "comments": [
@@ -13950,6 +13977,200 @@
           "lost": false
         }
       ]
+    },
+    {
+      "id": "T-398",
+      "title": "Decide whether Return in an edit box should press the dialog's default button",
+      "details": "Two dialogs treat Return oddly when their edit box has the keyboard:\n\n- Red Alert's waypoint-name box in the map editor (`src/ra/editor/mapedit.cc`): the loop maps `KN_RETURN` to OK, but the focused `EditClass` turns Return into its own button key, which the switch has no case for, so Return never closes the box. `editor_waypoints.script` presses Return and then clicks OK.\n- Tiberian Dawn's save-mission dialog (`src/td/screens/loaddlg.cc:368`): the first Return only takes the focus from the edit box (`EditClass::Handle_Key()` in `src/game/ui/edit.h:238` passes on its own gadget id), the second saves (shots `edit_box_left`, `game_saved` of `save_mission.script`). Red Alert's save dialog saves on the first Return.\n\nThe recorded hashes hold today's behaviour.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "ra",
+        "td",
+        "editor",
+        "ui-check",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d",
+      "toDecide": "Is either of these the original game's behaviour to keep, or should Return in the edit box act as OK/Save in both? Fixing is small (handle the edit box's button key like Return) and needs `--accept` on `editor_waypoints` and TD's `save_mission`.",
+      "anchors": [
+        {
+          "path": "src/ra/editor/mapedit.cc",
+          "startLine": 2052,
+          "endLine": 2052,
+          "text": "    if (input == KN_RETURN) {",
+          "before": [
+            "    **\tIf the <RETURN> key was pressed, then default to the appropriate",
+            "    **\taction button according to the style of this dialog box.",
+            "    */"
+          ],
+          "after": [
+            "      input = engine::window::ButtonKey(kButtonOk);",
+            "    }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-399",
+      "title": "Take the map editors' button state from the click event",
+      "details": "The map handlers of both editors ask `engine::window::IsLeftButtonDown()` when they process the map gadget's key (`src/ra/editor/mapedit.cc:1045`, `src/td/editor/mapedit.cc:1116`). A press and release that arrive in the same frame are therefore seen as a button-up and place nothing, which is why the editor scripts use `press` and `release` a few frames apart. Red Alert's members grid has a similar dependence on the pointer having been on the picture before the press (`src/ra/editor/mapedtm.cc:709`). Decide the press from the event's flags instead of the live state, then the scripts can use `click`.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "td",
+        "editor",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d",
+      "anchors": [
+        {
+          "path": "src/ra/editor/mapedit.cc",
+          "startLine": 1045,
+          "endLine": 1045,
+          "text": "      if (engine::window::IsLeftButtonDown()) {",
+          "before": [
+            "      /*",
+            "      **\tLeft Button DOWN",
+            "      */"
+          ],
+          "after": [
+            "        LMouseDown = true;",
+            "",
+            "        /*"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/editor/mapedit.cc",
+          "startLine": 1116,
+          "endLine": 1116,
+          "text": "      */",
+          "before": [
+            "    case engine::window::ButtonKey(kMapArea):",
+            "      /*",
+            "      ------------------------- Left Button DOWN -------------------------"
+          ],
+          "after": [
+            "      if (engine::window::IsLeftButtonDown()) {",
+            "        LMouseDown = true;",
+            "        /*"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-400",
+      "title": "Check the oddities the Tiberian Dawn editor scripts show",
+      "details": "Seen in the shots of `src/td/testdata/ui/editor_map.script` and `editor_trigger.script`:\n\n- The editor shows the mission's shroud although `-EDITOR` sets unshroud, so only the revealed part of the map can be clicked (shot `editor` of `editor_dialogs` too).\n- The \"Reinf\" label is cut off at the top of its cell (`reinforcement_cell`).\n- A trigger named GATE is labelled \"GAT\" on the map (`on_one_cell`).\n- A new trigger with no house lists as \"!!!\" (`list_with_the_trigger`).\n- The map scrolls until the pointer first moves, because the pointer starts in the screen's corner.\n- Outside the editor: the Visual Controls dialog does not cover Game Controls behind it (`visual_controls` of `sliders.script`), and `-NEWGAMESCG02EA` starts with the view on fully shrouded ground.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "td",
+        "editor",
+        "ui-check",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d",
+      "toDecide": "Which of these are the original game's behaviour to keep and which are port bugs to fix? Each fix is small; the shroud in the editor is the one that limits what scripts can reach."
+    },
+    {
+      "id": "T-401",
+      "title": "Check the message line's typing in a scripted network game",
+      "details": "The message line (`Message_Input()` in `src/ra/net/chat.cc`) only opens in a network or modem game, never in a campaign or skirmish game, so `tools/ui_check.py` cannot reach it: a `-NETGAME` run needs two instances and keeps real time, and its screenshots are not comparable. Options: let a `tools/net_check.py` script type a message with F1..F8, Backspace and Return and require the other instance to log the text it received; or unit-test `MessageListClass`'s edit line with `UiFixture`. Tiberian Dawn's message line has the same limit.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "testing",
+        "ra",
+        "td",
+        "net-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d",
+      "anchors": [
+        {
+          "path": "src/ra/net/chat.cc",
+          "startLine": 164,
+          "endLine": 164,
+          "text": "void Message_Input(engine::window::KeyNumber& input) {",
+          "before": [
+            "  base::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);",
+            "}",
+            ""
+          ],
+          "after": [
+            "  char txt[MAX_MESSAGE_LENGTH + 32];",
+            "",
+            "  // Check keyboard input for a request to send a message."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-402",
+      "title": "Add a held right button to the player script format",
+      "details": "`engine/window/player_script.h` has `press`/`move`/`release` for the left button but only `rclick` for the right one, so a right button held down cannot be scripted. The case that needs it: the auto-repeat that counts a member down in Red Alert's team members dialog (`editor_team_members.script` covers one right click). Add `rpress` and `rrelease` to `LoadPlayerScript()` and `ScriptedPlayer`, with tests in `player_script_test.cc`, and extend the script.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine",
+        "tools",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d",
+      "anchors": [
+        {
+          "path": "src/engine/window/player_script.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-403",
+      "title": "Give scripted runs a way to reach the sound controls and Tiberian Dawn's color picker",
+      "details": "Two screens stay out of `tools/ui_check.py`'s reach:\n\n- The sound controls of both games (volume sliders, the music list and its scroll bar): a scripted run has no sound device, so the dialog only says \"No Sound Card Detected\" (shot `sound_controls` of Red Alert's `options.script`, `no_sound_card` of Tiberian Dawn's `sliders.script`). It needs an audio device a scripted run can open without playing in real time.\n- Tiberian Dawn's multiplayer color picker in `Com_Scenario_Dialog()` (`src/td/net/nulldlg.cc`): the multiplayer menu offers only Modem/Serial, and Null Modem stops at \"Please select 'Settings'\", so the dialog sits behind a serial connection to a second player. A switch like Red Alert's `-NETGAME` that opens the dialog without a peer would reach it.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "testing",
+        "ra",
+        "td",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-12T05:58:22Z",
+      "source": "f3bd869d"
     }
   ]
 }
