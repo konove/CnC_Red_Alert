@@ -16,6 +16,7 @@
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
+#include "ra/net/session.h"
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -130,6 +131,66 @@ TEST_F(TechnoTest, ADeathWithNoKillerCreditsNobody) {
   EXPECT_EQ(bystander.kills(), 0);
   EXPECT_EQ(victim.kills(), 0);
   EXPECT_EQ(victim.House->UnitsLost, 1);
+}
+
+// A ranger standing on the map is a threat to the other house in its
+// region; captured, it has to become a threat to the house it was taken from
+// instead, or lifting it later takes the amount from the wrong house.
+TEST_F(TechnoTest, ACapturedObjectMovesItsThreatToTheOtherHouse) {
+  TheSession().Type = GAME_NORMAL;
+  UnitTypeClass& type = UnitTypeClass::As_Reference(UNIT_JEEP);
+  const int old_risk = type.Risk;
+  type.Risk = 8;
+  const Cell cell = Cell::FromXY(40, 40);
+  const int region = MapEditClass::Cell_Region(cell);
+  HouseClass& capturer = *HouseClass::As_Pointer(HOUSE_GREECE);
+  const HouseClass& loser = *HouseClass::As_Pointer(HOUSE_USSR);
+
+  TechnoClass& unit = MakeUnit(HOUSE_USSR);
+  unit.Coord = cell.Center();
+  unit.IsInLimbo = false;
+  ASSERT_TRUE(unit.ObjectClass::Mark(MARK_DOWN));
+  ASSERT_EQ(capturer.RegionThreatAt(region), 8);
+  ASSERT_EQ(loser.RegionThreatAt(region), 0);
+
+  EXPECT_TRUE(unit.TechnoClass::Captured(&capturer));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), 8);
+  // The regions beside it got their shares back too.
+  EXPECT_EQ(capturer.RegionThreatAt(region + 1), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region + 1), 4);
+
+  EXPECT_TRUE(unit.ObjectClass::Mark(MARK_UP));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), 0);
+
+  // Back in limbo, as the fixture expects to find it when it ends the game.
+  unit.IsInLimbo = true;
+  type.Risk = old_risk;
+}
+
+// Multiplayer games keep no threat, so a capture must not invent any.
+TEST_F(TechnoTest, ACaptureLeavesTheRegionsAloneOutsideTheCampaign) {
+  TheSession().Type = GAME_SKIRMISH;
+  UnitTypeClass& type = UnitTypeClass::As_Reference(UNIT_JEEP);
+  const int old_risk = type.Risk;
+  type.Risk = 8;
+  const Cell cell = Cell::FromXY(40, 40);
+  const int region = MapEditClass::Cell_Region(cell);
+  HouseClass& capturer = *HouseClass::As_Pointer(HOUSE_GREECE);
+  const HouseClass& loser = *HouseClass::As_Pointer(HOUSE_USSR);
+
+  TechnoClass& unit = MakeUnit(HOUSE_USSR);
+  unit.Coord = cell.Center();
+  unit.IsInLimbo = false;
+  ASSERT_TRUE(unit.ObjectClass::Mark(MARK_DOWN));
+
+  EXPECT_TRUE(unit.TechnoClass::Captured(&capturer));
+  EXPECT_EQ(capturer.RegionThreatAt(region), 0);
+  EXPECT_EQ(loser.RegionThreatAt(region), 0);
+
+  unit.IsInLimbo = true;
+  type.Risk = old_risk;
 }
 
 // The mode ends in Record_The_Kill(), which Take_Damage() reaches through
