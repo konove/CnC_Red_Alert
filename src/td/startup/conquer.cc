@@ -2292,7 +2292,7 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                 }
                 pixel = pixels.at(
                     base::ToSize((sample_y * pixel_width) + sample_x));
-                if (pixel == game::kLightGreen) {
+                if (pixel == game::kLightGreen.byte()) {
                   pixel = 0;
                 }
                 if (pixel != 0) {

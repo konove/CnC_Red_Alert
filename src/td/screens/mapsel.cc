@@ -1131,8 +1131,12 @@ void Map_Selection() {
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));
            selection++) {
-        color = TheScreen().sys_mem_page().view().GetPixel(
-            game::TheMouse().x() / 2, game::TheMouse().y() / 2);
+        color =
+            TheScreen()
+                .sys_mem_page()
+                .view()
+                .GetPixel(game::TheMouse().x() / 2, game::TheMouse().y() / 2)
+                .value();
 
         /*
         ** Special hack for Egypt the second time through
@@ -1728,9 +1732,8 @@ void Bit_It_In(Presentation& show, const int x, const int y, const int w,
             row_offset = 0;
           }
 
-          dest->view().PutPixelLocked(
-              px, py,
-              static_cast<unsigned char>(src->view().GetPixelLocked(px, py)));
+          dest->view().PutPixelLocked(px, py,
+                                      src->view().GetPixelLocked(px, py));
         }
         if (dagger) {
           // Overlay a downward-pointing wedge from screen center (x=160),
@@ -1743,13 +1746,9 @@ void Bit_It_In(Presentation& show, const int x, const int y, const int w,
             const int x_left = 160 - offset;
             const int x_right = 160 + offset;
             dest->view().PutPixelLocked(
-                x_left, row,
-                static_cast<unsigned char>(
-                    src->view().GetPixelLocked(x_left, row)));
+                x_left, row, src->view().GetPixelLocked(x_left, row));
             dest->view().PutPixelLocked(
-                x_right, row,
-                static_cast<unsigned char>(
-                    src->view().GetPixelLocked(x_right, row)));
+                x_right, row, src->view().GetPixelLocked(x_right, row));
           }
         }
         dest->view().Unlock();

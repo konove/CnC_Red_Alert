@@ -18,8 +18,9 @@ namespace td {
 // their own color, as does color 0. A shadow drawn over a shadow therefore
 // does not darken further. `color` must be a palette index (0..255).
 FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
-                                    int color, int frac);
-void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color, int size);
+                                    engine::gfx::PaletteIndex color, int frac);
+void Fat_Put_Pixel(PixelView& view, int x, int y,
+                   engine::gfx::PaletteIndex color, int size);
 void strtrim(char* buffer);
 
 // Null pointer check that fires only in cheat-key builds.

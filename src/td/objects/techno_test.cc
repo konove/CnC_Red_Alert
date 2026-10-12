@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/pooled.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/archive.h"
@@ -82,7 +83,7 @@ class TechnoTest : public GameFixture {
     bool has_box = false;
     for (int y = 0; y < kPageHeight; ++y) {
       for (int x = 0; x < kPageWidth; ++x) {
-        const int color = page.view().GetPixel(x, y);
+        const engine::gfx::PaletteIndex color = page.view().GetPixel(x, y);
         if (color == game::kBlack || color == game::kLightGreen) {
           ++drawn.health_bar_pixels;
         }

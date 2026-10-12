@@ -74,6 +74,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/window/hardware_cursor.h"
@@ -956,7 +957,7 @@ void Computer_Message() {
     /*.....................................................................
     Decode this house's color
     .....................................................................*/
-    const int color =
+    const engine::gfx::PaletteIndex color =
         base::At(TheSession().text_colors(), static_cast<int>(ptr->RemapColor));
 
     /*.....................................................................

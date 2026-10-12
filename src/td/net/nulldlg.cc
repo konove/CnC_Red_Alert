@@ -3576,8 +3576,7 @@ int Com_Scenario_Dialog() {
                   base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
                   base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
                   d_color_y + (1 * factor) + d_color_h - (2 * factor)),
-              static_cast<unsigned char>(
-                  base::At(TheSession().graphic_colors(), i)));
+              base::At(TheSession().graphic_colors(), i));
 
           if (i == TheSession().color_index()) {
             Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
@@ -4867,8 +4866,7 @@ int Com_Show_Scenario_Dialog() {
                   base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
                   base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
                   d_color_y + (1 * factor) + d_color_h - (2 * factor)),
-              static_cast<unsigned char>(
-                  base::At(TheSession().graphic_colors(), i)));
+              base::At(TheSession().graphic_colors(), i));
 
           if (i == TheSession().color_index()) {
             Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,

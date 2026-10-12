@@ -95,6 +95,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -187,7 +188,7 @@ int CellClass::Validate() const {
  *function.                                            * 05/31/1994 JLB : Takes
  *into account any stealth characteristics of object.                *
  *=============================================================================================*/
-int CellClass::Cell_Color(bool override) const {
+engine::gfx::PaletteIndex CellClass::Cell_Color(bool override) const {
   Validate();
   const BuildingClass* object = Cell_Building();
   if (object) {

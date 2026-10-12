@@ -854,7 +854,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
     /*
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
-    int color = game::kTransparentBlack;  // Color of the pixel to plot.
+    engine::gfx::PaletteIndex color = game::kTransparentBlack;  // What to plot.
     if ((*this).at(cell).IsVisible || TheDebugState().unshroud()) {
       color = cellptr->Cell_Color(true);
     } else {
@@ -904,12 +904,10 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
         }
 
       } else {
-        Fat_Put_Pixel(view, x, y,
-                      static_cast<uint8_t>(cellptr->Cell_Color(false)),
-                      ZoomFactor);
+        Fat_Put_Pixel(view, x, y, cellptr->Cell_Color(false), ZoomFactor);
       }
     } else {
-      Fat_Put_Pixel(view, x, y, static_cast<uint8_t>(color), ZoomFactor);
+      Fat_Put_Pixel(view, x, y, color, ZoomFactor);
     }
     if (color != game::kBlack) {
       Render_Overlay(view, cell, x, y, ZoomFactor);
@@ -1843,7 +1841,7 @@ void RadarClass::Player_Names(bool on) {
  *=============================================================================================*/
 void RadarClass::Draw_Names(PixelView& view) const {
   char txt[40];
-  int color = 0;
+  engine::gfx::PaletteIndex color;
   const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*

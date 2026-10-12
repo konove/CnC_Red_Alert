@@ -1509,10 +1509,10 @@ inline constexpr int kMouseCount = static_cast<int>(MOUSE_COUNT);
 **	the Draw_Box() function.
 */
 struct BoxStyleType {
-  int Filler;     // Center box fill color.
-  int Shadow;     // Shadow color (darker).
-  int Highlight;  // Highlight color (lighter).
-  int Corner;     // Corner color (transition).
+  engine::gfx::PaletteIndex Filler;     // Center box fill color.
+  engine::gfx::PaletteIndex Shadow;     // Shadow color (darker).
+  engine::gfx::PaletteIndex Highlight;  // Highlight color (lighter).
+  engine::gfx::PaletteIndex Corner;     // Corner color (transition).
 };
 
 enum class BoxStyleEnum {
@@ -2122,7 +2122,7 @@ inline constexpr int kSourceCount = static_cast<int>(SOURCE_COUNT);
 **	corresponding GroundType structure.
 */
 struct GroundType {
-  int Color = 0;  // Radar map (map editor) id color.
+  engine::gfx::PaletteIndex Color;  // Radar map (map editor) id color.
   base::EnumArray<SpeedType, unsigned char, kSpeedCount>
       Cost{};          // Terrain effect cost (normal).
   bool Build = false;  // Can build on this terrain?

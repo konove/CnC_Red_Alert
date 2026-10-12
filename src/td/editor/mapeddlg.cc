@@ -72,6 +72,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
@@ -961,7 +962,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   char txt[40];
   int txt_x = 0;
   int txt_y = 0;                    // for displaying text
-  int color = 0;                    // for drawing map symbology
+  engine::gfx::PaletteIndex color;  // for drawing map symbology
   ObjectClass* occupier = nullptr;  // cell's occupier
   /*........................................................................
   Buttons
@@ -1136,7 +1137,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           if (occupier == nullptr) {
             color = Ground.at((*this).at(cell).Land_Type()).Color;
             view.PutPixel(kBordX1 + cell.x() + 1, kBordY1 + cell.y() + 1,
-                          static_cast<unsigned char>(color));
+                          color);
           }
         }
 
@@ -1191,7 +1192,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
               color = HouseClass::As_Pointer(occupier->Owner())->Color;
             }
             view.PutPixel(kBordX1 + cell.x() + 1, kBordY1 + cell.y() + 1,
-                          static_cast<unsigned char>(color));
+                          color);
           }
         }
 

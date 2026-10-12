@@ -120,8 +120,9 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab(view);
-    TextPrinter(view, {11, game::kTransparentBlack, FontType::kGreen12Gradient,
-                       TPF_CENTER | TPF_USE_GRAD_PAL})
+    TextPrinter(
+        view, {game::kBlue, game::kTransparentBlack, FontType::kGreen12Gradient,
+               TPF_CENTER | TPF_USE_GRAD_PAL})
         .Print(absl::StrFormat("%ld", Current), {xx, 0});
 
     IsToRedraw = false;

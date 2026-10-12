@@ -75,8 +75,9 @@ class CcDrawShapeTest : public testing::Test {
     page.view().Clear();
     const auto shape_file = ShapeFile();
     CC_Draw_Shape(page.view(), shape_file, 0, 0, 0, WINDOW_MAIN, flags);
-    return {page.view().GetPixel(0, 0), page.view().GetPixel(1, 0),
-            page.view().GetPixel(0, 1), page.view().GetPixel(1, 1)};
+    PixelView& view = page.view();
+    return {view.GetPixel(0, 0).value(), view.GetPixel(1, 0).value(),
+            view.GetPixel(0, 1).value(), view.GetPixel(1, 1).value()};
   }
 
  private:

@@ -73,7 +73,7 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
         .Print(text, {x, y});
     return;
   }
-  int color = game::kWhite;
+  engine::gfx::PaletteIndex color = game::kWhite;
   if (disabled) {
     color = game::kLightGrey;
   } else if (pressed) {

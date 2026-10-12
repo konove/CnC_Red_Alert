@@ -200,15 +200,15 @@ class SessionClass {
   int player_count_ = 0;
   int max_players_ = 4;
 
-  int graphic_colors_[MAX_MPLAYER_COLORS] = {
-      5,    // Yellow
-      127,  // Red
-      135,  // BlueGreen
-      26,   // Orange
-      4,    // Green
-      202   // Blue-Grey
+  engine::gfx::PaletteIndex graphic_colors_[MAX_MPLAYER_COLORS] = {
+      engine::gfx::PaletteIndex{5},    // Yellow
+      engine::gfx::PaletteIndex{127},  // Red
+      engine::gfx::PaletteIndex{135},  // BlueGreen
+      engine::gfx::PaletteIndex{26},   // Orange
+      engine::gfx::PaletteIndex{4},    // Green
+      engine::gfx::PaletteIndex{202}   // Blue-Grey
   };
-  int text_colors_[MAX_MPLAYER_COLORS] = {
+  engine::gfx::PaletteIndex text_colors_[MAX_MPLAYER_COLORS] = {
       kCcGdiColor,   // Yellow
       kCcNodColor,   // Red
       kCcBlueGreen,  // BlueGreen

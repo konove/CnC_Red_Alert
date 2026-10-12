@@ -4299,38 +4299,38 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
   switch (color) {
     case REMAP_YELLOW:
       RemapTable = RemapYellow;
-      Color = 157;
-      BrightColor = 5;
+      Color = engine::gfx::PaletteIndex{157};
+      BrightColor = engine::gfx::PaletteIndex{5};
       break;
 
     case REMAP_RED:
       RemapTable = RemapRed;
-      Color = 123;
-      BrightColor = 127;
+      Color = engine::gfx::PaletteIndex{123};
+      BrightColor = engine::gfx::PaletteIndex{127};
       break;
 
     case REMAP_AQUA:
       RemapTable = RemapBlueGreen;
-      Color = 135;
-      BrightColor = 2;
+      Color = engine::gfx::PaletteIndex{135};
+      BrightColor = engine::gfx::PaletteIndex{2};
       break;
 
     case REMAP_ORANGE:
       RemapTable = RemapOrange;
-      Color = 26;
-      BrightColor = 24;
+      Color = engine::gfx::PaletteIndex{26};
+      BrightColor = engine::gfx::PaletteIndex{24};
       break;
 
     case REMAP_GREEN:
       RemapTable = RemapGreen;
-      Color = 167;
-      BrightColor = 159;
+      Color = engine::gfx::PaletteIndex{167};
+      BrightColor = engine::gfx::PaletteIndex{159};
       break;
 
     case REMAP_BLUE:
       RemapTable = RemapBlue;
-      Color = 203;
-      BrightColor = 201;
+      Color = engine::gfx::PaletteIndex{203};
+      BrightColor = engine::gfx::PaletteIndex{201};
       break;
     case PlayerColorType::REMAP_NONE:
     case PlayerColorType::REMAP_COUNT:

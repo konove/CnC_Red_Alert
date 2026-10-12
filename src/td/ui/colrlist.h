@@ -42,9 +42,11 @@
 #define CNC_RED_ALERT_TD_UI_COLRLIST_H_
 
 #include <cstddef>
+#include <optional>
 #include <span>
 #include <vector>
 
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
@@ -82,17 +84,21 @@ class ColorListClass : public ListClass {
     return Add_Item(text, game::kWhite);
   }
   int Add_Item(int text) override { return Add_Item(text, game::kWhite); }
-  virtual int Add_Item(const char* text, char color);
-  virtual int Add_Item(int text, char color);
+  virtual int Add_Item(const char* text, engine::gfx::PaletteIndex color);
+  virtual int Add_Item(int text, engine::gfx::PaletteIndex color);
   void Remove_Item(const char* text) override { ListClass::Remove_Item(text); }
   void Remove_Item(int index) override;
 
-  virtual void Set_Selected_Style(SelectStyleType style, int color = -1);
+  // Sets how the selected item is drawn. `color` is what the style draws
+  // with; without one a style draws in the item's own color.
+  virtual void Set_Selected_Style(
+      SelectStyleType style,
+      std::optional<engine::gfx::PaletteIndex> color = std::nullopt);
 
   /*
   **	This is the list of colors for each item.
   */
-  std::vector<char> Colors;
+  std::vector<engine::gfx::PaletteIndex> Colors;
 
  protected:
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,
@@ -102,7 +108,8 @@ class ColorListClass : public ListClass {
   **	This tells how to draw the selected item.
   */
   SelectStyleType Style{SELECT_HIGHLIGHT};
-  int SelectColor{-1};
+  std::optional<engine::gfx::PaletteIndex>
+      SelectColor;  // nullopt: the item's own.
 };
 
 }  // namespace td

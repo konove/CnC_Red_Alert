@@ -176,17 +176,17 @@ class ScoreTimeClass : public ScoreAnimClass {
 
 class ScorePrintClass : public ScoreAnimClass {
  public:
-  int Background;
+  engine::gfx::PaletteIndex Background;
   std::span<const uint8_t> PrimaryPalette;
   void Update() override;
-  ScorePrintClass(Presentation& show, const char* string, int xpos, int ypos,
-                  std::span<const uint8_t> palette
-                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = game::kTransparentBlack);
-  ScorePrintClass(Presentation& show, int string, int xpos, int ypos,
-                  std::span<const uint8_t> palette
-                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                  int background = game::kTransparentBlack);
+  ScorePrintClass(
+      Presentation& show, const char* string, int xpos, int ypos,
+      std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      engine::gfx::PaletteIndex background = game::kTransparentBlack);
+  ScorePrintClass(
+      Presentation& show, int string, int xpos, int ypos,
+      std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      engine::gfx::PaletteIndex background = game::kTransparentBlack);
   ~ScorePrintClass() override = default;
   ScorePrintClass(const ScorePrintClass&) = delete;
   ScorePrintClass& operator=(const ScorePrintClass&) = delete;
@@ -196,17 +196,17 @@ class ScorePrintClass : public ScoreAnimClass {
 
 class MultiStagePrintClass : public ScoreAnimClass {
  public:
-  int Background;
+  engine::gfx::PaletteIndex Background;
   std::span<const uint8_t> PrimaryPalette;
   void Update() override;
   MultiStagePrintClass(
       Presentation& show, const char* string, int xpos, int ypos,
       std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      int background = game::kTransparentBlack);
-  MultiStagePrintClass(Presentation& show, int string, int xpos, int ypos,
-                       std::span<const uint8_t> palette
-                           ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                       int background = game::kTransparentBlack);
+      engine::gfx::PaletteIndex background = game::kTransparentBlack);
+  MultiStagePrintClass(
+      Presentation& show, int string, int xpos, int ypos,
+      std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      engine::gfx::PaletteIndex background = game::kTransparentBlack);
   ~MultiStagePrintClass() override = default;
   MultiStagePrintClass(const MultiStagePrintClass&) = delete;
   MultiStagePrintClass& operator=(const MultiStagePrintClass&) = delete;

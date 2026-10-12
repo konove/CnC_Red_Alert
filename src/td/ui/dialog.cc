@@ -144,16 +144,20 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
           //{ CC_GREEN_BKGD, CC_GREEN_SHADOW, CC_LIGHT_GREEN,  CC_GREEN_CORNERS
           //},
           //// 7 Button is up w/border.
-          {kCcGreenBkgd, 14, 12, 13},  // 6 Button is down.
-          {kCcGreenBkgd, 12, 14, 13},  // 7 Button is up w/border.
+          {kCcGreenBkgd, game::kLightGrey, game::kBlack,
+           game::kGrey},  // 6 Button is down.
+          {kCcGreenBkgd, game::kBlack, game::kLightGrey,
+           game::kGrey},  // 7 Button is up w/border.
           {game::kGrey, game::kWhite, game::kBlack,
            game::kGrey},  // 8 Button is disabled down.
           {game::kGrey, game::kBlack, game::kLightGrey,
            game::kGrey},  // 9 Button is disabled up.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 10 List box.
           //{ BLACK,  CC_GREEN_BOX, CC_GREEN_BOX,  BLACK},	// 11 Menu box.
-          {game::kBlack, 14, 14, game::kBlack},  // 10 List box.
-          {game::kBlack, 14, 14, game::kBlack},  // 11 Menu box.
+          {game::kBlack, game::kLightGrey, game::kLightGrey,
+           game::kBlack},  // 10 List box.
+          {game::kBlack, game::kLightGrey, game::kLightGrey,
+           game::kBlack},  // 11 Menu box.
       }};
 
   w--;
@@ -165,20 +169,18 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
       CC_Texture_Fill(view, MixArchive::RetrieveData("BTEXTURE.SHP"),
                       TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
-      view.FillRect(Rect::FromCorners(x, y, x + w, y + h),
-                    static_cast<unsigned char>(style.Filler));
+      view.FillRect(Rect::FromCorners(x, y, x + w, y + h), style.Filler);
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h),
-                    static_cast<unsigned char>(style.Highlight));
+      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h), style.Highlight);
       break;
 
     case BOXSTYLE_GREEN_BORDER:
       view.DrawRect(Rect::FromCorners(x + 1, y + 1, x + w - 1, y + h - 1),
-                    static_cast<unsigned char>(style.Highlight));
+                    style.Highlight);
       break;
 
     case BoxStyleEnum::BOXSTYLE_DOWN:
@@ -193,18 +195,14 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
     case BoxStyleEnum::BOXSTYLE_GREEN_DIS_RAISED:
     case BoxStyleEnum::BOXSTYLE_COUNT:
     default:
-      view.DrawLine(x, y + h, x + w, y + h,
-                    static_cast<unsigned char>(style.Shadow));
-      view.DrawLine(x + w, y, x + w, y + h,
-                    static_cast<unsigned char>(style.Shadow));
+      view.DrawLine(x, y + h, x + w, y + h, style.Shadow);
+      view.DrawLine(x + w, y, x + w, y + h, style.Shadow);
 
-      view.DrawLine(x, y, x + w, y,
-                    static_cast<unsigned char>(style.Highlight));
-      view.DrawLine(x, y, x, y + h,
-                    static_cast<unsigned char>(style.Highlight));
+      view.DrawLine(x, y, x + w, y, style.Highlight);
+      view.DrawLine(x, y, x, y + h, style.Highlight);
 
-      view.PutPixel(x, y + h, static_cast<unsigned char>(style.Corner));
-      view.PutPixel(x + w, y, static_cast<unsigned char>(style.Corner));
+      view.PutPixel(x, y + h, style.Corner);
+      view.PutPixel(x + w, y, style.Corner);
       break;
   }
 }
@@ -392,8 +390,9 @@ FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
           .y_spacing = yspace};
 }
 
-TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
-                       const int back) {
+TextStyle TextStyleFor(const FontType font, TextPrintType flags,
+                       engine::gfx::PaletteIndex fore,
+                       const engine::gfx::PaletteIndex back) {
   flags = SupportedTextFlags(font, flags);
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {
@@ -427,8 +426,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
   ///////////////////////#endif	//(0)
 
   unsigned char fontpalette[16];  // Working font palette array.
-  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)), back,
-                  16);
+  base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)),
+                  back.byte(), 16);
 
   if (font == FontType::kVcr) {
     base::At(fontpalette, 3) = 12;
@@ -451,8 +450,9 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	according to the color index specified.
     */
     if (base::Any(flags & TPF_USE_GRAD_PAL)) {
-      base::CopyBytes(std::as_writable_bytes(base::Suffix(fontpalette, 0)),
-                      base::ObjectBytes(base::At(_textfontpal, fore % 16)), 16);
+      base::CopyBytes(
+          std::as_writable_bytes(base::Suffix(fontpalette, 0)),
+          base::ObjectBytes(base::At(_textfontpal, fore.value() % 16)), 16);
     } else {
       /*
       **	Special adjustment for fonts that have gradient artwork. When
@@ -460,20 +460,22 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
       *color based on the *	forground color specified.
       */
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                      fore, 12);
+                      fore.byte(), 12);
     }
 
     if (base::Any(flags & TPF_MEDIUM_COLOR)) {
-      fore = base::At(_textpalmedium, fore % 16);
+      fore = engine::gfx::PaletteIndex{
+          base::At(_textpalmedium, fore.value() % 16)};
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                      fore, 12);
+                      fore.byte(), 12);
     } else {
       if (base::Any(flags & TPF_BRIGHT_COLOR)) {
-        fore = base::At(_textpalbright, fore % 16);
+        fore = engine::gfx::PaletteIndex{
+            base::At(_textpalbright, fore.value() % 16)};
         base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
-                        fore, 12);
+                        fore.byte(), 12);
       } else {
-        fore = base::At(fontpalette, 1);
+        fore = engine::gfx::PaletteIndex{base::At(fontpalette, 1)};
       }
     }
   }
@@ -487,8 +489,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	The text is rendered plain.
     */
     case TPF_NOSHADOW:
-      base::At(fontpalette, 2) = static_cast<unsigned char>(back);
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = back.byte();
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -496,8 +498,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	drop shadow.
     */
     case TPF_DROPSHADOW:
-      base::At(fontpalette, 2) = game::kBlack;
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 2) = game::kBlack.byte();
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -506,7 +508,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     */
     case TPF_LIGHTSHADOW:
       base::At(fontpalette, 2) = (14 * 16) + 7 + 1;
-      base::At(fontpalette, 3) = static_cast<unsigned char>(back);
+      base::At(fontpalette, 3) = back.byte();
       break;
 
     /*
@@ -514,8 +516,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     **	when the text will be over a non-plain background.
     */
     case TPF_FULLSHADOW:
-      base::At(fontpalette, 2) = game::kBlack;
-      base::At(fontpalette, 3) = game::kBlack;
+      base::At(fontpalette, 2) = game::kBlack.byte();
+      base::At(fontpalette, 3) = game::kBlack.byte();
       break;
 
     case TextPrintType::TPF_NONE:
@@ -527,8 +529,8 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags, int fore,
     default:
       break;
   }
-  base::At(fontpalette, 0) = static_cast<unsigned char>(back);
-  base::At(fontpalette, 1) = static_cast<unsigned char>(fore);
+  base::At(fontpalette, 0) = back.byte();
+  base::At(fontpalette, 1) = fore.byte();
 
   FontStyle font_style = TextFontStyle(font, flags);
   std::ranges::copy(fontpalette, font_style.palette.begin());

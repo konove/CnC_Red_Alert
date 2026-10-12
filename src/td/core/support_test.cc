@@ -31,7 +31,8 @@ TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
   }
   SetColor(palette, 240, 10, 20, 50);
   SetColor(palette, 1, 50, 20, 10);
-  const FadingTable table = ConquerBuildFadingTable(palette, 240, 255);
+  const FadingTable table =
+      ConquerBuildFadingTable(palette, engine::gfx::PaletteIndex{240}, 255);
 
   EXPECT_EQ(table.at(0), 0);
   EXPECT_EQ(table.at(1), 240);
@@ -39,7 +40,8 @@ TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
 
 TEST(ConquerBuildFadingTableTest, CandidateColorsMapToThemselves) {
   Palette palette(PaletteColor(121, 121, 121));
-  const FadingTable table = ConquerBuildFadingTable(palette, 245, 200);
+  const FadingTable table =
+      ConquerBuildFadingTable(palette, engine::gfx::PaletteIndex{245}, 200);
 
   for (int index = 240; index < 256; index++) {
     EXPECT_EQ(base::At(std::span(table), index), index);

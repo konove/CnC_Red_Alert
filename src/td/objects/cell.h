@@ -234,7 +234,8 @@ class CellClass {
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
   [[nodiscard]] int Adjacent_Offset(game::Facing face) const;
   [[nodiscard]] Coordinate Center_Coord() const;
-  [[nodiscard]] int Cell_Color(bool override = false) const;
+  [[nodiscard]] engine::gfx::PaletteIndex Cell_Color(
+      bool override = false) const;
   [[nodiscard]] Cell Cell_Number() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
   [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;

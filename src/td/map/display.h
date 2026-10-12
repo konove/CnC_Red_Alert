@@ -170,7 +170,8 @@ class DisplayClass : public MapClass {
   virtual bool Map_Cell(Cell cell, HouseClass* house);
   virtual Cell Click_Cell_Calc(int x, int y);
   virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
-                         int /*unused*/ = -1, int /*unused*/ = game::kYellow,
+                         int /*unused*/ = -1,
+                         engine::gfx::PaletteIndex /*unused*/ = game::kYellow,
                          bool /*unused*/ = false, int /*unused*/ = 0) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(game::Direction facing, int& distance, bool really);

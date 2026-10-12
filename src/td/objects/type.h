@@ -187,9 +187,9 @@ class HouseTypeClass {
   **	the per-game values live in HouseClass, which copies them at
   **	construction and changes them with the player's color choice.
   */
-  unsigned char Color;
+  engine::gfx::PaletteIndex Color;
 
-  unsigned char BrightColor;
+  engine::gfx::PaletteIndex BrightColor;
 
   /*
   **	This points to the default remap table for this house.
@@ -207,8 +207,8 @@ class HouseTypeClass {
   //------------------------------------------------------------------------
   HouseTypeClass(
       HousesType house, const char* ini ABSL_ATTRIBUTE_LIFETIME_BOUND,
-      int fullname, const char* ext, int lemon, int color, int bright_color,
-      PlayerColorType remapcolor,
+      int fullname, const char* ext, int lemon, engine::gfx::PaletteIndex color,
+      engine::gfx::PaletteIndex bright_color, PlayerColorType remapcolor,
       std::span<const unsigned char> remap ABSL_ATTRIBUTE_LIFETIME_BOUND,
       char prefix) noexcept;
 

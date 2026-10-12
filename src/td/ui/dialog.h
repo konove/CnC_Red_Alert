@@ -26,7 +26,7 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // What a text print draws with: its adjusted flags, colour and font.
 struct TextStyle {
   TextPrintType flag{};  // The style flags after the font's own fixups.
-  int forecolor = 0;     // Palette index the glyphs print in.
+  engine::gfx::PaletteIndex forecolor;  // What the glyphs print in.
   FontStyle font_style;  // The font, spacing and glyph palette.
 };
 
@@ -36,14 +36,16 @@ FontStyle TextFontStyle(FontType font, TextPrintType flags);
 
 // Returns the style a print in `font` with `flags` in the colours `fore` and
 // `back` uses: TextFontStyle() plus the glyph palette.
-TextStyle TextStyleFor(FontType font, TextPrintType flags,
-                       int fore = game::kTransparentBlack,
-                       int back = game::kTransparentBlack);
+TextStyle TextStyleFor(
+    FontType font, TextPrintType flags,
+    engine::gfx::PaletteIndex fore = game::kTransparentBlack,
+    engine::gfx::PaletteIndex back = game::kTransparentBlack);
 
 // The colours, font and flags a text prints with.
 struct PrintStyle {
-  int fore = game::kTransparentBlack;  // Palette index of the glyphs.
-  int back = game::kTransparentBlack;  // Palette index behind the glyphs.
+  engine::gfx::PaletteIndex fore = game::kTransparentBlack;  // The glyphs.
+  engine::gfx::PaletteIndex back =
+      game::kTransparentBlack;  // Behind the glyphs.
   FontType font = FontType::k8Point;
   TextPrintType flags = TPF_DROPSHADOW;
 };

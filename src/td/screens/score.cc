@@ -79,6 +79,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -403,7 +404,7 @@ void ScoreCredsClass::Update() {
 
 ScorePrintClass::ScorePrintClass(Presentation& show, int string, int xpos,
                                  int ypos, std::span<const uint8_t> palette,
-                                 int background)
+                                 engine::gfx::PaletteIndex background)
     : ScoreAnimClass(show, xpos, ypos, Text_String(string)),
       Background(background),
       PrimaryPalette(palette) {
@@ -413,7 +414,7 @@ ScorePrintClass::ScorePrintClass(Presentation& show, int string, int xpos,
 ScorePrintClass::ScorePrintClass(Presentation& show, const char* string,
                                  int xpos, int ypos,
                                  std::span<const uint8_t> palette,
-                                 int background)
+                                 engine::gfx::PaletteIndex background)
     : ScoreAnimClass(show, xpos, ypos, string),
       Background(background),
       PrimaryPalette(palette) {
@@ -446,10 +447,12 @@ void ScorePrintClass::Update() {
       ** Clear out the white letter overlay
       */
       static const unsigned char _blackpal[] = {
-          game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-          game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-          game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-          game::kBlack, game::kBlack, game::kBlack, game::kBlack};
+          game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+          game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+          game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+          game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+          game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+          game::kBlack.byte()};
       const FontStyle black_font = ScoreFontStyle(_blackpal);
       show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
                                      2 * (YPos - 1), game::kTransparentBlack,
@@ -486,7 +489,7 @@ void ScorePrintClass::Update() {
 MultiStagePrintClass::MultiStagePrintClass(Presentation& show, int string,
                                            int xpos, int ypos,
                                            std::span<const uint8_t> palette,
-                                           int background)
+                                           engine::gfx::PaletteIndex background)
     : ScoreAnimClass(show, xpos, ypos, Text_String(string)),
       Background(background),
       PrimaryPalette(palette) {
@@ -497,7 +500,7 @@ MultiStagePrintClass::MultiStagePrintClass(Presentation& show,
                                            const char* string, int xpos,
                                            int ypos,
                                            std::span<const uint8_t> palette,
-                                           int background)
+                                           engine::gfx::PaletteIndex background)
     : ScoreAnimClass(show, xpos, ypos, string),
       Background(background),
       PrimaryPalette(palette) {
@@ -534,10 +537,12 @@ void MultiStagePrintClass::Update() {
         ** Clear out the white letter overlay
         */
         static const unsigned char _blackpal[] = {
-            game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-            game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-            game::kBlack, game::kBlack, game::kBlack, game::kBlack,
-            game::kBlack, game::kBlack, game::kBlack, game::kBlack};
+            game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+            game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+            game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+            game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+            game::kBlack.byte(), game::kBlack.byte(), game::kBlack.byte(),
+            game::kBlack.byte()};
         const FontStyle black_font = ScoreFontStyle(_blackpal);
         show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
                                        2 * (YPos - 1), game::kTransparentBlack,
@@ -2012,7 +2017,7 @@ void New_Infantry_Anim(int index, int anim) {
 // Draws a casualty bar `width` pixels long and two high at row `y`, with its
 // shadow one pixel down and to the right. `width` is at least 1.
 static void Draw_Bar(PixelView& view, const int y, const int width,
-                     const uint8_t color) {
+                     const engine::gfx::PaletteIndex color) {
   view.FillRect(Rect{0, y, width, 2}, color);
   view.DrawLine(1, y + 2, width, y + 2, game::kTransparentBlack);
   view.PutPixel(width, y + 1, game::kTransparentBlack);

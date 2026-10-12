@@ -52,6 +52,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/platform/timer.h"
@@ -82,7 +83,9 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                   int iny2);
 static int Select_To_Entry(int select, uint32_t bitfield, int index);
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
-                       int nfgc, int hfgc, int bgc);
+                       engine::gfx::PaletteIndex nfgc,
+                       engine::gfx::PaletteIndex hfgc,
+                       engine::gfx::PaletteIndex bgc);
 
 static MenuConfig menu_config;
 
@@ -168,7 +171,9 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
  */
 /*=========================================================================*/
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
-                       int nfgc, int hfgc, int bgc) {
+                       const engine::gfx::PaletteIndex nfgc,
+                       const engine::gfx::PaletteIndex hfgc,
+                       const engine::gfx::PaletteIndex bgc) {
   for (int loop = 0; loop < 3; loop++) {
     game::TheMouse().Hide();
     TextPrinter(view, {hfgc, bgc, FontType::k8Point, TPF_DROPSHADOW})
@@ -313,8 +318,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
 
   const int menuy = MenuWindowY() + menu.y;            /* get the absolute */
   const int menux = (MenuWindowColumn() + menu.x) * 8; /* coords of menu */
-  const int normcol = menu.normal_color;
-  const int litcol = menu.highlight_color;
+  const engine::gfx::PaletteIndex normcol = menu.normal_color;
+  const engine::gfx::PaletteIndex litcol = menu.highlight_color;
 
   /*
   **	Fetch a pending keystroke from the buffer if there is a keystroke

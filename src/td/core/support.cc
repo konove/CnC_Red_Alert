@@ -7,24 +7,24 @@
 #include <cstring>
 #include <span>
 
-#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 
 namespace td {
 
 FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
-                                    int color, int frac) {
+                                    const engine::gfx::PaletteIndex color,
+                                    int frac) {
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
 
-  CHECK(color >= 0 && color < 256) << "color " << color;
   frac = std::min(frac, 255);
   FadingTable table{};
 
@@ -58,7 +58,7 @@ FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
     // Sweep through a limited set of existing colors to find the closest
     // matching color.
 
-    int matchcolor = color;    // Default color (self).
+    int matchcolor = color.value();  // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
@@ -97,8 +97,8 @@ FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
   return table;
 }
 
-void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color,
-                   int size) {
+void Fat_Put_Pixel(PixelView& view, int x, int y,
+                   const engine::gfx::PaletteIndex color, int size) {
   view.FillRect(Rect{x, y, size, size}, color);
 }
 

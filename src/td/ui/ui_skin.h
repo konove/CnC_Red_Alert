@@ -18,7 +18,7 @@ namespace td {
 // widget templates call.
 struct UiSkin {
   // What a text widget's colour is: a palette index.
-  using TextColor = int;
+  using TextColor = engine::gfx::PaletteIndex;
   using Font = FontType;
   using PrintFlags = TextPrintType;  // Style flags only.
 

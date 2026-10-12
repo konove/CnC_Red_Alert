@@ -16,6 +16,7 @@
 #include "base/flags.h"
 #include "base/installed.h"
 #include "base/numeric.h"
+#include "engine/gfx/palette_index.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/assets/assets.h"
@@ -70,7 +71,7 @@ constexpr NamedFlags kJustify[] = {
 // TD colours are palette indices; its gradient tables are indexed by
 // fore % 16, so three rows of them are exercised.
 constexpr int kFores[] = {1, 5, 11};
-constexpr int kBack = 0x0C;
+constexpr engine::gfx::PaletteIndex kBack{0x0C};
 
 uint64_t Fingerprint(std::string_view text) {
   uint64_t hash = 0xCBF29CE484222325U;
@@ -122,7 +123,8 @@ class TextStyleTest : public testing::Test {
               const TextPrintType flags =
                   shadow.flags | color.flags | justify.flags;
               const TextStyle style =
-                  TextStyleFor(font.font, flags, fore, kBack);
+                  TextStyleFor(font.font, flags,
+                               engine::gfx::PaletteIndex::FromInt(fore), kBack);
               absl::StrAppend(&table, font.name, " fore", fore, " ",
                               shadow.name, " ", color.name, " ", justify.name,
                               " -> ", Describe(style), "\n");
@@ -153,7 +155,8 @@ TEST_F(TextStyleTest, EveryFontAndFlagDrawsAsBeforeTheSplit) {
 
 TEST_F(TextStyleTest, ThreePointFontDropsTheShadowsItHasNoRoomFor) {
   const TextStyle style =
-      TextStyleFor(FontType::k3Point, TPF_FULLSHADOW | TPF_CENTER, 5, kBack);
+      TextStyleFor(FontType::k3Point, TPF_FULLSHADOW | TPF_CENTER,
+                   engine::gfx::PaletteIndex{5}, kBack);
   EXPECT_FALSE(base::Any(style.flag & TPF_FULLSHADOW));
   EXPECT_TRUE(base::Any(style.flag & TPF_CENTER));
 }

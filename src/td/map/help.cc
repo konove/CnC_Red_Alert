@@ -61,6 +61,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
@@ -224,7 +225,8 @@ void HelpClass::AI(engine::window::InputEvent& event, int x, int y) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
+void HelpClass::Help_Text(int text, int x, int y,
+                          const engine::gfx::PaletteIndex color, bool quick,
                           int cost) {
   if (text != Text) {
     /*
@@ -288,7 +290,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int text_height = FontMaxHeight(font);
     view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},
-                  static_cast<unsigned char>(Color));
+                  Color);
 
     if (Cost) {
       char buffer[15];
@@ -298,8 +300,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       // The cost box shares its top edge with the bottom of the text box;
       // the black line opens the part of that edge the two have in common.
       view.DrawRect(
-          Rect{DrawX - 1, DrawY + text_height, width + 2, text_height},
-          static_cast<unsigned char>(Color));
+          Rect{DrawX - 1, DrawY + text_height, width + 2, text_height}, Color);
       view.DrawLine(DrawX, DrawY + text_height,
                     DrawX + std::min(width, Width) - 1, DrawY + text_height,
                     game::kBlack);

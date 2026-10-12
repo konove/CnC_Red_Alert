@@ -65,9 +65,11 @@
 #include "td/ui/colrlist.h"
 
 #include <cstddef>
+#include <optional>
 #include <span>
 
 #include "base/array.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "game/ui/standard_colors.h"
@@ -118,7 +120,8 @@ ColorListClass::~ColorListClass() { Colors.clear(); }
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-int ColorListClass::Add_Item(const char* text, char color) {
+int ColorListClass::Add_Item(const char* text,
+                             const engine::gfx::PaletteIndex color) {
   // ListClass adds nothing for a null text; keep Colors parallel to it.
   if (text == nullptr) {
     return Count() - 1;
@@ -143,7 +146,7 @@ int ColorListClass::Add_Item(const char* text, char color) {
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-int ColorListClass::Add_Item(int text, char color) {
+int ColorListClass::Add_Item(int text, const engine::gfx::PaletteIndex color) {
   // Not ListClass::Add_Item(int): that would call back into the virtual
   // Add_Item(const char*) and add a second color.
   return Add_Item(text == TXT_NONE ? nullptr : Text_String(text), color);
@@ -186,7 +189,9 @@ void ColorListClass::Remove_Item(int index) {
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-void ColorListClass::Set_Selected_Style(SelectStyleType style, int color) {
+void ColorListClass::Set_Selected_Style(
+    SelectStyleType style,
+    const std::optional<engine::gfx::PaletteIndex> color) {
   Style = style;
   SelectColor = color;
 }
@@ -211,8 +216,6 @@ void ColorListClass::Set_Selected_Style(SelectStyleType style, int color) {
  *=========================================================================*/
 void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                 int width, bool selected) {
-  int color = 0;
-
   const TextPrinter item(view, {base::At(Colors, index),
                                 game::kTransparentBlack, TextFont, TextFlags});
   /*
@@ -226,11 +229,8 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   /*
   ** For selected items, choose the right color & style:
   */
-  if (SelectColor == -1) {
-    color = static_cast<unsigned char>(base::At(Colors, index));
-  } else {
-    color = SelectColor;
-  }
+  const engine::gfx::PaletteIndex color =
+      SelectColor.value_or(base::At(Colors, index));
 
   const TextPrinter highlighted(
       view, {color, game::kTransparentBlack, TextFont, TextFlags});
@@ -260,8 +260,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      view.DrawRect(Rect{x, y, width - 1, LineHeight - 1},
-                    static_cast<unsigned char>(color));
+      view.DrawRect(Rect{x, y, width - 1, LineHeight - 1}, color);
       item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
 
@@ -271,12 +270,12 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_BAR:
       if (TextFont == FontType::k6PointGradient) {
         view.FillRect(Rect{x, y, width, LineHeight},
-                      static_cast<unsigned char>(SelectColor));
+                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));
         item.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
         view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
-                      static_cast<unsigned char>(SelectColor));
+                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));
         item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
       break;
@@ -286,15 +285,14 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_INVERT:
       if (TextFont == FontType::k6PointGradient) {
-        view.FillRect(Rect{x, y, width, LineHeight},
-                      static_cast<unsigned char>(base::At(Colors, index)));
+        view.FillRect(Rect{x, y, width, LineHeight}, base::At(Colors, index));
         // Black text on the transparent color; the names only look swapped.
         TextPrinter(
             view, {game::kBlack, game::kTransparentBlack, TextFont, TextFlags})
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
         view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
-                      static_cast<unsigned char>(base::At(Colors, index)));
+                      base::At(Colors, index));
         TextPrinter(view, {game::kLightGrey, game::kTransparentBlack, TextFont,
                            TextFlags})
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);

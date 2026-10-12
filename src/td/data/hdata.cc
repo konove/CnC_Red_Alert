@@ -51,6 +51,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/strings/safe_string.h"
+#include "engine/gfx/palette_index.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/objects/type.h"
@@ -58,12 +59,12 @@
 
 namespace td {
 
-const int COLOR_GOOD = 180;            // GOLD
-const int COLOR_BRIGHT_GOOD = 176;     // GOLD
-const int COLOR_BAD = 123;             // RED;
-const int COLOR_BRIGHT_BAD = 127;      // RED;
-const int COLOR_NEUTRAL = 205;         // WHITE;
-const int COLOR_BRIGHT_NEUTRAL = 202;  // WHITE;
+constexpr engine::gfx::PaletteIndex COLOR_GOOD{180};            // GOLD
+constexpr engine::gfx::PaletteIndex COLOR_BRIGHT_GOOD{176};     // GOLD
+constexpr engine::gfx::PaletteIndex COLOR_BAD{123};             // RED;
+constexpr engine::gfx::PaletteIndex COLOR_BRIGHT_BAD{127};      // RED;
+constexpr engine::gfx::PaletteIndex COLOR_NEUTRAL{205};         // WHITE;
+constexpr engine::gfx::PaletteIndex COLOR_BRIGHT_NEUTRAL{202};  // WHITE;
 
 // The Remap* tables these pass are const arrays with constant initializers, so
 // they are ready before any dynamic initialization runs, and the constructor
@@ -230,16 +231,18 @@ const base::EnumArray<HousesType, const HouseTypeClass*, kHouseCount>
  * HISTORY: * 06/21/1994 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
-                               const char* ext, int lemon, int color,
-                               int bright_color, PlayerColorType remapcolor,
+                               const char* ext, int lemon,
+                               const engine::gfx::PaletteIndex color,
+                               const engine::gfx::PaletteIndex bright_color,
+                               PlayerColorType remapcolor,
                                std::span<const unsigned char> remap,
                                char prefix) noexcept
     : House(house),
       IniName(ini),
       FullName(fullname),
       Lemon(lemon),
-      Color(static_cast<unsigned char>(color)),
-      BrightColor(static_cast<unsigned char>(bright_color)),
+      Color(color),
+      BrightColor(bright_color),
       RemapTable(remap),
       RemapColor(remapcolor),
       Prefix(prefix) {

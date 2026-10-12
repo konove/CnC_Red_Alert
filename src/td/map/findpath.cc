@@ -56,6 +56,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <span>
 
 #include "absl/log/check.h"
@@ -63,6 +64,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/core/path_overlap.h"
@@ -124,8 +126,11 @@ static bool DrawPath;
 
 static inline game::Facing Opposite(game::Facing face) { return face + 4; }
 
-static inline void Draw_Cell_Point(Cell cell, bool passable, int threat_stage,
-                                   int overide = 0) {
+// Plots `cell` for the path-search debug views. `overide`, when given, is
+// the color to plot it in on the traced map.
+static inline void Draw_Cell_Point(
+    Cell cell, bool passable, int threat_stage,
+    std::optional<engine::gfx::PaletteIndex> overide = std::nullopt) {
   if (DrawPath) {
     if (!TheDebugState().trace_path_search()) {
       int x = 0;
@@ -138,22 +143,16 @@ static inline void Draw_Cell_Point(Cell cell, bool passable, int threat_stage,
         } else {
           TheScreen().visible_view().PutPixel(
               x, y,
-              static_cast<unsigned char>(passable ? 9 + threat_stage
-                                                  : game::kRed));
+              passable ? engine::gfx::PaletteIndex::FromInt(9 + threat_stage)
+                       : game::kRed);
         }
       }
     } else {
       const int x = cell.index() % 64;
       const int y = cell.index() / 64;
-      if (!overide) {
-        TheScreen().visible_view().PutPixel(
-            64 + (x * 3) + 1, 8 + (y * 3) + 1,
-            passable ? game::kWhite : game::kBlack);
-      } else {
-        TheScreen().visible_view().PutPixel(
-            64 + (x * 3) + 1, 8 + (y * 3) + 1,
-            static_cast<unsigned char>(overide));
-      }
+      TheScreen().visible_view().PutPixel(
+          64 + (x * 3) + 1, 8 + (y * 3) + 1,
+          overide.value_or(passable ? game::kWhite : game::kBlack));
     }
   }
 }
@@ -1145,7 +1144,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
         }
       }
       Draw_Cell_Point(newcell, false, threat_stage,
-                      forcefail ? game::kBrown : 0);
+                      forcefail ? std::optional(game::kBrown) : std::nullopt);
       if (newcell == target) {
         forceout = true;
         break;
@@ -1596,7 +1595,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
       .Print(txt, {160, 0});
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
-      int color = 0;
+      engine::gfx::PaletteIndex color;
 
       switch (Can_Enter_Cell(Cell::FromXY(x, y))) {
         case game::MOVE_OK:
@@ -1624,8 +1623,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
       if (Cell::FromXY(x, y) == dest) {
         color = game::kBlue;
       }
-      Fat_Put_Pixel(view, 64 + (x * 3), 8 + (y * 3),
-                    static_cast<uint8_t>(color), 3);
+      Fat_Put_Pixel(view, 64 + (x * 3), 8 + (y * 3), color, 3);
     }
   }
 }
@@ -1640,7 +1638,7 @@ void FootClass::Debug_Draw_Path(PathType* path) {
 
   for (int idx = 0; idx < path->Length; idx++) {
     pos = Adjacent_Cell(pos, base::At(path->Command, list++));
-    Draw_Cell_Point(pos, true, -1, 0);
+    Draw_Cell_Point(pos, true, -1);
   }
 }
 

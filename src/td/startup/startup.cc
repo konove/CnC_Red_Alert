@@ -120,10 +120,13 @@ static absl::NoDestructor<std::unique_ptr<Game>> game;
 static void InitWindowList() {
   static constexpr int kRows[kWindowCount][8] = {
       // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y
-      {0, 0, 40, 200, game::kWhite, game::kBlack, 0, 0},      // Screen.
-      {1, 75, 38, 100, game::kWhite, game::kBlack, 0, 0},     // Error message.
-      {0, 0, 40, 200, game::kWhite, game::kLightGrey, 0, 0},  // Tactical map.
-      {12, 199 - 42, 16, 42, game::kLightGrey, game::kGrey, 0,
+      {0, 0, 40, 200, game::kWhite.value(), game::kBlack.value(), 0,
+       0},  // Screen.
+      {1, 75, 38, 100, game::kWhite.value(), game::kBlack.value(), 0,
+       0},  // Error message.
+      {0, 0, 40, 200, game::kWhite.value(), game::kLightGrey.value(), 0,
+       0},  // Tactical map.
+      {12, 199 - 42, 16, 42, game::kLightGrey.value(), game::kGrey.value(), 0,
        0},                           // Initial menu.
       {0, 0, 0, 0, 0, 0, 0, 0},      // Sidebar clipping.
       {5, 30, 30, 140, 0, 0, 0, 0},  // Scenario editor.

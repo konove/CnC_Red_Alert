@@ -61,6 +61,7 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -205,11 +206,9 @@ std::span<char> MessageListClass::Text_Storage(const TextLabelClass& label) {
   return {};
 }
 
-TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
-                                              FontType font,
-                                              TextPrintType style, int timeout,
-                                              uint16_t magic_number,
-                                              uint16_t crc) {
+TextLabelClass* MessageListClass::Add_Message(
+    char* txt, engine::gfx::PaletteIndex color, FontType font,
+    TextPrintType style, int timeout, uint16_t magic_number, uint16_t crc) {
   TextLabelClass* txtlabel = nullptr;
   int y = 0;
   int position = 0;
@@ -439,9 +438,9 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-TextLabelClass* MessageListClass::Add_Edit(int color, FontType font,
-                                           TextPrintType style, char* to,
-                                           int width) {
+TextLabelClass* MessageListClass::Add_Edit(engine::gfx::PaletteIndex color,
+                                           FontType font, TextPrintType style,
+                                           char* to, int width) {
   /*------------------------------------------------------------------------
   Do nothing if we're already in "edit" mode
   ------------------------------------------------------------------------*/

@@ -385,8 +385,8 @@ class HouseClass {
 
   // Radar and text colors for this house; start as the type's defaults and
   // change with the player's color choice.
-  unsigned char Color = 0;
-  unsigned char BrightColor = 0;
+  engine::gfx::PaletteIndex Color;
+  engine::gfx::PaletteIndex BrightColor;
   char Name[MPLAYER_NAME_MAX]{};
 
   /*

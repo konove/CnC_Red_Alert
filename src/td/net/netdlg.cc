@@ -1145,8 +1145,7 @@ static int Net_Join_Dialog() {
               Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
                                 base::At(cbox_x, i) + 1 + d_color_w - 2,
                                 d_color_y + 1 + d_color_h - 2),
-              static_cast<unsigned char>(
-                  base::At(TheSession().graphic_colors(), i)));
+              base::At(TheSession().graphic_colors(), i));
 
           if (i == TheSession().color_index()) {
             Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
@@ -1711,9 +1710,8 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(item, sizeof(item), "%s\t%s",
                            TheSession().player_name(), Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(
-              item, static_cast<char>(base::At(TheSession().text_colors(),
-                                               TheSession().color_index())));
+          playerlist.Add_Item(item, base::At(TheSession().text_colors(),
+                                             TheSession().color_index()));
 
           who = TheNetwork()
                     .players()
@@ -2442,9 +2440,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         TheNetwork().players().at(base::ToSize(i))->Player.Color =
             static_cast<unsigned char>(
                 TheNetwork().global_packet().PlayerInfo.Color);
-        base::At(playerlist->Colors, i) = static_cast<char>(
+        base::At(playerlist->Colors, i) =
             base::At(TheSession().text_colors(),
-                     TheNetwork().global_packet().PlayerInfo.Color));
+                     TheNetwork().global_packet().PlayerInfo.Color);
         found = 1;
         break;
       }
@@ -2497,8 +2495,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                        Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(
-          item, static_cast<char>(
-                    base::At(TheSession().text_colors(), who->Player.Color)));
+          item, base::At(TheSession().text_colors(), who->Player.Color));
 
       retcode = EV_NEW_PLAYER;
     }
@@ -3163,9 +3160,8 @@ static int Net_New_Dialog() {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(item,
-                      static_cast<char>(base::At(TheSession().text_colors(),
-                                                 TheSession().color_index())));
+  playerlist.Add_Item(
+      item, base::At(TheSession().text_colors(), TheSession().color_index()));
 
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
@@ -4098,8 +4094,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
                        Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(
-          item, static_cast<char>(
-                    base::At(TheSession().text_colors(), who->Player.Color)));
+          item, base::At(TheSession().text_colors(), who->Player.Color));
 
       /*..................................................................
       Send a confirmation packet
@@ -4527,9 +4522,8 @@ static int Net_Fake_New_Dialog() {
     absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(item,
-                      static_cast<char>(base::At(TheSession().text_colors(),
-                                                 TheSession().color_index())));
+  playerlist.Add_Item(
+      item, base::At(TheSession().text_colors(), TheSession().color_index()));
 
   Wait_For_Focus();
 
@@ -5302,9 +5296,8 @@ static int Net_Fake_Join_Dialog() {
             absl::SNPrintF(item, sizeof(item), "%s\t%s",
                            TheSession().player_name(), Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(
-              item, static_cast<char>(base::At(TheSession().text_colors(),
-                                               TheSession().color_index())));
+          playerlist.Add_Item(item, base::At(TheSession().text_colors(),
+                                             TheSession().color_index()));
 
           who = TheNetwork()
                     .players()

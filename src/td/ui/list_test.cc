@@ -8,6 +8,7 @@
 #include "base/installed.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
+#include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "td/assets/assets.h"
 #include "td/core/defines.h"
@@ -180,9 +181,9 @@ TEST(TdMessageListTest, OversizedEditPrefixIsClampedToOwnedStorage) {
   MessageListClass messages;
   messages.Init(0, 0, 4, 80, 8);
   std::string prefix(300, 'x');
-  ASSERT_NE(
-      messages.Add_Edit(0, FontType::k6Point, TPF_NONE, prefix.data(), 100),
-      nullptr);
+  ASSERT_NE(messages.Add_Edit(game::kTransparentBlack, FontType::k6Point,
+                              TPF_NONE, prefix.data(), 100),
+            nullptr);
   ASSERT_NE(messages.Get_Edit_Buf(), nullptr);
   EXPECT_STREQ(messages.Get_Edit_Buf(), "");
 }
@@ -192,12 +193,14 @@ TEST(TdMessageListTest, TailMergesIntoMatchingPlayersOwnedBuffer) {
   messages.Init(0, 0, 4, 80, 8);
   char head[] = "Alice:abcdefghijklmnopqrstuvw";
   char tail[] = "Alice:tail";
-  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
-                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  auto* label =
+      messages.Add_Message(head, game::kTransparentBlack, FontType::k6Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER, 123);
   ASSERT_NE(label, nullptr);
-  EXPECT_EQ(messages.Add_Message(tail, 0, FontType::k6Point, TPF_NONE, -1,
-                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
-            label);
+  EXPECT_EQ(
+      messages.Add_Message(tail, game::kTransparentBlack, FontType::k6Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+      label);
   EXPECT_EQ(std::string_view(label->Text), "Alice:abcdefghijklmnopqrstuvwtail");
   EXPECT_EQ(messages.Num_Messages(), 1);
 }
@@ -207,12 +210,14 @@ TEST(TdMessageListTest, MatchingCrcDoesNotMergeDifferentPlayers) {
   messages.Init(0, 0, 4, 80, 8);
   char head[] = "Alice:head";
   char tail[] = "Bob:tail";
-  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
-                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  auto* label =
+      messages.Add_Message(head, game::kTransparentBlack, FontType::k6Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER, 123);
   ASSERT_NE(label, nullptr);
-  EXPECT_NE(messages.Add_Message(tail, 0, FontType::k6Point, TPF_NONE, -1,
-                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
-            label);
+  EXPECT_NE(
+      messages.Add_Message(tail, game::kTransparentBlack, FontType::k6Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+      label);
   EXPECT_EQ(messages.Num_Messages(), 2);
 }
 
@@ -220,15 +225,15 @@ TEST(TdMessageListTest, SameTextInAnotherFontIsNotADuplicate) {
   MessageListClass messages;
   messages.Init(0, 0, 4, 80, 8);
   char text[] = "Alice:hello";
-  auto* label =
-      messages.Add_Message(text, 0, FontType::k6Point, TPF_NONE, -1, 0, 0);
+  auto* label = messages.Add_Message(text, game::kTransparentBlack,
+                                     FontType::k6Point, TPF_NONE, -1, 0, 0);
   ASSERT_NE(label, nullptr);
-  EXPECT_EQ(
-      messages.Add_Message(text, 0, FontType::k6Point, TPF_NONE, -1, 0, 0),
-      label);
-  EXPECT_NE(
-      messages.Add_Message(text, 0, FontType::k8Point, TPF_NONE, -1, 0, 0),
-      label);
+  EXPECT_EQ(messages.Add_Message(text, game::kTransparentBlack,
+                                 FontType::k6Point, TPF_NONE, -1, 0, 0),
+            label);
+  EXPECT_NE(messages.Add_Message(text, game::kTransparentBlack,
+                                 FontType::k8Point, TPF_NONE, -1, 0, 0),
+            label);
   EXPECT_EQ(messages.Num_Messages(), 2);
 }
 
@@ -237,12 +242,14 @@ TEST(TdMessageListTest, TailDoesNotMergeIntoMessageInAnotherFont) {
   messages.Init(0, 0, 4, 80, 8);
   char head[] = "Alice:head";
   char tail[] = "Alice:tail";
-  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
-                                     MESSAGE_HEAD_MAGIC_NUMBER, 123);
+  auto* label =
+      messages.Add_Message(head, game::kTransparentBlack, FontType::k6Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER, 123);
   ASSERT_NE(label, nullptr);
-  EXPECT_NE(messages.Add_Message(tail, 0, FontType::k8Point, TPF_NONE, -1,
-                                 MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
-            label);
+  EXPECT_NE(
+      messages.Add_Message(tail, game::kTransparentBlack, FontType::k8Point,
+                           TPF_NONE, -1, MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
+      label);
   EXPECT_EQ(std::string_view(label->Text), "Alice:head");
   EXPECT_EQ(messages.Num_Messages(), 2);
 }
