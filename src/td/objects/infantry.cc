@@ -1356,7 +1356,7 @@ void InfantryClass::AI() {
           **	indicates that basic path & movement logic needs to be
           **	aborted.
           */
-          if (!PathDelay.IsFinished()) {
+          if (PathDelay.HasTimeLeft()) {
             return;
           }
           if (!Basic_Path()) {

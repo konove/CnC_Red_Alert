@@ -437,7 +437,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     */
     const engine::platform::Timer<engine::platform::SystemTickSource> timer{
         int64_t{kTicksPerSecond} * 4};
-    while (timer.Remaining() > 0) {
+    while (timer.HasTimeLeft()) {
       Call_Back();
     }
     game::TheKeyboard().Clear();

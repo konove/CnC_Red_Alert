@@ -2357,15 +2357,26 @@
       "tags": [
         "refactoring",
         "td",
-        "engine",
-        "needs-decision"
+        "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-12T04:35:22Z",
       "parent": "T-235",
-      "toDecide": "- **Keep `HasTimeLeft()`** (35 sites) and convert the 10 sites that write `!IsFinished()` or compare `Remaining()` with 0.\n- **Drop `HasTimeLeft()`** and write `!IsFinished()` at its 35 sites."
+      "resolution": "Kept `HasTimeLeft()`: the 6 `!IsFinished()` sites (4 in TD, `ra/objects/mission.cc`, `engine/gfx/glow_pulse.h`) and `Remaining() > 0` in `td/ui/msgbox.cc` now call it, and the 4 TD `Remaining() == 0` sites call `IsFinished()`. `Remaining()` clamps at 0, so behaviour is unchanged.",
+      "toDecide": "- **Keep `HasTimeLeft()`** (35 sites) and convert the 10 sites that write `!IsFinished()` or compare `Remaining()` with 0.\n- **Drop `HasTimeLeft()`** and write `!IsFinished()` at its 35 sites.",
+      "decisions": [
+        {
+          "question": "Which spelling of \"the countdown has time left\" should the tree use? Either way the 4 TD `Remaining() == 0` sites become IsFinished().",
+          "options": [
+            "Keep HasTimeLeft() (Recommended)",
+            "Drop HasTimeLeft()"
+          ],
+          "answer": "Keep HasTimeLeft() (Recommended)",
+          "time": "2026-10-12T04:34:24Z"
+        }
+      ]
     },
     {
       "id": "T-84",

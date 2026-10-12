@@ -896,7 +896,7 @@ bool DriveClass::Start_Of_Move() {
     **	NavCom to null and let the script take care of assigning a new
     **	navigation target.
     */
-    if (!PathDelay.IsFinished()) {
+    if (PathDelay.HasTimeLeft()) {
       return false;
     }
     if (!Basic_Path()) {

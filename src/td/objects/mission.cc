@@ -108,7 +108,7 @@ bool MissionClass::Commence() {
 // shortens it, or commences another mission, still waits the delay it asks
 // for.
 void MissionClass::AI(MissionHandler& handler) {
-  if (!timer_.IsFinished()) {
+  if (timer_.HasTimeLeft()) {
     return;
   }
 

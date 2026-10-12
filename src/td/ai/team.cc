@@ -275,7 +275,7 @@ void TeamClass::AI() {
   ** for this team.
   */
   if (Suspended) {
-    if (!SuspendTimer.IsFinished()) {
+    if (SuspendTimer.HasTimeLeft()) {
       return;
     }
     Suspended = false;

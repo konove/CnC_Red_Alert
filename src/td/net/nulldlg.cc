@@ -4412,7 +4412,7 @@ int Com_Scenario_Dialog() {
     /*
     ** If user has clicked 'GO' and the timeout has elapsed then quit the loop
     */
-    if (ready_to_go && ready_time.Remaining() == 0) {
+    if (ready_to_go && ready_time.IsFinished()) {
       rc = 1;
       process = false;
     }

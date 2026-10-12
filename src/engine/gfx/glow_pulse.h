@@ -37,7 +37,7 @@ class GlowPulse {
   // Steps the fade if the period has run out. Returns true if it stepped, which
   // is when colors taken from Apply() go stale.
   bool Update() {
-    if (!timer_.IsFinished()) {
+    if (timer_.HasTimeLeft()) {
       return false;
     }
     timer_.Set(period_);
