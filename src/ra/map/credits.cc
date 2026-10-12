@@ -237,10 +237,10 @@ void CreditClass::AI(bool forced) {
     IsAudible = false;
     Current = Credits;
   } else {
-    if (Countdown) {
-      Countdown--;
+    if (tick_delay_) {
+      tick_delay_--;
     }
-    if (Countdown) {
+    if (tick_delay_) {
       return;
     }
 
@@ -251,9 +251,9 @@ void CreditClass::AI(bool forced) {
     int adder = static_cast<int>(Credits - Current);
 
     if (adder > 0) {
-      Countdown = 1;
+      tick_delay_ = 1;
     } else {
-      Countdown = 3;
+      tick_delay_ = 3;
     }
 
     adder = std::abs(adder);

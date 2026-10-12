@@ -73,7 +73,7 @@ class CreditClass {
   bool IsAudible : 1 {false};
 
  private:
-  int Countdown{0};  // Delay between ticks.
+  int tick_delay_{0};  // Delay between ticks.
 };
 
 }  // namespace ra
