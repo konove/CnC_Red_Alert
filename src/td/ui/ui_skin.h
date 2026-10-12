@@ -8,6 +8,7 @@
 #include <span>
 
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/defines.h"
 
@@ -67,7 +68,7 @@ struct UiSkin {
                              int height, bool raised);
 
   // The colour a gauge fills up to its value with.
-  static unsigned char Gauge_Fill_Color();
+  static engine::gfx::PaletteIndex Gauge_Fill_Color();
 
   // The font style `font` and `flags` select.
   static FontStyle FontStyleFor(Font font, PrintFlags flags);

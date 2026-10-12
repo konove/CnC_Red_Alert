@@ -5,6 +5,7 @@
 
 #include "base/installed.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/edit.h"
@@ -54,7 +55,7 @@ struct CheckBoxTestSkin {
   }
   static void Draw_Gauge_Box(PixelView& /*view*/, int /*x*/, int /*y*/,
                              int /*w*/, int /*h*/, bool /*raised*/) {}
-  static unsigned char Gauge_Fill_Color() { return 0; }
+  static engine::gfx::PaletteIndex Gauge_Fill_Color() { return {}; }
   static FontStyle FontStyleFor(Font /*font*/, PrintFlags /*f*/) { return {}; }
   static PrintFlags Edit_Flags(PrintFlags flags) { return flags; }
   static TextColor Edit_Default_Color() { return 0; }

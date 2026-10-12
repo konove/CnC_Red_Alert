@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_GAME_UI_GAUGE_H_
 #define CNC_RED_ALERT_GAME_UI_GAUGE_H_
 
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
@@ -76,7 +77,7 @@ class GaugeClass : public ControlClass {
     // Colourize the inside of the gauge if indicated.
     if (IsColorized) {
       const int middle = Value_To_Pixel(CurValue);
-      const unsigned char color = Skin::Gauge_Fill_Color();
+      const engine::gfx::PaletteIndex color = Skin::Gauge_Fill_Color();
       if (IsHorizontal) {
         if (middle >= X + 1) {
           view.FillRect(Rect::FromCorners(X + 1, Y + 1, middle, Y + Height - 2),

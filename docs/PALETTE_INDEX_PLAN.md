@@ -121,9 +121,9 @@ parameter narrows from `int` under clang, so the engine overloads had to be ther
    `FillRect`, `Print` (and their `Locked` forms); `GetPixel` returns `PaletteIndex`;
    `BuildFadingTable` takes one; `text_window.h`'s `kWindowFCol`/`kWindowBCol`. Engine tests move to
    the new overloads. One commit.
-4. **`game/ui`.** `Skin::Gauge_Fill_Color()` returns `PaletteIndex`; TD's `Skin::TextColor` becomes
-   `PaletteIndex` (RA's stays `RemapControlType*`). One commit for both games, as the templates are
-   shared.
+4. **`game/ui`.** `Skin::Gauge_Fill_Color()` returns `PaletteIndex`. TD's `Skin::TextColor` waits
+   for Task 6: it is what TD's `PrintStyle` and every label constructor take, so it changes with
+   them (RA's stays `RemapControlType*`). One commit for both games, as the templates are shared.
 5. **Red Alert.** Bottom-up: `RemapControlType`'s color fields; `ui/dialog.h` (`TextStyle`,
    `PrintStyle`, `TextStyleFor`, `DrawColorBox`); the printers; `Cell_Color`, `Closest_Color`,
    `FindColor`; radar, power, help, sidebar, vortex; screens, net and editor dialogs; `wol/`. Split

@@ -8,6 +8,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -80,7 +81,9 @@ void UiSkin::Draw_Gauge_Box(PixelView& view, const int x, const int y,
            true);
 }
 
-unsigned char UiSkin::Gauge_Fill_Color() { return Get_Color_Scheme()->Bright; }
+engine::gfx::PaletteIndex UiSkin::Gauge_Fill_Color() {
+  return engine::gfx::PaletteIndex{Get_Color_Scheme()->Bright};
+}
 
 FontStyle UiSkin::FontStyleFor(const Font font, const PrintFlags flags) {
   return TextFontStyle(font, flags);
