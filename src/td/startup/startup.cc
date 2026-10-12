@@ -16,29 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\startup.cpv   2.17   16 Oct 1995 16:48:12
- * JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : STARTUP.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : October 3, 1994 *
- *                                                                                             *
- *                  Last Update : August 27, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Delete_Swap_Files -- Deletes previously existing swap files. *
- *   ShutDownEngine -- Cleans up library systems before game exit. * main --
- *Initial startup routine (preps library systems). *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// The program entry point: builds the Game, applies the command line and
+// CONQUER.INI, opens the window and the audio, and runs the main game. Also
+// the shutdown every exit goes through.
 
 #include "td/startup/startup.h"
 
@@ -60,7 +40,6 @@
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/stream/byte_stream.h"
-#include "game/sim/direction.h"
 #include "game/sim/enums.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/screen.h"
@@ -117,34 +96,14 @@
 
 namespace td {
 
-void Delete_Swap_Files();
-
+// Reads CONQUER.INI from `config_file` and applies the settings the game
+// needs before it opens its window; see ApplySetupOptions().
 [[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,
                                                 const StartupOptions& options);
-
-/***********************************************************************************************
- * main -- Initial startup routine (preps library systems). *
- *                                                                                             *
- *    This is the routine that is first called when the program starts up. It
- *basically        * handles the command line parsing and setting up library
- *systems.                         *
- *                                                                                             *
- * INPUT:   argc  -- Number of command line arguments. *
- *                                                                                             *
- *          argv  -- Pointer to array of comman line argument strings. *
- *                                                                                             *
- * OUTPUT:  Returns with execution failure code (if any). *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/20/1995 JLB : Created. *
- *=============================================================================================*/
 
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
-extern bool CC95AlreadyRunning;
-void Move_Point(int16_t& x, int16_t& y, game::Direction dir, uint16_t distance);
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown(). The pointer itself is never destroyed: a Game
@@ -155,9 +114,6 @@ void Move_Point(int16_t& x, int16_t& y, game::Direction dir, uint16_t distance);
 static absl::NoDestructor<std::unique_ptr<Game>> game;
 
 #ifndef TD_NO_ENTRY_POINT
-// Hands what the command line asked for to whatever owns it. The screen
-// mode, the IPX socket, the bridge network and the 1.07 compatibility flag
-// wait for Read_Setup_Options(), because the config file asks for them too.
 // Fills in the window rows engine_gfx holds the storage for. The first two are
 // the screen and the error window, and the system needs them where they
 // are.
@@ -177,6 +133,9 @@ static void InitWindowList() {
                   sizeof(WindowList));
 }
 
+// Hands what the command line asked for to whatever owns it. The screen
+// mode, the IPX socket, the bridge network and the 1.07 compatibility flag
+// wait for Read_Setup_Options(), because the config file asks for them too.
 static void ApplyStartupOptions(const StartupOptions& options) {
   for (const std::string& path : options.search_paths) {
     SearchPaths::Add(path);
@@ -225,6 +184,11 @@ static void ApplyStartupOptions(const StartupOptions& options) {
 #endif
 }
 
+// The body of main() and WinMain(): starts the game, plays it and shuts it
+// down. Returns the process exit code: EXIT_FAILURE when the disk is nearly
+// full, CONQUER.INI cannot be opened, the video mode fails or a -SCRIPT run
+// goes wrong; EXIT_SUCCESS otherwise, including when the command line keeps
+// the game from starting.
 #ifdef _WIN32
 static int Run(HINSTANCE instance, char* command_line, int command_show)
 #else   // _WIN32
@@ -267,7 +231,8 @@ static int Run(int argc, char* argv[])
       scripted ? engine::window::DisplayKind::kScriptedWindow
                : engine::window::DisplayKind::kWindow);
 
-  // Change to executable's directory (if path is present)
+  // The game data is looked for relative to the executable, so run from its
+  // directory when the program was started with a path.
   const auto dir_path = program_path.parent_path();
 
   if (!dir_path.empty()) {
@@ -294,12 +259,8 @@ static int Run(int argc, char* argv[])
     (*game)->set_startup_options(*options);
     ApplyStartupOptions(*options);
 
-    /*
-    ** If there is not enough disk space free, dont allow the product to run.
-    */
-
+    // Without room for the saves and the config file, do not run at all.
     if (FreeDiskSpace() < INIT_FREE_DISK_SPACE) {
-      // pretty unlikely
       ShutDown();
       return EXIT_FAILURE;
     }
@@ -345,27 +306,20 @@ static int Run(int argc, char* argv[])
       CCDebugString("C&C95 - Adjusting variables for resolution.\n");
       TheOptions().Adjust_Variables_For_Resolution();
 
-      CCDebugString("C&C95 - Setting palette.\n");
-
       WindowList[0][kWindowWidth] = TheScreen().visible_view().width() / 8;
       WindowList[0][kWindowHeight] = TheScreen().visible_view().height();
 
       CCDebugString("C&C95 - Grabbing the mouse.\n");
       engine::window::HardwareCursor::GrabMouse();
 
-      /*
-      ** See if we should run the intro
-      */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
       engine::file::IniFile conquer_ini;
       if (const auto config_read = OpenDiskFile("CONQUER.INI")) {
         LoadIniText(engine::file::ReadIniText(*config_read), conquer_ini);
       }
 
-      /*
-      **	Check for forced intro movie run disabling. If the conquer
-      **	configuration file says "no", then don't run the intro.
-      */
+      // The intro movie plays unless CONQUER.INI says PlayIntro=No or WChat
+      // started the game.
       TheSpecialFlags().from_install =
           !absl::EqualsIgnoreCase(
               conquer_ini.GetString("Intro", "PlayIntro", "Yes"), "No") &&
@@ -374,16 +328,11 @@ static int Run(int argc, char* argv[])
           conquer_ini.GetInt("Options", "SlowPalette", 1) != 0);
 
 #ifdef DEMO
-      /*
-      **	Check for override directory path for CD searches.
-      */
+      // The demo may name a directory to search in place of the CD.
       TheGameState().override_path() = conquer_ini.GetString("CD", "Path", ".");
 #endif
 
-      /*
-      ** Regardless of whether we should run it or not, here we're
-      ** gonna change it to say "no" in the future.
-      */
+      // Whether or not the intro plays this time, later runs skip it.
       if (MarkIntroPlayed(conquer_ini)) {
         SaveIniFile("CONQUER.INI", conquer_ini);
       }
@@ -399,10 +348,7 @@ static int Run(int argc, char* argv[])
       }
 #endif
 
-      /*
-      **	If the intro is being run for the first time, then don't
-      **	allow breaking out of it with the <ESC> key.
-      */
+      // The first showing of the intro cannot be skipped with <ESC>.
       if (TheSpecialFlags().from_install) {
         TheGameState().breakout_allowed() = false;
       }
@@ -443,31 +389,14 @@ static int Run(int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  /*
-  **	Restore the current drive and directory.
-  */
-
+  // The command line asked for the usage text or held an invalid switch;
+  // Parse_Command_Line() has said so already.
   ShutDown();
   return EXIT_SUCCESS;
 }
 
 #endif  // TD_NO_ENTRY_POINT
 
-/***********************************************************************************************
- * ShutDownEngine -- Cleans up library systems in prep for game exit. *
- *                                                                                             *
- *    This routine should be called before the game terminates. It handles
- *cleaning up         * library systems so that a graceful return to the host
- *operating system is achieved.      *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/20/1995 JLB : Created. *
- *=============================================================================================*/
 void ShutDownEngine() {
 #ifndef DEMO
   if (TheSession().type() == GAME_MODEM ||
@@ -494,20 +423,6 @@ void ShutDown() {
   game->reset();
 }
 
-/***********************************************************************************************
- * Read_Setup_Options -- Read stuff in from the INI file that we need to know
- *sooner           *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 4:09PM ST : Created *
- *=============================================================================================*/
 void Read_Setup_Options(ByteStream& config_file,
                         const StartupOptions& options) {
   engine::file::IniFile ini;
@@ -537,9 +452,8 @@ void ApplySetupOptions(const engine::file::IniFile& ini,
       options.compatibility_v107 ||
       ini.GetInt("Options", "Compatibility", 0) != 0;
 
-  /*
-  ** See if an alternative socket number has been specified
-  */
+  // An alternative IPX socket. The file gives an offset into the range
+  // starting at 0x4000; the command-line value already has it added.
   if (options.socket.has_value()) {
     TheNetwork().ipx().Set_Socket(*options.socket);
   } else {
@@ -549,10 +463,8 @@ void ApplySetupOptions(const engine::file::IniFile& ini,
     }
   }
 
-  /*
-  ** See if a destination network has been specified. A missing or empty
-  ** DestNet gives the empty text, which ParseDestNet() rejects.
-  */
+  // A destination network to reach across a bridge. A missing or empty
+  // DestNet gives the empty text, which ParseDestNet() rejects.
   std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
     bridge_net = ParseDestNet(ini.GetString("Options", "DestNet", ""));

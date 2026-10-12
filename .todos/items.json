@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 394,
+  "nextId": 397,
   "items": [
     {
       "id": "T-2",
@@ -5270,43 +5270,14 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T04:18:37Z",
-      "updated": "2026-10-08T04:18:37Z",
+      "updated": "2026-10-12T04:07:50Z",
+      "resolution": "Removed the `Delete_Swap_Files` and `Move_Point` declarations (no definition or caller in `src/`), the unread `extern bool CC95AlreadyRunning`, the `game/sim/direction.h` include and the \"Setting palette.\" log. Replaced the legacy file and function banners with `//` comments (`Run()` now documents its exit codes), gave `ApplyStartupOptions()` back the comment that had merged into `InitWindowList()`'s, and rewrote the stale in-body comments. `tdsdl` builds and `tools/strict_tu.py` passes on the file.",
       "anchors": [
         {
           "path": "src/td/startup/startup.cc",
-          "startLine": 120,
-          "endLine": 120,
-          "text": "void Delete_Swap_Files();",
-          "before": [
-            "",
-            "namespace td {",
-            ""
-          ],
-          "after": [
-            "",
-            "[[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,",
-            "                                                const StartupOptions& options);"
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/td/startup/startup.cc",
-          "startLine": 146,
-          "endLine": 147,
-          "text": "extern bool CC95AlreadyRunning;\nvoid Move_Point(int16_t& x, int16_t& y, game::Direction dir, uint16_t distance);",
-          "before": [
-            "#ifdef _WIN32",
-            "HINSTANCE ProgramInstance;",
-            "#endif"
-          ],
-          "after": [
-            "",
-            "// The one Game; main() creates it and ShutDown() destroys it. nullptr before",
-            "// main() and after ShutDown(). The pointer itself is never destroyed: a Game"
-          ],
           "lost": false
         }
       ]
@@ -13766,6 +13737,149 @@
             "",
             "      case game::FIRE_CLOAKED:",
             "        IsFiring = false;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-394",
+      "title": "Remove the write-only CC95AlreadyRunning global in Tiberian Dawn",
+      "details": "`src/td/startup/ccdde.cc` defines `bool CC95AlreadyRunning` and sets it to true at line 121, but nothing in `src/` reads it: the last declaration outside the file, an unused `extern` in `td/startup/startup.cc`, went with T-178. The file is Windows-only and is not compiled on Linux, so the removal is edited blind. `/remove-dead-code`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T04:09:24Z",
+      "updated": "2026-10-12T04:09:24Z",
+      "source": "e24be34e",
+      "anchors": [
+        {
+          "path": "src/td/startup/ccdde.cc",
+          "startLine": 73,
+          "endLine": 73,
+          "text": "bool CC95AlreadyRunning =",
+          "before": [
+            "Instance_Class* DDE_Class = NULL;  // pointer for client callback",
+            "                                   // this *must* be called DDE_Class",
+            ""
+          ],
+          "after": [
+            "    FALSE;  // Was there an instance of C&C 95 already running when we started?",
+            "",
+            "extern engine::platform::Stopwatch<engine::platform::SystemTickSource>"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/ccdde.cc",
+          "startLine": 121,
+          "endLine": 121,
+          "text": "    CC95AlreadyRunning = true;",
+          "before": [
+            "  IsEnabled = true;",
+            "",
+            "  if (DDE_Class->Test_Server_Running(DDE_Class->local_name)) {"
+          ],
+          "after": [
+            "  } else {",
+            "    DDE_Class->Register_Server(DDE_Callback);",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-395",
+      "title": "Exit with a failure code when the Tiberian Dawn command line is invalid",
+      "details": "`Run()` in `src/td/startup/startup.cc` returns `EXIT_SUCCESS` whenever `Parse_Command_Line()` returns nothing. That covers the usage text (`-?`), where success is right, but also an invalid switch (\"Invalid option switch.\") and a `-NEWGAME` argument shorter than three characters, where the game refused to start. A script or test that launches the game cannot tell the two apart. `Parse_Command_Line()` would have to say which case it was (for example an expected-like result or an enum), and `Run()` return `EXIT_FAILURE` for a rejected line. Check whether Red Alert's `Run()` does the same.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bug",
+        "td",
+        "startup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T04:09:24Z",
+      "updated": "2026-10-12T04:09:24Z",
+      "source": "e24be34e",
+      "anchors": [
+        {
+          "path": "src/td/startup/startup.cc",
+          "startLine": 392,
+          "endLine": 395,
+          "text": "  // The command line asked for the usage text or held an invalid switch;\n  // Parse_Command_Line() has said so already.\n  ShutDown();\n  return EXIT_SUCCESS;",
+          "before": [
+            "    return EXIT_FAILURE;",
+            "  }",
+            ""
+          ],
+          "after": [
+            "}",
+            "",
+            "#endif  // TD_NO_ENTRY_POINT"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-396",
+      "title": "Accept socket offset 0 from the INI file as the command line does",
+      "details": "`ApplySetupOptions()` takes `[Options] Socket=` only when `socket > 0 && socket < 0x4000`, while `-SOCKET<offset>` (`ParseSocketArgument()` in `td/startup/init.cc`) accepts offsets in [0, 0x4000). So IPX socket 0x4000 can be asked for on the command line but not in the file. In the file 0 is also the default `GetInt()` returns for a missing key, which may be why it is excluded; decide whether the two should agree, and make them (a missing key can be told apart with an optional read). `src/ra/startup/startup.cc:201` has the same test.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "bug",
+        "td",
+        "ra",
+        "net"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T04:09:24Z",
+      "updated": "2026-10-12T04:09:24Z",
+      "source": "e24be34e",
+      "anchors": [
+        {
+          "path": "src/td/startup/startup.cc",
+          "startLine": 461,
+          "endLine": 461,
+          "text": "    if (socket > 0 && socket < 0x4000) {",
+          "before": [
+            "    TheNetwork().ipx().Set_Socket(*options.socket);",
+            "  } else {",
+            "    const int socket = ini.GetInt(\"Options\", \"Socket\", 0);"
+          ],
+          "after": [
+            "      TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));",
+            "    }",
+            "  }"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/startup/startup.cc",
+          "startLine": 201,
+          "endLine": 201,
+          "text": "    if (socket > 0 && socket < 0x4000) {",
+          "before": [
+            "    TheNetwork().ipx().Set_Socket(*options.socket);",
+            "  } else {",
+            "    const int socket = ini.GetInt(\"Options\", \"Socket\", 0);"
+          ],
+          "after": [
+            "      TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));",
+            "    }",
+            "  }"
           ],
           "lost": false
         }
