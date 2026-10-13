@@ -409,8 +409,7 @@ bool TeamType::Edit() {
       // A waypoint the scenario does not have becomes waypoint A.
       case NEED_WAYPOINT:
         mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));
-        if (mission.value() < 0 ||
-            mission.value() >= ScenarioClass::kHomeWaypoint) {
+        if (!ScenarioClass::IsLetterWaypoint(mission.value())) {
           mission.set_value(0);
         }
         break;

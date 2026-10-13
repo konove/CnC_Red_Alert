@@ -121,9 +121,20 @@ class ScenarioClass {
   // slots are reserved for the home cell, reinforcement arrivals and special
   // airdrop reinforcements.
   static constexpr int kWaypointCount = 101;
+  static constexpr int kLetterWaypointCount = kWaypointCount - 3;
   static constexpr int kSpecialWaypoint = kWaypointCount - 1;
   static constexpr int kReinforcementWaypoint = kWaypointCount - 2;
-  static constexpr int kHomeWaypoint = kWaypointCount - 3;
+  static constexpr int kHomeWaypoint = kLetterWaypointCount;
+  // Returns true if `waypoint` is an index into Waypoint, the three reserved
+  // slots included.
+  static constexpr bool IsWaypoint(const int waypoint) {
+    return waypoint >= 0 && waypoint < kWaypointCount;
+  }
+  // Returns true if `waypoint` is one the scenario's designer places and
+  // names by its letters, which leaves out the three reserved slots.
+  static constexpr bool IsLetterWaypoint(const int waypoint) {
+    return waypoint >= 0 && waypoint < kLetterWaypointCount;
+  }
   Cell Waypoint[kWaypointCount]{};
 
   /*

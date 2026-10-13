@@ -959,7 +959,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
             if (wayname[1] >= 'A' && wayname[1] <= 'Z') {
               waynm = ((waynm + 1) * 26) + (wayname[1] - 'A');
             }
-            if (waynm < ScenarioClass::kHomeWaypoint) {
+            if (ScenarioClass::IsLetterWaypoint(waynm)) {
               Update_Waypoint(waynm);
             }
           }
@@ -977,7 +977,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	Loop through letter waypoints; if this cell is one of them,
         **	clear that waypoint.
         */
-        for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
+        for (int i = 0; i < ScenarioClass::kLetterWaypointCount; i++) {
           if (base::At(TheScenario().Waypoint, i) ==
               TheWorld().current_cell()) {
             base::At(TheScenario().Waypoint, i) = Cell::None();

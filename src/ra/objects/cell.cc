@@ -1074,7 +1074,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
         */
         if (IsWaypoint) {
           char waypt[3];
-          for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
+          for (int i = 0; i < ScenarioClass::kLetterWaypointCount; i++) {
             if (base::At(TheScenario().Waypoint, i) == Cell_Number()) {
               if (i < 26) {
                 base::At(waypt, 0) = static_cast<char>('A' + i);

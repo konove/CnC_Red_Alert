@@ -505,8 +505,7 @@ std::string TeamType::Description() const {
 }
 
 void TeamType::set_origin(const WAYPOINT waypoint) {
-  origin_ =
-      waypoint >= 0 && waypoint < ScenarioClass::kWaypointCount ? waypoint : -1;
+  origin_ = ScenarioClass::IsWaypoint(waypoint) ? waypoint : -1;
 }
 
 void TeamType::AddMission(const TeamMission& mission) {

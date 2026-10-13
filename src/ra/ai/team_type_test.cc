@@ -22,6 +22,7 @@
 #include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/ai/scenario.h"
 #include "ra/ai/trigger_action.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/assets/palettes.h"
@@ -921,6 +922,23 @@ TEST_F(TeamTypeDrawTest, AScriptLineIsDrawnAsAListEntryToo) {
                TPF_NONE);
 
   EXPECT_EQ(CountOf(DialogColor()), kWidth * kHeight);
+}
+
+TEST(ScenarioWaypointTest, AWaypointIsAnIndexIntoTheScenariosWaypoints) {
+  EXPECT_FALSE(ScenarioClass::IsWaypoint(-1));
+  EXPECT_TRUE(ScenarioClass::IsWaypoint(0));
+  EXPECT_TRUE(ScenarioClass::IsWaypoint(ScenarioClass::kSpecialWaypoint));
+  EXPECT_FALSE(ScenarioClass::IsWaypoint(ScenarioClass::kWaypointCount));
+}
+
+// The home, reinforcement and special waypoints are not placed by letter.
+TEST(ScenarioWaypointTest, ALetterWaypointIsBelowTheReservedOnes) {
+  EXPECT_FALSE(ScenarioClass::IsLetterWaypoint(-1));
+  EXPECT_TRUE(ScenarioClass::IsLetterWaypoint(0));
+  EXPECT_TRUE(ScenarioClass::IsLetterWaypoint(97));
+  EXPECT_FALSE(ScenarioClass::IsLetterWaypoint(ScenarioClass::kHomeWaypoint));
+  EXPECT_FALSE(
+      ScenarioClass::IsLetterWaypoint(ScenarioClass::kSpecialWaypoint));
 }
 
 }  // namespace

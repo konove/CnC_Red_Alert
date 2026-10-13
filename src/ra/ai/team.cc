@@ -696,8 +696,7 @@ void TeamClass::AI() {
           break;
 
         case TeamMissionType::kMove:
-          if (static_cast<unsigned>(mission->value()) <
-                  ScenarioClass::kWaypointCount &&
+          if (ScenarioClass::IsWaypoint(mission->value()) &&
               Member != nullptr) {
             const FootClass* leader = Fetch_A_Leader();
             Cell movecell = base::At(TheScenario().Waypoint, mission->value());
@@ -715,8 +714,7 @@ void TeamClass::AI() {
         case TeamMissionType::kAttackWaypoint:
         case TeamMissionType::kPatrol:
         case TeamMissionType::kSpy:
-          if (static_cast<unsigned>(mission->value()) <
-              ScenarioClass::kWaypointCount) {
+          if (ScenarioClass::IsWaypoint(mission->value())) {
             Assign_Mission_Target(ra::Target::FromCell(
                 base::At(TheScenario().Waypoint, mission->value())));
           }
@@ -2432,8 +2430,7 @@ bool TeamClass::Is_Leaving_Map() const {
     // A waypoint number outside the table is not a destination at all, so the
     // team is not going anywhere.
     if (mission->mission() == TeamMissionType::kMove &&
-        static_cast<unsigned>(mission->value()) <
-            ScenarioClass::kWaypointCount &&
+        ScenarioClass::IsWaypoint(mission->value()) &&
         !TheMap().In_Radar(
             base::At(TheScenario().Waypoint, mission->value()))) {
       return true;
@@ -2981,8 +2978,7 @@ int TeamClass::TMission_Patrol() {
   if (!Target) {
     const TeamMission* mission =
         base::Suffix(Class->missions(), CurrentMission).data();
-    if (static_cast<unsigned>(mission->value()) <
-        ScenarioClass::kWaypointCount) {
+    if (ScenarioClass::IsWaypoint(mission->value())) {
       Assign_Mission_Target(ra::Target::FromCell(
           base::At(TheScenario().Waypoint, mission->value())));
     }
