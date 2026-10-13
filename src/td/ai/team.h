@@ -263,7 +263,7 @@ class TeamClass : public AbstractClass {
   */
   FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamType::kMaxTeamClasscount]{};
+  unsigned char Quantity[TeamType::kMaxMemberTypes]{};
 
   /*
   **	This records the success of each team type. As the team carries out its

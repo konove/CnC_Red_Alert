@@ -80,7 +80,7 @@ class ReinforcementTest : public ::testing::Test {
 
   // Adds a first mission to `team_type`, so that delivering it makes a team.
   static void AddMission(TeamType& team_type) {
-    base::At(team_type.MissionList, 0).Mission = TeamMissionType::kGuard;
+    base::At(team_type.MissionList, 0).mission = TeamMissionType::kGuard;
     team_type.MissionCount = 1;
   }
 
@@ -452,8 +452,8 @@ TEST_F(ReinforcementTest, ASpecialVehicleDrivesToTheReinforcementWaypoint) {
   EXPECT_EQ(team_type.ClassCount, 1);
   EXPECT_EQ(team_type.Class[0], &UnitTypeClass::As_Reference(UNIT_HARVESTER));
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kMoveCell);
-  EXPECT_EQ(team_type.MissionList[0].Argument, kWaypoint.index());
+  EXPECT_EQ(team_type.MissionList[0].mission, TeamMissionType::kMoveCell);
+  EXPECT_EQ(team_type.MissionList[0].argument, kWaypoint.index());
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
   const UnitClass* harvester = TheObjectHeaps().unit().ActiveAt(0);
   EXPECT_EQ(Cell::Containing(harvester->Coord).x(), 0);
@@ -477,7 +477,7 @@ TEST_F(ReinforcementTest,
   EXPECT_EQ(team_type.Class[1], &UnitTypeClass::As_Reference(UNIT_HOVER));
   // The mission asked for is dropped: the hovercraft delivers and that is all.
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kNone);
+  EXPECT_EQ(team_type.MissionList[0].mission, TeamMissionType::kNone);
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 2);
 }
 
@@ -507,8 +507,8 @@ TEST_F(ReinforcementTest, ASpecialTransportUnloadsAtTheReinforcementWaypoint) {
   EXPECT_EQ(team_type.Class[1],
             &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT));
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kUnload);
-  EXPECT_EQ(team_type.MissionList[0].Argument, kWayptReinf);
+  EXPECT_EQ(team_type.MissionList[0].mission, TeamMissionType::kUnload);
+  EXPECT_EQ(team_type.MissionList[0].argument, kWayptReinf);
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->cargo().How_Many(), 1);
 }
@@ -524,8 +524,8 @@ TEST_F(ReinforcementTest, ASpecialTransportKeepsTheMissionAskedFor) {
 
   const TeamType& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kGuard);
-  EXPECT_EQ(team_type.MissionList[0].Argument, 5);
+  EXPECT_EQ(team_type.MissionList[0].mission, TeamMissionType::kGuard);
+  EXPECT_EQ(team_type.MissionList[0].argument, 5);
 }
 
 TEST_F(ReinforcementTest, ASpecialAircraftKeepsItsMissionOrMovesToTheWaypoint) {
@@ -542,11 +542,11 @@ TEST_F(ReinforcementTest, ASpecialAircraftKeepsItsMissionOrMovesToTheWaypoint) {
 
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 2);
   const TeamType* with_mission = TheObjectHeaps().team_type().ActiveAt(0);
-  EXPECT_EQ(with_mission->MissionList[0].Mission, TeamMissionType::kGuard);
-  EXPECT_EQ(with_mission->MissionList[0].Argument, 5);
+  EXPECT_EQ(with_mission->MissionList[0].mission, TeamMissionType::kGuard);
+  EXPECT_EQ(with_mission->MissionList[0].argument, 5);
   const TeamType* without = TheObjectHeaps().team_type().ActiveAt(1);
-  EXPECT_EQ(without->MissionList[0].Mission, TeamMissionType::kMoveCell);
-  EXPECT_EQ(without->MissionList[0].Argument, kWaypoint.index());
+  EXPECT_EQ(without->MissionList[0].mission, TeamMissionType::kMoveCell);
+  EXPECT_EQ(without->MissionList[0].argument, kWaypoint.index());
 }
 
 TEST_F(ReinforcementTest, AFailedSpecialReinforcementLeavesNoTeamType) {

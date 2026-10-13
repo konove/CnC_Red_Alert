@@ -921,7 +921,7 @@ void HouseClass::AI() {
       const TeamType* ttype = Suggested_New_Team(true);
       if (ttype) {
         TheWorld().scenario_init()++;
-        ttype->Create_One_Of();
+        ttype->CreateTeam();
         TheWorld().scenario_init()--;
       }
     }
@@ -943,7 +943,7 @@ void HouseClass::AI() {
   if (TeamTime.IsFinished()) {
     const TeamType* ttype = Suggested_New_Team(false);
     if (ttype) {
-      ttype->Create_One_Of();
+      ttype->CreateTeam();
     }
 
     /*
@@ -2042,8 +2042,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
  *=============================================================================================*/
 const TeamType* HouseClass::Suggested_New_Team(bool alertcheck) {
   Validate();
-  return TeamType::Suggested_New_Team(this, UScan, IScan,
-                                      IsAlerted && alertcheck);
+  return TeamType::SuggestNewTeam(this, UScan, IScan, IsAlerted && alertcheck);
 }
 
 void HouseClass::Adjust_Threat(int region, int threat) {

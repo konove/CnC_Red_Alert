@@ -52,7 +52,7 @@
 
 namespace td {
 
-base::EnumArray<TeamMissionType, const char*> TeamType::TMissions = {
+base::EnumArray<TeamMissionType, const char*> TeamType::kMissionNames = {
     "Attack Base", "Attack Units", "Attack Civil.", "Rampage",
     "Defend Base", "Move",         "Move to Cell",  "Retreat",
     "Guard",       "Loop",         "Attack Tarcom", "Unload",
@@ -72,25 +72,25 @@ int TeamType::Validate() const {
   }
 }
 
-void TeamType::Init() { TheObjectHeaps().team_type().FreeAll(); }
+void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
 
-void TeamType::Read_INI(const engine::file::IniFile& ini) {
-  for (const auto& [name, entry] : ini.Entries(INI_Name())) {
+void TeamType::ReadIni(const engine::file::IniFile& ini) {
+  for (const auto& [name, entry] : ini.Entries(kIniSection)) {
     auto* team = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
     if (team == nullptr) {
       break;
     }
-    team->Fill_In(name, entry);
+    team->ReadIniEntry(name, entry);
   }
 
   // A scenario in the old format has no [TeamTypes] section.
   if (TheObjectHeaps().team_type().Count() == 0) {
-    Read_Old_INI(ini);
+    ReadOldIni(ini);
   }
 }
 
-void TeamType::Fill_In(std::string_view name, std::string_view entry) {
+void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   Validate();
   std::string_view p1;  // class or mission name
   std::string_view p2;  // its count or argument
@@ -127,7 +127,7 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
 
   // The members: a count, then that many Class:Num pairs.
   const int num_classes = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (num_classes < 0 || num_classes > kMaxTeamClasscount) {
+  if (num_classes < 0 || num_classes > kMaxMemberTypes) {
     ClassCount = 0;
     MissionCount = 0;
     return;
@@ -173,7 +173,7 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
 
   // The script: a count, then that many Mission:Arg pairs.
   MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
+  if (MissionCount < 0 || MissionCount > kMaxMissions) {
     ClassCount = 0;
     MissionCount = 0;
     return;
@@ -187,8 +187,8 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
       MissionCount = 0;
       return;
     }
-    mission.Mission = Mission_From_Name(p1);
-    mission.Argument = base::ParseIntegerOr<int>(p2, 0);
+    mission.mission = MissionFromName(p1);
+    mission.argument = base::ParseIntegerOr<int>(p2, 0);
     base::At(MissionList, i) = mission;
   }
 
@@ -203,12 +203,12 @@ void TeamType::Fill_In(std::string_view name, std::string_view entry) {
   }
 }
 
-void TeamType::Write_INI(engine::file::IniFile& ini, bool refresh) {
+void TeamType::WriteIni(engine::file::IniFile& ini, bool refresh) {
   // The team types are written in the current format only.
   ini.Clear("Teams");
 
   if (refresh) {
-    ini.Clear(INI_Name());
+    ini.Clear(kIniSection);
   }
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
@@ -235,20 +235,19 @@ void TeamType::Write_INI(engine::file::IniFile& ini, bool refresh) {
     // The script: a count, then Mission:Arg for each, the mission by name.
     absl::StrAppendFormat(&entry, ",%d", team->MissionCount);
     for (int i = 0; i < team->MissionCount; i++) {
-      absl::StrAppendFormat(
-          &entry, ",%s:%d",
-          Name_From_Mission(base::At(team->MissionList, i).Mission),
-          base::At(team->MissionList, i).Argument);
+      absl::StrAppendFormat(&entry, ",%s:%d",
+                            MissionName(base::At(team->MissionList, i).mission),
+                            base::At(team->MissionList, i).argument);
     }
 
     absl::StrAppendFormat(&entry, ",%d,%d", team->IsReinforcable,
                           team->IsPrebuilt);
 
-    ini.PutString(INI_Name(), team->IniName, entry);
+    ini.PutString(kIniSection, team->IniName, entry);
   }
 }
 
-void TeamType::Read_Old_INI(const engine::file::IniFile& ini) {
+void TeamType::ReadOldIni(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries("Teams")) {
     auto* team = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
@@ -281,11 +280,11 @@ void TeamType::Read_Old_INI(const engine::file::IniFile& ini) {
     tokens.Next();  // mission name, unused
 
     // The members: Class:Num pairs up to the end of the entry, of which the
-    // first kMaxTeamClasscount known types are kept.
+    // first kMaxMemberTypes known types are kept.
     int index = 0;
     std::string_view p1 = tokens.Next(",:");  // class name
     std::string_view p2 = tokens.Next(",:");  // its count
-    while (!p1.empty() && !p2.empty() && index < kMaxTeamClasscount) {
+    while (!p1.empty() && !p2.empty() && index < kMaxMemberTypes) {
       const TechnoTypeClass* otype = nullptr;
 
       const InfantryType i_id = InfantryTypeClass::From_Name(p1);
@@ -319,7 +318,7 @@ void TeamType::Read_Old_INI(const engine::file::IniFile& ini) {
   }
 }
 
-TeamType* TeamType::As_Pointer(std::string_view name) {
+TeamType* TeamType::FromName(std::string_view name) {
   if (name.empty()) {
     return nullptr;
   }
@@ -334,7 +333,7 @@ TeamType* TeamType::As_Pointer(std::string_view name) {
   return nullptr;
 }
 
-void TeamType::Remove() {
+void TeamType::Delete() {
   Validate();
 
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
@@ -347,11 +346,11 @@ void TeamType::Remove() {
   delete this;
 }
 
-TeamMissionType TeamType::Mission_From_Name(std::string_view name) {
+TeamMissionType TeamType::MissionFromName(std::string_view name) {
   if (!name.empty()) {
     for (const TeamMissionType order :
          magic_enum::enum_values<TeamMissionType>()) {
-      if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
+      if (absl::EqualsIgnoreCase(kMissionNames.at(order), name)) {
         return order;
       }
     }
@@ -360,11 +359,11 @@ TeamMissionType TeamType::Mission_From_Name(std::string_view name) {
   return TeamMissionType::kNone;
 }
 
-const char* TeamType::Name_From_Mission(TeamMissionType order) {
-  if (!magic_enum::enum_contains(order)) {
+const char* TeamType::MissionName(const TeamMissionType mission) {
+  if (!magic_enum::enum_contains(mission)) {
     return "None";
   }
-  return TMissions.at(order);
+  return kMissionNames.at(mission);
 }
 
 void* TeamType::operator new(std::size_t /*unused*/) noexcept {
@@ -382,7 +381,7 @@ void TeamType::operator delete(void* ptr) {
   TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
-TeamClass* TeamType::Create_One_Of() const {
+TeamClass* TeamType::CreateTeam() const {
   // TeamClass::Number counts the live teams of each team type, by slot.
   if (TheWorld().scenario_init() ||
       base::At(TeamClass::Number,
@@ -398,7 +397,7 @@ Target TeamType::As_Target() const {
                       TheObjectHeaps().team_type().SlotIndexOf(this));
 }
 
-void TeamType::Destroy_All_Of() const {
+void TeamType::DestroyTeams() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
@@ -411,34 +410,37 @@ void TeamType::Destroy_All_Of() const {
   }
 }
 
-const TeamType* TeamType::Suggested_New_Team(HouseClass* house, uint64_t utypes,
-                                             uint64_t itypes, bool alerted) {
+const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
+                                         uint64_t infantry_types,
+                                         bool alerted) {
   const TeamType* best = nullptr;
-  int bestvalue = 0;
+  int best_value = 0;
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    const TeamType* ttype = TheObjectHeaps().team_type().ActiveAt(index);
+    const TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
-    if (ttype && ttype->House == house->Class->House &&
+    if (candidate && candidate->House == house->Class->House &&
         base::At(TeamClass::Number, index) <
-            (alerted || !ttype->IsAutocreate ? ttype->MaxAllowed : 0)) {
+            (alerted || !candidate->IsAutocreate ? candidate->MaxAllowed : 0)) {
       // The unit and infantry types this team type wants, as bit masks.
       // Aircraft do not count.
-      uint64_t uneeded = 0;
-      uint64_t ineeded = 0;
-      for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
-        switch (base::At(ttype->Class, ctype)->What_Am_I()) {
+      uint64_t units_wanted = 0;
+      uint64_t infantry_wanted = 0;
+      for (int member = 0; std::cmp_less(member, candidate->ClassCount);
+           member++) {
+        switch (base::At(candidate->Class, member)->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            ineeded |=
+            infantry_wanted |=
                 base::Bit<uint64_t>(dynamic_cast<const InfantryTypeClass*>(
-                                        base::At(ttype->Class, ctype))
+                                        base::At(candidate->Class, member))
                                         ->Type);
             break;
 
           case RTTI_UNITTYPE:
-            uneeded |= base::Bit<uint64_t>(dynamic_cast<const UnitTypeClass*>(
-                                               base::At(ttype->Class, ctype))
-                                               ->Type);
+            units_wanted |=
+                base::Bit<uint64_t>(dynamic_cast<const UnitTypeClass*>(
+                                        base::At(candidate->Class, member))
+                                        ->Type);
             break;
           case RTTIType::RTTI_NONE:
           case RTTIType::RTTI_INFANTRY:
@@ -471,16 +473,16 @@ const TeamType* TeamType::Suggested_New_Team(HouseClass* house, uint64_t utypes,
       // A team type the house has no members for is still a candidate, at
       // half its priority.
       int value = 0;
-      if (ineeded & itypes || uneeded & utypes) {
-        value = ttype->RecruitPriority;
+      if (infantry_wanted & infantry_types || units_wanted & unit_types) {
+        value = candidate->RecruitPriority;
       } else {
-        value = ttype->RecruitPriority / 2;
+        value = candidate->RecruitPriority / 2;
       }
 
       // The first of equals wins.
-      if (!best || bestvalue < value) {
-        bestvalue = value;
-        best = ttype;
+      if (!best || best_value < value) {
+        best_value = value;
+        best = candidate;
       }
     }
   }

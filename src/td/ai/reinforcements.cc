@@ -518,12 +518,12 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
   }
   team_type->MissionCount = 1;
   if (mission != TeamMissionType::kNone) {
-    base::At(team_type->MissionList, 0).Mission = mission;
-    base::At(team_type->MissionList, 0).Argument = mission_argument;
+    base::At(team_type->MissionList, 0).mission = mission;
+    base::At(team_type->MissionList, 0).argument = mission_argument;
   } else if (transport_type != nullptr &&
              !IsUnitType(*transport_type, UNIT_HOVER)) {
-    base::At(team_type->MissionList, 0).Mission = TeamMissionType::kUnload;
-    base::At(team_type->MissionList, 0).Argument = kWayptReinf;
+    base::At(team_type->MissionList, 0).mission = TeamMissionType::kUnload;
+    base::At(team_type->MissionList, 0).argument = kWayptReinf;
   }
 
   // A delivery that fails after making its team deletes the team, and the

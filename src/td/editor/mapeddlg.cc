@@ -3416,7 +3416,7 @@ int MapEditClass::Import_Teams() {
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
   const std::vector<engine::file::IniEntry> entries =
-      master_ini.Entries(TeamType::INI_Name());
+      master_ini.Entries(TeamType::kIniSection);
 
   /*........................................................................
   For each entry in the INI section:
@@ -3568,7 +3568,7 @@ int MapEditClass::Import_Teams() {
         if (team == nullptr) {
           break;
         }
-        team->Fill_In(tbuffer, entry);
+        team->ReadIniEntry(tbuffer, entry);
       }
     }
   }

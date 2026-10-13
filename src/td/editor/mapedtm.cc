@@ -171,7 +171,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
         ...............................
         */
         if ((rc == 3) && CurTeam) {
-          CurTeam->Remove();
+          CurTeam->Delete();
           CurTeam = nullptr;
         }
       }
@@ -755,8 +755,8 @@ int MapEditClass::Edit_Team() {
   char maxnum_buf[4];
   char initnum_buf[4];
   char fear_buf[4];
-  TeamMission missions[TeamType::kMaxTeamMissions];
-  char missionbuf[TeamType::kMaxTeamMissions][20];
+  TeamMission missions[TeamType::kMaxMissions];
+  char missionbuf[TeamType::kMaxMissions][20];
 
   char arg_buf[4] = {0};
   static const int tabs[] = {130, 180};  // list box tab stops
@@ -917,7 +917,7 @@ int MapEditClass::Edit_Team() {
   */
   for (const TeamMissionType mission :
        magic_enum::enum_values<TeamMissionType>()) {
-    missionlist1.Add_Item(TeamType::Name_From_Mission(mission));
+    missionlist1.Add_Item(TeamType::MissionName(mission));
   }
 
   int missioncount = CurTeam->MissionCount;
@@ -928,13 +928,13 @@ int MapEditClass::Edit_Team() {
 
   int curmission = 0;  // currently-selected mission index
   if (missioncount) {
-    if (base::At(missions, curmission).Mission == TeamMissionType::kMove ||
-        base::At(missions, curmission).Mission == TeamMissionType::kUnload) {
+    if (base::At(missions, curmission).mission == TeamMissionType::kMove ||
+        base::At(missions, curmission).mission == TeamMissionType::kUnload) {
       absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
-                     base::At(missions, curmission).Argument + 'A');
+                     base::At(missions, curmission).argument + 'A');
     } else {
       absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
-                     base::At(missions, curmission).Argument);
+                     base::At(missions, curmission).argument);
     }
   }
   missionlist2.Set_Tabs(tabs);
@@ -1175,15 +1175,15 @@ int MapEditClass::Edit_Team() {
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
-          if (base::At(missions, curmission).Mission ==
+          if (base::At(missions, curmission).mission ==
                   TeamMissionType::kMove ||
-              base::At(missions, curmission).Mission ==
+              base::At(missions, curmission).mission ==
                   TeamMissionType::kUnload) {
             absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
-                           base::At(missions, curmission).Argument + 'A');
+                           base::At(missions, curmission).argument + 'A');
           } else {
             absl::SNPrintF(arg_buf, sizeof(arg_buf), "%d",
-                           base::At(missions, curmission).Argument);
+                           base::At(missions, curmission).argument);
           }
           arg_edt.Set_Text(arg_buf, 3);
         }
@@ -1194,7 +1194,7 @@ int MapEditClass::Edit_Team() {
       ..................................................................*/
       case engine::window::ButtonKey(kButtonAdd):
       case engine::window::ButtonKey(kButtonInsert):
-        if (missioncount < TeamType::kMaxTeamMissions) {
+        if (missioncount < TeamType::kMaxMissions) {
           /*
           ** Set 'i' to the position we're going to add into; this will
           ** be just AFTER the current item if we're adding, and it will
@@ -1222,19 +1222,19 @@ int MapEditClass::Edit_Team() {
           /*
           ** Set the Mission value based on 1st list box's index
           */
-          base::At(missions, i).Mission = static_cast<TeamMissionType>(
+          base::At(missions, i).mission = static_cast<TeamMissionType>(
               static_cast<int>(TeamMissionType::kAttackBase) +
               missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
           */
-          if (base::At(missions, i).Mission == TeamMissionType::kMove ||
-              base::At(missions, i).Mission == TeamMissionType::kUnload) {
-            base::At(missions, i).Argument =
+          if (base::At(missions, i).mission == TeamMissionType::kMove ||
+              base::At(missions, i).mission == TeamMissionType::kUnload) {
+            base::At(missions, i).argument =
                 toupper(base::At(arg_buf, 0)) - 'A';
           } else {
-            base::At(missions, i).Argument =
+            base::At(missions, i).argument =
                 base::ParseIntegerOr<int>(arg_buf, 0);
           }
           missioncount++;
@@ -1829,7 +1829,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamType::kMaxTeamClasscount) {
+          if (numclasses == TeamType::kMaxMemberTypes) {
             continue;
           }
           numclasses++;
@@ -1983,8 +1983,8 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Build_Mission_List(
-    int missioncount, const TeamMission (&missions)[TeamType::kMaxTeamMissions],
-    char (&missionbuf)[TeamType::kMaxTeamMissions][20], ListClass* list) {
+    int missioncount, const TeamMission (&missions)[TeamType::kMaxMissions],
+    char (&missionbuf)[TeamType::kMaxMissions][20], ListClass* list) {
   /*
   ** Start with an empty list
   */
@@ -1997,20 +1997,20 @@ void MapEditClass::Build_Mission_List(
     ** generate the string for a MOVE mission; the argument is the
     ** letter-designation of the cell to move to.
     */
-    if (base::At(missions, i).Mission == TeamMissionType::kMove ||
-        base::At(missions, i).Mission == TeamMissionType::kUnload) {
+    if (base::At(missions, i).mission == TeamMissionType::kMove ||
+        base::At(missions, i).mission == TeamMissionType::kUnload) {
       absl::SNPrintF(base::At(missionbuf, i), sizeof(base::At(missionbuf, i)),
                      "%s\t%c",
-                     TeamType::Name_From_Mission(base::At(missions, i).Mission),
-                     base::At(missions, i).Argument + 'A');
+                     TeamType::MissionName(base::At(missions, i).mission),
+                     base::At(missions, i).argument + 'A');
     } else {
       /*
       ** All other missions take a numeric argument.
       */
       absl::SNPrintF(base::At(missionbuf, i), sizeof(base::At(missionbuf, i)),
                      "%s\t%d",
-                     TeamType::Name_From_Mission(base::At(missions, i).Mission),
-                     base::At(missions, i).Argument);
+                     TeamType::MissionName(base::At(missions, i).mission),
+                     base::At(missions, i).argument);
     }
 
     /*

@@ -26,12 +26,12 @@ TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
     ASSERT_NE(heap_team, nullptr);
     TeamType& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
-    team.Fill_In(name, entry);
+    team.ReadIniEntry(name, entry);
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
 
     entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,0,"} + count;
-    team.Fill_In(name, entry);
+    team.ReadIniEntry(name, entry);
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
     base::DeletePooled(heap_team);
@@ -44,7 +44,7 @@ TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   auto* heap_team = base::NewPooled<TeamType>();
   ASSERT_NE(heap_team, nullptr);
   TeamType& team = *heap_team;
-  team.Fill_In(name, entry);
+  team.ReadIniEntry(name, entry);
   EXPECT_EQ(team.RecruitPriority, 7);
   EXPECT_EQ(team.MaxAllowed, 2);
   EXPECT_EQ(team.InitNum, 1);
@@ -52,7 +52,7 @@ TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   EXPECT_EQ(team.MissionCount, 0);
 
   char truncated[] = "GoodGuy,0,0,0,0,0,7,2,1,0,1";
-  team.Fill_In(name, truncated);
+  team.ReadIniEntry(name, truncated);
   EXPECT_EQ(team.ClassCount, 0);
   EXPECT_EQ(team.MissionCount, 0);
   base::DeletePooled(heap_team);
@@ -69,7 +69,7 @@ TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {
   // The switch is inside GoogleTest's macro.
   // GoogleTest death-test reporting uses its own bounded format arguments.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH(stack_team.Fill_In(name, entry), "TEAMTYPE object error");
+  EXPECT_DEATH(stack_team.ReadIniEntry(name, entry), "TEAMTYPE object error");
 }
 
 }  // namespace

@@ -1850,7 +1850,7 @@ bool Select_Game(bool fade) {
       type->MissionCount = 2;
       base::At(type->MissionList, 0) = {TeamMissionType::kGuard, 100};
       base::At(type->MissionList, 1) = {TeamMissionType::kLoop, 0};
-      auto* team = type->Create_One_Of();
+      auto* team = type->CreateTeam();
       if (team == nullptr || !team->Add(member)) {
         LOG(ERROR) << "-TEAMTEST: could not create a populated team";
         return false;

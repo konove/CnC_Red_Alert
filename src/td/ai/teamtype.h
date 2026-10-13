@@ -50,7 +50,7 @@ namespace td {
 class TeamClass;
 
 // One step of a team's script. A scenario INI stores the steps by the names
-// TeamType::Name_From_Mission() gives; a saved game stores the numbers.
+// TeamType::MissionName() gives; a saved game stores the numbers.
 enum class TeamMissionType {
   kNone = -1,
   kAttackBase,       // Attack the nearest enemy base.
@@ -76,17 +76,17 @@ enum class TeamMissionType {
 // TeamMissionType::kGuard and TeamMissionType::kUnload, it is also the time in
 // tenths of a minute after which the team goes on to its next line.
 struct TeamMission {
-  TeamMissionType Mission = TeamMissionType::kNone;
-  int Argument = 0;
+  TeamMissionType mission = TeamMissionType::kNone;
+  int argument = 0;
 
   // Saved-game support. Loading fails on a mission that is not one of the
   // enum's.
   template <class Archive>
   void Serialize(Archive& ar) {
-    ar(Mission, Argument);
+    ar(mission, argument);
     if constexpr (Archive::kIsReading) {
-      if (Mission != TeamMissionType::kNone &&
-          !magic_enum::enum_contains(Mission)) {
+      if (mission != TeamMissionType::kNone &&
+          !magic_enum::enum_contains(mission)) {
         ar.Fail("invalid team mission");
       }
     }
@@ -95,20 +95,20 @@ struct TeamMission {
 
 // A recipe for a team: its house, members, script and creation rules. Team
 // types live in the team type heap (TheObjectHeaps().team_type()), are created
-// by Read_INI(), the scenario editor or a special reinforcement, and are all
-// dropped by Init() when a scenario starts.
+// by ReadIni(), the scenario editor or a special reinforcement, and are all
+// dropped by FreeAll() when a scenario starts.
 //
 // Example:
-//   TeamType* type = TeamType::As_Pointer("atk1");
+//   TeamType* type = TeamType::FromName("atk1");
 //   if (type != nullptr) {
-//     type->Create_One_Of();
+//     type->CreateTeam();
 //   }
 class TeamType : public AbstractTypeClass {
  public:
   // The most kinds of member, and the most script lines, a team type holds.
   // Both size arrays that are saved.
-  static constexpr int kMaxTeamClasscount = 5;
-  static constexpr int kMaxTeamMissions = 20;
+  static constexpr int kMaxMemberTypes = 5;
+  static constexpr int kMaxMissions = 20;
 
   TeamType() : AbstractTypeClass(0, "") {}
   ~TeamType() override;
@@ -118,11 +118,11 @@ class TeamType : public AbstractTypeClass {
   TeamType& operator=(TeamType&&) = delete;
 
   // Frees every team type, in preparation for a new scenario.
-  static void Init();
+  static void FreeAll();
 
   // Creates a team type for every entry of the [TeamTypes] section of `ini`.
   // If that leaves the heap empty, reads the older [Teams] section instead.
-  static void Read_INI(const engine::file::IniFile& ini);
+  static void ReadIni(const engine::file::IniFile& ini);
   // Names this team type `name` and sets it from `entry`, a [TeamTypes]
   // value:
   //   House,Roundabout,Learning,Suicide,Autocreate,Mercenary,RecruitPriority,
@@ -134,56 +134,56 @@ class TeamType : public AbstractTypeClass {
   // missing or out of range, or a list shorter than its count, leaves the
   // team type with no members and no missions. The scenario editor also uses
   // this to import a team type from MASTER.INI.
-  void Fill_In(std::string_view name, std::string_view entry);
+  void ReadIniEntry(std::string_view name, std::string_view entry);
   // Writes every team type to the [TeamTypes] section of `ini` and deletes
   // the old-format [Teams] section. With `refresh` the section is emptied
   // first; without it the entries are added to the ones already there.
-  static void Write_INI(engine::file::IniFile& ini, bool refresh);
+  static void WriteIni(engine::file::IniFile& ini, bool refresh);
   // Creates a team type for every entry of the [Teams] section of `ini`, the
   // format of the earliest scenarios:
   //   House,Roundabout,Learning,Suicide,Autocreate,Mercenary,RecruitPriority,
   //   MaxAllowed,InitNum,MissionName,Class:Num,...
   // It has no script; the mission name is ignored.
-  static void Read_Old_INI(const engine::file::IniFile& ini);
+  static void ReadOldIni(const engine::file::IniFile& ini);
   // The scenario INI section that lists the team types.
-  static const char* INI_Name() { return "TeamTypes"; }
+  static constexpr const char* kIniSection = "TeamTypes";
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty.
-  static TeamType* As_Pointer(std::string_view name);
+  static TeamType* FromName(std::string_view name);
 
   // Deletes this team type, first clearing every trigger's reference to it.
   // Teams of the type are left alone. The scenario editor's delete.
-  void Remove();
+  void Delete();
   // Creates a team of this type for its house. Returns nullptr when
   // MaxAllowed teams of the type already exist (a limit scenario setup
   // ignores) or the team heap is full.
   // The heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  TeamClass* Create_One_Of() const;
+  TeamClass* CreateTeam() const;
   // Deletes every team of this type; their members go back to being loose
   // units.
-  void Destroy_All_Of() const;
+  void DestroyTeams() const;
 
   // Returns the INI and editor name of a team mission, "None" for
   // TeamMissionType::kNone or a value that is not a mission.
-  static const char* Name_From_Mission(TeamMissionType order);
+  static const char* MissionName(TeamMissionType mission);
   // Returns the mission with this name, ignoring case, or
   // TeamMissionType::kNone if there is none.
-  static TeamMissionType Mission_From_Name(std::string_view name);
+  static TeamMissionType MissionFromName(std::string_view name);
   // Picks the team type the computer should create for `house` now: among the
   // house's own with fewer than MaxAllowed teams in the field, the one with
   // the highest recruit priority, where a team type that wants none of the
   // unit and infantry types the house has counts for half its priority. The
-  // first of equals wins. `utypes` and `itypes` are bit masks, by type
-  // number, of the unit and infantry types the house has. Autocreate team
+  // first of equals wins. `unit_types` and `infantry_types` are bit masks, by
+  // type number, of the unit and infantry types the house has. Autocreate team
   // types take part only when the house is `alerted`. Returns nullptr when
   // there is no candidate.
-  static const TeamType* Suggested_New_Team(HouseClass* house, uint64_t utypes,
-                                            uint64_t itypes, bool alerted);
+  static const TeamType* SuggestNewTeam(HouseClass* house, uint64_t unit_types,
+                                        uint64_t infantry_types, bool alerted);
 
   // Returns the target value that names this team type.
   [[nodiscard]] Target As_Target() const;
@@ -221,7 +221,7 @@ class TeamType : public AbstractTypeClass {
   bool IsSuicide : 1 = false;
 
   // Only a house that has been alerted (the "autocreate" trigger action)
-  // creates teams of this type on its own; see Suggested_New_Team().
+  // creates teams of this type on its own; see SuggestNewTeam().
   bool IsAutocreate : 1 = false;
 
   // Mercenaries change sides if they start to lose. Read and written, but
@@ -260,21 +260,21 @@ class TeamType : public AbstractTypeClass {
 
   // The script: the first MissionCount entries of MissionList.
   int MissionCount = 0;
-  TeamMission MissionList[kMaxTeamMissions]{};
+  TeamMission MissionList[kMaxMissions]{};
 
   // The number of kinds of member: the entries in use of Class and
   // DesiredNum.
   uint8_t ClassCount = 0;
 
   // The type of each kind of member: an infantry, unit or aircraft type.
-  const TechnoTypeClass* Class[kMaxTeamClasscount]{};
+  const TechnoTypeClass* Class[kMaxMemberTypes]{};
 
   // How many of each kind of member a full team has.
-  uint8_t DesiredNum[kMaxTeamClasscount]{};
+  uint8_t DesiredNum[kMaxMemberTypes]{};
 
  private:
-  // The name of each mission, as Name_From_Mission() returns it.
-  static base::EnumArray<TeamMissionType, const char*> TMissions;
+  // The name of each mission, as MissionName() returns it.
+  static base::EnumArray<TeamMissionType, const char*> kMissionNames;
 };
 
 extern template void TeamType::Serialize<ArchiveWriter>(ArchiveWriter&);

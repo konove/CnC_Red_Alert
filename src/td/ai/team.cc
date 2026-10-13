@@ -469,23 +469,23 @@ void TeamClass::AI() {
       const TeamMission* mission =
           base::Suffix(Class->MissionList, CurrentMission).data();
 
-      TimeOut.Set(mission->Argument * (kTicksPerMinute / 10));
+      TimeOut.Set(mission->argument * (kTicksPerMinute / 10));
       Target = td::Target{};
-      switch (mission->Mission) {
+      switch (mission->mission) {
         case TeamMissionType::kMoveCell:
           Assign_Mission_Target(
-              td::Target::FromCellIndex(Cell::FromIndex(mission->Argument)));
+              td::Target::FromCellIndex(Cell::FromIndex(mission->argument)));
           break;
 
         case TeamMissionType::kMove:
         case TeamMissionType::kUnload:
           Assign_Mission_Target(td::Target::FromCellIndex(
-              base::At(TheWorld().waypoint(), mission->Argument)));
+              base::At(TheWorld().waypoint(), mission->argument)));
           break;
 
         case TeamMissionType::kAttackTarcom:
           Assign_Mission_Target(
-              td::Target::FromPacked(static_cast<uint16_t>(mission->Argument)));
+              td::Target::FromPacked(static_cast<uint16_t>(mission->argument)));
           break;
 
         case TeamMissionType::kNone:
@@ -527,7 +527,7 @@ void TeamClass::AI() {
     */
     const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
-    switch (mission->Mission) {
+    switch (mission->mission) {
       case TeamMissionType::kAttackBase:
         if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_BUILDINGS));
@@ -588,7 +588,7 @@ void TeamClass::AI() {
         break;
 
       case TeamMissionType::kLoop:
-        CurrentMission = mission->Argument - 1;
+        CurrentMission = mission->argument - 1;
         IsNextMission = true;
         break;
       case TeamMissionType::kNone:
@@ -601,7 +601,7 @@ void TeamClass::AI() {
     **	Check for mission time out condition. If the mission does in fact time
     *out, then *	flag it so that the team mission list will advance.
     */
-    switch (mission->Mission) {
+    switch (mission->mission) {
       case TeamMissionType::kAttackBase:
       case TeamMissionType::kAttackUnits:
       case TeamMissionType::kAttackCivilians:
@@ -1252,7 +1252,7 @@ void TeamClass::Coordinate_Move() {
                     STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
-                 base::At(Class->MissionList, CurrentMission + 1).Mission !=
+                 base::At(Class->MissionList, CurrentMission + 1).mission !=
                      TeamMissionType::kMove)) {
               if (unit->mission_state().current() != MISSION_MOVE) {
                 unit->Assign_Mission(MISSION_MOVE);

@@ -211,8 +211,8 @@ TEST(TdSaveValuesTest, TeamMissionPreservesOrderAndArgument) {
   TeamMission mission{TeamMissionType::kMoveCell, 4095};
   TeamMission loaded;
   Restore(loaded, Save(mission));
-  EXPECT_EQ(loaded.Mission, TeamMissionType::kMoveCell);
-  EXPECT_EQ(loaded.Argument, 4095);
+  EXPECT_EQ(loaded.mission, TeamMissionType::kMoveCell);
+  EXPECT_EQ(loaded.argument, 4095);
 }
 
 TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
@@ -224,7 +224,7 @@ TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
   ArchiveReader reader(source);
   reader(mission);
   EXPECT_FALSE(reader.ok());
-  mission.Mission = TeamMissionType::kGuard;
+  mission.mission = TeamMissionType::kGuard;
   bytes = Save(mission);
   SpanSource truncated(std::as_bytes(std::span(bytes).first(7)));
   ArchiveReader short_reader(truncated);

@@ -282,9 +282,8 @@ class MapEditClass : public MouseClass {
   int Edit_Team();
   int Team_Members(HousesType house);
   static void Build_Mission_List(
-      int missioncount,
-      const TeamMission (&missions)[TeamType::kMaxTeamMissions],
-      char (&missionbuf)[TeamType::kMaxTeamMissions][20], ListClass* list);
+      int missioncount, const TeamMission (&missions)[TeamType::kMaxMissions],
+      char (&missionbuf)[TeamType::kMaxMissions][20], ListClass* list);
 
   /*
   --------------------------- Private Interface ----------------------------

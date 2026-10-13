@@ -566,14 +566,14 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     case ACTION_CREATE_TEAM:
       if (Team) {
         TheWorld().scenario_init()++;
-        Team->Create_One_Of();
+        Team->CreateTeam();
         TheWorld().scenario_init()--;
       }
       break;
 
     case ACTION_DESTROY_TEAM:
       if (Team) {
-        Team->Destroy_All_Of();
+        Team->DestroyTeams();
       }
       break;
 
@@ -752,14 +752,14 @@ bool TriggerClass::Spring(EventType event, Cell cell) {
     case ACTION_CREATE_TEAM:
       if (Team) {
         TheWorld().scenario_init()++;
-        Team->Create_One_Of();
+        Team->CreateTeam();
         TheWorld().scenario_init()--;
       }
       break;
 
     case ACTION_DESTROY_TEAM:
       if (Team) {
-        Team->Destroy_All_Of();
+        Team->DestroyTeams();
       }
       break;
 
@@ -944,14 +944,14 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
     case ACTION_CREATE_TEAM:
       if (Team) {
         TheWorld().scenario_init()++;
-        Team->Create_One_Of();
+        Team->CreateTeam();
         TheWorld().scenario_init()--;
       }
       break;
 
     case ACTION_DESTROY_TEAM:
       if (Team) {
-        Team->Destroy_All_Of();
+        Team->DestroyTeams();
       }
       break;
 
@@ -1175,7 +1175,7 @@ void TriggerClass::Fill_In(std::string_view name, std::string_view entry) {
   /*
   **	5th token: Team.
   */
-  Team = TeamType::As_Pointer(tokens.Next());
+  Team = TeamType::FromName(tokens.Next());
 
   /*
   ** 6th token: IsPersistant.  This token was added later, so we must check

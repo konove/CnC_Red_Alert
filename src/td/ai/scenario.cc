@@ -320,7 +320,7 @@ void Clear_Scenario() {
 
   HouseClass::Init();
   ObjectClass::Init();
-  TeamType::Init();
+  TeamType::FreeAll();
   TeamClass::Init();
   TriggerClass::Init();
   AircraftClass::Init();

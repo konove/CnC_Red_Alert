@@ -416,7 +416,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the team-type data. The team types must be created before any
   **	triggers can be created.
   */
-  TeamType::Read_INI(scenario);
+  TeamType::ReadIni(scenario);
   Call_Back();
 
   /*
@@ -725,7 +725,7 @@ void Write_Scenario_Ini(const char* root) {
                base::FixedToCardinal(100, TheWorld().carry_over_percent()));
     ini.PutInt("Basic", "CarryOverCap", carry_over_cap);
 
-    TeamType::Write_INI(ini, true);
+    TeamType::WriteIni(ini, true);
     TriggerClass::Write_INI(ini, true);
     TheMap().Write_INI(ini);
     MapEditClass::Write_Binary(root);
@@ -751,7 +751,7 @@ void Write_Scenario_Ini(const char* root) {
     engine::file::IniFile master;
     LoadIniFile("MASTER.INI", master);
 
-    TeamType::Write_INI(master, false);
+    TeamType::WriteIni(master, false);
     TriggerClass::Write_INI(master, false);
 
     SaveIniFile("MASTER.INI", master);

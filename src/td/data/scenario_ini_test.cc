@@ -130,11 +130,11 @@ class ScenarioWriterTest : public testing::Test {
 TEST_F(ScenarioWriterTest, TeamTypesWriteBackWhatTheyRead) {
   IniFile scenario;
   Parse(kScenarioText, scenario);
-  TeamType::Read_INI(scenario);
+  TeamType::ReadIni(scenario);
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 1);
 
   IniFile written;
-  TeamType::Write_INI(written, true);
+  TeamType::WriteIni(written, true);
 
   ASSERT_EQ(written.EntryCount("TeamTypes"), 1);
   EXPECT_EQ(written.EntryName("TeamTypes", 0), "alpha");
@@ -149,7 +149,7 @@ TEST_F(ScenarioWriterTest, TriggersWriteBackWhatTheyRead) {
             "trig=Time,Win,5,None,alpha,1\r\n"
             "tr2=Attacked,Lose,0,None,None,0\r\n",
         scenario);
-  TeamType::Read_INI(scenario);
+  TeamType::ReadIni(scenario);
   TriggerClass::Read_INI(scenario);
   ASSERT_EQ(TheObjectHeaps().trigger().Count(), 2);
 
@@ -169,13 +169,13 @@ TEST_F(ScenarioWriterTest, TriggersWriteBackWhatTheyRead) {
 TEST_F(ScenarioWriterTest, WritingKeepsUnownedKeysAndDropsStaleOwnedOnes) {
   IniFile scenario;
   Parse(kScenarioText, scenario);
-  TeamType::Read_INI(scenario);
+  TeamType::ReadIni(scenario);
 
   IniFile target;
   Parse(std::string(kScenarioText) +
             "[Teams]\r\nold=1\r\n[TeamTypes]\r\nstale=None,0\r\n",
         target);
-  TeamType::Write_INI(target, true);
+  TeamType::WriteIni(target, true);
 
   EXPECT_EQ(target.GetString("Basic", "Name", ""), "Test");
   EXPECT_EQ(target.GetString("UNITS", "000", ""),
@@ -189,11 +189,11 @@ TEST_F(ScenarioWriterTest, WritingKeepsUnownedKeysAndDropsStaleOwnedOnes) {
 TEST_F(ScenarioWriterTest, WritingWithoutRefreshKeepsTheEntriesThere) {
   IniFile scenario;
   Parse(kScenarioText, scenario);
-  TeamType::Read_INI(scenario);
+  TeamType::ReadIni(scenario);
 
   IniFile master;
   Parse("[TeamTypes]\r\nbeta=None,0\r\nalpha=None,0\r\n", master);
-  TeamType::Write_INI(master, false);
+  TeamType::WriteIni(master, false);
 
   EXPECT_EQ(master.EntryCount("TeamTypes"), 2);
   EXPECT_EQ(master.GetString("TeamTypes", "beta", ""), "None,0");
