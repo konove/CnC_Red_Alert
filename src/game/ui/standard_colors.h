@@ -19,11 +19,22 @@
 // Names for the first sixteen palette indices. Originally part of the Westwood
 // standard header (WWSTD.H, Jeff Wilson, March 1994).
 //
-// The games' palettes reserve slots 0-15 for a fixed set of colors, so text,
-// dialog frames and debug overlays can name a color without looking it up in
-// the palette that happens to be current. The names are the Westwood library's
-// and only approximate: Tiberian Dawn's palette has orange at kPurple and tan at
-// kBrown, and aliases them in td/core/defines.h (kCcOrange, kCcTan).
+// Every theater palette of both games (Red Alert's TEMPERAT, SNOW and INTERIOR,
+// Tiberian Dawn's TEMPERAT, DESERT and WINTER) and Red Alert's menu palette
+// (PALETTE.CPS) hold the same sixteen colors in slots 0-15, the EGA set in
+// Westwood's order, so text, dialog frames and debug overlays can name a color
+// without looking it up in the palette that happens to be current. (One value
+// differs: the red of kLightGreen is 22 of 63 in Red Alert and 21 in Tiberian
+// Dawn.) The names fit what the files hold, in both games: kPurple is magenta
+// (aa00aa), kPink a light red (ff5555), kLightBlue a bright blue (5151ff).
+//
+// Tiberian Dawn's aliases in td/core/defines.h (kCcOrange for kPurple, kCcTan
+// for kBrown, kCcBlueGreen for kCyan, kCcBlueGrey for kLightBlue) do not
+// describe those colors; its palettes are not different there.
+//
+// A screen that brings its own palette need not keep the set: Tiberian Dawn's
+// map selection (DARK_*.PAL) and satellite view (SATSEL.PAL) put their own
+// colors in slots 1-11 and keep little more than black and white.
 
 #ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
 #define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_
