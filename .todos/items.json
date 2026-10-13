@@ -2836,7 +2836,7 @@
             "                        const int clip_height) {",
             "  const int x0 = std::max(rect.x, 0);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -14926,10 +14926,10 @@
         "base",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:02:40Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T07:09:33Z",
       "parent": "T-238",
       "source": "250ee739..c0ead523",
       "resolution": "`OutCode`, `OutCodeOf()`, `ClipRect()` and `ConfineRect()` are in `namespace base`. `ClipRect()` takes a `base::Rect` and returns what is left (the default `Rect` when nothing is, so callers ask `IsValid()`); `ConfineRect()` takes a `base::Rect` and returns a `base::ConfinedRect` (`position`, `bounded`). The 11 call sites in `engine/gfx` and both games' `map/display.cc` and `map/radar.cc` are converted, and the dead re-clamp after `ConfineRect()` in `Scroll_Map()` is removed.",
@@ -15006,10 +15006,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T07:03:26Z",
+      "updated": "2026-10-13T07:05:08Z",
       "source": "be2fcbf5f..484f9b5ee",
       "resolution": "`ConfineRect()` now takes the window as a `Rect` (`bounds`) and returns an absolute position, so the eight callers in both games pass the map's origin and size and no longer subtract and re-add the origin. `ConfinedRect` and the rule for `bounded` are unchanged; `clip_test.cc` gained four cases with a window away from the origin.",
       "anchors": [
@@ -15180,26 +15180,27 @@
         "engine",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T07:11:29Z",
       "source": "be2fcbf5f..484f9b5ee",
+      "resolution": "`OutCode` and `OutCodeOf()` are now in the anonymous namespace of `src/engine/gfx/pixel_buffer.cc`, and `clip.h` lost them along with `base/attributes.h`, `base/flags.h` and `<cstdint>`. The four `OutCodeTest` cases are replaced by three `DrawLineTest` cases in `pixel_buffer_test.cc` that clip a line at each edge from either end, which the line clipper had no test for. The optional second step (`ScaleLocked` by intersection) was not done.",
       "anchors": [
         {
-          "path": "src/base/clip.h",
-          "startLine": 18,
-          "endLine": 44,
-          "text": "// Which edges of a clipping window a point lies outside of: the\n// Cohen-Sutherland outcode. kInside is the empty set, the point is within the\n// window.\nenum class CNC_FLAG_ENUM OutCode : uint32_t {\n  kInside = 0,\n  kLeft = 0b1000,\n  kRight = 0b0100,\n  kAbove = 0b0010,\n  kBelow = 0b0001,\n};\ntemplate <>\ninline constexpr bool kIsFlagEnum<OutCode> = true;\n\n// The outcode of (x, y) against the window from (0, 0) to (width, height).\n//\n// A caller that clips a rectangle edge by edge takes the outcode of its\n// top-left corner and, against a window one pixel wider and taller, the\n// outcode of the corner just past its bottom-right. That second window is what\n// makes an end coordinate equal to the width count as inside: the rectangle\n// owns pixels up to but not including it.\nconstexpr OutCode OutCodeOf(const int x, const int y, const int width,\n                            const int height) {\n  return (x < 0 ? OutCode::kLeft : OutCode::kInside) |\n         (x >= width ? OutCode::kRight : OutCode::kInside) |\n         (y < 0 ? OutCode::kAbove : OutCode::kInside) |\n         (y >= height ? OutCode::kBelow : OutCode::kInside);\n}",
+          "path": "src/engine/gfx/pixel_buffer.cc",
+          "startLine": 54,
+          "endLine": 86,
+          "text": "// Which edges of a clipping window a point lies outside of: the\n// Cohen-Sutherland outcode. kInside is the empty set, the point is within the\n// window.\nenum class CNC_FLAG_ENUM OutCode : uint32_t {\n  kInside = 0,\n  kLeft = 0b1000,\n  kRight = 0b0100,\n  kAbove = 0b0010,\n  kBelow = 0b0001,\n};\n\n}  // namespace\n\n// A specialization has to be declared in the template's own namespace.\ntemplate <>\ninline constexpr bool base::kIsFlagEnum<OutCode> = true;\n\nnamespace {\n\n// The outcode of (x, y) against the window from (0, 0) to (width, height).\n//\n// The scaled blit takes the outcode of a rectangle's top-left corner and,\n// against a window one pixel wider and taller, the outcode of the corner just\n// past its bottom-right. That second window is what makes an end coordinate\n// equal to the width count as inside: the rectangle owns pixels up to but not\n// including it.\nconstexpr OutCode OutCodeOf(const int x, const int y, const int width,\n                            const int height) {\n  return (x < 0 ? OutCode::kLeft : OutCode::kInside) |\n         (x >= width ? OutCode::kRight : OutCode::kInside) |\n         (y < 0 ? OutCode::kAbove : OutCode::kInside) |\n         (y >= height ? OutCode::kBelow : OutCode::kInside);\n}",
           "before": [
             "",
-            "namespace base {",
+            "namespace {",
             ""
           ],
           "after": [
             "",
-            "// Clips `rect` to the window from (0, 0) to (clip_width, clip_height) and",
-            "// returns what is left of it. Nothing is left of a rectangle that lies outside"
+            "}  // namespace",
+            ""
           ],
           "lost": false
         }

@@ -20,9 +20,9 @@
 // to a page, the drawing primitives that work on the locked pixels, giving a
 // page its pixels, and locking the surface a page borrows them from.
 //
-// The primitives all clip with base/clip.h - the copies and the blit with
-// ClipRect(), the scaled blit and the line with the Cohen-Sutherland outcodes
-// themselves - and then walk whole rows.
+// The primitives all clip first and then walk whole rows: the copies and the
+// blit with base::ClipRect(), the scaled blit and the line with the
+// Cohen-Sutherland outcodes below.
 
 #include "engine/gfx/pixel_buffer.h"
 
@@ -39,6 +39,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
 #include "base/array.h"
+#include "base/attributes.h"
 #include "base/clip.h"
 #include "base/flags.h"
 #include "base/numeric.h"
@@ -47,6 +48,44 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_surface.h"
+
+namespace {
+
+// Which edges of a clipping window a point lies outside of: the
+// Cohen-Sutherland outcode. kInside is the empty set, the point is within the
+// window.
+enum class CNC_FLAG_ENUM OutCode : uint32_t {
+  kInside = 0,
+  kLeft = 0b1000,
+  kRight = 0b0100,
+  kAbove = 0b0010,
+  kBelow = 0b0001,
+};
+
+}  // namespace
+
+// A specialization has to be declared in the template's own namespace.
+template <>
+inline constexpr bool base::kIsFlagEnum<OutCode> = true;
+
+namespace {
+
+// The outcode of (x, y) against the window from (0, 0) to (width, height).
+//
+// The scaled blit takes the outcode of a rectangle's top-left corner and,
+// against a window one pixel wider and taller, the outcode of the corner just
+// past its bottom-right. That second window is what makes an end coordinate
+// equal to the width count as inside: the rectangle owns pixels up to but not
+// including it.
+constexpr OutCode OutCodeOf(const int x, const int y, const int width,
+                            const int height) {
+  return (x < 0 ? OutCode::kLeft : OutCode::kInside) |
+         (x >= width ? OutCode::kRight : OutCode::kInside) |
+         (y < 0 ? OutCode::kAbove : OutCode::kInside) |
+         (y >= height ? OutCode::kBelow : OutCode::kInside);
+}
+
+}  // namespace
 
 PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
                      const int width, const int height) {
@@ -416,9 +455,8 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int dst_y1 = dst_y + dst_height;
 
   // clip source
-  base::OutCode code0 = base::OutCodeOf(src_x0, src_y0, width_, height_);
-  base::OutCode code1 =
-      base::OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
+  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
+  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -427,27 +465,27 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & base::OutCode::kLeft)) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 = 0;
       dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);
     }
-    if (base::Any(code1 & base::OutCode::kRight)) {
+    if (base::Any(code1 & OutCode::kRight)) {
       src_x1 = width_;
       dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);
     }
-    if (base::Any(code0 & base::OutCode::kAbove)) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 = 0;
       dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);
     }
-    if (base::Any(code1 & base::OutCode::kBelow)) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       src_y1 = height_;
       dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);
     }
   }
 
   // clip dest
-  code0 = base::OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  code1 = base::OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -456,18 +494,18 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & base::OutCode::kLeft)) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       dst_x0 = 0;
       src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);
     }
-    if (base::Any(code1 & base::OutCode::kRight)) {
+    if (base::Any(code1 & OutCode::kRight)) {
       dst_x1 = dest.width();
     }
-    if (base::Any(code0 & base::OutCode::kAbove)) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       dst_y0 = 0;
       src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
     }
-    if (base::Any(code1 & base::OutCode::kBelow)) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       dst_y1 = dest.height();
     }
   }
@@ -764,34 +802,34 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   const int height = height_;
 
   // this is different to the original asm, but reused from blits
-  const base::OutCode code0 = base::OutCodeOf(x1, y1, width, height);
-  const base::OutCode code1 = base::OutCodeOf(x2, y2, width, height);
+  const OutCode code0 = OutCodeOf(x1, y1, width, height);
+  const OutCode code1 = OutCodeOf(x2, y2, width, height);
 
   if (base::Any(code0 & code1)) {
     return;
   }
 
   if (base::Any(code0)) {
-    if (base::Any(code0 & base::OutCode::kLeft))  // left
+    if (base::Any(code0 & OutCode::kLeft))  // left
     {
       if (x2 != x1) {
         y1 += -x1 * (y2 - y1) / (x2 - x1);
       }
       x1 = 0;
-    } else if (base::Any(code0 & base::OutCode::kRight)) {  // right
+    } else if (base::Any(code0 & OutCode::kRight)) {  // right
       if (x2 != x1) {
         y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
       }
       x1 = width - 1;
     }
 
-    if (base::Any(code0 & base::OutCode::kAbove))  // top
+    if (base::Any(code0 & OutCode::kAbove))  // top
     {
       if (y2 != y1) {
         x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
       }
       y1 = 0;
-    } else if (base::Any(code0 & base::OutCode::kBelow)) {  // bottom
+    } else if (base::Any(code0 & OutCode::kBelow)) {  // bottom
       if (y2 != y1) {
         x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
       }
@@ -800,26 +838,26 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   }
 
   if (base::Any(code1)) {
-    if (base::Any(code1 & base::OutCode::kLeft))  // left
+    if (base::Any(code1 & OutCode::kLeft))  // left
     {
       if (x1 != x2) {
         y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
       }
       x2 = 0;
-    } else if (base::Any(code1 & base::OutCode::kRight)) {  // right
+    } else if (base::Any(code1 & OutCode::kRight)) {  // right
       if (x1 != x2) {
         y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
       }
       x2 = width - 1;
     }
 
-    if (base::Any(code1 & base::OutCode::kAbove))  // top
+    if (base::Any(code1 & OutCode::kAbove))  // top
     {
       if (y1 != y2) {
         x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
       }
       y2 = 0;
-    } else if (base::Any(code1 & base::OutCode::kBelow)) {  // bottom
+    } else if (base::Any(code1 & OutCode::kBelow)) {  // bottom
       if (y1 != y2) {
         x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
       }

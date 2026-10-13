@@ -10,25 +10,6 @@ namespace {
 constexpr int kWidth = 50;
 constexpr int kHeight = 50;
 
-TEST(OutCodeTest, InsideWindowIsEmpty) {
-  EXPECT_EQ(OutCodeOf(0, 0, kWidth, kHeight), OutCode::kInside);
-  EXPECT_EQ(OutCodeOf(49, 49, kWidth, kHeight), OutCode::kInside);
-}
-
-TEST(OutCodeTest, EachEdgeGetsItsOwnBit) {
-  EXPECT_EQ(OutCodeOf(-1, 10, kWidth, kHeight), OutCode::kLeft);
-  EXPECT_EQ(OutCodeOf(kWidth, 10, kWidth, kHeight), OutCode::kRight);
-  EXPECT_EQ(OutCodeOf(10, -1, kWidth, kHeight), OutCode::kAbove);
-  EXPECT_EQ(OutCodeOf(10, kHeight, kWidth, kHeight), OutCode::kBelow);
-}
-
-TEST(OutCodeTest, CornerSetsTwoBits) {
-  EXPECT_EQ(OutCodeOf(-1, -1, kWidth, kHeight),
-            OutCode::kLeft | OutCode::kAbove);
-  EXPECT_EQ(OutCodeOf(kWidth, kHeight, kWidth, kHeight),
-            OutCode::kRight | OutCode::kBelow);
-}
-
 TEST(ClipRectTest, RectangleInsideIsUnchanged) {
   EXPECT_EQ(ClipRect(Rect{10, 20, 5, 6}, kWidth, kHeight),
             (Rect{10, 20, 5, 6}));

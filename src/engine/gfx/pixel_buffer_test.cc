@@ -388,6 +388,47 @@ TEST(FillRectTest, ClipsToTheView) {
                                         0, 0, 0, 9}));
 }
 
+// A line that runs past the view is cut at the edge it crosses, whichever end
+// is the one outside.
+TEST(DrawLineTest, ClipsALineThatCrossesTheLeftAndRightEdges) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+
+  dest.view().DrawLine(-3, 1, 7, 1, engine::gfx::PaletteIndex{7});
+  dest.view().DrawLine(7, 3, -3, 3, engine::gfx::PaletteIndex{9});
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                        7, 7, 7, 7,  //
+                                        0, 0, 0, 0,  //
+                                        9, 9, 9, 9}));
+}
+
+TEST(DrawLineTest, ClipsALineThatCrossesTheTopAndBottomEdges) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+
+  dest.view().DrawLine(1, -3, 1, 7, engine::gfx::PaletteIndex{7});
+  dest.view().DrawLine(3, 7, 3, -3, engine::gfx::PaletteIndex{9});
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 7, 0, 9,  //
+                                        0, 7, 0, 9,  //
+                                        0, 7, 0, 9,  //
+                                        0, 7, 0, 9}));
+}
+
+// The last column and row belong to the view; the ones after them do not.
+TEST(DrawLineTest, DrawsNothingForALineBeyondOneEdge) {
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer dest(4, 4, page);
+
+  dest.view().DrawLine(-1, 0, -1, 3, engine::gfx::PaletteIndex{7});
+  dest.view().DrawLine(4, 0, 4, 3, engine::gfx::PaletteIndex{7});
+  dest.view().DrawLine(0, -1, 3, -1, engine::gfx::PaletteIndex{7});
+  dest.view().DrawLine(0, 4, 3, 4, engine::gfx::PaletteIndex{7});
+
+  EXPECT_EQ(page, std::vector<uint8_t>(size_t{4} * 4, 0));
+}
+
 TEST(DrawRectTest, OutlinesTheRectangleAlongItsInsideEdge) {
   std::vector<uint8_t> page(size_t{5} * 4, 0);
   PixelBuffer dest(5, 4, page);
