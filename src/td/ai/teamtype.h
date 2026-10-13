@@ -16,23 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\teamtype.h_v   2.18   16 Oct 1995
- * 16:45:40   JOE_BOSTIC  $ */
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Command & Conquer                        *
- *                                                                         *
- *                    File Name : TEAMTYPE.H                               *
- *                                                                         *
- *                   Programmer : Bill Randolph                            *
- *                                                                         *
- *                   Start Date : December 7, 1994                         *
- *                                                                         *
- *                  Last Update : December 7, 1994   [BR]                  *
- *                                                                         *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// Team types: the scenario's recipes for the computer's task forces. A team
+// type names a house, the kinds and numbers of units that make up one team,
+// and the script of missions the team carries out. The [TeamTypes] section of
+// a scenario INI declares them; TeamClass (team.h) is a team in the field
+// built from one.
 
 #ifndef CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
 #define CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
@@ -60,34 +48,39 @@ namespace td {
 
 class TeamClass;
 
-/*
-**	TeamMissionType: the various missions that a team can have.
-*/
+// One step of a team's script. A scenario INI stores the steps by the names
+// TeamTypeClass::Name_From_Mission() gives; a saved game stores the numbers.
 enum class TeamMissionType {
   TMISSION_NONE = -1,
-  TMISSION_ATTACKBASE,       // Attack nearest enemy base.
-  TMISSION_ATTACKUNITS,      // Attack all enemy units.
-  TMISSION_ATTACKCIVILIANS,  // Attack all civilians
-  TMISSION_RAMPAGE,          // attack & destroy anything that's not mine
-  TMISSION_DEFENDBASE,       // Protect my base.
-  TMISSION_MOVE,          // moves to waypoint specified.
-  TMISSION_MOVECELL,      // moves to cell # specified.
-  TMISSION_RETREAT,       // order given by superior team, for coordinating
-  TMISSION_GUARD,         // works like an infantry's guard mission
-  TMISSION_LOOP,          // loop back to start of mission list
-  TMISSION_ATTACKTARCOM,  // attack tarcom
-  TMISSION_UNLOAD,        // Unload at current location.
+  TMISSION_ATTACKBASE,       // Attack the nearest enemy base.
+  TMISSION_ATTACKUNITS,      // Attack enemy units.
+  TMISSION_ATTACKCIVILIANS,  // Attack civilians.
+  TMISSION_RAMPAGE,          // Attack and destroy anything of the enemy's.
+  TMISSION_DEFENDBASE,       // Protect the house's own base; a move.
+  TMISSION_MOVE,             // Move to the given waypoint.
+  TMISSION_MOVECELL,         // Move to the given cell number.
+  TMISSION_RETREAT,          // Fall back; carried out as a move.
+  TMISSION_GUARD,            // Guard the area, as a unit's guard mission does.
+  TMISSION_LOOP,             // Jump to the given line of the script.
+  TMISSION_ATTACKTARCOM,     // Attack the target the team already has.
+  TMISSION_UNLOAD,           // Move to the given waypoint and unload there.
   TMISSION_COUNT,
 };
 using enum TeamMissionType;
 
-/*
-**	This structure contains one team mission value & its argument.
-*/
+// One line of a team type's script: a mission and its argument. The argument
+// is a waypoint for TMISSION_MOVE and TMISSION_UNLOAD, a cell number for
+// TMISSION_MOVECELL, a script line for TMISSION_LOOP and a packed target for
+// TMISSION_ATTACKTARCOM. For the attacks other than that one, and for
+// TMISSION_DEFENDBASE, TMISSION_RETREAT, TMISSION_GUARD and TMISSION_UNLOAD,
+// it is also the time in tenths of a minute after which the team goes on to
+// its next line.
 struct TeamMissionTag {
   TeamMissionType Mission = TMISSION_NONE;
   int Argument = 0;
 
+  // Saved-game support. Loading fails on a mission that is not one of the
+  // enum's.
   template <class Archive>
   void Serialize(Archive& ar) {
     ar(Mission, Argument);
@@ -100,17 +93,23 @@ struct TeamMissionTag {
 };
 using TeamMissionStruct = TeamMissionTag;
 
-/*
-**	TeamTypeClass declaration
-*/
+// A recipe for a team: its house, members, script and creation rules. Team
+// types live in the team type heap (TheObjectHeaps().team_type()), are created
+// by Read_INI(), the scenario editor or a special reinforcement, and are all
+// dropped by Init() when a scenario starts.
+//
+// Example:
+//   TeamTypeClass* type = TeamTypeClass::As_Pointer("atk1");
+//   if (type != nullptr) {
+//     type->Create_One_Of();
+//   }
 class TeamTypeClass : public AbstractTypeClass {
  public:
+  // The most kinds of member, and the most script lines, a team type holds.
+  // Both size arrays that are saved.
   static constexpr int kMaxTeamClasscount = 5;
   static constexpr int kMaxTeamMissions = 20;
 
-  /*
-  **	Constructor/Destructor
-  */
   TeamTypeClass() : AbstractTypeClass(0, "") {}
   ~TeamTypeClass() override;
   TeamTypeClass(const TeamTypeClass&) = delete;
@@ -118,51 +117,81 @@ class TeamTypeClass : public AbstractTypeClass {
   TeamTypeClass(TeamTypeClass&&) = delete;
   TeamTypeClass& operator=(TeamTypeClass&&) = delete;
 
-  /*
-  **	Initialization: clears all team types in preparation for new scenario
-  */
+  // Frees every team type, in preparation for a new scenario.
   static void Init();
 
-  /*
-  **	File I/O routines
-  */
+  // Creates a team type for every entry of the [TeamTypes] section of `ini`.
+  // If that leaves the heap empty, reads the older [Teams] section instead.
   static void Read_INI(const engine::file::IniFile& ini);
+  // Names this team type `name` and sets it from `entry`, a [TeamTypes]
+  // value:
+  //   House,Roundabout,Learning,Suicide,Autocreate,Mercenary,RecruitPriority,
+  //   MaxAllowed,InitNum,Fear,ClassCount,Class:Num,...,
+  //   MissionCount,Mission:Arg,...,Reinforcable,Prebuilt
+  // The house and the missions are names and the options are 0 or 1. The last
+  // two fields may be missing, which leaves both options on. A member whose
+  // type name is unknown is skipped; a member or mission count that is
+  // missing or out of range, or a list shorter than its count, leaves the
+  // team type with no members and no missions. The scenario editor also uses
+  // this to import a team type from MASTER.INI.
   void Fill_In(std::string_view name, std::string_view entry);
+  // Writes every team type to the [TeamTypes] section of `ini` and deletes
+  // the old-format [Teams] section. With `refresh` the section is emptied
+  // first; without it the entries are added to the ones already there.
   static void Write_INI(engine::file::IniFile& ini, bool refresh);
+  // Creates a team type for every entry of the [Teams] section of `ini`, the
+  // format of the earliest scenarios:
+  //   House,Roundabout,Learning,Suicide,Autocreate,Mercenary,RecruitPriority,
+  //   MaxAllowed,InitNum,MissionName,Class:Num,...
+  // It has no script; the mission name is ignored.
   static void Read_Old_INI(const engine::file::IniFile& ini);
+  // The scenario INI section that lists the team types.
   static const char* INI_Name() { return "TeamTypes"; }
-  // Field-wise saved-game support, defined in ioobj.cc.
+  // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
 
-  /*
-  **	As_Pointer gets a pointer to the trigger object give its name
-  */
+  // Returns the team type with this INI name, ignoring case, or nullptr if
+  // there is none or `name` is empty.
   static TeamTypeClass* As_Pointer(std::string_view name);
 
-  /*
-  **	Processing routines
-  */
+  // Deletes this team type, first clearing every trigger's reference to it.
+  // Teams of the type are left alone. The scenario editor's delete.
   void Remove();
-  // the heap owns the new object; many callers create without keeping it.
+  // Creates a team of this type for its house. Returns nullptr when
+  // MaxAllowed teams of the type already exist (a limit scenario setup
+  // ignores) or the team heap is full.
+  // The heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* Create_One_Of() const;
+  // Deletes every team of this type; their members go back to being loose
+  // units.
   void Destroy_All_Of() const;
 
-  /*
-  **	Utility routines
-  */
+  // Returns the INI and editor name of a team mission, "None" for
+  // TMISSION_NONE or a value that is not a mission.
   static const char* Name_From_Mission(TeamMissionType order);
+  // Returns the mission with this name, ignoring case, or TMISSION_NONE if
+  // there is none.
   static TeamMissionType Mission_From_Name(std::string_view name);
+  // Picks the team type the computer should create for `house` now: among the
+  // house's own with fewer than MaxAllowed teams in the field, the one with
+  // the highest recruit priority, where a team type that wants none of the
+  // unit and infantry types the house has counts for half its priority. The
+  // first of equals wins. `utypes` and `itypes` are bit masks, by type
+  // number, of the unit and infantry types the house has. Autocreate team
+  // types take part only when the house is `alerted`. Returns nullptr when
+  // there is no candidate.
   static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
                                                  uint64_t utypes,
                                                  uint64_t itypes, bool alerted);
 
+  // Returns the target value that names this team type.
   [[nodiscard]] Target As_Target() const;
 
-  /*
-  **	Overloaded operators
-  */
+  // Allocates from the team type heap. Returns nullptr when the heap is full;
+  // noexcept is what makes a new-expression test for that instead of
+  // constructing at null.
   void* operator new(std::size_t /*unused*/) noexcept;
   void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
@@ -170,116 +199,82 @@ class TeamTypeClass : public AbstractTypeClass {
   }
   void operator delete(void* ptr);
 
-  /*
-  **	Dee-buggin' support.
-  */
-  // debug self-check; callers run it for its assertions and ignore the count.
+  // Debug self-check: in a build with the cheat keys, stops the game when
+  // this object is not in the team type heap. Always returns 1; callers run
+  // it for the check and ignore the result.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
-  /*
-  **	If this teamtype object is active, then this flag will be true.
-  **	TeamType objects that are not active are either not yet created or have
-  **	been deleted after fulfilling their action.
-  */
+  // True while the object occupies its heap slot. operator new sets it
+  // before the constructor runs, so the initializer must agree with it;
+  // operator delete clears it.
   bool IsActive : 1 = true;
 
-  /*
-  **	If RoundAbout, the team avoids high-threat areas
-  */
+  // The team's members route around high-threat areas.
   bool IsRoundAbout : 1 = false;
 
-  /*
-  **	If Learning, the team learns from mistakes
-  */
+  // The team learns from its mistakes. Read and written, but nothing acts on
+  // it.
   bool IsLearning : 1 = false;
 
-  /*
-  **	If Suicide, the team won't stop until it achieves its mission or it's
-  **	dead
-  */
+  // The team does not stop for distractions until it achieves its mission or
+  // is dead.
   bool IsSuicide : 1 = false;
 
-  /*
-  **	Is this team type allowed to be created automatically by the computer
-  **	when the appropriate trigger indicates?
-  */
+  // Only a house that has been alerted (the "autocreate" trigger action)
+  // creates teams of this type on its own; see Suggested_New_Team().
   bool IsAutocreate : 1 = false;
 
-  /*
-  **	Mercenaries will change sides if they start to lose.
-  */
+  // Mercenaries change sides if they start to lose. Read and written, but
+  // nothing acts on it.
   bool IsMercenary : 1 = false;
 
-  /*
-  **	This flag tells the computer that it should build members to fill
-  **	a team of this type regardless of whether there actually is a team
-  **	of this type active.
-  */
+  // The computer builds the members of this team type ahead of time, whether
+  // or not a team of the type exists yet.
   bool IsPrebuilt : 1 = true;
 
-  /*
-  **	If this team should allow recruitment of new members, then this flag
-  **	will be true. A false value results in a team that fights until it
-  **	is dead. This is similar to IsSuicide, but they will defend themselves.
-  */
+  // A team in the field keeps recruiting replacements for lost members. If
+  // false it fights until it is dead; unlike a suicide team, its members
+  // still defend themselves.
   bool IsReinforcable : 1 = true;
 
-  /*
-  **	A transient team type was created exclusively to bring on reinforcements
-  **	as a result of some special event. As soon as there are no teams
-  **	existing of this type, then this team type should be deleted.
-  */
+  // Created only to bring on reinforcements for one special event. The last
+  // team of the type deletes the team type as it dies.
   bool IsTransient : 1 = false;
 
-  /*
-  **	Priority given the team for recruiting purposes; higher priority means
-  **	it can steal members from other teams (scale: 0 - 15)
-  */
+  // Rank among teams when recruiting, 0 to 15: a team takes members from
+  // teams of lower priority.
   int RecruitPriority = 7;
 
-  /*
-  **	Initial # of this type of team
-  */
+  // The scenario's "initial number" of teams of this type. Read, written and
+  // saved, but nothing creates teams from it.
   unsigned char InitNum = 0;
 
-  /*
-  **	Max # of this type of team allowed at one time
-  */
+  // The most teams of this type that may exist at one time.
   unsigned char MaxAllowed = 0;
 
-  /*
-  **	Fear level of this team
-  */
+  // The team's fear level. Read, written and saved, but nothing acts on it.
   unsigned char Fear = 0;
 
-  /*
-  **	House the team belongs to
-  */
+  // The house the teams belong to; HOUSE_NONE if the INI entry names none.
   HousesType House = HOUSE_NONE;
 
-  /*
-  **	The mission list for this team
-  */
+  // The script: the first MissionCount entries of MissionList.
   int MissionCount = 0;
   TeamMissionStruct MissionList[kMaxTeamMissions]{};
 
-  /*
-  **	Number of different classes in the team
-  */
+  // The number of kinds of member: the entries in use of Class and
+  // DesiredNum.
   unsigned char ClassCount = 0;
 
-  /*
-  **	Array of object types comprising the team
-  */
+  // The type of each kind of member: an infantry, unit or aircraft type.
   const TechnoTypeClass* Class[kMaxTeamClasscount]{};
 
-  /*
-  **	Desired # of each type of object comprising the team
-  */
+  // How many of each kind of member a full team has.
   unsigned char DesiredNum[kMaxTeamClasscount]{};
 
  private:
+  // The name of each mission, as Name_From_Mission() returns it.
   static base::EnumArray<TeamMissionType, const char*,
                          static_cast<int>(TMISSION_COUNT)>
       TMissions;

@@ -16,40 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\teamtype.cpv   2.17   16 Oct 1995
- * 16:48:52   JOE_BOSTIC  $ */
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Command & Conquer                        *
- *                                                                         *
- *                    File Name : TEAMTYPE.CPP                             *
- *                                                                         *
- *                   Programmer : Bill Randolph                            *
- *                                                                         *
- *                   Start Date : December 7, 1994                         *
- *                                                                         *
- *                  Last Update : July 21, 1995 [JLB]                      *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- *   TeamTypeClass::TeamTypeClass -- class constructor                     *
- *   TeamTypeClass::~TeamTypeClass -- class destructor                     *
- *   TeamTypeClass::Init -- pre-scenario initialization                    *
- *   TeamTypeClass::Read_INI -- reads INI data                             *
- *   TeamTypeClass::Write_INI -- writes INI data                           *
- *   TeamTypeClass::Read_Old_INI -- reads old INI format                   *
- *   TeamTypeClass::As_Pointer -- gets ptr for team type with given name   *
- *   TeamTypeClass::Remove -- removes this team from the system            *
- *   TeamTypeClass::Mission_From_Name -- returns mission for given name    *
- *   TeamTypeClass::Name_From_Mission -- returns name for given mission    *
- *   TeamTypeClass::operator new -- 'new' operator                         *
- *   TeamTypeClass::operator delete -- 'delete' operator                   *
- *   TeamTypeClass::Suggested_New_Team -- Suggests a new team to create.   *
- *   TeamTypeClass::Validate -- validates teamtype pointer
- **
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// Team types: reading and writing them in a scenario INI, picking one for the
+// computer to build, and creating and destroying their teams.
 
 #include "td/ai/teamtype.h"
 
@@ -84,9 +52,6 @@
 
 namespace td {
 
-/*
-********************************** Globals **********************************
-*/
 base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
     TeamTypeClass::TMissions = {
         "Attack Base",
@@ -105,21 +70,6 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
 
 TeamTypeClass::~TeamTypeClass() = default;
 
-/***********************************************************************************************
- * TeamTypeClass::Validate -- validates teamtype pointer
- **
- *                                                                                             *
- * INPUT: * none.
- **
- *                                                                                             *
- * OUTPUT: * 1 = ok, 0 = error
- **
- *                                                                                             *
- * WARNINGS: * none.
- **
- *                                                                                             *
- * HISTORY: * 08/09/1995 BRR : Created. *
- *=============================================================================================*/
 int TeamTypeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
     const int num = TheObjectHeaps().team_type().SlotIndexOf(this);
@@ -132,159 +82,59 @@ int TeamTypeClass::Validate() const {
   }
 }
 
-/***************************************************************************
- * TeamTypeClass::Init -- pre-scenario initialization                      *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
-/***************************************************************************
- * TeamTypeClass::Read_INI -- reads INI data                               *
- *                                                                         *
- * INI entry format:                                                       *
- *      TeamName = Housename,Roundabout,Learning,Suicide,Spy,Mercenary,    *
- *       RecruitPriority,MaxAllowed,InitNum,Fear,                          *
- *       ClassCount,Class:Num,Class:Num,...,                               *
- *       MissionCount,Mission:Arg,Mission:Arg,Mission:Arg,...              *
- *                                                                         *
- * INPUT:                                                                  *
- *      ini         parsed scenario INI file                               *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
- *=========================================================================*/
 void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
-  /*
-  ----------------------- Loop for all team entries ------------------------
-  */
   for (const auto& [name, entry] : ini.Entries(INI_Name())) {
-    /*
-    ....................... Create a new team type ........................
-    */
-    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();
 
-    /*
-    .......................... Fill the team in ...........................
-    */
     team->Fill_In(name, entry);
   }
 
-  /*
-  ** If no teams were read in, try reading the old INI format.
-  */
+  // A scenario in the old format has no [TeamTypes] section.
   if (TheObjectHeaps().team_type().Count() == 0) {
     Read_Old_INI(ini);
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Fill_In -- fills in trigger from the given INI entry *
- *                                                                                             *
- * This routine fills in the given teamtype with the given name, and values from
- ** the given INI entry. *
- *                                                                                             *
- * (This routine is used by the scenario editor, to import teams from the
- *MASTER.INI file.)    *
- *                                                                                             *
- *    INI entry format: * TeamName =
- *Housename,Roundabout,Learning,Suicide,Spy,Mercenary,                        *
- *       RecruitPriority,MaxAllowed,InitNum,Fear, *
- *       ClassCount,Class:Num,Class:Num,..., *
- *       MissionCount,Mission:Arg,Mission:Arg,Mission:Arg,... *
- *                                                                                             *
- * INPUT: * name      mnemonic for the desired trigger * entry      INI entry to
- *parse                                                          *
- *                                                                                             *
- * OUTPUT: * none. *
- *                                                                                             *
- * WARNINGS: * none. *
- *                                                                                             *
- * HISTORY: * 11/28/1994 BR : Created. *
- *=============================================================================================*/
 void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   Validate();
   std::string_view p1;  // class or mission name
   std::string_view p2;  // its count or argument
   TeamMissionStruct mission;
 
-  /*
-  ------------------------------ Set its name ------------------------------
-  */
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
 
-  /*
-  ---------------------------- 1st token: House ----------------------------
-  */
+  // An unknown house name gives HOUSE_NONE.
   House = HouseTypeClass::From_Name(tokens.Next());
 
-  /*
-  -------------------------- 2nd token: RoundAbout -------------------------
-  */
   IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-  /*
-  --------------------------- 3rd token: Learning --------------------------
-  */
   IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-  /*
-  --------------------------- 4th token: Suicide ---------------------------
-  */
   IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-  /*
-  ----------------------------- 5th token: Spy -----------------------------
-  */
+  // The fifth field was once "Spy".
   IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-  /*
-  -------------------------- 6th token: Mercenary --------------------------
-  */
   IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-  /*
-  ----------------------- 7th token: RecruitPriority -----------------------
-  */
   RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
-  /*
-  -------------------------- 8th token: MaxAllowed -------------------------
-  */
+  // The three counts are stored in a byte each; a number that does not fit
+  // wraps.
   MaxAllowed =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  /*
-  --------------------------- 9th token: InitNum ---------------------------
-  */
   InitNum =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  /*
-  ------------------------- 10th token: Fear level -------------------------
-  */
   Fear =
       static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  /*
-  ------------------------ 11th token: Class count -------------------------
-  */
+  // The members: a count, then that many Class:Num pairs.
   const int num_classes = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (num_classes < 0 || num_classes > kMaxTeamClasscount) {
     ClassCount = 0;
@@ -292,9 +142,6 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     return;
   }
 
-  /*
-  -------------- Loop through entries, setting class ptr & num -------------
-  */
   ClassCount = 0;
   for (int i = 0; i < num_classes; i++) {
     p1 = tokens.Next(",:");
@@ -304,35 +151,27 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
       MissionCount = 0;
       return;
     }
-    const TechnoTypeClass* otype = nullptr;  // ptr to type of object
+    const TechnoTypeClass* otype = nullptr;
 
-    /*
-    ------------------- See if this is an infantry name -------------------
-    */
-    const InfantryType i_id = InfantryTypeClass::From_Name(p1);  // infantry ID
+    // A name that several kinds of type share goes to the last kind that
+    // has it.
+    const InfantryType i_id = InfantryTypeClass::From_Name(p1);
     if (i_id != INFANTRY_NONE) {
       otype = &InfantryTypeClass::As_Reference(i_id);
     }
 
-    /*
-    ---------------------- See if this is a unit name ---------------------
-    */
-    const UnitType u_id = UnitTypeClass::From_Name(p1);  // unit ID
+    const UnitType u_id = UnitTypeClass::From_Name(p1);
     if (u_id != UNIT_NONE) {
       otype = &UnitTypeClass::As_Reference(u_id);
     }
 
-    /*
-    ------------------- See if this is an aircraft name -------------------
-    */
-    const AircraftType a_id = AircraftTypeClass::From_Name(p1);  // aircraft ID
+    const AircraftType a_id = AircraftTypeClass::From_Name(p1);
     if (a_id != AIRCRAFT_NONE) {
       otype = &AircraftTypeClass::As_Reference(a_id);
     }
 
-    /*
-    --------------- If the name was resolved, add this class --------------
-    */
+    // An unknown type (a unit this build does not have) is dropped and the
+    // next member takes its place.
     if (otype) {
       base::At(Class, ClassCount) = otype;
       base::At(DesiredNum, ClassCount) =
@@ -341,9 +180,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     }
   }
 
-  /*
-  ----------------------- next token: Mission count ------------------------
-  */
+  // The script: a count, then that many Mission:Arg pairs.
   MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
     ClassCount = 0;
@@ -364,6 +201,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     base::At(MissionList, i) = mission;
   }
 
+  // Older scenarios end the entry here, which leaves both options on.
   std::string_view ptr = tokens.Next();
   if (!ptr.empty()) {
     IsReinforcable = base::ParseIntegerOr<int>(ptr, 0) != 0;
@@ -374,74 +212,34 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   }
 }
 
-/***************************************************************************
- * TeamTypeClass::Write_INI -- writes INI data                             *
- *                                                                         *
- * INI entry format:                                                       *
- *      TeamName = Housename,Roundabout,Learning,Suicide,Spy,Mercenary,    *
- *       RecruitPriority,MaxAllowed,InitNum,Fear,                          *
- *       ClassCount,Class:Num,Class:Num,...,                               *
- *       MissionCount,Mission,Arg,Mission,Arg,Mission,Arg,...              *
- *                                                                         *
- * INPUT:                                                                  *
- *      ini      The INI database to write into.                           *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   char buf[500];
   const char* hname = nullptr;
 
-  /*------------------------------------------------------------------------
-  First, clear out all existing teamtypes in the old-style format.
-  ------------------------------------------------------------------------*/
+  // The team types are written in the current format only.
   ini.Clear("Teams");
 
-  /*------------------------------------------------------------------------
-  Clear out all existing teamtype data from the INI file.
-  ------------------------------------------------------------------------*/
   if (refresh) {
     ini.Clear(INI_Name());
   }
 
-  /*------------------------------------------------------------------------
-  Now write all the team data out
-  ------------------------------------------------------------------------*/
   base::At(buf, 0) = 0;
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    /*
-    .................. Get ptr to next active teamtype ....................
-    */
     TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
 
-    /*
-    .......................... Find house's name ..........................
-    */
     if (team->House == HOUSE_NONE) {
       hname = "None";
     } else {
       hname = HouseClass::As_Pointer(team->House)->Class->IniName;
     }
 
-    /*
-    ......................... Generate INI entry ..........................
-    */
     absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", hname,
                    team->IsRoundAbout, team->IsLearning, team->IsSuicide,
                    team->IsAutocreate, team->IsMercenary, team->RecruitPriority,
                    team->MaxAllowed, team->InitNum, team->Fear,
                    team->ClassCount);
 
-    /*.....................................................................
-    For every class in the team, record the class's name & desired count
-    .....................................................................*/
+    // The members: Class:Num for each.
     for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
       absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
                      sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
@@ -449,9 +247,7 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
                      base::At(team->DesiredNum, i));
     }
 
-    /*.....................................................................
-    Record the # of missions, and each mission name & argument value.
-    .....................................................................*/
+    // The script: a count, then Mission:Arg for each, the mission by name.
     absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
                    sizeof(buf) - std::string_view(buf).size(), ",%d",
                    team->MissionCount);
@@ -477,132 +273,58 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   }
 }
 
-/***************************************************************************
- * TeamTypeClass::Read_Old_INI -- reads old INI format                     *
- *                                                                         *
- *    INI entry format:                                                    *
- *      TeamName = Housename,Roundabout,Learning,Suicide,Spy,Mercenary,    *
- *       RecruitPriority,MaxAllowed,InitNum,Class:Num,Class:Num,...,Fear   *
- *                                                                         *
- * INPUT:                                                                  *
- *      ini         parsed scenario INI file                               *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *   02/01/1995 BR : No del team if no classes (editor needs empty teams!) *
- *=========================================================================*/
 void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
-  /*
-  ----------------------- Loop for all team entries ------------------------
-  */
   for (const auto& [name, entry] : ini.Entries("Teams")) {
-    /*
-    ........................ Create a new trigger .........................
-    */
-    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();
 
-    /*
-    ............................ Set its name .............................
-    */
     team->Set_Name(name);
 
-    /*
-    .......................... 1st token: House ...........................
-    */
     base::Tokenizer tokens(entry);
     team->House = HouseTypeClass::From_Name(tokens.Next());
 
-    /*
-    ........................ 2nd token: RoundAbout ........................
-    */
     team->IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-    /*
-    ......................... 3rd token: Learning .........................
-    */
     team->IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-    /*
-    ......................... 4th token: Suicide ..........................
-    */
     team->IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-    /*
-    ........................... 5th token: Spy ............................
-    */
     team->IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-    /*
-    ........................ 6th token: Mercenary .........................
-    */
     team->IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
 
-    /*
-    ..................... 7th token: RecruitPriority ......................
-    */
     team->RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
-    /*
-    ........................ 8th token: MaxAllowed ........................
-    */
     team->MaxAllowed =
         static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-    /*
-    ......................... 9th token: InitNum ..........................
-    */
     team->InitNum =
         static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-    /*
-    ....................... 10th token: Mission name ......................
-    */
     tokens.Next();  // mission name, unused
 
-    /*
-    ............ Loop through entries, setting class ptr & num ............
-    */
+    // The members: Class:Num pairs up to the end of the entry, of which the
+    // first kMaxTeamClasscount known types are kept.
     int index = 0;
     std::string_view p1 = tokens.Next(",:");  // class name
     std::string_view p2 = tokens.Next(",:");  // its count
     while (!p1.empty() && !p2.empty() && index < kMaxTeamClasscount) {
-      const TechnoTypeClass* otype = nullptr;  // ptr to type of object
+      const TechnoTypeClass* otype = nullptr;
 
-      /*
-      ................. See if this is an infantry name ..................
-      */
-      const InfantryType i_id =
-          InfantryTypeClass::From_Name(p1);  // infantry ID
+      const InfantryType i_id = InfantryTypeClass::From_Name(p1);
       if (i_id != INFANTRY_NONE) {
         otype = &InfantryTypeClass::As_Reference(i_id);
       }
 
-      /*
-      .................... See if this is a unit name ....................
-      */
-      const UnitType u_id = UnitTypeClass::From_Name(p1);  // unit ID
+      const UnitType u_id = UnitTypeClass::From_Name(p1);
       if (u_id != UNIT_NONE) {
         otype = &UnitTypeClass::As_Reference(u_id);
       }
 
-      /*
-      ................. See if this is an aircraft name ..................
-      */
-      const AircraftType a_id =
-          AircraftTypeClass::From_Name(p1);  // infantry ID
+      const AircraftType a_id = AircraftTypeClass::From_Name(p1);
       if (a_id != AIRCRAFT_NONE) {
         otype = &AircraftTypeClass::As_Reference(a_id);
       }
 
-      /*
-      ............. If the name was resolved, add this class .............
-      */
       if (otype) {
         base::At(team->Class, index) = otype;
         base::At(team->DesiredNum, index) =
@@ -611,9 +333,6 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
         team->ClassCount = static_cast<unsigned char>(index);
       }
 
-      /*
-      ................. Go to the next entry on the line .................
-      */
       p1 = tokens.Next(",:");
       p2 = tokens.Next(",:");
     }
@@ -622,21 +341,6 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   }
 }
 
-/***************************************************************************
- * TeamTypeClass::As_Pointer -- gets ptr for team type with given name     *
- *                                                                         *
- * INPUT:                                                                  *
- *      name      name of teamtype                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      ptr to TeamType with that name                                     *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/07/1994 BR : Created.                                              *
- *=========================================================================*/
 TeamTypeClass* TeamTypeClass::As_Pointer(std::string_view name) {
   if (name.empty()) {
     return nullptr;
@@ -652,27 +356,9 @@ TeamTypeClass* TeamTypeClass::As_Pointer(std::string_view name) {
   return nullptr;
 }
 
-/***************************************************************************
- * TeamTypeClass::Remove -- removes this team from the system              *
- *                                                                         *
- * INPUT:                                                                  *
- *      none.                                                              *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/09/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::Remove() {
   Validate();
 
-  /*
-  **	Remove all trigger references to this team.
-  */
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(i);
     if (trigger->Team == this) {
@@ -680,27 +366,9 @@ void TeamTypeClass::Remove() {
     }
   }
 
-  /*
-  **	Delete myself.
-  */
   delete this;
 }
 
-/***************************************************************************
- * TeamTypeClass::Mission_From_Name -- returns team mission for given name *
- *                                                                         *
- * INPUT:                                                                  *
- *      name         name to compare                                       *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      mission for that name                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/13/1994 BR : Created.                                              *
- *=========================================================================*/
 TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
   if (!name.empty()) {
     for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
@@ -714,21 +382,6 @@ TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
   return TMISSION_NONE;
 }
 
-/***************************************************************************
- * TeamTypeClass::Name_From_Mission -- returns name for given mission      *
- *                                                                         *
- * INPUT:                                                                  *
- *      order      mission to get name for                                 *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      name of mission                                                    *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   12/13/1994 BR : Created.                                              *
- *=========================================================================*/
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
     return "None";
@@ -736,21 +389,6 @@ const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
   return TMissions.at(order);
 }
 
-/***************************************************************************
- * TeamTypeClass::operator new -- 'new' operator                           *
- *                                                                         *
- * INPUT:                                                                  *
- *      none.                                                              *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      pointer to new TeamType                                            *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/28/1994 BR : Created.                                              *
- *=========================================================================*/
 void* TeamTypeClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
@@ -759,21 +397,6 @@ void* TeamTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return ptr;
 }
 
-/***************************************************************************
- * TeamTypeClass::operator delete -- 'delete' operator                     *
- *                                                                         *
- * INPUT:                                                                  *
- *      ptr      pointer to delete                                         *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/28/1994 BR : Created.                                              *
- *=========================================================================*/
 void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = false;
@@ -782,6 +405,7 @@ void TeamTypeClass::operator delete(void* ptr) {
 }
 
 TeamClass* TeamTypeClass::Create_One_Of() const {
+  // TeamClass::Number counts the live teams of each team type, by slot.
   if (TheWorld().scenario_init() ||
       base::At(TeamClass::Number,
                TheObjectHeaps().team_type().SlotIndexOf(this)) < MaxAllowed) {
@@ -801,37 +425,14 @@ void TeamTypeClass::Destroy_All_Of() const {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
     if (team->Class == this) {
+      // Deleting closes the gap in the heap's in-use list, so the next team
+      // is now at this position.
       base::DeletePooled(team);
       index--;
     }
   }
 }
 
-/***********************************************************************************************
- * TeamTypeClass::Suggested_New_Team -- Suggests a new team to create. *
- *                                                                                             *
- *    This routine will scan through the team types available and create teams
- *of the          * type that can best utilize the existing unit mix. *
- *                                                                                             *
- * INPUT:   house    -- Pointer to the house that this team is to be created
- *for.              *
- *                                                                                             *
- *          utype    -- A bit mask of the unit types available for this house. *
- *                                                                                             *
- *          itypes   -- A bit mask of the infantry types available for this
- *house.             *
- *                                                                                             *
- *          alerted  -- Is this house alerted? If true, then the Autocreate
- *teams will be      * considered in the selection process. *
- *                                                                                             *
- * OUTPUT:  Returns with a pointer to the team type that should be created. If
- *no team should  * be created, then it returns NULL. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/13/1995 JLB : Created. * 07/21/1995 JLB : Will autocreate team
- *even if no members in field.                        *
- *=============================================================================================*/
 const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
                                                        uint64_t utypes,
                                                        uint64_t itypes,
@@ -845,9 +446,8 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
     if (ttype && ttype->House == house->Class->House &&
         base::At(TeamClass::Number, index) <
             (alerted || !ttype->IsAutocreate ? ttype->MaxAllowed : 0)) {
-      /*
-      **	Determine what kind of units this team requires.
-      */
+      // The unit and infantry types this team type wants, as bit masks.
+      // Aircraft do not count.
       uint64_t uneeded = 0;
       uint64_t ineeded = 0;
       for (int ctype = 0; std::cmp_less(ctype, ttype->ClassCount); ctype++) {
@@ -892,10 +492,8 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
         }
       }
 
-      /*
-      **	If this team can use the types required, then consider it a
-      *possible *	team type to create.
-      */
+      // A team type the house has no members for is still a candidate, at
+      // half its priority.
       int value = 0;
       if (ineeded & itypes || uneeded & utypes) {
         value = ttype->RecruitPriority;
@@ -903,6 +501,7 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
         value = ttype->RecruitPriority / 2;
       }
 
+      // The first of equals wins.
       if (!best || bestvalue < value) {
         bestvalue = value;
         best = ttype;
