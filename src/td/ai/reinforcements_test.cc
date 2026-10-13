@@ -80,7 +80,7 @@ class ReinforcementTest : public ::testing::Test {
 
   // Adds a first mission to `team_type`, so that delivering it makes a team.
   static void AddMission(TeamTypeClass& team_type) {
-    base::At(team_type.MissionList, 0).Mission = TMISSION_GUARD;
+    base::At(team_type.MissionList, 0).Mission = TeamMissionType::kGuard;
     team_type.MissionCount = 1;
   }
 
@@ -445,14 +445,14 @@ TEST_F(ReinforcementTest, ASpecialVehicleDrivesToTheReinforcementWaypoint) {
   // The mission asked for is replaced.
   EXPECT_TRUE(DeliverSpecialReinforcement(
       house_, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr,
-      TMISSION_GUARD, 5));
+      TeamMissionType::kGuard, 5));
 
   const TeamTypeClass& team_type = SpecialTeamType();
   EXPECT_TRUE(team_type.IsTransient);
   EXPECT_EQ(team_type.ClassCount, 1);
   EXPECT_EQ(team_type.Class[0], &UnitTypeClass::As_Reference(UNIT_HARVESTER));
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TMISSION_MOVECELL);
+  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kMoveCell);
   EXPECT_EQ(team_type.MissionList[0].Argument, kWaypoint.index());
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 1);
   const UnitClass* harvester = TheObjectHeaps().unit().ActiveAt(0);
@@ -470,14 +470,14 @@ TEST_F(ReinforcementTest,
 
   EXPECT_TRUE(DeliverSpecialReinforcement(
       house_, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr,
-      TMISSION_GUARD, 5));
+      TeamMissionType::kGuard, 5));
 
   const TeamTypeClass& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.ClassCount, 2);
   EXPECT_EQ(team_type.Class[1], &UnitTypeClass::As_Reference(UNIT_HOVER));
   // The mission asked for is dropped: the hovercraft delivers and that is all.
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TMISSION_NONE);
+  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kNone);
   ASSERT_EQ(TheObjectHeaps().unit().Count(), 2);
 }
 
@@ -507,7 +507,7 @@ TEST_F(ReinforcementTest, ASpecialTransportUnloadsAtTheReinforcementWaypoint) {
   EXPECT_EQ(team_type.Class[1],
             &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT));
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TMISSION_UNLOAD);
+  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kUnload);
   EXPECT_EQ(team_type.MissionList[0].Argument, kWayptReinf);
   ASSERT_EQ(TheObjectHeaps().aircraft().Count(), 1);
   EXPECT_EQ(TheObjectHeaps().aircraft().ActiveAt(0)->cargo().How_Many(), 1);
@@ -519,11 +519,12 @@ TEST_F(ReinforcementTest, ASpecialTransportKeepsTheMissionAskedFor) {
 
   EXPECT_TRUE(DeliverSpecialReinforcement(
       house_, &InfantryTypeClass::As_Reference(INFANTRY_E1),
-      &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT), TMISSION_GUARD, 5));
+      &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT),
+      TeamMissionType::kGuard, 5));
 
   const TeamTypeClass& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.MissionCount, 1);
-  EXPECT_EQ(team_type.MissionList[0].Mission, TMISSION_GUARD);
+  EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kGuard);
   EXPECT_EQ(team_type.MissionList[0].Argument, 5);
 }
 
@@ -536,15 +537,15 @@ TEST_F(ReinforcementTest, ASpecialAircraftKeepsItsMissionOrMovesToTheWaypoint) {
       AircraftTypeClass::As_Reference(AIRCRAFT_HELICOPTER);
 
   EXPECT_TRUE(DeliverSpecialReinforcement(house_, &helicopter, nullptr,
-                                          TMISSION_GUARD, 5));
+                                          TeamMissionType::kGuard, 5));
   EXPECT_TRUE(DeliverSpecialReinforcement(house_, &helicopter, nullptr));
 
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 2);
   const TeamTypeClass* with_mission = TheObjectHeaps().team_type().ActiveAt(0);
-  EXPECT_EQ(with_mission->MissionList[0].Mission, TMISSION_GUARD);
+  EXPECT_EQ(with_mission->MissionList[0].Mission, TeamMissionType::kGuard);
   EXPECT_EQ(with_mission->MissionList[0].Argument, 5);
   const TeamTypeClass* without = TheObjectHeaps().team_type().ActiveAt(1);
-  EXPECT_EQ(without->MissionList[0].Mission, TMISSION_MOVECELL);
+  EXPECT_EQ(without->MissionList[0].Mission, TeamMissionType::kMoveCell);
   EXPECT_EQ(without->MissionList[0].Argument, kWaypoint.index());
 }
 

@@ -484,7 +484,7 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
   // only arrive from the south. Yes, this is an arbitrary limitation, but
   // that's the way it is (for now).
   if (drives_on && house->Edge == SOURCE_SOUTH && !HasLandRouteFromSouth()) {
-    mission = TMISSION_NONE;
+    mission = TeamMissionType::kNone;
     transport_type = &UnitTypeClass::As_Reference(UNIT_HOVER);
   }
 
@@ -492,16 +492,17 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
   // waypoint, whatever mission the caller asked for, and anything else does
   // when it has no mission. If not, the reinforcement will just sit at the
   // edge of the map.
-  if (transport_type == nullptr && (drives_on || mission == TMISSION_NONE)) {
-    mission = TMISSION_MOVECELL;
+  if (transport_type == nullptr &&
+      (drives_on || mission == TeamMissionType::kNone)) {
+    mission = TeamMissionType::kMoveCell;
     mission_argument =
         TheMap().Calculated_Cell(SOURCE_AIR, house->Class->House).index();
   }
 
   // Fill in the team type: transient, so that it is deleted along with its
   // last team. It always has one mission slot, so DeliverReinforcements()
-  // always makes a team for it. The slot stays TMISSION_NONE for a hovercraft
-  // delivery; any other transport without a mission unloads at the
+  // always makes a team for it. The slot stays TeamMissionType::kNone for a
+  // hovercraft delivery; any other transport without a mission unloads at the
   // reinforcement waypoint.
   base::SafeCopy(team_type->IniName, "TEMP");
   team_type->IsReinforcable = false;
@@ -516,12 +517,12 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
     base::At(team_type->DesiredNum, 1) = 1;
   }
   team_type->MissionCount = 1;
-  if (mission != TMISSION_NONE) {
+  if (mission != TeamMissionType::kNone) {
     base::At(team_type->MissionList, 0).Mission = mission;
     base::At(team_type->MissionList, 0).Argument = mission_argument;
   } else if (transport_type != nullptr &&
              !IsUnitType(*transport_type, UNIT_HOVER)) {
-    base::At(team_type->MissionList, 0).Mission = TMISSION_UNLOAD;
+    base::At(team_type->MissionList, 0).Mission = TeamMissionType::kUnload;
     base::At(team_type->MissionList, 0).Argument = kWayptReinf;
   }
 

@@ -39,13 +39,13 @@ bool DeliverReinforcements(const TeamTypeClass* team_type);
 // hovercraft.
 //
 // `mission` and `mission_argument` are the team mission to carry out on arrival
-// and its argument, usually a waypoint. TMISSION_NONE picks one: moving to the
-// reinforcement waypoint, or unloading there when there is a transport.
-bool DeliverSpecialReinforcement(const HouseClass* house,
-                                 const TechnoTypeClass* type,
-                                 const TechnoTypeClass* transport_type,
-                                 TeamMissionType mission = TMISSION_NONE,
-                                 int mission_argument = 0);
+// and its argument, usually a waypoint. TeamMissionType::kNone picks one:
+// moving to the reinforcement waypoint, or unloading there when there is a
+// transport.
+bool DeliverSpecialReinforcement(
+    const HouseClass* house, const TechnoTypeClass* type,
+    const TechnoTypeClass* transport_type,
+    TeamMissionType mission = TeamMissionType::kNone, int mission_argument = 0);
 
 // Launches an air strike: creates up to `count` aircraft of `aircraft_type`
 // for `house` at its map edge (north when it has none of the four), each a

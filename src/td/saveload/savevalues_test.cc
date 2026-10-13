@@ -208,21 +208,23 @@ TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
 }  // namespace
 
 TEST(TdSaveValuesTest, TeamMissionPreservesOrderAndArgument) {
-  TeamMissionStruct mission{TMISSION_MOVECELL, 4095};
+  TeamMissionStruct mission{TeamMissionType::kMoveCell, 4095};
   TeamMissionStruct loaded;
   Restore(loaded, Save(mission));
-  EXPECT_EQ(loaded.Mission, TMISSION_MOVECELL);
+  EXPECT_EQ(loaded.Mission, TeamMissionType::kMoveCell);
   EXPECT_EQ(loaded.Argument, 4095);
 }
 
 TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
-  TeamMissionStruct mission{TMISSION_COUNT, 1};
+  TeamMissionStruct mission{TeamMissionType::kGuard, 1};
   auto bytes = Save(mission);
+  // The mission is the first field; 12 is one past the last mission.
+  bytes.at(0) = 12;
   SpanSource source(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(source);
   reader(mission);
   EXPECT_FALSE(reader.ok());
-  mission.Mission = TMISSION_GUARD;
+  mission.Mission = TeamMissionType::kGuard;
   bytes = Save(mission);
   SpanSource truncated(std::as_bytes(std::span(bytes).first(7)));
   ArchiveReader short_reader(truncated);

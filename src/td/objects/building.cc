@@ -2540,7 +2540,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_AIRSTRIP:
           if (DeliverSpecialReinforcement(
                   House, &AircraftTypeClass::As_Reference(AIRCRAFT_CARGO),
-                  ttype, TMISSION_UNLOAD, As_Target().packed())) {
+                  ttype, TeamMissionType::kUnload, As_Target().packed())) {
             base::DeletePooled(base);
             return 2;
           }

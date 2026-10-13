@@ -72,6 +72,7 @@
 #include "game/ui/gadget_list.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/teamtype.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -915,9 +916,9 @@ int MapEditClass::Edit_Team() {
   /*
   ......................... Fill in mission lists ..........................
   */
-  for (i = 0; i < static_cast<int>(TMISSION_COUNT); i++) {
-    missionlist1.Add_Item(
-        TeamTypeClass::Name_From_Mission(static_cast<TeamMissionType>(i)));
+  for (const TeamMissionType mission :
+       magic_enum::enum_values<TeamMissionType>()) {
+    missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(mission));
   }
 
   int missioncount = CurTeam->MissionCount;
@@ -928,8 +929,8 @@ int MapEditClass::Edit_Team() {
 
   int curmission = 0;  // currently-selected mission index
   if (missioncount) {
-    if (base::At(missions, curmission).Mission == TMISSION_MOVE ||
-        base::At(missions, curmission).Mission == TMISSION_UNLOAD) {
+    if (base::At(missions, curmission).Mission == TeamMissionType::kMove ||
+        base::At(missions, curmission).Mission == TeamMissionType::kUnload) {
       absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
                      base::At(missions, curmission).Argument + 'A');
     } else {
@@ -1175,8 +1176,10 @@ int MapEditClass::Edit_Team() {
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
-          if (base::At(missions, curmission).Mission == TMISSION_MOVE ||
-              base::At(missions, curmission).Mission == TMISSION_UNLOAD) {
+          if (base::At(missions, curmission).Mission ==
+                  TeamMissionType::kMove ||
+              base::At(missions, curmission).Mission ==
+                  TeamMissionType::kUnload) {
             absl::SNPrintF(arg_buf, sizeof(arg_buf), "%c",
                            base::At(missions, curmission).Argument + 'A');
           } else {
@@ -1221,14 +1224,14 @@ int MapEditClass::Edit_Team() {
           ** Set the Mission value based on 1st list box's index
           */
           base::At(missions, i).Mission = static_cast<TeamMissionType>(
-              static_cast<int>(TMISSION_ATTACKBASE) +
+              static_cast<int>(TeamMissionType::kAttackBase) +
               missionlist1.Current_Index());
 
           /*
           ** Set the missions argument field
           */
-          if (base::At(missions, i).Mission == TMISSION_MOVE ||
-              base::At(missions, i).Mission == TMISSION_UNLOAD) {
+          if (base::At(missions, i).Mission == TeamMissionType::kMove ||
+              base::At(missions, i).Mission == TeamMissionType::kUnload) {
             base::At(missions, i).Argument =
                 toupper(base::At(arg_buf, 0)) - 'A';
           } else {
@@ -1996,8 +1999,8 @@ void MapEditClass::Build_Mission_List(
     ** generate the string for a MOVE mission; the argument is the
     ** letter-designation of the cell to move to.
     */
-    if (base::At(missions, i).Mission == TMISSION_MOVE ||
-        base::At(missions, i).Mission == TMISSION_UNLOAD) {
+    if (base::At(missions, i).Mission == TeamMissionType::kMove ||
+        base::At(missions, i).Mission == TeamMissionType::kUnload) {
       absl::SNPrintF(
           base::At(missionbuf, i), sizeof(base::At(missionbuf, i)), "%s\t%c",
           TeamTypeClass::Name_From_Mission(base::At(missions, i).Mission),

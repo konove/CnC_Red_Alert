@@ -473,32 +473,31 @@ void TeamClass::AI() {
       TimeOut.Set(mission->Argument * (kTicksPerMinute / 10));
       Target = td::Target{};
       switch (mission->Mission) {
-        case TMISSION_MOVECELL:
+        case TeamMissionType::kMoveCell:
           Assign_Mission_Target(
               td::Target::FromCellIndex(Cell::FromIndex(mission->Argument)));
           break;
 
-        case TMISSION_MOVE:
-        case TMISSION_UNLOAD:
+        case TeamMissionType::kMove:
+        case TeamMissionType::kUnload:
           Assign_Mission_Target(td::Target::FromCellIndex(
               base::At(TheWorld().waypoint(), mission->Argument)));
           break;
 
-        case TMISSION_ATTACKTARCOM:
+        case TeamMissionType::kAttackTarcom:
           Assign_Mission_Target(
               td::Target::FromPacked(static_cast<uint16_t>(mission->Argument)));
           break;
 
-        case TeamMissionType::TMISSION_NONE:
-        case TeamMissionType::TMISSION_ATTACKBASE:
-        case TeamMissionType::TMISSION_ATTACKUNITS:
-        case TeamMissionType::TMISSION_ATTACKCIVILIANS:
-        case TeamMissionType::TMISSION_RAMPAGE:
-        case TeamMissionType::TMISSION_DEFENDBASE:
-        case TeamMissionType::TMISSION_RETREAT:
-        case TeamMissionType::TMISSION_GUARD:
-        case TeamMissionType::TMISSION_LOOP:
-        case TeamMissionType::TMISSION_COUNT:
+        case TeamMissionType::kNone:
+        case TeamMissionType::kAttackBase:
+        case TeamMissionType::kAttackUnits:
+        case TeamMissionType::kAttackCivilians:
+        case TeamMissionType::kRampage:
+        case TeamMissionType::kDefendBase:
+        case TeamMissionType::kRetreat:
+        case TeamMissionType::kGuard:
+        case TeamMissionType::kLoop:
         default:
           Assign_Mission_Target(td::Target{});
           break;
@@ -530,7 +529,7 @@ void TeamClass::AI() {
     const TeamMissionStruct* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
     switch (mission->Mission) {
-      case TMISSION_ATTACKBASE:
+      case TeamMissionType::kAttackBase:
         if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_BUILDINGS));
           if (!MissionTarget) {
@@ -540,7 +539,7 @@ void TeamClass::AI() {
         Coordinate_Attack();
         break;
 
-      case TMISSION_ATTACKUNITS:
+      case TeamMissionType::kAttackUnits:
         if (!MissionTarget) {
           Assign_Mission_Target(
               Member->Greatest_Threat(THREAT_VEHICLES | THREAT_INFANTRY));
@@ -551,7 +550,7 @@ void TeamClass::AI() {
         Coordinate_Attack();
         break;
 
-      case TMISSION_ATTACKCIVILIANS:
+      case TeamMissionType::kAttackCivilians:
         if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_CIVILIANS));
           if (!MissionTarget) {
@@ -561,8 +560,8 @@ void TeamClass::AI() {
         Coordinate_Attack();
         break;
 
-      case TMISSION_ATTACKTARCOM:
-      case TMISSION_RAMPAGE:
+      case TeamMissionType::kAttackTarcom:
+      case TeamMissionType::kRampage:
         if (!MissionTarget) {
           Assign_Mission_Target(Member->Greatest_Threat(THREAT_NORMAL));
           if (!MissionTarget) {
@@ -572,34 +571,29 @@ void TeamClass::AI() {
         Coordinate_Attack();
         break;
 
-      case TMISSION_DEFENDBASE:
+      case TeamMissionType::kDefendBase:
         Coordinate_Move();
         break;
 
-        //			case TMISSION_HARVEST:
-        //				Coordinate_Move();
-        //				break;
-
-      case TMISSION_UNLOAD:
+      case TeamMissionType::kUnload:
         Coordinate_Unload();
         break;
 
-      case TMISSION_MOVE:
-      case TMISSION_RETREAT:
+      case TeamMissionType::kMove:
+      case TeamMissionType::kRetreat:
         Coordinate_Move();
         break;
 
-      case TMISSION_GUARD:
+      case TeamMissionType::kGuard:
         Coordinate_Regroup();
         break;
 
-      case TMISSION_LOOP:
+      case TeamMissionType::kLoop:
         CurrentMission = mission->Argument - 1;
         IsNextMission = true;
         break;
-      case TeamMissionType::TMISSION_NONE:
-      case TeamMissionType::TMISSION_MOVECELL:
-      case TeamMissionType::TMISSION_COUNT:
+      case TeamMissionType::kNone:
+      case TeamMissionType::kMoveCell:
       default:
         break;
     }
@@ -609,24 +603,23 @@ void TeamClass::AI() {
     *out, then *	flag it so that the team mission list will advance.
     */
     switch (mission->Mission) {
-      case TMISSION_ATTACKBASE:
-      case TMISSION_ATTACKUNITS:
-      case TMISSION_ATTACKCIVILIANS:
-      case TMISSION_RAMPAGE:
-      case TMISSION_DEFENDBASE:
-      case TMISSION_UNLOAD:
-      case TMISSION_RETREAT:
-      case TMISSION_GUARD:
+      case TeamMissionType::kAttackBase:
+      case TeamMissionType::kAttackUnits:
+      case TeamMissionType::kAttackCivilians:
+      case TeamMissionType::kRampage:
+      case TeamMissionType::kDefendBase:
+      case TeamMissionType::kUnload:
+      case TeamMissionType::kRetreat:
+      case TeamMissionType::kGuard:
         if (TimeOut.IsFinished()) {
           IsNextMission = true;
         }
         break;
-      case TeamMissionType::TMISSION_NONE:
-      case TeamMissionType::TMISSION_MOVE:
-      case TeamMissionType::TMISSION_MOVECELL:
-      case TeamMissionType::TMISSION_LOOP:
-      case TeamMissionType::TMISSION_ATTACKTARCOM:
-      case TeamMissionType::TMISSION_COUNT:
+      case TeamMissionType::kNone:
+      case TeamMissionType::kMove:
+      case TeamMissionType::kMoveCell:
+      case TeamMissionType::kLoop:
+      case TeamMissionType::kAttackTarcom:
       default:
         break;
     }
@@ -1261,7 +1254,7 @@ void TeamClass::Coordinate_Move() {
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
                  base::At(Class->MissionList, CurrentMission + 1).Mission !=
-                     TMISSION_MOVE)) {
+                     TeamMissionType::kMove)) {
               if (unit->mission_state().current() != MISSION_MOVE) {
                 unit->Assign_Mission(MISSION_MOVE);
               }

@@ -1,20 +1,20 @@
 /*
-**	Command & Conquer(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ **	Command & Conquer(tm)
+ **	Copyright 2025 Electronic Arts Inc.
+ **
+ **	This program is free software: you can redistribute it and/or modify
+ **	it under the terms of the GNU General Public License as published by
+ **	the Free Software Foundation, either version 3 of the License, or
+ **	(at your option) any later version.
+ **
+ **	This program is distributed in the hope that it will be useful,
+ **	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ **	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ **	GNU General Public License for more details.
+ **
+ **	You should have received a copy of the GNU General Public License
+ **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 // Team types: reading and writing them in a scenario INI, picking one for the
 // computer to build, and creating and destroying their teams.
@@ -39,6 +39,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/config.h"
@@ -51,20 +52,10 @@
 
 namespace td {
 
-base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
-    TeamTypeClass::TMissions = {
-        "Attack Base",
-        "Attack Units",
-        "Attack Civil.",
-        "Rampage",
-        "Defend Base",
-        "Move",
-        "Move to Cell",
-        "Retreat",
-        "Guard",
-        "Loop",
-        "Attack Tarcom",
-        "Unload",
+base::EnumArray<TeamMissionType, const char*> TeamTypeClass::TMissions = {
+    "Attack Base", "Attack Units", "Attack Civil.", "Rampage",
+    "Defend Base", "Move",         "Move to Cell",  "Retreat",
+    "Guard",       "Loop",         "Attack Tarcom", "Unload",
 };
 
 TeamTypeClass::~TeamTypeClass() = default;
@@ -358,19 +349,19 @@ void TeamTypeClass::Remove() {
 
 TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
   if (!name.empty()) {
-    for (TeamMissionType order = TMISSION_ATTACKBASE; order < TMISSION_COUNT;
-         order++) {
+    for (const TeamMissionType order :
+         magic_enum::enum_values<TeamMissionType>()) {
       if (absl::EqualsIgnoreCase(TMissions.at(order), name)) {
         return order;
       }
     }
   }
 
-  return TMISSION_NONE;
+  return TeamMissionType::kNone;
 }
 
 const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
-  if (order <= TMISSION_NONE || order >= TMISSION_COUNT) {
+  if (!magic_enum::enum_contains(order)) {
     return "None";
   }
   return TMissions.at(order);

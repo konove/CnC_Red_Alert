@@ -33,7 +33,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
-#include "base/enum_step.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/defines.h"
 #include "td/objects/house.h"
 #include "td/objects/type.h"
@@ -52,32 +52,31 @@ class TeamClass;
 // One step of a team's script. A scenario INI stores the steps by the names
 // TeamTypeClass::Name_From_Mission() gives; a saved game stores the numbers.
 enum class TeamMissionType {
-  TMISSION_NONE = -1,
-  TMISSION_ATTACKBASE,       // Attack the nearest enemy base.
-  TMISSION_ATTACKUNITS,      // Attack enemy units.
-  TMISSION_ATTACKCIVILIANS,  // Attack civilians.
-  TMISSION_RAMPAGE,          // Attack and destroy anything of the enemy's.
-  TMISSION_DEFENDBASE,       // Protect the house's own base; a move.
-  TMISSION_MOVE,             // Move to the given waypoint.
-  TMISSION_MOVECELL,         // Move to the given cell number.
-  TMISSION_RETREAT,          // Fall back; carried out as a move.
-  TMISSION_GUARD,            // Guard the area, as a unit's guard mission does.
-  TMISSION_LOOP,             // Jump to the given line of the script.
-  TMISSION_ATTACKTARCOM,     // Attack the target the team already has.
-  TMISSION_UNLOAD,           // Move to the given waypoint and unload there.
-  TMISSION_COUNT,
+  kNone = -1,
+  kAttackBase,       // Attack the nearest enemy base.
+  kAttackUnits,      // Attack enemy units.
+  kAttackCivilians,  // Attack civilians.
+  kRampage,          // Attack and destroy anything of the enemy's.
+  kDefendBase,       // Protect the house's own base; a move.
+  kMove,             // Move to the given waypoint.
+  kMoveCell,         // Move to the given cell number.
+  kRetreat,          // Fall back; carried out as a move.
+  kGuard,            // Guard the area, as a unit's guard mission does.
+  kLoop,             // Jump to the given line of the script.
+  kAttackTarcom,     // Attack the target the team already has.
+  kUnload,           // Move to the given waypoint and unload there.
 };
-using enum TeamMissionType;
 
 // One line of a team type's script: a mission and its argument. The argument
-// is a waypoint for TMISSION_MOVE and TMISSION_UNLOAD, a cell number for
-// TMISSION_MOVECELL, a script line for TMISSION_LOOP and a packed target for
-// TMISSION_ATTACKTARCOM. For the attacks other than that one, and for
-// TMISSION_DEFENDBASE, TMISSION_RETREAT, TMISSION_GUARD and TMISSION_UNLOAD,
-// it is also the time in tenths of a minute after which the team goes on to
-// its next line.
+// is a waypoint for TeamMissionType::kMove and TeamMissionType::kUnload, a cell
+// number for TeamMissionType::kMoveCell, a script line for
+// TeamMissionType::kLoop and a packed target for
+// TeamMissionType::kAttackTarcom. For the attacks other than that one, and for
+// TeamMissionType::kDefendBase, TeamMissionType::kRetreat,
+// TeamMissionType::kGuard and TeamMissionType::kUnload, it is also the time in
+// tenths of a minute after which the team goes on to its next line.
 struct TeamMissionTag {
-  TeamMissionType Mission = TMISSION_NONE;
+  TeamMissionType Mission = TeamMissionType::kNone;
   int Argument = 0;
 
   // Saved-game support. Loading fails on a mission that is not one of the
@@ -86,7 +85,8 @@ struct TeamMissionTag {
   void Serialize(Archive& ar) {
     ar(Mission, Argument);
     if constexpr (Archive::kIsReading) {
-      if (Mission < TMISSION_NONE || Mission >= TMISSION_COUNT) {
+      if (Mission != TeamMissionType::kNone &&
+          !magic_enum::enum_contains(Mission)) {
         ar.Fail("invalid team mission");
       }
     }
@@ -170,10 +170,10 @@ class TeamTypeClass : public AbstractTypeClass {
   void Destroy_All_Of() const;
 
   // Returns the INI and editor name of a team mission, "None" for
-  // TMISSION_NONE or a value that is not a mission.
+  // TeamMissionType::kNone or a value that is not a mission.
   static const char* Name_From_Mission(TeamMissionType order);
-  // Returns the mission with this name, ignoring case, or TMISSION_NONE if
-  // there is none.
+  // Returns the mission with this name, ignoring case, or
+  // TeamMissionType::kNone if there is none.
   static TeamMissionType Mission_From_Name(std::string_view name);
   // Picks the team type the computer should create for `house` now: among the
   // house's own with fewer than MaxAllowed teams in the field, the one with
@@ -276,17 +276,12 @@ class TeamTypeClass : public AbstractTypeClass {
 
  private:
   // The name of each mission, as Name_From_Mission() returns it.
-  static base::EnumArray<TeamMissionType, const char*,
-                         static_cast<int>(TMISSION_COUNT)>
-      TMissions;
+  static base::EnumArray<TeamMissionType, const char*> TMissions;
 };
 
 extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace td
-
-template <>
-inline constexpr bool base::kIsSteppableEnum<td::TeamMissionType> = true;
 
 #endif  // CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
