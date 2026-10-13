@@ -32,7 +32,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "base/enum_array.h"
+#include "base/strings/tokenizer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/core/defines.h"
 #include "td/objects/house.h"
@@ -135,6 +135,9 @@ class TeamType : public AbstractTypeClass {
   // team type with no members and no missions. The scenario editor also uses
   // this to import a team type from MASTER.INI.
   void ReadIniEntry(std::string_view name, std::string_view entry);
+  // Returns this team type's [TeamTypes] value, in the format ReadIniEntry()
+  // describes, always with its last two fields.
+  [[nodiscard]] std::string ToIniEntry() const;
   // Writes every team type to the [TeamTypes] section of `ini` and deletes
   // the old-format [Teams] section. With `refresh` the section is emptied
   // first; without it the entries are added to the ones already there.
@@ -199,10 +202,8 @@ class TeamType : public AbstractTypeClass {
   void operator delete(void* ptr);
 
   // Debug self-check: in a build with the cheat keys, stops the game when
-  // this object is not in the team type heap. Always returns 1; callers run
-  // it for the check and ignore the result.
-  // NOLINTNEXTLINE(modernize-use-nodiscard)
-  int Validate() const;
+  // this object is not in the team type heap.
+  void Validate() const;
 
   // True while the object occupies its heap slot. operator new sets it
   // before the constructor runs, so the initializer must agree with it;
@@ -273,8 +274,10 @@ class TeamType : public AbstractTypeClass {
   uint8_t DesiredNum[kMaxMemberTypes]{};
 
  private:
-  // The name of each mission, as MissionName() returns it.
-  static base::EnumArray<TeamMissionType, const char*> kMissionNames;
+  // Reads the nine fields both INI formats start with: the house, the five
+  // options that are not at the end of the entry, the recruit priority and
+  // the two team counts.
+  void ReadLeadingFields(base::Tokenizer& tokens);
 };
 
 extern template void TeamType::Serialize<ArchiveWriter>(ArchiveWriter&);

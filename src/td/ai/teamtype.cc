@@ -52,23 +52,42 @@
 
 namespace td {
 
-base::EnumArray<TeamMissionType, const char*> TeamType::kMissionNames = {
+namespace {
+
+// The name of each team mission in a scenario INI and in the scenario editor.
+constexpr base::EnumArray<TeamMissionType, const char*> kMissionNames = {
     "Attack Base", "Attack Units", "Attack Civil.", "Rampage",
     "Defend Base", "Move",         "Move to Cell",  "Retreat",
     "Guard",       "Loop",         "Attack Tarcom", "Unload",
 };
 
+// Returns the infantry, unit or aircraft type called `name`, or nullptr if
+// there is none. A name that several kinds share goes to the aircraft before
+// the unit and to the unit before the infantry.
+const TechnoTypeClass* MemberTypeFromName(const std::string_view name) {
+  if (const AircraftType aircraft = AircraftTypeClass::From_Name(name);
+      aircraft != AIRCRAFT_NONE) {
+    return &AircraftTypeClass::As_Reference(aircraft);
+  }
+  if (const UnitType unit = UnitTypeClass::From_Name(name); unit != UNIT_NONE) {
+    return &UnitTypeClass::As_Reference(unit);
+  }
+  if (const InfantryType infantry = InfantryTypeClass::From_Name(name);
+      infantry != INFANTRY_NONE) {
+    return &InfantryTypeClass::As_Reference(infantry);
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 TeamType::~TeamType() = default;
 
-int TeamType::Validate() const {
+void TeamType::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().team_type().SlotIndexOf(this);
-    if (num < 0 || num >= kTeamTypeMax) {
+    if (!TheObjectHeaps().team_type().Owns(this)) {
       Validate_Error("TEAMTYPE");
     }
-    return 1;
-  } else {
-    return 1;
   }
 }
 
@@ -76,12 +95,12 @@ void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
 
 void TeamType::ReadIni(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries(kIniSection)) {
-    auto* team = base::NewPooled<TeamType>();
+    auto* team_type = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
-    if (team == nullptr) {
+    if (team_type == nullptr) {
       break;
     }
-    team->ReadIniEntry(name, entry);
+    team_type->ReadIniEntry(name, entry);
   }
 
   // A scenario in the old format has no [TeamTypes] section.
@@ -92,81 +111,36 @@ void TeamType::ReadIni(const engine::file::IniFile& ini) {
 
 void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   Validate();
-  std::string_view p1;  // class or mission name
-  std::string_view p2;  // its count or argument
-  TeamMission mission;
 
   Set_Name(name);
 
   base::Tokenizer tokens(entry);
-
-  // An unknown house name gives HOUSE_NONE.
-  House = HouseTypeClass::From_Name(tokens.Next());
-
-  IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-  IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-  IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-  // The fifth field was once "Spy".
-  IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-  IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-  RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
-
-  // The three counts are stored in a byte each; a number that does not fit
-  // wraps.
-  MaxAllowed =
-      static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-  InitNum = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-
+  ReadLeadingFields(tokens);
   Fear = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   // The members: a count, then that many Class:Num pairs.
-  const int num_classes = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (num_classes < 0 || num_classes > kMaxMemberTypes) {
-    ClassCount = 0;
+  const int listed_count = base::ParseIntegerOr<int>(tokens.Next(), -1);
+  ClassCount = 0;
+  if (listed_count < 0 || listed_count > kMaxMemberTypes) {
     MissionCount = 0;
     return;
   }
-
-  ClassCount = 0;
-  for (int i = 0; i < num_classes; i++) {
-    p1 = tokens.Next(",:");
-    p2 = tokens.Next(",:");
-    if (p1.empty() || p2.empty()) {
+  for (int listed = 0; listed < listed_count; listed++) {
+    const std::string_view type_name = tokens.Next(",:");
+    const std::string_view quantity_text = tokens.Next(",:");
+    if (type_name.empty() || quantity_text.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;
     }
-    const TechnoTypeClass* otype = nullptr;
-
-    // A name that several kinds of type share goes to the last kind that
-    // has it.
-    const InfantryType i_id = InfantryTypeClass::From_Name(p1);
-    if (i_id != INFANTRY_NONE) {
-      otype = &InfantryTypeClass::As_Reference(i_id);
-    }
-
-    const UnitType u_id = UnitTypeClass::From_Name(p1);
-    if (u_id != UNIT_NONE) {
-      otype = &UnitTypeClass::As_Reference(u_id);
-    }
-
-    const AircraftType a_id = AircraftTypeClass::From_Name(p1);
-    if (a_id != AIRCRAFT_NONE) {
-      otype = &AircraftTypeClass::As_Reference(a_id);
-    }
 
     // An unknown type (a unit this build does not have) is dropped and the
     // next member takes its place.
-    if (otype) {
-      base::At(Class, ClassCount) = otype;
+    const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
+    if (member_type != nullptr) {
+      base::At(Class, ClassCount) = member_type;
       base::At(DesiredNum, ClassCount) =
-          static_cast<uint8_t>(base::ParseIntegerOr<int>(p2, 0));
+          static_cast<uint8_t>(base::ParseIntegerOr<int>(quantity_text, 0));
       ClassCount++;
     }
   }
@@ -179,28 +153,72 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
     return;
   }
 
-  for (int i = 0; i < MissionCount; i++) {
-    p1 = tokens.Next(",:");
-    p2 = tokens.Next(",:");
-    if (p1.empty() || p2.empty()) {
+  for (int line = 0; line < MissionCount; line++) {
+    const std::string_view mission_name = tokens.Next(",:");
+    const std::string_view argument_text = tokens.Next(",:");
+    if (mission_name.empty() || argument_text.empty()) {
       ClassCount = 0;
       MissionCount = 0;
       return;
     }
-    mission.mission = MissionFromName(p1);
-    mission.argument = base::ParseIntegerOr<int>(p2, 0);
-    base::At(MissionList, i) = mission;
+    base::At(MissionList, line) = {
+        .mission = MissionFromName(mission_name),
+        .argument = base::ParseIntegerOr<int>(argument_text, 0)};
   }
 
   // Older scenarios end the entry here, which leaves both options on.
-  std::string_view ptr = tokens.Next();
-  if (!ptr.empty()) {
-    IsReinforcable = base::ParseIntegerOr<int>(ptr, 0) != 0;
+  if (const std::string_view reinforceable = tokens.Next();
+      !reinforceable.empty()) {
+    IsReinforcable = base::ParseIntegerOr<int>(reinforceable, 0) != 0;
   }
-  ptr = tokens.Next();
-  if (!ptr.empty()) {
-    IsPrebuilt = base::ParseIntegerOr<int>(ptr, 0) != 0;
+  if (const std::string_view prebuilt = tokens.Next(); !prebuilt.empty()) {
+    IsPrebuilt = base::ParseIntegerOr<int>(prebuilt, 0) != 0;
   }
+}
+
+void TeamType::ReadLeadingFields(base::Tokenizer& tokens) {
+  // An unknown house name gives HOUSE_NONE.
+  House = HouseTypeClass::From_Name(tokens.Next());
+  IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  // The fifth field was once "Spy".
+  IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  // The counts are stored in a byte each; a number that does not fit wraps.
+  MaxAllowed =
+      static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  InitNum = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+}
+
+std::string TeamType::ToIniEntry() const {
+  // By its type: the scenario need not have the house itself.
+  const std::string_view house_name =
+      House == HOUSE_NONE ? "None"
+                          : HouseTypeClass::As_Reference(House).IniName;
+
+  std::string entry = absl::StrFormat(
+      "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", house_name, IsRoundAbout, IsLearning,
+      IsSuicide, IsAutocreate, IsMercenary, RecruitPriority, MaxAllowed,
+      InitNum, Fear, ClassCount);
+
+  // The members: Class:Num for each.
+  for (int i = 0; std::cmp_less(i, ClassCount); i++) {
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Class, i)->IniName,
+                          base::At(DesiredNum, i));
+  }
+
+  // The script: a count, then Mission:Arg for each, the mission by name.
+  absl::StrAppendFormat(&entry, ",%d", MissionCount);
+  for (int i = 0; i < MissionCount; i++) {
+    absl::StrAppendFormat(&entry, ",%s:%d",
+                          MissionName(base::At(MissionList, i).mission),
+                          base::At(MissionList, i).argument);
+  }
+
+  absl::StrAppendFormat(&entry, ",%d,%d", IsReinforcable, IsPrebuilt);
+  return entry;
 }
 
 void TeamType::WriteIni(engine::file::IniFile& ini, bool refresh) {
@@ -212,109 +230,43 @@ void TeamType::WriteIni(engine::file::IniFile& ini, bool refresh) {
   }
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-
-    // By its type: the scenario need not have the house itself.
-    const std::string_view house_name =
-        team->House == HOUSE_NONE
-            ? "None"
-            : HouseTypeClass::As_Reference(team->House).IniName;
-
-    std::string entry = absl::StrFormat(
-        "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", house_name, team->IsRoundAbout,
-        team->IsLearning, team->IsSuicide, team->IsAutocreate,
-        team->IsMercenary, team->RecruitPriority, team->MaxAllowed,
-        team->InitNum, team->Fear, team->ClassCount);
-
-    // The members: Class:Num for each.
-    for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
-      absl::StrAppendFormat(&entry, ",%s:%d", base::At(team->Class, i)->IniName,
-                            base::At(team->DesiredNum, i));
-    }
-
-    // The script: a count, then Mission:Arg for each, the mission by name.
-    absl::StrAppendFormat(&entry, ",%d", team->MissionCount);
-    for (int i = 0; i < team->MissionCount; i++) {
-      absl::StrAppendFormat(&entry, ",%s:%d",
-                            MissionName(base::At(team->MissionList, i).mission),
-                            base::At(team->MissionList, i).argument);
-    }
-
-    absl::StrAppendFormat(&entry, ",%d,%d", team->IsReinforcable,
-                          team->IsPrebuilt);
-
-    ini.PutString(kIniSection, team->IniName, entry);
+    const TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(index);
+    ini.PutString(kIniSection, team_type->IniName, team_type->ToIniEntry());
   }
 }
 
 void TeamType::ReadOldIni(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries("Teams")) {
-    auto* team = base::NewPooled<TeamType>();
+    auto* team_type = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
-    if (team == nullptr) {
+    if (team_type == nullptr) {
       break;
     }
-    team->Set_Name(name);
+    team_type->Set_Name(name);
 
     base::Tokenizer tokens(entry);
-    team->House = HouseTypeClass::From_Name(tokens.Next());
-
-    team->IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-    team->IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-    team->IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-    team->IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-    team->IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-
-    team->RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
-
-    team->MaxAllowed =
-        static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-    team->InitNum =
-        static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-
-    tokens.Next();  // mission name, unused
+    team_type->ReadLeadingFields(tokens);
+    tokens.Next();  // The mission's name, unused.
 
     // The members: Class:Num pairs up to the end of the entry, of which the
     // first kMaxMemberTypes known types are kept.
-    int index = 0;
-    std::string_view p1 = tokens.Next(",:");  // class name
-    std::string_view p2 = tokens.Next(",:");  // its count
-    while (!p1.empty() && !p2.empty() && index < kMaxMemberTypes) {
-      const TechnoTypeClass* otype = nullptr;
-
-      const InfantryType i_id = InfantryTypeClass::From_Name(p1);
-      if (i_id != INFANTRY_NONE) {
-        otype = &InfantryTypeClass::As_Reference(i_id);
+    int member_count = 0;
+    std::string_view type_name = tokens.Next(",:");
+    std::string_view quantity_text = tokens.Next(",:");
+    while (!type_name.empty() && !quantity_text.empty() &&
+           member_count < kMaxMemberTypes) {
+      const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
+      if (member_type != nullptr) {
+        base::At(team_type->Class, member_count) = member_type;
+        base::At(team_type->DesiredNum, member_count) =
+            static_cast<uint8_t>(base::ParseIntegerOr<int>(quantity_text, 0));
+        member_count++;
+        team_type->ClassCount = static_cast<uint8_t>(member_count);
       }
 
-      const UnitType u_id = UnitTypeClass::From_Name(p1);
-      if (u_id != UNIT_NONE) {
-        otype = &UnitTypeClass::As_Reference(u_id);
-      }
-
-      const AircraftType a_id = AircraftTypeClass::From_Name(p1);
-      if (a_id != AIRCRAFT_NONE) {
-        otype = &AircraftTypeClass::As_Reference(a_id);
-      }
-
-      if (otype) {
-        base::At(team->Class, index) = otype;
-        base::At(team->DesiredNum, index) =
-            static_cast<uint8_t>(base::ParseIntegerOr<int>(p2, 0));
-        index++;
-        team->ClassCount = static_cast<uint8_t>(index);
-      }
-
-      p1 = tokens.Next(",:");
-      p2 = tokens.Next(",:");
+      type_name = tokens.Next(",:");
+      quantity_text = tokens.Next(",:");
     }
-
-    team->Fear = 0;
   }
 }
 
@@ -419,7 +371,7 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     const TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
-    if (candidate && candidate->House == house->Class->House &&
+    if (candidate->House == house->Class->House &&
         base::At(TeamClass::Number, index) <
             (alerted || !candidate->IsAutocreate ? candidate->MaxAllowed : 0)) {
       // The unit and infantry types this team type wants, as bit masks.
