@@ -3,7 +3,6 @@
 
 #include "td/ai/teamtype.h"
 
-#include <cstddef>
 #include <span>
 #include <string>
 #include <string_view>
@@ -80,6 +79,28 @@ TEST_F(TeamTypeTest, ATeamTypeIsWrittenWithItsHousesNameWithoutThatHouse) {
 
   EXPECT_EQ(written.GetString("TeamTypes", "one", ""),
             "BadGuy,0,0,0,0,0,7,1,0,0,0,0,1,1");
+}
+
+// Twenty lines with long names and arguments make an entry of more than 500
+// characters.
+TEST_F(TeamTypeTest, TheLongestEntryIsWrittenWhole) {
+  std::string entry =
+      "GoodGuy,1,1,1,1,1,15,255,255,255,5,E1:255,E2:255,E3:255,E4:255,E5:255,"
+      "20";
+  for (int line = 0; line < 20; line++) {
+    entry += ",Attack Civil.:1000000";
+  }
+  entry += ",1,1";
+  ASSERT_GT(entry.size(), 500U);
+  IniFile ini;
+  Parse("[TeamTypes]\r\nbig=" + entry + "\r\n", ini);
+  TeamTypeClass::Read_INI(ini);
+  ASSERT_EQ(TheObjectHeaps().team_type().Count(), 1);
+
+  IniFile written;
+  TeamTypeClass::Write_INI(written, true);
+
+  EXPECT_EQ(written.GetString("TeamTypes", "big", ""), entry);
 }
 
 }  // namespace

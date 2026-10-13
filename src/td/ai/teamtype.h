@@ -26,6 +26,7 @@
 #define CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <span>
 #include <string>
 #include <string_view>
@@ -248,13 +249,13 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // The scenario's "initial number" of teams of this type. Read, written and
   // saved, but nothing creates teams from it.
-  unsigned char InitNum = 0;
+  uint8_t InitNum = 0;
 
   // The most teams of this type that may exist at one time.
-  unsigned char MaxAllowed = 0;
+  uint8_t MaxAllowed = 0;
 
   // The team's fear level. Read, written and saved, but nothing acts on it.
-  unsigned char Fear = 0;
+  uint8_t Fear = 0;
 
   // The house the teams belong to; HOUSE_NONE if the INI entry names none.
   HousesType House = HOUSE_NONE;
@@ -265,13 +266,13 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // The number of kinds of member: the entries in use of Class and
   // DesiredNum.
-  unsigned char ClassCount = 0;
+  uint8_t ClassCount = 0;
 
   // The type of each kind of member: an infantry, unit or aircraft type.
   const TechnoTypeClass* Class[kMaxTeamClasscount]{};
 
   // How many of each kind of member a full team has.
-  unsigned char DesiredNum[kMaxTeamClasscount]{};
+  uint8_t DesiredNum[kMaxTeamClasscount]{};
 
  private:
   // The name of each mission, as Name_From_Mission() returns it.

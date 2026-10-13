@@ -25,7 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -36,7 +36,6 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
-#include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "game/core/object_heap.h"
@@ -129,13 +128,11 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   // The three counts are stored in a byte each; a number that does not fit
   // wraps.
   MaxAllowed =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  InitNum =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  InitNum = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-  Fear =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  Fear = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   // The members: a count, then that many Class:Num pairs.
   const int num_classes = base::ParseIntegerOr<int>(tokens.Next(), -1);
@@ -178,7 +175,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
     if (otype) {
       base::At(Class, ClassCount) = otype;
       base::At(DesiredNum, ClassCount) =
-          static_cast<unsigned char>(base::ParseIntegerOr<int>(p2, 0));
+          static_cast<uint8_t>(base::ParseIntegerOr<int>(p2, 0));
       ClassCount++;
     }
   }
@@ -216,9 +213,6 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
 }
 
 void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
-  char buf[500];
-  const char* hname = nullptr;
-
   // The team types are written in the current format only.
   ini.Clear("Teams");
 
@@ -226,54 +220,40 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
     ini.Clear(INI_Name());
   }
 
-  base::At(buf, 0) = 0;
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+    const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
 
-    if (team->House == HOUSE_NONE) {
-      hname = "None";
-    } else {
-      // By its type: the scenario need not have the house itself.
-      hname = HouseTypeClass::As_Reference(team->House).IniName;
-    }
+    // By its type: the scenario need not have the house itself.
+    const std::string_view house_name =
+        team->House == HOUSE_NONE
+            ? "None"
+            : HouseTypeClass::As_Reference(team->House).IniName;
 
-    absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", hname,
-                   team->IsRoundAbout, team->IsLearning, team->IsSuicide,
-                   team->IsAutocreate, team->IsMercenary, team->RecruitPriority,
-                   team->MaxAllowed, team->InitNum, team->Fear,
-                   team->ClassCount);
+    std::string entry = absl::StrFormat(
+        "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", house_name, team->IsRoundAbout,
+        team->IsLearning, team->IsSuicide, team->IsAutocreate,
+        team->IsMercenary, team->RecruitPriority, team->MaxAllowed,
+        team->InitNum, team->Fear, team->ClassCount);
 
     // The members: Class:Num for each.
     for (int i = 0; std::cmp_less(i, team->ClassCount); i++) {
-      absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
-                     sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
-                     base::At(team->Class, i)->IniName,
-                     base::At(team->DesiredNum, i));
+      absl::StrAppendFormat(&entry, ",%s:%d", base::At(team->Class, i)->IniName,
+                            base::At(team->DesiredNum, i));
     }
 
     // The script: a count, then Mission:Arg for each, the mission by name.
-    absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
-                   sizeof(buf) - std::string_view(buf).size(), ",%d",
-                   team->MissionCount);
+    absl::StrAppendFormat(&entry, ",%d", team->MissionCount);
     for (int i = 0; i < team->MissionCount; i++) {
-      absl::SNPrintF(base::Suffix(buf, std::string_view(buf).size()).data(),
-                     sizeof(buf) - std::string_view(buf).size(), ",%s:%d",
-                     Name_From_Mission(base::At(team->MissionList, i).Mission),
-                     base::At(team->MissionList, i).Argument);
+      absl::StrAppendFormat(
+          &entry, ",%s:%d",
+          Name_From_Mission(base::At(team->MissionList, i).Mission),
+          base::At(team->MissionList, i).Argument);
     }
 
-    if (team->IsReinforcable) {
-      base::SafeAppend(buf, ",1");
-    } else {
-      base::SafeAppend(buf, ",0");
-    }
-    if (team->IsPrebuilt) {
-      base::SafeAppend(buf, ",1");
-    } else {
-      base::SafeAppend(buf, ",0");
-    }
+    absl::StrAppendFormat(&entry, ",%d,%d", team->IsReinforcable,
+                          team->IsPrebuilt);
 
-    ini.PutString(INI_Name(), team->IniName, buf);
+    ini.PutString(INI_Name(), team->IniName, entry);
   }
 }
 
@@ -302,10 +282,10 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
     team->RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
     team->MaxAllowed =
-        static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+        static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
     team->InitNum =
-        static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+        static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
     tokens.Next();  // mission name, unused
 
@@ -335,9 +315,9 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
       if (otype) {
         base::At(team->Class, index) = otype;
         base::At(team->DesiredNum, index) =
-            static_cast<unsigned char>(base::ParseIntegerOr<int>(p2, 0));
+            static_cast<uint8_t>(base::ParseIntegerOr<int>(p2, 0));
         index++;
-        team->ClassCount = static_cast<unsigned char>(index);
+        team->ClassCount = static_cast<uint8_t>(index);
       }
 
       p1 = tokens.Next(",:");
