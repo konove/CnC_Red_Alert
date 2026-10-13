@@ -16,6 +16,7 @@
 #include "base/buffer.h"
 #include "base/clip.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -231,19 +232,15 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
   // Clip the destination rectangle to the view. The source is the whole frame
   // from its top left, so it starts however far the destination's near corner
   // was pulled in; clipping the far corner only shortens the lines.
-  int dst_x = x;
-  int dst_y = y;
-  job.pixel_count = width;
-  job.line_count = height;
-  if (!ClipRect(dst_x, dst_y, job.pixel_count, job.line_count, dest.width(),
-                dest.height())) {
+  const base::Rect clipped = base::ClipRect(base::Rect{x, y, width, height},
+                                            dest.width(), dest.height());
+  if (!clipped.IsValid()) {
     return;
   }
-  // Clipping can still leave nothing: a far corner exactly on the left or
-  // top edge.
-  if (job.pixel_count <= 0 || job.line_count <= 0) {
-    return;
-  }
+  const int dst_x = clipped.x;
+  const int dst_y = clipped.y;
+  job.pixel_count = clipped.width;
+  job.line_count = clipped.height;
 
   job.src_stride = width;
   job.dst_stride = dest.stride();

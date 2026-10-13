@@ -1,7 +1,9 @@
 #include "base/clip.h"
 
+#include "base/rect.h"
 #include "gtest/gtest.h"
 
+namespace base {
 namespace {
 
 // A 50 by 50 window, the shape the map code clips cell rectangles against.
@@ -35,160 +37,106 @@ TEST(OutCodeTest, WidenedWindowAdmitsTheEndCoordinate) {
 }
 
 TEST(ClipRectTest, RectangleInsideIsUnchanged) {
-  int x = 10;
-  int y = 20;
-  int width = 5;
-  int height = 6;
-
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 10);
-  EXPECT_EQ(y, 20);
-  EXPECT_EQ(width, 5);
-  EXPECT_EQ(height, 6);
+  EXPECT_EQ(ClipRect(Rect{10, 20, 5, 6}, kWidth, kHeight),
+            (Rect{10, 20, 5, 6}));
 }
 
-TEST(ClipRectTest, RectanglePastAnEdgeIsRejected) {
-  int x = 100;
-  int y = 0;
-  int width = 10;
-  int height = 10;
-  EXPECT_FALSE(ClipRect(x, y, width, height, kWidth, kHeight));
+TEST(ClipRectTest, RectanglePastAnEdgeLeavesNothing) {
+  EXPECT_FALSE(ClipRect(Rect{100, 0, 10, 10}, kWidth, kHeight).IsValid());
+  EXPECT_FALSE(ClipRect(Rect{-20, 0, 10, 10}, kWidth, kHeight).IsValid());
+  EXPECT_FALSE(ClipRect(Rect{0, -20, 10, 10}, kWidth, kHeight).IsValid());
+  EXPECT_FALSE(ClipRect(Rect{0, 100, 10, 10}, kWidth, kHeight).IsValid());
+}
 
-  x = -20;
-  EXPECT_FALSE(ClipRect(x, y, width, height, kWidth, kHeight));
+// The far corner is one past the last pixel, so a rectangle that ends on the
+// window's left or top edge, or starts on its right or bottom one, passes the
+// outcode test although no pixel of it is inside. Nothing left is always the
+// default Rect, whichever way it came about.
+TEST(ClipRectTest, RectangleOnlyTouchingAnEdgeLeavesNothing) {
+  EXPECT_EQ(ClipRect(Rect{-10, 5, 10, 10}, kWidth, kHeight), Rect{});
+  EXPECT_EQ(ClipRect(Rect{5, -10, 10, 10}, kWidth, kHeight), Rect{});
+  EXPECT_EQ(ClipRect(Rect{kWidth, 5, 0, 10}, kWidth, kHeight), Rect{});
+  EXPECT_EQ(ClipRect(Rect{5, kHeight, 10, 0}, kWidth, kHeight), Rect{});
+}
 
-  x = 0;
-  y = -20;
-  EXPECT_FALSE(ClipRect(x, y, width, height, kWidth, kHeight));
-
-  y = 100;
-  EXPECT_FALSE(ClipRect(x, y, width, height, kWidth, kHeight));
+TEST(ClipRectTest, EmptyRectangleLeavesNothing) {
+  EXPECT_EQ(ClipRect(Rect{10, 10, 0, 5}, kWidth, kHeight), Rect{});
+  EXPECT_EQ(ClipRect(Rect{10, 10, 5, 0}, kWidth, kHeight), Rect{});
+  EXPECT_EQ(ClipRect(Rect{10, 10, -3, 5}, kWidth, kHeight), Rect{});
 }
 
 TEST(ClipRectTest, RectangleTouchingTheFarEdgeIsInside) {
-  int x = 40;
-  int y = 40;
-  int width = 10;
-  int height = 10;
-
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 40);
-  EXPECT_EQ(y, 40);
-  EXPECT_EQ(width, 10);
-  EXPECT_EQ(height, 10);
+  EXPECT_EQ(ClipRect(Rect{40, 40, 10, 10}, kWidth, kHeight),
+            (Rect{40, 40, 10, 10}));
 }
 
 TEST(ClipRectTest, OverhangIsTrimmedFromTheFarEdges) {
-  int x = 45;
-  int y = 45;
-  int width = 10;
-  int height = 20;
-
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 45);
-  EXPECT_EQ(y, 45);
-  EXPECT_EQ(width, 5);
-  EXPECT_EQ(height, 5);
+  EXPECT_EQ(ClipRect(Rect{45, 45, 10, 20}, kWidth, kHeight),
+            (Rect{45, 45, 5, 5}));
 }
 
 TEST(ClipRectTest, OverhangIsTrimmedFromTheNearEdges) {
-  int x = -5;
-  int y = -8;
-  int width = 10;
-  int height = 20;
-
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 0);
-  EXPECT_EQ(y, 0);
-  EXPECT_EQ(width, 5);
-  EXPECT_EQ(height, 12);
+  EXPECT_EQ(ClipRect(Rect{-5, -8, 10, 20}, kWidth, kHeight),
+            (Rect{0, 0, 5, 12}));
 }
 
 TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {
-  int x = -10;
-  int y = -10;
-  int width = 100;
-  int height = 100;
-
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 0);
-  EXPECT_EQ(y, 0);
-  EXPECT_EQ(width, kWidth);
-  EXPECT_EQ(height, kHeight);
+  EXPECT_EQ(ClipRect(Rect{-10, -10, 100, 100}, kWidth, kHeight),
+            (Rect{0, 0, kWidth, kHeight}));
 }
 
 // The map clips a 24 by 24 cell against the tactical view; a cell straddling
 // the right edge keeps only the columns still on screen.
 TEST(ClipRectTest, CellStraddlingTheTacticalEdge) {
-  int x = 36;
-  int y = 12;
-  int width = 24;
-  int height = 24;
+  EXPECT_EQ(ClipRect(Rect{36, 12, 24, 24}, kWidth, kHeight),
+            (Rect{36, 12, 14, 24}));
+}
 
-  EXPECT_TRUE(ClipRect(x, y, width, height, kWidth, kHeight));
-  EXPECT_EQ(x, 36);
-  EXPECT_EQ(width, 14);
-  EXPECT_EQ(y, 12);
-  EXPECT_EQ(height, 24);
+// Checks where ConfineRect() puts `rect` in the test window and whether it
+// reports having bounded it.
+void ExpectConfined(const Rect& rect, const int x, const int y,
+                    const bool bounded) {
+  const ConfinedRect confined = ConfineRect(rect, kWidth, kHeight);
+
+  EXPECT_EQ(confined.position.x, x);
+  EXPECT_EQ(confined.position.y, y);
+  EXPECT_EQ(confined.bounded, bounded);
 }
 
 TEST(ConfineRectTest, RectangleInsideDoesNotMove) {
-  int x = 10;
-  int y = 20;
-
-  EXPECT_FALSE(ConfineRect(x, y, 5, 6, kWidth, kHeight));
-  EXPECT_EQ(x, 10);
-  EXPECT_EQ(y, 20);
+  ExpectConfined(Rect{10, 20, 5, 6}, 10, 20, false);
 }
 
 TEST(ConfineRectTest, RectangleTouchingTheFarEdgeDoesNotMove) {
-  int x = 40;
-  int y = 40;
-
-  EXPECT_FALSE(ConfineRect(x, y, 10, 10, kWidth, kHeight));
-  EXPECT_EQ(x, 40);
-  EXPECT_EQ(y, 40);
+  ExpectConfined(Rect{40, 40, 10, 10}, 40, 40, false);
 }
 
 // The rectangle keeps its size and slides back inside, unlike ClipRect(),
 // which would have trimmed the overhang off instead.
 TEST(ConfineRectTest, OverhangSlidesBackAndKeepsItsSize) {
-  int x = 45;
-  int y = 48;
-
-  EXPECT_TRUE(ConfineRect(x, y, 10, 20, kWidth, kHeight));
-  EXPECT_EQ(x, 40);
-  EXPECT_EQ(y, 30);
+  ExpectConfined(Rect{45, 48, 10, 20}, 40, 30, true);
 }
 
 TEST(ConfineRectTest, NegativeOriginMovesToZero) {
-  int x = -5;
-  int y = -8;
+  ExpectConfined(Rect{-5, -8, 10, 20}, 0, 0, true);
+}
 
-  EXPECT_TRUE(ConfineRect(x, y, 10, 20, kWidth, kHeight));
-  EXPECT_EQ(x, 0);
-  EXPECT_EQ(y, 0);
+// Each axis is bounded on its own.
+TEST(ConfineRectTest, OneAxisCanBeBoundedAlone) {
+  ExpectConfined(Rect{-5, 20, 10, 10}, 0, 20, true);
+  ExpectConfined(Rect{10, 48, 10, 10}, 10, 40, true);
 }
 
 TEST(ConfineRectTest, RectangleLargerThanTheWindowPinsToTheOrigin) {
-  int x = 30;
-  int y = 30;
-
-  EXPECT_TRUE(ConfineRect(x, y, 100, 100, kWidth, kHeight));
-  EXPECT_EQ(x, 0);
-  EXPECT_EQ(y, 0);
+  ExpectConfined(Rect{30, 30, 100, 100}, 0, 0, true);
 }
 
 // A rectangle too big for the window reports as bounded even though it was
 // already at the origin and does not move. Both games' map scrolling depends
 // on that: it reads the result as "the scroll hit the edge of the world".
 TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
-  int x = 0;
-  int y = 0;
-
-  EXPECT_TRUE(ConfineRect(x, y, 100, 100, kWidth, kHeight));
-  EXPECT_EQ(x, 0);
-  EXPECT_EQ(y, 0);
+  ExpectConfined(Rect{0, 0, 100, 100}, 0, 0, true);
 }
 
 }  // namespace
+}  // namespace base

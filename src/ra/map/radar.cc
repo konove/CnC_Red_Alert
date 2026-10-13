@@ -92,6 +92,7 @@
 #include "base/array.h"
 #include "base/clip.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
@@ -1886,11 +1887,13 @@ void RadarClass::Set_Radar_Position(Cell cell) {
     oldy = 0;
   }
 
-  ConfineRect(oldx, oldy, RadarCellWidth, RadarCellHeight, MapCellWidth,
-              MapCellHeight);
+  const base::Point confined =
+      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},
+                        MapCellWidth, MapCellHeight)
+          .position;
 
-  const int newx = oldx + MapCellX;
-  const int newy = oldy + MapCellY;
+  const int newx = confined.x + MapCellX;
+  const int newy = confined.y + MapCellY;
   const int newcell = Cell::FromXY(newx, newy).index();
 
   if (RadarCell != newcell) {

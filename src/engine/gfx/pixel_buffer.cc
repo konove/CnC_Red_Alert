@@ -212,8 +212,9 @@ void PixelView::CopyToBufferLocked(const base::Rect& source,
   int src_x1 = source.right();
   int src_y1 = source.bottom();
 
-  const OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
-  const OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
+  const base::OutCode code0 = base::OutCodeOf(src_x0, src_y0, width_, height_);
+  const base::OutCode code1 =
+      base::OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -222,18 +223,18 @@ void PixelView::CopyToBufferLocked(const base::Rect& source,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
+    if (base::Any(code0 & base::OutCode::kLeft)) {
       dst_x0 -= src_x0;
       src_x0 = 0;
     }
-    if (base::Any(code1 & OutCode::kRight)) {
+    if (base::Any(code1 & base::OutCode::kRight)) {
       src_x1 = width_;
     }
-    if (base::Any(code0 & OutCode::kAbove)) {
+    if (base::Any(code0 & base::OutCode::kAbove)) {
       dst_y0 -= src_y0;
       src_y0 = 0;
     }
-    if (base::Any(code1 & OutCode::kBelow)) {
+    if (base::Any(code1 & base::OutCode::kBelow)) {
       src_y1 = height_;
     }
   }
@@ -283,8 +284,9 @@ void PixelView::CopyFromBufferLocked(const base::Rect& dest,
   int dst_x1 = dest.right();
   int dst_y1 = dest.bottom();
 
-  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, width_, height_);
-  const OutCode code1 = OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
+  const base::OutCode code0 = base::OutCodeOf(dst_x0, dst_y0, width_, height_);
+  const base::OutCode code1 =
+      base::OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -293,18 +295,18 @@ void PixelView::CopyFromBufferLocked(const base::Rect& dest,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
+    if (base::Any(code0 & base::OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (base::Any(code1 & OutCode::kRight)) {
+    if (base::Any(code1 & base::OutCode::kRight)) {
       dst_x1 = width_;
     }
-    if (base::Any(code0 & OutCode::kAbove)) {
+    if (base::Any(code0 & base::OutCode::kAbove)) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (base::Any(code1 & OutCode::kBelow)) {
+    if (base::Any(code1 & base::OutCode::kBelow)) {
       dst_y1 = height_;
     }
   }
@@ -354,15 +356,14 @@ void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
   // clip source
   const int src_x = source.x;
   const int src_y = source.y;
-  int src_x0 = src_x;
-  int src_y0 = src_y;
-  int src_width = source.width;
-  int src_height = source.height;
-  if (!ClipRect(src_x0, src_y0, src_width, src_height, width_, height_)) {
+  const base::Rect clipped = base::ClipRect(source, width_, height_);
+  if (!clipped.IsValid()) {
     return;
   }
-  int src_x1 = src_x0 + src_width;
-  int src_y1 = src_y0 + src_height;
+  int src_x0 = clipped.x;
+  int src_y0 = clipped.y;
+  int src_x1 = clipped.right();
+  int src_y1 = clipped.bottom();
 
   // clip dest
   // Whatever the source clip took off the top and left moves the destination
@@ -372,9 +373,10 @@ void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
   int dst_x1 = dst_x0 + (src_x1 - src_x0);
   int dst_y1 = dst_y0 + (src_y1 - src_y0);
 
-  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  const OutCode code1 =
-      OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  const base::OutCode code0 =
+      base::OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  const base::OutCode code1 =
+      base::OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -383,19 +385,19 @@ void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
+    if (base::Any(code0 & base::OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (base::Any(code1 & OutCode::kRight)) {
+    if (base::Any(code1 & base::OutCode::kRight)) {
       src_x1 -= dst_x1 - dest.width();
       dst_x1 = dest.width();
     }
-    if (base::Any(code0 & OutCode::kAbove)) {
+    if (base::Any(code0 & base::OutCode::kAbove)) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (base::Any(code1 & OutCode::kBelow)) {
+    if (base::Any(code1 & base::OutCode::kBelow)) {
       src_y1 -= dst_y1 - dest.height();
       dst_y1 = dest.height();
     }
@@ -514,8 +516,9 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int dst_y1 = dst_y + dst_height;
 
   // clip source
-  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
-  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
+  base::OutCode code0 = base::OutCodeOf(src_x0, src_y0, width_, height_);
+  base::OutCode code1 =
+      base::OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -524,27 +527,27 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
+    if (base::Any(code0 & base::OutCode::kLeft)) {
       src_x0 = 0;
       dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);
     }
-    if (base::Any(code1 & OutCode::kRight)) {
+    if (base::Any(code1 & base::OutCode::kRight)) {
       src_x1 = width_;
       dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);
     }
-    if (base::Any(code0 & OutCode::kAbove)) {
+    if (base::Any(code0 & base::OutCode::kAbove)) {
       src_y0 = 0;
       dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);
     }
-    if (base::Any(code1 & OutCode::kBelow)) {
+    if (base::Any(code1 & base::OutCode::kBelow)) {
       src_y1 = height_;
       dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);
     }
   }
 
   // clip dest
-  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  code0 = base::OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = base::OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -553,18 +556,18 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   if (base::Any(code0 | code1)) {
     // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
+    if (base::Any(code0 & base::OutCode::kLeft)) {
       dst_x0 = 0;
       src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);
     }
-    if (base::Any(code1 & OutCode::kRight)) {
+    if (base::Any(code1 & base::OutCode::kRight)) {
       dst_x1 = dest.width();
     }
-    if (base::Any(code0 & OutCode::kAbove)) {
+    if (base::Any(code0 & base::OutCode::kAbove)) {
       dst_y0 = 0;
       src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
     }
-    if (base::Any(code1 & OutCode::kBelow)) {
+    if (base::Any(code1 & base::OutCode::kBelow)) {
       dst_y1 = dest.height();
     }
   }
@@ -861,34 +864,34 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   const int height = height_;
 
   // this is different to the original asm, but reused from blits
-  const OutCode code0 = OutCodeOf(x1, y1, width, height);
-  const OutCode code1 = OutCodeOf(x2, y2, width, height);
+  const base::OutCode code0 = base::OutCodeOf(x1, y1, width, height);
+  const base::OutCode code1 = base::OutCodeOf(x2, y2, width, height);
 
   if (base::Any(code0 & code1)) {
     return;
   }
 
   if (base::Any(code0)) {
-    if (base::Any(code0 & OutCode::kLeft))  // left
+    if (base::Any(code0 & base::OutCode::kLeft))  // left
     {
       if (x2 != x1) {
         y1 += -x1 * (y2 - y1) / (x2 - x1);
       }
       x1 = 0;
-    } else if (base::Any(code0 & OutCode::kRight)) {  // right
+    } else if (base::Any(code0 & base::OutCode::kRight)) {  // right
       if (x2 != x1) {
         y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
       }
       x1 = width - 1;
     }
 
-    if (base::Any(code0 & OutCode::kAbove))  // top
+    if (base::Any(code0 & base::OutCode::kAbove))  // top
     {
       if (y2 != y1) {
         x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
       }
       y1 = 0;
-    } else if (base::Any(code0 & OutCode::kBelow)) {  // bottom
+    } else if (base::Any(code0 & base::OutCode::kBelow)) {  // bottom
       if (y2 != y1) {
         x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
       }
@@ -897,26 +900,26 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   }
 
   if (base::Any(code1)) {
-    if (base::Any(code1 & OutCode::kLeft))  // left
+    if (base::Any(code1 & base::OutCode::kLeft))  // left
     {
       if (x1 != x2) {
         y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
       }
       x2 = 0;
-    } else if (base::Any(code1 & OutCode::kRight)) {  // right
+    } else if (base::Any(code1 & base::OutCode::kRight)) {  // right
       if (x1 != x2) {
         y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
       }
       x2 = width - 1;
     }
 
-    if (base::Any(code1 & OutCode::kAbove))  // top
+    if (base::Any(code1 & base::OutCode::kAbove))  // top
     {
       if (y1 != y2) {
         x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
       }
       y2 = 0;
-    } else if (base::Any(code1 & OutCode::kBelow)) {  // bottom
+    } else if (base::Any(code1 & base::OutCode::kBelow)) {  // bottom
       if (y1 != y2) {
         x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
       }
@@ -1047,20 +1050,15 @@ void PixelView::RemapLocked(const base::Rect& rect,
   }
 
   // clip
-  int dst_x0 = rect.x;
-  int dst_y0 = rect.y;
-  int pixel_count = rect.width;
-  int line_count = rect.height;
-  if (!ClipRect(dst_x0, dst_y0, pixel_count, line_count, width_, height_)) {
+  const base::Rect clipped = base::ClipRect(rect, width_, height_);
+  if (!clipped.IsValid()) {
     return;
   }
+  const int pixel_count = clipped.width;
+  int line_count = clipped.height;
 
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
-
-  if (pixel_count <= 0 || line_count <= 0) {
-    return;
-  }
+  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
 
   const int skip = static_cast<int>(dst_area - pixel_count);
 
