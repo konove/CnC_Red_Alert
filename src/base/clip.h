@@ -51,7 +51,9 @@ constexpr OutCode OutCodeOf(int x, int y, int width, int height) {
 //
 // A caller that has a second rectangle to carry along - a source to match a
 // clipped destination, or the reverse - moves it by however much the result's
-// corner moved, or clips with OutCodeOf() directly.
+// corner moved. Only one that scales between the two (PixelView::ScaleLocked)
+// clips with OutCodeOf() directly, because each edge then moves the other
+// rectangle by a different amount.
 constexpr Rect ClipRect(const Rect& rect, const int clip_width,
                         const int clip_height) {
   int x0 = rect.x;

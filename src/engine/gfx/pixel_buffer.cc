@@ -20,8 +20,9 @@
 // to a page, the drawing primitives that work on the locked pixels, giving a
 // page its pixels, and locking the surface a page borrows them from.
 //
-// The primitives all clip with the Cohen-Sutherland outcodes of
-// base/clip.h and then walk whole rows.
+// The primitives all clip with base/clip.h - the copies and the blit with
+// ClipRect(), the scaled blit and the line with the Cohen-Sutherland outcodes
+// themselves - and then walk whole rows.
 
 #include "engine/gfx/pixel_buffer.h"
 
@@ -202,59 +203,26 @@ void PixelView::CopyToBuffer(const base::Rect& source,
 
 void PixelView::CopyToBufferLocked(const base::Rect& source,
                                    std::span<uint8_t> dest) {
+  // The buffer holds the whole of `source`, so what the clip took off the top
+  // and left is skipped in it too.
   const int width = source.width;
-  int dst_x0 = 0;
-  int dst_y0 = 0;
-
-  // clip src
-  int src_x0 = source.x;
-  int src_y0 = source.y;
-  int src_x1 = source.right();
-  int src_y1 = source.bottom();
-
-  const base::OutCode code0 = base::OutCodeOf(src_x0, src_y0, width_, height_);
-  const base::OutCode code1 =
-      base::OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
-
-  // outside
-  if (base::Any(code0 & code1)) {
+  const base::Rect clipped = base::ClipRect(source, width_, height_);
+  if (!clipped.IsValid()) {
     return;
-  }
-
-  if (base::Any(code0 | code1)) {
-    // apply clip
-    if (base::Any(code0 & base::OutCode::kLeft)) {
-      dst_x0 -= src_x0;
-      src_x0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kRight)) {
-      src_x1 = width_;
-    }
-    if (base::Any(code0 & base::OutCode::kAbove)) {
-      dst_y0 -= src_y0;
-      src_y0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kBelow)) {
-      src_y1 = height_;
-    }
   }
 
   const base::ssize src_area = stride();
-  auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_area);
+  auto src_offset = pixels().begin() + clipped.x + (clipped.y * src_area);
 
-  auto dst_offset =
-      dest.begin() + dst_x0 + (static_cast<base::ssize>(dst_y0) * width);
-
-  if (src_x1 <= src_x0 || src_y1 <= src_y0) {
-    return;
-  }
+  auto dst_offset = dest.begin() + (clipped.x - source.x) +
+                    (static_cast<base::ssize>(clipped.y - source.y) * width);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = src_x1 - src_x0;
-  int line_count = src_y1 - src_y0;
+  const int pixel_count = clipped.width;
+  int line_count = clipped.height;
 
   // copy lines
   do {
@@ -274,59 +242,26 @@ void PixelView::CopyFromBuffer(const base::Rect& dest,
 
 void PixelView::CopyFromBufferLocked(const base::Rect& dest,
                                      std::span<const uint8_t> source) {
+  // The buffer holds the whole of `dest`, so what the clip took off the top and
+  // left is skipped in it too.
   const int width = dest.width;
-  int src_x0 = 0;
-  int src_y0 = 0;
-
-  // clip dest
-  int dst_x0 = dest.x;
-  int dst_y0 = dest.y;
-  int dst_x1 = dest.right();
-  int dst_y1 = dest.bottom();
-
-  const base::OutCode code0 = base::OutCodeOf(dst_x0, dst_y0, width_, height_);
-  const base::OutCode code1 =
-      base::OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
-
-  // outside
-  if (base::Any(code0 & code1)) {
+  const base::Rect clipped = base::ClipRect(dest, width_, height_);
+  if (!clipped.IsValid()) {
     return;
   }
 
-  if (base::Any(code0 | code1)) {
-    // apply clip
-    if (base::Any(code0 & base::OutCode::kLeft)) {
-      src_x0 -= dst_x0;
-      dst_x0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kRight)) {
-      dst_x1 = width_;
-    }
-    if (base::Any(code0 & base::OutCode::kAbove)) {
-      src_y0 -= dst_y0;
-      dst_y0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kBelow)) {
-      dst_y1 = height_;
-    }
-  }
-
-  auto src_offset =
-      source.begin() + src_x0 + (static_cast<base::ssize>(src_y0) * width);
+  auto src_offset = source.begin() + (clipped.x - dest.x) +
+                    (static_cast<base::ssize>(clipped.y - dest.y) * width);
 
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
-
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return;
-  }
+  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = dst_x1 - dst_x0;
-  int line_count = dst_y1 - dst_y0;
+  const int pixel_count = clipped.width;
+  int line_count = clipped.height;
 
   // copy lines
   do {
@@ -353,72 +288,37 @@ void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
                              const bool transparent) {
   // Only Tiberian Dawn asks for a transparent blit.
 
-  // clip source
-  const int src_x = source.x;
-  const int src_y = source.y;
-  const base::Rect clipped = base::ClipRect(source, width_, height_);
-  if (!clipped.IsValid()) {
+  // Clip the source to this view, then the destination to `dest`. Whatever a
+  // clip takes off the top and left of one rectangle moves the other by as
+  // much, so the remaining pixels keep their place.
+  const base::Rect src_visible = base::ClipRect(source, width_, height_);
+  if (!src_visible.IsValid()) {
     return;
   }
-  int src_x0 = clipped.x;
-  int src_y0 = clipped.y;
-  int src_x1 = clipped.right();
-  int src_y1 = clipped.bottom();
-
-  // clip dest
-  // Whatever the source clip took off the top and left moves the destination
-  // by as much, so the remaining pixels keep their place.
-  int dst_x0 = dst_x + (src_x0 - src_x);
-  int dst_y0 = dst_y + (src_y0 - src_y);
-  int dst_x1 = dst_x0 + (src_x1 - src_x0);
-  int dst_y1 = dst_y0 + (src_y1 - src_y0);
-
-  const base::OutCode code0 =
-      base::OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  const base::OutCode code1 =
-      base::OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
-
-  // outside
-  if (base::Any(code0 & code1)) {
+  const base::Rect dst_wanted{dst_x + (src_visible.x - source.x),
+                              dst_y + (src_visible.y - source.y),
+                              src_visible.width, src_visible.height};
+  const base::Rect dst_visible =
+      base::ClipRect(dst_wanted, dest.width(), dest.height());
+  if (!dst_visible.IsValid()) {
     return;
   }
-
-  if (base::Any(code0 | code1)) {
-    // apply clip
-    if (base::Any(code0 & base::OutCode::kLeft)) {
-      src_x0 -= dst_x0;
-      dst_x0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kRight)) {
-      src_x1 -= dst_x1 - dest.width();
-      dst_x1 = dest.width();
-    }
-    if (base::Any(code0 & base::OutCode::kAbove)) {
-      src_y0 -= dst_y0;
-      dst_y0 = 0;
-    }
-    if (base::Any(code1 & base::OutCode::kBelow)) {
-      src_y1 -= dst_y1 - dest.height();
-      dst_y1 = dest.height();
-    }
-  }
+  const int src_x0 = src_visible.x + (dst_visible.x - dst_wanted.x);
+  const int src_y0 = src_visible.y + (dst_visible.y - dst_wanted.y);
 
   const base::ssize src_area = stride();
   auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_area);
 
   const base::ssize dst_area = dest.stride();
-  auto dst_offset = dest.pixels().begin() + dst_x0 + (dst_y0 * dst_area);
-
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return;
-  }
+  auto dst_offset =
+      dest.pixels().begin() + dst_visible.x + (dst_visible.y * dst_area);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = src_x1 - src_x0;
-  int line_count = src_y1 - src_y0;
+  const int pixel_count = dst_visible.width;
+  int line_count = dst_visible.height;
 
   if (src_offset < dst_offset) {
     // backward (bottom -> top)
