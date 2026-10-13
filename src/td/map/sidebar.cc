@@ -99,6 +99,7 @@
 #include <string>
 
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "engine/file/game_file.h"

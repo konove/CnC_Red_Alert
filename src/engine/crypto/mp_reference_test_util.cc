@@ -101,6 +101,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "engine/crypto/digit_cursor_reference_test_util.h"

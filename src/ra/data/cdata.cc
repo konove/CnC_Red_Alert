@@ -61,7 +61,7 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"

@@ -8,6 +8,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/numeric.h"
 
 namespace game {

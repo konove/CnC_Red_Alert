@@ -92,7 +92,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"

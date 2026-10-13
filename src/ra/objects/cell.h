@@ -43,8 +43,8 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/bit.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"

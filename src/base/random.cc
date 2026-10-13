@@ -24,8 +24,8 @@
 #include <span>
 #include <utility>
 
+#include "base/bit.h"
 #include "base/buffer.h"
-#include "base/numeric.h"
 
 RandomClass::RandomClass(const uint32_t seed) noexcept : seed_(seed) {}
 

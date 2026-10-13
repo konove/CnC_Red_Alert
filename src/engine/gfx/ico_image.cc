@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"

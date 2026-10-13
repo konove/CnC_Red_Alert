@@ -56,9 +56,9 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"

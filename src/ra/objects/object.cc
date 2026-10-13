@@ -118,8 +118,8 @@
 #include "absl/log/check.h"
 #include "base/algorithm.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"

@@ -43,20 +43,20 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/enum_step.h"  // IWYU pragma: export
 #include "base/fixed.h"
 #include "base/flags.h"  // IWYU pragma: export
-#include "base/numeric.h"
 #include "engine/gfx/palette_index.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/cell.h"        // IWYU pragma: export
 #include "ra/core/coordinate.h"  // IWYU pragma: export
-#include "ra/core/packed.h"  // IWYU pragma: export
-#include "ra/core/rtti.h"    // IWYU pragma: export
-#include "ra/core/target.h"  // IWYU pragma: export
+#include "ra/core/packed.h"      // IWYU pragma: export
+#include "ra/core/rtti.h"        // IWYU pragma: export
+#include "ra/core/target.h"      // IWYU pragma: export
 
 namespace ra {
 

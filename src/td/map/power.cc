@@ -57,7 +57,7 @@
 #include <span>
 
 #include "base/array.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

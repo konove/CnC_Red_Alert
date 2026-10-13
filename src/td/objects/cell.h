@@ -44,7 +44,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/defines.h"
 #include "td/objects/building.h"

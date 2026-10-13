@@ -46,8 +46,8 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/cardinal.h"
-#include "base/numeric.h"
 #include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"

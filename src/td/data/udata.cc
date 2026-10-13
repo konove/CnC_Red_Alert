@@ -60,9 +60,9 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
+#include "base/bit.h"
 #include "base/cardinal.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/keyframe.h"

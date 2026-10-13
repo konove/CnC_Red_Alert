@@ -15654,16 +15654,17 @@
         "base",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T14:55:54Z",
-      "updated": "2026-10-13T14:55:54Z",
+      "updated": "2026-10-13T22:39:37Z",
       "source": "b7d8591a6",
+      "resolution": "Moved both `base::Bit` overloads to the new `src/base/bit.h` and their tests to `bit_test.cc`. The 51 files that call it include `base/bit.h`; 33 of them no longer include `base/numeric.h`, which now holds only `ToSize()` and `ToSigned()`.",
       "anchors": [
         {
-          "path": "src/base/numeric.h",
-          "startLine": 56,
-          "endLine": 67,
+          "path": "src/base/bit.h",
+          "startLine": 23,
+          "endLine": 34,
           "text": "template <std::unsigned_integral T>\nconstexpr T Bit(int index) noexcept {\n  DCHECK(index >= 0 && index < std::numeric_limits<T>::digits);\n  return static_cast<T>(T{1} << static_cast<unsigned>(index));\n}\n\n// The same for an index enum: `base::Bit<uint32_t>(HOUSE_SPAIN)`.\ntemplate <std::unsigned_integral T, class E>\n  requires std::is_enum_v<E>\nconstexpr T Bit(E index) noexcept {\n  return Bit<T>(static_cast<int>(index));\n}",
           "before": [
             "// Example:",
@@ -15691,10 +15692,10 @@
         "editor",
         "ui-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T19:09:45Z",
-      "updated": "2026-10-13T22:30:04Z",
+      "updated": "2026-10-13T22:30:25Z",
       "source": "0d1e4d393",
       "resolution": "Chose the smallest change: the rows lose their 3-pixel gap and start at y = 19, so seven rows end at 355, above the name line at 359 and the buttons. Drawing and hit testing now share the grid constants through `MemberAt()` (they disagreed by 2 pixels, and a pointer left of or right of the grid picked a member); a `CHECK` fails if a new unit type makes the grid overrun the name line. Hashes of `editor_dialogs` and `editor_team_members` re-recorded.",
       "anchors": [

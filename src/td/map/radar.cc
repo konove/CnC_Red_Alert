@@ -89,9 +89,9 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/clip.h"
-#include "base/numeric.h"
 #include "base/point.h"
 #include "base/rect.h"
 #include "base/unaligned.h"

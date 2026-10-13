@@ -121,10 +121,10 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/cardinal.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"

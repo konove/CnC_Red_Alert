@@ -21,7 +21,7 @@
 
 #include <cstdint>
 
-#include "base/numeric.h"
+#include "base/bit.h"
 
 // A deterministic linear congruential pseudo-random number generator.
 //

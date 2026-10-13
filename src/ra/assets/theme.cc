@@ -61,9 +61,9 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
+#include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "magic_enum/magic_enum.hpp"

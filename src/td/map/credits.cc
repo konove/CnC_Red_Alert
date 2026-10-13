@@ -63,7 +63,7 @@
 #include <cstdlib>
 
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/audio.h"

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/array.h"
-#include "base/numeric.h"
+#include "base/bit.h"
 #include "base/pooled.h"
 #include "engine/file/ini_file.h"
 #include "engine/stream/archive.h"

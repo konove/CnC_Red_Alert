@@ -1737,9 +1737,8 @@ A fresh sweep found 3,363 sites (TD 2,101, RA 902, tech 172, sdllib 156, winvq 2
   theme-owner, zone and threat masks, the modem status. The data-table rows are untouched. Three
   `STRUCTF_CIV` macros named enumerators that do not exist and are gone.
 - **A bit from an index (about 200).** `1 << house`, `1L << Class->Type` and the loop forms go
-  through `base::Bit<T>(index)` (`base/numeric.h`), the one place a signed index becomes a shift
-  count, checked against the width in debug builds. The 64-bit house scans go through `ScanBit`, see
-  below.
+  through `base::Bit<T>(index)` (`base/bit.h`), the one place a signed index becomes a shift count,
+  checked against the width in debug builds. The 64-bit house scans go through `ScanBit`, see below.
 - **Arithmetic (about 350).** `>> 1`, `<< 3` and the resolution-factor shifts on widths, lengths and
   counts are `/ 2`, `* 8` and a `scale` computed once; `& 0x01` on a frame counter is `% 2`;
   ring-buffer wraps are `% size`; `(x + 3) & ~3` is `/ 4 * 4`. 13 right shifts of values that can be
@@ -1796,13 +1795,12 @@ Each enum took the first rule that applied:
   `TypeClass::Pointers` tables, the per-house and per-type counters and the local lookup tables
   changed form; their subscripts did not. A brace initializer of struct elements needed one more
   brace pair.
-- **Conversions.** `base::Bit<T>(enum)` (`base/numeric.h`) and `base::Any(flags)` (`base/flags.h`)
-  and the constrained flag operators in `base/flags.h` (opted into by the sdllib flag enums; the
-  games' flag enums keep the `jshell.h` templates) absorb the bit work; the remaining enum-to-int
-  sites are `static_cast<int>` (about 1,180 net), most of them heap `Ptr()` indices, `ScanBit`,
-  `WindowList` subscripts, packet byte fields and `DirType`/`MPHType` arithmetic. `tech/2keyfbuf.h`
-  takes `ShapeFlags_Type` instead of `uint32_t`; `FactoryClass::SpecialItem` is a
-  `SpecialWeaponType`.
+- **Conversions.** `base::Bit<T>(enum)` (`base/bit.h`) and `base::Any(flags)` (`base/flags.h`) and
+  the constrained flag operators in `base/flags.h` (opted into by the sdllib flag enums; the games'
+  flag enums keep the `jshell.h` templates) absorb the bit work; the remaining enum-to-int sites are
+  `static_cast<int>` (about 1,180 net), most of them heap `Ptr()` indices, `ScanBit`, `WindowList`
+  subscripts, packet byte fields and `DirType`/`MPHType` arithmetic. `tech/2keyfbuf.h` takes
+  `ShapeFlags_Type` instead of `uint32_t`; `FactoryClass::SpecialItem` is a `SpecialWeaponType`.
 - **Key codes.** `KeyNumType` and `KeyASCIIType` stay unscoped under one reasoned `NOLINT`: a key
   number is a bit pattern (code, modifier bits, `KN_BUTTON | id`) that the keyboard buffer stores as
   an integer and masks at 1,171 sites; scoping it adds a cast at each and no safety.

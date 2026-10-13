@@ -72,6 +72,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"

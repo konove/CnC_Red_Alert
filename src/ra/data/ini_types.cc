@@ -48,8 +48,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
+#include "base/bit.h"
 #include "base/fixed.h"
-#include "base/numeric.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "game/core/cell_size.h"

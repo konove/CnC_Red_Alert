@@ -46,10 +46,10 @@
 #include <utility>
 
 #include "base/attributes.h"
+#include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/enum_step.h"  // IWYU pragma: export
 #include "base/flags.h"      // IWYU pragma: export
-#include "base/numeric.h"
 #include "engine/gfx/palette_index.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"

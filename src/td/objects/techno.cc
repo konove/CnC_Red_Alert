@@ -175,9 +175,9 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/cardinal.h"
 #include "base/flags.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"

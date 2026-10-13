@@ -106,6 +106,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"

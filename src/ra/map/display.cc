@@ -120,6 +120,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bit.h"
 #include "base/buffer.h"
 #include "base/clip.h"
 #include "base/enum_array.h"
