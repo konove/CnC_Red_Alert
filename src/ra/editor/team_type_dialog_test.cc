@@ -11,6 +11,7 @@
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/map/world.h"
+#include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/startup/ui_test_util.h"
 
@@ -110,7 +111,7 @@ TEST_F(TeamTypeDialogTest, OkAcceptsItAndNamesABlankTeamTypeWithDashes) {
   EXPECT_EQ(team_type_->mission_count(), 0);
 }
 
-TEST_F(TeamTypeDialogTest, CancelLeavesTheTeamTypeAsItWasButForAMissingHouse) {
+TEST_F(TeamTypeDialogTest, CancelLeavesTheTeamTypeAsItWas) {
   team_type_->Set_Name("tanks");
   team_type_->AddMission({TeamMissionType::kMove, 3});
   player()
@@ -126,7 +127,7 @@ TEST_F(TeamTypeDialogTest, CancelLeavesTheTeamTypeAsItWasButForAMissingHouse) {
   EXPECT_STREQ(team_type_->IniName, "tanks");
   EXPECT_FALSE(team_type_->is_roundabout());
   EXPECT_EQ(team_type_->mission_count(), 1);
-  EXPECT_EQ(team_type_->house(), HOUSE_GOOD);
+  EXPECT_EQ(team_type_->house(), HOUSE_NONE);
 }
 
 TEST_F(TeamTypeDialogTest, ACheckBoxSetsItsOption) {
@@ -262,6 +263,31 @@ TEST_F(TeamTypeDialogTest, ACellIsTypedInHex) {
   EXPECT_EQ(team_type_->missions()[1].value(), 0x1AF);
 }
 
+// The field takes letters that are no hex digits.
+TEST_F(TeamTypeDialogTest, ACellWithAStrayCharacterIsZero) {
+  constexpr int kArgumentX = 35 + 170 + 15 + 3;
+  constexpr int kArgumentY = 103 + 3;
+  team_type_->AddMission({TeamMissionType::kMoveCell, 0x1A});
+  player()
+      .At(3)
+      .Click(kScriptX, kScriptRow0Y)
+      .At(6)
+      .Click(kScriptX, kScriptRow0Y)
+      .At(9)
+      .Click(kArgumentX, kArgumentY)
+      .At(11)
+      .Type("Z")
+      .At(15)
+      .Click(kAppendX, kAppendY)
+      .At(18)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  ASSERT_EQ(team_type_->mission_count(), 2);
+  EXPECT_EQ(team_type_->missions()[1].value(), 0);
+}
+
 TEST_F(TeamTypeDialogTest, ALineWithAWaypointIsCopiedWithIt) {
   const TeamMission copy = CopyOf({TeamMissionType::kMove, 27});
 
@@ -354,6 +380,72 @@ TEST_F(TeamTypeScriptEditTest, DeleteRemovesTheSelectedLine) {
   ASSERT_EQ(team_type_->mission_count(), 1);
   EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
   EXPECT_EQ(team_type_->missions()[0].value(), 3);
+}
+
+// The Members button, below the name field, and in the members dialog, which
+// fills the 640 by 400 screen, the first member picture (the first infantry
+// type) and the OK button.
+constexpr int kMembersX = 35 + 5;
+constexpr int kMembersY = 39 + 3;
+constexpr int kFirstMemberX = 32 + 8;
+constexpr int kFirstMemberY = 21 + 8;
+constexpr int kMembersOkX = 265 + 5;
+constexpr int kMembersOkY = 369 + 3;
+
+// The members dialog redraws the map when it closes, sidebar and radar
+// included, and those are drawn for the player's house.
+class TeamTypeMembersDialogTest : public TeamTypeDialogTest {
+ protected:
+  TeamTypeMembersDialogTest() {
+    ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GREECE);
+  }
+};
+
+TEST_F(TeamTypeMembersDialogTest, TheMembersDialogEditsThisTeamType) {
+  player()
+      .At(3)
+      .Click(kMembersX, kMembersY)
+      .At(6)
+      .MoveTo(kFirstMemberX, kFirstMemberY)
+      .At(9)
+      .Click(kFirstMemberX, kFirstMemberY)
+      .At(12)
+      .Click(kMembersOkX, kMembersOkY)
+      .At(15)
+      .Click(kOkX, kOkY);
+
+  EXPECT_TRUE(team_type_->Edit());
+
+  ASSERT_EQ(team_type_->member_count(), 1);
+  EXPECT_EQ(team_type_->members()[0].type,
+            &InfantryTypeClass::As_Reference(InfantryType{0}));
+  EXPECT_EQ(team_type_->members()[0].quantity, 1);
+}
+
+// The members dialog writes to the team type when it closes, before the team
+// type dialog is answered.
+TEST_F(TeamTypeMembersDialogTest,
+       CancelPutsBackTheMembersTheMembersDialogChanged) {
+  const TechnoTypeClass* const type =
+      &AircraftTypeClass::As_Reference(AircraftType{0});
+  team_type_->AddMember({.quantity = 2, .type = type});
+  player()
+      .At(3)
+      .Click(kMembersX, kMembersY)
+      .At(6)
+      .MoveTo(kFirstMemberX, kFirstMemberY)
+      .At(9)
+      .Click(kFirstMemberX, kFirstMemberY)
+      .At(12)
+      .Click(kMembersOkX, kMembersOkY)
+      .At(15)
+      .Click(kCancelX, kOkY);
+
+  EXPECT_FALSE(team_type_->Edit());
+
+  ASSERT_EQ(team_type_->member_count(), 1);
+  EXPECT_EQ(team_type_->members()[0].type, type);
+  EXPECT_EQ(team_type_->members()[0].quantity, 2);
 }
 
 TEST_F(TeamTypeDialogTest, ReplaceAndDeleteDoNothingToAnEmptyScript) {

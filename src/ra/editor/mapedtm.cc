@@ -434,13 +434,13 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
  *                      *
  *                                                                         *
  * INPUT:                                                                  *
+ *      team_type  team type whose members are edited                      *
  *      house      house to display objects for                            *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      0 = OK, -1 = cancel                                                *
  *                                                                         *
  * WARNINGS:                                                               *
- *      CurTeam must NOT be NULL when this function is called.             *
  *      This routine uses HIDBUFF for data storage.                        *
  *                                                                         *
  * HISTORY:                                                                *
@@ -476,7 +476,7 @@ constexpr int kCancelH = 9;
 constexpr int kCancelX = kDialogCx + 5;
 constexpr int kCancelY = 0;
 
-int MapEditClass::Team_Members(HousesType house) {
+int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
   /*
   **	Button enumerations:
   */
@@ -577,7 +577,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Loop through all classes in the team.
   */
-  for (i = 0; i < CurTeam->member_count(); i++) {
+  for (i = 0; i < team_type.member_count(); i++) {
     /*
     **	Find this class in our array.
     */
@@ -587,15 +587,14 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (base::At(CurTeam->members(), i).type == base::At(teamclass, j)) {
-        base::At(teamcount, j) = base::At(CurTeam->members(), i).quantity;
+      if (base::At(team_type.members(), i).type == base::At(teamclass, j)) {
+        base::At(teamcount, j) = base::At(team_type.members(), i).quantity;
         break;
       }
     }
   }
-  int numclasses =
-      CurTeam
-          ->member_count();  // current # classes in the team (limited to <=5)
+  // current # classes in the team (limited to <=5)
+  int numclasses = team_type.member_count();
 
   /*
   **	Set up the dialog dimensions based on number of classes we have to draw
@@ -851,11 +850,11 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Copy data into team.
   */
   if (!cancel) {
-    CurTeam->ClearMembers();
+    team_type.ClearMembers();
     for (int j = 0; j < maxclasses; j++) {
       if (base::At(teamcount, j) > 0) {
-        CurTeam->AddMember({.quantity = base::At(teamcount, j),
-                            .type = base::At(teamclass, j)});
+        team_type.AddMember({.quantity = base::At(teamcount, j),
+                             .type = base::At(teamclass, j)});
       }
     }
   }

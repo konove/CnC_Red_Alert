@@ -73,27 +73,6 @@ namespace ra {
 
 using enum engine::window::KeyNumber;
 
-namespace {
-
-// Returns the value of the hex digits in `text`, for the editor's cell-number
-// field. A character that is not a hex digit counts as 0.
-int ParseHexDigits(const std::string_view text) {
-  int value = 0;
-  for (const char digit : text) {
-    value *= 16;
-    if (digit >= '0' && digit <= '9') {
-      value += digit - '0';
-    } else if (digit >= 'a' && digit <= 'f') {
-      value += 10 + (digit - 'a');
-    } else if (digit >= 'A' && digit <= 'F') {
-      value += 10 + (digit - 'A');
-    }
-  }
-  return value;
-}
-
-}  // namespace
-
 bool TeamType::Edit() {
   // Dialog and button dimensions, in pixels of the editor's 640x400 screen.
   constexpr int kDialogW = 400;
@@ -169,10 +148,9 @@ bool TeamType::Edit() {
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     house_drop.Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
-  if (house_ == HOUSE_NONE) {
-    house_ = HOUSE_GOOD;
-  }
-  house_drop.Set_Selected_Index(static_cast<int>(house_));
+  // A team type without a house is offered the first one; OK stores it.
+  house_drop.Set_Selected_Index(
+      static_cast<int>(house_ == HOUSE_NONE ? HOUSE_GOOD : house_));
   commands.AddAfter(house_drop, name_edit);
 
   // Recruit priority for this team.
@@ -403,7 +381,7 @@ bool TeamType::Edit() {
         break;
 
       case NEED_HEX_NUMBER:
-        mission.set_value(ParseHexDigits(argument_edit.Get_Text()));
+        mission.set_value(base::ParseHexOr<int>(argument_edit.Get_Text(), 0));
         break;
 
       // A waypoint the scenario does not have becomes waypoint A.
@@ -435,6 +413,59 @@ bool TeamType::Edit() {
     return mission;
   };
 
+  // Shows `line` as the work mission: selects its mission in mission_drop and
+  // puts its argument into the control that mission needs. The inverse of
+  // work_mission().
+  const auto load_work_mission = [&](const TeamMission& line) {
+    mission_drop.Set_Selected_Index(static_cast<int>(line.mission()));
+
+    switch (TeamMissionNeeds(line.mission())) {
+      case NEED_MISSION:
+        unit_mission_drop.Set_Selected_Index(
+            static_cast<int>(line.unit_mission()));
+        break;
+
+      case NEED_FORMATION:
+        formation_drop.Set_Selected_Index(static_cast<int>(line.formation()));
+        break;
+
+      case NEED_NUMBER:
+        absl::SNPrintF(argument_text, sizeof(argument_text), "%d",
+                       line.value());
+        break;
+
+      case NEED_HEX_NUMBER:
+        absl::SNPrintF(argument_text, sizeof(argument_text), "%x",
+                       static_cast<unsigned int>(line.value()));
+        break;
+
+      case NEED_QUARRY:
+        quarry_drop.Set_Selected_Index(static_cast<int>(line.quarry()));
+        break;
+
+      case NEED_WAYPOINT:
+        base::SafeCopy(argument_text, WaypointLetters(line.value()));
+        break;
+      case NEED_NONE:
+      case NEED_THEME:
+      case NEED_MOVIE:
+      case NEED_SOUND:
+      case NEED_SPEECH:
+      case NEED_INFANTRY:
+      case NEED_UNIT:
+      case NEED_AIRCRAFT:
+      case NEED_STRUCTURE:
+      case NEED_TRIGGER:
+      case NEED_TEAM:
+      case NEED_HOUSE:
+      case NEED_TIME:
+      case NEED_BOOL:
+      case NEED_SPECIAL:
+      default:
+        break;
+    }
+  };
+
   PixelView& view = TheScreen().visible_view();
 
   const TextPrinter caption(
@@ -442,6 +473,14 @@ bool TeamType::Edit() {
 
   commands.AddAfter(ok_button, name_edit);
   commands.Add(cancel_button);
+
+  // The members dialog writes to the team type at once; Cancel puts these
+  // back.
+  std::vector<TeamMember> saved_members;
+  saved_members.reserve(kMaxMemberTypes);
+  for (int index = 0; index < member_count_; index++) {
+    saved_members.push_back(base::At(members_, index));
+  }
 
   // Main processing loop. The last* values are the script list's selection,
   // its length and the control used on the previous event (-1 before any):
@@ -556,55 +595,7 @@ bool TeamType::Edit() {
         if (script_list.Count() && last_script_count == script_list.Count() &&
             last_control == kButtonMission2 &&
             last_script_index == script_list.Current_Index()) {
-          const TeamMission& line = *script_list.Current_Item();
-          mission_drop.Set_Selected_Index(static_cast<int>(line.mission()));
-
-          switch (TeamMissionNeeds(line.mission())) {
-            case NEED_MISSION:
-              unit_mission_drop.Set_Selected_Index(
-                  static_cast<int>(line.unit_mission()));
-              break;
-
-            case NEED_FORMATION:
-              formation_drop.Set_Selected_Index(
-                  static_cast<int>(line.formation()));
-              break;
-
-            case NEED_NUMBER:
-              absl::SNPrintF(argument_text, sizeof(argument_text), "%d",
-                             line.value());
-              break;
-
-            case NEED_HEX_NUMBER:
-              absl::SNPrintF(argument_text, sizeof(argument_text), "%x",
-                             static_cast<unsigned int>(line.value()));
-              break;
-
-            case NEED_QUARRY:
-              quarry_drop.Set_Selected_Index(static_cast<int>(line.quarry()));
-              break;
-
-            case NEED_WAYPOINT:
-              base::SafeCopy(argument_text, WaypointLetters(line.value()));
-              break;
-            case NEED_NONE:
-            case NEED_THEME:
-            case NEED_MOVIE:
-            case NEED_SOUND:
-            case NEED_SPEECH:
-            case NEED_INFANTRY:
-            case NEED_UNIT:
-            case NEED_AIRCRAFT:
-            case NEED_STRUCTURE:
-            case NEED_TRIGGER:
-            case NEED_TEAM:
-            case NEED_HOUSE:
-            case NEED_TIME:
-            case NEED_BOOL:
-            case NEED_SPECIAL:
-            default:
-              break;
-          }
+          load_work_mission(*script_list.Current_Item());
         }
         last_script_index = script_list.Current_Index();
         last_script_count = script_list.Count();
@@ -662,7 +653,7 @@ bool TeamType::Edit() {
         members_button.Turn_Off();
 
         TheMap().Team_Members(
-            static_cast<HousesType>(house_drop.Current_Index()));
+            *this, static_cast<HousesType>(house_drop.Current_Index()));
 
         redraw = true;
         break;
@@ -706,6 +697,10 @@ bool TeamType::Edit() {
 
       // Cancel: leave the team type as it was.
       case engine::window::ButtonKey(kButtonCancel):
+        ClearMembers();
+        for (const TeamMember& member : saved_members) {
+          AddMember(member);
+        }
         return false;
 
       // Unrecognized events are ignored. If any button related event is

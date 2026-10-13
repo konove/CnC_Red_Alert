@@ -235,10 +235,10 @@ class TeamType : public AbstractTypeClass {
   static TeamType* FromName(std::string_view name);
   // Runs the scenario editor's team type dialog on this team type and blocks
   // until the player closes it. Returns true if it was confirmed with OK, and
-  // false if it was cancelled, which leaves the team type as it was apart from
-  // a missing house, which becomes HOUSE_GOOD either way. The members are
-  // edited by a second dialog (MapEditClass::Team_Members()) that this one
-  // only opens. Defined in editor/team_type_dialog.cc.
+  // false if it was cancelled, which leaves the team type as it was. A team
+  // type without a house is offered HOUSE_GOOD. The members are edited by a
+  // second dialog (MapEditClass::Team_Members()) that this one only opens.
+  // Defined in editor/team_type_dialog.cc.
   bool Edit();
   // Returns the members as "TYPE:count,TYPE:count", cut to 25 characters with
   // a trailing "..." when longer. The text is empty in a build without the

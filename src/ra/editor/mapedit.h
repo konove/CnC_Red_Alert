@@ -260,7 +260,7 @@ class MapEditClass : public MouseClass {
                           int index, int quant, HousesType house);
   void Handle_Teams(const char* caption);
   int Select_Team(const char* caption);
-  int Team_Members(HousesType house);
+  int Team_Members(TeamType& team_type, HousesType house);
 
   /*
   **	Private Interface
