@@ -339,47 +339,13 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
       // Aircraft do not count.
       uint64_t units_wanted = 0;
       uint64_t infantry_wanted = 0;
-      for (int member = 0; std::cmp_less(member, candidate->member_count_);
-           member++) {
-        switch (base::At(candidate->members_, member).type->What_Am_I()) {
-          case RTTI_INFANTRYTYPE:
-            infantry_wanted |= base::Bit<uint64_t>(
-                dynamic_cast<const InfantryTypeClass*>(
-                    base::At(candidate->members_, member).type)
-                    ->Type);
-            break;
-
-          case RTTI_UNITTYPE:
-            units_wanted |= base::Bit<uint64_t>(
-                dynamic_cast<const UnitTypeClass*>(
-                    base::At(candidate->members_, member).type)
-                    ->Type);
-            break;
-          case RTTIType::RTTI_NONE:
-          case RTTIType::RTTI_INFANTRY:
-          case RTTIType::RTTI_UNIT:
-          case RTTIType::RTTI_AIRCRAFT:
-          case RTTIType::RTTI_AIRCRAFTTYPE:
-          case RTTIType::RTTI_BUILDING:
-          case RTTIType::RTTI_BUILDINGTYPE:
-          case RTTIType::RTTI_TERRAIN:
-          case RTTIType::RTTI_ABSTRACTTYPE:
-          case RTTIType::RTTI_ANIM:
-          case RTTIType::RTTI_ANIMTYPE:
-          case RTTIType::RTTI_BULLET:
-          case RTTIType::RTTI_BULLETTYPE:
-          case RTTIType::RTTI_OVERLAY:
-          case RTTIType::RTTI_OVERLAYTYPE:
-          case RTTIType::RTTI_SMUDGE:
-          case RTTIType::RTTI_SMUDGETYPE:
-          case RTTIType::RTTI_TEAM:
-          case RTTIType::RTTI_TEMPLATE:
-          case RTTIType::RTTI_TEMPLATETYPE:
-          case RTTIType::RTTI_TERRAINTYPE:
-          case RTTIType::RTTI_OBJECT:
-          case RTTIType::RTTI_SPECIAL:
-          default:
-            break;
+      for (const TeamMember& member : candidate->members()) {
+        if (const auto* const infantry =
+                dynamic_cast<const InfantryTypeClass*>(member.type)) {
+          infantry_wanted |= base::Bit<uint64_t>(infantry->Type);
+        } else if (const auto* const unit =
+                       dynamic_cast<const UnitTypeClass*>(member.type)) {
+          units_wanted |= base::Bit<uint64_t>(unit->Type);
         }
       }
 
