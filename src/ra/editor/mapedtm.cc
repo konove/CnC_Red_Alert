@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include "absl/log/check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -464,7 +465,13 @@ constexpr int kPictureH = 24;
 constexpr int kPictureW = 64;
 constexpr int kPictureH = 48;
 #endif
-constexpr int kRowH = (kPictureH + 3);
+// The pictures form a grid without gaps: seven rows of them, which the
+// Aftermath units made of the original six, leave no room for one below the
+// caption and above the name of the member under the pointer.
+constexpr int kRowH = kPictureH;
+constexpr int kPicturesX = kDialogX + 32;
+constexpr int kPicturesY = 19;
+constexpr int kPictureColumns = (kDialogW - 64) / kPictureW;
 
 constexpr int kOkW = 50;
 constexpr int kOkH = 9;
@@ -475,6 +482,24 @@ constexpr int kCancelW = 50;
 constexpr int kCancelH = 9;
 constexpr int kCancelX = kDialogCx + 5;
 constexpr int kCancelY = 0;
+
+namespace {
+
+// Returns the index of the member whose picture holds the point, or -1 when
+// it is on none of the `member_count` pictures.
+int MemberAt(const int x, const int y, const int member_count) {
+  if (x < kPicturesX || y < kPicturesY) {
+    return -1;
+  }
+  const int col = (x - kPicturesX) / kPictureW;
+  if (col >= kPictureColumns) {
+    return -1;
+  }
+  const int index = (((y - kPicturesY) / kRowH) * kPictureColumns) + col;
+  return index < member_count ? index : -1;
+}
+
+}  // namespace
 
 int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
   /*
@@ -597,20 +622,16 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
   int numclasses = team_type.member_count();
 
   /*
-  **	Set up the dialog dimensions based on number of classes we have to draw
-  **
-  **	Compute picture rows & cols.
-  */
-  const int numcols =
-      (kDialogW - 16) / kPictureW;  // # units displayed horizontally
-
-  /*
   **	Dialog's height = top margin + label + picture rows + margin + label +
   *margin + btn
   */
   const int dlg_h = 400;  // dialog height
   const int dlg_y = 0;
   const int msg_y = dlg_y + dlg_h - 26 - 15;  // y-coord for object names
+  CHECK_LE(kPicturesY +
+               ((maxclasses + kPictureColumns - 1) / kPictureColumns * kRowH),
+           msg_y)
+      << "the member pictures run into the name line";
 
   okbtn.Y = dlg_y + dlg_h - kMargin - kOkH - 15;
   cancelbtn.Y = dlg_y + dlg_h - kMargin - kCancelH - 15;
@@ -675,7 +696,7 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
                       house);
         }
 
-        if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
+        if (curclass >= 0) {
           TextPrinter(view, {&ThePalettes().color_remaps().at(PCOLOR_BROWN),
                              game::kTransparentBlack, FontType::kEditor,
                              TPF_CENTER | TPF_NOSHADOW})
@@ -739,8 +760,7 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((game::TheMouse().x() - 32 - kDialogX) / kPictureW) +
-            (((game::TheMouse().y() - (dlg_y + 8 + 11)) / kRowH) * numcols);
+        i = MemberAt(game::TheMouse().x(), game::TheMouse().y(), maxclasses);
 
         /*
         **	If it's changed, update class label.
@@ -755,7 +775,7 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
           view.FillRect(base::Rect{kDialogX + 32, msg_y, kDialogW - 96, kTxt6H},
                         game::kBlack);
 
-          if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
+          if (curclass >= 0) {
             TextPrinter(view, {scheme, game::kTransparentBlack,
                                FontType::kEditor, TPF_CENTER | TPF_NOSHADOW})
                 .Print(base::At(teamclass, curclass)->Full_Name(),
@@ -897,12 +917,8 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
  *=============================================================================================*/
 void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
                                int index, int quant, HousesType house) {
-  const int numcols = (kDialogW - 64) / kPictureW;
-  const int col = index % numcols;
-  const int row = index / numcols;
-  const int dlg_y = 0;
-  const int x = kDialogX + 32 + (col * kPictureW);
-  const int y = dlg_y + 8 + 13 + (row * kRowH);
+  const int x = kPicturesX + ((index % kPictureColumns) * kPictureW);
+  const int y = kPicturesY + ((index / kPictureColumns) * kRowH);
   RemapControlType* scheme = Get_Color_Scheme();
 
   /*

@@ -12201,10 +12201,10 @@
         "editor",
         "ui-check"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-10T03:13:31Z",
-      "updated": "2026-10-13T19:09:45Z",
+      "updated": "2026-10-13T22:27:27Z",
       "source": "eeda1518",
       "resolution": "The original drew at the centre of the editor window (`WinW/2, WinH>>1` after `Change_Window()`), and the port had turned that into the centre of the screen, (320,200), which is outside the 64x48 box `CC_Draw_Shape()` clips to. `Draw_Member()` and the object placement dialog now pass `kPictureW / 2, kPictureH / 2`; the cameos show in both and the stray square on the map is gone. The pale area was the empty ninth slot of the last row. Hashes of `editor_dialogs`, `editor_objects` and `editor_team_members` re-recorded.",
       "comments": [
@@ -12217,12 +12217,12 @@
       "anchors": [
         {
           "path": "src/ra/editor/mapedtm.cc",
-          "startLine": 479,
-          "endLine": 479,
+          "startLine": 503,
+          "endLine": 503,
           "text": "int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {",
           "before": [
-            "constexpr int kCancelX = kDialogCx + 5;",
-            "constexpr int kCancelY = 0;",
+            "",
+            "}  // namespace",
             ""
           ],
           "after": [
@@ -15691,16 +15691,17 @@
         "editor",
         "ui-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T19:09:45Z",
-      "updated": "2026-10-13T19:09:45Z",
+      "updated": "2026-10-13T22:30:04Z",
       "source": "0d1e4d393",
+      "resolution": "Chose the smallest change: the rows lose their 3-pixel gap and start at y = 19, so seven rows end at 355, above the name line at 359 and the buttons. Drawing and hit testing now share the grid constants through `MemberAt()` (they disagreed by 2 pixels, and a pointer left of or right of the grid picked a member); a `CHECK` fails if a new unit type makes the grid overrun the name line. Hashes of `editor_dialogs` and `editor_team_members` re-recorded.",
       "anchors": [
         {
           "path": "src/ra/editor/mapedtm.cc",
-          "startLine": 897,
-          "endLine": 897,
+          "startLine": 917,
+          "endLine": 917,
           "text": " *=============================================================================================*/",
           "before": [
             " * WARNINGS:   none *",
@@ -15710,7 +15711,7 @@
           "after": [
             "void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,",
             "                               int index, int quant, HousesType house) {",
-            "  const int numcols = (kDialogW - 64) / kPictureW;"
+            "  const int x = kPicturesX + ((index % kPictureColumns) * kPictureW);"
           ],
           "lost": false
         }
