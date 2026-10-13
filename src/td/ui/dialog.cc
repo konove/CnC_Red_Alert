@@ -64,13 +64,13 @@
 #include "base/enum_array.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/point.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
-#include "game/core/point.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/assets.h"
 #include "td/assets/screen.h"
@@ -546,17 +546,17 @@ TextPrinter TextPrinter::With(const TextPrintType flags) const {
   return printer;
 }
 
-void TextPrinter::Print(const std::string& text, const game::Point at) const {
+void TextPrinter::Print(const std::string& text, const base::Point at) const {
   Print(text.c_str(), at);
 }
 
-void TextPrinter::Print(const int text, const game::Point at) const {
+void TextPrinter::Print(const int text, const base::Point at) const {
   if (text != TXT_NONE) {
     Print(Text_String(text), at);
   }
 }
 
-void TextPrinter::Print(const char* text, const game::Point at) const {
+void TextPrinter::Print(const char* text, const base::Point at) const {
   if (text == nullptr || *text == '\0') {
     return;
   }
@@ -598,7 +598,7 @@ void TextPrinter::Print(const char* text, const game::Point at) const {
   }
 }
 
-void TextPrinter::PrintClipped(const char* text, const game::Point at,
+void TextPrinter::PrintClipped(const char* text, const base::Point at,
                                const int width,
                                std::span<const int> tabs) const {
   if (text == nullptr) {

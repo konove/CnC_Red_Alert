@@ -44,7 +44,8 @@ struct QuadrantOffset {
   bool closer_to_end_axis = false;
 };
 
-QuadrantOffset QuadrantOffsetToward(const Point from, const Point to) {
+QuadrantOffset QuadrantOffsetToward(const base::Point from,
+                                    const base::Point to) {
   const int x_offset = to.x - from.x;
   // (0, 0) is the north-west corner, so north is the negative Y direction.
   const int y_offset = to.y - from.y;
@@ -65,7 +66,7 @@ QuadrantOffset QuadrantOffsetToward(const Point from, const Point to) {
 
 }  // namespace
 
-Direction Direction8Toward(const Point from, const Point to) {
+Direction Direction8Toward(const base::Point from, const base::Point to) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from, to);
 
@@ -81,7 +82,7 @@ Direction Direction8Toward(const Point from, const Point to) {
   return Direction(quadrant + (closer_to_end_axis ? 0x40 : 0));
 }
 
-Direction Direction256Toward(const Point from, const Point to) {
+Direction Direction256Toward(const base::Point from, const base::Point to) {
   const auto [quadrant, smaller, bigger, closer_to_end_axis] =
       QuadrantOffsetToward(from, to);
 

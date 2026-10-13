@@ -31,7 +31,7 @@
 #include <cstdint>
 
 #include "base/enum_step.h"  // IWYU pragma: export
-#include "game/core/point.h"  // IWYU pragma: export
+#include "base/point.h"      // IWYU pragma: export
 
 namespace game {
 
@@ -148,7 +148,7 @@ static_assert(sizeof(Direction) == 1);
 // The diagonals take more than their share of the circle: a slope steeper than
 // 1 in 2 off an axis already counts as diagonal (26.6 degrees, where an even
 // split would be 22.5). Equal points give Direction::kNorthEast.
-Direction Direction8Toward(Point from, Point to);
+Direction Direction8Toward(base::Point from, base::Point to);
 
 // Returns the direction from `from` to `to` to full 256-step accuracy. The
 // angle is interpolated linearly along the shorter offset rather than taken
@@ -156,7 +156,7 @@ Direction Direction8Toward(Point from, Point to);
 // four steps off between them. An angle between two steps rounds toward the
 // axis its quadrant starts on, going clockwise. Equal points give 255, just
 // shy of north.
-Direction Direction256Toward(Point from, Point to);
+Direction Direction256Toward(base::Point from, base::Point to);
 
 // Returns the facing nearest to `dir`; the last sixteenth of the circle
 // rounds up to Facing::kNorth.

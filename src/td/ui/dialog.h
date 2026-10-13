@@ -5,9 +5,9 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "base/point.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/core/point.h"
 #include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -70,15 +70,15 @@ class TextPrinter {
   // and TPF_RIGHT make `at.x` the middle or the right edge of the text. Format
   // beforehand: absl::StrFormat() for a literal, base::FormatRuntime() for a
   // text from the string table.
-  void Print(const char* text, game::Point at) const;
-  void Print(const std::string& text, game::Point at) const;
+  void Print(const char* text, base::Point at) const;
+  void Print(const std::string& text, base::Point at) const;
   // Same, with the text looked up by string-table number; TXT_NONE prints
   // nothing.
-  void Print(int text, game::Point at) const;
+  void Print(int text, base::Point at) const;
   // Prints `text` cut off `width` pixels right of `at`: a list box's row. A
   // tab in the text moves on to the next of `tabs`, which are pixel offsets
   // from `at.x`, or to the next multiple of 50 when there are none.
-  void PrintClipped(const char* text, game::Point at, int width,
+  void PrintClipped(const char* text, base::Point at, int width,
                     std::span<const int> tabs = {}) const;
 
  private:
