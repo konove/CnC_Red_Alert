@@ -33,26 +33,26 @@ class ColorBoxTest : public UiFixture {
 TEST_F(ColorBoxTest, FillsExactlyTheInsideOfTheBevel) {
   DrawColorBox(page_.view(), kBox, kColor, false);
 
-  for (int y = kBox.y + 1; y < kBox.bottom() - 1; ++y) {
-    for (int x = kBox.x + 1; x < kBox.right() - 1; ++x) {
+  for (int y = kBox.y() + 1; y < kBox.bottom() - 1; ++y) {
+    for (int x = kBox.x() + 1; x < kBox.right() - 1; ++x) {
       ASSERT_EQ(page_.view().GetPixel(x, y), kColor) << x << "," << y;
     }
   }
-  EXPECT_EQ(ColoredPixels(), (kBox.width - 2) * (kBox.height - 2));
+  EXPECT_EQ(ColoredPixels(), (kBox.width() - 2) * (kBox.height() - 2));
 }
 
 TEST_F(ColorBoxTest, SelectedBoxSwapsTheBevelColors) {
   DrawColorBox(page_.view(), kBox, kColor, false);
   const engine::gfx::PaletteIndex raised_top =
-      page_.view().GetPixel(kBox.x + 1, kBox.y);
+      page_.view().GetPixel(kBox.x() + 1, kBox.y());
   const engine::gfx::PaletteIndex raised_bottom =
-      page_.view().GetPixel(kBox.x + 1, kBox.bottom() - 1);
+      page_.view().GetPixel(kBox.x() + 1, kBox.bottom() - 1);
 
   DrawColorBox(page_.view(), kBox, kColor, true);
 
-  EXPECT_EQ(page_.view().GetPixel(kBox.x + 1, kBox.y), raised_bottom);
-  EXPECT_EQ(page_.view().GetPixel(kBox.x + 1, kBox.bottom() - 1), raised_top);
-  EXPECT_EQ(ColoredPixels(), (kBox.width - 2) * (kBox.height - 2));
+  EXPECT_EQ(page_.view().GetPixel(kBox.x() + 1, kBox.y()), raised_bottom);
+  EXPECT_EQ(page_.view().GetPixel(kBox.x() + 1, kBox.bottom() - 1), raised_top);
+  EXPECT_EQ(ColoredPixels(), (kBox.width() - 2) * (kBox.height() - 2));
 }
 
 }  // namespace

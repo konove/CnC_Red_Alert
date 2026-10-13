@@ -244,24 +244,25 @@ void PixelView::CopyToBufferLocked(const base::Rect& source,
                                    std::span<uint8_t> dest) {
   // The buffer holds the whole of `source`, so what the clip took off the top
   // and left is skipped in it too.
-  const int width = source.width;
+  const int width = source.width();
   const base::Rect clipped = base::ClipRect(source, width_, height_);
   if (!clipped.IsValid()) {
     return;
   }
 
   const base::ssize src_area = stride();
-  auto src_offset = pixels().begin() + clipped.x + (clipped.y * src_area);
+  auto src_offset = pixels().begin() + clipped.x() + (clipped.y() * src_area);
 
-  auto dst_offset = dest.begin() + (clipped.x - source.x) +
-                    (static_cast<base::ssize>(clipped.y - source.y) * width);
+  auto dst_offset =
+      dest.begin() + (clipped.x() - source.x()) +
+      (static_cast<base::ssize>(clipped.y() - source.y()) * width);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = clipped.width;
-  int line_count = clipped.height;
+  const int pixel_count = clipped.width();
+  int line_count = clipped.height();
 
   // copy lines
   do {
@@ -283,24 +284,24 @@ void PixelView::CopyFromBufferLocked(const base::Rect& dest,
                                      std::span<const uint8_t> source) {
   // The buffer holds the whole of `dest`, so what the clip took off the top and
   // left is skipped in it too.
-  const int width = dest.width;
+  const int width = dest.width();
   const base::Rect clipped = base::ClipRect(dest, width_, height_);
   if (!clipped.IsValid()) {
     return;
   }
 
-  auto src_offset = source.begin() + (clipped.x - dest.x) +
-                    (static_cast<base::ssize>(clipped.y - dest.y) * width);
+  auto src_offset = source.begin() + (clipped.x() - dest.x()) +
+                    (static_cast<base::ssize>(clipped.y() - dest.y()) * width);
 
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
+  auto dst_offset = pixels().begin() + clipped.x() + (clipped.y() * dst_area);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = clipped.width;
-  int line_count = clipped.height;
+  const int pixel_count = clipped.width();
+  int line_count = clipped.height();
 
   // copy lines
   do {
@@ -334,30 +335,30 @@ void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
   if (!src_visible.IsValid()) {
     return;
   }
-  const base::Rect dst_wanted{dst_x + (src_visible.x - source.x),
-                              dst_y + (src_visible.y - source.y),
-                              src_visible.width, src_visible.height};
+  const base::Rect dst_wanted{dst_x + (src_visible.x() - source.x()),
+                              dst_y + (src_visible.y() - source.y()),
+                              src_visible.width(), src_visible.height()};
   const base::Rect dst_visible =
       base::ClipRect(dst_wanted, dest.width(), dest.height());
   if (!dst_visible.IsValid()) {
     return;
   }
-  const int src_x0 = src_visible.x + (dst_visible.x - dst_wanted.x);
-  const int src_y0 = src_visible.y + (dst_visible.y - dst_wanted.y);
+  const int src_x0 = src_visible.x() + (dst_visible.x() - dst_wanted.x());
+  const int src_y0 = src_visible.y() + (dst_visible.y() - dst_wanted.y());
 
   const base::ssize src_area = stride();
   auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_area);
 
   const base::ssize dst_area = dest.stride();
   auto dst_offset =
-      dest.pixels().begin() + dst_visible.x + (dst_visible.y * dst_area);
+      dest.pixels().begin() + dst_visible.x() + (dst_visible.y() * dst_area);
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
     return;
   }
 
-  const int pixel_count = dst_visible.width;
-  int line_count = dst_visible.height;
+  const int pixel_count = dst_visible.width();
+  int line_count = dst_visible.height();
 
   if (src_offset < dst_offset) {
     // backward (bottom -> top)
@@ -776,8 +777,8 @@ void PixelView::DrawRect(const base::Rect& rect,
   if (!rect.IsValid() || !Lock()) {
     return;
   }
-  const int x1 = rect.x;
-  const int y1 = rect.y;
+  const int x1 = rect.x();
+  const int y1 = rect.y();
   const int x2 = rect.right() - 1;
   const int y2 = rect.bottom() - 1;
   DrawLineLocked(x1, y1, x2, y1, color);
@@ -955,10 +956,10 @@ void PixelView::FillRectLocked(const base::Rect& rect,
 
   const uint8_t pixel = color.byte();
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
+  auto dst_offset = pixels().begin() + clipped.x() + (clipped.y() * dst_area);
 
-  for (int line = 0; line < clipped.height; ++line) {
-    std::fill_n(dst_offset, clipped.width, pixel);
+  for (int line = 0; line < clipped.height(); ++line) {
+    std::fill_n(dst_offset, clipped.width(), pixel);
     dst_offset += dst_area;
   }
 }
@@ -982,11 +983,11 @@ void PixelView::RemapLocked(const base::Rect& rect,
   if (!clipped.IsValid()) {
     return;
   }
-  const int pixel_count = clipped.width;
-  int line_count = clipped.height;
+  const int pixel_count = clipped.width();
+  int line_count = clipped.height();
 
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
+  auto dst_offset = pixels().begin() + clipped.x() + (clipped.y() * dst_area);
 
   const int skip = static_cast<int>(dst_area - pixel_count);
 

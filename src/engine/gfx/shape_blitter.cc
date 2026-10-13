@@ -237,10 +237,10 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
   if (!clipped.IsValid()) {
     return;
   }
-  const int dst_x = clipped.x;
-  const int dst_y = clipped.y;
-  job.pixel_count = clipped.width;
-  job.line_count = clipped.height;
+  const int dst_x = clipped.x();
+  const int dst_y = clipped.y();
+  job.pixel_count = clipped.width();
+  job.line_count = clipped.height();
 
   job.src_stride = width;
   job.dst_stride = dest.stride();

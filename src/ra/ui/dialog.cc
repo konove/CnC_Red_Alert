@@ -277,9 +277,10 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
 
 void DrawColorBox(PixelView& view, const base::Rect& box,
                   const engine::gfx::PaletteIndex color, const bool selected) {
-  view.FillRect(base::Rect{box.x + 1, box.y + 1, box.width - 2, box.height - 2},
-                color);
-  Draw_Box(view, box.x, box.y, box.width, box.height,
+  view.FillRect(
+      base::Rect{box.x() + 1, box.y() + 1, box.width() - 2, box.height() - 2},
+      color);
+  Draw_Box(view, box.x(), box.y(), box.width(), box.height(),
            selected ? BOXSTYLE_DOWN : BOXSTYLE_RAISED, false);
 }
 

@@ -105,8 +105,8 @@ void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
                           const std::span<const uint8_t> remap_table,
                           const base::Rect& clip) {
   if (Lock()) {
-    DrawStampLocked(icon_set, cell, x, y, remap_table, clip.x, clip.y,
-                    clip.width, clip.height);
+    DrawStampLocked(icon_set, cell, x, y, remap_table, clip.x(), clip.y(),
+                    clip.width(), clip.height());
     Unlock();
   }
 }
@@ -144,8 +144,8 @@ void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
   if (!visible.IsValid()) {
     return;
   }
-  const int draw_width = visible.width;
-  const int draw_height = visible.height;
+  const int draw_width = visible.width();
+  const int draw_height = visible.height();
 
   // Without a remap table the faster loops below are used. A table too short
   // to translate every color is refused rather than read past.
@@ -158,10 +158,11 @@ void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
   const auto src_start =
       tables->tiles.begin() +
       (static_cast<base::ssize>(tile) * tile_width * tile_height) +
-      (static_cast<base::ssize>(visible.y - y) * tile_width) + (visible.x - x);
+      (static_cast<base::ssize>(visible.y() - y) * tile_width) +
+      (visible.x() - x);
   const base::ssize dst_stride = stride();
-  const auto dst_start = pixels().begin() + (clip_x + visible.x) +
-                         ((clip_y + visible.y) * dst_stride);
+  const auto dst_start = pixels().begin() + (clip_x + visible.x()) +
+                         ((clip_y + visible.y()) * dst_stride);
 
   // Draws the clipped tile with each pixel passed through `translate`,
   // leaving the destination alone where that gives color 0.

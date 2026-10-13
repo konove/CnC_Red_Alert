@@ -197,12 +197,10 @@ int PredatorOffset(const int frame, const int x, const int window_width) {
 
 base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
                             const int shape_num) {
-  base::Rect rect;
-
   const std::vector<uint8_t> shape =
       engine::gfx::BuildFrame(shapedata, shape_num);
   if (shape.empty()) {
-    return rect;
+    return base::Rect{};
   }
 
   const int width = engine::gfx::KeyframeWidth(shapedata);
@@ -211,8 +209,10 @@ base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Four scans, one per edge, each narrowing the search area for the next:
   // the top scan also gives a first guess at the left edge, the bottom scan
   // hands the right scan a starting column, and so on.
-  rect.x = 0;
-  rect.y = 0;
+  int left = 0;
+  int top = 0;
+  int box_width = 0;
+  int box_height = 0;
   int x_limit = width - 1;
   const int y_limit = height - 1;
 
@@ -220,8 +220,8 @@ base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.y = y;
-        rect.x = x;
+        top = y;
+        left = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
         // holding any pixel is the top edge, so there is nothing left to scan.
         y = y_limit + 1;
@@ -231,23 +231,23 @@ base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   }
 
   // Find bottom edge of the shape.
-  for (int y = y_limit; y >= rect.y; y--) {
+  for (int y = y_limit; y >= top; y--) {
     for (int x = x_limit; x >= 0; x--) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.height = y - rect.y + 1;
+        box_height = y - top + 1;
         x_limit = x;
-        y = rect.y - 1;
+        y = top - 1;
         break;
       }
     }
   }
 
   // Find left edge of the shape.
-  for (int x = 0; x < rect.x; x++) {
-    for (int y = rect.y; y < rect.y + rect.height; y++) {
+  for (int x = 0; x < left; x++) {
+    for (int y = top; y < top + box_height; y++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.x = x;
-        x = rect.x;
+        left = x;
+        x = left;
         break;
       }
     }
@@ -255,21 +255,18 @@ base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
 
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
-    for (int y = rect.y; y < rect.y + rect.height; y++) {
+    for (int y = top; y < top + box_height; y++) {
       if (shape.at(base::ToSize((y * width) + x)) != 0) {
-        rect.width = x - rect.x + 1;
+        box_width = x - left + 1;
         x = x_limit - 1;
         break;
       }
     }
   }
 
-  // Normalize the rectangle around the center of the shape.
-  rect.x -= width / 2;
-  rect.y -= height / 2;
-
-  // Return with the minimum rectangle that encloses the shape.
-  return rect;
+  // The minimum rectangle that encloses the shape, relative to its center.
+  return base::Rect{left - (width / 2), top - (height / 2), box_width,
+                    box_height};
 }
 
 // Icons are 24x24 pixels in the source art, and the radar draws them at

@@ -1942,8 +1942,8 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
                   Lepton_To_Pixel(TacLeptonHeight));
               if (visible.IsValid()) {
                 view.FillRect(
-                    base::Rect{TacPixelX + visible.x, TacPixelY + visible.y,
-                               visible.width, visible.height},
+                    base::Rect{TacPixelX + visible.x(), TacPixelY + visible.y(),
+                               visible.width(), visible.height()},
                     game::kBlack);
               }
             }

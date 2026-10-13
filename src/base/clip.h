@@ -25,15 +25,13 @@ namespace base {
 // because each edge then moves the other rectangle by a different amount.
 constexpr Rect ClipRect(const Rect& rect, const int clip_width,
                         const int clip_height) {
-  const int x0 = std::max(rect.x, 0);
-  const int y0 = std::max(rect.y, 0);
+  const int x0 = std::max(rect.x(), 0);
+  const int y0 = std::max(rect.y(), 0);
 
   // A rectangle outside the window comes out with a width or a height that is
   // not positive, like one that was empty to begin with.
-  const Rect clipped{.x = x0,
-                     .y = y0,
-                     .width = std::min(rect.right(), clip_width) - x0,
-                     .height = std::min(rect.bottom(), clip_height) - y0};
+  const Rect clipped{x0, y0, std::min(rect.right(), clip_width) - x0,
+                     std::min(rect.bottom(), clip_height) - y0};
   return clipped.IsValid() ? clipped : Rect{};
 }
 
@@ -66,21 +64,21 @@ struct ConfinedRect {
 // hit the edge of the world" and recomputes the distance actually travelled,
 // so that is behaviour rather than an accident.
 constexpr ConfinedRect ConfineRect(const Rect& rect, const Rect& bounds) {
-  ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};
+  ConfinedRect result{.position = {.x = rect.x(), .y = rect.y()}};
 
-  if (rect.x < bounds.x) {
-    result.position.x = bounds.x;
+  if (rect.x() < bounds.x()) {
+    result.position.x = bounds.x();
     result.bounded = true;
   } else if (rect.right() > bounds.right()) {
-    result.position.x = std::max(bounds.right() - rect.width, bounds.x);
+    result.position.x = std::max(bounds.right() - rect.width(), bounds.x());
     result.bounded = true;
   }
 
-  if (rect.y < bounds.y) {
-    result.position.y = bounds.y;
+  if (rect.y() < bounds.y()) {
+    result.position.y = bounds.y();
     result.bounded = true;
   } else if (rect.bottom() > bounds.bottom()) {
-    result.position.y = std::max(bounds.bottom() - rect.height, bounds.y);
+    result.position.y = std::max(bounds.bottom() - rect.height(), bounds.y());
     result.bounded = true;
   }
 

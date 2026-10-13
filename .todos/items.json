@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 433,
+  "nextId": 435,
   "items": [
     {
       "id": "T-2",
@@ -14986,8 +14986,8 @@
             ""
           ],
           "after": [
-            "  const int draw_width = visible.width;",
-            "  const int draw_height = visible.height;",
+            "  const int draw_width = visible.width();",
+            "  const int draw_height = visible.height();",
             ""
           ],
           "lost": false
@@ -15016,8 +15016,8 @@
       "anchors": [
         {
           "path": "src/base/clip.h",
-          "startLine": 90,
-          "endLine": 90,
+          "startLine": 66,
+          "endLine": 66,
           "text": "constexpr ConfinedRect ConfineRect(const Rect& rect, const Rect& bounds) {",
           "before": [
             "// at its corner. Both games' map scrolling reads the result as \"the scroll",
@@ -15025,9 +15025,9 @@
             "// so that is behaviour rather than an accident."
           ],
           "after": [
-            "  ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};",
+            "  ConfinedRect result{.position = {.x = rect.x(), .y = rect.y()}};",
             "",
-            "  if (rect.x < bounds.x) {"
+            "  if (rect.x() < bounds.x()) {"
           ],
           "lost": false
         },
@@ -15255,10 +15255,10 @@
         "testing",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T07:29:07Z",
+      "updated": "2026-10-13T07:29:47Z",
       "source": "be2fcbf5f..484f9b5ee",
       "resolution": "`base::Point` and `base::ConfinedRect` have a defaulted `operator==`, and `ConfinedRect` a hidden-friend `PrintTo()` like `PaletteIndex` has, so a failed comparison shows `{(x, y), bounded}`. The `ConfineRect` tests compare whole `ConfinedRect` values and `ExpectConfined()` is gone. `Point` got no printer, to keep `<ostream>` out of `point.h`; neither game defined a comparison of its own.",
       "anchors": [
@@ -15374,10 +15374,11 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-13T07:22:08Z",
-      "updated": "2026-10-13T07:22:08Z",
+      "updated": "2026-10-13T07:38:47Z",
+      "resolution": "`base::Rect` is now a class: `x_`/`y_`/`width_`/`height_` are private behind `x()`, `y()`, `width()`, `height()`, with a four-int constructor and no setters, so a Rect changes only by assigning a new one. The 11 files that read the fields call the accessors; `ra::Shape_Dimensions`, the one place that built a Rect field by field, now scans into locals and constructs the result.",
       "anchors": [
         {
           "path": "src/base/rect.h",
@@ -15394,7 +15395,7 @@
             "  // either order, so it is never empty: equal corners give one pixel.",
             "  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -15411,11 +15412,11 @@
       "anchors": [
         {
           "path": "src/base/rect.h",
-          "startLine": 20,
-          "endLine": 21,
+          "startLine": 21,
+          "endLine": 22,
           "text": "  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,\n                                                  const int x2, const int y2) {",
           "before": [
-            "struct Rect {",
+            " public:",
             "  // The rectangle that spans two opposite corners, both inclusive and in",
             "  // either order, so it is never empty: equal corners give one pixel."
           ],
@@ -15454,7 +15455,7 @@
             "  friend constexpr bool operator==(const Rect&, const Rect&) = default;",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -15513,6 +15514,66 @@
             "  GadgetClass() noexcept = default;",
             "  // Not copyable or movable: the list it is in points at it.",
             "  GadgetClass(const GadgetClass&) = delete;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-433",
+      "title": "pass clip_rect",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:35:14Z",
+      "updated": "2026-10-13T07:35:14Z",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/stamp.cc",
+          "startLine": 117,
+          "endLine": 118,
+          "text": "                                const int clip_x, const int clip_y,\n                                const int clip_width, const int clip_height) {",
+          "before": [
+            "void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,",
+            "                                const int cell, const int x, const int y,",
+            "                                std::span<const uint8_t> remap_table,"
+          ],
+          "after": [
+            "  const std::optional<IconSetTables> tables = ReadIconSet(icon_set);",
+            "  if (!tables) {",
+            "    return;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-434",
+      "title": "pass point",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:35:22Z",
+      "updated": "2026-10-13T07:35:22Z",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/stamp.cc",
+          "startLine": 115,
+          "endLine": 115,
+          "text": "                                const int cell, const int x, const int y,",
+          "before": [
+            "}",
+            "",
+            "void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,"
+          ],
+          "after": [
+            "                                std::span<const uint8_t> remap_table,",
+            "                                const int clip_x, const int clip_y,",
+            "                                const int clip_width, const int clip_height) {"
           ],
           "lost": false
         }

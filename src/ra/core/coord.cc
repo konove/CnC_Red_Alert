@@ -58,14 +58,14 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
   // Convert the rect from coord-relative to absolute world leptons. Each edge
   // is a 16-bit lepton word, so a rect reaching past the world's left or top
   // edge wraps, as it always has.
-  const int left =
-      static_cast<uint16_t>(x + static_cast<int16_t>(Pixel_To_Lepton(rect.x)));
-  const int top =
-      static_cast<uint16_t>(y + static_cast<int16_t>(Pixel_To_Lepton(rect.y)));
+  const int left = static_cast<uint16_t>(
+      x + static_cast<int16_t>(Pixel_To_Lepton(rect.x())));
+  const int top = static_cast<uint16_t>(
+      y + static_cast<int16_t>(Pixel_To_Lepton(rect.y())));
   const int right =
-      static_cast<uint16_t>(left + Pixel_To_Lepton(rect.width - 1));
+      static_cast<uint16_t>(left + Pixel_To_Lepton(rect.width() - 1));
   const int bottom =
-      static_cast<uint16_t>(top + Pixel_To_Lepton(rect.height - 1));
+      static_cast<uint16_t>(top + Pixel_To_Lepton(rect.height() - 1));
 
   const int cell_left = Lepton_Cell(left);
   const int cell_right = Lepton_Cell(right);
