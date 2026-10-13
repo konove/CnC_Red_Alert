@@ -32,8 +32,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/type_heaps.h"
-#include "ra/objects/type.h"
 #include "ra/startup/ui_test_util.h"
 #include "ra/ui/color_scheme.h"
 
@@ -45,12 +43,9 @@ namespace {
 class TriggerTypeDialogTest : public UiFixture {
  protected:
   void SetUp() override {
-    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    AircraftTypeClass::Init_Heap();
-    BuildingTypeClass::Init_Heap();
-    InfantryTypeClass::Init_Heap();
+    InitAircraftTypes();
+    InitBuildingTypes();
+    InitInfantryTypes();
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     team_type_ = base::NewPooled<TeamType>();

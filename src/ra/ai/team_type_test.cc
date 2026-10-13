@@ -31,7 +31,6 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/type_heaps.h"
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/mission.h"
@@ -54,12 +53,9 @@ bool HasDescriptions() {
 class TeamTypeTest : public UiFixture {
  protected:
   void SetUp() override {
-    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());
-    AircraftTypeClass::Init_Heap();
-    InfantryTypeClass::Init_Heap();
-    VesselTypeClass::Init_Heap();
+    InitAircraftTypes();
+    InitInfantryTypes();
+    InitVesselTypes();
     TheObjectHeaps().team().Reset(4);
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);

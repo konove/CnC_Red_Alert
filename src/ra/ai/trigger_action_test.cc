@@ -19,7 +19,6 @@
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"
@@ -719,8 +718,7 @@ TEST_F(TriggerActionGameTest, CreepShadowRuns) {
 }
 
 TEST_F(TriggerActionGameTest, LaunchNukesOrdersEverySiloToFire) {
-  TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-  BuildingTypeClass::Init_Heap();
+  InitBuildingTypes();
   BuildingTypeClass::As_Reference(STRUCT_MSLO).MaxStrength = 500;
   BuildingTypeClass::As_Reference(STRUCT_BARRACKS).MaxStrength = 500;
   TheObjectHeaps().building().Reset(2);

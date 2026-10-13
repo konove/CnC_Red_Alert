@@ -33,6 +33,15 @@ class GameFixture : public ::testing::Test {
   // Empties the display layers, which are static and outlive the Game.
   void TearDown() override;
 
+  // Each builds every type of one kind, as the game does when it starts. The
+  // house and vehicle types are always there; a fixture calls these for the
+  // other kinds its tests name.
+  static void InitAircraftTypes();
+  static void InitBuildingTypes();
+  static void InitInfantryTypes();
+  static void InitTemplateTypes();
+  static void InitVesselTypes();
+
   // Makes TextString(text_id) return `text`, for one of the game's own
   // strings (0 up to kTextCount). The first call installs a text table in
   // which every other string is empty; before it there is no table and every

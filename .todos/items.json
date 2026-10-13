@@ -3132,11 +3132,12 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
-      "parent": "T-240"
+      "updated": "2026-10-13T01:54:17Z",
+      "parent": "T-240",
+      "resolution": "The stored `team_count_` and `OnTeamCreated()`/`OnTeamDeleted()` are gone; `TeamType::CountTeams()` counts the teams in the heap. Save version bumped to 21 with T-153 and the fixture regenerated."
     },
     {
       "id": "T-110",
@@ -4339,12 +4340,13 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T01:27:53Z",
+      "updated": "2026-10-13T01:54:17Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "Removed `is_transient_` (with `set_is_transient()`) and `fear_` from `TeamType` and its `Serialize()`; `initial_count_` stays. `kSaveGameVersion` is 21, `SAVEGAME.SCG01EA` regenerated, `tools/ra_saveload_smoke.sh` passes.",
       "toDecide": "- **Drop `is_transient_` and `fear_`**: about 10 lines, and the save format changes (bump `kSaveGameVersion`, run `tools/ra_saveload_smoke.sh`). `initial_count_` stays as long as scenarios round-trip through the editor.\n- **Keep** all three.",
       "decisions": [
         {
@@ -4387,17 +4389,18 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:54:17Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`missions()` and `members()` return `std::span`s of the entries in use. Reviewed the 12 `CurrentMission` reads in `team.cc`: `Coordinate_Move()` (next line) and `Is_Leaving_Map()` got guards, the advance in `AI()` now rejects a negative line; the rest only run after that check. The count accessors stay (about 40 `int` loop bounds use them). Tests, save/load smoke and `tools/net_check.py` pass.",
       "anchors": [
         {
           "path": "src/ra/ai/team_type.h",
-          "startLine": 287,
-          "endLine": 287,
+          "startLine": 282,
+          "endLine": 282,
           "text": "  [[nodiscard]] const MissionArray& missions() const",
           "before": [
             "  // The script: the first mission_count() entries of missions(). The rest",
@@ -4409,7 +4412,7 @@
             "    return missions_;",
             "  }"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4479,8 +4482,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team_type_test.cc",
-          "startLine": 51,
-          "endLine": 51,
+          "startLine": 56,
+          "endLine": 56,
           "text": "  void SetUp() override {",
           "before": [
             "// reading the current scenario format, and one team type to work on.",
@@ -4488,9 +4491,9 @@
             " protected:"
           ],
           "after": [
-            "    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());",
-            "    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());",
-            "    TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());"
+            "    InitAircraftTypes();",
+            "    InitInfantryTypes();",
+            "    InitVesselTypes();"
           ],
           "lost": false
         }

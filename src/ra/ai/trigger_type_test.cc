@@ -25,7 +25,6 @@
 #include "engine/stream/vector_sink.h"
 #include "game/ui/standard_colors.h"
 #include "gtest/gtest.h"
-#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team_type.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
@@ -33,7 +32,6 @@
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/type_heaps.h"
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 #include "ra/startup/game_test_util.h"
@@ -473,12 +471,9 @@ class TriggerTypeObjectNameTest : public TriggerTypeTest {
  protected:
   void SetUp() override {
     TriggerTypeTest::SetUp();
-    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    AircraftTypeClass::Init_Heap();
-    BuildingTypeClass::Init_Heap();
-    InfantryTypeClass::Init_Heap();
+    InitAircraftTypes();
+    InitBuildingTypes();
+    InitInfantryTypes();
   }
 
   // What Description() puts after the prefix: the event's name and `value`.

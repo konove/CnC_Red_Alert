@@ -39,6 +39,31 @@ void GameFixture::TearDown() {
   }
 }
 
+void GameFixture::InitAircraftTypes() {
+  TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
+  AircraftTypeClass::Init_Heap();
+}
+
+void GameFixture::InitBuildingTypes() {
+  TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
+  BuildingTypeClass::Init_Heap();
+}
+
+void GameFixture::InitInfantryTypes() {
+  TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
+  InfantryTypeClass::Init_Heap();
+}
+
+void GameFixture::InitTemplateTypes() {
+  TheTypeHeaps().tmplate().Reset(magic_enum::enum_count<TemplateType>());
+  TemplateTypeClass::Init_Heap();
+}
+
+void GameFixture::InitVesselTypes() {
+  TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());
+  VesselTypeClass::Init_Heap();
+}
+
 void GameFixture::SetText(const int text_id, const std::string_view text) {
   texts_.resize(kTextCount);
   texts_.at(base::ToSize(text_id)) = text;

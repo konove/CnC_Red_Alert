@@ -7,16 +7,13 @@
 #include "engine/window/keyboard.h"
 #include "engine/window/scripted_player.h"
 #include "gtest/gtest.h"
-#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team_type.h"
 #include "ra/ai/trigger_type.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/type_heaps.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
-#include "ra/objects/type.h"
 #include "ra/startup/ui_test_util.h"
 
 namespace ra {
@@ -42,12 +39,9 @@ class TriggerListTest : public UiFixture {
     TheObjectHeaps().team_type().Reset(4);
     TheObjectHeaps().trigger_type().Reset(4);
     // The trigger dialog that Edit and New open lists every kind of object.
-    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    AircraftTypeClass::Init_Heap();
-    BuildingTypeClass::Init_Heap();
-    InfantryTypeClass::Init_Heap();
+    InitAircraftTypes();
+    InitBuildingTypes();
+    InitInfantryTypes();
     for (const char* const name : {"zulu", "Alfa", "mike"}) {
       base::NewPooled<TriggerType>()->Set_Name(name);
     }

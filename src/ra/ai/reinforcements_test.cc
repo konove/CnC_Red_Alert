@@ -10,7 +10,6 @@
 #include "base/pooled.h"
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
-#include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/team_type.h"
@@ -19,7 +18,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/map/display.h"
 #include "ra/map/world.h"
@@ -41,14 +39,10 @@ namespace {
 class ReinforcementTest : public GameFixture {
  protected:
   ReinforcementTest() {
-    TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-    TheTypeHeaps().tmplate().Reset(magic_enum::enum_count<TemplateType>());
-    AircraftTypeClass::Init_Heap();
-    InfantryTypeClass::Init_Heap();
-    BuildingTypeClass::Init_Heap();
-    TemplateTypeClass::Init_Heap();
+    InitAircraftTypes();
+    InitInfantryTypes();
+    InitBuildingTypes();
+    InitTemplateTypes();
     // No rules are loaded, so every type has no strength, and a team takes no
     // member that looks dead.
     UnitTypeClass::As_Reference(UNIT_JEEP).MaxStrength = 100;

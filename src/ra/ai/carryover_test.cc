@@ -16,12 +16,10 @@
 #include "engine/stream/vector_sink.h"
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
-#include "magic_enum/magic_enum.hpp"
 #include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
-#include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/map/map.h"
 #include "ra/map/world.h"
@@ -65,11 +63,9 @@ std::string Read(const std::vector<std::byte>& bytes, Carryover& record) {
 class CarryoverTest : public GameFixture {
  protected:
   CarryoverTest() {
-    TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
-    InfantryTypeClass::Init_Heap();
+    InitInfantryTypes();
     TheObjectHeaps().infantry().Reset(4);
-    TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
-    BuildingTypeClass::Init_Heap();
+    InitBuildingTypes();
     TheObjectHeaps().building().Reset(2);
     // No rules are loaded, and infantry are only placed on ground that foot
     // soldiers can cross.
