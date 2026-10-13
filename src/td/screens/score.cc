@@ -1866,12 +1866,12 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
     _state = false;
   }
 
-  show.page().view().DrawLine(
-      HALLFAME_X + (pos * 6), ypos, HALLFAME_X + (pos * 6) + 5, ypos,
-      _state ? game::kLightBlue : game::kTransparentBlack);
+  show.page().view().DrawLine(HALLFAME_X + (pos * 6), ypos,
+                              HALLFAME_X + (pos * 6) + 5, ypos,
+                              _state ? kCcBlueGrey : game::kTransparentBlack);
   show.text_page().view().FillRect(
       Rect{2 * (HALLFAME_X + (pos * 6)), 2 * ypos, 6 * 2, 2},
-      _state ? game::kLightBlue : game::kBlack);
+      _state ? kCcBlueGrey : game::kBlack);
 
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.

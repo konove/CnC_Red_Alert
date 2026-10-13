@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 404,
+  "nextId": 408,
   "items": [
     {
       "id": "T-2",
@@ -5722,7 +5722,7 @@
     {
       "id": "T-189",
       "title": "Use Tiberian Dawn's own color aliases where it draws with the misnamed slots",
-      "details": "The standard color names are the Westwood library's; in Tiberian Dawn's palette slot 1 is orange, 2 blue-green, 7 tan and 10 blue-grey, and `td/core/defines.h` aliases them (`kCcOrange = game::kPurple`, `kCcBlueGreen = game::kCyan`, `kCcTan = game::kBrown`, `kCcBlueGrey = game::kLightBlue`). TD code still names the slots directly in a few places: `mapeddlg.cc` draws the \"Rock/Wall/Road\" and \"Neutral Unit\" legend with `game::kBrown` and `game::kPurple`, and `findpath.cc`'s debug overlay uses `game::kCyan` and `game::kBrown`. Replace those with the `kCc...` aliases so the name matches what shows on screen. `findpath.cc:1151` also passes a literal `0` beside `game::kBrown`; it means `game::kTransparentBlack`. No behaviour change. Check with `git grep -nE 'game::k(Purple|Cyan|Brown|LightBlue)' -- src/td`.",
+      "details": "The standard color names are the Westwood library's; in Tiberian Dawn's palette slot 1 is orange, 2 blue-green, 7 tan and 10 blue-grey, and `td/core/defines.h` aliases them as `engine::gfx::PaletteIndex` constants (`kCcOrange = game::kPurple`, `kCcBlueGreen = game::kCyan`, `kCcTan = game::kBrown`, `kCcBlueGrey = game::kLightBlue`). TD code still names the slots directly: `mapeddlg.cc` draws the \"Rock/Wall/Road\" and \"Neutral Unit\" legend with `game::kBrown` and `game::kPurple`; `findpath.cc`'s debug overlay uses `game::kCyan` (313), `game::kBrown` (1147, 1612) and `game::kLightBlue` (441, 527, 1621); `score.cc` (1871, 1874) and the \"raised blue\" box colors in `ui/dialog.cc` (133-134) use `game::kLightBlue`. Replace those with the `kCc...` aliases so the name matches what shows on screen. No behaviour change. Check with `git grep -nE 'game::k(Purple|Cyan|Brown|LightBlue)' -- src/td`: only the four alias definitions should remain.",
       "priority": "p3",
       "effort": "s",
       "tags": [
@@ -5730,42 +5730,43 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-10T20:52:39Z",
+      "updated": "2026-10-12T22:58:55Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
+      "resolution": "Replaced the 12 direct uses of `game::kPurple`/`kCyan`/`kBrown`/`kLightBlue` in `mapeddlg.cc`, `findpath.cc`, `score.cc` and `ui/dialog.cc` with `kCcOrange`/`kCcBlueGreen`/`kCcTan`/`kCcBlueGrey`. Same palette slots, so nothing changes on screen; the grep now finds only the four alias definitions in `td/core/defines.h`.",
       "anchors": [
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2426,
-          "endLine": 2432,
-          "text": "inline constexpr int kCcGdiColor = game::kYellow;\ninline constexpr int kCcNodColor = game::kRed;\ninline constexpr int kCcBlueGreen = game::kCyan;\ninline constexpr int kCcBlueGrey = game::kLightBlue;\ninline constexpr int kCcOrange = game::kPurple;\ninline constexpr int kCcGreen = game::kGreen;\ninline constexpr int kCcTan = game::kBrown;",
+          "startLine": 2427,
+          "endLine": 2433,
+          "text": "inline constexpr engine::gfx::PaletteIndex kCcGdiColor = game::kYellow;\ninline constexpr engine::gfx::PaletteIndex kCcNodColor = game::kRed;\ninline constexpr engine::gfx::PaletteIndex kCcBlueGreen = game::kCyan;\ninline constexpr engine::gfx::PaletteIndex kCcBlueGrey = game::kLightBlue;\ninline constexpr engine::gfx::PaletteIndex kCcOrange = game::kPurple;\ninline constexpr engine::gfx::PaletteIndex kCcGreen = game::kGreen;\ninline constexpr engine::gfx::PaletteIndex kCcTan = game::kBrown;",
           "before": [
             "};",
             "using enum SpecialDialogType;",
             ""
           ],
           "after": [
-            "inline constexpr int kCcGreenShadow = 140;",
-            "inline constexpr int kCcGreenBkgd = 141;",
-            "inline constexpr int kCcGreenCorners = kCcGreenBkgd;"
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};",
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};",
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
-          "startLine": 1067,
-          "endLine": 1067,
-          "text": "        TextPrinter(view, {game::kBrown, game::kTransparentBlack,",
+          "startLine": 1068,
+          "endLine": 1068,
+          "text": "        TextPrinter(view, {kCcTan, game::kTransparentBlack, FontType::k6Point,",
           "before": [
             "                           FontType::k6Point, TPF_DROPSHADOW})",
             "            .Print(\"Tiberium\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
           "after": [
-            "                           FontType::k6Point, TPF_DROPSHADOW})",
+            "                           TPF_DROPSHADOW})",
             "            .Print(\"Rock/Wall/Road\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
@@ -5773,9 +5774,9 @@
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
-          "startLine": 1079,
-          "endLine": 1079,
-          "text": "        TextPrinter(view, {game::kPurple, game::kTransparentBlack,",
+          "startLine": 1080,
+          "endLine": 1080,
+          "text": "        TextPrinter(view, {kCcOrange, game::kTransparentBlack,",
           "before": [
             "                           FontType::k6Point, TPF_DROPSHADOW})",
             "            .Print(\"Nod Unit\", {txt_x, txt_y});",
@@ -5790,9 +5791,9 @@
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 311,
-          "endLine": 311,
-          "text": "        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);",
+          "startLine": 313,
+          "endLine": 313,
+          "text": "        Draw_Cell_Point(curr_pos, true, -1, kCcBlueGreen);",
           "before": [
             "        dir = base::At(path->Command, base::ToSize(list - 1));",
             "        path->Length = idx;",
@@ -5807,9 +5808,9 @@
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 1148,
-          "endLine": 1148,
-          "text": "                      forcefail ? game::kBrown : 0);",
+          "startLine": 1147,
+          "endLine": 1147,
+          "text": "                      forcefail ? std::optional(kCcTan) : std::nullopt);",
           "before": [
             "        }",
             "      }",
@@ -5820,13 +5821,13 @@
             "        forceout = true;",
             "        break;"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/map/findpath.cc",
-          "startLine": 1613,
-          "endLine": 1613,
-          "text": "          color = game::kBrown;",
+          "startLine": 1612,
+          "endLine": 1612,
+          "text": "          color = kCcTan;",
           "before": [
             "          color = game::kYellow;",
             "          break;",
@@ -5844,7 +5845,7 @@
     {
       "id": "T-190",
       "title": "Tell game::kLightGreen and TD's kCcLightGreen apart",
-      "details": "Since `kLtGreen` became `game::kLightGreen` (palette slot 4), Tiberian Dawn has two near-identical names for different slots: `game::kLightGreen = 4` and its own `kCcLightGreen = 159` (the dialog green, also aliased as `kCcGreenBox`). A reader can pick the wrong one. Options: rename TD's to say what it is for (it already has `kCcGreenBox`; the other `kCcGreen...` constants are named by role), or leave both and add a comment at `kCcLightGreen`. Small; TD only.",
+      "details": "Since `kLtGreen` became `game::kLightGreen` (`PaletteIndex{4}`), Tiberian Dawn has two near-identical names for different slots: `game::kLightGreen` and its own `kCcLightGreen` (`PaletteIndex{159}`, the dialog green, also aliased as `kCcGreenBox`). Both are `engine::gfx::PaletteIndex` now, so the type does not tell them apart and a reader can pick the wrong one. Options: rename TD's to say what it is for (it already has `kCcGreenBox`; the other `kCcGreen...` constants are named by role), or leave both and add a comment at `kCcLightGreen`. Small; TD only.",
       "priority": "p3",
       "effort": "s",
       "tags": [
@@ -5854,7 +5855,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-08T07:13:58Z",
+      "updated": "2026-10-12T22:57:52Z",
       "parent": "T-186",
       "source": "5d374065",
       "anchors": [
@@ -5862,35 +5863,35 @@
           "path": "src/game/ui/standard_colors.h",
           "startLine": 41,
           "endLine": 41,
-          "text": "inline constexpr int kLightGreen = 4;",
+          "text": "inline constexpr engine::gfx::PaletteIndex kLightGreen{4};",
           "before": [
-            "inline constexpr int kPurple = 1;",
-            "inline constexpr int kCyan = 2;",
-            "inline constexpr int kGreen = 3;"
+            "inline constexpr engine::gfx::PaletteIndex kPurple{1};",
+            "inline constexpr engine::gfx::PaletteIndex kCyan{2};",
+            "inline constexpr engine::gfx::PaletteIndex kGreen{3};"
           ],
           "after": [
-            "inline constexpr int kYellow = 5;",
-            "inline constexpr int kPink = 6;",
-            "inline constexpr int kBrown = 7;"
+            "inline constexpr engine::gfx::PaletteIndex kYellow{5};",
+            "inline constexpr engine::gfx::PaletteIndex kPink{6};",
+            "inline constexpr engine::gfx::PaletteIndex kBrown{7};"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2436,
-          "endLine": 2436,
-          "text": "inline constexpr int kCcLightGreen = 159;",
+          "startLine": 2437,
+          "endLine": 2437,
+          "text": "inline constexpr engine::gfx::PaletteIndex kCcLightGreen{159};",
           "before": [
-            "inline constexpr int kCcGreenShadow = 140;",
-            "inline constexpr int kCcGreenBkgd = 141;",
-            "inline constexpr int kCcGreenCorners = kCcGreenBkgd;"
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};",
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};",
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;"
           ],
           "after": [
-            "inline constexpr int kCcGreenBox = kCcLightGreen;",
-            "inline constexpr int kCcBrightGreen = 167;",
-            "inline constexpr int kCcUnderline = kCcBrightGreen;"
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcLightGreen;",
+            "inline constexpr engine::gfx::PaletteIndex kCcBrightGreen{167};",
+            "inline constexpr engine::gfx::PaletteIndex kCcUnderline = kCcBrightGreen;"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -8036,7 +8037,7 @@
     {
       "id": "T-256",
       "title": "Make PaletteClass::Closest_Color() a free function over engine::gfx::Palette",
-      "details": "`PaletteClass::Closest_Color()` (`ra/assets/palette.cc`, the anchor) reads only `at()`, and `BuildClosestColorFadingTable()` is its one caller, which could then drop `PaletteClass` and `ra/assets/palette.h`. 4 files, same bytes.",
+      "details": "`PaletteClass::Closest_Color()` (`ra/assets/palette.cc`, the anchor) reads only `at()` and returns an `engine::gfx::PaletteIndex`. `BuildClosestColorFadingTable()` in `ra/core/fading_table_builders.cc` is its one caller; with a free function over `engine::gfx::Palette` it could take a `const engine::gfx::Palette&` and drop `PaletteClass` and the `ra/assets/palette.h` include from both `fading_table_builders` files. 4 files (`palette.h`, `palette.cc`, `fading_table_builders.h`, `fading_table_builders.cc`), same bytes. The comment in `ra/assets/dib.cc` that names `PaletteClass::Closest_Color` needs the new name.",
       "priority": "p3",
       "effort": "s",
       "tags": [
@@ -8046,26 +8047,26 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:35:19Z",
-      "updated": "2026-10-09T20:35:19Z",
+      "updated": "2026-10-12T22:57:52Z",
       "parent": "T-125",
       "source": "71420e43..dec8840c",
       "anchors": [
         {
           "path": "src/ra/assets/palette.cc",
-          "startLine": 63,
-          "endLine": 63,
-          "text": "int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {",
+          "startLine": 64,
+          "endLine": 65,
+          "text": "engine::gfx::PaletteIndex PaletteClass::Closest_Color(\n    const engine::gfx::PaletteColor& col) const {",
           "before": [
             "  }",
             "}",
             ""
           ],
           "after": [
-            "  int index = -1;",
-            "  int diff = 256 * 3;",
-            ""
+            "  // The first entry is closer than the starting distance, which is larger",
+            "  // than any two colors can be apart.",
+            "  int index = 0;"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -12239,13 +12240,13 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T05:14:19Z",
-      "updated": "2026-10-10T05:14:19Z",
+      "updated": "2026-10-12T22:57:02Z",
       "anchors": [
         {
           "path": "src/ra/map/power.cc",
-          "startLine": 213,
-          "endLine": 241,
-          "text": "      if (power_height) {\n        int color1 = 3;\n        int color2 = 4;\n\n        if (ThePlayer()->Drain > ThePlayer()->Power) {\n          color1 = 214;\n          color2 = 211;\n        }\n        if (ThePlayer()->Drain > ThePlayer()->Power * 2) {\n          color1 = 235;\n          color2 = 230;\n        }\n\n        /*\n        ** New power bar is in slightly different place\n        **\n        ** Old power bar was 107 pixels high. New bar is 153 pixels high.\n        **\n        ** ST - 5/2/96 11:23AM\n        */\n        // The clamp above allows 108, one more than the 107 this scales from,\n        // so the result is held to the top tick. Power_Height() stops at 104\n        // and the bounce adds 2 at most, so no game reaches it.\n        constexpr int kScaleRows = 152 + 1;\n        power_height =\n            std::min(power_height * kScaleRows / (106 + 1), kScaleRows);\n        drain_height =\n            std::min(drain_height * kScaleRows / (106 + 1), kScaleRows);\n        bottom = 350 + 1;",
+          "startLine": 214,
+          "endLine": 242,
+          "text": "      if (power_height) {\n        engine::gfx::PaletteIndex color1{3};\n        engine::gfx::PaletteIndex color2{4};\n\n        if (ThePlayer()->Drain > ThePlayer()->Power) {\n          color1 = engine::gfx::PaletteIndex{214};\n          color2 = engine::gfx::PaletteIndex{211};\n        }\n        if (ThePlayer()->Drain > ThePlayer()->Power * 2) {\n          color1 = engine::gfx::PaletteIndex{235};\n          color2 = engine::gfx::PaletteIndex{230};\n        }\n\n        /*\n        ** New power bar is in slightly different place\n        **\n        ** Old power bar was 107 pixels high. New bar is 153 pixels high.\n        **\n        ** ST - 5/2/96 11:23AM\n        */\n        // The clamp above allows 108, one more than the 107 this scales from,\n        // so the result is held to the top tick. Power_Height() stops at 104\n        // and the bounce adds 2 at most, so no game reaches it.\n        constexpr int kScaleRows = 152 + 1;\n        power_height =\n            std::min(power_height * kScaleRows / (106 + 1), kScaleRows);\n        drain_height =\n            std::min(drain_height * kScaleRows / (106 + 1), kScaleRows);\n        bottom = 350 + 1;",
           "before": [
             "      /*",
             "      **\tDraw the power output graphic on top of the power bar framework.",
@@ -12256,7 +12257,7 @@
             "        // The heights are positions on the scale drawn beside the bar, whose",
             "        // zero tick is the row `bottom` and whose top tick is `kScaleRows`"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -14194,6 +14195,217 @@
       "created": "2026-10-12T05:58:22Z",
       "updated": "2026-10-12T05:58:22Z",
       "source": "f3bd869d"
+    },
+    {
+      "id": "T-404",
+      "title": "Remove the color arguments nothing uses: RA Help_Text and TD's score printers",
+      "details": "Red Alert's `HelpClass::Help_Text()` ignores its `color` parameter and always prints in `kHelpTextColor` (\"all help text prints in the same color for E3\"), while `power.cc`, `sidebar.cc` and `display.cc` still work out and pass a color. Tiberian Dawn's `ScorePrintClass` and `MultiStagePrintClass` take a `background` and store it in `Background`, which nothing reads.\n\nDrop the parameter and the member, and the code in the callers that only computes them (`/remove-dead-code`). Tiberian Dawn's `Help_Text()` does use its color; leave it.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T20:00:45Z",
+      "updated": "2026-10-12T20:00:45Z",
+      "source": "41a7d9c7..cfed6a3e",
+      "anchors": [
+        {
+          "path": "src/ra/map/help.cc",
+          "startLine": 219,
+          "endLine": 220,
+          "text": "void HelpClass::Help_Text(int text, int x, int y,\n                          engine::gfx::PaletteIndex /*color*/, bool quick) {",
+          "before": [
+            " *                                                                                             *",
+            " * HISTORY: * 11/18/1994 JLB : Created. *",
+            " *=============================================================================================*/"
+          ],
+          "after": [
+            "  if (text != Text) {",
+            "    /*",
+            "    **\tIf there is an existing text message, then flag the map to redraw the"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/screens/score.h",
+          "startLine": 179,
+          "endLine": 179,
+          "text": "  engine::gfx::PaletteIndex Background;",
+          "before": [
+            "",
+            "class ScorePrintClass : public ScoreAnimClass {",
+            " public:"
+          ],
+          "after": [
+            "  std::span<const uint8_t> PrimaryPalette;",
+            "  void Update() override;",
+            "  ScorePrintClass("
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/screens/score.h",
+          "startLine": 199,
+          "endLine": 199,
+          "text": "  engine::gfx::PaletteIndex Background;",
+          "before": [
+            "",
+            "class MultiStagePrintClass : public ScoreAnimClass {",
+            " public:"
+          ],
+          "after": [
+            "  std::span<const uint8_t> PrimaryPalette;",
+            "  void Update() override;",
+            "  MultiStagePrintClass("
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-405",
+      "title": "Give the menu table and the window list named fields instead of rows of int",
+      "details": "Red Alert's `menu_list` (`int[][8]`: x, y, width, items, selected, normal color, selected color, zero) and both games' `WindowList` rows (x, y, width, height, foreground, background, cursor x, cursor y) mix coordinates with two colors in one array of `int`, indexed by constants such as `kNormcol` and `kWindowFCol`. Since colors are `engine::gfx::PaletteIndex` the tables store `value()` and the readers convert back with `PaletteIndex::FromInt()`.\n\nMake each row a struct with named, typed fields (Tiberian Dawn's `MenuConfig` in `td/screens/menus.h` already is one). `WindowList`'s storage is in `engine/gfx/text_window.h` and is filled with `CopyBytes` from the `kRows` tables.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "ra",
+        "td",
+        "engine"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T20:00:45Z",
+      "updated": "2026-10-12T20:00:45Z",
+      "source": "41a7d9c7..cfed6a3e",
+      "anchors": [
+        {
+          "path": "src/ra/screens/menus.cc",
+          "startLine": 120,
+          "endLine": 120,
+          "text": "static int menu_list[][8] = {",
+          "before": [
+            "                       engine::gfx::PaletteIndex bgc);",
+            "",
+            "// X, Y, item width, items high, selected, normal color, selected color, zero."
+          ],
+          "after": [
+            "    {1, 3, 12, 3, 0, game::kWhite.value(), game::kPink.value(), 0},",
+            "};",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/startup/startup.cc",
+          "startLine": 134,
+          "endLine": 134,
+          "text": "  static constexpr int kRows[kWindowCount][8] = {",
+          "before": [
+            "// the screen and the error window, and the system needs them where they",
+            "// are.",
+            "static void InitWindowList() {"
+          ],
+          "after": [
+            "      // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y",
+            "      {0, 0, 40 * 16, 400, game::kWhite.value(), game::kBlack.value(), 0,",
+            "       0},  // Screen."
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/startup/startup.cc",
+          "startLine": 121,
+          "endLine": 121,
+          "text": "  static constexpr int kRows[kWindowCount][8] = {",
+          "before": [
+            "// the screen and the error window, and the system needs them where they",
+            "// are.",
+            "static void InitWindowList() {"
+          ],
+          "after": [
+            "      // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y",
+            "      {0, 0, 40, 200, game::kWhite.value(), game::kBlack.value(), 0,",
+            "       0},  // Screen."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-406",
+      "title": "Check what TD's ColorListClass bar should draw in when no select color is set",
+      "details": "With `SELECT_BAR` and no select color, `ColorListClass::Draw_Entry()` fills the bar with palette slot 255. That is what the original `static_cast<unsigned char>(SelectColor)` of the sentinel -1 gave, and it was kept when `SelectColor` became `std::optional<PaletteIndex>` (`value_or(PaletteIndex{255})`). The other styles fall back to the item's own color, as the comment on `Set_Selected_Style()` says.\n\nBoth callers that choose `SELECT_BAR` (`td/net/netdlg.cc`) pass `kCcGreenShadow`, so no screen shows it today. Decide whether the bar should use the item's color too, or `Set_Selected_Style()` should require a color for that style, and add a test.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T20:00:45Z",
+      "updated": "2026-10-12T20:00:45Z",
+      "source": "7648136e",
+      "anchors": [
+        {
+          "path": "src/td/ui/colrlist.cc",
+          "startLine": 273,
+          "endLine": 278,
+          "text": "                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));\n        item.With(TPF_BRIGHT_COLOR)\n            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);\n      } else {\n        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},\n                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));",
+          "before": [
+            "    case SELECT_BAR:",
+            "      if (TextFont == FontType::k6PointGradient) {",
+            "        view.FillRect(Rect{x, y, width, LineHeight},"
+          ],
+          "after": [
+            "        item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);",
+            "      }",
+            "      break;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-407",
+      "title": "Merge Red Alert's identical GroundColor and SnowColor tables",
+      "details": "`GroundColor` and `SnowColor` in `ra/core/const.h` hold the same nine radar colors, and `CellClass::Cell_Color()` picks one of them by `TheWorld().last_theater()`. Either the snow table was meant to differ (check the original data and how the snow radar looks) or one table and no theater test are enough.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "ra"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-12T20:00:45Z",
+      "updated": "2026-10-12T20:00:45Z",
+      "source": "41a7d9c7..cfed6a3e",
+      "anchors": [
+        {
+          "path": "src/ra/core/const.h",
+          "startLine": 211,
+          "endLine": 233,
+          "text": "constexpr base::EnumArray<LandType, engine::gfx::PaletteIndex> GroundColor = {\n    engine::gfx::PaletteIndex{141},  // \"Clear\" terrain.\n    engine::gfx::PaletteIndex{141},  // Road terrain.\n    engine::gfx::PaletteIndex{172},  // Water.\n    engine::gfx::PaletteIndex{21},   // Impassable rock.\n    engine::gfx::PaletteIndex{21},   // Wall (blocks movement).\n    engine::gfx::PaletteIndex{158},  // Tiberium field.\n    engine::gfx::PaletteIndex{141},  //\tBeach terrain.\n    engine::gfx::PaletteIndex{141},  // Rocky terrain.\n    engine::gfx::PaletteIndex{174}   // Rocky riverbed.\n};\n\nconstexpr base::EnumArray<LandType, engine::gfx::PaletteIndex> SnowColor = {\n    engine::gfx::PaletteIndex{141},  // \"Clear\" terrain.\n    engine::gfx::PaletteIndex{141},  // Road terrain.\n    engine::gfx::PaletteIndex{172},  // Water.\n    engine::gfx::PaletteIndex{21},   // Impassable rock.\n    engine::gfx::PaletteIndex{21},   // Wall (blocks movement).\n    engine::gfx::PaletteIndex{158},  // Tiberium field.\n    engine::gfx::PaletteIndex{141},  //\tBeach terrain.\n    engine::gfx::PaletteIndex{141},  // Rocky terrain.\n    engine::gfx::PaletteIndex{174}   // Rocky riverbed.\n};",
+          "before": [
+            "**\tof the given terrain cells.",
+            "*/",
+            ""
+          ],
+          "after": [
+            "",
+            "/***************************************************************************",
+            "**\tThese are the names of the theaters."
+          ],
+          "lost": false
+        }
+      ]
     }
   ]
 }

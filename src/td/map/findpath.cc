@@ -310,7 +310,7 @@ bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::Facing& dir,
         dir = base::At(path->Command, base::ToSize(list - 1));
         path->Length = idx;
         path->LastFixup = curr_pos;
-        Draw_Cell_Point(curr_pos, true, -1, game::kCyan);
+        Draw_Cell_Point(curr_pos, true, -1, kCcBlueGreen);
         return true;
       }
 
@@ -438,7 +438,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         path->Cost -=
             Passable_Cell(pos, base::At(path->Command, list), -1, threshhold);
         Clear_Overlap(path, pos);
-        Draw_Cell_Point(pos, true, -1, game::kLightBlue);
+        Draw_Cell_Point(pos, true, -1, kCcBlueGrey);
         idx++;
         list++;
       }
@@ -524,7 +524,7 @@ bool FootClass::Register_Cell(PathType* path, Cell cell, game::Facing dir,
         pos = Adjacent_Cell(pos, path->Command[list]);
         path->Cost -= Passable_Cell(pos, path->Command[list], -1, threshhold);
         path->Overlap[pos.index() >> 5] &= ~(1 << ((pos.index() & 31) - 1));
-        Draw_Cell_Point(pos, true, -1, game::kLightBlue);
+        Draw_Cell_Point(pos, true, -1, kCcBlueGrey);
         idx++;
         list++;
       }
@@ -1144,7 +1144,7 @@ bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
         }
       }
       Draw_Cell_Point(newcell, false, threat_stage,
-                      forcefail ? std::optional(game::kBrown) : std::nullopt);
+                      forcefail ? std::optional(kCcTan) : std::nullopt);
       if (newcell == target) {
         forceout = true;
         break;
@@ -1609,7 +1609,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
           color = game::kYellow;
           break;
         case game::MOVE_TEMP:
-          color = game::kBrown;
+          color = kCcTan;
           break;
         case game::MoveType::MOVE_CLOAK:
         case game::MoveType::MOVE_NO:
@@ -1618,7 +1618,7 @@ void FootClass::Debug_Draw_Map(const char* txt, Cell start, Cell dest,
           break;
       }
       if (Cell::FromXY(x, y) == start) {
-        color = game::kLightBlue;
+        color = kCcBlueGrey;
       }
       if (Cell::FromXY(x, y) == dest) {
         color = game::kBlue;
