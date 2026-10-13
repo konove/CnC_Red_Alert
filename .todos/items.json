@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 428,
+  "nextId": 433,
   "items": [
     {
       "id": "T-2",
@@ -14951,10 +14951,10 @@
         "engine",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T07:14:28Z",
+      "updated": "2026-10-13T07:16:48Z",
       "source": "be2fcbf5f..484f9b5ee",
       "resolution": "`PixelView::FillRectLocked` and `PixelView::DrawStampLocked` now clip with `base::ClipRect()` and test `IsValid()` instead of computing their own intersections. The stamp clips the tile while it is still relative to the clip corner and adds `clip_x`/`clip_y` only for the destination offset.",
       "anchors": [
@@ -15255,45 +15255,63 @@
         "testing",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T07:29:07Z",
       "source": "be2fcbf5f..484f9b5ee",
+      "resolution": "`base::Point` and `base::ConfinedRect` have a defaulted `operator==`, and `ConfinedRect` a hidden-friend `PrintTo()` like `PaletteIndex` has, so a failed comparison shows `{(x, y), bounded}`. The `ConfineRect` tests compare whole `ConfinedRect` values and `ExpectConfined()` is gone. `Point` got no printer, to keep `<ostream>` out of `point.h`; neither game defined a comparison of its own.",
       "anchors": [
         {
           "path": "src/base/point.h",
           "startLine": 10,
-          "endLine": 10,
-          "text": "struct Point {",
+          "endLine": 11,
+          "text": "struct Point {\n  friend constexpr bool operator==(const Point&, const Point&) = default;",
           "before": [
             "",
             "// A position on a plane where (0, 0) is the north-west corner, so y grows",
             "// southward. The unit is the caller's: pixels, leptons or cells."
           ],
           "after": [
+            "",
             "  int x = 0;",
-            "  int y = 0;",
+            "  int y = 0;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/base/clip.h",
+          "startLine": 41,
+          "endLine": 50,
+          "text": "struct ConfinedRect {\n  friend constexpr bool operator==(const ConfinedRect&,\n                                   const ConfinedRect&) = default;\n\n  // Shows the position and the flag in a failed test expectation.\n  friend void PrintTo(const ConfinedRect& confined, std::ostream* os) {\n    *os << \"{(\" << confined.position.x << \", \" << confined.position.y << \"), \"\n        << (confined.bounded ? \"bounded\" : \"not bounded\") << \"}\";\n  }\n",
+          "before": [
+            "}",
+            "",
+            "// Where ConfineRect() put a rectangle."
+          ],
+          "after": [
+            "  Point position;        // the rectangle's top left corner",
+            "  bool bounded = false;  // whether either axis ran into the window's edge",
             "};"
           ],
           "lost": false
         },
         {
           "path": "src/base/clip_test.cc",
-          "startLine": 77,
-          "endLine": 86,
-          "text": "  EXPECT_EQ(ClipRect(Rect{-10, -10, 100, 100}, kWidth, kHeight),\n            (Rect{0, 0, kWidth, kHeight}));\n}\n\n// Checks where ConfineRect() puts `rect` in the test window and whether it\n// reports having bounded it.\nvoid ExpectConfined(const Rect& rect, const int x, const int y,\n                    const bool bounded) {\n  const ConfinedRect confined = ConfineRect(rect, kWidth, kHeight);\n",
+          "startLine": 63,
+          "endLine": 63,
+          "text": "constexpr Rect kWindow{0, 0, kWidth, kHeight};",
           "before": [
             "}",
             "",
-            "TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {"
+            "// The window most of the tests below confine to."
           ],
           "after": [
-            "  EXPECT_EQ(confined.position.x, x);",
-            "  EXPECT_EQ(confined.position.y, y);",
-            "  EXPECT_EQ(confined.bounded, bounded);"
+            "",
+            "TEST(ConfineRectTest, RectangleInsideDoesNotMove) {",
+            "  EXPECT_EQ(ConfineRect(Rect{10, 20, 5, 6}, kWindow),"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -15345,6 +15363,156 @@
             "",
             "  const base::ssize bpr = stride();",
             ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-428",
+      "title": "Make it immutable",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:22:08Z",
+      "updated": "2026-10-13T07:22:08Z",
+      "anchors": [
+        {
+          "path": "src/base/rect.h",
+          "startLine": 17,
+          "endLine": 17,
+          "text": "struct Rect {",
+          "before": [
+            "// Example:",
+            "//   view.FillRect(base::Rect{x, y, width, height}, color);",
+            "//   view.DrawRect(base::Rect::FromCorners(x1, y1, x2, y2), color);"
+          ],
+          "after": [
+            "  // The rectangle that spans two opposite corners, both inclusive and in",
+            "  // either order, so it is never empty: equal corners give one pixel.",
+            "  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-429",
+      "title": "accept points",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:22:24Z",
+      "updated": "2026-10-13T07:22:24Z",
+      "anchors": [
+        {
+          "path": "src/base/rect.h",
+          "startLine": 20,
+          "endLine": 21,
+          "text": "  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,\n                                                  const int x2, const int y2) {",
+          "before": [
+            "struct Rect {",
+            "  // The rectangle that spans two opposite corners, both inclusive and in",
+            "  // either order, so it is never empty: equal corners give one pixel."
+          ],
+          "after": [
+            "    const int left = std::min(x1, x2);",
+            "    const int top = std::min(y1, y2);",
+            "    return Rect{left, top, std::max(x1, x2) - left + 1,"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-430",
+      "title": "point",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:22:35Z",
+      "updated": "2026-10-13T07:22:35Z",
+      "anchors": [
+        {
+          "path": "src/base/rect.h",
+          "startLine": 34,
+          "endLine": 36,
+          "text": "  // One past the last column and row.\n  [[nodiscard]] constexpr int right() const { return x + width; }\n  [[nodiscard]] constexpr int bottom() const { return y + height; }",
+          "before": [
+            "    return width > 0 && height > 0;",
+            "  }",
+            ""
+          ],
+          "after": [
+            "",
+            "  friend constexpr bool operator==(const Rect&, const Rect&) = default;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-431",
+      "title": "make it immutable",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:22:48Z",
+      "updated": "2026-10-13T07:22:48Z",
+      "anchors": [
+        {
+          "path": "src/base/point.h",
+          "startLine": 10,
+          "endLine": 15,
+          "text": "struct Point {\n  friend constexpr bool operator==(const Point&, const Point&) = default;\n\n  int x = 0;\n  int y = 0;\n};",
+          "before": [
+            "",
+            "// A position on a plane where (0, 0) is the north-west corner, so y grows",
+            "// southward. The unit is the caller's: pixels, leptons or cells."
+          ],
+          "after": [
+            "",
+            "}  // namespace base",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-432",
+      "title": "Can it take Rect as first argument",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:27:51Z",
+      "updated": "2026-10-13T07:27:51Z",
+      "anchors": [
+        {
+          "path": "src/game/ui/gadget.h",
+          "startLine": 116,
+          "endLine": 117,
+          "text": "  GadgetClass(int x, int y, int w, int h, unsigned flags,\n              bool sticky = false) noexcept;",
+          "before": [
+            "  static constexpr unsigned kKeyboard =",
+            "      0x0100;  // Keyboard input processing (maybe).",
+            ""
+          ],
+          "after": [
+            "  GadgetClass() noexcept = default;",
+            "  // Not copyable or movable: the list it is in points at it.",
+            "  GadgetClass(const GadgetClass&) = delete;"
           ],
           "lost": false
         }

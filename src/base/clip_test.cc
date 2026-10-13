@@ -59,48 +59,48 @@ TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {
             (Rect{0, 0, kWidth, kHeight}));
 }
 
-// Checks where ConfineRect() puts `rect` in the test window and whether it
-// reports having bounded it.
-void ExpectConfined(const Rect& rect, const int x, const int y,
-                    const bool bounded) {
-  const ConfinedRect confined = ConfineRect(rect, Rect{0, 0, kWidth, kHeight});
-
-  EXPECT_EQ(confined.position.x, x);
-  EXPECT_EQ(confined.position.y, y);
-  EXPECT_EQ(confined.bounded, bounded);
-}
+// The window most of the tests below confine to.
+constexpr Rect kWindow{0, 0, kWidth, kHeight};
 
 TEST(ConfineRectTest, RectangleInsideDoesNotMove) {
-  ExpectConfined(Rect{10, 20, 5, 6}, 10, 20, false);
+  EXPECT_EQ(ConfineRect(Rect{10, 20, 5, 6}, kWindow),
+            (ConfinedRect{.position = {10, 20}, .bounded = false}));
 }
 
 TEST(ConfineRectTest, RectangleTouchingTheFarEdgeDoesNotMove) {
-  ExpectConfined(Rect{40, 40, 10, 10}, 40, 40, false);
+  EXPECT_EQ(ConfineRect(Rect{40, 40, 10, 10}, kWindow),
+            (ConfinedRect{.position = {40, 40}, .bounded = false}));
 }
 
 // The rectangle keeps its size and slides back inside, unlike ClipRect(),
 // which would have trimmed the overhang off instead.
 TEST(ConfineRectTest, OverhangSlidesBackAndKeepsItsSize) {
-  ExpectConfined(Rect{45, 48, 10, 20}, 40, 30, true);
+  EXPECT_EQ(ConfineRect(Rect{45, 48, 10, 20}, kWindow),
+            (ConfinedRect{.position = {40, 30}, .bounded = true}));
 }
 
 TEST(ConfineRectTest, NegativeOriginMovesToZero) {
-  ExpectConfined(Rect{-5, -8, 10, 20}, 0, 0, true);
+  EXPECT_EQ(ConfineRect(Rect{-5, -8, 10, 20}, kWindow),
+            (ConfinedRect{.position = {0, 0}, .bounded = true}));
 }
 
 // Each axis is bounded on its own.
 TEST(ConfineRectTest, OneAxisCanBeBoundedAlone) {
-  ExpectConfined(Rect{-5, 20, 10, 10}, 0, 20, true);
-  ExpectConfined(Rect{10, 48, 10, 10}, 10, 40, true);
+  EXPECT_EQ(ConfineRect(Rect{-5, 20, 10, 10}, kWindow),
+            (ConfinedRect{.position = {0, 20}, .bounded = true}));
+  EXPECT_EQ(ConfineRect(Rect{10, 48, 10, 10}, kWindow),
+            (ConfinedRect{.position = {10, 40}, .bounded = true}));
 }
 
 TEST(ConfineRectTest, RectangleLargerThanTheWindowPinsToTheOrigin) {
-  ExpectConfined(Rect{30, 30, 100, 100}, 0, 0, true);
+  EXPECT_EQ(ConfineRect(Rect{30, 30, 100, 100}, kWindow),
+            (ConfinedRect{.position = {0, 0}, .bounded = true}));
 }
 
 // Bounded although it does not move; see ConfineRect().
 TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
-  ExpectConfined(Rect{0, 0, 100, 100}, 0, 0, true);
+  EXPECT_EQ(ConfineRect(Rect{0, 0, 100, 100}, kWindow),
+            (ConfinedRect{.position = {0, 0}, .bounded = true}));
 }
 
 // The map's playable area starts some cells in from the corner of the world,
@@ -108,39 +108,33 @@ TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
 constexpr Rect kOffsetBounds{100, 200, kWidth, kHeight};
 
 TEST(ConfineRectTest, WindowAwayFromTheOriginLeavesARectangleInsideAlone) {
-  const ConfinedRect confined =
-      ConfineRect(Rect{110, 220, 5, 6}, kOffsetBounds);
-
-  EXPECT_EQ(confined.position.x, 110);
-  EXPECT_EQ(confined.position.y, 220);
-  EXPECT_FALSE(confined.bounded);
+  EXPECT_EQ(ConfineRect(Rect{110, 220, 5, 6}, kOffsetBounds),
+            (ConfinedRect{.position = {110, 220}, .bounded = false}));
 }
 
 TEST(ConfineRectTest, WindowAwayFromTheOriginBoundsAtItsNearEdges) {
-  const ConfinedRect confined = ConfineRect(Rect{95, 0, 10, 20}, kOffsetBounds);
-
-  EXPECT_EQ(confined.position.x, 100);
-  EXPECT_EQ(confined.position.y, 200);
-  EXPECT_TRUE(confined.bounded);
+  EXPECT_EQ(ConfineRect(Rect{95, 0, 10, 20}, kOffsetBounds),
+            (ConfinedRect{.position = {100, 200}, .bounded = true}));
 }
 
 TEST(ConfineRectTest, WindowAwayFromTheOriginBoundsAtItsFarEdges) {
-  const ConfinedRect confined =
-      ConfineRect(Rect{145, 248, 10, 20}, kOffsetBounds);
-
-  EXPECT_EQ(confined.position.x, 140);
-  EXPECT_EQ(confined.position.y, 230);
-  EXPECT_TRUE(confined.bounded);
+  EXPECT_EQ(ConfineRect(Rect{145, 248, 10, 20}, kOffsetBounds),
+            (ConfinedRect{.position = {140, 230}, .bounded = true}));
 }
 
 // Pinned to the window's corner, not to (0, 0).
 TEST(ConfineRectTest, WindowAwayFromTheOriginPinsAnOversizedRectangle) {
-  const ConfinedRect confined =
-      ConfineRect(Rect{130, 230, 100, 100}, kOffsetBounds);
+  EXPECT_EQ(ConfineRect(Rect{130, 230, 100, 100}, kOffsetBounds),
+            (ConfinedRect{.position = {100, 200}, .bounded = true}));
+}
 
-  EXPECT_EQ(confined.position.x, 100);
-  EXPECT_EQ(confined.position.y, 200);
-  EXPECT_TRUE(confined.bounded);
+// What a failed comparison shows, in place of the struct's bytes.
+TEST(ConfinedRectTest, PrintsItsPositionAndWhetherItWasBounded) {
+  EXPECT_EQ(
+      testing::PrintToString(ConfinedRect{.position = {3, 4}, .bounded = true}),
+      "{(3, 4), bounded}");
+  EXPECT_EQ(testing::PrintToString(ConfinedRect{.position = {3, 4}}),
+            "{(3, 4), not bounded}");
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define CNC_RED_ALERT_BASE_CLIP_H_
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/point.h"
 #include "base/rect.h"
@@ -38,6 +39,15 @@ constexpr Rect ClipRect(const Rect& rect, const int clip_width,
 
 // Where ConfineRect() put a rectangle.
 struct ConfinedRect {
+  friend constexpr bool operator==(const ConfinedRect&,
+                                   const ConfinedRect&) = default;
+
+  // Shows the position and the flag in a failed test expectation.
+  friend void PrintTo(const ConfinedRect& confined, std::ostream* os) {
+    *os << "{(" << confined.position.x << ", " << confined.position.y << "), "
+        << (confined.bounded ? "bounded" : "not bounded") << "}";
+  }
+
   Point position;        // the rectangle's top left corner
   bool bounded = false;  // whether either axis ran into the window's edge
 };
