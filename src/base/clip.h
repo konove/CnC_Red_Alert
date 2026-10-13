@@ -10,7 +10,6 @@
 
 #include "base/attributes.h"
 #include "base/flags.h"
-#include "base/numeric.h"
 #include "base/point.h"
 #include "base/rect.h"
 
@@ -31,12 +30,13 @@ inline constexpr bool kIsFlagEnum<OutCode> = true;
 
 // The outcode of (x, y) against the window from (0, 0) to (width, height).
 //
-// A rectangle is clipped by taking the outcode of its top-left corner and,
-// against a window one pixel wider and taller, the outcode of the corner just
-// past its bottom-right. That second window is what makes an end coordinate
-// equal to the width count as inside: the rectangle owns pixels up to but not
-// including it.
-constexpr OutCode OutCodeOf(int x, int y, int width, int height) {
+// A caller that clips a rectangle edge by edge takes the outcode of its
+// top-left corner and, against a window one pixel wider and taller, the
+// outcode of the corner just past its bottom-right. That second window is what
+// makes an end coordinate equal to the width count as inside: the rectangle
+// owns pixels up to but not including it.
+constexpr OutCode OutCodeOf(const int x, const int y, const int width,
+                            const int height) {
   return (x < 0 ? OutCode::kLeft : OutCode::kInside) |
          (x >= width ? OutCode::kRight : OutCode::kInside) |
          (y < 0 ? OutCode::kAbove : OutCode::kInside) |
@@ -56,37 +56,15 @@ constexpr OutCode OutCodeOf(int x, int y, int width, int height) {
 // rectangle by a different amount.
 constexpr Rect ClipRect(const Rect& rect, const int clip_width,
                         const int clip_height) {
-  int x0 = rect.x;
-  int y0 = rect.y;
-  int x1 = rect.right();
-  int y1 = rect.bottom();
+  const int x0 = std::max(rect.x, 0);
+  const int y0 = std::max(rect.y, 0);
 
-  const OutCode near_corner = OutCodeOf(x0, y0, clip_width, clip_height);
-  const OutCode far_corner = OutCodeOf(x1, y1, clip_width + 1, clip_height + 1);
-
-  // A bit set in both corners puts the whole rectangle past that one edge.
-  if (Any(near_corner & far_corner)) {
-    return {};
-  }
-
-  // Only the near corner can fall off the left or top edge and only the far
-  // corner off the right or bottom, so each edge is pulled in from one side.
-  if (Any(near_corner & OutCode::kLeft)) {
-    x0 = 0;
-  }
-  if (Any(far_corner & OutCode::kRight)) {
-    x1 = clip_width;
-  }
-  if (Any(near_corner & OutCode::kAbove)) {
-    y0 = 0;
-  }
-  if (Any(far_corner & OutCode::kBelow)) {
-    y1 = clip_height;
-  }
-
-  // A far corner exactly on the left or top edge passes the outcode test and
-  // leaves no pixels.
-  const Rect clipped{x0, y0, x1 - x0, y1 - y0};
+  // A rectangle outside the window comes out with a width or a height that is
+  // not positive, like one that was empty to begin with.
+  const Rect clipped{.x = x0,
+                     .y = y0,
+                     .width = std::min(rect.right(), clip_width) - x0,
+                     .height = std::min(rect.bottom(), clip_height) - y0};
   return clipped.IsValid() ? clipped : Rect{};
 }
 
@@ -111,7 +89,7 @@ struct ConfinedRect {
 // so that is behaviour rather than an accident.
 constexpr ConfinedRect ConfineRect(const Rect& rect, const int clip_width,
                                    const int clip_height) {
-  ConfinedRect result{.position = {rect.x, rect.y}};
+  ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};
 
   if (rect.x < 0) {
     result.position.x = 0;

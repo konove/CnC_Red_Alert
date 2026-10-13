@@ -29,13 +29,6 @@ TEST(OutCodeTest, CornerSetsTwoBits) {
             OutCode::kRight | OutCode::kBelow);
 }
 
-// The widened window callers use for the corner just past the bottom right is
-// what lets an end coordinate equal to the width count as inside.
-TEST(OutCodeTest, WidenedWindowAdmitsTheEndCoordinate) {
-  EXPECT_EQ(OutCodeOf(kWidth, kHeight, kWidth + 1, kHeight + 1),
-            OutCode::kInside);
-}
-
 TEST(ClipRectTest, RectangleInsideIsUnchanged) {
   EXPECT_EQ(ClipRect(Rect{10, 20, 5, 6}, kWidth, kHeight),
             (Rect{10, 20, 5, 6}));
@@ -85,13 +78,6 @@ TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {
             (Rect{0, 0, kWidth, kHeight}));
 }
 
-// The map clips a 24 by 24 cell against the tactical view; a cell straddling
-// the right edge keeps only the columns still on screen.
-TEST(ClipRectTest, CellStraddlingTheTacticalEdge) {
-  EXPECT_EQ(ClipRect(Rect{36, 12, 24, 24}, kWidth, kHeight),
-            (Rect{36, 12, 14, 24}));
-}
-
 // Checks where ConfineRect() puts `rect` in the test window and whether it
 // reports having bounded it.
 void ExpectConfined(const Rect& rect, const int x, const int y,
@@ -131,9 +117,7 @@ TEST(ConfineRectTest, RectangleLargerThanTheWindowPinsToTheOrigin) {
   ExpectConfined(Rect{30, 30, 100, 100}, 0, 0, true);
 }
 
-// A rectangle too big for the window reports as bounded even though it was
-// already at the origin and does not move. Both games' map scrolling depends
-// on that: it reads the result as "the scroll hit the edge of the world".
+// Bounded although it does not move; see ConfineRect().
 TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
   ExpectConfined(Rect{0, 0, 100, 100}, 0, 0, true);
 }

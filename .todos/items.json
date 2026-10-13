@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 421,
+  "nextId": 427,
   "items": [
     {
       "id": "T-2",
@@ -648,8 +648,8 @@
           ],
           "after": [
             "",
-            "Rect Shape_Dimensions(const std::span<const std::byte> shapedata,",
-            "                      const int shape_num) {"
+            "base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,",
+            "                            const int shape_num) {"
           ],
           "lost": false
         }
@@ -2814,26 +2814,27 @@
         "base",
         "engine"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T06:40:23Z",
       "parent": "T-237",
+      "resolution": "`PixelView::CopyToBufferLocked()`, `CopyFromBufferLocked()` and the destination clip of `BlitToLocked()` now call `base::ClipRect()` and shift the other rectangle by how far the result's corner moved. `ScaleLocked()` keeps its outcode clip, because a scaled blit moves the other rectangle by a different amount per edge; the comment on `ClipRect()` in `base/clip.h` now says that instead of sending every such caller to `OutCodeOf()`.",
       "anchors": [
         {
           "path": "src/base/clip.h",
-          "startLine": 47,
-          "endLine": 50,
-          "text": "// A caller that has a second rectangle to carry along - a source to match a\n// clipped destination, or the reverse - clips with OutCodeOf() directly\n// instead, because it has to move that rectangle by however much came off\n// each edge.",
+          "startLine": 52,
+          "endLine": 56,
+          "text": "// A caller that has a second rectangle to carry along - a source to match a\n// clipped destination, or the reverse - moves it by however much the result's\n// corner moved. Only one that scales between the two (PixelView::ScaleLocked)\n// clips with OutCodeOf() directly, because each edge then moves the other\n// rectangle by a different amount.",
           "before": [
-            "// through the four references. Returns false, leaving all four alone, when",
-            "// the rectangle lies wholly outside the window.",
+            "// then the default Rect, so `IsValid()` tells whether there is anything to",
+            "// draw.",
             "//"
           ],
           "after": [
-            "constexpr bool ClipRect(int& x, int& y, int& width, int& height, int clip_width,",
-            "                        int clip_height) {",
-            "  int x0 = x;"
+            "constexpr Rect ClipRect(const Rect& rect, const int clip_width,",
+            "                        const int clip_height) {",
+            "  const int x0 = std::max(rect.x, 0);"
           ],
           "lost": false
         }
@@ -3132,10 +3133,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T00:35:14Z",
-      "updated": "2026-10-13T01:54:17Z",
+      "updated": "2026-10-13T05:15:23Z",
       "parent": "T-240",
       "resolution": "The stored `team_count_` and `OnTeamCreated()`/`OnTeamDeleted()` are gone; `TeamType::CountTeams()` counts the teams in the heap. Save version bumped to 21 with T-153 and the fixture regenerated."
     },
@@ -4109,10 +4110,10 @@
         "ra",
         "editor"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:30Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "The dialog selects `HOUSE_GOOD` for a team type without a house but stores the house on OK only. Cancel also puts back the members the members dialog changed.",
@@ -4159,10 +4160,10 @@
         "ra",
         "editor"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:31Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`ParseHexDigits()` is gone; the cell-number field is read with `base::ParseHexOr<int>(text, 0)`. `ACellWithAStrayCharacterIsZero` pins the new reading.",
@@ -4209,10 +4210,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-13T02:09:44Z",
+      "updated": "2026-10-13T05:15:19Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`TeamType`, `TeamMission`, `TriggerType`, `EventChoiceClass` and `ActionChoice` draw through `UiSkin::Draw_List_Entry()`; the plain-font branch, which no list reached, is gone. `TriggerClass::Draw_It()`/`Description()` and `MultiMission::Draw_It()` had no callers and are deleted. `tools/ui_check.py` passes.",
@@ -4254,10 +4255,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:33Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "Added `ScenarioClass::IsWaypoint()` and `IsLetterWaypoint()` (plus `kLetterWaypointCount` for the two loops) and used them at the seven sites; behaviour unchanged.",
@@ -4291,10 +4292,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:35Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`TeamType::SuggestNewTeam()` collects its candidates in a `std::vector`, so every eligible team type takes part in the draw; the test is now `EveryCandidateTakesPartInTheDraw`.",
@@ -4341,10 +4342,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T01:54:17Z",
+      "updated": "2026-10-13T05:15:25Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "Removed `is_transient_` (with `set_is_transient()`) and `fear_` from `TeamType` and its `Serialize()`; `initial_count_` stays. `kSaveGameVersion` is 21, `SAVEGAME.SCG01EA` regenerated, `tools/ra_saveload_smoke.sh` passes.",
@@ -4390,10 +4391,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T01:54:17Z",
+      "updated": "2026-10-13T05:15:27Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`missions()` and `members()` return `std::span`s of the entries in use. Reviewed the 12 `CurrentMission` reads in `team.cc`: `Coordinate_Move()` (next line) and `Is_Leaving_Map()` got guards, the advance in `AI()` now rejects a negative line; the rest only run after that check. The count accessors stay (about 40 `int` loop bounds use them). Tests, save/load smoke and `tools/net_check.py` pass.",
@@ -4429,10 +4430,10 @@
         "editor",
         "coverage"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:36Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`MapEditClass::Team_Members()` takes the `TeamType&` to edit and `Edit()` passes `*this`. Two dialog tests open the members dialog, add a member and close it; Cancel in the team dialog now restores the members.",
@@ -4474,10 +4475,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T02:09:44Z",
+      "updated": "2026-10-13T05:15:28Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`GameFixture` has `InitAircraftTypes()`, `InitBuildingTypes()`, `InitInfantryTypes()`, `InitTemplateTypes()` and `InitVesselTypes()`; the eight fixtures call them. The team type and trigger type heap `Reset()`s stay in the fixtures: their sizes differ per test.",
@@ -4511,10 +4512,10 @@
         "refactoring",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T05:15:15Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "fixedIn": "35f00645",
@@ -4537,10 +4538,10 @@
         "tools",
         "coverage"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T02:17:33Z",
+      "updated": "2026-10-13T05:15:18Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "`tools/coverage.py --release-too` also builds and runs the tests without the editor and cheat keys (`build-coverage.release`, configured with `-DDOTENV_BUILD_VERSION=release`) and counts a line covered when either build covers it. `ra/ai/team_type.cc` and `ra/ai/trigger_type.cc` now read 100%. Documented in `CLAUDE.md` and `/cover-files`."
@@ -4593,10 +4594,10 @@
         "editor",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-13T01:37:55Z",
+      "updated": "2026-10-13T05:15:37Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "The double-click handler's switch moved into a `load_work_mission(const TeamMission&)` lambda beside `work_mission`."
@@ -4649,10 +4650,10 @@
         "ra",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-07T07:02:47Z",
-      "updated": "2026-10-13T02:09:44Z",
+      "updated": "2026-10-13T05:15:21Z",
       "parent": "T-240",
       "source": "ff429d5f",
       "resolution": "`NeedType`'s enumerators are `NeedType::kNone` ... `kHexNumber` at all 412 mentions, the `using enum` is gone and the comment block is rewritten. The type name keeps its suffix.",
@@ -5230,8 +5231,8 @@
       "anchors": [
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 157,
-          "endLine": 157,
+          "startLine": 151,
+          "endLine": 151,
           "text": "Direction Direction8Toward(Point from, Point to);",
           "before": [
             "// The diagonals take more than their share of the circle: a slope steeper than",
@@ -5243,12 +5244,12 @@
             "// Returns the direction from `from` to `to` to full 256-step accuracy. The",
             "// angle is interpolated linearly along the shorter offset rather than taken"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/sim/direction.h",
-          "startLine": 165,
-          "endLine": 165,
+          "startLine": 159,
+          "endLine": 159,
           "text": "Direction Direction256Toward(Point from, Point to);",
           "before": [
             "// four steps off between them. An angle between two steps rounds toward the",
@@ -5260,7 +5261,7 @@
             "// Returns the facing nearest to `dir`; the last sixteenth of the circle",
             "// rounds up to Facing::kNorth."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -7525,10 +7526,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T20:33:08Z",
-      "updated": "2026-10-13T02:56:20Z",
+      "updated": "2026-10-13T05:15:39Z",
       "source": "30c6f6ae..e9ac6245",
       "resolution": "All 14 parts are fixed (`3ab3b81a..35f00645`): the Red Alert dialog, waypoint, candidate-cap, save-format, span-accessor, list-entry, fixture and `NeedType` items, `tools/coverage.py --release-too`, and the `/modernize-file` run on Tiberian Dawn's team type files. The four decisions were asked and recorded (T-148, T-149, T-152, T-153). What the TD run left open is under T-410.",
       "anchors": [
@@ -10908,8 +10909,8 @@
       "anchors": [
         {
           "path": "src/ra/ui/dialog.h",
-          "startLine": 111,
-          "endLine": 112,
+          "startLine": 115,
+          "endLine": 116,
           "text": "  void PrintClipped(const char* text, game::Point at, int width,\n                    std::span<const int> tabs = {}) const;",
           "before": [
             "  // Prints `text` cut off `width` pixels right of `at`: a list box's row. A",
@@ -10921,7 +10922,7 @@
             " private:",
             "  [[nodiscard]] const RemapControlType* scheme() const"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/ai/trigger_action.cc",
@@ -11544,8 +11545,8 @@
         },
         {
           "path": "src/td/map/help.cc",
-          "startLine": 291,
-          "endLine": 291,
+          "startLine": 292,
+          "endLine": 292,
           "text": "    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},",
           "before": [
             "    tip.Print(Text, {DrawX, DrawY});",
@@ -11557,7 +11558,7 @@
             "",
             "    if (Cost) {"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/map/help.cc",
@@ -11574,7 +11575,7 @@
             "",
             "    if (Cost) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -11650,8 +11651,8 @@
       "anchors": [
         {
           "path": "src/td/startup/init.cc",
-          "startLine": 874,
-          "endLine": 875,
+          "startLine": 875,
+          "endLine": 876,
           "text": "            TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0);\n            TheScreen().visible_view().FillRect(Rect{0, 440, 640, 40}, 0);",
           "before": [
             "          ** Make sure top and bottom of screen are clear in 640x480 mode",
@@ -11663,7 +11664,7 @@
             "        }",
             "      }"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -11716,18 +11717,18 @@
         },
         {
           "path": "src/ra/net/nulldlg.cc",
-          "startLine": 3186,
-          "endLine": 3186,
-          "text": "            DrawColorBox(",
+          "startLine": 4917,
+          "endLine": 4917,
+          "text": "          DrawColorBox(",
           "before": [
-            "        if (display >= REDRAW_COLORS) {",
-            "          for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
-            "            const auto color = static_cast<PlayerColorType>(i);"
+            "      if (display >= REDRAW_COLORS) {",
+            "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
+            "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "                view,",
-            "                Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
-            "                ThePalettes().color_remaps().at(color).Box,"
+            "              view,",
+            "              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,"
           ],
           "lost": false
         },
@@ -11742,9 +11743,9 @@
             "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
-            "              ThePalettes().color_remaps().at(color).Box,",
-            "              color == TheSession().ColorIdx);"
+            "              view,",
+            "              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,"
           ],
           "lost": false
         },
@@ -11759,9 +11760,9 @@
             "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
-            "              ThePalettes().color_remaps().at(color).Box,",
-            "              color == TheSession().ColorIdx);"
+            "              view,",
+            "              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,"
           ],
           "lost": false
         },
@@ -11776,9 +11777,9 @@
             "          const auto color = static_cast<PlayerColorType>(i);"
           ],
           "after": [
-            "              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
-            "              ThePalettes().color_remaps().at(color).Box,",
-            "              color == TheSession().ColorIdx);"
+            "              view,",
+            "              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},",
+            "              ThePalettes().color_remaps().at(color).Box,"
           ],
           "lost": false
         }
@@ -11868,14 +11869,14 @@
           "path": "src/td/net/netdlg.cc",
           "startLine": 1146,
           "endLine": 1146,
-          "text": "                                base::At(cbox_x, i) + 1 + d_color_w - 2,",
+          "text": "                                      base::At(cbox_x, i) + 1 + d_color_w - 2,",
           "before": [
             "        for (i = 0; i < MAX_MPLAYER_COLORS; i++) {",
             "          view.FillRect(",
-            "              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
+            "              base::Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,"
           ],
           "after": [
-            "                                d_color_y + 1 + d_color_h - 2),",
+            "                                      d_color_y + 1 + d_color_h - 2),",
             "              base::At(TheSession().graphic_colors(), i));",
             ""
           ],
@@ -14410,7 +14411,7 @@
             "      }",
             "      break;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -14508,10 +14509,10 @@
         "tools",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T00:38:27Z",
-      "updated": "2026-10-13T00:52:23Z",
+      "updated": "2026-10-13T05:15:41Z",
       "resolution": "Added `DESERT.MIX`, `WINTER.MIX`, the three `*ICNH.MIX` icon archives and `SC-000.MIX`/`SC-001.MIX` to `kArchives` in `src/tools/game_data.cc`. `mixdump <td-dir> --list DESERT.PAL WINTER.PAL CLEAR1.DES CLEAR1.WIN` now finds them in their theater archives; Red Alert lookups are unchanged.",
       "anchors": [
         {
@@ -14909,6 +14910,385 @@
             "",
             "  // The team does not stop for distractions until it achieves its mission or",
             "  // is dead."
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-421",
+      "title": "Move the clipping functions into namespace base and pass them a Rect",
+      "details": "`OutCode`, `OutCodeOf()`, `ClipRect()` and `ConfineRect()` in `src/base/clip.h` are in the global namespace, and take a rectangle as four ints: `ClipRect()` writes the clipped one back through four `int&`, `ConfineRect()` through two.\n\n`base::Rect` (`src/base/rect.h`) and `base::Point` (`src/base/point.h`) now sit beside them, so:\n\n- put all four in `namespace base` and qualify the callers (6 files outside `clip.h`);\n- have `ClipRect()` take a `base::Rect` and the window size and return the clipped rectangle, with an invalid `Rect` (or `std::optional`) for \"wholly outside\", instead of a `bool` and four out-parameters;\n- have `ConfineRect()` take a `base::Rect` and return the moved one or its `base::Point`.\n\nCallers that clip with `OutCodeOf()` directly to carry a second rectangle along are the subject of T-98; do that one together with this or after it.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "base",
+        "cleanup"
+      ],
+      "status": "fixed",
+      "author": "agent",
+      "created": "2026-10-13T06:02:40Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "parent": "T-238",
+      "source": "250ee739..c0ead523",
+      "resolution": "`OutCode`, `OutCodeOf()`, `ClipRect()` and `ConfineRect()` are in `namespace base`. `ClipRect()` takes a `base::Rect` and returns what is left (the default `Rect` when nothing is, so callers ask `IsValid()`); `ConfineRect()` takes a `base::Rect` and returns a `base::ConfinedRect` (`position`, `bounded`). The 11 call sites in `engine/gfx` and both games' `map/display.cc` and `map/radar.cc` are converted, and the dead re-clamp after `ConfineRect()` in `Scroll_Map()` is removed.",
+      "anchors": [
+        {
+          "path": "src/base/clip.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-422",
+      "title": "Clip the fill and the stamp with ClipRect() instead of their own intersections",
+      "details": "Two drawing functions still intersect a rectangle with a window by hand, which is what `base::ClipRect()` (`src/base/clip.h`) does:\n\n- `PixelView::FillRectLocked` in `src/engine/gfx/pixel_buffer.cc` computes `x1`/`y1`/`x2`/`y2` with `std::max`/`std::min` and its own empty test. Replace with `base::ClipRect(rect, width_, height_)` and `IsValid()`.\n- The tile draw in `src/engine/gfx/stamp.cc` intersects the tile with a clip window that is not at the origin. Clip the tile rectangle with `ClipRect()` while it is still relative to the clip corner, then add `clip_x`/`clip_y`.\n\nNo behaviour change; `engine_gfx_test` covers both.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "engine",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "source": "be2fcbf5f..484f9b5ee",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pixel_buffer.cc",
+          "startLine": 911,
+          "endLine": 923,
+          "text": "void PixelView::FillRectLocked(const base::Rect& rect,\n                               const engine::gfx::PaletteIndex color) {\n  const uint8_t pixel = color.byte();\n  // Clamp to the view; x2,y2 are the last column and row filled.\n  const int x1 = std::max(rect.x, 0);\n  const int y1 = std::max(rect.y, 0);\n  const int x2 = std::min(rect.right(), width_) - 1;\n  const int y2 = std::min(rect.bottom(), height_) - 1;\n\n  // An empty rectangle, or one that misses the view.\n  if (x2 < x1 || y2 < y1) {\n    return;\n  }",
+          "before": [
+            "  }",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "  const base::ssize dst_area = stride();",
+            "  auto dst_offset = pixels().begin() + x1 + (y1 * dst_area);"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/gfx/stamp.cc",
+          "startLine": 139,
+          "endLine": 146,
+          "text": "  // x,y arrive relative to the clip rectangle's corner. Intersect the tile\n  // with the rectangle, in view coordinates.\n  x += clip_x;\n  y += clip_y;\n  const int left = std::max(x, clip_x);\n  const int top = std::max(y, clip_y);\n  const int right = std::min(x + tile_width, clip_x + clip_width);\n  const int bottom = std::min(y + tile_height, clip_y + clip_height);",
+          "before": [
+            "    return;",
+            "  }",
+            ""
+          ],
+          "after": [
+            "  if (left >= right || top >= bottom) {",
+            "    return;",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-423",
+      "title": "Pass ConfineRect() the window as a Rect so callers stop translating by the map origin",
+      "details": "`base::ConfineRect(rect, clip_width, clip_height)` in `src/base/clip.h` confines to a window at (0, 0). All eight callers have a window that starts at the map origin, so each subtracts the origin before the call and adds it back after: three in `src/ra/map/display.cc`, one in `src/ra/map/radar.cc`, and the same four in `src/td/map/`.\n\nChange the signature to `ConfineRect(const Rect& rect, const Rect& bounds)` and call it with `{MapCellX, MapCellY, MapCellWidth, MapCellHeight}` in the caller's unit (leptons or cells). That removes 16 subtract/add pairs. Keep the returned `ConfinedRect` and the rule for `bounded` as they are: six callers ignore `bounded`, but `Scroll_Map` in both games reads it, including for a rectangle larger than the window that does not move.\n\nUpdate `src/base/clip_test.cc` with a window that is not at the origin.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "base",
+        "ra",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "source": "be2fcbf5f..484f9b5ee",
+      "anchors": [
+        {
+          "path": "src/base/clip.h",
+          "startLine": 90,
+          "endLine": 90,
+          "text": "constexpr ConfinedRect ConfineRect(const Rect& rect, const int clip_width,",
+          "before": [
+            "// at the origin. Both games' map scrolling reads the result as \"the scroll",
+            "// hit the edge of the world\" and recomputes the distance actually travelled,",
+            "// so that is behaviour rather than an accident."
+          ],
+          "after": [
+            "                                   const int clip_height) {",
+            "  ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/display.cc",
+          "startLine": 630,
+          "endLine": 630,
+          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "before": [
+            "  const int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        MapCellWidth * game::kCellWidthLeptons,",
+            "                        MapCellHeight * game::kCellHeightLeptons)",
+            "          .position;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/display.cc",
+          "startLine": 1291,
+          "endLine": 1291,
+          "text": "  const base::ConfinedRect confined = base::ConfineRect(",
+          "before": [
+            "                 static_cast<int16_t>(Cell_To_Lepton(MapCellX));",
+            "  const int yy = static_cast<int>(static_cast<int16_t>(coord.y())) -",
+            "                 static_cast<int16_t>(Cell_To_Lepton(MapCellY));"
+          ],
+          "after": [
+            "      base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+            "      Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));",
+            "  const bool shifted = confined.bounded;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/display.cc",
+          "startLine": 3569,
+          "endLine": 3569,
+          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "before": [
+            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        Cell_To_Lepton(MapCellWidth),",
+            "                        Cell_To_Lepton(MapCellHeight))",
+            "          .position;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/ra/map/radar.cc",
+          "startLine": 1891,
+          "endLine": 1891,
+          "text": "      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+          "before": [
+            "  }",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        MapCellWidth, MapCellHeight)",
+            "          .position;",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/display.cc",
+          "startLine": 617,
+          "endLine": 617,
+          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "before": [
+            "  const int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        MapCellWidth * game::kCellWidthLeptons,",
+            "                        MapCellHeight * game::kCellHeightLeptons)",
+            "          .position;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/display.cc",
+          "startLine": 1333,
+          "endLine": 1333,
+          "text": "  const base::ConfinedRect confined = base::ConfineRect(",
+          "before": [
+            "  */",
+            "  const int xx = coord.x() - Cell_To_Lepton(MapCellX);",
+            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);"
+          ],
+          "after": [
+            "      base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+            "      Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));",
+            "  const bool shifted = confined.bounded;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/display.cc",
+          "startLine": 3291,
+          "endLine": 3291,
+          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "before": [
+            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        Cell_To_Lepton(MapCellWidth),",
+            "                        Cell_To_Lepton(MapCellHeight))",
+            "          .position;"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/radar.cc",
+          "startLine": 1629,
+          "endLine": 1629,
+          "text": "      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+          "before": [
+            "  }",
+            "",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                        MapCellWidth, MapCellHeight)",
+            "          .position;",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-424",
+      "title": "Move OutCode and OutCodeOf() from base into the pixel buffer, their only user",
+      "details": "Since `ClipRect()` became a plain intersection, nothing in `src/base/clip.h` uses `OutCode` or `OutCodeOf()`. Their only users are the scaled blit (`PixelView::ScaleLocked`) and the line clipper in `src/engine/gfx/pixel_buffer.cc`.\n\nMove the enum, its `kIsFlagEnum` specialization and the function into that file's anonymous namespace, move the four `OutCodeTest` cases from `src/base/clip_test.cc` to a test that can reach them (or drop them if the line and scale tests in `engine_gfx_test` already cover every edge), and drop `base/attributes.h`, `base/flags.h` and `<cstdint>` from `clip.h` if nothing else there needs them. The paragraph in `ClipRect()`'s comment that names `OutCodeOf()` and `PixelView::ScaleLocked` goes with it.\n\nOptional second step: `ScaleLocked` could intersect and compare edges too, which would leave outcodes to the line clipper alone.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "base",
+        "engine",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "source": "be2fcbf5f..484f9b5ee",
+      "anchors": [
+        {
+          "path": "src/base/clip.h",
+          "startLine": 18,
+          "endLine": 44,
+          "text": "// Which edges of a clipping window a point lies outside of: the\n// Cohen-Sutherland outcode. kInside is the empty set, the point is within the\n// window.\nenum class CNC_FLAG_ENUM OutCode : uint32_t {\n  kInside = 0,\n  kLeft = 0b1000,\n  kRight = 0b0100,\n  kAbove = 0b0010,\n  kBelow = 0b0001,\n};\ntemplate <>\ninline constexpr bool kIsFlagEnum<OutCode> = true;\n\n// The outcode of (x, y) against the window from (0, 0) to (width, height).\n//\n// A caller that clips a rectangle edge by edge takes the outcode of its\n// top-left corner and, against a window one pixel wider and taller, the\n// outcode of the corner just past its bottom-right. That second window is what\n// makes an end coordinate equal to the width count as inside: the rectangle\n// owns pixels up to but not including it.\nconstexpr OutCode OutCodeOf(const int x, const int y, const int width,\n                            const int height) {\n  return (x < 0 ? OutCode::kLeft : OutCode::kInside) |\n         (x >= width ? OutCode::kRight : OutCode::kInside) |\n         (y < 0 ? OutCode::kAbove : OutCode::kInside) |\n         (y >= height ? OutCode::kBelow : OutCode::kInside);\n}",
+          "before": [
+            "",
+            "namespace base {",
+            ""
+          ],
+          "after": [
+            "",
+            "// Clips `rect` to the window from (0, 0) to (clip_width, clip_height) and",
+            "// returns what is left of it. Nothing is left of a rectangle that lies outside"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-425",
+      "title": "Define base::Any() in flags.h, next to the flag enum operators",
+      "details": "`src/base/flags.h` documents `base::Any(flags & ...)` as the way to test a flag enum, but the function is defined in `src/base/numeric.h`, which also pulls in `absl/log/check.h` (about 131,000 preprocessed lines). A header that only tests flags has to include both.\n\nMove `Any()` to `flags.h`. Then every `.cc` that calls `base::Any` needs `base/flags.h` among its includes (`misc-include-cleaner` enforces it) and may lose `base/numeric.h` if it used nothing else from it; count the call sites first, since this is a tree-wide include change.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "base",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "source": "be2fcbf5f..484f9b5ee",
+      "anchors": [
+        {
+          "path": "src/base/numeric.h",
+          "startLine": 77,
+          "endLine": 77,
+          "text": "constexpr bool Any(E flags) noexcept {",
+          "before": [
+            "//   if (base::Any(threat & THREAT_RANGE)) ...",
+            "template <class E>",
+            "  requires std::is_enum_v<E>"
+          ],
+          "after": [
+            "  return static_cast<std::underlying_type_t<E>>(flags) != 0;",
+            "}",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-426",
+      "title": "Give base::Point an operator== and compare whole ConfinedRects in the clip test",
+      "details": "`base::Point` (`src/base/point.h`) has no `operator==`, although `base::Rect` has a defaulted one. `ExpectConfined()` in `src/base/clip_test.cc` therefore compares `position.x`, `position.y` and `bounded` one by one, and a failure reports the helper's line rather than the test's.\n\nAdd `friend constexpr bool operator==(const Point&, const Point&) = default;` to `Point` and the same to `ConfinedRect` in `src/base/clip.h`, then write the tests as `EXPECT_EQ(ConfineRect(...), (ConfinedRect{{x, y}, bounded}))` and delete the helper. Add a `PrintTo()` or `operator<<` for the two types in the test, or gtest prints a failed comparison as a byte dump. Check first that neither game defines its own comparison of points, which would become ambiguous.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "base",
+        "testing",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T06:46:59Z",
+      "source": "be2fcbf5f..484f9b5ee",
+      "anchors": [
+        {
+          "path": "src/base/point.h",
+          "startLine": 10,
+          "endLine": 10,
+          "text": "struct Point {",
+          "before": [
+            "",
+            "// A position on a plane where (0, 0) is the north-west corner, so y grows",
+            "// southward. The unit is the caller's: pixels, leptons or cells."
+          ],
+          "after": [
+            "  int x = 0;",
+            "  int y = 0;",
+            "};"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/base/clip_test.cc",
+          "startLine": 77,
+          "endLine": 86,
+          "text": "  EXPECT_EQ(ClipRect(Rect{-10, -10, 100, 100}, kWidth, kHeight),\n            (Rect{0, 0, kWidth, kHeight}));\n}\n\n// Checks where ConfineRect() puts `rect` in the test window and whether it\n// reports having bounded it.\nvoid ExpectConfined(const Rect& rect, const int x, const int y,\n                    const bool bounded) {\n  const ConfinedRect confined = ConfineRect(rect, kWidth, kHeight);\n",
+          "before": [
+            "}",
+            "",
+            "TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {"
+          ],
+          "after": [
+            "  EXPECT_EQ(confined.position.x, x);",
+            "  EXPECT_EQ(confined.position.y, y);",
+            "  EXPECT_EQ(confined.bounded, bounded);"
           ],
           "lost": false
         }
