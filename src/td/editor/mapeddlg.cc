@@ -3563,7 +3563,11 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(entry_index)) {
-        auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
+        auto* team = base::NewPooled<TeamTypeClass>();
+        // The heap is full: the rest of the checked team types stay behind.
+        if (team == nullptr) {
+          break;
+        }
         team->Fill_In(tbuffer, entry);
       }
     }

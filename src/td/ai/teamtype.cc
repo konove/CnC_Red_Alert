@@ -87,7 +87,10 @@ void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
 void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries(INI_Name())) {
     auto* team = base::NewPooled<TeamTypeClass>();
-
+    // The heap is full: this entry and the rest are dropped.
+    if (team == nullptr) {
+      break;
+    }
     team->Fill_In(name, entry);
   }
 
@@ -230,7 +233,8 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
     if (team->House == HOUSE_NONE) {
       hname = "None";
     } else {
-      hname = HouseClass::As_Pointer(team->House)->Class->IniName;
+      // By its type: the scenario need not have the house itself.
+      hname = HouseTypeClass::As_Reference(team->House).IniName;
     }
 
     absl::SNPrintF(buf, sizeof(buf), "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", hname,
@@ -276,7 +280,10 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
 void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries("Teams")) {
     auto* team = base::NewPooled<TeamTypeClass>();
-
+    // The heap is full: this entry and the rest are dropped.
+    if (team == nullptr) {
+      break;
+    }
     team->Set_Name(name);
 
     base::Tokenizer tokens(entry);
