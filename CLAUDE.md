@@ -356,7 +356,11 @@ framework.
 `tools/coverage.py <files>` reports the lines and branches of those files that no test reaches. It
 keeps its own clang build with source-based coverage in `build-coverage` (configured on first use,
 about 2.5 minutes cold, seconds after that) and runs every gtest executable; `--tests <regex>`
-narrows the run to some of them. `/cover-files` uses it to take a file to 100%.
+narrows the run to some of them. `/cover-files` uses it to take a file to 100%. `--release-too` also
+measures a build without the scenario editor and the cheat keys (in `build-coverage.release`) and
+counts a line covered when either build covers it: with `BUILD_VERSION=internal` in `.env`, the
+release side of an `if constexpr (config::kScenarioEditorEnabled)` is otherwise never compiled and
+the tests written for it skip themselves.
 
 Code that blocks in its own loop until the player answers (a dialog, a menu, a timed screen) is
 tested with `UiFixture` (`ra/startup/ui_test_util.h`, `td/startup/ui_test_util.h`): a real `Game` on

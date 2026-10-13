@@ -4209,12 +4209,13 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T02:09:44Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`TeamType`, `TeamMission`, `TriggerType`, `EventChoiceClass` and `ActionChoice` draw through `UiSkin::Draw_List_Entry()`; the plain-font branch, which no list reached, is gone. `TriggerClass::Draw_It()`/`Description()` and `MultiMission::Draw_It()` had no callers and are deleted. `tools/ui_check.py` passes.",
       "comments": [
         {
           "author": "agent",
@@ -4473,17 +4474,18 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T02:09:44Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`GameFixture` has `InitAircraftTypes()`, `InitBuildingTypes()`, `InitInfantryTypes()`, `InitTemplateTypes()` and `InitVesselTypes()`; the eight fixtures call them. The team type and trigger type heap `Reset()`s stay in the fixtures: their sizes differ per test.",
       "anchors": [
         {
           "path": "src/ra/ai/team_type_test.cc",
-          "startLine": 56,
-          "endLine": 56,
+          "startLine": 55,
+          "endLine": 55,
           "text": "  void SetUp() override {",
           "before": [
             "// reading the current scenario format, and one team type to work on.",
@@ -4644,12 +4646,13 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-07T07:02:47Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T02:09:44Z",
       "parent": "T-240",
       "source": "ff429d5f",
+      "resolution": "`NeedType`'s enumerators are `NeedType::kNone` ... `kHexNumber` at all 412 mentions, the `using enum` is gone and the comment block is rewritten. The type name keeps its suffix.",
       "anchors": [
         {
           "path": "src/ra/core/defines.h",

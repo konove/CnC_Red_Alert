@@ -19,6 +19,12 @@ code (declarations only) is reported as such and counts as covered.
 --tests narrows the run to the test executables whose name matches the regex,
 for the edit loop. Coverage then counts only those tests, so finish with a run
 without it: code another suite reaches is covered too.
+
+--release-too measures a second build as well, one without the scenario editor
+and the cheat keys, and counts a line covered when either build covers it. The
+first build is whatever .env selects, usually BUILD_VERSION=internal, and there
+the release side of an `if constexpr (config::kScenarioEditorEnabled)` is
+never compiled, and the tests written for it skip themselves.
 """
 
 import argparse
@@ -59,7 +65,12 @@ def cache_value(build_dir: Path, key: str) -> str:
     return match.group(1)
 
 
-def configure(build_dir: Path) -> None:
+# cmake/DotEnv.cmake caches what .env says without overwriting a value that is
+# already there, so this one wins over BUILD_VERSION=internal in .env.
+RELEASE_VERSION = "-DDOTENV_BUILD_VERSION=release"
+
+
+def configure(build_dir: Path, extra: list[str]) -> None:
     """Configures an instrumented build; the checks are off, they add nothing here."""
     subprocess.run(
         [
@@ -72,6 +83,7 @@ def configure(build_dir: Path) -> None:
             "-DCMAKE_CXX_COMPILER=clang++",
             f"-DCMAKE_C_FLAGS={COVERAGE_FLAGS}",
             f"-DCMAKE_CXX_FLAGS={COVERAGE_FLAGS}",
+            *extra,
         ],
         cwd=REPO_ROOT,
         check=True,
@@ -267,38 +279,22 @@ def report(
     return not missed_lines
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    parser.add_argument(
-        "--build-dir",
-        default=os.environ.get("COVERAGE_DIR", "build-coverage"),
-        help="instrumented build directory (default: build-coverage, or $COVERAGE_DIR)",
-    )
-    parser.add_argument("--parallel", type=int, default=(os.cpu_count() or 2) // 2)
-    parser.add_argument(
-        "--tests", help="run only the test executables whose name matches this regex"
-    )
-    parser.add_argument(
-        "--branches", action="store_true", help="list the lines with untaken branches"
-    )
-    parser.add_argument(
-        "--no-build", action="store_true", help="reuse the binaries as they are"
-    )
-    parser.add_argument("files", nargs="+", help="the sources and headers to report on")
-    args = parser.parse_args()
+@dataclass
+class Measurement:
+    lcov: str
+    binaries: int
+    tests_passed: bool
+    compiled: set[Path]
 
-    files = [Path(name).resolve() for name in args.files]
-    for path in files:
-        if not path.is_file():
-            sys.exit(f"{path} does not exist")
 
-    build_dir = Path(args.build_dir)
+def measure(
+    build_dir: Path, configure_extra: list[str], args: argparse.Namespace, files: list[Path]
+) -> Measurement:
+    """Builds build_dir, runs its tests and exports the coverage of files as lcov."""
     if not build_dir.is_absolute():
         build_dir = REPO_ROOT / build_dir
     if not (build_dir / "CMakeCache.txt").exists():
-        configure(build_dir)
+        configure(build_dir, configure_extra)
     if cache_value(build_dir, "CMAKE_CXX_FLAGS") != COVERAGE_FLAGS:
         sys.exit(f"{build_dir} was not configured by this script; delete it or pass another")
 
@@ -361,15 +357,70 @@ def main() -> int:
     if export.returncode != 0:
         print(export.stderr[-4000:])
         sys.exit("llvm-cov failed")
-    coverage = parse_lcov(export.stdout)
+    return Measurement(
+        export.stdout, len(binaries), tests_passed, compiled_files(build_dir)
+    )
 
-    print(f"ran {len(binaries)} test executables")
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--build-dir",
+        default=os.environ.get("COVERAGE_DIR", "build-coverage"),
+        help="instrumented build directory (default: build-coverage, or $COVERAGE_DIR)",
+    )
+    parser.add_argument("--parallel", type=int, default=(os.cpu_count() or 2) // 2)
+    parser.add_argument(
+        "--tests", help="run only the test executables whose name matches this regex"
+    )
+    parser.add_argument(
+        "--branches", action="store_true", help="list the lines with untaken branches"
+    )
+    parser.add_argument(
+        "--no-build", action="store_true", help="reuse the binaries as they are"
+    )
+    parser.add_argument(
+        "--release-too",
+        action="store_true",
+        help="also measure a build without the scenario editor and cheat keys, in"
+        " <build-dir>.release, and count a line covered when either build covers it",
+    )
+    parser.add_argument("files", nargs="+", help="the sources and headers to report on")
+    args = parser.parse_args()
+
+    files = [Path(name).resolve() for name in args.files]
+    for path in files:
+        if not path.is_file():
+            sys.exit(f"{path} does not exist")
+
+    runs = [measure(Path(args.build_dir), [], args, files)]
+    if args.release_too:
+        runs.append(
+            measure(Path(args.build_dir + ".release"), [RELEASE_VERSION], args, files)
+        )
+    # parse_lcov() adds up the records of a file, so a line counts as covered
+    # when either build ran it, and a line only one build compiles is judged
+    # by that build alone.
+    coverage = parse_lcov("".join(run.lcov for run in runs))
+    tests_passed = all(run.tests_passed for run in runs)
+    compiled = set().union(*(run.compiled for run in runs))
+
+    print(
+        f"ran {runs[0].binaries} test executables"
+        + (", and again without the editor" if args.release_too else "")
+    )
     complete = True
-    compiled = compiled_files(build_dir)
     for path in files:
         complete &= report(path, coverage.get(path), path in compiled, args.branches)
     if not tests_passed:
         print("\nsome tests failed; the numbers above undercount")
+    if not complete and not args.release_too:
+        print(
+            "\nif a line left is the release side of an `if constexpr (config::k...)`,"
+            " --release-too measures the build that compiles it"
+        )
     return 0 if complete and tests_passed else 1
 
 
