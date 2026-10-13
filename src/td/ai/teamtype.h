@@ -61,12 +61,6 @@ namespace td {
 class TeamClass;
 
 /*
-********************************** Defines **********************************
-*/
-// #define	kTeamTypeMax			20			// max #
-// of different team types
-
-/*
 **	TeamMissionType: the various missions that a team can have.
 */
 enum class TeamMissionType {
@@ -76,8 +70,6 @@ enum class TeamMissionType {
   TMISSION_ATTACKCIVILIANS,  // Attack all civilians
   TMISSION_RAMPAGE,          // attack & destroy anything that's not mine
   TMISSION_DEFENDBASE,       // Protect my base.
-                             //	TMISSION_HARVEST,
-  //// stake out a Tiberium claim, defend & harvest it
   TMISSION_MOVE,          // moves to waypoint specified.
   TMISSION_MOVECELL,      // moves to cell # specified.
   TMISSION_RETREAT,       // order given by superior team, for coordinating

@@ -94,7 +94,6 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
         "Attack Civil.",
         "Rampage",
         "Defend Base",
-        //	"Harvest",
         "Move",
         "Move to Cell",
         "Retreat",
