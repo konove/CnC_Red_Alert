@@ -948,29 +948,19 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
 
 void PixelView::FillRectLocked(const base::Rect& rect,
                                const engine::gfx::PaletteIndex color) {
-  const uint8_t pixel = color.byte();
-  // Clamp to the view; x2,y2 are the last column and row filled.
-  const int x1 = std::max(rect.x, 0);
-  const int y1 = std::max(rect.y, 0);
-  const int x2 = std::min(rect.right(), width_) - 1;
-  const int y2 = std::min(rect.bottom(), height_) - 1;
-
-  // An empty rectangle, or one that misses the view.
-  if (x2 < x1 || y2 < y1) {
+  const base::Rect clipped = base::ClipRect(rect, width_, height_);
+  if (!clipped.IsValid()) {
     return;
   }
 
+  const uint8_t pixel = color.byte();
   const base::ssize dst_area = stride();
-  auto dst_offset = pixels().begin() + x1 + (y1 * dst_area);
+  auto dst_offset = pixels().begin() + clipped.x + (clipped.y * dst_area);
 
-  const int pixel_count = x2 - x1 + 1;
-  int line_count = y2 - y1 + 1;
-
-  // fill lines
-  do {
-    std::fill_n(dst_offset, pixel_count, pixel);
+  for (int line = 0; line < clipped.height; ++line) {
+    std::fill_n(dst_offset, clipped.width, pixel);
     dst_offset += dst_area;
-  } while (--line_count);
+  }
 }
 
 void PixelView::Remap(const base::Rect& rect,

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 427,
+  "nextId": 428,
   "items": [
     {
       "id": "T-2",
@@ -14951,43 +14951,44 @@
         "engine",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T07:14:28Z",
       "source": "be2fcbf5f..484f9b5ee",
+      "resolution": "`PixelView::FillRectLocked` and `PixelView::DrawStampLocked` now clip with `base::ClipRect()` and test `IsValid()` instead of computing their own intersections. The stamp clips the tile while it is still relative to the clip corner and adds `clip_x`/`clip_y` only for the destination offset.",
       "anchors": [
         {
           "path": "src/engine/gfx/pixel_buffer.cc",
-          "startLine": 911,
-          "endLine": 923,
-          "text": "void PixelView::FillRectLocked(const base::Rect& rect,\n                               const engine::gfx::PaletteIndex color) {\n  const uint8_t pixel = color.byte();\n  // Clamp to the view; x2,y2 are the last column and row filled.\n  const int x1 = std::max(rect.x, 0);\n  const int y1 = std::max(rect.y, 0);\n  const int x2 = std::min(rect.right(), width_) - 1;\n  const int y2 = std::min(rect.bottom(), height_) - 1;\n\n  // An empty rectangle, or one that misses the view.\n  if (x2 < x1 || y2 < y1) {\n    return;\n  }",
+          "startLine": 949,
+          "endLine": 953,
+          "text": "void PixelView::FillRectLocked(const base::Rect& rect,\n                               const engine::gfx::PaletteIndex color) {\n  const base::Rect clipped = base::ClipRect(rect, width_, height_);\n  if (!clipped.IsValid()) {\n    return;",
           "before": [
             "  }",
             "}",
             ""
           ],
           "after": [
+            "  }",
             "",
-            "  const base::ssize dst_area = stride();",
-            "  auto dst_offset = pixels().begin() + x1 + (y1 * dst_area);"
+            "  const uint8_t pixel = color.byte();"
           ],
           "lost": false
         },
         {
           "path": "src/engine/gfx/stamp.cc",
-          "startLine": 139,
+          "startLine": 140,
           "endLine": 146,
-          "text": "  // x,y arrive relative to the clip rectangle's corner. Intersect the tile\n  // with the rectangle, in view coordinates.\n  x += clip_x;\n  y += clip_y;\n  const int left = std::max(x, clip_x);\n  const int top = std::max(y, clip_y);\n  const int right = std::min(x + tile_width, clip_x + clip_width);\n  const int bottom = std::min(y + tile_height, clip_y + clip_height);",
+          "text": "  // x,y arrive relative to the clip rectangle's corner, and so does what is\n  // left of the tile inside it.\n  const base::Rect visible = base::ClipRect(\n      base::Rect{x, y, tile_width, tile_height}, clip_width, clip_height);\n  if (!visible.IsValid()) {\n    return;\n  }",
           "before": [
             "    return;",
             "  }",
             ""
           ],
           "after": [
-            "  if (left >= right || top >= bottom) {",
-            "    return;",
-            "  }"
+            "  const int draw_width = visible.width;",
+            "  const int draw_height = visible.height;",
+            ""
           ],
           "lost": false
         }
@@ -15180,10 +15181,10 @@
         "engine",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T07:11:29Z",
+      "updated": "2026-10-13T07:13:52Z",
       "source": "be2fcbf5f..484f9b5ee",
       "resolution": "`OutCode` and `OutCodeOf()` are now in the anonymous namespace of `src/engine/gfx/pixel_buffer.cc`, and `clip.h` lost them along with `base/attributes.h`, `base/flags.h` and `<cstdint>`. The four `OutCodeTest` cases are replaced by three `DrawLineTest` cases in `pixel_buffer_test.cc` that clip a line at each edge from either end, which the line clipper had no test for. The optional second step (`ScaleLocked` by intersection) was not done.",
       "anchors": [
@@ -15293,6 +15294,59 @@
             "  EXPECT_EQ(confined.bounded, bounded);"
           ],
           "lost": true
+        }
+      ]
+    },
+    {
+      "id": "T-427",
+      "title": "Test the diagonal line clipping and the scaled blit's right and bottom clipping",
+      "details": "`tools/coverage.py src/engine/gfx/pixel_buffer.cc --tests engine_gfx` shows two clipping paths in `src/engine/gfx/pixel_buffer.cc` that no test reaches:\n\n- `PixelView::DrawLineLocked`: the `DrawLineTest` cases in `src/engine/gfx/pixel_buffer_test.cc` only clip horizontal and vertical lines, so the slope arithmetic that moves the other coordinate when an end is cut (`y1 += -x1 * (y2 - y1) / (x2 - x1)` and its seven siblings) always adds zero. Most of the diagonal stepping after the clip is unreached as well. Add diagonal lines that cross each edge, one that crosses a corner (two bits set in one outcode), and check the pixels.\n- `PixelView::ScaleLocked`: `ScaleTest.ClipsRowsOffTheTopOfTheDestination` is the only clipping test. The branches for a source that runs past the right or bottom of its view, and for a destination that runs past the right or bottom of `dest`, are unreached. Add a case for each, with and without scaling, since each clipped edge moves the other rectangle by a scaled amount.\n\nTests only; if one shows wrong pixels, file the bug rather than change the expectation.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "engine",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T07:12:08Z",
+      "updated": "2026-10-13T07:12:08Z",
+      "source": "0e26eb61f",
+      "anchors": [
+        {
+          "path": "src/engine/gfx/pixel_buffer.cc",
+          "startLine": 457,
+          "endLine": 513,
+          "text": "  // clip source\n  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);\n  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);\n\n  // outside\n  if (base::Any(code0 & code1)) {\n    return;\n  }\n\n  if (base::Any(code0 | code1)) {\n    // apply clip\n    if (base::Any(code0 & OutCode::kLeft)) {\n      src_x0 = 0;\n      dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);\n    }\n    if (base::Any(code1 & OutCode::kRight)) {\n      src_x1 = width_;\n      dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);\n    }\n    if (base::Any(code0 & OutCode::kAbove)) {\n      src_y0 = 0;\n      dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);\n    }\n    if (base::Any(code1 & OutCode::kBelow)) {\n      src_y1 = height_;\n      dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);\n    }\n  }\n\n  // clip dest\n  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());\n  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);\n\n  // outside\n  if (base::Any(code0 & code1)) {\n    return;\n  }\n\n  if (base::Any(code0 | code1)) {\n    // apply clip\n    if (base::Any(code0 & OutCode::kLeft)) {\n      dst_x0 = 0;\n      src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);\n    }\n    if (base::Any(code1 & OutCode::kRight)) {\n      dst_x1 = dest.width();\n    }\n    if (base::Any(code0 & OutCode::kAbove)) {\n      dst_y0 = 0;\n      src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);\n    }\n    if (base::Any(code1 & OutCode::kBelow)) {\n      dst_y1 = dest.height();\n    }\n  }\n\n  // do scale",
+          "before": [
+            "  int dst_x1 = dst_x + dst_width;",
+            "  int dst_y1 = dst_y + dst_height;",
+            ""
+          ],
+          "after": [
+            "  const base::ssize src_win_width = stride();",
+            "  auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_win_width);",
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/gfx/pixel_buffer.cc",
+          "startLine": 798,
+          "endLine": 866,
+          "text": "void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,\n                               const engine::gfx::PaletteIndex color) {\n  const uint8_t pixel = color.byte();\n  const int width = width_;\n  const int height = height_;\n\n  // this is different to the original asm, but reused from blits\n  const OutCode code0 = OutCodeOf(x1, y1, width, height);\n  const OutCode code1 = OutCodeOf(x2, y2, width, height);\n\n  if (base::Any(code0 & code1)) {\n    return;\n  }\n\n  if (base::Any(code0)) {\n    if (base::Any(code0 & OutCode::kLeft))  // left\n    {\n      if (x2 != x1) {\n        y1 += -x1 * (y2 - y1) / (x2 - x1);\n      }\n      x1 = 0;\n    } else if (base::Any(code0 & OutCode::kRight)) {  // right\n      if (x2 != x1) {\n        y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);\n      }\n      x1 = width - 1;\n    }\n\n    if (base::Any(code0 & OutCode::kAbove))  // top\n    {\n      if (y2 != y1) {\n        x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));\n      }\n      y1 = 0;\n    } else if (base::Any(code0 & OutCode::kBelow)) {  // bottom\n      if (y2 != y1) {\n        x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));\n      }\n      y1 = height - 1;\n    }\n  }\n\n  if (base::Any(code1)) {\n    if (base::Any(code1 & OutCode::kLeft))  // left\n    {\n      if (x1 != x2) {\n        y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));\n      }\n      x2 = 0;\n    } else if (base::Any(code1 & OutCode::kRight)) {  // right\n      if (x1 != x2) {\n        y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));\n      }\n      x2 = width - 1;\n    }\n\n    if (base::Any(code1 & OutCode::kAbove))  // top\n    {\n      if (y1 != y2) {\n        x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));\n      }\n      y2 = 0;\n    } else if (base::Any(code1 & OutCode::kBelow)) {  // bottom\n      if (y1 != y2) {\n        x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));\n      }\n      y2 = height - 1;\n    }\n  }",
+          "before": [
+            "  }",
+            "}",
+            ""
+          ],
+          "after": [
+            "",
+            "  const base::ssize bpr = stride();",
+            ""
+          ],
+          "lost": false
         }
       ]
     }

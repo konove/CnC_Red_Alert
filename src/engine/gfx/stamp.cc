@@ -10,6 +10,7 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/clip.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "base/types.h"
@@ -111,7 +112,7 @@ void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
 }
 
 void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
-                                const int cell, int x, int y,
+                                const int cell, const int x, const int y,
                                 std::span<const uint8_t> remap_table,
                                 const int clip_x, const int clip_y,
                                 const int clip_width, const int clip_height) {
@@ -136,19 +137,15 @@ void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
     return;
   }
 
-  // x,y arrive relative to the clip rectangle's corner. Intersect the tile
-  // with the rectangle, in view coordinates.
-  x += clip_x;
-  y += clip_y;
-  const int left = std::max(x, clip_x);
-  const int top = std::max(y, clip_y);
-  const int right = std::min(x + tile_width, clip_x + clip_width);
-  const int bottom = std::min(y + tile_height, clip_y + clip_height);
-  if (left >= right || top >= bottom) {
+  // x,y arrive relative to the clip rectangle's corner, and so does what is
+  // left of the tile inside it.
+  const base::Rect visible = base::ClipRect(
+      base::Rect{x, y, tile_width, tile_height}, clip_width, clip_height);
+  if (!visible.IsValid()) {
     return;
   }
-  const int draw_width = right - left;
-  const int draw_height = bottom - top;
+  const int draw_width = visible.width;
+  const int draw_height = visible.height;
 
   // Without a remap table the faster loops below are used. A table too short
   // to translate every color is refused rather than read past.
@@ -161,9 +158,10 @@ void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
   const auto src_start =
       tables->tiles.begin() +
       (static_cast<base::ssize>(tile) * tile_width * tile_height) +
-      (static_cast<base::ssize>(top - y) * tile_width) + (left - x);
+      (static_cast<base::ssize>(visible.y - y) * tile_width) + (visible.x - x);
   const base::ssize dst_stride = stride();
-  const auto dst_start = pixels().begin() + left + (top * dst_stride);
+  const auto dst_start = pixels().begin() + (clip_x + visible.x) +
+                         ((clip_y + visible.y) * dst_stride);
 
   // Draws the clipped tile with each pixel passed through `translate`,
   // leaving the destination alone where that gives color 0.
