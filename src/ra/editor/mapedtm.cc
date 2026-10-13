@@ -917,8 +917,8 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
 
   game::TheMouse().Hide();
   Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
-  ptr->Display(view, Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
-               house);
+  // Display() draws relative to the window, which is this box.
+  ptr->Display(view, kPictureW / 2, kPictureH / 2, WINDOW_EDITOR, house);
   if (quant > 0) {
     TextPrinter(view, {scheme, game::kTransparentBlack, FontType::k8Point,
                        TPF_DROPSHADOW})

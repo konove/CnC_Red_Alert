@@ -401,8 +401,8 @@ int MapEditClass::Placement_Dialog() {
           kPictureH;
       Draw_Box(view, kPictureX, kPictureY, kPictureW, kPictureH, BOXSTYLE_DOWN,
                false);
-      curobj->Display(view, Screen::kWidth / 2, Screen::kHeight / 2,
-                      WINDOW_EDITOR, LastHouse);
+      curobj->Display(view, kPictureW / 2, kPictureH / 2, WINDOW_EDITOR,
+                      LastHouse);
 
       /*
       **	Erase the grid

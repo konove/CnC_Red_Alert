@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 438,
+  "nextId": 439,
   "items": [
     {
       "id": "T-2",
@@ -12201,11 +12201,12 @@
         "editor",
         "ui-check"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-10T03:13:31Z",
-      "updated": "2026-10-13T02:56:30Z",
+      "updated": "2026-10-13T19:09:45Z",
       "source": "eeda1518",
+      "resolution": "The original drew at the centre of the editor window (`WinW/2, WinH>>1` after `Change_Window()`), and the port had turned that into the centre of the screen, (320,200), which is outside the 64x48 box `CC_Draw_Shape()` clips to. `Draw_Member()` and the object placement dialog now pass `kPictureW / 2, kPictureH / 2`; the cameos show in both and the stray square on the map is gone. The pale area was the empty ninth slot of the last row. Hashes of `editor_dialogs`, `editor_objects` and `editor_team_members` re-recorded.",
       "comments": [
         {
           "author": "agent",
@@ -15218,10 +15219,10 @@
         "base",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T08:05:43Z",
+      "updated": "2026-10-13T19:07:34Z",
       "source": "be2fcbf5f..484f9b5ee",
       "resolution": "Moved `base::Any()` from `base/numeric.h` to `base/flags.h` and its test to `flags_test.cc`. Of the 28 callers outside `src/base`, 22 gained `base/flags.h` and 10 that used nothing else from it lost `base/numeric.h`; two plan docs name the new header.",
       "anchors": [
@@ -15617,10 +15618,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-13T07:48:25Z",
-      "updated": "2026-10-13T15:14:58Z",
+      "updated": "2026-10-13T19:07:35Z",
       "resolution": "The casts were needed as the code stood: `Coordinate::x()`/`y()` are unsigned, so a scroll past the left/top wrapped. `Scroll_Map` now moves in plain ints with the new `base::MoveOffset()` (`base/trig.h`) instead of `Coord_Move()`, so nothing wraps and the casts are gone. Tests: `base/trig_test.cc`, `ra/map/display_scroll_test.cc`.",
       "anchors": [
         {
@@ -15673,6 +15674,43 @@
             "",
             "}  // namespace base",
             ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-438",
+      "title": "Keep the bottom row of Red Alert's team members dialog off its buttons",
+      "details": "With the pictures drawn (T-356), the dialog's seventh row of members (phase transport ... helicarrier) starts at y = 345 and runs to 393, under the name of the member the pointer is on (y ≈ 362) and the OK and Cancel buttons (y ≈ 373): see shot `second_member` of `src/ra/testdata/ui/editor_team_members.script`. `Draw_Member()` places a row every `kRowH` = 51 pixels from y = 21, so seven rows need 378 pixels of a 400-pixel screen. Members without a cameo (the civilians, the ants) show their small map sprite, which is the original's fallback. Decide whether to shrink the rows, page the list or move the buttons; the `member_*` and `editor_team_members` shots then need `--accept`.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "ra",
+        "editor",
+        "ui-check"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T19:09:45Z",
+      "updated": "2026-10-13T19:09:45Z",
+      "source": "0d1e4d393",
+      "anchors": [
+        {
+          "path": "src/ra/editor/mapedtm.cc",
+          "startLine": 897,
+          "endLine": 897,
+          "text": " *=============================================================================================*/",
+          "before": [
+            " * WARNINGS:   none *",
+            " *                                                                                             *",
+            " * HISTORY: * 07/02/1995 JLB : Created. *"
+          ],
+          "after": [
+            "void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,",
+            "                               int index, int quant, HousesType house) {",
+            "  const int numcols = (kDialogW - 64) / kPictureW;"
           ],
           "lost": false
         }
