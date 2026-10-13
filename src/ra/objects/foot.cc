@@ -97,6 +97,7 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/sim/direction.h"

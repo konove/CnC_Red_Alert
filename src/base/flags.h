@@ -30,6 +30,19 @@ constexpr auto Bits(E e) noexcept {
   return static_cast<std::make_unsigned_t<std::underlying_type_t<E>>>(e);
 }
 
+// True when any bit of a flag enum value is set; the enum need not have opted
+// in to the operators. A scoped enum is not
+// contextually convertible to bool, so `if (flags & ShapeFlags::kGhost)` is
+// written `if (base::Any(flags & ShapeFlags::kGhost))`.
+//
+// Example:
+//   if (base::Any(threat & THREAT_RANGE)) ...
+template <class E>
+  requires std::is_enum_v<E>
+constexpr bool Any(E flags) noexcept {
+  return static_cast<std::underlying_type_t<E>>(flags) != 0;
+}
+
 }  // namespace base
 
 // The operators live at global scope because the enums do; the constraint

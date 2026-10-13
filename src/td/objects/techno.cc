@@ -176,6 +176,7 @@
 
 #include "base/array.h"
 #include "base/cardinal.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"

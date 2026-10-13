@@ -48,6 +48,7 @@
 #include <vector>
 
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"

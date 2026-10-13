@@ -55,6 +55,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"

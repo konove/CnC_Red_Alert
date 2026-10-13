@@ -1796,12 +1796,13 @@ Each enum took the first rule that applied:
   `TypeClass::Pointers` tables, the per-house and per-type counters and the local lookup tables
   changed form; their subscripts did not. A brace initializer of struct elements needed one more
   brace pair.
-- **Conversions.** `base::Bit<T>(enum)` and `base::Any(flags)` (`base/numeric.h`) and the
-  constrained flag operators in `base/flags.h` (opted into by the sdllib flag enums; the games' flag
-  enums keep the `jshell.h` templates) absorb the bit work; the remaining enum-to-int sites are
-  `static_cast<int>` (about 1,180 net), most of them heap `Ptr()` indices, `ScanBit`, `WindowList`
-  subscripts, packet byte fields and `DirType`/`MPHType` arithmetic. `tech/2keyfbuf.h` takes
-  `ShapeFlags_Type` instead of `uint32_t`; `FactoryClass::SpecialItem` is a `SpecialWeaponType`.
+- **Conversions.** `base::Bit<T>(enum)` (`base/numeric.h`) and `base::Any(flags)` (`base/flags.h`)
+  and the constrained flag operators in `base/flags.h` (opted into by the sdllib flag enums; the
+  games' flag enums keep the `jshell.h` templates) absorb the bit work; the remaining enum-to-int
+  sites are `static_cast<int>` (about 1,180 net), most of them heap `Ptr()` indices, `ScanBit`,
+  `WindowList` subscripts, packet byte fields and `DirType`/`MPHType` arithmetic. `tech/2keyfbuf.h`
+  takes `ShapeFlags_Type` instead of `uint32_t`; `FactoryClass::SpecialItem` is a
+  `SpecialWeaponType`.
 - **Key codes.** `KeyNumType` and `KeyASCIIType` stay unscoped under one reasoned `NOLINT`: a key
   number is a bit pattern (code, modifier bits, `KN_BUTTON | id`) that the keyboard buffer stores as
   an integer and masks at 1,171 sites; scoping it adds a cast at each and no safety.

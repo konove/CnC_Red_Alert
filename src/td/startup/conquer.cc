@@ -84,6 +84,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"

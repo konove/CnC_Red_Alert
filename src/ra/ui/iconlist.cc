@@ -46,6 +46,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "base/strings/safe_string.h"

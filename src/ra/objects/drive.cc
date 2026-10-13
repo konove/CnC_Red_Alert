@@ -70,6 +70,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/fixed.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "game/core/cell_size.h"
 #include "game/sim/direction.h"

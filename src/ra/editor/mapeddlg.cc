@@ -58,6 +58,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"

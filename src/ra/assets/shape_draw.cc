@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "base/types.h"

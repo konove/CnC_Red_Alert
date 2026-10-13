@@ -45,6 +45,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/fixed.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"

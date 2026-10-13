@@ -45,6 +45,7 @@
 
 #include "ra/ui/statbtn.h"
 
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "engine/gfx/font.h"

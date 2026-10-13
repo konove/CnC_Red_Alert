@@ -66,18 +66,6 @@ constexpr T Bit(E index) noexcept {
   return Bit<T>(static_cast<int>(index));
 }
 
-// True when any bit of a flag enum value is set. A scoped enum is not
-// contextually convertible to bool, so `if (flags & ShapeFlags::kGhost)` is
-// written `if (base::Any(flags & ShapeFlags::kGhost))`.
-//
-// Example:
-//   if (base::Any(threat & THREAT_RANGE)) ...
-template <class E>
-  requires std::is_enum_v<E>
-constexpr bool Any(E flags) noexcept {
-  return static_cast<std::underlying_type_t<E>>(flags) != 0;
-}
-
 }  // namespace base
 
 #endif  // CNC_RED_ALERT_BASE_NUMERIC_H_

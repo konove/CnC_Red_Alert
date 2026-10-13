@@ -158,6 +158,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/rect.h"

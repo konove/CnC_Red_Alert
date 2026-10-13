@@ -15,7 +15,6 @@
 #include "base/enum_array.h"
 #include "base/flags.h"
 #include "base/installed.h"
-#include "base/numeric.h"
 #include "engine/gfx/palette_index.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"

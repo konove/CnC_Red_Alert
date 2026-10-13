@@ -15218,16 +15218,17 @@
         "base",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T08:05:43Z",
       "source": "be2fcbf5f..484f9b5ee",
+      "resolution": "Moved `base::Any()` from `base/numeric.h` to `base/flags.h` and its test to `flags_test.cc`. Of the 28 callers outside `src/base`, 22 gained `base/flags.h` and 10 that used nothing else from it lost `base/numeric.h`; two plan docs name the new header.",
       "anchors": [
         {
-          "path": "src/base/numeric.h",
-          "startLine": 77,
-          "endLine": 77,
+          "path": "src/base/flags.h",
+          "startLine": 42,
+          "endLine": 42,
           "text": "constexpr bool Any(E flags) noexcept {",
           "before": [
             "//   if (base::Any(threat & THREAT_RANGE)) ...",
@@ -15465,10 +15466,10 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-13T07:22:48Z",
-      "updated": "2026-10-13T07:51:43Z",
+      "updated": "2026-10-13T07:52:32Z",
       "resolution": "`base::Point` is now a class with private `x_`/`y_`, a constructor and read accessors `x()`/`y()`, and no setters: a Point changes only by assigning a new one. `ConfineRect()` computes the position in locals and builds the Point once; the callers in direction.cc, both games' display/radar/dialog read through the accessors. Added `point_test.cc`.",
       "anchors": [
         {

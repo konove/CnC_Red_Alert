@@ -3,7 +3,6 @@
 #include <cstdint>
 
 #include "base/attributes.h"
-#include "base/numeric.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -35,6 +34,18 @@ TEST(FlagsTest, CompoundAssignmentUpdatesInPlace) {
   flags &= ~Effect::kGhost;
   EXPECT_FALSE(base::Any(flags & Effect::kGhost));
   EXPECT_EQ(flags, Effect::kPredator);
+}
+
+TEST(FlagsTest, AnyIsTrueWhenAnyBitIsSet) {
+  static_assert(!base::Any(Effect::kNone));
+  static_assert(base::Any(Effect::kGhost));
+  EXPECT_TRUE(base::Any(static_cast<Effect>(3)));
+  EXPECT_FALSE(base::Any(Effect{}));
+}
+
+TEST(FlagsTest, AnyTakesAnEnumThatHasNotOptedIn) {
+  static_assert(base::Any(Plain::kA));
+  static_assert(!base::Any(static_cast<Plain>(0)));
 }
 
 TEST(FlagsTest, OnlyOptedInEnumsQualify) {

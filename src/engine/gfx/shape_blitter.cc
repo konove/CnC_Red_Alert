@@ -15,6 +15,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/clip.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/rect.h"
 #include "base/types.h"

@@ -55,7 +55,7 @@
 
 #include "absl/log/check.h"
 #include "base/algorithm.h"
-#include "base/numeric.h"
+#include "base/flags.h"
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
 #include "game/core/object_heap.h"

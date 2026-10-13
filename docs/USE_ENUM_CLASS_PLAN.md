@@ -84,7 +84,7 @@ that enum instead. A bitfield that stores an enum casts on store and load.
 **5. Flag enums keep their operators and test with `base::Any`.** The games' `jshell.h` templates
 and sdllib's per-type `operator|`, `&`, `~` already cast through `uint32_t` and work on scoped
 enums. The one thing a scoped flag set loses is truth testing: `if (flags & SHAPE_GHOST)` becomes
-`if (base::Any(flags & SHAPE_GHOST))`, where `Any(E)` (in `base/numeric.h`) is `!= 0` on the
+`if (base::Any(flags & SHAPE_GHOST))`, where `Any(E)` (in `base/flags.h`) is `!= 0` on the
 underlying type. `int` masks such as `flags & 0xFF` cast through rule 4.
 
 **6. `KeyNumType` and `KeyASCIIType` stay unscoped under a reasoned `NOLINT`.** A key number is a

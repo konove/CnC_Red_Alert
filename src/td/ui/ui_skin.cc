@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/cardinal.h"
-#include "base/numeric.h"
+#include "base/flags.h"
 #include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"

@@ -60,7 +60,7 @@
 #include <span>
 
 #include "base/array.h"
-#include "base/numeric.h"
+#include "base/flags.h"
 #include "base/pooled.h"
 #include "base/rect.h"
 #include "engine/file/mix_archive.h"
