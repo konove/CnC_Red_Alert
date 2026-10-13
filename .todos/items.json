@@ -14439,20 +14439,21 @@
         "tools",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T00:38:27Z",
-      "updated": "2026-10-13T00:38:27Z",
+      "updated": "2026-10-13T00:52:23Z",
+      "resolution": "Added `DESERT.MIX`, `WINTER.MIX`, the three `*ICNH.MIX` icon archives and `SC-000.MIX`/`SC-001.MIX` to `kArchives` in `src/tools/game_data.cc`. `mixdump <td-dir> --list DESERT.PAL WINTER.PAL CLEAR1.DES CLEAR1.WIN` now finds them in their theater archives; Red Alert lookups are unchanged.",
       "anchors": [
         {
           "path": "src/tools/game_data.cc",
           "startLine": 22,
-          "endLine": 30,
-          "text": "    \"MAIN1.MIX\",    \"MAIN2.MIX\",    \"MAIN3.MIX\",    \"MAIN4.MIX\",\n    \"EXPAND.MIX\",   \"EXPAND2.MIX\",  \"HIRES1.MIX\",   \"LORES1.MIX\",\n    \"REDALERT.MIX\", \"MAIN.MIX\",     \"GENERAL.MIX\",  \"GENERAL1.MIX\",\n    \"GENERAL2.MIX\", \"GENERAL3.MIX\", \"GENERAL4.MIX\", \"LOCAL.MIX\",\n    \"CONQUER.MIX\",  \"HIRES.MIX\",    \"LORES.MIX\",    \"SCORES.MIX\",\n    \"SOUNDS.MIX\",   \"SPEECH.MIX\",   \"RUSSIAN.MIX\",  \"ALLIES.MIX\",\n    \"MOVIES1.MIX\",  \"MOVIES2.MIX\",  \"TRANSIT.MIX\",  \"INTERIOR.MIX\",\n    \"SNOW.MIX\",     \"TEMPERAT.MIX\", \"CCLOCAL.MIX\",  \"UPDATE.MIX\",\n    \"UPDATEC.MIX\",  \"LANGUAGE.MIX\", \"MOVIES.MIX\",   \"ZOUNDS.MIX\"};",
+          "endLine": 33,
+          "text": "constexpr std::string_view kArchives[] = {\n    \"MAIN1.MIX\",    \"MAIN2.MIX\",    \"MAIN3.MIX\",    \"MAIN4.MIX\",\n    \"EXPAND.MIX\",   \"EXPAND2.MIX\",  \"HIRES1.MIX\",   \"LORES1.MIX\",\n    \"REDALERT.MIX\", \"MAIN.MIX\",     \"GENERAL.MIX\",  \"GENERAL1.MIX\",\n    \"GENERAL2.MIX\", \"GENERAL3.MIX\", \"GENERAL4.MIX\", \"LOCAL.MIX\",\n    \"CONQUER.MIX\",  \"HIRES.MIX\",    \"LORES.MIX\",    \"SCORES.MIX\",\n    \"SOUNDS.MIX\",   \"SPEECH.MIX\",   \"RUSSIAN.MIX\",  \"ALLIES.MIX\",\n    \"MOVIES1.MIX\",  \"MOVIES2.MIX\",  \"TRANSIT.MIX\",  \"INTERIOR.MIX\",\n    \"SNOW.MIX\",     \"TEMPERAT.MIX\", \"CCLOCAL.MIX\",  \"UPDATE.MIX\",\n    \"UPDATEC.MIX\",  \"LANGUAGE.MIX\", \"MOVIES.MIX\",   \"ZOUNDS.MIX\",\n    \"DESERT.MIX\",   \"WINTER.MIX\",   \"TEMPICNH.MIX\", \"DESEICNH.MIX\",\n    \"WINTICNH.MIX\", \"SC-000.MIX\",   \"SC-001.MIX\"};",
           "before": [
             "// MAIN1..MAIN4.MIX. Tiberian Dawn's archives are unencrypted and loose; its",
-            "// names that Red Alert shares are listed once.",
-            "constexpr std::string_view kArchives[] = {"
+            "// names that Red Alert shares are listed once. The game finds its scenario",
+            "// archives with the pattern SC*.MIX; the two listed are the ones it ships."
           ],
           "after": [
             "",

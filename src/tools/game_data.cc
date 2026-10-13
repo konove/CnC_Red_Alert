@@ -17,7 +17,8 @@ namespace {
 // be opened once the one holding it is registered, so the order matters: the
 // Steam release of Red Alert packs the original MIX files inside
 // MAIN1..MAIN4.MIX. Tiberian Dawn's archives are unencrypted and loose; its
-// names that Red Alert shares are listed once.
+// names that Red Alert shares are listed once. The game finds its scenario
+// archives with the pattern SC*.MIX; the two listed are the ones it ships.
 constexpr std::string_view kArchives[] = {
     "MAIN1.MIX",    "MAIN2.MIX",    "MAIN3.MIX",    "MAIN4.MIX",
     "EXPAND.MIX",   "EXPAND2.MIX",  "HIRES1.MIX",   "LORES1.MIX",
@@ -27,7 +28,9 @@ constexpr std::string_view kArchives[] = {
     "SOUNDS.MIX",   "SPEECH.MIX",   "RUSSIAN.MIX",  "ALLIES.MIX",
     "MOVIES1.MIX",  "MOVIES2.MIX",  "TRANSIT.MIX",  "INTERIOR.MIX",
     "SNOW.MIX",     "TEMPERAT.MIX", "CCLOCAL.MIX",  "UPDATE.MIX",
-    "UPDATEC.MIX",  "LANGUAGE.MIX", "MOVIES.MIX",   "ZOUNDS.MIX"};
+    "UPDATEC.MIX",  "LANGUAGE.MIX", "MOVIES.MIX",   "ZOUNDS.MIX",
+    "DESERT.MIX",   "WINTER.MIX",   "TEMPICNH.MIX", "DESEICNH.MIX",
+    "WINTICNH.MIX", "SC-000.MIX",   "SC-001.MIX"};
 
 // The public half of the key the archives are indexed with, as ra/core/const.h
 // embeds it and IniFile::GetPublicKey() reads it. The exponent is the known
