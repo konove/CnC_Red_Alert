@@ -332,20 +332,22 @@ int MapEditClass::Select_Team(const char* caption) {
     base::SafeAppend(team_name, "\t");
     base::SafeAppend(team_name,
                      HouseTypeClass::As_Reference(
-                         TheObjectHeaps().team_type().ActiveAt(i)->House)
+                         TheObjectHeaps().team_type().ActiveAt(i)->house())
                          .Suffix);
     base::SafeAppend(team_name, "\t");
 
     /*
     ................ Fill in class & count for all classes ................
     */
-    for (int j = 0;
-         std::cmp_less(j, TheObjectHeaps().team_type().ActiveAt(i)->ClassCount);
+    for (int j = 0; std::cmp_less(
+             j, TheObjectHeaps().team_type().ActiveAt(i)->member_count());
          j++) {
       absl::SNPrintF(
           txt, sizeof(txt), "%s:%d",
-          base::At(TheObjectHeaps().team_type().ActiveAt(i)->Class, j)->IniName,
-          base::At(TheObjectHeaps().team_type().ActiveAt(i)->DesiredNum, j));
+          base::At(TheObjectHeaps().team_type().ActiveAt(i)->members(), j)
+              .type->IniName,
+          base::At(TheObjectHeaps().team_type().ActiveAt(i)->members(), j)
+              .quantity);
 
       /*..................................................................
       Add entry if there's room; break otherwise
@@ -899,18 +901,19 @@ int MapEditClass::Edit_Team() {
   ........................... Copy team's state ............................
   */
   base::SafeCopy(name_buf, CurTeam->IniName);
-  absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", CurTeam->RecruitPriority);
-  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", CurTeam->MaxAllowed);
-  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", CurTeam->InitNum);
-  absl::SNPrintF(fear_buf, sizeof(fear_buf), "%d", CurTeam->Fear);
-  int roundabout = CurTeam->IsRoundAbout;
-  int learning = CurTeam->IsLearning;
-  int suicide = CurTeam->IsSuicide;
-  HousesType house = CurTeam->House;
-  int autocreate = CurTeam->IsAutocreate;
-  int mercenary = CurTeam->IsMercenary;
-  int prebuilt = CurTeam->IsPrebuilt;
-  int reinforce = CurTeam->IsReinforcable;
+  absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", CurTeam->recruit_priority());
+  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", CurTeam->max_teams());
+  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d",
+                 CurTeam->initial_count());
+  absl::SNPrintF(fear_buf, sizeof(fear_buf), "%d", CurTeam->fear());
+  int roundabout = CurTeam->is_roundabout() ? 1 : 0;
+  int learning = CurTeam->is_learning() ? 1 : 0;
+  int suicide = CurTeam->is_suicide() ? 1 : 0;
+  HousesType house = CurTeam->house();
+  int autocreate = CurTeam->is_autocreate() ? 1 : 0;
+  int mercenary = CurTeam->is_mercenary() ? 1 : 0;
+  int prebuilt = CurTeam->is_prebuilt() ? 1 : 0;
+  int reinforce = CurTeam->is_reinforceable() ? 1 : 0;
 
   /*
   ......................... Fill in mission lists ..........................
@@ -920,9 +923,9 @@ int MapEditClass::Edit_Team() {
     missionlist1.Add_Item(TeamType::MissionName(mission));
   }
 
-  int missioncount = CurTeam->MissionCount;
+  int missioncount = CurTeam->mission_count();
   for (i = 0; i < missioncount; i++) {
-    base::At(missions, i) = base::At(CurTeam->MissionList, i);
+    base::At(missions, i) = base::At(CurTeam->missions(), i);
   }
   Build_Mission_List(missioncount, missions, missionbuf, &missionlist2);
 
@@ -1361,22 +1364,20 @@ int MapEditClass::Edit_Team() {
   ------------------------ Save selections & return ------------------------
   */
   CurTeam->Set_Name(name_buf);
-  CurTeam->RecruitPriority = base::ParseIntegerOr<int>(recr_buf, 0);
-  CurTeam->MaxAllowed =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(maxnum_buf, 0));
-  CurTeam->InitNum =
-      static_cast<unsigned char>(base::ParseIntegerOr<int>(initnum_buf, 0));
-  CurTeam->IsRoundAbout = roundabout != 0;
-  CurTeam->IsLearning = learning != 0;
-  CurTeam->IsSuicide = suicide != 0;
-  CurTeam->IsAutocreate = autocreate != 0;
-  CurTeam->IsPrebuilt = prebuilt != 0;
-  CurTeam->IsReinforcable = reinforce != 0;
-  CurTeam->IsMercenary = mercenary != 0;
-  CurTeam->House = house;
-  CurTeam->MissionCount = missioncount;
+  CurTeam->set_recruit_priority(base::ParseIntegerOr<int>(recr_buf, 0));
+  CurTeam->set_max_teams(base::ParseIntegerOr<int>(maxnum_buf, 0));
+  CurTeam->set_initial_count(base::ParseIntegerOr<int>(initnum_buf, 0));
+  CurTeam->set_is_roundabout(roundabout != 0);
+  CurTeam->set_is_learning(learning != 0);
+  CurTeam->set_is_suicide(suicide != 0);
+  CurTeam->set_is_autocreate(autocreate != 0);
+  CurTeam->set_is_prebuilt(prebuilt != 0);
+  CurTeam->set_is_reinforceable(reinforce != 0);
+  CurTeam->set_is_mercenary(mercenary != 0);
+  CurTeam->set_house(house);
+  CurTeam->ClearMissions();
   for (i = 0; i < missioncount; i++) {
-    base::At(CurTeam->MissionList, i) = base::At(missions, i);
+    CurTeam->AddMission(base::At(missions, i));
   }
 
   return 0;
@@ -1593,7 +1594,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Loop through all classes in the team.
   */
-  for (i = 0; std::cmp_less(i, CurTeam->ClassCount); i++) {
+  for (i = 0; std::cmp_less(i, CurTeam->member_count()); i++) {
     /*
     **	Find this class in our array.
     */
@@ -1603,14 +1604,17 @@ int MapEditClass::Team_Members(HousesType house) {
       **	'teamclass' array entry by comparing the actual pointers; typeid
       **	won't work because E1 & E2 are the same type class.
       */
-      if (base::At(CurTeam->Class, i) == teamclass.at(base::ToSize(j))) {
-        teamcount.at(base::ToSize(j)) = base::At(CurTeam->DesiredNum, i);
+      if (base::At(CurTeam->members(), i).type ==
+          teamclass.at(base::ToSize(j))) {
+        teamcount.at(base::ToSize(j)) =
+            base::At(CurTeam->members(), i).quantity;
         break;
       }
     }
   }
   int numclasses =
-      CurTeam->ClassCount;  // current # classes in the team (limited to <=5)
+      CurTeam
+          ->member_count();  // current # classes in the team (limited to <=5)
 
   /*
   **	Set up the dialog dimensions based on number of classes we have to draw
@@ -1883,14 +1887,12 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Copy data into team.
   */
   if (!cancel) {
-    CurTeam->ClassCount = static_cast<unsigned char>(numclasses);
-    i = 0;  // current team class index
+    CurTeam->ClearMembers();
     for (int j = 0; j < maxclasses; j++) {
       if (teamcount.at(base::ToSize(j)) > 0) {
-        base::At(CurTeam->DesiredNum, i) =
-            static_cast<unsigned char>(teamcount.at(base::ToSize(j)));
-        base::At(CurTeam->Class, i) = teamclass.at(base::ToSize(j));
-        i++;
+        CurTeam->AddMember(
+            {.quantity = static_cast<uint8_t>(teamcount.at(base::ToSize(j))),
+             .type = teamclass.at(base::ToSize(j))});
       }
     }
   }

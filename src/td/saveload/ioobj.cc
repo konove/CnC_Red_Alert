@@ -132,43 +132,44 @@ template void TriggerClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TeamType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
-  bool active = IsActive;
-  bool roundabout = IsRoundAbout;
-  bool learning = IsLearning;
-  bool suicide = IsSuicide;
-  bool autocreate = IsAutocreate;
-  bool mercenary = IsMercenary;
-  bool prebuilt = IsPrebuilt;
-  bool reinforcable = IsReinforcable;
-  bool transient = IsTransient;
+  bool active = is_active_;
+  bool roundabout = is_roundabout_;
+  bool learning = is_learning_;
+  bool suicide = is_suicide_;
+  bool autocreate = is_autocreate_;
+  bool mercenary = is_mercenary_;
+  bool prebuilt = is_prebuilt_;
+  bool reinforcable = is_reinforceable_;
+  bool transient = is_transient_;
   ar(active, roundabout, learning, suicide, autocreate, mercenary, prebuilt,
-     reinforcable, transient, RecruitPriority, InitNum, MaxAllowed, Fear, House,
-     MissionCount, ClassCount);
+     reinforcable, transient, recruit_priority_, initial_count_, max_teams_,
+     fear_, house_, mission_count_, member_count_);
   if constexpr (Archive::kIsReading) {
-    IsActive = active;
-    IsRoundAbout = roundabout;
-    IsLearning = learning;
-    IsSuicide = suicide;
-    IsAutocreate = autocreate;
-    IsMercenary = mercenary;
-    IsPrebuilt = prebuilt;
-    IsReinforcable = reinforcable;
-    IsTransient = transient;
-    if (!active || MissionCount < 0 || MissionCount > kMaxMissions ||
-        ClassCount > kMaxMemberTypes || House < HOUSE_NONE ||
-        House >= HOUSE_COUNT) {
+    is_active_ = active;
+    is_roundabout_ = roundabout;
+    is_learning_ = learning;
+    is_suicide_ = suicide;
+    is_autocreate_ = autocreate;
+    is_mercenary_ = mercenary;
+    is_prebuilt_ = prebuilt;
+    is_reinforceable_ = reinforcable;
+    is_transient_ = transient;
+    if (!active || mission_count_ < 0 || mission_count_ > kMaxMissions ||
+        member_count_ > kMaxMemberTypes || house_ < HOUSE_NONE ||
+        house_ >= HOUSE_COUNT) {
       ar.Fail("invalid team type state");
       return;
     }
   }
   // Unused array tails have no gameplay meaning and are defaulted on load.
-  for (int i = 0; i < MissionCount; ++i) {
-    ar(base::At(MissionList, i));
+  for (int i = 0; i < mission_count_; ++i) {
+    ar(base::At(missions_, i));
   }
-  for (int i = 0; std::cmp_less(i, ClassCount); ++i) {
-    ar(TechnoTypePtr(base::At(Class, i)), base::At(DesiredNum, i));
+  for (int i = 0; std::cmp_less(i, member_count_); ++i) {
+    ar(TechnoTypePtr(base::At(members_, i).type),
+       base::At(members_, i).quantity);
     if constexpr (Archive::kIsReading) {
-      if (base::At(Class, i) == nullptr) {
+      if (base::At(members_, i).type == nullptr) {
         ar.Fail("missing team member type");
       }
     }
@@ -215,7 +216,7 @@ void TeamClass::Serialize(Archive& ar) {
     }
     if (!known_type || TheObjectHeaps().house().PositionOf(House) < 0 ||
         Total < 0 || CurrentMission < -1 ||
-        CurrentMission >= Class->MissionCount) {
+        CurrentMission >= Class->mission_count()) {
       ar.Fail("invalid team state");
     }
   }

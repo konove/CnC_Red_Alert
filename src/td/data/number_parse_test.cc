@@ -27,13 +27,13 @@ TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
     TeamType& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
     team.ReadIniEntry(name, entry);
-    EXPECT_EQ(team.ClassCount, 0) << count;
-    EXPECT_EQ(team.MissionCount, 0) << count;
+    EXPECT_EQ(team.member_count(), 0) << count;
+    EXPECT_EQ(team.mission_count(), 0) << count;
 
     entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,0,"} + count;
     team.ReadIniEntry(name, entry);
-    EXPECT_EQ(team.ClassCount, 0) << count;
-    EXPECT_EQ(team.MissionCount, 0) << count;
+    EXPECT_EQ(team.member_count(), 0) << count;
+    EXPECT_EQ(team.mission_count(), 0) << count;
     base::DeletePooled(heap_team);
   }
 }
@@ -45,16 +45,16 @@ TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   ASSERT_NE(heap_team, nullptr);
   TeamType& team = *heap_team;
   team.ReadIniEntry(name, entry);
-  EXPECT_EQ(team.RecruitPriority, 7);
-  EXPECT_EQ(team.MaxAllowed, 2);
-  EXPECT_EQ(team.InitNum, 1);
-  EXPECT_EQ(team.ClassCount, 0);
-  EXPECT_EQ(team.MissionCount, 0);
+  EXPECT_EQ(team.recruit_priority(), 7);
+  EXPECT_EQ(team.max_teams(), 2);
+  EXPECT_EQ(team.initial_count(), 1);
+  EXPECT_EQ(team.member_count(), 0);
+  EXPECT_EQ(team.mission_count(), 0);
 
   char truncated[] = "GoodGuy,0,0,0,0,0,7,2,1,0,1";
   team.ReadIniEntry(name, truncated);
-  EXPECT_EQ(team.ClassCount, 0);
-  EXPECT_EQ(team.MissionCount, 0);
+  EXPECT_EQ(team.member_count(), 0);
+  EXPECT_EQ(team.mission_count(), 0);
   base::DeletePooled(heap_team);
 }
 

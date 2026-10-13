@@ -113,8 +113,8 @@ TEST_F(TeamTypeTest, TheLongestEntryIsWrittenWhole) {
 TeamType& MakeTeamType(const int max_teams) {
   auto* team_type = base::NewPooled<TeamType>();
   EXPECT_NE(team_type, nullptr);
-  team_type->House = HOUSE_GOOD;
-  team_type->MaxAllowed = static_cast<uint8_t>(max_teams);
+  team_type->set_house(HOUSE_GOOD);
+  team_type->set_max_teams(static_cast<uint8_t>(max_teams));
   return *team_type;
 }
 
@@ -177,7 +177,7 @@ TEST_F(TeamTypeTest, DestroyTeamsDeletesTheTeamsOfThisTypeOnly) {
 // A transient team type exists for one special reinforcement.
 TEST_F(TeamTypeTest, ATransientTeamTypeIsDeletedWithItsLastTeam) {
   TeamType& team_type = MakeTeamType(2);
-  team_type.IsTransient = true;
+  team_type.set_is_transient(true);
   const TeamClass* const first = team_type.CreateTeam();
   const TeamClass* const second = team_type.CreateTeam();
   ASSERT_NE(second, nullptr);

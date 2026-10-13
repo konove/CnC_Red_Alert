@@ -603,7 +603,7 @@ PathType* FootClass::Find_Path(Cell dest, std::span<game::Facing> final_moves,
   Debug_Draw_Map("Initial Draw", source, dest, false);
 
   //	MoveMask = flags;
-  if (Team && Team->Class->IsRoundAbout) {
+  if (Team && Team->Class->is_roundabout()) {
     unit_threat = Team ? Team->Risk : Risk();
     threat_stage = 0;
     threat = 0;

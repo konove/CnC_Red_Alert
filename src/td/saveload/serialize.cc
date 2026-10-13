@@ -146,7 +146,7 @@ INSTANTIATE_TYPE_PTR(SmudgeTypeClass);
 template <class T>
 void TeamTypePtr<T>::Serialize(ArchiveWriter& ar) {
   Target target =
-      ref_ != nullptr && ref_->IsActive ? ref_->As_Target() : Target{};
+      ref_ != nullptr && ref_->is_active() ? ref_->As_Target() : Target{};
   ar(target);
 }
 

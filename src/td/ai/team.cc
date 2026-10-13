@@ -170,7 +170,7 @@ TeamClass::~TeamClass() {
     }
 
     // This team is still in the heap: a count of one means it is the last.
-    if (Class->IsTransient && Class->CountTeams() == 1) {
+    if (Class->is_transient() && Class->CountTeams() == 1) {
       base::DeletePooled(Class);
     }
   }
@@ -281,8 +281,8 @@ void TeamClass::AI() {
   *should *	recalculate the under strength and full strength flags.
   */
   if (IsAltered) {
-    for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
-      desired += base::At(Class->DesiredNum, index);
+    for (int index = 0; std::cmp_less(index, Class->member_count()); index++) {
+      desired += base::At(Class->members(), index).quantity;
     }
 
     if (Total) {
@@ -301,7 +301,7 @@ void TeamClass::AI() {
         *strength *	mode when the members transition the magic 1/3 strength
         *threshhold.
         */
-        if (Class->IsReinforcable) {
+        if (Class->is_reinforceable()) {
           IsUnderStrength = Total <= desired / 3;
         } else {
           /*
@@ -436,9 +436,10 @@ void TeamClass::AI() {
   **	Only try to recruit members for a non player controlled team.
   */
   if (!IsMoving ||
-      (!IsFullStrength && Class->IsReinforcable && !House->IsHuman)) {
-    for (int index = 0; std::cmp_less(index, Class->ClassCount); index++) {
-      if (base::At(Quantity, index) < base::At(Class->DesiredNum, index)) {
+      (!IsFullStrength && Class->is_reinforceable() && !House->IsHuman)) {
+    for (int index = 0; std::cmp_less(index, Class->member_count()); index++) {
+      if (base::At(Quantity, index) <
+          base::At(Class->members(), index).quantity) {
         Recruit(index);
       }
     }
@@ -461,9 +462,10 @@ void TeamClass::AI() {
   if (IsMoving && !IsReforming && IsNextMission) {
     IsNextMission = false;
     CurrentMission++;
-    if (CurrentMission < Class->MissionCount) {
-      const TeamMission* mission =
-          base::Suffix(Class->MissionList, CurrentMission).data();
+    // A jump to a line the script does not have ends the team, as running
+    // off its end does.
+    if (CurrentMission >= 0 && CurrentMission < Class->mission_count()) {
+      const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
 
       TimeOut.Set(mission->argument * (kTicksPerMinute / 10));
       Target = td::Target{};
@@ -521,8 +523,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    const TeamMission* mission =
-        base::Suffix(Class->MissionList, CurrentMission).data();
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
     switch (mission->mission) {
       case TeamMissionType::kAttackBase:
         if (!MissionTarget) {
@@ -655,7 +656,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	If this team doesn't accept new members, then don't accept this one
   *either.
   */
-  //	if (!Class->IsReinforcable && IsMoving) {
+  //	if (!Class->is_reinforceable() && IsMoving) {
   //		return(false);
   //	}
 
@@ -692,7 +693,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	is permitted to leave the other team in order to join this one. If not,
   **	then no further processing is allowed -- bail.
   */
-  if (team && team->Class->RecruitPriority >= Class->RecruitPriority) {
+  if (team && team->Class->recruit_priority() >= Class->recruit_priority()) {
     return false;
   }
 
@@ -702,9 +703,9 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   *illegal to add this *	object to this team -- return with failure flag.
   */
   if (typeindex == -1) {
-    for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
+    for (typeindex = 0; std::cmp_less(typeindex, Class->member_count());
          typeindex++) {
-      if (base::At(Class->Class, typeindex) == &obj->Class_Of()) {
+      if (base::At(Class->members(), typeindex).type == &obj->Class_Of()) {
         break;
       }
     }
@@ -714,7 +715,8 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   **	If the team is already full of this type, then adding the object is not
   *allowed. *	Return with a failure flag in this case.
   */
-  if (base::At(Quantity, typeindex) >= base::At(Class->DesiredNum, typeindex)) {
+  if (base::At(Quantity, typeindex) >=
+      base::At(Class->members(), typeindex).quantity) {
     return false;
   }
 
@@ -786,9 +788,9 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   *object from the team is a good idea.
   */
   if (typeindex == -1) {
-    for (typeindex = 0; std::cmp_less(typeindex, Class->ClassCount);
+    for (typeindex = 0; std::cmp_less(typeindex, Class->member_count());
          typeindex++) {
-      if (base::At(Class->Class, typeindex) == &obj->Class_Of()) {
+      if (base::At(Class->members(), typeindex).type == &obj->Class_Of()) {
         break;
       }
     }
@@ -798,7 +800,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   **	Decrement the counter for the team class. There is now one less of this
   *object type.
   */
-  if (std::cmp_less(typeindex, Class->ClassCount)) {
+  if (std::cmp_less(typeindex, Class->member_count())) {
     base::At(Quantity, typeindex)--;
   }
 
@@ -887,18 +889,20 @@ int TeamClass::Recruit(int typeindex) {
   **	Quick check to see if recruiting is really allowed for this index or
   *not.
   */
-  if (base::At(Class->DesiredNum, typeindex) > base::At(Quantity, typeindex)) {
+  if (base::At(Class->members(), typeindex).quantity >
+      base::At(Quantity, typeindex)) {
     /*
     **	For infantry objects, sweep through the infantry in the game looking for
     **	ones owned by the house that owns the team. When found, try to add.
     */
-    if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_INFANTRYTYPE) {
+    if (base::At(Class->members(), typeindex).type->What_Am_I() ==
+        RTTI_INFANTRYTYPE) {
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
         InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
         if ((infantry->House == House &&
-             infantry->Class == base::At(Class->Class, typeindex)) &&
+             infantry->Class == base::At(Class->members(), typeindex).type) &&
             Add(infantry, typeindex)) {
           added++;
         }
@@ -908,18 +912,19 @@ int TeamClass::Recruit(int typeindex) {
         *to the *	team, then abort further scanning for members.
         */
         if (base::At(Quantity, typeindex) >=
-            base::At(Class->DesiredNum, typeindex)) {
+            base::At(Class->members(), typeindex).quantity) {
           break;
         }
       }
     }
 
-    if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_UNITTYPE) {
+    if (base::At(Class->members(), typeindex).type->What_Am_I() ==
+        RTTI_UNITTYPE) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
         if ((unit->House == House &&
-             unit->Class == base::At(Class->Class, typeindex)) &&
+             unit->Class == base::At(Class->members(), typeindex).type) &&
             Add(unit, typeindex)) {
           added++;
 
@@ -939,7 +944,7 @@ int TeamClass::Recruit(int typeindex) {
         *to the *	team, then abort further scanning for members.
         */
         if (base::At(Quantity, typeindex) >=
-            base::At(Class->DesiredNum, typeindex)) {
+            base::At(Class->members(), typeindex).quantity) {
           break;
         }
       }
@@ -1075,7 +1080,7 @@ void TeamClass::Calc_Center(Cell& center, Cell& obj_center) const {
 void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
                             TechnoClass* source) {
   Validate();
-  if (result != game::RESULT_NONE && !Class->IsSuicide) {
+  if (result != game::RESULT_NONE && !Class->is_suicide()) {
     if (!IsMoving) {
       // Should run to a better hiding place or disband into a group of hunting
       // units.
@@ -1229,6 +1234,14 @@ void TeamClass::Coordinate_Move() {
   FootClass* unit = Member;
   bool finished = true;
 
+  // The script's next line, if it has one, is another move. CurrentMission
+  // is -1 while the team is still forming.
+  const int next_mission = CurrentMission + 1;
+  const bool next_is_move = next_mission >= 0 &&
+                            next_mission < Class->mission_count() &&
+                            base::At(Class->missions(), next_mission).mission ==
+                                TeamMissionType::kMove;
+
   if (!Target) {
     Target = MissionTarget;
   }
@@ -1248,8 +1261,7 @@ void TeamClass::Coordinate_Move() {
                     STRAY_DISTANCE ||
                 (unit->What_Am_I() == RTTI_AIRCRAFT &&
                  dynamic_cast<AircraftClass*>(unit)->Altitude > 0 &&
-                 base::At(Class->MissionList, CurrentMission + 1).mission !=
-                     TeamMissionType::kMove)) {
+                 !next_is_move)) {
               if (unit->mission_state().current() != MISSION_MOVE) {
                 unit->Assign_Mission(MISSION_MOVE);
               }
@@ -1475,7 +1487,7 @@ void TeamClass::Suspend_Teams(int priority) {
     **	If a team is below the "survival priority level", then it gets
     **	destroyed. The team members are then free to be reassigned.
     */
-    if (team && team->Class->RecruitPriority < priority) {
+    if (team && team->Class->recruit_priority() < priority) {
       while (team->Member) {
         team->Remove(team->Member);
       }

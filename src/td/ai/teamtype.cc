@@ -29,6 +29,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -116,21 +117,21 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
 
   base::Tokenizer tokens(entry);
   ReadLeadingFields(tokens);
-  Fear = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  fear_ = StoredCount(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   // The members: a count, then that many Class:Num pairs.
   const int listed_count = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  ClassCount = 0;
+  member_count_ = 0;
   if (listed_count < 0 || listed_count > kMaxMemberTypes) {
-    MissionCount = 0;
+    mission_count_ = 0;
     return;
   }
   for (int listed = 0; listed < listed_count; listed++) {
     const std::string_view type_name = tokens.Next(",:");
     const std::string_view quantity_text = tokens.Next(",:");
     if (type_name.empty() || quantity_text.empty()) {
-      ClassCount = 0;
-      MissionCount = 0;
+      member_count_ = 0;
+      mission_count_ = 0;
       return;
     }
 
@@ -138,30 +139,30 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
     // next member takes its place.
     const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
     if (member_type != nullptr) {
-      base::At(Class, ClassCount) = member_type;
-      base::At(DesiredNum, ClassCount) =
-          static_cast<uint8_t>(base::ParseIntegerOr<int>(quantity_text, 0));
-      ClassCount++;
+      base::At(members_, member_count_++) = {
+          .quantity =
+              static_cast<uint8_t>(base::ParseIntegerOr<int>(quantity_text, 0)),
+          .type = member_type};
     }
   }
 
   // The script: a count, then that many Mission:Arg pairs.
-  MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
-  if (MissionCount < 0 || MissionCount > kMaxMissions) {
-    ClassCount = 0;
-    MissionCount = 0;
+  mission_count_ = base::ParseIntegerOr<int>(tokens.Next(), -1);
+  if (mission_count_ < 0 || mission_count_ > kMaxMissions) {
+    member_count_ = 0;
+    mission_count_ = 0;
     return;
   }
 
-  for (int line = 0; line < MissionCount; line++) {
+  for (int line = 0; line < mission_count_; line++) {
     const std::string_view mission_name = tokens.Next(",:");
     const std::string_view argument_text = tokens.Next(",:");
     if (mission_name.empty() || argument_text.empty()) {
-      ClassCount = 0;
-      MissionCount = 0;
+      member_count_ = 0;
+      mission_count_ = 0;
       return;
     }
-    base::At(MissionList, line) = {
+    base::At(missions_, line) = {
         .mission = MissionFromName(mission_name),
         .argument = base::ParseIntegerOr<int>(argument_text, 0)};
   }
@@ -169,55 +170,53 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   // Older scenarios end the entry here, which leaves both options on.
   if (const std::string_view reinforceable = tokens.Next();
       !reinforceable.empty()) {
-    IsReinforcable = base::ParseIntegerOr<int>(reinforceable, 0) != 0;
+    is_reinforceable_ = base::ParseIntegerOr<int>(reinforceable, 0) != 0;
   }
   if (const std::string_view prebuilt = tokens.Next(); !prebuilt.empty()) {
-    IsPrebuilt = base::ParseIntegerOr<int>(prebuilt, 0) != 0;
+    is_prebuilt_ = base::ParseIntegerOr<int>(prebuilt, 0) != 0;
   }
 }
 
 void TeamType::ReadLeadingFields(base::Tokenizer& tokens) {
   // An unknown house name gives HOUSE_NONE.
-  House = HouseTypeClass::From_Name(tokens.Next());
-  IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  IsLearning = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  house_ = HouseTypeClass::From_Name(tokens.Next());
+  is_roundabout_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_learning_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_suicide_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
   // The fifth field was once "Spy".
-  IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  IsMercenary = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
-  // The counts are stored in a byte each; a number that does not fit wraps.
-  MaxAllowed =
-      static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  InitNum = static_cast<uint8_t>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  is_autocreate_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_mercenary_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));
 }
 
 std::string TeamType::ToIniEntry() const {
   // By its type: the scenario need not have the house itself.
   const std::string_view house_name =
-      House == HOUSE_NONE ? "None"
-                          : HouseTypeClass::As_Reference(House).IniName;
+      house_ == HOUSE_NONE ? "None"
+                           : HouseTypeClass::As_Reference(house_).IniName;
 
   std::string entry = absl::StrFormat(
-      "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", house_name, IsRoundAbout, IsLearning,
-      IsSuicide, IsAutocreate, IsMercenary, RecruitPriority, MaxAllowed,
-      InitNum, Fear, ClassCount);
+      "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", house_name, is_roundabout_,
+      is_learning_, is_suicide_, is_autocreate_, is_mercenary_,
+      recruit_priority_, max_teams_, initial_count_, fear_, member_count_);
 
   // The members: Class:Num for each.
-  for (int i = 0; std::cmp_less(i, ClassCount); i++) {
-    absl::StrAppendFormat(&entry, ",%s:%d", base::At(Class, i)->IniName,
-                          base::At(DesiredNum, i));
+  for (int i = 0; std::cmp_less(i, member_count_); i++) {
+    absl::StrAppendFormat(&entry, ",%s:%d", base::At(members_, i).type->IniName,
+                          base::At(members_, i).quantity);
   }
 
   // The script: a count, then Mission:Arg for each, the mission by name.
-  absl::StrAppendFormat(&entry, ",%d", MissionCount);
-  for (int i = 0; i < MissionCount; i++) {
+  absl::StrAppendFormat(&entry, ",%d", mission_count_);
+  for (int i = 0; i < mission_count_; i++) {
     absl::StrAppendFormat(&entry, ",%s:%d",
-                          MissionName(base::At(MissionList, i).mission),
-                          base::At(MissionList, i).argument);
+                          MissionName(base::At(missions_, i).mission),
+                          base::At(missions_, i).argument);
   }
 
-  absl::StrAppendFormat(&entry, ",%d,%d", IsReinforcable, IsPrebuilt);
+  absl::StrAppendFormat(&entry, ",%d,%d", is_reinforceable_, is_prebuilt_);
   return entry;
 }
 
@@ -250,18 +249,15 @@ void TeamType::ReadOldIni(const engine::file::IniFile& ini) {
 
     // The members: Class:Num pairs up to the end of the entry, of which the
     // first kMaxMemberTypes known types are kept.
-    int member_count = 0;
     std::string_view type_name = tokens.Next(",:");
     std::string_view quantity_text = tokens.Next(",:");
     while (!type_name.empty() && !quantity_text.empty() &&
-           member_count < kMaxMemberTypes) {
+           team_type->member_count_ < kMaxMemberTypes) {
       const TechnoTypeClass* const member_type = MemberTypeFromName(type_name);
       if (member_type != nullptr) {
-        base::At(team_type->Class, member_count) = member_type;
-        base::At(team_type->DesiredNum, member_count) =
-            static_cast<uint8_t>(base::ParseIntegerOr<int>(quantity_text, 0));
-        member_count++;
-        team_type->ClassCount = static_cast<uint8_t>(member_count);
+        team_type->AddMember({.quantity = static_cast<uint8_t>(
+                                  base::ParseIntegerOr<int>(quantity_text, 0)),
+                              .type = member_type});
       }
 
       type_name = tokens.Next(",:");
@@ -321,21 +317,21 @@ const char* TeamType::MissionName(const TeamMissionType mission) {
 void* TeamType::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
-    static_cast<TeamType*>(ptr)->IsActive = true;
+    static_cast<TeamType*>(ptr)->is_active_ = true;
   }
   return ptr;
 }
 
 void TeamType::operator delete(void* ptr) {
   if (ptr) {
-    static_cast<TeamType*>(ptr)->IsActive = false;
+    static_cast<TeamType*>(ptr)->is_active_ = false;
   }
   TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
 TeamClass* TeamType::CreateTeam() const {
-  if (TheWorld().scenario_init() || CountTeams() < MaxAllowed) {
-    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
+  if (TheWorld().scenario_init() || CountTeams() < max_teams_) {
+    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }
   return nullptr;
 }
@@ -378,28 +374,29 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     const TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
-    if (candidate->House == house->Class->House &&
-        candidate->CountTeams() <
-            (alerted || !candidate->IsAutocreate ? candidate->MaxAllowed : 0)) {
+    if (candidate->house_ == house->Class->House &&
+        candidate->CountTeams() < (alerted || !candidate->is_autocreate_
+                                       ? candidate->max_teams_
+                                       : 0)) {
       // The unit and infantry types this team type wants, as bit masks.
       // Aircraft do not count.
       uint64_t units_wanted = 0;
       uint64_t infantry_wanted = 0;
-      for (int member = 0; std::cmp_less(member, candidate->ClassCount);
+      for (int member = 0; std::cmp_less(member, candidate->member_count_);
            member++) {
-        switch (base::At(candidate->Class, member)->What_Am_I()) {
+        switch (base::At(candidate->members_, member).type->What_Am_I()) {
           case RTTI_INFANTRYTYPE:
-            infantry_wanted |=
-                base::Bit<uint64_t>(dynamic_cast<const InfantryTypeClass*>(
-                                        base::At(candidate->Class, member))
-                                        ->Type);
+            infantry_wanted |= base::Bit<uint64_t>(
+                dynamic_cast<const InfantryTypeClass*>(
+                    base::At(candidate->members_, member).type)
+                    ->Type);
             break;
 
           case RTTI_UNITTYPE:
-            units_wanted |=
-                base::Bit<uint64_t>(dynamic_cast<const UnitTypeClass*>(
-                                        base::At(candidate->Class, member))
-                                        ->Type);
+            units_wanted |= base::Bit<uint64_t>(
+                dynamic_cast<const UnitTypeClass*>(
+                    base::At(candidate->members_, member).type)
+                    ->Type);
             break;
           case RTTIType::RTTI_NONE:
           case RTTIType::RTTI_INFANTRY:
@@ -433,9 +430,9 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
       // half its priority.
       int value = 0;
       if (infantry_wanted & infantry_types || units_wanted & unit_types) {
-        value = candidate->RecruitPriority;
+        value = candidate->recruit_priority_;
       } else {
-        value = candidate->RecruitPriority / 2;
+        value = candidate->recruit_priority_ / 2;
       }
 
       // The first of equals wins.
@@ -447,6 +444,16 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
   }
 
   return best;
+}
+
+void TeamType::AddMission(const TeamMission& mission) {
+  CHECK(mission_count_ < kMaxMissions);
+  base::At(missions_, mission_count_++) = mission;
+}
+
+void TeamType::AddMember(const TeamMember& member) {
+  CHECK(member_count_ < kMaxMemberTypes);
+  base::At(members_, member_count_++) = member;
 }
 
 }  // namespace td

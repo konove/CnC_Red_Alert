@@ -93,6 +93,13 @@ struct TeamMission {
   }
 };
 
+// One kind of member a team type asks for, and how many of it.
+struct TeamMember {
+  uint8_t quantity = 0;
+  // An infantry, unit or aircraft type; nullptr only in an unused entry.
+  const TechnoTypeClass* type = nullptr;
+};
+
 // A recipe for a team: its house, members, script and creation rules. Team
 // types live in the team type heap (TheObjectHeaps().team_type()), are created
 // by ReadIni(), the scenario editor or a special reinforcement, and are all
@@ -207,79 +214,137 @@ class TeamType : public AbstractTypeClass {
   // this object is not in the team type heap.
   void Validate() const;
 
-  // True while the object occupies its heap slot. operator new sets it
-  // before the constructor runs, so the initializer must agree with it;
-  // operator delete clears it.
-  bool IsActive : 1 = true;
+  // The accessors below are documented at the data members.
+  [[nodiscard]] bool is_active() const { return is_active_; }
+  [[nodiscard]] bool is_roundabout() const { return is_roundabout_; }
+  void set_is_roundabout(const bool value) { is_roundabout_ = value; }
+  [[nodiscard]] bool is_learning() const { return is_learning_; }
+  void set_is_learning(const bool value) { is_learning_ = value; }
+  [[nodiscard]] bool is_suicide() const { return is_suicide_; }
+  void set_is_suicide(const bool value) { is_suicide_ = value; }
+  [[nodiscard]] bool is_autocreate() const { return is_autocreate_; }
+  void set_is_autocreate(const bool value) { is_autocreate_ = value; }
+  [[nodiscard]] bool is_mercenary() const { return is_mercenary_; }
+  void set_is_mercenary(const bool value) { is_mercenary_ = value; }
+  [[nodiscard]] bool is_prebuilt() const { return is_prebuilt_; }
+  void set_is_prebuilt(const bool value) { is_prebuilt_ = value; }
+  [[nodiscard]] bool is_reinforceable() const { return is_reinforceable_; }
+  void set_is_reinforceable(const bool value) { is_reinforceable_ = value; }
+  [[nodiscard]] bool is_transient() const { return is_transient_; }
+  void set_is_transient(const bool value) { is_transient_ = value; }
+  [[nodiscard]] int recruit_priority() const { return recruit_priority_; }
+  void set_recruit_priority(const int value) { recruit_priority_ = value; }
+  [[nodiscard]] int initial_count() const { return initial_count_; }
+  // Take any number: see StoredCount().
+  void set_initial_count(const int value) {
+    initial_count_ = StoredCount(value);
+  }
+  [[nodiscard]] int max_teams() const { return max_teams_; }
+  void set_max_teams(const int value) { max_teams_ = StoredCount(value); }
+  [[nodiscard]] int fear() const { return fear_; }
+  [[nodiscard]] HousesType house() const { return house_; }
+  void set_house(const HousesType value) { house_ = value; }
 
-  // The team's members route around high-threat areas.
-  bool IsRoundAbout : 1 = false;
+  // The script, mission_count() lines long.
+  [[nodiscard]] int mission_count() const { return mission_count_; }
+  [[nodiscard]] std::span<const TeamMission> missions() const
+      // Clang cannot trace the reference through libstdc++ span operations.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return std::span(missions_).first(static_cast<std::size_t>(mission_count_));
+  }
+  // Appends a line to the script, which must have fewer than kMaxMissions.
+  void AddMission(const TeamMission& mission);
+  // Leaves the team type with no script.
+  void ClearMissions() { mission_count_ = 0; }
 
-  // The team learns from its mistakes. Read and written, but nothing acts on
-  // it.
-  bool IsLearning : 1 = false;
-
-  // The team does not stop for distractions until it achieves its mission or
-  // is dead.
-  bool IsSuicide : 1 = false;
-
-  // Only a house that has been alerted (the "autocreate" trigger action)
-  // creates teams of this type on its own; see SuggestNewTeam().
-  bool IsAutocreate : 1 = false;
-
-  // Mercenaries change sides if they start to lose. Read and written, but
-  // nothing acts on it.
-  bool IsMercenary : 1 = false;
-
-  // The computer builds the members of this team type ahead of time, whether
-  // or not a team of the type exists yet.
-  bool IsPrebuilt : 1 = true;
-
-  // A team in the field keeps recruiting replacements for lost members. If
-  // false it fights until it is dead; unlike a suicide team, its members
-  // still defend themselves.
-  bool IsReinforcable : 1 = true;
-
-  // Created only to bring on reinforcements for one special event. The last
-  // team of the type deletes the team type as it dies.
-  bool IsTransient : 1 = false;
-
-  // Rank among teams when recruiting, 0 to 15: a team takes members from
-  // teams of lower priority.
-  int RecruitPriority = 7;
-
-  // The scenario's "initial number" of teams of this type. Read, written and
-  // saved, but nothing creates teams from it.
-  uint8_t InitNum = 0;
-
-  // The most teams of this type that may exist at one time.
-  uint8_t MaxAllowed = 0;
-
-  // The team's fear level. Read, written and saved, but nothing acts on it.
-  uint8_t Fear = 0;
-
-  // The house the teams belong to; HOUSE_NONE if the INI entry names none.
-  HousesType House = HOUSE_NONE;
-
-  // The script: the first MissionCount entries of MissionList.
-  int MissionCount = 0;
-  TeamMission MissionList[kMaxMissions]{};
-
-  // The number of kinds of member: the entries in use of Class and
-  // DesiredNum.
-  uint8_t ClassCount = 0;
-
-  // The type of each kind of member: an infantry, unit or aircraft type.
-  const TechnoTypeClass* Class[kMaxMemberTypes]{};
-
-  // How many of each kind of member a full team has.
-  uint8_t DesiredNum[kMaxMemberTypes]{};
+  // The members wanted, member_count() kinds of them.
+  [[nodiscard]] int member_count() const { return member_count_; }
+  [[nodiscard]] std::span<const TeamMember> members() const
+      // Clang cannot trace the reference through libstdc++ span operations.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return std::span(members_).first(static_cast<std::size_t>(member_count_));
+  }
+  // Appends a kind of member, of which there must be fewer than
+  // kMaxMemberTypes.
+  void AddMember(const TeamMember& member);
+  // Leaves the team type with no members.
+  void ClearMembers() { member_count_ = 0; }
 
  private:
+  // Returns `value` as the byte a count is stored in, which a number that
+  // does not fit wraps into: a scenario's -1 is 255.
+  static constexpr uint8_t StoredCount(const int value) {
+    return static_cast<uint8_t>(value);
+  }
+
   // Reads the nine fields both INI formats start with: the house, the five
   // options that are not at the end of the entry, the recruit priority and
   // the two team counts.
   void ReadLeadingFields(base::Tokenizer& tokens);
+
+  // True while the object occupies its heap slot. operator new sets it
+  // before the constructor runs, so the initializer must agree with it;
+  // operator delete clears it.
+  bool is_active_ : 1 = true;
+
+  // The team's members route around high-threat areas.
+  bool is_roundabout_ : 1 = false;
+
+  // The team learns from its mistakes. Read and written, but nothing acts on
+  // it.
+  bool is_learning_ : 1 = false;
+
+  // The team does not stop for distractions until it achieves its mission or
+  // is dead.
+  bool is_suicide_ : 1 = false;
+
+  // Only a house that has been alerted (the "autocreate" trigger action)
+  // creates teams of this type on its own; see SuggestNewTeam().
+  bool is_autocreate_ : 1 = false;
+
+  // Mercenaries change sides if they start to lose. Read and written, but
+  // nothing acts on it.
+  bool is_mercenary_ : 1 = false;
+
+  // The computer builds the members of this team type ahead of time, whether
+  // or not a team of the type exists yet.
+  bool is_prebuilt_ : 1 = true;
+
+  // A team in the field keeps recruiting replacements for lost members. If
+  // false it fights until it is dead; unlike a suicide team, its members
+  // still defend themselves.
+  bool is_reinforceable_ : 1 = true;
+
+  // Created only to bring on reinforcements for one special event. The last
+  // team of the type deletes the team type as it dies.
+  bool is_transient_ : 1 = false;
+
+  // Rank among teams when recruiting, 0 to 15: a team takes members from
+  // teams of lower priority.
+  int32_t recruit_priority_ = 7;
+
+  // The scenario's "initial number" of teams of this type. Read, written and
+  // saved, but nothing creates teams from it.
+  uint8_t initial_count_ = 0;
+
+  // The most teams of this type that may exist at one time.
+  uint8_t max_teams_ = 0;
+
+  // The team's fear level. Read, written and saved, but nothing acts on it.
+  uint8_t fear_ = 0;
+
+  // The house the teams belong to; HOUSE_NONE if the INI entry names none.
+  HousesType house_ = HOUSE_NONE;
+
+  // The script: the first mission_count_ entries of missions_.
+  int32_t mission_count_ = 0;
+  TeamMission missions_[kMaxMissions]{};
+
+  // The members wanted: the first member_count_ entries of members_.
+  uint8_t member_count_ = 0;
+  TeamMember members_[kMaxMemberTypes]{};
 };
 
 extern template void TeamType::Serialize<ArchiveWriter>(ArchiveWriter&);

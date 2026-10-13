@@ -2966,7 +2966,7 @@ void HouseClass::Clobber_All() {
     }
   }
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    if (TheObjectHeaps().team_type().ActiveAt(i)->House == Class->House) {
+    if (TheObjectHeaps().team_type().ActiveAt(i)->house() == Class->House) {
       base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(i));
       i--;
     }
@@ -3282,14 +3282,14 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           if (tptr) {
             const TeamType* team = tptr->Class;
 
-            if (/*team->IsReinforcable || */ !tptr->IsFullStrength &&
-                team->House == Class->House) {
-              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                   subindex++) {
-                if (base::At(team->Class, subindex)->What_Am_I() ==
+            if (/*team->is_reinforceable() || */ !tptr->IsFullStrength &&
+                team->house() == Class->House) {
+              for (int subindex = 0;
+                   std::cmp_less(subindex, team->member_count()); subindex++) {
+                if (base::At(team->members(), subindex).type->What_Am_I() ==
                     RTTI_UNITTYPE) {
                   counter.at(dynamic_cast<const UnitTypeClass*>(
-                                 base::At(team->Class, subindex))
+                                 base::At(team->members(), subindex).type)
                                  ->Type) = 1;
                   //									counter[((UnitTypeClass
                   // const *)(team->Class[subindex]))->Type] +=
@@ -3308,17 +3308,19 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         for (int index = 0; index < TheObjectHeaps().team_type().Count();
              index++) {
           const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-          if (team && (team->House == Class->House && team->IsPrebuilt &&
-                       (!team->IsAutocreate || IsAlerted))) {
-            for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                 subindex++) {
-              if (base::At(team->Class, subindex)->What_Am_I() ==
+          if (team && (team->house() == Class->House && team->is_prebuilt() &&
+                       (!team->is_autocreate() || IsAlerted))) {
+            for (int subindex = 0;
+                 std::cmp_less(subindex, team->member_count()); subindex++) {
+              if (base::At(team->members(), subindex).type->What_Am_I() ==
                   RTTI_UNITTYPE) {
-                const UnitType subtype = dynamic_cast<const UnitTypeClass*>(
-                                             base::At(team->Class, subindex))
-                                             ->Type;
-                counter.at(subtype) = std::max<int>(
-                    counter.at(subtype), base::At(team->DesiredNum, subindex));
+                const UnitType subtype =
+                    dynamic_cast<const UnitTypeClass*>(
+                        base::At(team->members(), subindex).type)
+                        ->Type;
+                counter.at(subtype) =
+                    std::max<int>(counter.at(subtype),
+                                  base::At(team->members(), subindex).quantity);
               }
             }
           }
@@ -3404,16 +3406,16 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
           if (tptr) {
             const TeamType* team = tptr->Class;
 
-            if ((team->IsReinforcable || !tptr->IsFullStrength) &&
-                team->House == Class->House) {
-              for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                   subindex++) {
-                if (base::At(team->Class, subindex)->What_Am_I() ==
+            if ((team->is_reinforceable() || !tptr->IsFullStrength) &&
+                team->house() == Class->House) {
+              for (int subindex = 0;
+                   std::cmp_less(subindex, team->member_count()); subindex++) {
+                if (base::At(team->members(), subindex).type->What_Am_I() ==
                     RTTI_INFANTRYTYPE) {
                   counter.at(dynamic_cast<const InfantryTypeClass*>(
-                                 base::At(team->Class, subindex))
+                                 base::At(team->members(), subindex).type)
                                  ->Type) +=
-                      base::At(team->DesiredNum, subindex) + 1;
+                      base::At(team->members(), subindex).quantity + 1;
                 }
               }
             }
@@ -3428,20 +3430,21 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         for (int index = 0; index < TheObjectHeaps().team_type().Count();
              index++) {
           const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
-          if (team && (team->House == Class->House && team->IsPrebuilt &&
-                       (!team->IsAutocreate || IsAlerted))) {
-            for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
-                 subindex++) {
-              if (base::At(team->Class, subindex)->What_Am_I() ==
+          if (team && (team->house() == Class->House && team->is_prebuilt() &&
+                       (!team->is_autocreate() || IsAlerted))) {
+            for (int subindex = 0;
+                 std::cmp_less(subindex, team->member_count()); subindex++) {
+              if (base::At(team->members(), subindex).type->What_Am_I() ==
                   RTTI_INFANTRYTYPE) {
                 const InfantryType subtype =
                     dynamic_cast<const InfantryTypeClass*>(
-                        base::At(team->Class, subindex))
+                        base::At(team->members(), subindex).type)
                         ->Type;
                 //									counter[subtype]
                 //= 1;
-                counter.at(subtype) = std::max<int>(
-                    counter.at(subtype), base::At(team->DesiredNum, subindex));
+                counter.at(subtype) =
+                    std::max<int>(counter.at(subtype),
+                                  base::At(team->members(), subindex).quantity);
                 counter.at(subtype) = std::min(counter.at(subtype), 5);
               }
             }
@@ -4169,7 +4172,7 @@ void HouseClass::Blowup_All() {
   **	Just delete the teams & triggers for this house.
   */
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    if (TheObjectHeaps().team_type().ActiveAt(i)->House == Class->House) {
+    if (TheObjectHeaps().team_type().ActiveAt(i)->house() == Class->House) {
       base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(i));
       i--;
     }

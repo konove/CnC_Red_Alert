@@ -1842,14 +1842,11 @@ bool Select_Game(bool fade) {
         return false;
       }
       type->Set_Name("saveteam");
-      type->House = ThePlayer()->Class->House;
-      type->MaxAllowed = 1;
-      type->ClassCount = 1;
-      base::At(type->Class, 0) = member->Class;
-      base::At(type->DesiredNum, 0) = 1;
-      type->MissionCount = 2;
-      base::At(type->MissionList, 0) = {TeamMissionType::kGuard, 100};
-      base::At(type->MissionList, 1) = {TeamMissionType::kLoop, 0};
+      type->set_house(ThePlayer()->Class->House);
+      type->set_max_teams(1);
+      type->AddMember({.quantity = 1, .type = member->Class});
+      type->AddMission({TeamMissionType::kGuard, 100});
+      type->AddMission({TeamMissionType::kLoop, 0});
       auto* team = type->CreateTeam();
       if (team == nullptr || !team->Add(member)) {
         LOG(ERROR) << "-TEAMTEST: could not create a populated team";

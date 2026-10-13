@@ -204,17 +204,17 @@ static bool FlyIn(FootClass* group, const SourceType edge,
 
 bool DeliverReinforcements(const TeamType* team_type) {
   // A missing type, or one with no members, has nothing to bring on.
-  if (team_type == nullptr || team_type->ClassCount == 0) {
+  if (team_type == nullptr || team_type->member_count() == 0) {
     return false;
   }
-  HouseClass* const house = HouseClass::As_Pointer(team_type->House);
-  const int member_type_count = team_type->ClassCount;
+  HouseClass* const house = HouseClass::As_Pointer(team_type->house());
+  const int member_type_count = team_type->member_count();
 
   // The team that will control the members. A type without missions gets no
   // team, since the team would have nothing to tell them: its members are
   // given orders of their own when they are placed.
   TeamClass* team = nullptr;
-  if (team_type->MissionCount != 0) {
+  if (team_type->mission_count() != 0) {
     team = base::NewPooled<TeamClass>(team_type, house);
     if (team == nullptr) {
       return false;
@@ -231,7 +231,7 @@ bool DeliverReinforcements(const TeamType* team_type) {
   bool only_transports = true;  // Is there nothing but transports and aircraft?
   for (int member_index = 0; member_index < member_type_count; member_index++) {
     const TechnoTypeClass* member_type =
-        base::At(team_type->Class, member_index);
+        base::At(team_type->members(), member_index).type;
     if (member_type->What_Am_I() == RTTI_AIRCRAFTTYPE) {
       arrives_by_air = true;
     } else if (member_type->IsTransporter) {
@@ -249,7 +249,8 @@ bool DeliverReinforcements(const TeamType* team_type) {
     source = SOURCE_AIR;
   } else if (arrives_by_hovercraft) {
     source = SOURCE_BEACH;
-  } else if (IsUnitType(*base::At(team_type->Class, 0), UNIT_GUNBOAT)) {
+  } else if (IsUnitType(*base::At(team_type->members(), 0).type,
+                        UNIT_GUNBOAT)) {
     source = SOURCE_SHIPPING;
   }
 
@@ -268,9 +269,9 @@ bool DeliverReinforcements(const TeamType* team_type) {
   FootClass* riders = nullptr;
   for (int member_index = 0; member_index < member_type_count; member_index++) {
     const TechnoTypeClass* member_type =
-        base::At(team_type->Class, member_index);
+        base::At(team_type->members(), member_index).type;
 
-    const int copies = base::At(team_type->DesiredNum, member_index);
+    const int copies = base::At(team_type->members(), member_index).quantity;
     for (int copy = 0; copy < copies; copy++) {
       TheWorld().scenario_init()++;
       auto* member =
@@ -346,7 +347,7 @@ bool DeliverReinforcements(const TeamType* team_type) {
       FootClass* gunboat = PopHead(group);
       DeleteGroup(group);
       const Cell lane_cell =
-          TheMap().Calculated_Cell(SOURCE_SHIPPING, team_type->House);
+          TheMap().Calculated_Cell(SOURCE_SHIPPING, team_type->house());
       gunboat->IsALoaner = true;
       if (!gunboat->Unlimbo(lane_cell.Center(), game::Direction::kWest)) {
         base::DeletePooled(team);
@@ -364,12 +365,12 @@ bool DeliverReinforcements(const TeamType* team_type) {
     case SOURCE_SOUTH:
     case SOURCE_EAST:
     case SOURCE_WEST:
-      EnterFromEdge(group, source, team_type->House, team != nullptr);
+      EnterFromEdge(group, source, team_type->house(), team != nullptr);
       break;
 
     case SOURCE_AIR: {
       const bool placed =
-          FlyIn(group, house->Edge, team_type->House, team != nullptr);
+          FlyIn(group, house->Edge, team_type->house(), team != nullptr);
 
       // `placed` is the result for the last aircraft only, so the team goes
       // when that one failed, even if earlier ones are on the map.
@@ -395,7 +396,7 @@ bool DeliverReinforcements(const TeamType* team_type) {
       FootClass* lander = PopHead(group);
       DeleteGroup(group);
       const Cell beach_cell =
-          TheMap().Calculated_Cell(SOURCE_BEACH, team_type->House);
+          TheMap().Calculated_Cell(SOURCE_BEACH, team_type->house());
       if (beach_cell.index() == 0) {
         base::DeletePooled(lander);
         break;
@@ -432,7 +433,7 @@ bool DeliverReinforcements(const TeamType* team_type) {
 
   // Announce the reinforcements to the player they belong to. This does not
   // depend on any member having reached the map.
-  if (announce && team_type->House == ThePlayer()->Class->House) {
+  if (announce && team_type->house() == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
 
@@ -505,25 +506,21 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
   // hovercraft delivery; any other transport without a mission unloads at the
   // reinforcement waypoint.
   base::SafeCopy(team_type->IniName, "TEMP");
-  team_type->IsReinforcable = false;
-  team_type->IsTransient = true;
-  team_type->House = house->Class->House;
-  team_type->ClassCount = 1;
-  base::At(team_type->Class, 0) = type;
-  base::At(team_type->DesiredNum, 0) = 1;
+  team_type->set_is_reinforceable(false);
+  team_type->set_is_transient(true);
+  team_type->set_house(house->Class->House);
+  team_type->AddMember({.quantity = 1, .type = type});
   if (transport_type != nullptr) {
-    team_type->ClassCount = 2;
-    base::At(team_type->Class, 1) = transport_type;
-    base::At(team_type->DesiredNum, 1) = 1;
+    team_type->AddMember({.quantity = 1, .type = transport_type});
   }
-  team_type->MissionCount = 1;
   if (mission != TeamMissionType::kNone) {
-    base::At(team_type->MissionList, 0).mission = mission;
-    base::At(team_type->MissionList, 0).argument = mission_argument;
+    team_type->AddMission({.mission = mission, .argument = mission_argument});
   } else if (transport_type != nullptr &&
              !IsUnitType(*transport_type, UNIT_HOVER)) {
-    base::At(team_type->MissionList, 0).mission = TeamMissionType::kUnload;
-    base::At(team_type->MissionList, 0).argument = kWayptReinf;
+    team_type->AddMission(
+        {.mission = TeamMissionType::kUnload, .argument = kWayptReinf});
+  } else {
+    team_type->AddMission({});
   }
 
   // A delivery that fails after making its team deletes the team, and the
