@@ -84,14 +84,6 @@ const TechnoTypeClass* MemberTypeFromName(const std::string_view name) {
 
 TeamType::~TeamType() = default;
 
-void TeamType::Validate() const {
-  if constexpr (config::kCheatKeysEnabled) {
-    if (!TheObjectHeaps().team_type().Owns(this)) {
-      Validate_Error("TEAMTYPE");
-    }
-  }
-}
-
 void TeamType::FreeAll() { TheObjectHeaps().team_type().FreeAll(); }
 
 void TeamType::ReadIni(const engine::file::IniFile& ini) {
@@ -175,20 +167,6 @@ void TeamType::ReadIniEntry(std::string_view name, std::string_view entry) {
   if (const std::string_view prebuilt = tokens.Next(); !prebuilt.empty()) {
     is_prebuilt_ = base::ParseIntegerOr<int>(prebuilt, 0) != 0;
   }
-}
-
-void TeamType::ReadLeadingFields(base::Tokenizer& tokens) {
-  // An unknown house name gives HOUSE_NONE.
-  house_ = HouseTypeClass::From_Name(tokens.Next());
-  is_roundabout_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  is_learning_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  is_suicide_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  // The fifth field was once "Spy".
-  is_autocreate_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  is_mercenary_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);
-  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));
-  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));
 }
 
 std::string TeamType::ToIniEntry() const {
@@ -294,52 +272,11 @@ void TeamType::Delete() {
   delete this;
 }
 
-TeamMissionType TeamType::MissionFromName(std::string_view name) {
-  if (!name.empty()) {
-    for (const TeamMissionType order :
-         magic_enum::enum_values<TeamMissionType>()) {
-      if (absl::EqualsIgnoreCase(kMissionNames.at(order), name)) {
-        return order;
-      }
-    }
-  }
-
-  return TeamMissionType::kNone;
-}
-
-const char* TeamType::MissionName(const TeamMissionType mission) {
-  if (!magic_enum::enum_contains(mission)) {
-    return "None";
-  }
-  return kMissionNames.at(mission);
-}
-
-void* TeamType::operator new(std::size_t /*unused*/) noexcept {
-  void* ptr = TheObjectHeaps().team_type().Allocate();
-  if (ptr) {
-    static_cast<TeamType*>(ptr)->is_active_ = true;
-  }
-  return ptr;
-}
-
-void TeamType::operator delete(void* ptr) {
-  if (ptr) {
-    static_cast<TeamType*>(ptr)->is_active_ = false;
-  }
-  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
-}
-
 TeamClass* TeamType::CreateTeam() const {
   if (TheWorld().scenario_init() || CountTeams() < max_teams_) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }
   return nullptr;
-}
-
-Target TeamType::As_Target() const {
-  Validate();
-  return Target::Make(KIND_TEAMTYPE,
-                      TheObjectHeaps().team_type().SlotIndexOf(this));
 }
 
 int TeamType::CountTeams() const {
@@ -363,6 +300,26 @@ void TeamType::DestroyTeams() const {
       index--;
     }
   }
+}
+
+const char* TeamType::MissionName(const TeamMissionType mission) {
+  if (!magic_enum::enum_contains(mission)) {
+    return "None";
+  }
+  return kMissionNames.at(mission);
+}
+
+TeamMissionType TeamType::MissionFromName(std::string_view name) {
+  if (!name.empty()) {
+    for (const TeamMissionType order :
+         magic_enum::enum_values<TeamMissionType>()) {
+      if (absl::EqualsIgnoreCase(kMissionNames.at(order), name)) {
+        return order;
+      }
+    }
+  }
+
+  return TeamMissionType::kNone;
 }
 
 const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
@@ -446,6 +403,35 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
   return best;
 }
 
+Target TeamType::As_Target() const {
+  Validate();
+  return Target::Make(KIND_TEAMTYPE,
+                      TheObjectHeaps().team_type().SlotIndexOf(this));
+}
+
+void* TeamType::operator new(std::size_t /*unused*/) noexcept {
+  void* ptr = TheObjectHeaps().team_type().Allocate();
+  if (ptr) {
+    static_cast<TeamType*>(ptr)->is_active_ = true;
+  }
+  return ptr;
+}
+
+void TeamType::operator delete(void* ptr) {
+  if (ptr) {
+    static_cast<TeamType*>(ptr)->is_active_ = false;
+  }
+  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
+}
+
+void TeamType::Validate() const {
+  if constexpr (config::kCheatKeysEnabled) {
+    if (!TheObjectHeaps().team_type().Owns(this)) {
+      Validate_Error("TEAMTYPE");
+    }
+  }
+}
+
 void TeamType::AddMission(const TeamMission& mission) {
   CHECK(mission_count_ < kMaxMissions);
   base::At(missions_, mission_count_++) = mission;
@@ -454,6 +440,20 @@ void TeamType::AddMission(const TeamMission& mission) {
 void TeamType::AddMember(const TeamMember& member) {
   CHECK(member_count_ < kMaxMemberTypes);
   base::At(members_, member_count_++) = member;
+}
+
+void TeamType::ReadLeadingFields(base::Tokenizer& tokens) {
+  // An unknown house name gives HOUSE_NONE.
+  house_ = HouseTypeClass::From_Name(tokens.Next());
+  is_roundabout_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_learning_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_suicide_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  // The fifth field was once "Spy".
+  is_autocreate_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  is_mercenary_ = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+  recruit_priority_ = base::ParseIntegerOr<int>(tokens.Next(), 0);
+  set_max_teams(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  set_initial_count(base::ParseIntegerOr<int>(tokens.Next(), 0));
 }
 
 }  // namespace td

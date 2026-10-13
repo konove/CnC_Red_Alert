@@ -118,11 +118,11 @@ class TeamType : public AbstractTypeClass {
   static constexpr int kMaxMissions = 20;
 
   TeamType() : AbstractTypeClass(0, "") {}
-  ~TeamType() override;
   TeamType(const TeamType&) = delete;
   TeamType& operator=(const TeamType&) = delete;
   TeamType(TeamType&&) = delete;
   TeamType& operator=(TeamType&&) = delete;
+  ~TeamType() override;
 
   // Frees every team type, in preparation for a new scenario.
   static void FreeAll();
