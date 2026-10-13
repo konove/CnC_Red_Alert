@@ -70,7 +70,6 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -79,8 +78,6 @@
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
-#include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/env.h"
 #include "engine/platform/file_system.h"
@@ -88,10 +85,8 @@
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "game/core/object_heap.h"
-#include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/installation.h"
-#include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/mission_id.h"
@@ -106,8 +101,6 @@
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/unit.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
 
 namespace ra {
 
@@ -1265,32 +1258,6 @@ MultiMission::MultiMission(const char* filename, const char* description,
   Set_Digest(digest);
   Set_Official(official);
   Set_Expansion(expansion);
-}
-
-void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected, FontType font,
-                           TextPrintType flags) const {
-  RemapControlType* scheme = Get_Color_Scheme();
-  static const int _tabs[] = {35, 60, 80, 100};
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-    } else {
-      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
-      }
-    }
-
-    TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-        .PrintClipped(ScenarioDescription, {x, y}, width, _tabs);
-  } else {
-    TextPrinter(view,
-                {selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                          : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                 game::kTransparentBlack, font, flags})
-        .PrintClipped(ScenarioDescription, {x, y}, width, _tabs);
-  }
 }
 
 void MultiMission::Set_Description(const char* description) {

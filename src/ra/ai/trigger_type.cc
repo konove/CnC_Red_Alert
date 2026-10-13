@@ -29,27 +29,21 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/core/object_heap.h"
-#include "game/ui/standard_colors.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
-#include "ra/assets/palettes.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/text.h"
 #include "ra/data/text_ids.h"
 #include "ra/objects/type.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
+#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
@@ -273,32 +267,14 @@ std::string TriggerType::ToIniEntry() const {
 void TriggerType::Draw_It(PixelView& view, int /*unused*/, const int x,
                           const int y, const int width, const int height,
                           const bool selected, const FontType font,
-                          TextPrintType flags) const {
+                          const TextPrintType flags) const {
   if (!config::kCheatKeysEnabled && !config::kScenarioEditorEnabled) {
     return;
   }
-  RemapControlType* scheme = Get_Color_Scheme();
   // Tab stops in pixels: Description() puts a tab after the name.
   static constexpr std::array<int, 2> kTabStops = {13, 40};
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-    } else {
-      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
-      }
-    }
-
-    TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-        .PrintClipped(Description().c_str(), {x, y}, width, kTabStops);
-  } else {
-    TextPrinter(
-        view, {(selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                         : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-               game::kTransparentBlack, font, flags})
-        .PrintClipped(Description().c_str(), {x, y}, width, kTabStops);
-  }
+  UiSkin::Draw_List_Entry(view, Description().c_str(), x, y, width, height,
+                          font, flags, selected, kTabStops);
 }
 
 void TriggerType::DestroyAll() {

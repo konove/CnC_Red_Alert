@@ -36,21 +36,17 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
-#include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/waypoint_name.h"
-#include "ra/assets/palettes.h"
 #include "ra/core/config.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
@@ -62,8 +58,7 @@
 #include "ra/objects/house.h"
 #include "ra/objects/mission.h"
 #include "ra/objects/type.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
+#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
@@ -113,29 +108,6 @@ const TechnoTypeClass* MemberTypeFromName(const std::string_view name) {
     return &VesselTypeClass::As_Reference(vessel);
   }
   return nullptr;
-}
-
-// Draws `text` as a list box entry in the given rectangle, highlighted when
-// `selected`. `tab_stops` are the pixel columns its tabs advance to.
-void DrawListEntry(PixelView& view, const std::string& text,
-                   const std::span<const int> tab_stops, const int x,
-                   const int y, const int width, const int height,
-                   const bool selected, const FontType font,
-                   TextPrintType flags) {
-  RemapControlType* scheme = Get_Color_Scheme();
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-    } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-      flags = flags | TPF_MEDIUM_COLOR;
-    }
-  } else {
-    scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
-                                                       : PCOLOR_GREY);
-  }
-  TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-      .PrintClipped(text.c_str(), {x, y}, width, tab_stops);
 }
 
 }  // namespace
@@ -201,8 +173,8 @@ void TeamMission::Draw_It(PixelView& view, const int index, const int x,
   // Pixel columns of the mission's name and of a second field
   // Description() never writes.
   static constexpr int kTabStops[] = {13, 40};
-  DrawListEntry(view, Description(index), kTabStops, x, y, width, height,
-                selected, font, flags);
+  UiSkin::Draw_List_Entry(view, Description(index).c_str(), x, y, width, height,
+                          font, flags, selected, kTabStops);
 }
 
 TeamType::TeamType()
@@ -429,8 +401,8 @@ void TeamType::Draw_It(PixelView& view, int /*unused*/, const int x,
     // Pixel columns of Description()'s fields after the name: house, origin,
     // mission count, members.
     static constexpr int kTabStops[] = {35, 60, 80, 100};
-    DrawListEntry(view, Description(), kTabStops, x, y, width, height, selected,
-                  font, flags);
+    UiSkin::Draw_List_Entry(view, Description().c_str(), x, y, width, height,
+                            font, flags, selected, kTabStops);
   }
 }
 

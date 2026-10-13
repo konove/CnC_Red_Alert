@@ -36,11 +36,8 @@
  * Functions: * Find_Or_Make -- Find or create a trigger of the type specified.
  ** TriggerClass::As_Target -- Converts trigger to a target value *
  *   TriggerClass::Attaches_To -- Determines what trigger can attach to. *
- *   TriggerClass::Description -- Fetch a one line ASCII description of the
- *trigger.           * TriggerClass::Detach -- Detach specified target from this
- *trigger.                        * TriggerClass::Draw_It -- Draws this trigger
- *as if it were part of a list box.             * TriggerClass::Init -- clears
- *triggers for new scenario                                    *
+ *   TriggerClass::Detach -- Detach specified target from this trigger. *
+ *   TriggerClass::Init -- clears triggers for new scenario *
  *   TriggerClass::Spring -- Spring the trigger (possibly). *
  *   TriggerClass::TriggerClass -- constructor * TriggerClass::operator delete
  *-- Returns a trigger to the special memory pool.            *
@@ -60,16 +57,11 @@
 #include "base/algorithm.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
-#include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "game/core/object_heap.h"
-#include "game/ui/standard_colors.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger_action.h"
 #include "ra/ai/trigger_type.h"
-#include "ra/assets/palettes.h"
-#include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
@@ -79,72 +71,8 @@
 #include "ra/objects/object.h"
 #include "ra/objects/tracker.h"
 #include "ra/startup/game_state.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
 
 namespace ra {
-
-/***********************************************************************************************
- * TriggerClass::Description -- Fetch a one line ASCII description of the
- *trigger.             *
- *                                                                                             *
- *    In the rare (possibly never?) case of requiring a description for this
- *trigger, then     * just have the model class generate a description and
- *return that.                        *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with an ASCII description of this trigger. *
- *                                                                                             *
- * WARNINGS:   see TriggerType::Description() *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
-std::string TriggerClass::Description() const { return Class->Description(); }
-
-/***********************************************************************************************
- * TriggerClass::Draw_It -- Draws this trigger as if it were part of a list box.
- **
- *                                                                                             *
- *    This routine is called when the trigger has been assigned to a list box.
- *It will         * display a description of the trigger. *
- *                                                                                             *
- * INPUT:   see below... *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 07/09/1996 JLB : Created. *
- *=============================================================================================*/
-void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected, FontType font,
-                           TextPrintType flags) const {
-  if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    RemapControlType* scheme = Get_Color_Scheme();
-    static const int _tabs[] = {13, 40};
-    if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-      if (selected) {
-        flags = flags | TPF_BRIGHT_COLOR;
-        view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-      } else {
-        if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-          flags = flags | TPF_MEDIUM_COLOR;
-        }
-      }
-
-      TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-          .PrintClipped(Description().c_str(), {x, y}, width, _tabs);
-    } else {
-      TextPrinter(
-          view,
-          {(selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-           game::kTransparentBlack, font, flags})
-          .PrintClipped(Description().c_str(), {x, y}, width, _tabs);
-    }
-  }
-}
 
 /***********************************************************************************************
  * TriggerClass::TriggerClass -- constructor *

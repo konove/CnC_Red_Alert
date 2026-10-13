@@ -666,26 +666,14 @@ TEST_F(TriggerTypeDrawTest, TheEditorFontIsDrawnLikeAGradientFont) {
   EXPECT_EQ(CountOf(DialogColor()), kWidth * kHeight);
 }
 
-TEST_F(TriggerTypeDrawTest, ASelectedEntryInAPlainFontIsBlueTextWithoutABar) {
+// The editor's lists all use the editor font; any other is drawn the same.
+TEST_F(TriggerTypeDrawTest, ASelectedEntryInAPlainFontIsABarOfTheSchemeToo) {
   if (!HasDescriptions()) {
     GTEST_SKIP() << "this build has no editor descriptions";
   }
   Draw(true, FontType::k6Point);
 
-  const int text = CountOf(SchemeColor(PCOLOR_DIALOG_BLUE));
-  EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
-}
-
-TEST_F(TriggerTypeDrawTest, AnUnselectedEntryInAPlainFontIsGreyText) {
-  if (!HasDescriptions()) {
-    GTEST_SKIP() << "this build has no editor descriptions";
-  }
-  Draw(false, FontType::k6Point);
-
-  const int text = CountOf(SchemeColor(PCOLOR_GREY));
-  EXPECT_GT(text, 0);
-  EXPECT_EQ(CountOf(game::kTransparentBlack), (kWidth * kHeight) - text);
+  EXPECT_EQ(CountOf(DialogColor()), kWidth * kHeight);
 }
 
 TEST_F(TriggerTypeDrawTest, NothingIsDrawnWithoutTheEditor) {

@@ -4225,8 +4225,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 121,
-          "endLine": 121,
+          "startLine": 120,
+          "endLine": 120,
           "text": "void DrawListEntry(PixelView& view, const std::string& text,",
           "before": [
             "",
@@ -4238,7 +4238,7 @@
             "                   const int y, const int width, const int height,",
             "                   const bool selected, const FontType font,"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },

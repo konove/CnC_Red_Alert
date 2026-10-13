@@ -58,24 +58,19 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
-#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/core/object_heap.h"
-#include "game/ui/standard_colors.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/team_type.h"
-#include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/ui/color_scheme.h"
-#include "ra/ui/dialog.h"
+#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
@@ -177,27 +172,10 @@ base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                FontType font, TextPrintType flags) const {
-  RemapControlType* scheme = Get_Color_Scheme();
-  static const int _tabs[] = {13, 40};
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-    } else {
-      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-        flags = flags | TPF_MEDIUM_COLOR;
-      }
-    }
-
-    TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-        .PrintClipped(Description(), {x, y}, width, _tabs);
-  } else {
-    TextPrinter(view,
-                {selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
-                          : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                 game::kTransparentBlack, font, flags})
-        .PrintClipped(Description(), {x, y}, width, _tabs);
-  }
+  // Tab stops in pixels; the event names hold no tabs.
+  static constexpr int kTabStops[] = {13, 40};
+  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
+                          selected, kTabStops);
 }
 
 /***********************************************************************************************

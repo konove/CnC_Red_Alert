@@ -102,10 +102,6 @@ class TriggerClass {
   **	Utility routines
   */
   [[nodiscard]] Target As_Target() const;
-  [[nodiscard]] std::string Description() const;
-  void Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
-               int height, bool selected, FontType font,
-               TextPrintType flags) const;
   [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   /*

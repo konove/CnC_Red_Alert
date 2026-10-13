@@ -28,12 +28,10 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/enum_array.h"
-#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
@@ -48,7 +46,6 @@
 #include "ra/ai/trigger_type.h"
 #include "ra/ai/waypoint_name.h"
 #include "ra/assets/audio.h"
-#include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/const.h"
@@ -64,6 +61,7 @@
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/textbtn.h"
+#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
@@ -106,23 +104,11 @@ class ActionChoice {
 void ActionChoice::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                            int width, int height, bool selected, FontType font,
                            TextPrintType flags) const {
-  RemapControlType* scheme = Get_Color_Scheme();
   // Tab stops in pixels; the action names hold no tabs, so they only matter to
   // the shared print call.
   static constexpr std::array<int, 2> kTabStops = {13, 40};
-  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
-    if (selected) {
-      flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, height}, scheme->Shadow);
-    } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
-      flags = flags | TPF_MEDIUM_COLOR;
-    }
-  } else {
-    scheme = &ThePalettes().color_remaps().at(selected ? PCOLOR_DIALOG_BLUE
-                                                       : PCOLOR_GREY);
-  }
-  TextPrinter(view, {scheme, game::kTransparentBlack, font, flags})
-      .PrintClipped(Description(), {x, y}, width, kTabStops);
+  UiSkin::Draw_List_Entry(view, Description(), x, y, width, height, font, flags,
+                          selected, kTabStops);
 }
 
 // Returns the name selected in `list`, or an empty view when the list has no
