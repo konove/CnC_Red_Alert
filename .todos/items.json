@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 410,
+  "nextId": 421,
   "items": [
     {
       "id": "T-2",
@@ -4511,15 +4511,17 @@
         "refactoring",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T02:56:13Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "fixedIn": "35f00645",
+      "resolution": "Ran the pass in 14 commits (`a23fc52b..35f00645`): the files are `td/ai/team_type.*` with `TeamType`, `TeamMission`, `TeamMember`, `TeamMissionType::kName`, private data behind Red Alert's accessors, span accessors and `CountTeams()` in place of `TeamClass::Number`. Fixed three bugs (two null dereferences on a full heap or a missing house, a truncated INI entry) and guarded the script reads in `td/ai/team.cc`. Coverage of both files is 100% of lines. TD's team dialog lives in `td/editor/mapedtm.cc` already and stores nothing before OK. The IDE stage was skipped; leftovers are under T-410.",
       "anchors": [
         {
-          "path": "src/td/ai/teamtype.h",
+          "path": "src/td/ai/team_type.h",
           "lost": false
         }
       ]
@@ -4535,12 +4537,13 @@
         "tools",
         "coverage"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T02:17:33Z",
       "parent": "T-240",
-      "source": "30c6f6ae..e9ac6245"
+      "source": "30c6f6ae..e9ac6245",
+      "resolution": "`tools/coverage.py --release-too` also builds and runs the tests without the editor and cheat keys (`build-coverage.release`, configured with `-DDOTENV_BUILD_VERSION=release`) and counts a line covered when either build covers it. `ra/ai/team_type.cc` and `ra/ai/trigger_type.cc` now read 100%. Documented in `CLAUDE.md` and `/cover-files`."
     },
     {
       "id": "T-159",
@@ -7522,11 +7525,12 @@
         "refactoring",
         "ra"
       ],
-      "status": "in_progress",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:33:08Z",
-      "updated": "2026-10-13T01:26:33Z",
+      "updated": "2026-10-13T02:56:20Z",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "All 14 parts are fixed (`3ab3b81a..35f00645`): the Red Alert dialog, waypoint, candidate-cap, save-format, span-accessor, list-entry, fixture and `NeedType` items, `tools/coverage.py --release-too`, and the `/modernize-file` run on Tiberian Dawn's team type files. The four decisions were asked and recorded (T-148, T-149, T-152, T-153). What the TD run left open is under T-410.",
       "anchors": [
         {
           "path": "src/ra/ai/team_type.h",
@@ -9741,11 +9745,11 @@
         },
         {
           "path": "src/td/objects/house.cc",
-          "startLine": 2049,
-          "endLine": 2049,
+          "startLine": 2048,
+          "endLine": 2048,
           "text": "void HouseClass::Adjust_Threat(int region, int threat) {",
           "before": [
-            "                                           IsAlerted && alertcheck);",
+            "  return TeamType::SuggestNewTeam(this, UScan, IScan, IsAlerted && alertcheck);",
             "}",
             ""
           ],
@@ -10042,7 +10046,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:36:56Z",
-      "updated": "2026-10-09T20:36:56Z",
+      "updated": "2026-10-13T02:56:25Z",
       "parent": "T-135",
       "source": "ef839f66..0ab14e0a",
       "anchors": [
@@ -10050,7 +10054,7 @@
           "path": "src/td/ai/reinforcements.cc",
           "startLine": 205,
           "endLine": 205,
-          "text": "bool DeliverReinforcements(const TeamTypeClass* team_type) {",
+          "text": "bool DeliverReinforcements(const TeamType* team_type) {",
           "before": [
             "  return placed;",
             "}",
@@ -10058,7 +10062,7 @@
           ],
           "after": [
             "  // A missing type, or one with no members, has nothing to bring on.",
-            "  if (team_type == nullptr || team_type->ClassCount == 0) {",
+            "  if (team_type == nullptr || team_type->member_count() == 0) {",
             "    return false;"
           ],
           "lost": false
@@ -12199,7 +12203,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-10T03:13:31Z",
-      "updated": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-13T02:56:30Z",
       "source": "eeda1518",
       "comments": [
         {
@@ -12213,7 +12217,7 @@
           "path": "src/ra/editor/mapedtm.cc",
           "startLine": 479,
           "endLine": 479,
-          "text": "int MapEditClass::Team_Members(HousesType house) {",
+          "text": "int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {",
           "before": [
             "constexpr int kCancelX = kDialogCx + 5;",
             "constexpr int kCancelY = 0;",
@@ -12224,7 +12228,7 @@
             "  **\tButton enumerations:",
             "  */"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -14524,6 +14528,387 @@
             "",
             "// The public half of the key the archives are indexed with, as ra/core/const.h",
             "// embeds it and IniFile::GetPublicKey() reads it. The exponent is the known"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-410",
+      "title": "Leftovers from the td/ai/team_type modernization",
+      "details": "What the `/modernize-file` run on Tiberian Dawn's team type files (now `td/ai/team_type.*`) left open. It was T-157, the last part of T-240.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:55:38Z",
+      "updated": "2026-10-13T02:55:38Z",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/ai/team_type.h",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-411",
+      "title": "Decide whether a Tiberian Dawn team on a Move to Cell line should ever advance",
+      "details": "`TeamClass::AI()` (`td/ai/team.cc`, the anchor) gives a team its target when a `TeamMissionType::kMoveCell` line starts, but the per-frame switch below has no case for it: `kMove` and `kRetreat` call `Coordinate_Move()`, `kMoveCell` falls to `default: break`, and it is not among the missions that time out. So nothing ever sets `IsNextMission` and the team stays on that line. `CreateSpecialReinforcement()` (`td/ai/reinforcements.cc`) gives its transient team type a single `kMoveCell` line. Red Alert's `kMoveCell` calls `Coordinate_Move()`. The original TD source has the same gap, so this is the shipped behaviour.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "toDecide": "- **Keep**: shipped behaviour; special reinforcements arrive and their team never finishes its line.\n- **Add `case TeamMissionType::kMoveCell:` to the `Coordinate_Move()` group** (1 line): such teams move as a body to the cell and then end, which changes how reinforcements behave after landing and what a multiplayer game against an unchanged peer computes.",
+      "anchors": [
+        {
+          "path": "src/td/ai/team.cc",
+          "startLine": 592,
+          "endLine": 592,
+          "text": "      case TeamMissionType::kMoveCell:",
+          "before": [
+            "        IsNextMission = true;",
+            "        break;",
+            "      case TeamMissionType::kNone:"
+          ],
+          "after": [
+            "      default:",
+            "        break;",
+            "    }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-412",
+      "title": "Decide whether Tiberian Dawn should clamp a team count that does not fit a byte",
+      "details": "`TeamType::StoredCount()` (`td/ai/team_type.h`, the anchor) stores MaxAllowed, InitNum and Fear in a byte by plain cast, so a scenario's 300 reads as 44 and -1 as 255. Red Alert's twin clamps: anything above 255, and any negative number, is 255. `ATeamCountThatDoesNotFitAByteWraps` in `td/ai/team_type_test.cc` pins the wrap.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "toDecide": "- **Keep the wrap**: what the original game read.\n- **Clamp as Red Alert does** (1 line plus the test): only changes what a nonsense value above 255 means.",
+      "anchors": [
+        {
+          "path": "src/td/ai/team_type.h",
+          "startLine": 278,
+          "endLine": 278,
+          "text": "  static constexpr uint8_t StoredCount(const int value) {",
+          "before": [
+            " private:",
+            "  // Returns `value` as the byte a count is stored in, which a number that",
+            "  // does not fit wraps into: a scenario's -1 is 255."
+          ],
+          "after": [
+            "    return static_cast<uint8_t>(value);",
+            "  }",
+            ""
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-413",
+      "title": "Keep Tiberian Dawn's team members dialog from changing a team type the team dialog cancels",
+      "details": "The members dialog in `td/editor/mapedtm.cc` (the anchor) writes its result into `CurTeam` with `ClearMembers()` / `AddMember()` when it closes, so Cancel in the team dialog that opened it keeps the member changes while dropping everything else. Red Alert had the same fault and T-155 fixed it: `TeamType::Edit()` snapshots the members and puts them back on Cancel (`ra/editor/team_type_dialog.cc`). Do the same in TD's team dialog (about 10 lines), with a `UiFixture` test as `ra/editor/team_type_dialog_test.cc` has; TD's team and members dialogs have no tests at all.",
+      "priority": "p2",
+      "effort": "m",
+      "tags": [
+        "bugs",
+        "td",
+        "editor"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/editor/mapedtm.cc",
+          "startLine": 1890,
+          "endLine": 1890,
+          "text": "    CurTeam->ClearMembers();",
+          "before": [
+            "  **\tCopy data into team.",
+            "  */",
+            "  if (!cancel) {"
+          ],
+          "after": [
+            "    for (int j = 0; j < maxclasses; j++) {",
+            "      if (teamcount.at(base::ToSize(j)) > 0) {",
+            "        CurTeam->AddMember("
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-414",
+      "title": "Store the fear level Tiberian Dawn's team dialog edits",
+      "details": "The team dialog in `td/editor/mapedtm.cc` shows `CurTeam->fear()` in an edit field (`fear_buf`, the anchor) but the block that saves the dialog (~1367) never writes it back, so a typed value is lost. `TeamType` has no `set_fear()`. Either add the setter and store it, or remove the field from the dialog: nothing in the game acts on the fear level, it is only read from and written to the scenario INI.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "editor"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/editor/mapedtm.cc",
+          "startLine": 908,
+          "endLine": 908,
+          "text": "  absl::SNPrintF(fear_buf, sizeof(fear_buf), \"%d\", CurTeam->fear());",
+          "before": [
+            "  absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), \"%d\", CurTeam->max_teams());",
+            "  absl::SNPrintF(initnum_buf, sizeof(initnum_buf), \"%d\",",
+            "                 CurTeam->initial_count());"
+          ],
+          "after": [
+            "  int roundabout = CurTeam->is_roundabout() ? 1 : 0;",
+            "  int learning = CurTeam->is_learning() ? 1 : 0;",
+            "  int suicide = CurTeam->is_suicide() ? 1 : 0;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-415",
+      "title": "Give Tiberian Dawn's TeamClass a test file",
+      "details": "`td/ai/team.cc` has no `team_test.cc`. This run added three guards to it that no test reaches: the advance in `AI()` rejects a negative script line (the anchor), `Coordinate_Move()` asks whether the script has a next line before reading it (~1232), and the destructor deletes a transient team type with its last team (covered only from `td/ai/team_type_test.cc`). Red Alert's `ra/ai/team_test.cc` is the model: bring one jeep on as a team with a one-line script through `DeliverReinforcements()`, call `AI()`, and check `AJumpPastTheEndOfTheScriptEndsTheTeam` and `AJumpToANegativeLineEndsTheTeam`. The next-line read needs an aircraft member in flight on the last line of its script.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "testing",
+        "td",
+        "coverage"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/ai/team.cc",
+          "startLine": 467,
+          "endLine": 467,
+          "text": "    if (CurrentMission >= 0 && CurrentMission < Class->mission_count()) {",
+          "before": [
+            "    CurrentMission++;",
+            "    // A jump to a line the script does not have ends the team, as running",
+            "    // off its end does."
+          ],
+          "after": [
+            "      const TeamMission* mission = &base::At(Class->missions(), CurrentMission);",
+            "",
+            "      TimeOut.Set(mission->argument * (kTicksPerMinute / 10));"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-416",
+      "title": "Let a Tiberian Dawn save load when a team has jumped past the end of its script",
+      "details": "`TeamClass::Serialize()` (`td/saveload/ioobj.cc`, the anchor) fails the load with \"invalid team state\" when `CurrentMission >= Class->mission_count()`. A `TeamMissionType::kLoop` line whose argument is a line the script does not have leaves `CurrentMission` there until the team's next `AI()` turn, which then ends the team. A game saved in that frame cannot be loaded. Accept the value on load (the next turn deals with it), or make the loop handler in `td/ai/team.cc` end the team at once. Needs a scenario or a test that saves in that frame to confirm.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/saveload/ioobj.cc",
+          "startLine": 219,
+          "endLine": 219,
+          "text": "        CurrentMission >= Class->mission_count()) {",
+          "before": [
+            "    }",
+            "    if (!known_type || TheObjectHeaps().house().PositionOf(House) < 0 ||",
+            "        Total < 0 || CurrentMission < -1 ||"
+          ],
+          "after": [
+            "      ar.Fail(\"invalid team state\");",
+            "    }",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-417",
+      "title": "Check the waypoint number of a Tiberian Dawn team mission before using it",
+      "details": "`TeamClass::AI()` (`td/ai/team.cc`, the anchor) takes the target of a `kMove` or `kUnload` line from `base::At(TheWorld().waypoint(), mission->argument)`, which aborts on a waypoint number outside the table. The number comes straight from the scenario INI (`TeamType::ReadIniEntry()` stores any integer). Red Alert tests `ScenarioClass::IsWaypoint()` first and gives the team no target. Do the same here, about 5 lines.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/ai/team.cc",
+          "startLine": 481,
+          "endLine": 481,
+          "text": "              base::At(TheWorld().waypoint(), mission->argument)));",
+          "before": [
+            "        case TeamMissionType::kMove:",
+            "        case TeamMissionType::kUnload:",
+            "          Assign_Mission_Target(td::Target::FromCellIndex("
+          ],
+          "after": [
+            "          break;",
+            "",
+            "        case TeamMissionType::kAttackTarcom:"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-418",
+      "title": "Detach a deleted Tiberian Dawn team type from the teams made from it",
+      "details": "`TeamType::Delete()` (`td/ai/team_type.cc`, the anchor), the scenario editor's delete, clears every trigger's reference to the team type but leaves teams of the type alone, so their `TeamClass::Class` dangles. Editor only: teams exist there only if the scenario was started. Red Alert's twin is T-63. Call `DestroyTeams()` first, 1 line plus a test in `td/ai/team_type_test.cc`.\n\nAlso there: `CreateTeam()` (~275) passes `HouseClass::As_Pointer(house_)` to the new team unchecked, which is null when the scenario does not have the team type's house.",
+      "priority": "p2",
+      "effort": "s",
+      "tags": [
+        "bugs",
+        "td",
+        "editor"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/ai/team_type.cc",
+          "startLine": 262,
+          "endLine": 262,
+          "text": "void TeamType::Delete() {",
+          "before": [
+            "  return nullptr;",
+            "}",
+            ""
+          ],
+          "after": [
+            "  Validate();",
+            "",
+            "  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-419",
+      "title": "Run the IDE inspection pass on Tiberian Dawn's team type files",
+      "details": "Stage 9 of the run was skipped: CLion held a stale buffer of the `.cc` (its text from before the renames, 97 'cannot resolve symbol' errors) and timed out on the header; `team_type_test.cc` came back clean. Reload the files in the IDE, then run `/fix-ide-issues src/td/ai/team_type.cc src/td/ai/team_type.h`.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "anchors": [
+        {
+          "path": "src/td/ai/team_type.cc",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-420",
+      "title": "Decide whether to keep the Tiberian Dawn team type fields nothing acts on",
+      "details": "`TeamType` (`td/ai/team_type.h`, the anchor) stores four fields the game never acts on: `is_learning_`, `is_mercenary_`, `fear_` and `initial_count_`. All four are fields of the `[TeamTypes]` INI entry, are shown by the scenario editor and are in `TeamType::Serialize()` (`td/saveload/ioobj.cc`).",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "refactoring",
+        "td",
+        "cleanup",
+        "needs-decision"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T02:56:13Z",
+      "updated": "2026-10-13T02:56:13Z",
+      "parent": "T-410",
+      "source": "a23fc52b..35f00645",
+      "toDecide": "- **Keep**: scenarios round-trip through the editor unchanged.\n- **Drop them from the saved game only** (about 10 lines, bump TD's `kSaveGameVersion`, regenerate `src/td/testdata/SAVEGAME.*`): they stay in the INI and the editor.",
+      "anchors": [
+        {
+          "path": "src/td/ai/team_type.h",
+          "startLine": 297,
+          "endLine": 297,
+          "text": "  bool is_learning_ : 1 = false;",
+          "before": [
+            "",
+            "  // The team learns from its mistakes. Read and written, but nothing acts on",
+            "  // it."
+          ],
+          "after": [
+            "",
+            "  // The team does not stop for distractions until it achieves its mission or",
+            "  // is dead."
           ],
           "lost": false
         }
