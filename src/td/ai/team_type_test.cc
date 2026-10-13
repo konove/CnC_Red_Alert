@@ -2,7 +2,7 @@
 // and writes its scenario INI entry, which one the computer is offered, and
 // the teams it creates, counts and destroys.
 
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 
 #include <cstddef>
 #include <cstdint>

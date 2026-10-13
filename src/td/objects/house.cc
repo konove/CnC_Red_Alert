@@ -161,7 +161,7 @@
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/reinforcements.h"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"

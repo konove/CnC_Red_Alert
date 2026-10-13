@@ -19,7 +19,7 @@
 // Team types: reading and writing them in a scenario INI, picking one for the
 // computer to build, and creating and destroying their teams.
 
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 
 #include <cstdint>
 #include <cstdio>

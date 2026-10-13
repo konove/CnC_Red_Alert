@@ -25,7 +25,7 @@
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/assets/audio.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"

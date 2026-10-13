@@ -3,7 +3,7 @@
 #include "engine/stream/archive.h"
 #include "game/core/object_heap.h"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/objects/aircraft.h"
 #include "td/objects/anim.h"

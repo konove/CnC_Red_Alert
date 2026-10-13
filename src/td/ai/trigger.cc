@@ -84,7 +84,7 @@
 #include "game/core/object_heap.h"
 #include "td/ai/reinforcements.h"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"

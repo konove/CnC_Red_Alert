@@ -50,7 +50,7 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/strings/safe_string.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/defines.h"
 #include "td/objects/object.h"
 

@@ -11,7 +11,7 @@
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/cell.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"

@@ -64,7 +64,7 @@
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/gadget_list.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/map/mouse.h"

@@ -46,7 +46,7 @@
 #include "absl/base/attributes.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/defines.h"
 #include "td/objects/abstract.h"
 #include "td/objects/foot.h"

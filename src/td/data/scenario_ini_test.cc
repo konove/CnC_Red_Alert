@@ -18,7 +18,7 @@
 #include "game/core/object_heap.h"
 #include "gtest/gtest.h"
 #include "td/ai/prebuilt_base.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"

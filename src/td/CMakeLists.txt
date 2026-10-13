@@ -187,7 +187,7 @@ apply_dotenv_settings(td_special_options_test)
 
 add_gtest(
     NAME td_team_type_test
-    SOURCES ai/teamtype_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc
+    SOURCES ai/team_type_test.cc ${TD_GAME_TEST_UTIL} startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_team_type_test PRIVATE TD_NO_ENTRY_POINT=1)

@@ -13,7 +13,7 @@
 #include "game/sim/door.h"
 #include "game/sim/mph.h"
 #include "gtest/gtest.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/defines.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"

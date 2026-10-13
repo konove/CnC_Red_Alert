@@ -4,7 +4,7 @@
 #ifndef CNC_RED_ALERT_TD_AI_REINFORCEMENTS_H_
 #define CNC_RED_ALERT_TD_AI_REINFORCEMENTS_H_
 
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/core/defines.h"
 #include "td/objects/house.h"
 #include "td/objects/type.h"

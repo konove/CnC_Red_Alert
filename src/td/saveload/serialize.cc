@@ -8,7 +8,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "game/core/object_heap.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/core/object_heaps.h"

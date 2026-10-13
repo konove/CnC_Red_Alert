@@ -54,7 +54,7 @@
 #include "game/sim/stage_counter.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"

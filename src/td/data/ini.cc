@@ -79,7 +79,7 @@
 #include "game/sim/enums.h"
 #include "td/ai/prebuilt_base.h"
 #include "td/ai/scenario.h"
-#include "td/ai/teamtype.h"
+#include "td/ai/team_type.h"
 #include "td/ai/trigger.h"
 #include "td/assets/theme.h"
 #include "td/core/config.h"
