@@ -283,8 +283,8 @@ class MapEditClass : public MouseClass {
   int Team_Members(HousesType house);
   static void Build_Mission_List(
       int missioncount,
-      const TeamMissionStruct (&missions)[TeamTypeClass::kMaxTeamMissions],
-      char (&missionbuf)[TeamTypeClass::kMaxTeamMissions][20], ListClass* list);
+      const TeamMission (&missions)[TeamType::kMaxTeamMissions],
+      char (&missionbuf)[TeamType::kMaxTeamMissions][20], ListClass* list);
 
   /*
   --------------------------- Private Interface ----------------------------
@@ -341,7 +341,7 @@ class MapEditClass : public MouseClass {
   /*.....................................................................
   The "current" team type for editing & associating with a trigger
   .....................................................................*/
-  TeamTypeClass* CurTeam = nullptr;  // current team
+  TeamType* CurTeam = nullptr;  // current team
 
   /*.....................................................................
   Bitfields for flags & such

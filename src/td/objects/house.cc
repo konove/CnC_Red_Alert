@@ -918,7 +918,7 @@ void HouseClass::AI() {
     const int maxteams = Random_Pick(
         2, static_cast<int>(((TheWorld().build_level() - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
-      const TeamTypeClass* ttype = Suggested_New_Team(true);
+      const TeamType* ttype = Suggested_New_Team(true);
       if (ttype) {
         TheWorld().scenario_init()++;
         ttype->Create_One_Of();
@@ -941,7 +941,7 @@ void HouseClass::AI() {
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
   if (TeamTime.IsFinished()) {
-    const TeamTypeClass* ttype = Suggested_New_Team(false);
+    const TeamType* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
     }
@@ -2040,10 +2040,10 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-const TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
+const TeamType* HouseClass::Suggested_New_Team(bool alertcheck) {
   Validate();
-  return TeamTypeClass::Suggested_New_Team(this, UScan, IScan,
-                                           IsAlerted && alertcheck);
+  return TeamType::Suggested_New_Team(this, UScan, IScan,
+                                      IsAlerted && alertcheck);
 }
 
 void HouseClass::Adjust_Threat(int region, int threat) {
@@ -3281,7 +3281,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
           const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
           if (tptr) {
-            const TeamTypeClass* team = tptr->Class;
+            const TeamType* team = tptr->Class;
 
             if (/*team->IsReinforcable || */ !tptr->IsFullStrength &&
                 team->House == Class->House) {
@@ -3308,8 +3308,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         for (int index = 0; index < TheObjectHeaps().team_type().Count();
              index++) {
-          const TeamTypeClass* team =
-              TheObjectHeaps().team_type().ActiveAt(index);
+          const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
           if (team && (team->House == Class->House && team->IsPrebuilt &&
                        (!team->IsAutocreate || IsAlerted))) {
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);
@@ -3404,7 +3403,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
           const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
           if (tptr) {
-            const TeamTypeClass* team = tptr->Class;
+            const TeamType* team = tptr->Class;
 
             if ((team->IsReinforcable || !tptr->IsFullStrength) &&
                 team->House == Class->House) {
@@ -3429,8 +3428,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         */
         for (int index = 0; index < TheObjectHeaps().team_type().Count();
              index++) {
-          const TeamTypeClass* team =
-              TheObjectHeaps().team_type().ActiveAt(index);
+          const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
           if (team && (team->House == Class->House && team->IsPrebuilt &&
                        (!team->IsAutocreate || IsAlerted))) {
             for (int subindex = 0; std::cmp_less(subindex, team->ClassCount);

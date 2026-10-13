@@ -43,11 +43,11 @@ TEST_F(TeamTypeTest, EntriesPastTheHeapsCapacityAreDropped) {
       "three=GoodGuy,0,0,0,0,0,7,1,0,0,0,0\r\n",
       ini);
 
-  TeamTypeClass::Read_INI(ini);
+  TeamType::Read_INI(ini);
 
   EXPECT_EQ(TheObjectHeaps().team_type().Count(), 2);
-  EXPECT_NE(TeamTypeClass::As_Pointer("two"), nullptr);
-  EXPECT_EQ(TeamTypeClass::As_Pointer("three"), nullptr);
+  EXPECT_NE(TeamType::As_Pointer("two"), nullptr);
+  EXPECT_EQ(TeamType::As_Pointer("three"), nullptr);
 }
 
 TEST_F(TeamTypeTest, OldFormatEntriesPastTheHeapsCapacityAreDropped) {
@@ -59,7 +59,7 @@ TEST_F(TeamTypeTest, OldFormatEntriesPastTheHeapsCapacityAreDropped) {
       "two=GoodGuy,0,0,0,0,0,7,1,0,Hunt,E1:2\r\n",
       ini);
 
-  TeamTypeClass::Read_INI(ini);
+  TeamType::Read_INI(ini);
 
   EXPECT_EQ(TheObjectHeaps().team_type().Count(), 1);
 }
@@ -71,11 +71,11 @@ TEST_F(TeamTypeTest, ATeamTypeIsWrittenWithItsHousesNameWithoutThatHouse) {
       "[TeamTypes]\r\n"
       "one=BadGuy,0,0,0,0,0,7,1,0,0,0,0,1,1\r\n",
       ini);
-  TeamTypeClass::Read_INI(ini);
+  TeamType::Read_INI(ini);
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 1);
 
   IniFile written;
-  TeamTypeClass::Write_INI(written, true);
+  TeamType::Write_INI(written, true);
 
   EXPECT_EQ(written.GetString("TeamTypes", "one", ""),
             "BadGuy,0,0,0,0,0,7,1,0,0,0,0,1,1");
@@ -94,11 +94,11 @@ TEST_F(TeamTypeTest, TheLongestEntryIsWrittenWhole) {
   ASSERT_GT(entry.size(), 500U);
   IniFile ini;
   Parse("[TeamTypes]\r\nbig=" + entry + "\r\n", ini);
-  TeamTypeClass::Read_INI(ini);
+  TeamType::Read_INI(ini);
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 1);
 
   IniFile written;
-  TeamTypeClass::Write_INI(written, true);
+  TeamType::Write_INI(written, true);
 
   EXPECT_EQ(written.GetString("TeamTypes", "big", ""), entry);
 }

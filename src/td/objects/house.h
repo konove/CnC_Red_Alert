@@ -69,7 +69,7 @@ class IniFile;
 
 namespace td {
 
-class TeamTypeClass;
+class TeamType;
 
 /****************************************************************************
 **	Player control structure. Each player (computer or human) has one of
@@ -490,7 +490,7 @@ class HouseClass {
                                        static_cast<int>(Tiberium));
   }
   void Begin_Production() { IsStarted = true; }
-  const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  const TeamType* Suggested_New_Team(bool alertcheck = false);
   // Adds `threat` to `region` and a share of it to the eight regions around
   // it; negative when an object leaves.
   void Adjust_Threat(int region, int threat);

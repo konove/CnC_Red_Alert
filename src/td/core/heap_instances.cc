@@ -51,4 +51,4 @@ template class game::ObjectHeap<td::TerrainClass>;
 template class game::ObjectHeap<td::TriggerClass>;
 template class game::ObjectHeap<td::UnitClass>;
 
-template class game::ObjectHeap<td::TeamTypeClass>;
+template class game::ObjectHeap<td::TeamType>;

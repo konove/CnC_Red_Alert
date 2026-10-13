@@ -54,7 +54,7 @@ class TriggerPtr {
   TriggerClass*& ref_;
 };
 
-class TeamTypeClass;
+class TeamType;
 
 // A team definition lives in a heap, rather than a static type table. Preserve
 // its Target and validate kind/bounds before returning an unconstructed slot.
@@ -186,8 +186,8 @@ class AnimTypeClass;
 class AircraftTypeClass;
 class OverlayTypeClass;
 class SmudgeTypeClass;
-extern template class TeamTypePtr<TeamTypeClass>;
-extern template class TeamTypePtr<const TeamTypeClass>;
+extern template class TeamTypePtr<TeamType>;
+extern template class TeamTypePtr<const TeamType>;
 extern template void TypePtr<HouseTypeClass>::Serialize(ArchiveWriter&);
 extern template void TypePtr<HouseTypeClass>::Serialize(ArchiveReader&);
 extern template void TypePtr<BuildingTypeClass>::Serialize(ArchiveWriter&);

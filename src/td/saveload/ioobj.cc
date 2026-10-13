@@ -130,7 +130,7 @@ template void TriggerClass::Serialize(ArchiveWriter&);
 template void TriggerClass::Serialize(ArchiveReader&);
 
 template <class Archive>
-void TeamTypeClass::Serialize(Archive& ar) {
+void TeamType::Serialize(Archive& ar) {
   AbstractTypeClass::Serialize(ar);
   bool active = IsActive;
   bool roundabout = IsRoundAbout;
@@ -174,8 +174,8 @@ void TeamTypeClass::Serialize(Archive& ar) {
     }
   }
 }
-template void TeamTypeClass::Serialize(ArchiveWriter&);
-template void TeamTypeClass::Serialize(ArchiveReader&);
+template void TeamType::Serialize(ArchiveWriter&);
+template void TeamType::Serialize(ArchiveReader&);
 
 template <class Archive>
 void TeamClass::Serialize(Archive& ar) {

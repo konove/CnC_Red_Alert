@@ -70,7 +70,7 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  const TeamTypeClass* Class = nullptr;
+  const TeamType* Class = nullptr;
 
   /*
   **	This specifies the owner of this team.
@@ -184,7 +184,7 @@ class TeamClass : public AbstractClass {
     SuspendTimer.Set(0);
     SuspendTimer.Stop();
   }
-  TeamClass(const TeamTypeClass* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  TeamClass(const TeamType* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
             HouseClass* owner ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
@@ -263,7 +263,7 @@ class TeamClass : public AbstractClass {
   */
   FootClass* Member = nullptr;
 
-  unsigned char Quantity[TeamTypeClass::kMaxTeamClasscount]{};
+  unsigned char Quantity[TeamType::kMaxTeamClasscount]{};
 
   /*
   **	This records the success of each team type. As the team carries out its

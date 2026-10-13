@@ -202,7 +202,7 @@ static bool FlyIn(FootClass* group, const SourceType edge,
   return placed;
 }
 
-bool DeliverReinforcements(const TeamTypeClass* team_type) {
+bool DeliverReinforcements(const TeamType* team_type) {
   // A missing type, or one with no members, has nothing to bring on.
   if (team_type == nullptr || team_type->ClassCount == 0) {
     return false;
@@ -463,7 +463,7 @@ bool DeliverSpecialReinforcement(const HouseClass* house,
   if (house == nullptr || type == nullptr) {
     return false;
   }
-  auto* team_type = base::NewPooled<TeamTypeClass>();
+  auto* team_type = base::NewPooled<TeamType>();
   if (team_type == nullptr) {
     return false;
   }

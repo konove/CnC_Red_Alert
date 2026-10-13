@@ -50,7 +50,7 @@ namespace td {
 class TeamClass;
 
 // One step of a team's script. A scenario INI stores the steps by the names
-// TeamTypeClass::Name_From_Mission() gives; a saved game stores the numbers.
+// TeamType::Name_From_Mission() gives; a saved game stores the numbers.
 enum class TeamMissionType {
   kNone = -1,
   kAttackBase,       // Attack the nearest enemy base.
@@ -75,7 +75,7 @@ enum class TeamMissionType {
 // TeamMissionType::kDefendBase, TeamMissionType::kRetreat,
 // TeamMissionType::kGuard and TeamMissionType::kUnload, it is also the time in
 // tenths of a minute after which the team goes on to its next line.
-struct TeamMissionTag {
+struct TeamMission {
   TeamMissionType Mission = TeamMissionType::kNone;
   int Argument = 0;
 
@@ -92,7 +92,6 @@ struct TeamMissionTag {
     }
   }
 };
-using TeamMissionStruct = TeamMissionTag;
 
 // A recipe for a team: its house, members, script and creation rules. Team
 // types live in the team type heap (TheObjectHeaps().team_type()), are created
@@ -100,23 +99,23 @@ using TeamMissionStruct = TeamMissionTag;
 // dropped by Init() when a scenario starts.
 //
 // Example:
-//   TeamTypeClass* type = TeamTypeClass::As_Pointer("atk1");
+//   TeamType* type = TeamType::As_Pointer("atk1");
 //   if (type != nullptr) {
 //     type->Create_One_Of();
 //   }
-class TeamTypeClass : public AbstractTypeClass {
+class TeamType : public AbstractTypeClass {
  public:
   // The most kinds of member, and the most script lines, a team type holds.
   // Both size arrays that are saved.
   static constexpr int kMaxTeamClasscount = 5;
   static constexpr int kMaxTeamMissions = 20;
 
-  TeamTypeClass() : AbstractTypeClass(0, "") {}
-  ~TeamTypeClass() override;
-  TeamTypeClass(const TeamTypeClass&) = delete;
-  TeamTypeClass& operator=(const TeamTypeClass&) = delete;
-  TeamTypeClass(TeamTypeClass&&) = delete;
-  TeamTypeClass& operator=(TeamTypeClass&&) = delete;
+  TeamType() : AbstractTypeClass(0, "") {}
+  ~TeamType() override;
+  TeamType(const TeamType&) = delete;
+  TeamType& operator=(const TeamType&) = delete;
+  TeamType(TeamType&&) = delete;
+  TeamType& operator=(TeamType&&) = delete;
 
   // Frees every team type, in preparation for a new scenario.
   static void Init();
@@ -154,7 +153,7 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // Returns the team type with this INI name, ignoring case, or nullptr if
   // there is none or `name` is empty.
-  static TeamTypeClass* As_Pointer(std::string_view name);
+  static TeamType* As_Pointer(std::string_view name);
 
   // Deletes this team type, first clearing every trigger's reference to it.
   // Teams of the type are left alone. The scenario editor's delete.
@@ -183,9 +182,8 @@ class TeamTypeClass : public AbstractTypeClass {
   // number, of the unit and infantry types the house has. Autocreate team
   // types take part only when the house is `alerted`. Returns nullptr when
   // there is no candidate.
-  static const TeamTypeClass* Suggested_New_Team(HouseClass* house,
-                                                 uint64_t utypes,
-                                                 uint64_t itypes, bool alerted);
+  static const TeamType* Suggested_New_Team(HouseClass* house, uint64_t utypes,
+                                            uint64_t itypes, bool alerted);
 
   // Returns the target value that names this team type.
   [[nodiscard]] Target As_Target() const;
@@ -262,7 +260,7 @@ class TeamTypeClass : public AbstractTypeClass {
 
   // The script: the first MissionCount entries of MissionList.
   int MissionCount = 0;
-  TeamMissionStruct MissionList[kMaxTeamMissions]{};
+  TeamMission MissionList[kMaxTeamMissions]{};
 
   // The number of kinds of member: the entries in use of Class and
   // DesiredNum.
@@ -279,8 +277,8 @@ class TeamTypeClass : public AbstractTypeClass {
   static base::EnumArray<TeamMissionType, const char*> TMissions;
 };
 
-extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
-extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TeamType::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamType::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace td
 

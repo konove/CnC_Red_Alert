@@ -26,7 +26,7 @@ namespace td {
 // or the hovercraft could not be placed; in the campaign also when the last
 // aircraft could not be. Members that find no room at the map edge are dropped
 // and the result is still true.
-bool DeliverReinforcements(const TeamTypeClass* team_type);
+bool DeliverReinforcements(const TeamType* team_type);
 
 // Brings on one object of `type` for `house` that no trigger planned, such as
 // a replacement harvester or a unit bought at the airstrip, by building a

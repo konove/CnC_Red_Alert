@@ -1058,7 +1058,7 @@ bool TriggerClass::Remove() {
  * This routine reads in the triggers & creates them. Then, other classes can *
  * get pointers to the triggers they're linked to. *
  *                                                                                             *
- * The routine relies on the TeamTypeClasses already being loaded so it can
+ * The routine relies on the team types already being loaded so it can
  *resolve            * references to teams in this function. *
  *                                                                                             *
  * Cell Trigger pointers & IsTrigger flags are set in DisplayClass::Read_INI(),
@@ -1175,7 +1175,7 @@ void TriggerClass::Fill_In(std::string_view name, std::string_view entry) {
   /*
   **	5th token: Team.
   */
-  Team = TeamTypeClass::As_Pointer(tokens.Next());
+  Team = TeamType::As_Pointer(tokens.Next());
 
   /*
   ** 6th token: IsPersistant.  This token was added later, so we must check

@@ -22,9 +22,9 @@ class TdTeamTypeParseTest : public testing::Test {
 TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
   char name[] = "TestTeam";
   for (const char* count : {"-1", "999999", "2147483648", "1tail"}) {
-    auto* heap_team = base::NewPooled<TeamTypeClass>();
+    auto* heap_team = base::NewPooled<TeamType>();
     ASSERT_NE(heap_team, nullptr);
-    TeamTypeClass& team = *heap_team;
+    TeamType& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
     team.Fill_In(name, entry);
     EXPECT_EQ(team.ClassCount, 0) << count;
@@ -41,9 +41,9 @@ TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
 TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   char name[] = "TestTeam";
   char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
-  auto* heap_team = base::NewPooled<TeamTypeClass>();
+  auto* heap_team = base::NewPooled<TeamType>();
   ASSERT_NE(heap_team, nullptr);
-  TeamTypeClass& team = *heap_team;
+  TeamType& team = *heap_team;
   team.Fill_In(name, entry);
   EXPECT_EQ(team.RecruitPriority, 7);
   EXPECT_EQ(team.MaxAllowed, 2);
@@ -65,7 +65,7 @@ TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {
   // Validation used to exit(0), which ended the test binary as a success.
   char name[] = "TestTeam";
   char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
-  TeamTypeClass stack_team;
+  TeamType stack_team;
   // The switch is inside GoogleTest's macro.
   // GoogleTest death-test reporting uses its own bounded format arguments.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)

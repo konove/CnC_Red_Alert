@@ -1836,7 +1836,7 @@ bool Select_Game(bool fade) {
           break;
         }
       }
-      auto* type = base::NewPooled<TeamTypeClass>();
+      auto* type = base::NewPooled<TeamType>();
       if (member == nullptr || type == nullptr) {
         LOG(ERROR) << "-TEAMTEST: no member or team type slot";
         return false;

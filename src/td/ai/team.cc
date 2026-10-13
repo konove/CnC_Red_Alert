@@ -179,8 +179,7 @@ TeamClass::~TeamClass() {
   }
 }
 
-TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
-    : TeamClass() {
+TeamClass::TeamClass(const TeamType* type, HouseClass* owner) : TeamClass() {
   Class = type;
   House = owner;
   base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))++;
@@ -467,7 +466,7 @@ void TeamClass::AI() {
     IsNextMission = false;
     CurrentMission++;
     if (CurrentMission < Class->MissionCount) {
-      const TeamMissionStruct* mission =
+      const TeamMission* mission =
           base::Suffix(Class->MissionList, CurrentMission).data();
 
       TimeOut.Set(mission->Argument * (kTicksPerMinute / 10));
@@ -526,7 +525,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    const TeamMissionStruct* mission =
+    const TeamMission* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
     switch (mission->Mission) {
       case TeamMissionType::kAttackBase:

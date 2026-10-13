@@ -52,15 +52,15 @@
 
 namespace td {
 
-base::EnumArray<TeamMissionType, const char*> TeamTypeClass::TMissions = {
+base::EnumArray<TeamMissionType, const char*> TeamType::TMissions = {
     "Attack Base", "Attack Units", "Attack Civil.", "Rampage",
     "Defend Base", "Move",         "Move to Cell",  "Retreat",
     "Guard",       "Loop",         "Attack Tarcom", "Unload",
 };
 
-TeamTypeClass::~TeamTypeClass() = default;
+TeamType::~TeamType() = default;
 
-int TeamTypeClass::Validate() const {
+int TeamType::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
     const int num = TheObjectHeaps().team_type().SlotIndexOf(this);
     if (num < 0 || num >= kTeamTypeMax) {
@@ -72,11 +72,11 @@ int TeamTypeClass::Validate() const {
   }
 }
 
-void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
+void TeamType::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
-void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
+void TeamType::Read_INI(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries(INI_Name())) {
-    auto* team = base::NewPooled<TeamTypeClass>();
+    auto* team = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
     if (team == nullptr) {
       break;
@@ -90,11 +90,11 @@ void TeamTypeClass::Read_INI(const engine::file::IniFile& ini) {
   }
 }
 
-void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
+void TeamType::Fill_In(std::string_view name, std::string_view entry) {
   Validate();
   std::string_view p1;  // class or mission name
   std::string_view p2;  // its count or argument
-  TeamMissionStruct mission;
+  TeamMission mission;
 
   Set_Name(name);
 
@@ -203,7 +203,7 @@ void TeamTypeClass::Fill_In(std::string_view name, std::string_view entry) {
   }
 }
 
-void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
+void TeamType::Write_INI(engine::file::IniFile& ini, bool refresh) {
   // The team types are written in the current format only.
   ini.Clear("Teams");
 
@@ -212,7 +212,7 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   }
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
+    const TeamType* team = TheObjectHeaps().team_type().ActiveAt(index);
 
     // By its type: the scenario need not have the house itself.
     const std::string_view house_name =
@@ -248,9 +248,9 @@ void TeamTypeClass::Write_INI(engine::file::IniFile& ini, bool refresh) {
   }
 }
 
-void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
+void TeamType::Read_Old_INI(const engine::file::IniFile& ini) {
   for (const auto& [name, entry] : ini.Entries("Teams")) {
-    auto* team = base::NewPooled<TeamTypeClass>();
+    auto* team = base::NewPooled<TeamType>();
     // The heap is full: this entry and the rest are dropped.
     if (team == nullptr) {
       break;
@@ -319,7 +319,7 @@ void TeamTypeClass::Read_Old_INI(const engine::file::IniFile& ini) {
   }
 }
 
-TeamTypeClass* TeamTypeClass::As_Pointer(std::string_view name) {
+TeamType* TeamType::As_Pointer(std::string_view name) {
   if (name.empty()) {
     return nullptr;
   }
@@ -334,7 +334,7 @@ TeamTypeClass* TeamTypeClass::As_Pointer(std::string_view name) {
   return nullptr;
 }
 
-void TeamTypeClass::Remove() {
+void TeamType::Remove() {
   Validate();
 
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
@@ -347,7 +347,7 @@ void TeamTypeClass::Remove() {
   delete this;
 }
 
-TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
+TeamMissionType TeamType::Mission_From_Name(std::string_view name) {
   if (!name.empty()) {
     for (const TeamMissionType order :
          magic_enum::enum_values<TeamMissionType>()) {
@@ -360,29 +360,29 @@ TeamMissionType TeamTypeClass::Mission_From_Name(std::string_view name) {
   return TeamMissionType::kNone;
 }
 
-const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
+const char* TeamType::Name_From_Mission(TeamMissionType order) {
   if (!magic_enum::enum_contains(order)) {
     return "None";
   }
   return TMissions.at(order);
 }
 
-void* TeamTypeClass::operator new(std::size_t /*unused*/) noexcept {
+void* TeamType::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
-    static_cast<TeamTypeClass*>(ptr)->IsActive = true;
+    static_cast<TeamType*>(ptr)->IsActive = true;
   }
   return ptr;
 }
 
-void TeamTypeClass::operator delete(void* ptr) {
+void TeamType::operator delete(void* ptr) {
   if (ptr) {
-    static_cast<TeamTypeClass*>(ptr)->IsActive = false;
+    static_cast<TeamType*>(ptr)->IsActive = false;
   }
-  TheObjectHeaps().team_type().Free(static_cast<TeamTypeClass*>(ptr));
+  TheObjectHeaps().team_type().Free(static_cast<TeamType*>(ptr));
 }
 
-TeamClass* TeamTypeClass::Create_One_Of() const {
+TeamClass* TeamType::Create_One_Of() const {
   // TeamClass::Number counts the live teams of each team type, by slot.
   if (TheWorld().scenario_init() ||
       base::At(TeamClass::Number,
@@ -392,13 +392,13 @@ TeamClass* TeamTypeClass::Create_One_Of() const {
   return nullptr;
 }
 
-Target TeamTypeClass::As_Target() const {
+Target TeamType::As_Target() const {
   Validate();
   return Target::Make(KIND_TEAMTYPE,
                       TheObjectHeaps().team_type().SlotIndexOf(this));
 }
 
-void TeamTypeClass::Destroy_All_Of() const {
+void TeamType::Destroy_All_Of() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
     const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
@@ -411,15 +411,13 @@ void TeamTypeClass::Destroy_All_Of() const {
   }
 }
 
-const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
-                                                       uint64_t utypes,
-                                                       uint64_t itypes,
-                                                       bool alerted) {
-  const TeamTypeClass* best = nullptr;
+const TeamType* TeamType::Suggested_New_Team(HouseClass* house, uint64_t utypes,
+                                             uint64_t itypes, bool alerted) {
+  const TeamType* best = nullptr;
   int bestvalue = 0;
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    const TeamTypeClass* ttype = TheObjectHeaps().team_type().ActiveAt(index);
+    const TeamType* ttype = TheObjectHeaps().team_type().ActiveAt(index);
 
     if (ttype && ttype->House == house->Class->House &&
         base::At(TeamClass::Number, index) <

@@ -3416,7 +3416,7 @@ int MapEditClass::Import_Teams() {
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
   const std::vector<engine::file::IniEntry> entries =
-      master_ini.Entries(TeamTypeClass::INI_Name());
+      master_ini.Entries(TeamType::INI_Name());
 
   /*........................................................................
   For each entry in the INI section:
@@ -3563,7 +3563,7 @@ int MapEditClass::Import_Teams() {
       ** and fill it in.
       */
       if (teamlist.Is_Checked(entry_index)) {
-        auto* team = base::NewPooled<TeamTypeClass>();
+        auto* team = base::NewPooled<TeamType>();
         // The heap is full: the rest of the checked team types stay behind.
         if (team == nullptr) {
           break;

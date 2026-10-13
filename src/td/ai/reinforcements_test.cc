@@ -62,15 +62,15 @@ class ReinforcementTest : public ::testing::Test {
 
   // A team type for the house with no members and no missions, so that
   // delivering it makes no team.
-  static TeamTypeClass& MakeTeamType() {
-    auto* team_type = base::NewPooled<TeamTypeClass>();
+  static TeamType& MakeTeamType() {
+    auto* team_type = base::NewPooled<TeamType>();
     EXPECT_NE(team_type, nullptr);
     team_type->House = HOUSE_GOOD;
     return *team_type;
   }
 
   // Adds `count` objects of `member_type` to `team_type`.
-  static void AddMembers(TeamTypeClass& team_type,
+  static void AddMembers(TeamType& team_type,
                          const TechnoTypeClass& member_type, const int count) {
     base::At(team_type.Class, team_type.ClassCount) = &member_type;
     base::At(team_type.DesiredNum, team_type.ClassCount) =
@@ -79,7 +79,7 @@ class ReinforcementTest : public ::testing::Test {
   }
 
   // Adds a first mission to `team_type`, so that delivering it makes a team.
-  static void AddMission(TeamTypeClass& team_type) {
+  static void AddMission(TeamType& team_type) {
     base::At(team_type.MissionList, 0).Mission = TeamMissionType::kGuard;
     team_type.MissionCount = 1;
   }
@@ -107,7 +107,7 @@ class ReinforcementTest : public ::testing::Test {
   }
 
   // The one team type DeliverSpecialReinforcement() made.
-  static const TeamTypeClass& SpecialTeamType() {
+  static const TeamType& SpecialTeamType() {
     EXPECT_EQ(TheObjectHeaps().team_type().Count(), 1);
     return *TheObjectHeaps().team_type().ActiveAt(0);
   }
@@ -134,7 +134,7 @@ TEST_F(ReinforcementTest, AnAirStrikeThatCannotBePlacedCountsNoAircraft) {
 
 TEST_F(ReinforcementTest, ATeamThatCannotBePlacedAtTheEdgeIsDeleted) {
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -146,7 +146,7 @@ TEST_F(ReinforcementTest, ATeamThatCannotBePlacedAtTheEdgeIsDeleted) {
 TEST_F(ReinforcementTest, AVehicleGroupEntersFromTheHouseEdge) {
   TheGameState().active() = true;
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -166,7 +166,7 @@ TEST_F(ReinforcementTest, AHovercraftWithNoBeachToLandOnIsDeleted) {
   // The map has no water, so there is no beach cell. A transport deletes its
   // cargo only while the game is active.
   TheGameState().active() = true;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_HOVER), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
 
@@ -177,7 +177,7 @@ TEST_F(ReinforcementTest, AHovercraftWithNoBeachToLandOnIsDeleted) {
 
 TEST_F(ReinforcementTest, AGroupForAHouseEdgeThatIsNoEdgeIsDeleted) {
   house_->Edge = SOURCE_VISIBLE;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
 
   DeliverReinforcements(&team_type);
@@ -187,7 +187,7 @@ TEST_F(ReinforcementTest, AGroupForAHouseEdgeThatIsNoEdgeIsDeleted) {
 
 TEST_F(ReinforcementTest, TheGroundMembersOfAnAirGroupAreDeleted) {
   // No transport, so the soldier cannot ride in the A-10.
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_A10), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
 
@@ -197,7 +197,7 @@ TEST_F(ReinforcementTest, TheGroundMembersOfAnAirGroupAreDeleted) {
 }
 
 TEST_F(ReinforcementTest, EveryGunboatThatCannotBePlacedIsDeleted) {
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_GUNBOAT), 2);
 
   EXPECT_FALSE(DeliverReinforcements(&team_type));
@@ -212,7 +212,7 @@ class EdgeEntryTest : public ReinforcementTest,
 TEST_P(EdgeEntryTest, AGroupWithoutATeamMovesOntoTheMap) {
   TheGameState().active() = true;
   house_->Edge = GetParam();
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 1);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -240,7 +240,7 @@ INSTANTIATE_TEST_SUITE_P(Edges, EdgeEntryTest,
 TEST_F(ReinforcementTest, AGroupWithATeamWaitsForItsOrders) {
   TheGameState().active() = true;
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 2);
   AddMission(team_type);
 
@@ -266,7 +266,7 @@ TEST_F(ReinforcementTest, AHovercraftStartsBelowTheBeachItLandsOn) {
   Flood(MAP_CELL_H - 2, 30, 30);
   Flood(MAP_CELL_H - 1, 30, 30);
   constexpr Cell kBeach = Cell::FromXY(30, MAP_CELL_H - 3);
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_HOVER), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
 
@@ -290,7 +290,7 @@ TEST_F(ReinforcementTest, AHovercraftNeverJoinsTheTeamItsCargoIsIn) {
   TheGameState().active() = true;
   Flood(MAP_CELL_H - 2, 30, 30);
   Flood(MAP_CELL_H - 1, 30, 30);
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_HOVER), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 1);
   AddMission(team_type);
@@ -314,7 +314,7 @@ TEST_F(ReinforcementTest, OneGunboatSailsWestAlongTheShippingLane) {
   // gunboat starts one cell east of it.
   constexpr int kLaneRow = 12;
   Flood(kLaneRow, 1, MAP_CELL_W - 1);
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_GUNBOAT), 2);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -332,7 +332,7 @@ TEST_F(ReinforcementTest, OneGunboatSailsWestAlongTheShippingLane) {
 TEST_F(ReinforcementTest, AnA10FliesInAsALoanerAndHunts) {
   TheGameState().active() = true;
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_A10), 1);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -351,7 +351,7 @@ TEST_F(ReinforcementTest, ALoadedHelicopterUnloadsAtTheReinforcementWaypoint) {
   house_->Edge = SOURCE_WEST;
   constexpr Cell kWaypoint = Cell::FromXY(20, 30);
   base::At(TheWorld().waypoint(), kWayptReinf) = kWaypoint;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT), 1);
   AddMembers(team_type, InfantryTypeClass::As_Reference(INFANTRY_E1), 2);
 
@@ -372,7 +372,7 @@ TEST_F(ReinforcementTest, AnEmptyHelicopterIsKeptAndMovesToTheWaypoint) {
   house_->Edge = SOURCE_WEST;
   constexpr Cell kWaypoint = Cell::FromXY(20, 30);
   base::At(TheWorld().waypoint(), kWayptReinf) = kWaypoint;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT), 1);
 
   EXPECT_TRUE(DeliverReinforcements(&team_type));
@@ -387,7 +387,7 @@ TEST_F(ReinforcementTest, AnEmptyHelicopterIsKeptAndMovesToTheWaypoint) {
 TEST_F(ReinforcementTest, AnAircraftWithATeamIsLeftToItsTeam) {
   TheGameState().active() = true;
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT), 1);
   AddMission(team_type);
 
@@ -406,7 +406,7 @@ TEST_F(ReinforcementTest, ACargoPlaneEntersInTheRowOfItsAirstrip) {
   // The house's own edge would bring it in from the west.
   house_->Edge = SOURCE_WEST;
   const BuildingClass& airstrip = PlaceAirstrip(Cell::FromXY(20, 30));
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_CARGO), 1);
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 1);
 
@@ -425,7 +425,7 @@ TEST_F(ReinforcementTest, ACargoPlaneEntersInTheRowOfItsAirstrip) {
 TEST_F(ReinforcementTest, ACargoPlaneWithoutAnAirstripEntersAtTheHouseEdge) {
   TheGameState().active() = true;
   house_->Edge = SOURCE_WEST;
-  TeamTypeClass& team_type = MakeTeamType();
+  TeamType& team_type = MakeTeamType();
   AddMembers(team_type, AircraftTypeClass::As_Reference(AIRCRAFT_CARGO), 1);
   AddMembers(team_type, UnitTypeClass::As_Reference(UNIT_JEEP), 1);
 
@@ -447,7 +447,7 @@ TEST_F(ReinforcementTest, ASpecialVehicleDrivesToTheReinforcementWaypoint) {
       house_, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr,
       TeamMissionType::kGuard, 5));
 
-  const TeamTypeClass& team_type = SpecialTeamType();
+  const TeamType& team_type = SpecialTeamType();
   EXPECT_TRUE(team_type.IsTransient);
   EXPECT_EQ(team_type.ClassCount, 1);
   EXPECT_EQ(team_type.Class[0], &UnitTypeClass::As_Reference(UNIT_HARVESTER));
@@ -472,7 +472,7 @@ TEST_F(ReinforcementTest,
       house_, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr,
       TeamMissionType::kGuard, 5));
 
-  const TeamTypeClass& team_type = SpecialTeamType();
+  const TeamType& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.ClassCount, 2);
   EXPECT_EQ(team_type.Class[1], &UnitTypeClass::As_Reference(UNIT_HOVER));
   // The mission asked for is dropped: the hovercraft delivers and that is all.
@@ -502,7 +502,7 @@ TEST_F(ReinforcementTest, ASpecialTransportUnloadsAtTheReinforcementWaypoint) {
       house_, &InfantryTypeClass::As_Reference(INFANTRY_E1),
       &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT)));
 
-  const TeamTypeClass& team_type = SpecialTeamType();
+  const TeamType& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.ClassCount, 2);
   EXPECT_EQ(team_type.Class[1],
             &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT));
@@ -522,7 +522,7 @@ TEST_F(ReinforcementTest, ASpecialTransportKeepsTheMissionAskedFor) {
       &AircraftTypeClass::As_Reference(AIRCRAFT_TRANSPORT),
       TeamMissionType::kGuard, 5));
 
-  const TeamTypeClass& team_type = SpecialTeamType();
+  const TeamType& team_type = SpecialTeamType();
   ASSERT_EQ(team_type.MissionCount, 1);
   EXPECT_EQ(team_type.MissionList[0].Mission, TeamMissionType::kGuard);
   EXPECT_EQ(team_type.MissionList[0].Argument, 5);
@@ -541,10 +541,10 @@ TEST_F(ReinforcementTest, ASpecialAircraftKeepsItsMissionOrMovesToTheWaypoint) {
   EXPECT_TRUE(DeliverSpecialReinforcement(house_, &helicopter, nullptr));
 
   ASSERT_EQ(TheObjectHeaps().team_type().Count(), 2);
-  const TeamTypeClass* with_mission = TheObjectHeaps().team_type().ActiveAt(0);
+  const TeamType* with_mission = TheObjectHeaps().team_type().ActiveAt(0);
   EXPECT_EQ(with_mission->MissionList[0].Mission, TeamMissionType::kGuard);
   EXPECT_EQ(with_mission->MissionList[0].Argument, 5);
-  const TeamTypeClass* without = TheObjectHeaps().team_type().ActiveAt(1);
+  const TeamType* without = TheObjectHeaps().team_type().ActiveAt(1);
   EXPECT_EQ(without->MissionList[0].Mission, TeamMissionType::kMoveCell);
   EXPECT_EQ(without->MissionList[0].Argument, kWaypoint.index());
 }
@@ -561,7 +561,7 @@ TEST_F(ReinforcementTest, AFailedSpecialReinforcementLeavesNoTeamType) {
 }
 
 TEST_F(ReinforcementTest, ATeamTypeWithoutMembersDeliversNothing) {
-  const TeamTypeClass& team_type = MakeTeamType();
+  const TeamType& team_type = MakeTeamType();
 
   EXPECT_FALSE(DeliverReinforcements(&team_type));
   EXPECT_FALSE(DeliverReinforcements(nullptr));

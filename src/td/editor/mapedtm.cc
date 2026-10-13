@@ -108,13 +108,12 @@ using enum engine::window::KeyNumber;
  *   12/08/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Handle_Teams(const char* caption) {
-
   /*------------------------------------------------------------------------
   Team dialog processing loop:
   - Invoke the team selection dialog. If a team's selected, break
     & return
   - If user wants to edit the current team, do so
-  - If user wants to create new team, new a TeamTypeClass & edit it
+  - If user wants to create new team, new a TeamType & edit it
   - If user wants to delete team, delete the current team
   - Keep looping until 'OK'
   ------------------------------------------------------------------------*/
@@ -146,7 +145,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
         /*
         ........................ Create a new team .........................
         */
-        CurTeam = base::NewPooled<TeamTypeClass>();
+        CurTeam = base::NewPooled<TeamType>();
         if (CurTeam) {
           /*
           ................... delete it if user cancels ...................
@@ -756,8 +755,8 @@ int MapEditClass::Edit_Team() {
   char maxnum_buf[4];
   char initnum_buf[4];
   char fear_buf[4];
-  TeamMissionStruct missions[TeamTypeClass::kMaxTeamMissions];
-  char missionbuf[TeamTypeClass::kMaxTeamMissions][20];
+  TeamMission missions[TeamType::kMaxTeamMissions];
+  char missionbuf[TeamType::kMaxTeamMissions][20];
 
   char arg_buf[4] = {0};
   static const int tabs[] = {130, 180};  // list box tab stops
@@ -918,7 +917,7 @@ int MapEditClass::Edit_Team() {
   */
   for (const TeamMissionType mission :
        magic_enum::enum_values<TeamMissionType>()) {
-    missionlist1.Add_Item(TeamTypeClass::Name_From_Mission(mission));
+    missionlist1.Add_Item(TeamType::Name_From_Mission(mission));
   }
 
   int missioncount = CurTeam->MissionCount;
@@ -1195,7 +1194,7 @@ int MapEditClass::Edit_Team() {
       ..................................................................*/
       case engine::window::ButtonKey(kButtonAdd):
       case engine::window::ButtonKey(kButtonInsert):
-        if (missioncount < TeamTypeClass::kMaxTeamMissions) {
+        if (missioncount < TeamType::kMaxTeamMissions) {
           /*
           ** Set 'i' to the position we're going to add into; this will
           ** be just AFTER the current item if we're adding, and it will
@@ -1830,7 +1829,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Don't allow more classes than we can handle.
           */
-          if (numclasses == TeamTypeClass::kMaxTeamClasscount) {
+          if (numclasses == TeamType::kMaxTeamClasscount) {
             continue;
           }
           numclasses++;
@@ -1970,7 +1969,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
  *                                                                         *
  * INPUT:                                                                  *
  *      missioncount      # of missions to add to the list                 *
- *      missions            array of TeamMissionStruct's                   *
+ *      missions            array of TeamMission's                   *
  *      missionbuf         character arrays to store strings in            *
  *      list               list box to add strings to                      *
  *                                                                         *
@@ -1984,9 +1983,8 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Build_Mission_List(
-    int missioncount,
-    const TeamMissionStruct (&missions)[TeamTypeClass::kMaxTeamMissions],
-    char (&missionbuf)[TeamTypeClass::kMaxTeamMissions][20], ListClass* list) {
+    int missioncount, const TeamMission (&missions)[TeamType::kMaxTeamMissions],
+    char (&missionbuf)[TeamType::kMaxTeamMissions][20], ListClass* list) {
   /*
   ** Start with an empty list
   */
@@ -2001,18 +1999,18 @@ void MapEditClass::Build_Mission_List(
     */
     if (base::At(missions, i).Mission == TeamMissionType::kMove ||
         base::At(missions, i).Mission == TeamMissionType::kUnload) {
-      absl::SNPrintF(
-          base::At(missionbuf, i), sizeof(base::At(missionbuf, i)), "%s\t%c",
-          TeamTypeClass::Name_From_Mission(base::At(missions, i).Mission),
-          base::At(missions, i).Argument + 'A');
+      absl::SNPrintF(base::At(missionbuf, i), sizeof(base::At(missionbuf, i)),
+                     "%s\t%c",
+                     TeamType::Name_From_Mission(base::At(missions, i).Mission),
+                     base::At(missions, i).Argument + 'A');
     } else {
       /*
       ** All other missions take a numeric argument.
       */
-      absl::SNPrintF(
-          base::At(missionbuf, i), sizeof(base::At(missionbuf, i)), "%s\t%d",
-          TeamTypeClass::Name_From_Mission(base::At(missions, i).Mission),
-          base::At(missions, i).Argument);
+      absl::SNPrintF(base::At(missionbuf, i), sizeof(base::At(missionbuf, i)),
+                     "%s\t%d",
+                     TeamType::Name_From_Mission(base::At(missions, i).Mission),
+                     base::At(missions, i).Argument);
     }
 
     /*

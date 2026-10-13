@@ -208,15 +208,15 @@ TEST(TdSaveValuesTest, TypePointersRejectInvalidIdsAndTruncation) {
 }  // namespace
 
 TEST(TdSaveValuesTest, TeamMissionPreservesOrderAndArgument) {
-  TeamMissionStruct mission{TeamMissionType::kMoveCell, 4095};
-  TeamMissionStruct loaded;
+  TeamMission mission{TeamMissionType::kMoveCell, 4095};
+  TeamMission loaded;
   Restore(loaded, Save(mission));
   EXPECT_EQ(loaded.Mission, TeamMissionType::kMoveCell);
   EXPECT_EQ(loaded.Argument, 4095);
 }
 
 TEST(TdSaveValuesTest, TeamMissionRejectsUnknownOrderAndTruncation) {
-  TeamMissionStruct mission{TeamMissionType::kGuard, 1};
+  TeamMission mission{TeamMissionType::kGuard, 1};
   auto bytes = Save(mission);
   // The mission is the first field; 12 is one past the last mission.
   bytes.at(0) = 12;

@@ -230,7 +230,7 @@ class TriggerClass {
   **	a team-related trigger goes off, or for reinforcements. The house
   **	for reinforcements is determined by the house for that team.
   */
-  TeamTypeClass* Team = nullptr;
+  TeamType* Team = nullptr;
 
   /*
   **	If this trigger object is active, then this flag will be true. Trigger

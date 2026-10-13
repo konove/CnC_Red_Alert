@@ -166,8 +166,8 @@ void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
   ref_ = TheObjectHeaps().team_type().Slot(target.value());
 }
 
-template class TeamTypePtr<TeamTypeClass>;
-template class TeamTypePtr<const TeamTypeClass>;
+template class TeamTypePtr<TeamType>;
+template class TeamTypePtr<const TeamType>;
 
 void HousePtr::Serialize(ArchiveWriter& ar) {
   int32_t index =
