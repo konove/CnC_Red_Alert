@@ -118,45 +118,45 @@ std::string TeamMission::Description(const int index) const {
         absl::StrFormat("%d\t%s", index, TeamType::MissionName(mission_));
 
     switch (TeamMissionNeeds(mission_)) {
-      case NEED_MISSION:
+      case NeedType::kMission:
         text += MissionClass::Mission_Name(argument_.unit_mission);
         break;
 
-      case NEED_FORMATION:
+      case NeedType::kFormation:
         text += FormationName.at(argument_.formation);
         break;
 
-      case NEED_NUMBER:
+      case NeedType::kNumber:
         absl::StrAppendFormat(&text, "%d", argument_.value);
         break;
 
-      case NEED_HEX_NUMBER:
+      case NeedType::kHexNumber:
         absl::StrAppendFormat(&text, "%x",
                               static_cast<unsigned int>(argument_.value));
         break;
 
-      case NEED_QUARRY:
+      case NeedType::kQuarry:
         text += QuarryName.at(argument_.quarry);
         break;
 
-      case NEED_WAYPOINT:
+      case NeedType::kWaypoint:
         text += WaypointLetters(argument_.value);
         break;
-      case NeedType::NEED_NONE:
-      case NeedType::NEED_THEME:
-      case NeedType::NEED_MOVIE:
-      case NeedType::NEED_SOUND:
-      case NeedType::NEED_SPEECH:
-      case NeedType::NEED_INFANTRY:
-      case NeedType::NEED_UNIT:
-      case NeedType::NEED_AIRCRAFT:
-      case NeedType::NEED_STRUCTURE:
-      case NeedType::NEED_TRIGGER:
-      case NeedType::NEED_TEAM:
-      case NeedType::NEED_HOUSE:
-      case NeedType::NEED_TIME:
-      case NeedType::NEED_BOOL:
-      case NeedType::NEED_SPECIAL:
+      case NeedType::kNone:
+      case NeedType::kTheme:
+      case NeedType::kMovie:
+      case NeedType::kSound:
+      case NeedType::kSpeech:
+      case NeedType::kInfantry:
+      case NeedType::kUnit:
+      case NeedType::kAircraft:
+      case NeedType::kStructure:
+      case NeedType::kTrigger:
+      case NeedType::kTeam:
+      case NeedType::kHouse:
+      case NeedType::kTime:
+      case NeedType::kBool:
+      case NeedType::kSpecial:
       default:
         break;
     }
@@ -496,28 +496,28 @@ void TeamType::AddMember(const TeamMember& member) {
 NeedType TeamMissionNeeds(const TeamMissionType mission) {
   switch (mission) {
     case TeamMissionType::kFormation:
-      return NEED_FORMATION;
+      return NeedType::kFormation;
 
     case TeamMissionType::kAttack:
-      return NEED_QUARRY;
+      return NeedType::kQuarry;
 
     // A cell number, which the editor shows and reads in hex.
     case TeamMissionType::kMoveCell:
-      return NEED_HEX_NUMBER;
+      return NeedType::kHexNumber;
 
     case TeamMissionType::kSetGlobal:
     case TeamMissionType::kGuard:
     case TeamMissionType::kLoop:
-      return NEED_NUMBER;
+      return NeedType::kNumber;
 
     case TeamMissionType::kPatrol:
     case TeamMissionType::kMove:
     case TeamMissionType::kAttackWaypoint:
     case TeamMissionType::kSpy:
-      return NEED_WAYPOINT;
+      return NeedType::kWaypoint;
 
     case TeamMissionType::kDo:
-      return NEED_MISSION;
+      return NeedType::kMission;
 
     case TeamMissionType::kNone:
     case TeamMissionType::kAttackTarcom:
@@ -529,6 +529,6 @@ NeedType TeamMissionNeeds(const TeamMissionType mission) {
     default:
       break;
   }
-  return NEED_NONE;
+  return NeedType::kNone;
 }
 }  // namespace ra

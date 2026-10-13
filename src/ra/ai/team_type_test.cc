@@ -688,26 +688,27 @@ TEST_F(TeamTypeTest, TheEditorNamesEveryTeamMission) {
 }
 
 TEST_F(TeamTypeTest, EachTeamMissionNeedsItsKindOfArgument) {
-  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kFormation), NEED_FORMATION);
-  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kAttack), NEED_QUARRY);
-  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kMoveCell), NEED_HEX_NUMBER);
-  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kDo), NEED_MISSION);
+  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kFormation),
+            NeedType::kFormation);
+  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kAttack), NeedType::kQuarry);
+  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kMoveCell), NeedType::kHexNumber);
+  EXPECT_EQ(TeamMissionNeeds(TeamMissionType::kDo), NeedType::kMission);
   for (const TeamMissionType mission :
        {TeamMissionType::kSetGlobal, TeamMissionType::kGuard,
         TeamMissionType::kLoop}) {
-    EXPECT_EQ(TeamMissionNeeds(mission), NEED_NUMBER);
+    EXPECT_EQ(TeamMissionNeeds(mission), NeedType::kNumber);
   }
   for (const TeamMissionType mission :
        {TeamMissionType::kPatrol, TeamMissionType::kMove,
         TeamMissionType::kAttackWaypoint, TeamMissionType::kSpy}) {
-    EXPECT_EQ(TeamMissionNeeds(mission), NEED_WAYPOINT);
+    EXPECT_EQ(TeamMissionNeeds(mission), NeedType::kWaypoint);
   }
   for (const TeamMissionType mission :
        {TeamMissionType::kNone, TeamMissionType::kAttackTarcom,
         TeamMissionType::kUnload, TeamMissionType::kDeploy,
         TeamMissionType::kHoundDog, TeamMissionType::kInvulnerable,
         TeamMissionType::kLoad}) {
-    EXPECT_EQ(TeamMissionNeeds(mission), NEED_NONE);
+    EXPECT_EQ(TeamMissionNeeds(mission), NeedType::kNone);
   }
 }
 

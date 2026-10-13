@@ -659,7 +659,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       Team = nullptr;
       Data.Value = -1;
       if (!token.empty()) {
-        if (Event_Needs(Event) == NEED_TEAM) {
+        if (Event_Needs(Event) == NeedType::kTeam) {
           Team = TheObjectHeaps().team_type().Slot(
               base::ParseIntegerOr<int>(token, 0));
         } else {
@@ -687,7 +687,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
  *                                                                                             *
  *    This routine will examine the specified event type and return a code that
  *indicates      * the type of data that must be supplied to this event. Some
- *events require no data and    * these will return NEED_NONE. *
+ *events require no data and    * these will return NeedType::kNone. *
  *                                                                                             *
  * INPUT:   event -- The event type to examine. *
  *                                                                                             *
@@ -710,7 +710,7 @@ NeedType Event_Needs(TEventType event) {
     case TEVENT_UNITS_DESTROYED:
     case TEVENT_ALL_DESTROYED:
     case TEVENT_LOW_POWER:
-      return NEED_HOUSE;
+      return NeedType::kHouse;
 
     case TEVENT_NUNITS_DESTROYED:
     case TEVENT_NBUILDINGS_DESTROYED:
@@ -718,23 +718,23 @@ NeedType Event_Needs(TEventType event) {
     case TEVENT_TIME:
     case TEVENT_GLOBAL_SET:
     case TEVENT_GLOBAL_CLEAR:
-      return NEED_NUMBER;
+      return NeedType::kNumber;
 
     case TEVENT_BUILDING_EXISTS:
     case TEVENT_BUILD:
-      return NEED_STRUCTURE;
+      return NeedType::kStructure;
 
     case TEVENT_BUILD_UNIT:
-      return NEED_UNIT;
+      return NeedType::kUnit;
 
     case TEVENT_BUILD_INFANTRY:
-      return NEED_INFANTRY;
+      return NeedType::kInfantry;
 
     case TEVENT_BUILD_AIRCRAFT:
-      return NEED_AIRCRAFT;
+      return NeedType::kAircraft;
 
     case TEVENT_LEAVES_MAP:
-      return NEED_TEAM;
+      return NeedType::kTeam;
 
     case TEventType::TEVENT_NONE:
     case TEventType::TEVENT_SPIED:
@@ -751,7 +751,7 @@ NeedType Event_Needs(TEventType event) {
     default:
       break;
   }
-  return NEED_NONE;
+  return NeedType::kNone;
 }
 
 /***********************************************************************************************

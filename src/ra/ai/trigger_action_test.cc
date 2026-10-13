@@ -212,45 +212,45 @@ TEST(TriggerActionNameTest, EveryActionHasAnEditorName) {
 }
 
 TEST(TriggerActionNeedTest, EachActionAsksForTheValueItUses) {
-  EXPECT_EQ(ActionNeed(TriggerActionType::kOneSpecial), NEED_SPECIAL);
-  EXPECT_EQ(ActionNeed(TriggerActionType::kFullSpecial), NEED_SPECIAL);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kOneSpecial), NeedType::kSpecial);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kFullSpecial), NeedType::kSpecial);
   for (const TriggerActionType type :
        {TriggerActionType::kFireSale, TriggerActionType::kWin,
         TriggerActionType::kLose, TriggerActionType::kAllHunt,
         TriggerActionType::kBeginProduction, TriggerActionType::kAutocreate}) {
-    EXPECT_EQ(ActionNeed(type), NEED_HOUSE);
+    EXPECT_EQ(ActionNeed(type), NeedType::kHouse);
   }
-  EXPECT_EQ(ActionNeed(TriggerActionType::kBaseBuilding), NEED_BOOL);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kBaseBuilding), NeedType::kBool);
   for (const TriggerActionType type :
        {TriggerActionType::kCreateTeam, TriggerActionType::kDestroyTeam,
         TriggerActionType::kReinforcements}) {
-    EXPECT_EQ(ActionNeed(type), NEED_TEAM);
+    EXPECT_EQ(ActionNeed(type), NeedType::kTeam);
   }
-  EXPECT_EQ(ActionNeed(TriggerActionType::kForceTrigger), NEED_TRIGGER);
-  EXPECT_EQ(ActionNeed(TriggerActionType::kDestroyTrigger), NEED_TRIGGER);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kForceTrigger), NeedType::kTrigger);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kDestroyTrigger), NeedType::kTrigger);
   for (const TriggerActionType type :
        {TriggerActionType::kDropZoneFlare, TriggerActionType::kRevealSome,
         TriggerActionType::kRevealZone}) {
-    EXPECT_EQ(ActionNeed(type), NEED_WAYPOINT);
+    EXPECT_EQ(ActionNeed(type), NeedType::kWaypoint);
   }
-  EXPECT_EQ(ActionNeed(TriggerActionType::kPlayMusic), NEED_THEME);
-  EXPECT_EQ(ActionNeed(TriggerActionType::kPlayMovie), NEED_MOVIE);
-  EXPECT_EQ(ActionNeed(TriggerActionType::kPlaySound), NEED_SOUND);
-  EXPECT_EQ(ActionNeed(TriggerActionType::kPlaySpeech), NEED_SPEECH);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kPlayMusic), NeedType::kTheme);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kPlayMovie), NeedType::kMovie);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kPlaySound), NeedType::kSound);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kPlaySpeech), NeedType::kSpeech);
   for (const TriggerActionType type :
        {TriggerActionType::kTextTrigger, TriggerActionType::kAddTimer,
         TriggerActionType::kSubTimer, TriggerActionType::kSetTimer,
         TriggerActionType::kSetGlobal, TriggerActionType::kClearGlobal}) {
-    EXPECT_EQ(ActionNeed(type), NEED_NUMBER);
+    EXPECT_EQ(ActionNeed(type), NeedType::kNumber);
   }
-  EXPECT_EQ(ActionNeed(TriggerActionType::kPreferredTarget), NEED_QUARRY);
+  EXPECT_EQ(ActionNeed(TriggerActionType::kPreferredTarget), NeedType::kQuarry);
   for (const TriggerActionType type :
        {TriggerActionType::kNone, TriggerActionType::kWinLose,
         TriggerActionType::kAllowWin, TriggerActionType::kRevealAll,
         TriggerActionType::kStartTimer, TriggerActionType::kStopTimer,
         TriggerActionType::kCreepShadow, TriggerActionType::kDestroyObject,
         TriggerActionType::kLaunchNukes}) {
-    EXPECT_EQ(ActionNeed(type), NEED_NONE);
+    EXPECT_EQ(ActionNeed(type), NeedType::kNone);
   }
 }
 
@@ -313,15 +313,16 @@ TEST_F(TriggerActionGameTest, AnActionKeepsOnlyTheFieldsItsTypeUses) {
                            .value = 3})
             ->ToRecord();
     const NeedType need = ActionNeed(type);
-    EXPECT_EQ(record.team_type, need == NEED_TEAM ? team_type_ : nullptr)
+    EXPECT_EQ(record.team_type, need == NeedType::kTeam ? team_type_ : nullptr)
         << ActionName(type);
     EXPECT_EQ(record.trigger_type,
-              need == NEED_TRIGGER ? trigger_type_ : nullptr)
+              need == NeedType::kTrigger ? trigger_type_ : nullptr)
         << ActionName(type);
     int value = 3;
-    if (need == NEED_NONE || need == NEED_TEAM || need == NEED_TRIGGER) {
+    if (need == NeedType::kNone || need == NeedType::kTeam ||
+        need == NeedType::kTrigger) {
       value = -1;
-    } else if (need == NEED_BOOL) {
+    } else if (need == NeedType::kBool) {
       value = 1;
     }
     EXPECT_EQ(record.value, value) << ActionName(type);

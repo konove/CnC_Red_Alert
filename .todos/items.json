@@ -1825,7 +1825,7 @@
           "endLine": 996,
           "text": "TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {",
           "before": [
-            "  return NEED_NONE;",
+            "  return NeedType::kNone;",
             "}",
             ""
           ],
@@ -4653,18 +4653,18 @@
       "anchors": [
         {
           "path": "src/ra/core/defines.h",
-          "startLine": 1755,
-          "endLine": 1755,
+          "startLine": 1752,
+          "endLine": 1752,
           "text": "enum class NeedType {",
           "before": [
-            "*required. This is also used *\tfor team mission types that might need",
-            "*additional data.",
-            "*/"
+            "",
+            "// The kind of argument a trigger event, a trigger action or a team mission",
+            "// takes, which is also the control the scenario editor offers for it."
           ],
           "after": [
-            "  NEED_NONE,       // No additional data is required.",
-            "  NEED_THEME,      // Need a musical theme.",
-            "  NEED_MOVIE,      // Need a movie to play."
+            "  kNone,       // No additional data is required.",
+            "  kTheme,      // Need a musical theme.",
+            "  kMovie,      // Need a movie to play."
           ],
           "lost": false
         }

@@ -360,53 +360,53 @@ bool TeamType::Edit() {
         static_cast<TeamMissionType>(mission_drop.Current_Index()));
     mission.set_value(0);
     switch (TeamMissionNeeds(mission.mission())) {
-      case NEED_MISSION:
+      case NeedType::kMission:
         mission.set_unit_mission(
             static_cast<MissionType>(unit_mission_drop.Current_Index()));
         break;
 
-      case NEED_FORMATION:
+      case NeedType::kFormation:
         mission.set_formation(
             static_cast<FormationType>(formation_drop.Current_Index()));
         break;
 
-      case NEED_QUARRY:
+      case NeedType::kQuarry:
         mission.set_quarry(
             static_cast<QuarryType>(quarry_drop.Current_Index()));
         break;
 
-      case NEED_NUMBER:
+      case NeedType::kNumber:
         mission.set_value(
             base::ParseIntegerOr<int>(argument_edit.Get_Text(), 0));
         break;
 
-      case NEED_HEX_NUMBER:
+      case NeedType::kHexNumber:
         mission.set_value(base::ParseHexOr<int>(argument_edit.Get_Text(), 0));
         break;
 
       // A waypoint the scenario does not have becomes waypoint A.
-      case NEED_WAYPOINT:
+      case NeedType::kWaypoint:
         mission.set_value(WaypointFromLetters(argument_edit.Get_Text()));
         if (!ScenarioClass::IsLetterWaypoint(mission.value())) {
           mission.set_value(0);
         }
         break;
 
-      case NEED_NONE:
-      case NEED_THEME:
-      case NEED_MOVIE:
-      case NEED_SOUND:
-      case NEED_SPEECH:
-      case NEED_INFANTRY:
-      case NEED_UNIT:
-      case NEED_AIRCRAFT:
-      case NEED_STRUCTURE:
-      case NEED_TRIGGER:
-      case NEED_TEAM:
-      case NEED_HOUSE:
-      case NEED_TIME:
-      case NEED_BOOL:
-      case NEED_SPECIAL:
+      case NeedType::kNone:
+      case NeedType::kTheme:
+      case NeedType::kMovie:
+      case NeedType::kSound:
+      case NeedType::kSpeech:
+      case NeedType::kInfantry:
+      case NeedType::kUnit:
+      case NeedType::kAircraft:
+      case NeedType::kStructure:
+      case NeedType::kTrigger:
+      case NeedType::kTeam:
+      case NeedType::kHouse:
+      case NeedType::kTime:
+      case NeedType::kBool:
+      case NeedType::kSpecial:
       default:
         break;
     }
@@ -420,47 +420,47 @@ bool TeamType::Edit() {
     mission_drop.Set_Selected_Index(static_cast<int>(line.mission()));
 
     switch (TeamMissionNeeds(line.mission())) {
-      case NEED_MISSION:
+      case NeedType::kMission:
         unit_mission_drop.Set_Selected_Index(
             static_cast<int>(line.unit_mission()));
         break;
 
-      case NEED_FORMATION:
+      case NeedType::kFormation:
         formation_drop.Set_Selected_Index(static_cast<int>(line.formation()));
         break;
 
-      case NEED_NUMBER:
+      case NeedType::kNumber:
         absl::SNPrintF(argument_text, sizeof(argument_text), "%d",
                        line.value());
         break;
 
-      case NEED_HEX_NUMBER:
+      case NeedType::kHexNumber:
         absl::SNPrintF(argument_text, sizeof(argument_text), "%x",
                        static_cast<unsigned int>(line.value()));
         break;
 
-      case NEED_QUARRY:
+      case NeedType::kQuarry:
         quarry_drop.Set_Selected_Index(static_cast<int>(line.quarry()));
         break;
 
-      case NEED_WAYPOINT:
+      case NeedType::kWaypoint:
         base::SafeCopy(argument_text, WaypointLetters(line.value()));
         break;
-      case NEED_NONE:
-      case NEED_THEME:
-      case NEED_MOVIE:
-      case NEED_SOUND:
-      case NEED_SPEECH:
-      case NEED_INFANTRY:
-      case NEED_UNIT:
-      case NEED_AIRCRAFT:
-      case NEED_STRUCTURE:
-      case NEED_TRIGGER:
-      case NEED_TEAM:
-      case NEED_HOUSE:
-      case NEED_TIME:
-      case NEED_BOOL:
-      case NEED_SPECIAL:
+      case NeedType::kNone:
+      case NeedType::kTheme:
+      case NeedType::kMovie:
+      case NeedType::kSound:
+      case NeedType::kSpeech:
+      case NeedType::kInfantry:
+      case NeedType::kUnit:
+      case NeedType::kAircraft:
+      case NeedType::kStructure:
+      case NeedType::kTrigger:
+      case NeedType::kTeam:
+      case NeedType::kHouse:
+      case NeedType::kTime:
+      case NeedType::kBool:
+      case NeedType::kSpecial:
       default:
         break;
     }
@@ -503,39 +503,39 @@ bool TeamType::Edit() {
       commands.Remove(unit_mission_drop);
       switch (TeamMissionNeeds(
           static_cast<TeamMissionType>(mission_drop.Current_Index()))) {
-        case NEED_NONE:
-        case NEED_THEME:
-        case NEED_MOVIE:
-        case NEED_SOUND:
-        case NEED_SPEECH:
-        case NEED_INFANTRY:
-        case NEED_UNIT:
-        case NEED_AIRCRAFT:
-        case NEED_STRUCTURE:
-        case NEED_TRIGGER:
-        case NEED_TEAM:
-        case NEED_HOUSE:
-        case NEED_TIME:
-        case NEED_BOOL:
-        case NEED_SPECIAL:
+        case NeedType::kNone:
+        case NeedType::kTheme:
+        case NeedType::kMovie:
+        case NeedType::kSound:
+        case NeedType::kSpeech:
+        case NeedType::kInfantry:
+        case NeedType::kUnit:
+        case NeedType::kAircraft:
+        case NeedType::kStructure:
+        case NeedType::kTrigger:
+        case NeedType::kTeam:
+        case NeedType::kHouse:
+        case NeedType::kTime:
+        case NeedType::kBool:
+        case NeedType::kSpecial:
         default:
           break;
 
-        case NEED_MISSION:
+        case NeedType::kMission:
           commands.AddAfter(unit_mission_drop, name_edit);
           break;
 
-        case NEED_FORMATION:
+        case NeedType::kFormation:
           commands.AddAfter(formation_drop, name_edit);
           break;
 
-        case NEED_WAYPOINT:
-        case NEED_NUMBER:
-        case NEED_HEX_NUMBER:
+        case NeedType::kWaypoint:
+        case NeedType::kNumber:
+        case NeedType::kHexNumber:
           commands.AddAfter(argument_edit, name_edit);
           break;
 
-        case NEED_QUARRY:
+        case NeedType::kQuarry:
           commands.AddAfter(quarry_drop, name_edit);
           break;
       }

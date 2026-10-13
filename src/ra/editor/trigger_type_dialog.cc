@@ -300,7 +300,7 @@ bool TriggerType::Edit() {
       kAction1Waypoint, action1_waypoint_text, sizeof(action1_waypoint_text),
       FontType::kEditor, TPF_NOSHADOW, kAction1DataX, kAction1DataY, kDataWidth,
       9, EditClass::kAlpha);
-  if (ActionNeed(action1_record.type) == NEED_WAYPOINT) {
+  if (ActionNeed(action1_record.type) == NeedType::kWaypoint) {
     base::SafeCopy(action1_waypoint_text,
                    WaypointLetters(action1_record.value));
   }
@@ -310,7 +310,7 @@ bool TriggerType::Edit() {
       kAction2Waypoint, action2_waypoint_text, sizeof(action2_waypoint_text),
       FontType::kEditor, TPF_NOSHADOW, kAction2DataX, kAction2DataY, kDataWidth,
       9, EditClass::kAlpha);
-  if (ActionNeed(action2_record.type) == NEED_WAYPOINT) {
+  if (ActionNeed(action2_record.type) == NeedType::kWaypoint) {
     base::SafeCopy(action2_waypoint_text,
                    WaypointLetters(action2_record.value));
   }
@@ -322,7 +322,7 @@ bool TriggerType::Edit() {
                                TPF_NOSHADOW, kEvent1DataX, kEvent1DataY,
                                kDataWidth, 9, EditClass::kNumeric);
   if (const NeedType need = Event_Needs(event1.Event);
-      need == NEED_TIME || need == NEED_NUMBER) {
+      need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event1_number_text, sizeof(event1_number_text), "%d",
                    static_cast<int>(event1.Data.Value));
   }
@@ -333,7 +333,7 @@ bool TriggerType::Edit() {
                                TPF_NOSHADOW, kEvent2DataX, kEvent2DataY,
                                kDataWidth, 9, EditClass::kNumeric);
   if (const NeedType need = Event_Needs(event2.Event);
-      need == NEED_TIME || need == NEED_NUMBER) {
+      need == NeedType::kTime || need == NeedType::kNumber) {
     absl::SNPrintF(event2_number_text, sizeof(event2_number_text), "%d",
                    static_cast<int>(event2.Data.Value));
   }
@@ -343,7 +343,7 @@ bool TriggerType::Edit() {
                                 sizeof(action1_number_text), FontType::kEditor,
                                 TPF_NOSHADOW, kAction1DataX, kAction1DataY,
                                 kDataWidth, 9, EditClass::kNumeric);
-  if (ActionNeed(action1_record.type) == NEED_NUMBER) {
+  if (ActionNeed(action1_record.type) == NeedType::kNumber) {
     absl::SNPrintF(action1_number_text, sizeof(action1_number_text), "%d",
                    action1_record.value);
   }
@@ -353,7 +353,7 @@ bool TriggerType::Edit() {
                                 sizeof(action2_number_text), FontType::kEditor,
                                 TPF_NOSHADOW, kAction2DataX, kAction2DataY,
                                 kDataWidth, 9, EditClass::kNumeric);
-  if (ActionNeed(action2_record.type) == NEED_NUMBER) {
+  if (ActionNeed(action2_record.type) == NeedType::kNumber) {
     absl::SNPrintF(action2_number_text, sizeof(action2_number_text), "%d",
                    action2_record.value);
   }
@@ -471,14 +471,16 @@ bool TriggerType::Edit() {
   action2_bool_list.Add_Item("OFF");
   action2_bool_list.Add_Item("ON");
 
-  action1_bool_list.Set_Selected_Index(
-      ActionNeed(action1_record.type) == NEED_BOOL && action1_record.value != 0
-          ? 1
-          : 0);
-  action2_bool_list.Set_Selected_Index(
-      ActionNeed(action2_record.type) == NEED_BOOL && action2_record.value != 0
-          ? 1
-          : 0);
+  action1_bool_list.Set_Selected_Index(ActionNeed(action1_record.type) ==
+                                                   NeedType::kBool &&
+                                               action1_record.value != 0
+                                           ? 1
+                                           : 0);
+  action2_bool_list.Set_Selected_Index(ActionNeed(action2_record.type) ==
+                                                   NeedType::kBool &&
+                                               action2_record.value != 0
+                                           ? 1
+                                           : 0);
 
   // Musical theme lists for the actions; the list index is the ThemeType.
   char action1_theme_text[kDescriptionSize] = "";
@@ -499,12 +501,12 @@ bool TriggerType::Edit() {
     action2_theme_list.Add_Item(ThemeClass::Full_Name(theme));
   }
 
-  if (ActionNeed(action1_record.type) == NEED_THEME) {
+  if (ActionNeed(action1_record.type) == NeedType::kTheme) {
     action1_theme_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_theme_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_THEME) {
+  if (ActionNeed(action2_record.type) == NeedType::kTheme) {
     action2_theme_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_theme_list.Set_Selected_Index(0);
@@ -529,12 +531,12 @@ bool TriggerType::Edit() {
     action2_movie_list.Add_Item(VQName.at(movie));
   }
 
-  if (ActionNeed(action1_record.type) == NEED_MOVIE) {
+  if (ActionNeed(action1_record.type) == NeedType::kMovie) {
     action1_movie_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_movie_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_MOVIE) {
+  if (ActionNeed(action2_record.type) == NeedType::kMovie) {
     action2_movie_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_movie_list.Set_Selected_Index(0);
@@ -559,12 +561,12 @@ bool TriggerType::Edit() {
     action2_sound_list.Add_Item(VocName(sound));
   }
 
-  if (ActionNeed(action1_record.type) == NEED_SOUND) {
+  if (ActionNeed(action1_record.type) == NeedType::kSound) {
     action1_sound_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_sound_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_SOUND) {
+  if (ActionNeed(action2_record.type) == NeedType::kSound) {
     action2_sound_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_sound_list.Set_Selected_Index(0);
@@ -589,12 +591,12 @@ bool TriggerType::Edit() {
     action2_speech_list.Add_Item(VoxName(speech));
   }
 
-  if (ActionNeed(action1_record.type) == NEED_SPEECH) {
+  if (ActionNeed(action1_record.type) == NeedType::kSpeech) {
     action1_speech_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_speech_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_SPEECH) {
+  if (ActionNeed(action2_record.type) == NeedType::kSpeech) {
     action2_speech_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_speech_list.Set_Selected_Index(0);
@@ -621,13 +623,13 @@ bool TriggerType::Edit() {
         TextString(BuildingTypeClass::As_Reference(building).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NEED_STRUCTURE) {
+  if (Event_Needs(event1.Event) == NeedType::kStructure) {
     event1_building_list.Set_Selected_Index(
         static_cast<int>(event1.Data.Structure));
   } else {
     event1_building_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NEED_STRUCTURE) {
+  if (Event_Needs(event2.Event) == NeedType::kStructure) {
     event2_building_list.Set_Selected_Index(
         static_cast<int>(event2.Data.Structure));
   } else {
@@ -655,13 +657,13 @@ bool TriggerType::Edit() {
         TextString(InfantryTypeClass::As_Reference(infantry).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NEED_INFANTRY) {
+  if (Event_Needs(event1.Event) == NeedType::kInfantry) {
     event1_infantry_list.Set_Selected_Index(
         static_cast<int>(event1.Data.Infantry));
   } else {
     event1_infantry_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NEED_INFANTRY) {
+  if (Event_Needs(event2.Event) == NeedType::kInfantry) {
     event2_infantry_list.Set_Selected_Index(
         static_cast<int>(event2.Data.Infantry));
   } else {
@@ -689,13 +691,13 @@ bool TriggerType::Edit() {
         TextString(AircraftTypeClass::As_Reference(aircraft).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NEED_AIRCRAFT) {
+  if (Event_Needs(event1.Event) == NeedType::kAircraft) {
     event1_aircraft_list.Set_Selected_Index(
         static_cast<int>(event1.Data.Aircraft));
   } else {
     event1_aircraft_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NEED_AIRCRAFT) {
+  if (Event_Needs(event2.Event) == NeedType::kAircraft) {
     event2_aircraft_list.Set_Selected_Index(
         static_cast<int>(event2.Data.Aircraft));
   } else {
@@ -723,12 +725,12 @@ bool TriggerType::Edit() {
         TextString(UnitTypeClass::As_Reference(unit).Full_Name()));
   }
 
-  if (Event_Needs(event1.Event) == NEED_UNIT) {
+  if (Event_Needs(event1.Event) == NeedType::kUnit) {
     event1_unit_list.Set_Selected_Index(static_cast<int>(event1.Data.Unit));
   } else {
     event1_unit_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NEED_UNIT) {
+  if (Event_Needs(event2.Event) == NeedType::kUnit) {
     event2_unit_list.Set_Selected_Index(static_cast<int>(event2.Data.Unit));
   } else {
     event2_unit_list.Set_Selected_Index(0);
@@ -771,22 +773,22 @@ bool TriggerType::Edit() {
         HouseTypeClass::As_Reference(house_type).IniName);
   }
 
-  if (Event_Needs(event1.Event) == NEED_HOUSE) {
+  if (Event_Needs(event1.Event) == NeedType::kHouse) {
     event1_house_list.Set_Selected_Index(static_cast<int>(event1.Data.House));
   } else {
     event1_house_list.Set_Selected_Index(0);
   }
-  if (Event_Needs(event2.Event) == NEED_HOUSE) {
+  if (Event_Needs(event2.Event) == NeedType::kHouse) {
     event2_house_list.Set_Selected_Index(static_cast<int>(event2.Data.House));
   } else {
     event2_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action1_record.type) == NEED_HOUSE) {
+  if (ActionNeed(action1_record.type) == NeedType::kHouse) {
     action1_house_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_house_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_HOUSE) {
+  if (ActionNeed(action2_record.type) == NeedType::kHouse) {
     action2_house_list.Set_Selected_Index(action2_record.value);
   } else {
     action2_house_list.Set_Selected_Index(0);
@@ -812,14 +814,14 @@ bool TriggerType::Edit() {
     action1_special_list.Add_Item(SpecialWeaponName.at(weapon));
     action2_special_list.Add_Item(SpecialWeaponName.at(weapon));
   }
-  if (ActionNeed(action1_record.type) == NEED_SPECIAL &&
+  if (ActionNeed(action1_record.type) == NeedType::kSpecial &&
       magic_enum::enum_contains(
           static_cast<SpecialWeaponType>(action1_record.value))) {
     action1_special_list.Set_Selected_Index(action1_record.value);
   } else {
     action1_special_list.Set_Selected_Index(0);
   }
-  if (ActionNeed(action2_record.type) == NEED_SPECIAL &&
+  if (ActionNeed(action2_record.type) == NeedType::kSpecial &&
       magic_enum::enum_contains(
           static_cast<SpecialWeaponType>(action2_record.value))) {
     action2_special_list.Set_Selected_Index(action2_record.value);
@@ -1009,49 +1011,48 @@ bool TriggerType::Edit() {
       gadgets.Remove(event1_unit_list);
       gadgets.Remove(event1_team_list);
       switch (Event_Needs(*event1_list.Current_Item())) {
-        case NEED_HOUSE:
+        case NeedType::kHouse:
           gadgets.AddAfter(event1_house_list, ok_button);
           break;
 
-        case NEED_TEAM:
+        case NeedType::kTeam:
           gadgets.AddAfter(event1_team_list, ok_button);
           break;
 
-
-        case NEED_NUMBER:
+        case NeedType::kNumber:
           gadgets.AddAfter(event1_number_edit, ok_button);
           break;
 
-        case NEED_STRUCTURE:
+        case NeedType::kStructure:
           gadgets.AddAfter(event1_building_list, ok_button);
           break;
 
-        case NEED_INFANTRY:
+        case NeedType::kInfantry:
           gadgets.AddAfter(event1_infantry_list, ok_button);
           break;
 
-        case NEED_AIRCRAFT:
+        case NeedType::kAircraft:
           gadgets.AddAfter(event1_aircraft_list, ok_button);
           break;
 
-        case NEED_UNIT:
+        case NeedType::kUnit:
           gadgets.AddAfter(event1_unit_list, ok_button);
           break;
 
-        case NeedType::NEED_NONE:
-        case NeedType::NEED_WAYPOINT:
-        case NeedType::NEED_TIME:
-        case NeedType::NEED_THEME:
-        case NeedType::NEED_MOVIE:
-        case NeedType::NEED_SOUND:
-        case NeedType::NEED_SPEECH:
-        case NeedType::NEED_TRIGGER:
-        case NeedType::NEED_QUARRY:
-        case NeedType::NEED_FORMATION:
-        case NeedType::NEED_BOOL:
-        case NeedType::NEED_SPECIAL:
-        case NeedType::NEED_MISSION:
-        case NeedType::NEED_HEX_NUMBER:
+        case NeedType::kNone:
+        case NeedType::kWaypoint:
+        case NeedType::kTime:
+        case NeedType::kTheme:
+        case NeedType::kMovie:
+        case NeedType::kSound:
+        case NeedType::kSpeech:
+        case NeedType::kTrigger:
+        case NeedType::kQuarry:
+        case NeedType::kFormation:
+        case NeedType::kBool:
+        case NeedType::kSpecial:
+        case NeedType::kMission:
+        case NeedType::kHexNumber:
         default:
           break;
       }
@@ -1066,49 +1067,48 @@ bool TriggerType::Edit() {
       gadgets.Remove(event2_team_list);
       if (gadgets.Extract(kEvent2List)) {
         switch (Event_Needs(*event2_list.Current_Item())) {
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             gadgets.AddAfter(event2_house_list, ok_button);
             break;
 
-          case NEED_TEAM:
+          case NeedType::kTeam:
             gadgets.AddAfter(event2_team_list, ok_button);
             break;
 
-
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             gadgets.AddAfter(event2_number_edit, ok_button);
             break;
 
-          case NEED_STRUCTURE:
+          case NeedType::kStructure:
             gadgets.AddAfter(event2_building_list, ok_button);
             break;
 
-          case NEED_INFANTRY:
+          case NeedType::kInfantry:
             gadgets.AddAfter(event2_infantry_list, ok_button);
             break;
 
-          case NEED_AIRCRAFT:
+          case NeedType::kAircraft:
             gadgets.AddAfter(event2_aircraft_list, ok_button);
             break;
 
-          case NEED_UNIT:
+          case NeedType::kUnit:
             gadgets.AddAfter(event2_unit_list, ok_button);
             break;
 
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_WAYPOINT:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_THEME:
-          case NeedType::NEED_MOVIE:
-          case NeedType::NEED_SOUND:
-          case NeedType::NEED_SPEECH:
-          case NeedType::NEED_TRIGGER:
-          case NeedType::NEED_QUARRY:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_BOOL:
-          case NeedType::NEED_SPECIAL:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kWaypoint:
+          case NeedType::kTime:
+          case NeedType::kTheme:
+          case NeedType::kMovie:
+          case NeedType::kSound:
+          case NeedType::kSpeech:
+          case NeedType::kTrigger:
+          case NeedType::kQuarry:
+          case NeedType::kFormation:
+          case NeedType::kBool:
+          case NeedType::kSpecial:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }
@@ -1144,62 +1144,62 @@ bool TriggerType::Edit() {
       gadgets.Remove(action1_movie_list);
       gadgets.Remove(action1_speech_list);
       switch (ActionNeed(*action1_list.Current_Item())) {
-        case NEED_MOVIE:
+        case NeedType::kMovie:
           gadgets.AddAfter(action1_movie_list, ok_button);
           break;
 
-        case NEED_SPECIAL:
+        case NeedType::kSpecial:
           gadgets.AddAfter(action1_special_list, ok_button);
           break;
 
-        case NEED_HOUSE:
+        case NeedType::kHouse:
           gadgets.AddAfter(action1_house_list, ok_button);
           break;
 
-        case NEED_BOOL:
+        case NeedType::kBool:
           gadgets.AddAfter(action1_bool_list, ok_button);
           break;
 
-        case NEED_TRIGGER:
+        case NeedType::kTrigger:
           gadgets.AddAfter(action1_trigger_list, ok_button);
           break;
 
-        case NEED_TEAM:
+        case NeedType::kTeam:
           gadgets.AddAfter(action1_team_list, ok_button);
           break;
 
-        case NEED_NUMBER:
+        case NeedType::kNumber:
           gadgets.AddAfter(action1_number_edit, ok_button);
           break;
 
-        case NEED_WAYPOINT:
+        case NeedType::kWaypoint:
           gadgets.AddAfter(action1_waypoint_edit, ok_button);
           break;
 
-        case NEED_THEME:
+        case NeedType::kTheme:
           gadgets.AddAfter(action1_theme_list, ok_button);
           break;
 
-        case NEED_SOUND:
+        case NeedType::kSound:
           gadgets.AddAfter(action1_sound_list, ok_button);
           break;
 
-        case NEED_SPEECH:
+        case NeedType::kSpeech:
           gadgets.AddAfter(action1_speech_list, ok_button);
           break;
 
-        case NEED_QUARRY:
+        case NeedType::kQuarry:
           gadgets.AddAfter(action1_quarry_list, ok_button);
           break;
-        case NeedType::NEED_NONE:
-        case NeedType::NEED_INFANTRY:
-        case NeedType::NEED_UNIT:
-        case NeedType::NEED_AIRCRAFT:
-        case NeedType::NEED_STRUCTURE:
-        case NeedType::NEED_TIME:
-        case NeedType::NEED_FORMATION:
-        case NeedType::NEED_MISSION:
-        case NeedType::NEED_HEX_NUMBER:
+        case NeedType::kNone:
+        case NeedType::kInfantry:
+        case NeedType::kUnit:
+        case NeedType::kAircraft:
+        case NeedType::kStructure:
+        case NeedType::kTime:
+        case NeedType::kFormation:
+        case NeedType::kMission:
+        case NeedType::kHexNumber:
         default:
           break;
       }
@@ -1219,62 +1219,62 @@ bool TriggerType::Edit() {
       gadgets.Remove(action2_speech_list);
       if (gadgets.Extract(kAction2List)) {
         switch (ActionNeed(*action2_list.Current_Item())) {
-          case NEED_MOVIE:
+          case NeedType::kMovie:
             gadgets.AddAfter(action2_movie_list, ok_button);
             break;
 
-          case NEED_SPECIAL:
+          case NeedType::kSpecial:
             gadgets.AddAfter(action2_special_list, ok_button);
             break;
 
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             gadgets.AddAfter(action2_house_list, ok_button);
             break;
 
-          case NEED_BOOL:
+          case NeedType::kBool:
             gadgets.AddAfter(action2_bool_list, ok_button);
             break;
 
-          case NEED_TRIGGER:
+          case NeedType::kTrigger:
             gadgets.AddAfter(action2_trigger_list, ok_button);
             break;
 
-          case NEED_TEAM:
+          case NeedType::kTeam:
             gadgets.AddAfter(action2_team_list, ok_button);
             break;
 
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             gadgets.AddAfter(action2_number_edit, ok_button);
             break;
 
-          case NEED_WAYPOINT:
+          case NeedType::kWaypoint:
             gadgets.AddAfter(action2_waypoint_edit, ok_button);
             break;
 
-          case NEED_THEME:
+          case NeedType::kTheme:
             gadgets.AddAfter(action2_theme_list, ok_button);
             break;
 
-          case NEED_SOUND:
+          case NeedType::kSound:
             gadgets.AddAfter(action2_sound_list, ok_button);
             break;
 
-          case NEED_SPEECH:
+          case NeedType::kSpeech:
             gadgets.AddAfter(action2_speech_list, ok_button);
             break;
 
-          case NEED_QUARRY:
+          case NeedType::kQuarry:
             gadgets.AddAfter(action2_quarry_list, ok_button);
             break;
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_INFANTRY:
-          case NeedType::NEED_UNIT:
-          case NeedType::NEED_AIRCRAFT:
-          case NeedType::NEED_STRUCTURE:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kInfantry:
+          case NeedType::kUnit:
+          case NeedType::kAircraft:
+          case NeedType::kStructure:
+          case NeedType::kTime:
+          case NeedType::kFormation:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }
@@ -1376,52 +1376,51 @@ bool TriggerType::Edit() {
         event_control = event_style;
         event1.Event = *event1_list.Current_Item();
         switch (Event_Needs(event1.Event)) {
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             event1.Data.House = HousesType(event1_house_list.Current_Index());
             break;
 
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             event1.Data.Value =
                 base::ParseIntegerOr<int>(event1_number_edit.Get_Text(), 0);
             break;
 
-          case NEED_STRUCTURE:
+          case NeedType::kStructure:
             event1.Data.Structure =
                 StructType(event1_building_list.Current_Index());
             break;
 
-          case NEED_UNIT:
+          case NeedType::kUnit:
             event1.Data.Unit = UnitType(event1_unit_list.Current_Index());
             break;
 
-          case NEED_INFANTRY:
+          case NeedType::kInfantry:
             event1.Data.Infantry =
                 InfantryType(event1_infantry_list.Current_Index());
             break;
 
-          case NEED_AIRCRAFT:
+          case NeedType::kAircraft:
             event1.Data.Aircraft =
                 AircraftType(event1_aircraft_list.Current_Index());
             break;
 
-
-          case NEED_TEAM:
+          case NeedType::kTeam:
             event1.Team = TeamType::FromName(SelectedName(event1_team_list));
             break;
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_WAYPOINT:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_THEME:
-          case NeedType::NEED_MOVIE:
-          case NeedType::NEED_SOUND:
-          case NeedType::NEED_SPEECH:
-          case NeedType::NEED_TRIGGER:
-          case NeedType::NEED_QUARRY:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_BOOL:
-          case NeedType::NEED_SPECIAL:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kWaypoint:
+          case NeedType::kTime:
+          case NeedType::kTheme:
+          case NeedType::kMovie:
+          case NeedType::kSound:
+          case NeedType::kSpeech:
+          case NeedType::kTrigger:
+          case NeedType::kQuarry:
+          case NeedType::kFormation:
+          case NeedType::kBool:
+          case NeedType::kSpecial:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }
@@ -1430,52 +1429,51 @@ bool TriggerType::Edit() {
         // event is in use.
         event2.Event = *event2_list.Current_Item();
         switch (Event_Needs(event2.Event)) {
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             event2.Data.House = HousesType(event2_house_list.Current_Index());
             break;
 
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             event2.Data.Value =
                 base::ParseIntegerOr<int>(event2_number_edit.Get_Text(), 0);
             break;
 
-          case NEED_STRUCTURE:
+          case NeedType::kStructure:
             event2.Data.Structure =
                 StructType(event2_building_list.Current_Index());
             break;
 
-          case NEED_UNIT:
+          case NeedType::kUnit:
             event2.Data.Unit = UnitType(event2_unit_list.Current_Index());
             break;
 
-          case NEED_INFANTRY:
+          case NeedType::kInfantry:
             event2.Data.Infantry =
                 InfantryType(event2_infantry_list.Current_Index());
             break;
 
-          case NEED_AIRCRAFT:
+          case NeedType::kAircraft:
             event2.Data.Aircraft =
                 AircraftType(event2_aircraft_list.Current_Index());
             break;
 
-
-          case NEED_TEAM:
+          case NeedType::kTeam:
             event2.Team = TeamType::FromName(SelectedName(event2_team_list));
             break;
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_WAYPOINT:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_THEME:
-          case NeedType::NEED_MOVIE:
-          case NeedType::NEED_SOUND:
-          case NeedType::NEED_SPEECH:
-          case NeedType::NEED_TRIGGER:
-          case NeedType::NEED_QUARRY:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_BOOL:
-          case NeedType::NEED_SPECIAL:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kWaypoint:
+          case NeedType::kTime:
+          case NeedType::kTheme:
+          case NeedType::kMovie:
+          case NeedType::kSound:
+          case NeedType::kSpeech:
+          case NeedType::kTrigger:
+          case NeedType::kQuarry:
+          case NeedType::kFormation:
+          case NeedType::kBool:
+          case NeedType::kSpecial:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }
@@ -1485,66 +1483,66 @@ bool TriggerType::Edit() {
         action_control = MultiStyle(has_second_action);
         action1_record.type = *action1_list.Current_Item();
         switch (ActionNeed(action1_record.type)) {
-          case NEED_SPECIAL:
+          case NeedType::kSpecial:
             action1_record.value = action1_special_list.Current_Index();
             break;
 
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             action1_record.value = action1_house_list.Current_Index();
             break;
 
-          case NEED_TRIGGER:
+          case NeedType::kTrigger:
             action1_record.trigger_type =
                 TriggerType::FromName(SelectedName(action1_trigger_list));
             break;
 
-          case NEED_TEAM:
+          case NeedType::kTeam:
             action1_record.team_type =
                 TeamType::FromName(SelectedName(action1_team_list));
             break;
 
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             action1_record.value =
                 base::ParseIntegerOr<int>(action1_number_edit.Get_Text(), 0);
             break;
 
-          case NEED_WAYPOINT:
+          case NeedType::kWaypoint:
             action1_record.value = WaypointFromLetters(action1_waypoint_text);
             break;
 
-          case NEED_BOOL:
+          case NeedType::kBool:
             action1_record.value =
                 action1_bool_list.Current_Index() != 0 ? 1 : 0;
             break;
 
-          case NEED_THEME:
+          case NeedType::kTheme:
             action1_record.value = action1_theme_list.Current_Index();
             break;
 
-          case NEED_SOUND:
+          case NeedType::kSound:
             action1_record.value = action1_sound_list.Current_Index();
             break;
 
-          case NEED_MOVIE:
+          case NeedType::kMovie:
             action1_record.value = action1_movie_list.Current_Index();
             break;
 
-          case NEED_SPEECH:
+          case NeedType::kSpeech:
             action1_record.value = action1_speech_list.Current_Index();
             break;
 
-          case NEED_QUARRY:
+          case NeedType::kQuarry:
             action1_record.value = action1_quarry_list.Current_Index();
             break;
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_INFANTRY:
-          case NeedType::NEED_UNIT:
-          case NeedType::NEED_AIRCRAFT:
-          case NeedType::NEED_STRUCTURE:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kInfantry:
+          case NeedType::kUnit:
+          case NeedType::kAircraft:
+          case NeedType::kStructure:
+          case NeedType::kTime:
+          case NeedType::kFormation:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }
@@ -1552,66 +1550,66 @@ bool TriggerType::Edit() {
         // The second action and its data, stored even when it is not in use.
         action2_record.type = *action2_list.Current_Item();
         switch (ActionNeed(action2_record.type)) {
-          case NEED_SPECIAL:
+          case NeedType::kSpecial:
             action2_record.value = action2_special_list.Current_Index();
             break;
 
-          case NEED_HOUSE:
+          case NeedType::kHouse:
             action2_record.value = action2_house_list.Current_Index();
             break;
 
-          case NEED_TRIGGER:
+          case NeedType::kTrigger:
             action2_record.trigger_type =
                 TriggerType::FromName(SelectedName(action2_trigger_list));
             break;
 
-          case NEED_TEAM:
+          case NeedType::kTeam:
             action2_record.team_type =
                 TeamType::FromName(SelectedName(action2_team_list));
             break;
 
-          case NEED_NUMBER:
+          case NeedType::kNumber:
             action2_record.value =
                 base::ParseIntegerOr<int>(action2_number_edit.Get_Text(), 0);
             break;
 
-          case NEED_WAYPOINT:
+          case NeedType::kWaypoint:
             action2_record.value = WaypointFromLetters(action2_waypoint_text);
             break;
 
-          case NEED_BOOL:
+          case NeedType::kBool:
             action2_record.value =
                 action2_bool_list.Current_Index() != 0 ? 1 : 0;
             break;
 
-          case NEED_THEME:
+          case NeedType::kTheme:
             action2_record.value = action2_theme_list.Current_Index();
             break;
 
-          case NEED_MOVIE:
+          case NeedType::kMovie:
             action2_record.value = action2_movie_list.Current_Index();
             break;
 
-          case NEED_SOUND:
+          case NeedType::kSound:
             action2_record.value = action2_sound_list.Current_Index();
             break;
 
-          case NEED_SPEECH:
+          case NeedType::kSpeech:
             action2_record.value = action2_speech_list.Current_Index();
             break;
 
-          case NEED_QUARRY:
+          case NeedType::kQuarry:
             action2_record.value = action2_quarry_list.Current_Index();
             break;
-          case NeedType::NEED_NONE:
-          case NeedType::NEED_INFANTRY:
-          case NeedType::NEED_UNIT:
-          case NeedType::NEED_AIRCRAFT:
-          case NeedType::NEED_STRUCTURE:
-          case NeedType::NEED_TIME:
-          case NeedType::NEED_FORMATION:
-          case NeedType::NEED_MISSION:
-          case NeedType::NEED_HEX_NUMBER:
+          case NeedType::kNone:
+          case NeedType::kInfantry:
+          case NeedType::kUnit:
+          case NeedType::kAircraft:
+          case NeedType::kStructure:
+          case NeedType::kTime:
+          case NeedType::kFormation:
+          case NeedType::kMission:
+          case NeedType::kHexNumber:
           default:
             break;
         }

@@ -366,8 +366,8 @@ class TeamType : public AbstractTypeClass {
   TeamMember members_[kMaxMemberTypes];
 };
 
-// Returns the kind of argument a team mission takes, NEED_NONE for a mission
-// that takes none; it says which member of TeamMission::Data is in use
+// Returns the kind of argument a team mission takes, NeedType::kNone for a
+// mission that takes none; it says which member of TeamMission::Data is in use
 // and which control the team editor offers.
 NeedType TeamMissionNeeds(TeamMissionType mission);
 

@@ -928,7 +928,7 @@ NeedType ActionNeed(const TriggerActionType action) {
   switch (action) {
     case TriggerActionType::kOneSpecial:
     case TriggerActionType::kFullSpecial:
-      return NEED_SPECIAL;
+      return NeedType::kSpecial;
 
     case TriggerActionType::kFireSale:
     case TriggerActionType::kWin:
@@ -936,36 +936,36 @@ NeedType ActionNeed(const TriggerActionType action) {
     case TriggerActionType::kAllHunt:
     case TriggerActionType::kBeginProduction:
     case TriggerActionType::kAutocreate:
-      return NEED_HOUSE;
+      return NeedType::kHouse;
 
     case TriggerActionType::kBaseBuilding:
-      return NEED_BOOL;
+      return NeedType::kBool;
 
     case TriggerActionType::kCreateTeam:
     case TriggerActionType::kDestroyTeam:
     case TriggerActionType::kReinforcements:
-      return NEED_TEAM;
+      return NeedType::kTeam;
 
     case TriggerActionType::kForceTrigger:
     case TriggerActionType::kDestroyTrigger:
-      return NEED_TRIGGER;
+      return NeedType::kTrigger;
 
     case TriggerActionType::kDropZoneFlare:
     case TriggerActionType::kRevealSome:
     case TriggerActionType::kRevealZone:
-      return NEED_WAYPOINT;
+      return NeedType::kWaypoint;
 
     case TriggerActionType::kPlayMusic:
-      return NEED_THEME;
+      return NeedType::kTheme;
 
     case TriggerActionType::kPlayMovie:
-      return NEED_MOVIE;
+      return NeedType::kMovie;
 
     case TriggerActionType::kPlaySound:
-      return NEED_SOUND;
+      return NeedType::kSound;
 
     case TriggerActionType::kPlaySpeech:
-      return NEED_SPEECH;
+      return NeedType::kSpeech;
 
     case TriggerActionType::kTextTrigger:
     case TriggerActionType::kAddTimer:
@@ -973,10 +973,10 @@ NeedType ActionNeed(const TriggerActionType action) {
     case TriggerActionType::kSetTimer:
     case TriggerActionType::kSetGlobal:
     case TriggerActionType::kClearGlobal:
-      return NEED_NUMBER;
+      return NeedType::kNumber;
 
     case TriggerActionType::kPreferredTarget:
-      return NEED_QUARRY;
+      return NeedType::kQuarry;
 
     case TriggerActionType::kNone:
     case TriggerActionType::kWinLose:
@@ -990,7 +990,7 @@ NeedType ActionNeed(const TriggerActionType action) {
     default:
       break;
   }
-  return NEED_NONE;
+  return NeedType::kNone;
 }
 
 TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
@@ -1011,7 +1011,8 @@ TriggerActionRecord ReadTriggerActionRecord(base::Tokenizer& tokens) {
   } else {
     // The shipped scenarios: the team and the trigger are given by name.
     record.team_type = TeamType::FromName(tokens.Next());
-    if (ActionNeed(record.type) == NEED_TEAM && record.team_type == nullptr) {
+    if (ActionNeed(record.type) == NeedType::kTeam &&
+        record.team_type == nullptr) {
       DLOG(WARNING) << "ReadTriggerActionRecord: " << ActionName(record.type)
                     << " names a team that does not exist";
     }

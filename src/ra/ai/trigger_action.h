@@ -93,8 +93,9 @@ enum class TriggerActionType {
 const char* ActionName(TriggerActionType action);
 
 // Returns the kind of value `action` takes in TriggerActionRecord::value, which
-// the scenario editor prompts for; NEED_NONE when it takes none. NEED_TEAM and
-// NEED_TRIGGER mean the record's team_type or trigger_type instead.
+// the scenario editor prompts for; NeedType::kNone when it takes none.
+// NeedType::kTeam and NeedType::kTrigger mean the record's team_type or
+// trigger_type instead.
 NeedType ActionNeed(TriggerActionType action);
 
 // What an action is told when its trigger springs.

@@ -114,46 +114,46 @@ std::string TriggerType::Description() const {
   // The first event's value, when it has one worth showing.
   std::string value_text;
   switch (Event_Needs(event1.Event)) {
-    case NEED_NUMBER:
+    case NeedType::kNumber:
       value_text = absl::StrCat(event1.Data.Value);
       break;
 
-    case NEED_UNIT:
+    case NeedType::kUnit:
       value_text =
           TextString(UnitTypeClass::As_Reference(event1.Data.Unit).Full_Name());
       break;
 
-    case NEED_AIRCRAFT:
+    case NeedType::kAircraft:
       value_text = TextString(
           AircraftTypeClass::As_Reference(event1.Data.Aircraft).Full_Name());
       break;
 
-    case NEED_STRUCTURE:
+    case NeedType::kStructure:
       value_text = TextString(
           BuildingTypeClass::As_Reference(event1.Data.Structure).Full_Name());
       break;
 
-    case NEED_INFANTRY:
+    case NeedType::kInfantry:
       value_text = TextString(
           InfantryTypeClass::As_Reference(event1.Data.Infantry).Full_Name());
       break;
 
-    case NeedType::NEED_NONE:
-    case NeedType::NEED_THEME:
-    case NeedType::NEED_MOVIE:
-    case NeedType::NEED_SOUND:
-    case NeedType::NEED_SPEECH:
-    case NeedType::NEED_TRIGGER:
-    case NeedType::NEED_WAYPOINT:
-    case NeedType::NEED_TEAM:
-    case NeedType::NEED_HOUSE:
-    case NeedType::NEED_TIME:
-    case NeedType::NEED_QUARRY:
-    case NeedType::NEED_FORMATION:
-    case NeedType::NEED_BOOL:
-    case NeedType::NEED_SPECIAL:
-    case NeedType::NEED_MISSION:
-    case NeedType::NEED_HEX_NUMBER:
+    case NeedType::kNone:
+    case NeedType::kTheme:
+    case NeedType::kMovie:
+    case NeedType::kSound:
+    case NeedType::kSpeech:
+    case NeedType::kTrigger:
+    case NeedType::kWaypoint:
+    case NeedType::kTeam:
+    case NeedType::kHouse:
+    case NeedType::kTime:
+    case NeedType::kQuarry:
+    case NeedType::kFormation:
+    case NeedType::kBool:
+    case NeedType::kSpecial:
+    case NeedType::kMission:
+    case NeedType::kHexNumber:
     default:
       break;
   }

@@ -1747,36 +1747,31 @@ enum class RadioMessageType {
 };
 using enum RadioMessageType;
 
-/****************************************************************************
-**	Various trigger events and actions require additional data. This
-*enumeration is *	used to indicate what kind of additional data is
-*required. This is also used *	for team mission types that might need
-*additional data.
-*/
+// The kind of argument a trigger event, a trigger action or a team mission
+// takes, which is also the control the scenario editor offers for it.
 enum class NeedType {
-  NEED_NONE,       // No additional data is required.
-  NEED_THEME,      // Need a musical theme.
-  NEED_MOVIE,      // Need a movie to play.
-  NEED_SOUND,      // Sound effect.
-  NEED_SPEECH,     // Speech from EVA.
-  NEED_INFANTRY,   // Infantry type class.
-  NEED_UNIT,       // Unit type class.
-  NEED_AIRCRAFT,   // Aircraft type class.
-  NEED_STRUCTURE,  // Structure type class.
-  NEED_WAYPOINT,   // Waypoint letter.
-  NEED_NUMBER,     // General number.
-  NEED_TRIGGER,    //	Trigger object reference.
-  NEED_TEAM,       // Team type class.
-  NEED_HOUSE,      // House type number.
-  NEED_TIME,       // Time delay value required.
-  NEED_QUARRY,     // Quarry type is needed.
-  NEED_FORMATION,  // A formation type is needed.
-  NEED_BOOL,       // Boolean value is needed.
-  NEED_SPECIAL,    // Special weapon ability.
-  NEED_MISSION,    // General unit mission type.
-  NEED_HEX_NUMBER  // General number.
+  kNone,       // No additional data is required.
+  kTheme,      // Need a musical theme.
+  kMovie,      // Need a movie to play.
+  kSound,      // Sound effect.
+  kSpeech,     // Speech from EVA.
+  kInfantry,   // Infantry type class.
+  kUnit,       // Unit type class.
+  kAircraft,   // Aircraft type class.
+  kStructure,  // Structure type class.
+  kWaypoint,   // Waypoint letter.
+  kNumber,     // General number.
+  kTrigger,    // Trigger object reference.
+  kTeam,       // Team type class.
+  kHouse,      // House type number.
+  kTime,       // Time delay value required.
+  kQuarry,     // Quarry type is needed.
+  kFormation,  // A formation type is needed.
+  kBool,       // Boolean value is needed.
+  kSpecial,    // Special weapon ability.
+  kMission,    // General unit mission type.
+  kHexNumber,  // A number the editor shows and reads in hex.
 };
-using enum NeedType;
 
 /****************************************************************************
 **	There are various target types that teams and special weapons can be

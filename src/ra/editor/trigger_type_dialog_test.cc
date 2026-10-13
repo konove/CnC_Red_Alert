@@ -199,22 +199,23 @@ struct Contents {
 // that takes none.
 int EventValue(const TEventClass& event) {
   const NeedType need = Event_Needs(event.Event);
-  if (need == NEED_HOUSE) {
+  if (need == NeedType::kHouse) {
     return static_cast<int>(event.Data.House);
   }
-  if (need == NEED_STRUCTURE) {
+  if (need == NeedType::kStructure) {
     return static_cast<int>(event.Data.Structure);
   }
-  if (need == NEED_INFANTRY) {
+  if (need == NeedType::kInfantry) {
     return static_cast<int>(event.Data.Infantry);
   }
-  if (need == NEED_AIRCRAFT) {
+  if (need == NeedType::kAircraft) {
     return static_cast<int>(event.Data.Aircraft);
   }
-  if (need == NEED_UNIT) {
+  if (need == NeedType::kUnit) {
     return static_cast<int>(event.Data.Unit);
   }
-  if (need == NEED_WAYPOINT || need == NEED_TIME || need == NEED_NUMBER) {
+  if (need == NeedType::kWaypoint || need == NeedType::kTime ||
+      need == NeedType::kNumber) {
     return event.Data.Value;
   }
   return 0;
@@ -256,21 +257,21 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
   void Fill(TEventClass& event, const TEventType type) const {
     event.Event = type;
     const NeedType need = Event_Needs(type);
-    if (need == NEED_HOUSE) {
+    if (need == NeedType::kHouse) {
       event.Data.House = HOUSE_UKRAINE;
-    } else if (need == NEED_TEAM) {
+    } else if (need == NeedType::kTeam) {
       event.Team = team_type_;
-    } else if (need == NEED_STRUCTURE) {
+    } else if (need == NeedType::kStructure) {
       event.Data.Structure = STRUCT_POWER;
-    } else if (need == NEED_INFANTRY) {
+    } else if (need == NeedType::kInfantry) {
       event.Data.Infantry = INFANTRY_E2;
-    } else if (need == NEED_AIRCRAFT) {
+    } else if (need == NeedType::kAircraft) {
       event.Data.Aircraft = AIRCRAFT_HIND;
-    } else if (need == NEED_UNIT) {
+    } else if (need == NeedType::kUnit) {
       event.Data.Unit = UNIT_JEEP;
-    } else if (need == NEED_WAYPOINT) {
+    } else if (need == NeedType::kWaypoint) {
       event.Data.Value = 5;
-    } else if (need == NEED_TIME || need == NEED_NUMBER) {
+    } else if (need == NeedType::kTime || need == NeedType::kNumber) {
       event.Data.Value = 7;
     }
   }
@@ -279,17 +280,17 @@ class TriggerTypeDialogRoundTripTest : public TriggerTypeDialogTest {
   [[nodiscard]] TriggerActionRecord Record(const TriggerActionType type) const {
     TriggerActionRecord record{.type = type};
     const NeedType need = ActionNeed(type);
-    if (need == NEED_TEAM) {
+    if (need == NeedType::kTeam) {
       record.team_type = team_type_;
-    } else if (need == NEED_TRIGGER) {
+    } else if (need == NeedType::kTrigger) {
       record.trigger_type = other_trigger_type_;
-    } else if (need == NEED_HOUSE) {
+    } else if (need == NeedType::kHouse) {
       record.value = static_cast<int>(HOUSE_UKRAINE);
-    } else if (need == NEED_WAYPOINT) {
+    } else if (need == NeedType::kWaypoint) {
       record.value = 5;
-    } else if (need == NEED_NUMBER) {
+    } else if (need == NeedType::kNumber) {
       record.value = 7;
-    } else if (need != NEED_NONE) {
+    } else if (need != NeedType::kNone) {
       // A special weapon, movie, flag, theme, sound, speech or quarry: an
       // index into its list.
       record.value = 1;
