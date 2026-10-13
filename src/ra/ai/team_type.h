@@ -209,6 +209,8 @@ class TeamType : public AbstractTypeClass {
   // The heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* CreateTeam();
+  // Returns the number of teams of this type that exist now.
+  [[nodiscard]] int CountTeams() const;
   // Deletes every team of this type; their members go back to being loose
   // units.
   void DestroyTeams() const;
@@ -259,7 +261,6 @@ class TeamType : public AbstractTypeClass {
   void set_is_prebuilt(const bool value) { is_prebuilt_ = value; }
   [[nodiscard]] bool is_reinforceable() const { return is_reinforceable_; }
   void set_is_reinforceable(const bool value) { is_reinforceable_ = value; }
-  void set_is_transient(const bool value) { is_transient_ = value; }
   [[nodiscard]] int recruit_priority() const { return recruit_priority_; }
   [[nodiscard]] int max_teams() const { return max_teams_; }
   // Take any number: see StoredCount().
@@ -274,12 +275,6 @@ class TeamType : public AbstractTypeClass {
   [[nodiscard]] WAYPOINT origin() const { return origin_; }
   // Takes a `waypoint` the scenario does not have as -1, none.
   void set_origin(WAYPOINT waypoint);
-
-  // The number of teams of this type that exist now. TeamClass reports its
-  // own creation and deletion.
-  [[nodiscard]] int team_count() const { return team_count_; }
-  void OnTeamCreated() { team_count_++; }
-  void OnTeamDeleted() { team_count_--; }
 
   // The script: the first mission_count() entries of missions(). The rest
   // are unused.
@@ -337,10 +332,6 @@ class TeamType : public AbstractTypeClass {
   // still defend themselves.
   bool is_reinforceable_ : 1 = true;
 
-  // Created only to bring on reinforcements for one special event (the
-  // paratrooper drop), not by the scenario.
-  bool is_transient_ : 1 = false;
-
   // Rank among teams when recruiting, 0 to 15: a team takes members from
   // teams of lower priority.
   int recruit_priority_ = 7;
@@ -351,9 +342,6 @@ class TeamType : public AbstractTypeClass {
 
   // The most teams of this type that may exist at one time.
   unsigned char max_teams_ = 0;
-
-  // Unused; kept because it is in the saved game.
-  unsigned char fear_ = 0;
 
   // The house the teams belong to. HOUSE_NONE until ReadIniEntry() or the
   // editor sets it.
@@ -367,9 +355,6 @@ class TeamType : public AbstractTypeClass {
   // reinforcement; -1 for none, otherwise below
   // ScenarioClass::kWaypointCount.
   WAYPOINT origin_ = -1;
-
-  // The number of teams of this type that exist now.
-  int team_count_ = 0;
 
   // The script: the first mission_count_ entries of missions_.
   int mission_count_ = 0;

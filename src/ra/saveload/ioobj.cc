@@ -113,19 +113,16 @@ void TeamType::Serialize(Archive& ar) {
   bool is_autocreate = is_autocreate_;
   bool is_prebuilt = is_prebuilt_;
   bool is_reinforcable = is_reinforceable_;
-  bool is_transient = is_transient_;
   ar(is_active, is_round_about, is_suicide, is_autocreate, is_prebuilt,
-     is_reinforcable, is_transient, recruit_priority_, initial_count_,
-     max_teams_, fear_, house_,
+     is_reinforcable, recruit_priority_, initial_count_, max_teams_, house_,
      game::HeapSlotPtr(trigger_, TheObjectHeaps().trigger_type()), origin_,
-     team_count_, mission_count_, missions_, member_count_, members_);
+     mission_count_, missions_, member_count_, members_);
   is_active_ = is_active;
   is_roundabout_ = is_round_about;
   is_suicide_ = is_suicide;
   is_autocreate_ = is_autocreate;
   is_prebuilt_ = is_prebuilt;
   is_reinforceable_ = is_reinforcable;
-  is_transient_ = is_transient;
 }
 template void TeamType::Serialize(ArchiveWriter&);
 template void TeamType::Serialize(ArchiveReader&);

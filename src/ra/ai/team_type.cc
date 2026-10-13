@@ -29,7 +29,6 @@
 #include <span>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
@@ -386,10 +385,20 @@ void TeamType::WriteIni(engine::file::IniFile& ini) {
 }
 
 TeamClass* TeamType::CreateTeam() {
-  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {
+  if (TheWorld().scenario_init() || CountTeams() < max_teams_) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(house_));
   }
   return nullptr;
+}
+
+int TeamType::CountTeams() const {
+  int count = 0;
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    if (TheObjectHeaps().team().ActiveAt(index)->Class == this) {
+      count++;
+    }
+  }
+  return count;
 }
 
 void TeamType::DestroyTeams() const {
@@ -439,7 +448,7 @@ TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,
     const int limit =
         alerted == candidate->is_autocreate() ? candidate->max_teams() : 0;
     if (candidate->house() == house->Class->House &&
-        candidate->team_count() < limit) {
+        candidate->CountTeams() < limit) {
       choices.push_back(candidate);
     }
   }

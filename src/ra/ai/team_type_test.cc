@@ -99,7 +99,7 @@ TEST_F(TeamTypeTest, ANewTeamTypeHasNoHouseNoOriginAndNothingInIt) {
   EXPECT_EQ(team_type_->trigger(), nullptr);
   EXPECT_EQ(team_type_->member_count(), 0);
   EXPECT_EQ(team_type_->mission_count(), 0);
-  EXPECT_EQ(team_type_->team_count(), 0);
+  EXPECT_EQ(team_type_->CountTeams(), 0);
   EXPECT_EQ(team_type_->recruit_priority(), 7);
   EXPECT_TRUE(team_type_->is_prebuilt());
   EXPECT_TRUE(team_type_->is_reinforceable());
@@ -539,7 +539,24 @@ TEST_F(TeamTypeTest, ATeamTypeBelowItsLimitCreatesATeamOfItsHouse) {
 
   ASSERT_NE(team, nullptr);
   EXPECT_EQ(TheObjectHeaps().team().Count(), 1);
-  EXPECT_EQ(team_type_->team_count(), 1);
+  EXPECT_EQ(team_type_->CountTeams(), 1);
+}
+
+// Only its own teams, and only the ones that still exist.
+TEST_F(TeamTypeTest, TheTeamCountFollowsTheTeamsInTheField) {
+  team_type_->ReadIniEntry("tanks", SovietEntry(0, 2));
+  auto* const other = base::NewPooled<TeamType>();
+  other->ReadIniEntry("more", SovietEntry(0, 2));
+  const TeamClass* const team = team_type_->CreateTeam();
+  ASSERT_NE(team, nullptr);
+  ASSERT_NE(team_type_->CreateTeam(), nullptr);
+  ASSERT_NE(other->CreateTeam(), nullptr);
+  EXPECT_EQ(team_type_->CountTeams(), 2);
+
+  base::DeletePooled(team);
+
+  EXPECT_EQ(team_type_->CountTeams(), 1);
+  EXPECT_EQ(other->CountTeams(), 1);
 }
 
 TEST_F(TeamTypeTest, ATeamTypeAtItsLimitCreatesNoTeam) {
@@ -547,7 +564,7 @@ TEST_F(TeamTypeTest, ATeamTypeAtItsLimitCreatesNoTeam) {
   ASSERT_NE(team_type_->CreateTeam(), nullptr);
 
   EXPECT_EQ(team_type_->CreateTeam(), nullptr);
-  EXPECT_EQ(team_type_->team_count(), 1);
+  EXPECT_EQ(team_type_->CountTeams(), 1);
 }
 
 TEST_F(TeamTypeTest, ScenarioSetUpCreatesATeamPastTheLimit) {

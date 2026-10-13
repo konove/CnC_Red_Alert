@@ -4080,12 +4080,12 @@
       "anchors": [
         {
           "path": "src/ra/ai/team.cc",
-          "startLine": 2424,
-          "endLine": 2424,
+          "startLine": 2435,
+          "endLine": 2435,
           "text": "            base::At(TheScenario().Waypoint, mission->value()))) {",
           "before": [
-            "        static_cast<unsigned>(mission->value()) <",
-            "            ScenarioClass::kWaypointCount &&",
+            "    if (mission->mission() == TeamMissionType::kMove &&",
+            "        ScenarioClass::IsWaypoint(mission->value()) &&",
             "        !TheMap().In_Radar("
           ],
           "after": [
@@ -4106,16 +4106,27 @@
       "tags": [
         "bugs",
         "ra",
-        "editor",
-        "needs-decision"
+        "editor"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "The dialog selects `HOUSE_GOOD` for a team type without a house but stores the house on OK only. Cancel also puts back the members the members dialog changed.",
       "toDecide": "- **Keep**: a new team type always ends up with a house, even after Cancel (`CancelLeavesTheTeamTypeAsItWasButForAMissingHouse` pins it).\n- **Store the house on OK only**: select `HOUSE_GOOD` in the list without writing it; about 5 lines plus the test. Editor behaviour only.",
+      "decisions": [
+        {
+          "question": "Cancel in the team type dialog still turns HOUSE_NONE into HOUSE_GOOD. Keep that, or store the house only on OK?",
+          "options": [
+            "Store on OK only (Recommended)",
+            "Keep"
+          ],
+          "answer": "Store on OK only (Recommended)",
+          "time": "2026-10-13T01:27:53Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/editor/team_type_dialog.cc",
@@ -4132,7 +4143,7 @@
             "  }",
             "  house_drop.Set_Selected_Index(static_cast<int>(house_));"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4145,16 +4156,27 @@
       "tags": [
         "refactoring",
         "ra",
-        "editor",
-        "needs-decision"
+        "editor"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`ParseHexDigits()` is gone; the cell-number field is read with `base::ParseHexOr<int>(text, 0)`. `ACellWithAStrayCharacterIsZero` pins the new reading.",
       "toDecide": "- **Use `base::ParseHexOr<int>(text, 0)`**: drops 14 lines; a stray character then makes the whole number 0 (\"12z\" is 0x120 today), and a sign and surrounding spaces are accepted.\n- **Keep `ParseHexDigits()`**. Editor behaviour only.",
+      "decisions": [
+        {
+          "question": "Replace the team editor's hand-written ParseHexDigits() with base::ParseHexOr<int>(text, 0)?",
+          "options": [
+            "Use ParseHexOr (Recommended)",
+            "Keep ParseHexDigits()"
+          ],
+          "answer": "Use ParseHexOr (Recommended)",
+          "time": "2026-10-13T01:27:53Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/editor/team_type_dialog.cc",
@@ -4171,7 +4193,7 @@
             "  for (const char digit : text) {",
             "    value *= 16;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4230,17 +4252,18 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "Added `ScenarioClass::IsWaypoint()` and `IsLetterWaypoint()` (plus `kLetterWaypointCount` for the two loops) and used them at the seven sites; behaviour unchanged.",
       "anchors": [
         {
           "path": "src/ra/editor/team_type_dialog.cc",
-          "startLine": 413,
-          "endLine": 413,
+          "startLine": 391,
+          "endLine": 391,
           "text": "            mission.value() >= ScenarioClass::kHomeWaypoint) {",
           "before": [
             "      case NEED_WAYPOINT:",
@@ -4252,7 +4275,7 @@
             "        }",
             "        break;"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4264,21 +4287,32 @@
       "effort": "s",
       "tags": [
         "refactoring",
-        "ra",
-        "needs-decision"
+        "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:07Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`TeamType::SuggestNewTeam()` collects its candidates in a `std::vector`, so every eligible team type takes part in the draw; the test is now `EveryCandidateTakesPartInTheDraw`.",
       "toDecide": "- **Keep** the cap of 20 candidates: shipped behaviour (`TheTwentyFirstCandidateIsNeverOffered` pins it).\n- **Lift it** (a `std::vector`, 5 lines): changes which team a house builds and what the synchronized random stream returns afterwards, so missions with many team types play differently and a game against an unchanged peer desyncs.",
+      "decisions": [
+        {
+          "question": "SuggestNewTeam() only considers the first 20 eligible team types. Keep the cap or lift it?",
+          "options": [
+            "Keep the cap (Recommended)",
+            "Lift it"
+          ],
+          "answer": "Lift it",
+          "time": "2026-10-13T01:27:53Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 428,
-          "endLine": 428,
+          "startLine": 436,
+          "endLine": 436,
           "text": "  TeamType* choices[20];",
           "before": [
             "TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,",
@@ -4290,7 +4324,7 @@
             "",
             "  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4303,16 +4337,26 @@
       "tags": [
         "refactoring",
         "ra",
-        "cleanup",
-        "needs-decision"
+        "cleanup"
       ],
       "status": "open",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:27:53Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
       "toDecide": "- **Drop `is_transient_` and `fear_`**: about 10 lines, and the save format changes (bump `kSaveGameVersion`, run `tools/ra_saveload_smoke.sh`). `initial_count_` stays as long as scenarios round-trip through the editor.\n- **Keep** all three.",
+      "decisions": [
+        {
+          "question": "Drop the team type fields nothing reads (is_transient_, fear_)? initial_count_ stays either way for the editor round trip.",
+          "options": [
+            "Drop both (Recommended)",
+            "Keep all three"
+          ],
+          "answer": "Drop both (Recommended)",
+          "time": "2026-10-13T01:27:53Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/ra/ai/team_type.h",
@@ -4329,7 +4373,7 @@
             "  // Rank among teams when recruiting, 0 to 15: a team takes members from",
             "  // teams of lower priority."
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -4381,12 +4425,13 @@
         "editor",
         "coverage"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-12T05:58:22Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
       "source": "30c6f6ae..e9ac6245",
+      "resolution": "`MapEditClass::Team_Members()` takes the `TeamType&` to edit and `Edit()` passes `*this`. Two dialog tests open the members dialog, add a member and close it; Cancel in the team dialog now restores the members.",
       "comments": [
         {
           "author": "agent",
@@ -4397,8 +4442,8 @@
       "anchors": [
         {
           "path": "src/ra/editor/team_type_dialog.cc",
-          "startLine": 659,
-          "endLine": 659,
+          "startLine": 649,
+          "endLine": 649,
           "text": "      case engine::window::ButtonKey(kButtonMembers):",
           "before": [
             "        break;",
@@ -4540,12 +4585,13 @@
         "editor",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-06T09:18:45Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:37:55Z",
       "parent": "T-240",
-      "source": "30c6f6ae..e9ac6245"
+      "source": "30c6f6ae..e9ac6245",
+      "resolution": "The double-click handler's switch moved into a `load_work_mission(const TeamMission&)` lambda beside `work_mission`."
     },
     {
       "id": "T-161",
@@ -5594,10 +5640,10 @@
         "refactoring",
         "game"
       ],
-      "status": "open",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:27Z",
-      "updated": "2026-10-08T07:13:27Z",
+      "updated": "2026-10-13T01:26:16Z",
       "source": "37ea18f9..323cb376",
       "anchors": [
         {
@@ -5852,18 +5898,18 @@
         "refactoring",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-13T00:22:26Z",
+      "updated": "2026-10-13T01:26:13Z",
       "parent": "T-186",
       "source": "5d374065",
       "resolution": "Renamed TD's `kCcLightGreen` (slot 159) to `kCcGreenHighlight`, named by role like `kCcGreenShadow`, and added a comment at its definition saying it is not `game::kLightGreen` (slot 4). Its one use, the dial hand in `td/ui/dial8.cc`, and the `kCcGreenBox` alias follow; no slot changed.",
       "anchors": [
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2439,
-          "endLine": 2439,
+          "startLine": 2435,
+          "endLine": 2435,
           "text": "inline constexpr engine::gfx::PaletteIndex kCcGreenHighlight{159};",
           "before": [
             "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;",
@@ -5889,10 +5935,10 @@
         "documentation",
         "game"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-13T00:38:27Z",
+      "updated": "2026-10-13T01:26:10Z",
       "parent": "T-186",
       "source": "53dd4a3b",
       "resolution": "Dumped slots 0-15 of RA's TEMPERAT/SNOW/INTERIOR.PAL, PALETTE.CPS and EGOPAL.PAL and TD's TEMPERAT/DESERT/WINTER.PAL (the last two read straight from DESERT.MIX/WINTER.MIX, which `mixdump` does not open). All hold the same sixteen EGA colors (one 6-bit step apart in kLightGreen's red), so the \"reserved\" sentence is confirmed; the claim that TD's palette has orange at kPurple and tan at kBrown was wrong (slot 1 is aa00aa, slot 7 aa5500 in TD too) and the file comment now says so, and notes that TD's DARK_*.PAL and SATSEL.PAL screens do not keep the set.",
@@ -6014,10 +6060,10 @@
         "documentation",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-13T01:24:59Z",
+      "updated": "2026-10-13T01:26:06Z",
       "parent": "T-186",
       "source": "323cb376",
       "resolution": "The example in `engine/gfx/glow_pulse.h` now declares its own constants, `kGlowBase` (a `PaletteColor`) and `kGlowSlot`, instead of reading `palette.at(kWhite)`, and qualifies `SystemTickSource`, so it names nothing the engine cannot include.",
@@ -7470,10 +7516,10 @@
         "refactoring",
         "ra"
       ],
-      "status": "open",
+      "status": "in_progress",
       "author": "agent",
       "created": "2026-10-09T20:33:08Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:26:33Z",
       "source": "30c6f6ae..e9ac6245",
       "anchors": [
         {
@@ -10373,11 +10419,11 @@
       "anchors": [
         {
           "path": "src/ra/objects/cell.cc",
-          "startLine": 1079,
-          "endLine": 1083,
+          "startLine": 1080,
+          "endLine": 1084,
           "text": "                base::At(waypt, 0) = static_cast<char>('A' + i);\n                base::At(waypt, 1) = 0;\n              } else {\n                base::At(waypt, 0) = static_cast<char>('A' + (i / 26) - 1);\n                base::At(waypt, 1) = static_cast<char>('A' + (i % 26));",
           "before": [
-            "          for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {",
+            "          for (int i = 0; i < ScenarioClass::kLetterWaypointCount; i++) {",
             "            if (base::At(TheScenario().Waypoint, i) == Cell_Number()) {",
             "              if (i < 26) {"
           ],
@@ -12172,7 +12218,7 @@
             "  **\tButton enumerations:",
             "  */"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -13715,8 +13761,8 @@
         },
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 380,
-          "endLine": 387,
+          "startLine": 379,
+          "endLine": 386,
           "text": "void TeamType::WriteIni(engine::file::IniFile& ini) {\n  ini.Clear(kIniSection);\n\n  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {\n    const TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(index);\n    ini.PutString(kIniSection, team_type->IniName, team_type->ToIniEntry());\n  }\n}",
           "before": [
             "  return true;",
@@ -13726,7 +13772,7 @@
           "after": [
             "",
             "TeamClass* TeamType::CreateTeam() {",
-            "  if (TheWorld().scenario_init() || std::cmp_less(team_count_, max_teams_)) {"
+            "  if (TheWorld().scenario_init() || CountTeams() < max_teams_) {"
           ],
           "lost": false
         }
@@ -14403,10 +14449,10 @@
         "cleanup",
         "td"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-13T00:38:27Z",
-      "updated": "2026-10-13T01:21:03Z",
+      "updated": "2026-10-13T01:26:08Z",
       "parent": "T-186",
       "resolution": "Deleted `kCcOrange`, `kCcTan`, `kCcBlueGreen` and `kCcBlueGrey` and replaced their 21 uses in `src/td` with `game::kPurple`, `kBrown`, `kCyan` and `kLightBlue`. While doing it found that the names were not arbitrary: TD's gradient font takes the slot as a row of the tables in `TextStyleFor()` (1 draws oranges, 7 tans, 2 blue-greens, 10 blue-greys), which 9 of the uses rely on; the user confirmed deleting all the same. The file comment in `game/ui/standard_colors.h`, which T-191 left saying the aliases describe nothing, now explains the rows, and `text_colors_` in `td/net/session.h` has a comment.",
       "toDecide": "Use the `game::k...` names and delete `kCcOrange`, `kCcTan`, `kCcBlueGreen`, `kCcBlueGrey` (this reverses part of T-189), or keep the aliases and only document that the names are historical?",

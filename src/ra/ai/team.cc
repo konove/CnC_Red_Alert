@@ -293,7 +293,6 @@ TeamClass::~TeamClass() {
     while (Member != nullptr) {
       Remove(Member);
     }
-    Class->OnTeamDeleted();
 
     /*
     **	When the team dies, any trigger associated with it, dies as well. This
@@ -341,7 +340,6 @@ TeamClass::TeamClass(TeamType* type, HouseClass* owner)
     Zone =
         ra::Target::FromCell(base::At(TheScenario().Waypoint, Class->origin()));
   }
-  Class->OnTeamCreated();
 
   /*
   **	If there is a trigger tightly associated with this team, then

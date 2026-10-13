@@ -2487,7 +2487,6 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
           ttype = base::NewPooled<TeamType>();
           if (ttype != nullptr) {
             base::SafeCopy(ttype->IniName, "@PINF");
-            ttype->set_is_transient(true);
             ttype->set_is_prebuilt(false);
             ttype->set_is_reinforceable(false);
             ttype->set_origin(ScenarioClass::kSpecialWaypoint);
