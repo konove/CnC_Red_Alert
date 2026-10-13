@@ -15006,162 +15006,163 @@
         "td",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T06:46:59Z",
-      "updated": "2026-10-13T06:46:59Z",
+      "updated": "2026-10-13T07:03:26Z",
       "source": "be2fcbf5f..484f9b5ee",
+      "resolution": "`ConfineRect()` now takes the window as a `Rect` (`bounds`) and returns an absolute position, so the eight callers in both games pass the map's origin and size and no longer subtract and re-add the origin. `ConfinedRect` and the rule for `bounded` are unchanged; `clip_test.cc` gained four cases with a window away from the origin.",
       "anchors": [
         {
           "path": "src/base/clip.h",
           "startLine": 90,
           "endLine": 90,
-          "text": "constexpr ConfinedRect ConfineRect(const Rect& rect, const int clip_width,",
+          "text": "constexpr ConfinedRect ConfineRect(const Rect& rect, const Rect& bounds) {",
           "before": [
-            "// at the origin. Both games' map scrolling reads the result as \"the scroll",
+            "// at its corner. Both games' map scrolling reads the result as \"the scroll",
             "// hit the edge of the world\" and recomputes the distance actually travelled,",
             "// so that is behaviour rather than an accident."
           ],
           "after": [
-            "                                   const int clip_height) {",
             "  ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};",
-            ""
+            "",
+            "  if (rect.x < bounds.x) {"
           ],
           "lost": false
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 630,
-          "endLine": 630,
-          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "startLine": 627,
+          "endLine": 627,
+          "text": "      base::ConfineRect(base::Rect{TacticalCoord.x(), TacticalCoord.y(),",
           "before": [
-            "  const int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);",
-            "",
+            "  **\tbecause of the changed dimensions.",
+            "  */",
             "  const base::Point confined ="
           ],
           "after": [
-            "                        MapCellWidth * game::kCellWidthLeptons,",
-            "                        MapCellHeight * game::kCellHeightLeptons)",
-            "          .position;"
+            "                                   TacLeptonWidth, TacLeptonHeight},",
+            "                        base::Rect{MapCellX * game::kCellWidthLeptons,",
+            "                                   MapCellY * game::kCellHeightLeptons,"
           ],
           "lost": false
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 1291,
-          "endLine": 1291,
+          "startLine": 1287,
+          "endLine": 1287,
           "text": "  const base::ConfinedRect confined = base::ConfineRect(",
           "before": [
-            "                 static_cast<int16_t>(Cell_To_Lepton(MapCellX));",
-            "  const int yy = static_cast<int>(static_cast<int16_t>(coord.y())) -",
-            "                 static_cast<int16_t>(Cell_To_Lepton(MapCellY));"
+            "  */",
+            "  // A scroll past the top or left of the world wraps the 16-bit lepton",
+            "  // component around; read as signed it is the negative one that was meant."
           ],
           "after": [
-            "      base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
-            "      Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));",
-            "  const bool shifted = confined.bounded;"
+            "      base::Rect{static_cast<int16_t>(coord.x()),",
+            "                 static_cast<int16_t>(coord.y()), TacLeptonWidth,",
+            "                 TacLeptonHeight},"
           ],
           "lost": false
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 3569,
-          "endLine": 3569,
-          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "startLine": 3563,
+          "endLine": 3563,
+          "text": "      base::ConfineRect(",
           "before": [
-            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);",
-            "",
+            "  **\tBound the desired location to fit the legal map edges.",
+            "  */",
             "  const base::Point confined ="
           ],
           "after": [
-            "                        Cell_To_Lepton(MapCellWidth),",
-            "                        Cell_To_Lepton(MapCellHeight))",
-            "          .position;"
+            "          base::Rect{coord.x(), coord.y(), TacLeptonWidth, TacLeptonHeight},",
+            "          base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),",
+            "                     Cell_To_Lepton(MapCellWidth),"
           ],
           "lost": false
         },
         {
           "path": "src/ra/map/radar.cc",
-          "startLine": 1891,
-          "endLine": 1891,
-          "text": "      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+          "startLine": 1885,
+          "endLine": 1885,
+          "text": "      base::ConfineRect(",
           "before": [
-            "  }",
+            "  const int oldy = zoomed ? cell.y() : MapCellY;",
             "",
             "  const base::Point confined ="
           ],
           "after": [
-            "                        MapCellWidth, MapCellHeight)",
-            "          .position;",
-            ""
-          ],
-          "lost": false
-        },
-        {
-          "path": "src/td/map/display.cc",
-          "startLine": 617,
-          "endLine": 617,
-          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
-          "before": [
-            "  const int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);",
-            "",
-            "  const base::Point confined ="
-          ],
-          "after": [
-            "                        MapCellWidth * game::kCellWidthLeptons,",
-            "                        MapCellHeight * game::kCellHeightLeptons)",
+            "          base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+            "          base::Rect{MapCellX, MapCellY, MapCellWidth, MapCellHeight})",
             "          .position;"
           ],
           "lost": false
         },
         {
           "path": "src/td/map/display.cc",
-          "startLine": 1333,
-          "endLine": 1333,
+          "startLine": 614,
+          "endLine": 614,
+          "text": "      base::ConfineRect(base::Rect{TacticalCoord.x(), TacticalCoord.y(),",
+          "before": [
+            "  **\tbecause of the changed dimensions.",
+            "  */",
+            "  const base::Point confined ="
+          ],
+          "after": [
+            "                                   TacLeptonWidth, TacLeptonHeight},",
+            "                        base::Rect{MapCellX * game::kCellWidthLeptons,",
+            "                                   MapCellY * game::kCellHeightLeptons,"
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/td/map/display.cc",
+          "startLine": 1329,
+          "endLine": 1329,
           "text": "  const base::ConfinedRect confined = base::ConfineRect(",
           "before": [
-            "  */",
-            "  const int xx = coord.x() - Cell_To_Lepton(MapCellX);",
-            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);"
+            "  /*",
+            "  **\tClip the new coordinate to the edges of the game world.",
+            "  */"
           ],
           "after": [
-            "      base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
-            "      Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));",
-            "  const bool shifted = confined.bounded;"
+            "      base::Rect{coord.x(), coord.y(), TacLeptonWidth, TacLeptonHeight},",
+            "      base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),",
+            "                 Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});"
           ],
           "lost": false
         },
         {
           "path": "src/td/map/display.cc",
-          "startLine": 3291,
-          "endLine": 3291,
-          "text": "      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},",
+          "startLine": 3283,
+          "endLine": 3283,
+          "text": "      base::ConfineRect(",
           "before": [
-            "  const int yy = coord.y() - Cell_To_Lepton(MapCellY);",
-            "",
+            "  **\tBound the desired location to fit the legal map edges.",
+            "  */",
             "  const base::Point confined ="
           ],
           "after": [
-            "                        Cell_To_Lepton(MapCellWidth),",
-            "                        Cell_To_Lepton(MapCellHeight))",
-            "          .position;"
+            "          base::Rect{coord.x(), coord.y(), TacLeptonWidth, TacLeptonHeight},",
+            "          base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),",
+            "                     Cell_To_Lepton(MapCellWidth),"
           ],
           "lost": false
         },
         {
           "path": "src/td/map/radar.cc",
-          "startLine": 1629,
-          "endLine": 1629,
-          "text": "      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+          "startLine": 1623,
+          "endLine": 1623,
+          "text": "      base::ConfineRect(",
           "before": [
-            "  }",
+            "  const int oldy = zoomed ? cell.y() : MapCellY;",
             "",
             "  const base::Point confined ="
           ],
           "after": [
-            "                        MapCellWidth, MapCellHeight)",
-            "          .position;",
-            ""
+            "          base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},",
+            "          base::Rect{MapCellX, MapCellY, MapCellWidth, MapCellHeight})",
+            "          .position;"
           ],
           "lost": false
         }
@@ -15290,7 +15291,7 @@
             "  EXPECT_EQ(confined.position.y, y);",
             "  EXPECT_EQ(confined.bounded, bounded);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     }

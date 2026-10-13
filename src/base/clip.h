@@ -74,9 +74,9 @@ struct ConfinedRect {
   bool bounded = false;  // whether either axis ran into the window's edge
 };
 
-// Slides `rect` so that it lies inside the window from (0, 0) to (clip_width,
-// clip_height), moving it as little as it can and changing only its position,
-// never its size. A rectangle too big for the window is pinned to the origin.
+// Slides `rect` so that it lies inside `bounds`, moving it as little as it can
+// and changing only its position, never its size. A rectangle too big for the
+// window is pinned to its top left corner.
 //
 // Where ClipRect() trims a rectangle to what is visible, this keeps all of it
 // and pushes it back inside - which is what the map wants of a tactical view
@@ -84,26 +84,25 @@ struct ConfinedRect {
 //
 // An axis reports as bounded even when the rectangle already sat where the
 // bounding would put it, which happens when it is larger than the window and
-// at the origin. Both games' map scrolling reads the result as "the scroll
+// at its corner. Both games' map scrolling reads the result as "the scroll
 // hit the edge of the world" and recomputes the distance actually travelled,
 // so that is behaviour rather than an accident.
-constexpr ConfinedRect ConfineRect(const Rect& rect, const int clip_width,
-                                   const int clip_height) {
+constexpr ConfinedRect ConfineRect(const Rect& rect, const Rect& bounds) {
   ConfinedRect result{.position = {.x = rect.x, .y = rect.y}};
 
-  if (rect.x < 0) {
-    result.position.x = 0;
+  if (rect.x < bounds.x) {
+    result.position.x = bounds.x;
     result.bounded = true;
-  } else if (rect.right() > clip_width) {
-    result.position.x = std::max(clip_width - rect.width, 0);
+  } else if (rect.right() > bounds.right()) {
+    result.position.x = std::max(bounds.right() - rect.width, bounds.x);
     result.bounded = true;
   }
 
-  if (rect.y < 0) {
-    result.position.y = 0;
+  if (rect.y < bounds.y) {
+    result.position.y = bounds.y;
     result.bounded = true;
-  } else if (rect.bottom() > clip_height) {
-    result.position.y = std::max(clip_height - rect.height, 0);
+  } else if (rect.bottom() > bounds.bottom()) {
+    result.position.y = std::max(bounds.bottom() - rect.height, bounds.y);
     result.bounded = true;
   }
 

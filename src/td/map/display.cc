@@ -610,18 +610,16 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   **	Adjust the tactical cell if it is now in an invalid position
   **	because of the changed dimensions.
   */
-  const int xx = TacticalCoord.x() - (MapCellX * game::kCellWidthLeptons);
-  const int yy = TacticalCoord.y() - (MapCellY * game::kCellHeightLeptons);
-
   const base::Point confined =
-      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},
-                        MapCellWidth * game::kCellWidthLeptons,
-                        MapCellHeight * game::kCellHeightLeptons)
+      base::ConfineRect(base::Rect{TacticalCoord.x(), TacticalCoord.y(),
+                                   TacLeptonWidth, TacLeptonHeight},
+                        base::Rect{MapCellX * game::kCellWidthLeptons,
+                                   MapCellY * game::kCellHeightLeptons,
+                                   MapCellWidth * game::kCellWidthLeptons,
+                                   MapCellHeight * game::kCellHeightLeptons})
           .position;
 
-  Set_Tactical_Position(Coordinate::FromLeptons(
-      confined.x + (MapCellX * game::kCellWidthLeptons),
-      confined.y + (MapCellY * game::kCellHeightLeptons)));
+  Set_Tactical_Position(Coordinate::FromLeptons(confined.x, confined.y));
 
   TacPixelX = x;
   TacPixelY = y;
@@ -1328,15 +1326,12 @@ bool DisplayClass::Scroll_Map(game::Direction facing, int& distance,
   /*
   **	Clip the new coordinate to the edges of the game world.
   */
-  const int xx = coord.x() - Cell_To_Lepton(MapCellX);
-  const int yy = coord.y() - Cell_To_Lepton(MapCellY);
   const base::ConfinedRect confined = base::ConfineRect(
-      base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},
-      Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
+      base::Rect{coord.x(), coord.y(), TacLeptonWidth, TacLeptonHeight},
+      base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),
+                 Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});
   const bool shifted = confined.bounded;
-  coord =
-      Coordinate::FromLeptons(confined.position.x + Cell_To_Lepton(MapCellX),
-                              confined.position.y + Cell_To_Lepton(MapCellY));
+  coord = Coordinate::FromLeptons(confined.position.x, confined.position.y);
 
   /*
   **	If the desired scroll was bound by the edge of the map, then adjust the
@@ -3284,16 +3279,14 @@ void DisplayClass::Set_Tactical_Position(Coordinate coord) {
   /*
   **	Bound the desired location to fit the legal map edges.
   */
-  const int xx = coord.x() - Cell_To_Lepton(MapCellX);
-  const int yy = coord.y() - Cell_To_Lepton(MapCellY);
-
   const base::Point confined =
-      base::ConfineRect(base::Rect{xx, yy, TacLeptonWidth, TacLeptonHeight},
-                        Cell_To_Lepton(MapCellWidth),
-                        Cell_To_Lepton(MapCellHeight))
+      base::ConfineRect(
+          base::Rect{coord.x(), coord.y(), TacLeptonWidth, TacLeptonHeight},
+          base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),
+                     Cell_To_Lepton(MapCellWidth),
+                     Cell_To_Lepton(MapCellHeight)})
           .position;
-  coord = Coordinate::FromLeptons(confined.x + Cell_To_Lepton(MapCellX),
-                                  confined.y + Cell_To_Lepton(MapCellY));
+  coord = Coordinate::FromLeptons(confined.x, confined.y);
 
   if (TheWorld().scenario_init()) {
     TacticalCoord = coord;

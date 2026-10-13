@@ -82,7 +82,7 @@ TEST(ClipRectTest, RectangleLargerThanTheWindowBecomesTheWindow) {
 // reports having bounded it.
 void ExpectConfined(const Rect& rect, const int x, const int y,
                     const bool bounded) {
-  const ConfinedRect confined = ConfineRect(rect, kWidth, kHeight);
+  const ConfinedRect confined = ConfineRect(rect, Rect{0, 0, kWidth, kHeight});
 
   EXPECT_EQ(confined.position.x, x);
   EXPECT_EQ(confined.position.y, y);
@@ -120,6 +120,46 @@ TEST(ConfineRectTest, RectangleLargerThanTheWindowPinsToTheOrigin) {
 // Bounded although it does not move; see ConfineRect().
 TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
   ExpectConfined(Rect{0, 0, 100, 100}, 0, 0, true);
+}
+
+// The map's playable area starts some cells in from the corner of the world,
+// so the window the games confine to is never at the origin.
+constexpr Rect kOffsetBounds{100, 200, kWidth, kHeight};
+
+TEST(ConfineRectTest, WindowAwayFromTheOriginLeavesARectangleInsideAlone) {
+  const ConfinedRect confined =
+      ConfineRect(Rect{110, 220, 5, 6}, kOffsetBounds);
+
+  EXPECT_EQ(confined.position.x, 110);
+  EXPECT_EQ(confined.position.y, 220);
+  EXPECT_FALSE(confined.bounded);
+}
+
+TEST(ConfineRectTest, WindowAwayFromTheOriginBoundsAtItsNearEdges) {
+  const ConfinedRect confined = ConfineRect(Rect{95, 0, 10, 20}, kOffsetBounds);
+
+  EXPECT_EQ(confined.position.x, 100);
+  EXPECT_EQ(confined.position.y, 200);
+  EXPECT_TRUE(confined.bounded);
+}
+
+TEST(ConfineRectTest, WindowAwayFromTheOriginBoundsAtItsFarEdges) {
+  const ConfinedRect confined =
+      ConfineRect(Rect{145, 248, 10, 20}, kOffsetBounds);
+
+  EXPECT_EQ(confined.position.x, 140);
+  EXPECT_EQ(confined.position.y, 230);
+  EXPECT_TRUE(confined.bounded);
+}
+
+// Pinned to the window's corner, not to (0, 0).
+TEST(ConfineRectTest, WindowAwayFromTheOriginPinsAnOversizedRectangle) {
+  const ConfinedRect confined =
+      ConfineRect(Rect{130, 230, 100, 100}, kOffsetBounds);
+
+  EXPECT_EQ(confined.position.x, 100);
+  EXPECT_EQ(confined.position.y, 200);
+  EXPECT_TRUE(confined.bounded);
 }
 
 }  // namespace

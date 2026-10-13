@@ -1614,24 +1614,19 @@ void RadarClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Set_Radar_Position(Cell cell) {
-  int oldx = 0;
-  int oldy = 0;
-
-  if (ZoomFactor != 1) {
-    oldx = cell.x() - MapCellX;
-    oldy = cell.y() - MapCellY;
-  } else {
-    oldx = 0;
-    oldy = 0;
-  }
+  // Zoomed all the way out, the radar shows the map from its corner.
+  const bool zoomed = ZoomFactor != 1;
+  const int oldx = zoomed ? cell.x() : MapCellX;
+  const int oldy = zoomed ? cell.y() : MapCellY;
 
   const base::Point confined =
-      base::ConfineRect(base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},
-                        MapCellWidth, MapCellHeight)
+      base::ConfineRect(
+          base::Rect{oldx, oldy, RadarCellWidth, RadarCellHeight},
+          base::Rect{MapCellX, MapCellY, MapCellWidth, MapCellHeight})
           .position;
 
-  const int newx = confined.x + MapCellX;
-  const int newy = confined.y + MapCellY;
+  const int newx = confined.x;
+  const int newy = confined.y;
   const int newcell = Cell::FromXY(newx, newy).index();
 
   if (RadarCell != newcell) {
