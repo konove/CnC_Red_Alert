@@ -1462,9 +1462,9 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     /*
     ......................... print the label ..........................
     */
-    TextPrinter(view,
-                {kCcTan, game::kTransparentBlack, FontType::k6PointGradient,
-                 TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL})
+    TextPrinter(
+        view, {game::kBrown, game::kTransparentBlack, FontType::k6PointGradient,
+               TPF_CENTER | TPF_NOSHADOW | TPF_USE_GRAD_PAL})
         .Print(buf, {320, 0});
   }
 }

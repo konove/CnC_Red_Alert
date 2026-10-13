@@ -5753,7 +5753,7 @@
             "inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};",
             "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
@@ -5770,7 +5770,7 @@
             "            .Print(\"Rock/Wall/Road\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/editor/mapeddlg.cc",
@@ -5787,7 +5787,7 @@
             "            .Print(\"Neutral Unit\", {txt_x, txt_y});",
             "        txt_y += 16;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/findpath.cc",
@@ -5804,7 +5804,7 @@
             "      }",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/findpath.cc",
@@ -5821,7 +5821,7 @@
             "        forceout = true;",
             "        break;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/map/findpath.cc",
@@ -5838,7 +5838,7 @@
             "        case game::MoveType::MOVE_CLOAK:",
             "        case game::MoveType::MOVE_NO:"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -5912,7 +5912,7 @@
             "#ifndef CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_",
             "#define CNC_RED_ALERT_GAME_UI_STANDARD_COLORS_H_"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -14400,25 +14400,37 @@
       "effort": "s",
       "tags": [
         "cleanup",
-        "td",
-        "needs-decision"
+        "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-13T00:38:27Z",
-      "updated": "2026-10-13T00:38:27Z",
+      "updated": "2026-10-13T01:21:03Z",
       "parent": "T-186",
+      "resolution": "Deleted `kCcOrange`, `kCcTan`, `kCcBlueGreen` and `kCcBlueGrey` and replaced their 21 uses in `src/td` with `game::kPurple`, `kBrown`, `kCyan` and `kLightBlue`. While doing it found that the names were not arbitrary: TD's gradient font takes the slot as a row of the tables in `TextStyleFor()` (1 draws oranges, 7 tans, 2 blue-greens, 10 blue-greys), which 9 of the uses rely on; the user confirmed deleting all the same. The file comment in `game/ui/standard_colors.h`, which T-191 left saying the aliases describe nothing, now explains the rows, and `text_colors_` in `td/net/session.h` has a comment.",
       "toDecide": "Use the `game::k...` names and delete `kCcOrange`, `kCcTan`, `kCcBlueGreen`, `kCcBlueGrey` (this reverses part of T-189), or keep the aliases and only document that the names are historical?",
+      "decisions": [
+        {
+          "question": "What should happen to the four TD aliases (kCcOrange, kCcTan, kCcBlueGreen, kCcBlueGrey) that misdescribe the standard slots?",
+          "options": [
+            "Delete, use game::k...",
+            "Keep, document as historical",
+            "Delete only the unused one"
+          ],
+          "answer": "Delete, use game::k...",
+          "time": "2026-10-13T01:16:15Z"
+        }
+      ],
       "anchors": [
         {
           "path": "src/td/core/defines.h",
-          "startLine": 2429,
-          "endLine": 2433,
-          "text": "inline constexpr engine::gfx::PaletteIndex kCcBlueGreen = game::kCyan;\ninline constexpr engine::gfx::PaletteIndex kCcBlueGrey = game::kLightBlue;\ninline constexpr engine::gfx::PaletteIndex kCcOrange = game::kPurple;\ninline constexpr engine::gfx::PaletteIndex kCcGreen = game::kGreen;\ninline constexpr engine::gfx::PaletteIndex kCcTan = game::kBrown;",
+          "startLine": 2427,
+          "endLine": 2429,
+          "text": "inline constexpr engine::gfx::PaletteIndex kCcGdiColor = game::kYellow;\ninline constexpr engine::gfx::PaletteIndex kCcNodColor = game::kRed;\ninline constexpr engine::gfx::PaletteIndex kCcGreen = game::kGreen;",
           "before": [
-            "",
-            "inline constexpr engine::gfx::PaletteIndex kCcGdiColor = game::kYellow;",
-            "inline constexpr engine::gfx::PaletteIndex kCcNodColor = game::kRed;"
+            "};",
+            "using enum SpecialDialogType;",
+            ""
           ],
           "after": [
             "inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};",

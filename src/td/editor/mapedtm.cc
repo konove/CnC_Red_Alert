@@ -1704,9 +1704,9 @@ int MapEditClass::Team_Members(HousesType house) {
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-          TextPrinter(
-              view, {kCcTan, game::kTransparentBlack, FontType::k6PointGradient,
-                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
+          TextPrinter(view, {game::kBrown, game::kTransparentBlack,
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW})
               .Print(teamclass.at(base::ToSize(curclass))->Full_Name(),
                      {kDialogX + (kDialogW / 2), msg_y});
         }

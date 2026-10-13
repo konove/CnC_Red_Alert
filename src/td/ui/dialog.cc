@@ -130,8 +130,8 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
            game::kLightGrey},  // 0 Button is down.
           {game::kLightGrey, game::kGrey, game::kWhite,
            game::kLightGrey},  // 1 Button is up w/border.
-          {kCcBlueGrey, game::kBlue, game::kLightCyan,
-           kCcBlueGrey},  // 2 Raised blue.
+          {game::kLightBlue, game::kBlue, game::kLightCyan,
+           game::kLightBlue},  // 2 Raised blue.
           {game::kGrey, game::kWhite, game::kBlack,
            game::kGrey},  // 3 Button is disabled down.
           {game::kGrey, game::kBlack, game::kWhite,

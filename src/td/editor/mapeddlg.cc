@@ -1065,8 +1065,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
                            FontType::k6Point, TPF_DROPSHADOW})
             .Print("Tiberium", {txt_x, txt_y});
         txt_y += 16;
-        TextPrinter(view, {kCcTan, game::kTransparentBlack, FontType::k6Point,
-                           TPF_DROPSHADOW})
+        TextPrinter(view, {game::kBrown, game::kTransparentBlack,
+                           FontType::k6Point, TPF_DROPSHADOW})
             .Print("Rock/Wall/Road", {txt_x, txt_y});
         txt_y += 16;
         TextPrinter(view, {game::kYellow, game::kTransparentBlack,
@@ -1077,7 +1077,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
                            FontType::k6Point, TPF_DROPSHADOW})
             .Print("Nod Unit", {txt_x, txt_y});
         txt_y += 16;
-        TextPrinter(view, {kCcOrange, game::kTransparentBlack,
+        TextPrinter(view, {game::kPurple, game::kTransparentBlack,
                            FontType::k6Point, TPF_DROPSHADOW})
             .Print("Neutral Unit", {txt_x, txt_y});
         txt_y += 16;

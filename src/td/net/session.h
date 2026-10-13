@@ -208,13 +208,16 @@ class SessionClass {
       engine::gfx::PaletteIndex{4},    // Green
       engine::gfx::PaletteIndex{202}   // Blue-Grey
   };
+  // What a player's name is printed in. These go to the gradient font, which
+  // takes the slot as a row of its palette tables (TextStyleFor() in
+  // td/ui/dialog.cc); the comments name the color that row draws.
   engine::gfx::PaletteIndex text_colors_[MAX_MPLAYER_COLORS] = {
-      kCcGdiColor,   // Yellow
-      kCcNodColor,   // Red
-      kCcBlueGreen,  // BlueGreen
-      kCcOrange,     // Orange
-      kCcGreen,      // Green
-      kCcBlueGrey,   // Blue
+      kCcGdiColor,       // Yellow
+      kCcNodColor,       // Red
+      game::kCyan,       // BlueGreen
+      game::kPurple,     // Orange
+      kCcGreen,          // Green
+      game::kLightBlue,  // Blue-Grey
   };
 
   std::vector<char*> scenarios_;

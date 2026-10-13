@@ -28,9 +28,13 @@
 // Dawn.) The names fit what the files hold, in both games: kPurple is magenta
 // (aa00aa), kPink a light red (ff5555), kLightBlue a bright blue (5151ff).
 //
-// Tiberian Dawn's aliases in td/core/defines.h (kCcOrange for kPurple, kCcTan
-// for kBrown, kCcBlueGreen for kCyan, kCcBlueGrey for kLightBlue) do not
-// describe those colors; its palettes are not different there.
+// Tiberian Dawn's gradient fonts do not draw these slots: with
+// TPF_USE_GRAD_PAL, TPF_MEDIUM_COLOR or TPF_BRIGHT_COLOR its TextStyleFor()
+// (td/ui/dialog.cc) takes the color as a row of its font palette tables, and
+// the row draws other slots. kPurple gives oranges (24-27), kBrown tans
+// (176-180), kCyan blue-greens (135, 136, 119) and kLightBlue blue-greys
+// (201-204), which is why its player text colors (td/net/session.h) are
+// commented "Orange" and "BlueGreen".
 //
 // A screen that brings its own palette need not keep the set: Tiberian Dawn's
 // map selection (DARK_*.PAL) and satellite view (SATSEL.PAL) put their own

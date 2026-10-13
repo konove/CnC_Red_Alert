@@ -2426,11 +2426,7 @@ using enum SpecialDialogType;
 
 inline constexpr engine::gfx::PaletteIndex kCcGdiColor = game::kYellow;
 inline constexpr engine::gfx::PaletteIndex kCcNodColor = game::kRed;
-inline constexpr engine::gfx::PaletteIndex kCcBlueGreen = game::kCyan;
-inline constexpr engine::gfx::PaletteIndex kCcBlueGrey = game::kLightBlue;
-inline constexpr engine::gfx::PaletteIndex kCcOrange = game::kPurple;
 inline constexpr engine::gfx::PaletteIndex kCcGreen = game::kGreen;
-inline constexpr engine::gfx::PaletteIndex kCcTan = game::kBrown;
 inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};
 inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};
 inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;

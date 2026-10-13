@@ -3491,7 +3491,7 @@ int Com_Scenario_Dialog() {
 
   if (!std::string_view(ModemRXString).empty()) {
     TheSession().messages().Add_Message(
-        ModemRXString, kCcTan, FontType::k6PointGradient,
+        ModemRXString, game::kBrown, FontType::k6PointGradient,
         TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
   }
 
@@ -4795,7 +4795,7 @@ int Com_Show_Scenario_Dialog() {
 
   if (!std::string_view(ModemRXString).empty()) {
     TheSession().messages().Add_Message(
-        ModemRXString, kCcTan, FontType::k6PointGradient,
+        ModemRXString, game::kBrown, FontType::k6PointGradient,
         TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
   }
 
