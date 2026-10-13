@@ -2434,8 +2434,10 @@ inline constexpr engine::gfx::PaletteIndex kCcTan = game::kBrown;
 inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};
 inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};
 inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;
-inline constexpr engine::gfx::PaletteIndex kCcLightGreen{159};
-inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcLightGreen;
+// The light edge of a green dialog box, opposite kCcGreenShadow. Not
+// game::kLightGreen, which is slot 4 of the standard colors.
+inline constexpr engine::gfx::PaletteIndex kCcGreenHighlight{159};
+inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcGreenHighlight;
 inline constexpr engine::gfx::PaletteIndex kCcBrightGreen{167};
 inline constexpr engine::gfx::PaletteIndex kCcUnderline = kCcBrightGreen;
 inline constexpr engine::gfx::PaletteIndex kCcGreenBar = kCcBrightGreen;

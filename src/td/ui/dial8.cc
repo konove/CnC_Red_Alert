@@ -269,7 +269,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     view.DrawLine(FaceX, FaceY,
                   base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
                   base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
-                  kCcLightGreen);
+                  kCcGreenHighlight);
 
     /*
     **	Restore the mouse.

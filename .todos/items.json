@@ -5617,10 +5617,10 @@
         "game",
         "engine"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-12T08:25:24Z",
+      "updated": "2026-10-13T00:21:14Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
       "resolution": "Palette slots are now `engine::gfx::PaletteIndex` (`engine/gfx/palette_index.h`), a one-byte class with an explicit constructor and no arithmetic: the `PixelView` drawing functions, both games' text printers, style structs, color schemes and widgets take it, and the `game::k...` colors are of that type. Done in seven steps per `docs/PALETTE_INDEX_PLAN.md` through a transitional `operator int` that the last commit removes; drawing, save files and the network check are unchanged.",
@@ -5730,10 +5730,10 @@
         "td",
         "cleanup"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-12T22:58:55Z",
+      "updated": "2026-10-13T00:21:12Z",
       "parent": "T-186",
       "source": "37ea18f9..323cb376",
       "resolution": "Replaced the 12 direct uses of `game::kPurple`/`kCyan`/`kBrown`/`kLightBlue` in `mapeddlg.cc`, `findpath.cc`, `score.cc` and `ui/dialog.cc` with `kCcOrange`/`kCcBlueGreen`/`kCcTan`/`kCcBlueGrey`. Same palette slots, so nothing changes on screen; the grep now finds only the four alias definitions in `td/core/defines.h`.",
@@ -5852,42 +5852,26 @@
         "refactoring",
         "td"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-12T22:57:52Z",
+      "updated": "2026-10-13T00:22:26Z",
       "parent": "T-186",
       "source": "5d374065",
+      "resolution": "Renamed TD's `kCcLightGreen` (slot 159) to `kCcGreenHighlight`, named by role like `kCcGreenShadow`, and added a comment at its definition saying it is not `game::kLightGreen` (slot 4). Its one use, the dial hand in `td/ui/dial8.cc`, and the `kCcGreenBox` alias follow; no slot changed.",
       "anchors": [
         {
-          "path": "src/game/ui/standard_colors.h",
-          "startLine": 41,
-          "endLine": 41,
-          "text": "inline constexpr engine::gfx::PaletteIndex kLightGreen{4};",
-          "before": [
-            "inline constexpr engine::gfx::PaletteIndex kPurple{1};",
-            "inline constexpr engine::gfx::PaletteIndex kCyan{2};",
-            "inline constexpr engine::gfx::PaletteIndex kGreen{3};"
-          ],
-          "after": [
-            "inline constexpr engine::gfx::PaletteIndex kYellow{5};",
-            "inline constexpr engine::gfx::PaletteIndex kPink{6};",
-            "inline constexpr engine::gfx::PaletteIndex kBrown{7};"
-          ],
-          "lost": false
-        },
-        {
           "path": "src/td/core/defines.h",
-          "startLine": 2437,
-          "endLine": 2437,
-          "text": "inline constexpr engine::gfx::PaletteIndex kCcLightGreen{159};",
+          "startLine": 2439,
+          "endLine": 2439,
+          "text": "inline constexpr engine::gfx::PaletteIndex kCcGreenHighlight{159};",
           "before": [
-            "inline constexpr engine::gfx::PaletteIndex kCcGreenShadow{140};",
-            "inline constexpr engine::gfx::PaletteIndex kCcGreenBkgd{141};",
-            "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;"
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenCorners = kCcGreenBkgd;",
+            "// The light edge of a green dialog box, opposite kCcGreenShadow. Not",
+            "// game::kLightGreen, which is slot 4 of the standard colors."
           ],
           "after": [
-            "inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcLightGreen;",
+            "inline constexpr engine::gfx::PaletteIndex kCcGreenBox = kCcGreenHighlight;",
             "inline constexpr engine::gfx::PaletteIndex kCcBrightGreen{167};",
             "inline constexpr engine::gfx::PaletteIndex kCcUnderline = kCcBrightGreen;"
           ],
