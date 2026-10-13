@@ -609,8 +609,8 @@ TEST_F(TeamTypeTest, NoTeamTypesOfferNone) {
   EXPECT_EQ(TeamType::SuggestNewTeam(house_, false), nullptr);
 }
 
-// Only the first twenty candidates take part in the draw.
-TEST_F(TeamTypeTest, TheTwentyFirstCandidateIsNeverOffered) {
+// The original game drew among the first twenty candidates only.
+TEST_F(TeamTypeTest, EveryCandidateTakesPartInTheDraw) {
   TeamType::FreeAll();
   TheObjectHeaps().team_type().Reset(21);
   TeamType* last = nullptr;
@@ -620,11 +620,13 @@ TEST_F(TeamTypeTest, TheTwentyFirstCandidateIsNeverOffered) {
     last->ReadIniEntry("t", SovietEntry(0, 1));
   }
 
-  for (int draw = 0; draw < 200; draw++) {
+  bool last_was_offered = false;
+  for (int draw = 0; draw < 2000 && !last_was_offered; draw++) {
     const TeamType* const offered = TeamType::SuggestNewTeam(house_, false);
     ASSERT_NE(offered, nullptr);
-    ASSERT_NE(offered, last);
+    last_was_offered = offered == last;
   }
+  EXPECT_TRUE(last_was_offered);
 }
 
 TEST_F(TeamTypeTest, ASavedHeapLoadsEveryTeamTypeIntoItsOldSlot) {

@@ -26,7 +26,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
@@ -432,13 +431,8 @@ const char* TeamType::MissionName(const TeamMissionType mission) {
 
 TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,
                                    const bool alerted) {
-  // Only the first 20 candidates in heap order take part in the draw.
-  TeamType* choices[20];
-  int choice_count = 0;
-
-  for (int index = 0; index < TheObjectHeaps().team_type().Count() &&
-                      choice_count < std::ssize(choices);
-       index++) {
+  std::vector<TeamType*> choices;
+  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
     // A team type on the wrong side of the alert is treated as full.
@@ -446,14 +440,14 @@ TeamType* TeamType::SuggestNewTeam(const HouseClass* const house,
         alerted == candidate->is_autocreate() ? candidate->max_teams() : 0;
     if (candidate->house() == house->Class->House &&
         candidate->team_count() < limit) {
-      base::At(choices, choice_count++) = candidate;
+      choices.push_back(candidate);
     }
   }
 
-  if (choice_count > 0) {
-    return base::At(choices, RandomPick(0, choice_count - 1));
+  if (choices.empty()) {
+    return nullptr;
   }
-  return nullptr;
+  return base::At(choices, RandomPick(0, static_cast<int>(choices.size()) - 1));
 }
 
 TeamType* TeamType::FromName(const std::string_view name) {
