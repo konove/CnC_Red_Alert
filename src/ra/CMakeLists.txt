@@ -231,6 +231,7 @@ add_gtest(
         data/text_test.cc
         core/random_pick_test.cc
         core/coord_test.cc
+        map/display_scroll_test.cc
         ${RA_GAME_TEST_UTIL}
         startup/startup.cc
     LIBS ra_engine absl::core_headers

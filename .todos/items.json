@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 437,
+  "nextId": 438,
   "items": [
     {
       "id": "T-2",
@@ -15033,8 +15033,8 @@
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 627,
-          "endLine": 627,
+          "startLine": 628,
+          "endLine": 628,
           "text": "      base::ConfineRect(base::Rect{TacticalCoord.x(), TacticalCoord.y(),",
           "before": [
             "  **\tbecause of the changed dimensions.",
@@ -15050,25 +15050,25 @@
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 1287,
-          "endLine": 1287,
+          "startLine": 1289,
+          "endLine": 1289,
           "text": "  const base::ConfinedRect confined = base::ConfineRect(",
           "before": [
-            "  */",
-            "  // A scroll past the top or left of the world wraps the 16-bit lepton",
-            "  // component around; read as signed it is the negative one that was meant."
+            "  /*",
+            "  **\tClip the new position to the edges of the game world.",
+            "  */"
           ],
           "after": [
-            "      base::Rect{static_cast<int16_t>(coord.x()),",
-            "                 static_cast<int16_t>(coord.y()), TacLeptonWidth,",
-            "                 TacLeptonHeight},"
+            "      base::Rect{TacticalCoord.x() + offset.x(), TacticalCoord.y() + offset.y(),",
+            "                 TacLeptonWidth, TacLeptonHeight},",
+            "      base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),"
           ],
           "lost": false
         },
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 3563,
-          "endLine": 3563,
+          "startLine": 3566,
+          "endLine": 3566,
           "text": "      base::ConfineRect(",
           "before": [
             "  **\tBound the desired location to fit the legal map edges.",
@@ -15617,25 +15617,62 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-13T07:48:25Z",
-      "updated": "2026-10-13T07:48:25Z",
+      "updated": "2026-10-13T15:14:58Z",
+      "resolution": "The casts were needed as the code stood: `Coordinate::x()`/`y()` are unsigned, so a scroll past the left/top wrapped. `Scroll_Map` now moves in plain ints with the new `base::MoveOffset()` (`base/trig.h`) instead of `Coord_Move()`, so nothing wraps and the casts are gone. Tests: `base/trig_test.cc`, `ra/map/display_scroll_test.cc`.",
       "anchors": [
         {
           "path": "src/ra/map/display.cc",
-          "startLine": 1288,
-          "endLine": 1289,
-          "text": "      base::Rect{static_cast<int16_t>(coord.x()),\n                 static_cast<int16_t>(coord.y()), TacLeptonWidth,",
+          "startLine": 1289,
+          "endLine": 1291,
+          "text": "  const base::ConfinedRect confined = base::ConfineRect(\n      base::Rect{TacticalCoord.x() + offset.x(), TacticalCoord.y() + offset.y(),\n                 TacLeptonWidth, TacLeptonHeight},",
           "before": [
-            "  // A scroll past the top or left of the world wraps the 16-bit lepton",
-            "  // component around; read as signed it is the negative one that was meant.",
-            "  const base::ConfinedRect confined = base::ConfineRect("
+            "  /*",
+            "  **\tClip the new position to the edges of the game world.",
+            "  */"
           ],
           "after": [
-            "                 TacLeptonHeight},",
             "      base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),",
-            "                 Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});"
+            "                 Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});",
+            "  const bool shifted = confined.bounded;"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-437",
+      "title": "Give base::Bit() a header of its own",
+      "details": "`base::Bit<T>()` (both overloads) lives in `src/base/numeric.h` next to `ToSize()` and `ToSigned()`, so a header that only needs a bit mask includes all of it. Move the two overloads to a new `src/base/bit.h` and their tests from `numeric_test.cc` to a `bit_test.cc`.\n\n- `Bit` range-checks its index with `DCHECK`, so `bit.h` still includes `absl/log/check.h`; the gain is a smaller, better-named header, not a cheaper preprocess. It does not belong in `base/flags.h`, which is kept free of `check.h` (T-425) and serves scoped flag enums, while `Bit` returns an unsigned integer mask.\n- Size: 255 call sites in 52 files. Every `.cc` that calls `base::Bit` needs `base/bit.h` (`misc-include-cleaner` enforces it) and may lose `base/numeric.h` if it uses neither `ToSize()` nor `ToSigned()`.\n- Eight headers use it besides `numeric.h`: `base/random.h`, `engine/crypto/mp_reference_test_util.h`, `engine/video/vqa/vqa_format.h`, `game/core/path_overlap.h`, `ra/core/defines.h`, `ra/objects/cell.h`, `td/core/defines.h`, `td/objects/cell.h`. The two `defines.h` have the widest fan-out, so the full strict build re-analyzes most of the tree.",
+      "priority": "p3",
+      "effort": "m",
+      "tags": [
+        "refactoring",
+        "base",
+        "cleanup"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-13T14:55:54Z",
+      "updated": "2026-10-13T14:55:54Z",
+      "source": "b7d8591a6",
+      "anchors": [
+        {
+          "path": "src/base/numeric.h",
+          "startLine": 56,
+          "endLine": 67,
+          "text": "template <std::unsigned_integral T>\nconstexpr T Bit(int index) noexcept {\n  DCHECK(index >= 0 && index < std::numeric_limits<T>::digits);\n  return static_cast<T>(T{1} << static_cast<unsigned>(index));\n}\n\n// The same for an index enum: `base::Bit<uint32_t>(HOUSE_SPAIN)`.\ntemplate <std::unsigned_integral T, class E>\n  requires std::is_enum_v<E>\nconstexpr T Bit(E index) noexcept {\n  return Bit<T>(static_cast<int>(index));\n}",
+          "before": [
+            "// Example:",
+            "//   allies |= base::Bit<uint32_t>(house);",
+            "//   if ((BScan & base::Bit<uint64_t>(STRUCT_WEAP)) != 0) ..."
+          ],
+          "after": [
+            "",
+            "}  // namespace base",
+            ""
           ],
           "lost": false
         }

@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/array.h"
+#include "base/point.h"
 
 namespace base {
 
@@ -75,18 +76,27 @@ inline constexpr int16_t kCos256[256] = {
 };
 // clang-format on
 
-// Move a point by `distance` leptons in the given direction.
+// Returns how far a move of `distance` leptons in direction `dir` goes along
+// each axis, Y growing downward. The result is not confined to the 16 bits of
+// a lepton, so a move that leaves the world can be clipped afterwards.
 // The >> 7 (divide by 128) exactly cancels the amplitude-128 scaling. It is a
 // floor division of a signed product, which `/ 128` (rounding toward zero)
 // would change for the negative quadrants.
-inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
-                      const int16_t distance) {
+inline Point MoveOffset(const uint8_t dir, const int distance) {
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
   const int dx = (base::At(kSin256, dir) * distance) >> 7;
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
   const int dy = (base::At(kCos256, dir) * distance) >> 7;
-  x = static_cast<int16_t>(x + dx);
-  y = static_cast<int16_t>(y - dy);
+  return {dx, -dy};
+}
+
+// Move a point by `distance` leptons in the given direction, wrapping each
+// component around at 16 bits.
+inline void MovePoint(int16_t& x, int16_t& y, const uint8_t dir,
+                      const int16_t distance) {
+  const Point offset = MoveOffset(dir, distance);
+  x = static_cast<int16_t>(x + offset.x());
+  y = static_cast<int16_t>(y + offset.y());
 }
 
 // Like MovePoint but halves Y for 2:1 isometric projection (turret offsets).

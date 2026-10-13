@@ -127,6 +127,7 @@
 #include "base/point.h"
 #include "base/rect.h"
 #include "base/strings/number_parse.h"
+#include "base/trig.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
@@ -1274,24 +1275,25 @@ bool DisplayClass::Scroll_Map(game::Direction facing, int& distance,
   }
 
   /*
-  **	Determine the coordinate that it wants to scroll to.
+  **	Determine the position that it wants to scroll to.
   */
-  Coordinate coord =
-      Coord_Move(TacticalCoord, facing, static_cast<uint16_t>(distance));
+  // Moved as plain ints rather than with Coord_Move(): a scroll past the top
+  // or left of the world stays negative here, where the 16-bit lepton
+  // component of a Coordinate would wrap around.
+  const base::Point offset =
+      base::MoveOffset(static_cast<uint8_t>(facing.value()), distance);
 
   /*
-  **	Clip the new coordinate to the edges of the game world.
+  **	Clip the new position to the edges of the game world.
   */
-  // A scroll past the top or left of the world wraps the 16-bit lepton
-  // component around; read as signed it is the negative one that was meant.
   const base::ConfinedRect confined = base::ConfineRect(
-      base::Rect{static_cast<int16_t>(coord.x()),
-                 static_cast<int16_t>(coord.y()), TacLeptonWidth,
-                 TacLeptonHeight},
+      base::Rect{TacticalCoord.x() + offset.x(), TacticalCoord.y() + offset.y(),
+                 TacLeptonWidth, TacLeptonHeight},
       base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),
                  Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});
   const bool shifted = confined.bounded;
-  coord = Coordinate::FromLeptons(confined.position.x(), confined.position.y());
+  const Coordinate coord =
+      Coordinate::FromLeptons(confined.position.x(), confined.position.y());
 
   /*
   **	If the desired scroll was bound by the edge of the map, then adjust the
