@@ -6014,22 +6014,23 @@
         "documentation",
         "engine"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-08T07:13:58Z",
-      "updated": "2026-10-09T20:33:08Z",
+      "updated": "2026-10-13T01:24:59Z",
       "parent": "T-186",
       "source": "323cb376",
+      "resolution": "The example in `engine/gfx/glow_pulse.h` now declares its own constants, `kGlowBase` (a `PaletteColor`) and `kGlowSlot`, instead of reading `palette.at(kWhite)`, and qualifies `SystemTickSource`, so it names nothing the engine cannot include.",
       "anchors": [
         {
           "path": "src/engine/gfx/glow_pulse.h",
-          "startLine": 20,
-          "endLine": 20,
-          "text": "//     palette.at(kPulseColor) = pulse.Apply(palette.at(kWhite));",
+          "startLine": 18,
+          "endLine": 25,
+          "text": "//   // The color at full brightness, and the palette slot that shows it glow.\n//   constexpr engine::gfx::PaletteColor kGlowBase(255, 80, 80);\n//   constexpr int kGlowSlot = 254;\n//\n//   static GlowPulse<engine::platform::SystemTickSource> pulse(\n//       kTimerSecond / 6);\n//   if (pulse.Update()) {\n//     palette.at(kGlowSlot) = pulse.Apply(kGlowBase);",
           "before": [
-            "// Example:",
-            "//   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);",
-            "//   if (pulse.Update()) {"
+            "// entries whenever it steps.",
+            "//",
+            "// Example:"
           ],
           "after": [
             "//     palette.Set();",

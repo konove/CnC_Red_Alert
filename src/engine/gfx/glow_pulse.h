@@ -15,9 +15,14 @@
 // entries whenever it steps.
 //
 // Example:
-//   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
+//   // The color at full brightness, and the palette slot that shows it glow.
+//   constexpr engine::gfx::PaletteColor kGlowBase(255, 80, 80);
+//   constexpr int kGlowSlot = 254;
+//
+//   static GlowPulse<engine::platform::SystemTickSource> pulse(
+//       kTimerSecond / 6);
 //   if (pulse.Update()) {
-//     palette.at(kPulseColor) = pulse.Apply(palette.at(kWhite));
+//     palette.at(kGlowSlot) = pulse.Apply(kGlowBase);
 //     palette.Set();
 //   }
 template <engine::platform::TickSource T>
