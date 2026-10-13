@@ -62,9 +62,9 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -407,9 +407,9 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Erase the grid
       */
-      view.FillRect(Rect::FromCorners(kGridX - (kGridblockW * 2), kGridY,
-                                      kGridX + (kGridsize * kGridblockW),
-                                      kGridY + (kGridsize * kGridblockH)),
+      view.FillRect(base::Rect::FromCorners(kGridX - (kGridblockW * 2), kGridY,
+                                            kGridX + (kGridsize * kGridblockW),
+                                            kGridY + (kGridsize * kGridblockH)),
                     game::kBlack);
 
       /*
@@ -422,7 +422,8 @@ int MapEditClass::Placement_Dialog() {
         occupy = occupy.subspan(1);
         x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
         y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
-        view.FillRect(Rect{x, y, kGridblockW, kGridblockH}, scheme->Bright);
+        view.FillRect(base::Rect{x, y, kGridblockW, kGridblockH},
+                      scheme->Bright);
       }
 
       /*

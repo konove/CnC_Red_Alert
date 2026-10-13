@@ -7,10 +7,10 @@
 
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "game/ui/standard_colors.h"
 #include "ra/assets/compat.h"
@@ -133,7 +133,7 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
   RemapControlType* scheme = Get_Color_Scheme();
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    view.FillRect(Rect{x, y, width, line_height}, scheme->Shadow);
+    view.FillRect(base::Rect{x, y, width, line_height}, scheme->Shadow);
   } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
     flags = flags | TPF_MEDIUM_COLOR;
   }
@@ -158,9 +158,10 @@ void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,
                             const int width, const int height, const bool on) {
   Draw_Box(view, x, y, width, height, BOXSTYLE_DOWN, false);
-  view.FillRect(Rect{x + 1, y + 1, width - 2, height - 2}, DKGREY);
+  view.FillRect(base::Rect{x + 1, y + 1, width - 2, height - 2}, DKGREY);
   if (on) {
-    view.FillRect(Rect{x + 1, y + 1, width - 2, height - 2}, game::kLightGreen);
+    view.FillRect(base::Rect{x + 1, y + 1, width - 2, height - 2},
+                  game::kLightGreen);
   }
 }
 

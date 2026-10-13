@@ -48,12 +48,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/rect.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
 #include "engine/video/game_file_vqa_io.h"
@@ -223,8 +223,8 @@ void Choose_Side() {
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
-    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
-                                             Rect{0, 22, 320, 156}, 0, 22);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), base::Rect{0, 22, 320, 156}, 0, 22);
 
     /*
     ** If the sample has stopped or is about to then restart it
@@ -283,8 +283,9 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  show.page().view().FillRect(Rect{0, 180, 320, 20}, game::kTransparentBlack);
-  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40},
+  show.page().view().FillRect(base::Rect{0, 180, 320, 20},
+                              game::kTransparentBlack);
+  TheScreen().visible_view().FillRect(base::Rect{0, 360, 640, 40},
                                       game::kTransparentBlack);
   show.ShowPage();
   TheScreen().sys_mem_page().view().Clear();

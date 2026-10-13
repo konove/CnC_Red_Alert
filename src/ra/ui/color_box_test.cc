@@ -1,10 +1,9 @@
 // Tests DrawColorBox: the colour reaches every pixel inside the bevel and none
 // outside it, and the bevel is sunken for the selected box only.
 
-
+#include "base/rect.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "gtest/gtest.h"
 #include "ra/startup/ui_test_util.h"
 #include "ra/ui/dialog.h"
@@ -15,7 +14,7 @@ namespace {
 class ColorBoxTest : public UiFixture {
  protected:
   static constexpr engine::gfx::PaletteIndex kColor{200};
-  static constexpr Rect kBox{3, 2, 20, 18};
+  static constexpr base::Rect kBox{3, 2, 20, 18};
 
   // The number of pixels of the page that are in the swatch colour.
   int ColoredPixels() {

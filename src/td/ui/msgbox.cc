@@ -50,10 +50,10 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -240,7 +240,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   game::TheMouse().Hide();
   if (preserve) {
     back.resize(base::ToSize(width * height));
-    TheScreen().visible_view().CopyToBuffer(Rect{x, y, width, height},
+    TheScreen().visible_view().CopyToBuffer(base::Rect{x, y, width, height},
                                             std::span(back));
   }
   // display = true;
@@ -252,7 +252,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     }
     PixelView& picture = TheScreen().sys_mem_page().view();
     picture.BlitTo(TheScreen().visible_view(),
-                   Rect{0, 0, picture.width(), picture.height()}, 160, 100);
+                   base::Rect{0, 0, picture.width(), picture.height()}, 160,
+                   100);
   } else {
 #endif
     Dialog_Box(view, x, y, width, height);
@@ -294,8 +295,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
           PixelView& picture = TheScreen().sys_mem_page().view();
           picture.BlitTo(TheScreen().visible_view(),
-                         Rect{0, 0, picture.width(), picture.height()}, 160,
-                         100);
+                         base::Rect{0, 0, picture.width(), picture.height()},
+                         160, 100);
         } else {
 #endif
           Dialog_Box(view, x, y, width, height);
@@ -448,7 +449,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (preserve) {
     game::TheMouse().Hide();
-    TheScreen().visible_view().CopyFromBuffer(Rect{x, y, width, height},
+    TheScreen().visible_view().CopyFromBuffer(base::Rect{x, y, width, height},
                                               std::span(back));
     back.clear();
     game::TheMouse().Show();

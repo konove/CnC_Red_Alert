@@ -92,9 +92,9 @@
 #include "base/buffer.h"
 #include "base/clip.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/unaligned.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -472,11 +472,11 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
                       WINDOW_MAIN, ShapeFlags::kNone);
         if (BaseX || BaseY) {
           view.FillRect(
-              Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
+              base::Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
               game::kGrey);
         } else {
           view.FillRect(
-              Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
+              base::Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
               game::kBlack);
         }
 
@@ -492,7 +492,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         if (TheScreen().IsVisible(&view)) {
           game::TheMouse().Hide();
           view.BlitTo(TheScreen().visible_view(),
-                      Rect{RadX, RadY, RadWidth, RadHeight}, RadX, RadY);
+                      base::Rect{RadX, RadY, RadWidth, RadHeight}, RadX, RadY);
           game::TheMouse().Show();
         }
       }
@@ -593,7 +593,7 @@ void RadarClass::Render_Terrain(PixelView& view, Cell cell, int x, int y,
       continue;
     }
 
-    IconStage.view().CopyFromBuffer(Rect{0, 0, 3, 3}, icon);
+    IconStage.view().CopyFromBuffer(base::Rect{0, 0, 3, 3}, icon);
     IconStage.view().Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                            FadingBrighten);
   }
@@ -707,7 +707,7 @@ void RadarClass::Render_Overlay(PixelView& view, Cell cell, int x, int y,
       if (icon.empty()) {
         return;
       }
-      IconStage.view().CopyFromBuffer(Rect{0, 0, 3, 3}, icon);
+      IconStage.view().CopyFromBuffer(base::Rect{0, 0, 3, 3}, icon);
       if (otype->IsTiberium) {
         IconStage.view().Scale(view, 0, 0, x, y, 3, 3, size, size, true,
                                FadingGreen);
@@ -895,8 +895,8 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
             if (start <= data.size() &&
                 data.size() - start >= std::size_t{24} * 24) {
               TileStage.view().CopyFromBuffer(
-                  Rect{0, 0, 24, 24}, base::UnsignedBytes(data.subspan(
-                                          start, std::size_t{24} * 24)));
+                  base::Rect{0, 0, 24, 24}, base::UnsignedBytes(data.subspan(
+                                                start, std::size_t{24} * 24)));
               TileStage.view().Scale(view, 0, 0, x, y, 24, 24, ZoomFactor,
                                      ZoomFactor, true);
             }
@@ -1664,9 +1664,10 @@ void RadarClass::Set_Radar_Position(Cell cell) {
         */
         TheScreen().hidden_view().BlitTo(
             TheScreen().hidden_view(),
-            Rect{((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-                 ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
-                 radw * ZoomFactor, radh * ZoomFactor},
+            base::Rect{
+                ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+                ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+                radw * ZoomFactor, radh * ZoomFactor},
             ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
             ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY);
 
@@ -1853,8 +1854,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   CC_Draw_Shape(view, RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                 WINDOW_MAIN, ShapeFlags::kNone);
-  view.FillRect(Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
-                game::kBlack);
+  view.FillRect(
+      base::Rect{RadX + RadOffX, RadY + RadOffY, RadIWidth, RadIHeight},
+      game::kBlack);
 
   int y = RadY + RadOffY;
 

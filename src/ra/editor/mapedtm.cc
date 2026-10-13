@@ -47,9 +47,9 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -752,7 +752,7 @@ int MapEditClass::Team_Members(TeamType& team_type, HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           game::TheMouse().Hide();
-          view.FillRect(Rect{kDialogX + 32, msg_y, kDialogW - 96, kTxt6H},
+          view.FillRect(base::Rect{kDialogX + 32, msg_y, kDialogW - 96, kTxt6H},
                         game::kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {

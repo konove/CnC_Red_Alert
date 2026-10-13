@@ -60,9 +60,9 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"
 #include "game/core/cell_size.h"
@@ -1455,7 +1455,8 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
 
       } else {
         TheScreen().hidden_view().BlitTo(
-            view, Rect{0, 0, game::kCellWidthPixels, game::kCellHeightPixels},
+            view,
+            base::Rect{0, 0, game::kCellWidthPixels, game::kCellHeightPixels},
             x + ((index % w) * game::kCellWidthPixels),
             y + ((index / w) * game::kCellHeightPixels));
       }

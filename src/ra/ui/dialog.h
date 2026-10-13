@@ -8,10 +8,10 @@
 
 #include "absl/base/attributes.h"
 #include "base/point.h"
+#include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
 
@@ -47,7 +47,7 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
 // Draws the swatch a setup dialog shows for one player colour: `box` with a
 // one-pixel bevel, sunken when `selected` and raised otherwise, and everything
 // inside the bevel in the palette index `color`.
-void DrawColorBox(PixelView& view, const Rect& box,
+void DrawColorBox(PixelView& view, const base::Rect& box,
                   engine::gfx::PaletteIndex color, bool selected);
 void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // What a text print draws with: its adjusted flags, colour and font.

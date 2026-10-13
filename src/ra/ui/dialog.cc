@@ -64,11 +64,11 @@
 #include "base/flags.h"
 #include "base/numeric.h"
 #include "base/point.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "game/ui/standard_colors.h"
@@ -172,8 +172,8 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(view, shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL,
                 ShapeFlags::kNone);
 
-  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), Rect{x, y, w, h},
-                                   x, y);
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                   base::Rect{x, y, w, h}, x, y);
 }
 
 // Draws the beveled edges shared by the button box styles: "Shadow" along the
@@ -184,7 +184,8 @@ static void Draw_Beveled_Box(PixelView& view, const int left, const int top,
                              const int right, const int bottom,
                              const bool filled, const BoxStyleType& colors) {
   if (filled) {
-    view.FillRect(Rect::FromCorners(left, top, right, bottom), colors.Filler);
+    view.FillRect(base::Rect::FromCorners(left, top, right, bottom),
+                  colors.Filler);
   }
 
   view.DrawLine(left, bottom, right, bottom, colors.Shadow);
@@ -215,18 +216,18 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
     // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
       if (filled) {
-        view.FillRect(Rect{x, y, w, h}, game::kBlack);
+        view.FillRect(base::Rect{x, y, w, h}, game::kBlack);
       }
-      view.DrawRect(Rect{x, y, w, h}, scheme->Box);
+      view.DrawRect(base::Rect{x, y, w, h}, scheme->Box);
       break;
 
     // Same outline, inset one pixel, which leaves a filled margin around the
     // frame of a dialog.
     case BOXSTYLE_BORDER:
       if (filled) {
-        view.FillRect(Rect{x, y, w, h}, game::kBlack);
+        view.FillRect(base::Rect{x, y, w, h}, game::kBlack);
       }
-      view.DrawRect(Rect{x + 1, y + 1, w - 2, h - 2}, scheme->Box);
+      view.DrawRect(base::Rect{x + 1, y + 1, w - 2, h - 2}, scheme->Box);
       break;
 
     case BOXSTYLE_DOWN:
@@ -274,9 +275,9 @@ void Draw_Box(PixelView& view, const int x, const int y, const int w,
   }
 }
 
-void DrawColorBox(PixelView& view, const Rect& box,
+void DrawColorBox(PixelView& view, const base::Rect& box,
                   const engine::gfx::PaletteIndex color, const bool selected) {
-  view.FillRect(Rect{box.x + 1, box.y + 1, box.width - 2, box.height - 2},
+  view.FillRect(base::Rect{box.x + 1, box.y + 1, box.width - 2, box.height - 2},
                 color);
   Draw_Box(view, box.x, box.y, box.width, box.height,
            selected ? BOXSTYLE_DOWN : BOXSTYLE_RAISED, false);

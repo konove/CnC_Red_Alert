@@ -60,10 +60,10 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -289,7 +289,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
     tip.Print(Text, {DrawX, DrawY});
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int text_height = FontMaxHeight(font);
-    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},
+    view.DrawRect(base::Rect{DrawX - 1, DrawY - 1, Width + 2, text_height + 2},
                   Color);
 
     if (Cost) {
@@ -300,7 +300,8 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       // The cost box shares its top edge with the bottom of the text box;
       // the black line opens the part of that edge the two have in common.
       view.DrawRect(
-          Rect{DrawX - 1, DrawY + text_height, width + 2, text_height}, Color);
+          base::Rect{DrawX - 1, DrawY + text_height, width + 2, text_height},
+          Color);
       view.DrawLine(DrawX, DrawY + text_height,
                     DrawX + std::min(width, Width) - 1, DrawY + text_height,
                     game::kBlack);

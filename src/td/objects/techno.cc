@@ -178,8 +178,8 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/platform/timer.h"
@@ -997,10 +997,11 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       /*
       **	Draw the outline of the bargraph.
       */
-      draw_window.Remap(Rect{xx + 1, yy + 1, width - 1, 3 - 1},
+      draw_window.Remap(base::Rect{xx + 1, yy + 1, width - 1, 3 - 1},
                         MouseClass::FadingShade);
-      draw_window.DrawRect(Rect::FromCorners(xx, yy, xx + width - 1, yy + 3),
-                           game::kBlack);
+      draw_window.DrawRect(
+          base::Rect::FromCorners(xx, yy, xx + width - 1, yy + 3),
+          game::kBlack);
 
       /*
       **	Determine the width of the interior strength
@@ -1019,7 +1020,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       if (ratio < 0x3F) {
         color = game::kRed;
       }
-      draw_window.FillRect(Rect{xx + 1, yy + 1, pwidth, 3 - 1}, color);
+      draw_window.FillRect(base::Rect{xx + 1, yy + 1, pwidth, 3 - 1}, color);
     }
 
     /*

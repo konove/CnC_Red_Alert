@@ -59,10 +59,10 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -1786,7 +1786,7 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           game::TheMouse().Hide();
-          view.FillRect(Rect{kDialogX + 8, msg_y, kDialogW - 16, kTxt6H},
+          view.FillRect(base::Rect{kDialogX + 8, msg_y, kDialogW - 16, kTxt6H},
                         game::kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {

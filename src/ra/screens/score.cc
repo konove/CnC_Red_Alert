@@ -48,6 +48,7 @@
 #include "base/count_up.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
@@ -58,7 +59,6 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
@@ -263,7 +263,7 @@ void ScorePrintClass::Update() {
                                       pos - 12, YPos, game::kTransparentBlack,
                                       game::kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
-                                       Rect{pos - 12, YPos - 2, 14, 16},
+                                       base::Rect{pos - 12, YPos - 2, 14, 16},
                                        pos - 12, YPos - 2);
     }
     // Smear the next letter in white, straight onto the visible page: one row
@@ -301,7 +301,7 @@ void ScoreScaleClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
     if (Stage) {
-      TheScreen().hidden_view().FillRect(Rect{0, 0, 15, 15},
+      TheScreen().hidden_view().FillRect(base::Rect{0, 0, 15, 15},
                                          game::kTransparentBlack);
       TheScreen().hidden_view().Print(
           ScoreFontStyle(Palette), std::string(Text()).c_str(), 0, 0,
@@ -318,7 +318,8 @@ void ScoreScaleClass::Update() {
           ScoreFontStyle(Palette), std::string(Text()).c_str(), XPos, YPos,
           game::kTransparentBlack, game::kTransparentBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
-                                       Rect{XPos, YPos, 12, 12}, XPos, YPos);
+                                       base::Rect{XPos, YPos, 12, 12}, XPos,
+                                       YPos);
       Release_Slot(this);
       return;
     }
@@ -807,7 +808,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // then replaced by the final coloured frame.
   PixelView& hidden = TheScreen().hidden_view();
   PixelView& view = TheScreen().visible_view();
-  hidden.FillRect(Rect{0, 0, 249, 19}, game::kTransparentBlack);
+  hidden.FillRect(base::Rect{0, 0, 249, 19}, game::kTransparentBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, ShapeFlags::kNone, {},
                 {});
   const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
@@ -817,7 +818,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(view, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     ShapeFlags::kNone, {}, {});
     } else {
-      hidden.BlitTo(view, Rect{0, 0, (3 + gdikilled) * 2, 16}, xpos * 2,
+      hidden.BlitTo(view, base::Rect{0, 0, (3 + gdikilled) * 2, 16}, xpos * 2,
                     ypos * 2);
     }
 
@@ -838,7 +839,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                     ShapeFlags::kNone, {}, {});
     } else {
-      hidden.BlitTo(view, Rect{0, 0, (3 + nodkilled) * 2, 16}, xpos * 2,
+      hidden.BlitTo(view, base::Rect{0, 0, (3 + nodkilled) * 2, 16}, xpos * 2,
                     (ypos + 12) * 2);
     }
 
@@ -958,7 +959,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
   // The copy sits 200 pixels (100 in 320x200 terms) above the original, which
   // is where the `ypos - 100` and Animate_Cursor()'s `ypos - 200` come from.
   TheScreen().hidden_view().BlitTo(TheScreen().hidden_view(),
-                                   Rect{0, 200, 200, 200}, 0, 0);
+                                   base::Rect{0, 200, 200, 200}, 0, 0);
 
   do {
     ServiceRealTime();
@@ -995,10 +996,12 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           const int xposindex6 = (xpos + (index * 6)) * 2;
           TheScreen().hidden_view().BlitTo(
               TheScreen().visible_view(),
-              Rect{xposindex6, (ypos - 100) * 2, 12, 12}, xposindex6, ypos * 2);
+              base::Rect{xposindex6, (ypos - 100) * 2, 12, 12}, xposindex6,
+              ypos * 2);
           TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(),
-              Rect{xposindex6, (ypos - 100) * 2, 12, 12}, xposindex6, ypos * 2);
+              base::Rect{xposindex6, (ypos - 100) * 2, 12, 12}, xposindex6,
+              ypos * 2);
         }
 
       } else if (key != '\r') {
@@ -1007,11 +1010,11 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
         if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
           TheScreen().hidden_view().BlitTo(
               TheScreen().visible_view(),
-              Rect{(xpos + (index * 6)) * 2, (ypos - 100) * 2, 12, 12},
+              base::Rect{(xpos + (index * 6)) * 2, (ypos - 100) * 2, 12, 12},
               (xpos + (index * 6)) * 2, ypos * 2);
           TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(),
-              Rect{(xpos + (index * 6)) * 2, (ypos - 100) * 2, 12, 12},
+              base::Rect{(xpos + (index * 6)) * 2, (ypos - 100) * 2, 12, 12},
               (xpos + (index * 6)) * 2, ypos * 2);
           base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
@@ -1051,7 +1054,7 @@ void Animate_Cursor(int pos, int ypos) {
   if (pos != _lastpos) {
     TheScreen().hidden_view().BlitTo(
         TheScreen().visible_view(),
-        Rect{(HALLFAME_X + (_lastpos * 6)) * 2, ypos - 200, 12, 2},
+        base::Rect{(HALLFAME_X + (_lastpos * 6)) * 2, ypos - 200, 12, 2},
         (HALLFAME_X + (_lastpos * 6)) * 2, ypos);
     _lastpos = pos;
     _state = 0;

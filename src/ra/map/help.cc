@@ -59,10 +59,10 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
+#include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
@@ -283,7 +283,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
     help.Print(Text, {DrawX, DrawY});
     const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int font_height = FontMaxHeight(font);
-    view.DrawRect(Rect{DrawX - 1, DrawY - 1, Width + 2, font_height + 2},
+    view.DrawRect(base::Rect{DrawX - 1, DrawY - 1, Width + 2, font_height + 2},
                   Color);
 
     if (Cost) {
@@ -295,7 +295,8 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       // The cost box shares its top edge with the bottom of the text box;
       // the black line opens the part of that edge the two have in common.
       view.DrawRect(
-          Rect{DrawX - 1, DrawY + font_height, width + 2, font_height}, Color);
+          base::Rect{DrawX - 1, DrawY + font_height, width + 2, font_height},
+          Color);
       view.DrawLine(DrawX, DrawY + font_height,
                     DrawX + std::min(width, Width) - 1, DrawY + font_height,
                     game::kBlack);

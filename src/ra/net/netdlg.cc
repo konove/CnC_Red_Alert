@@ -148,6 +148,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/random.h"
+#include "base/rect.h"
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
 #include "engine/crypto/key_phrase_hash.h"
@@ -156,7 +157,6 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/random_seed.h"
@@ -1884,7 +1884,8 @@ static int Net_Join_Dialog() {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           const auto color = static_cast<PlayerColorType>(i);
           DrawColorBox(
-              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
+              view,
+              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
               ThePalettes().color_remaps().at(color).Box,
               color == TheSession().ColorIdx);
         }
@@ -5674,8 +5675,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     const int time_width = StringPixelWidth(font, time_allowed.c_str());
 
     const int fillx = 320 - (time_width / 2) - 6;
-    view.FillRect(Rect{fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                       time_width + 12, d_txt6_h + 2},
+    view.FillRect(base::Rect{fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+                             time_width + 12, d_txt6_h + 2},
                   game::kBlack);
 
     TextPrinter(view,

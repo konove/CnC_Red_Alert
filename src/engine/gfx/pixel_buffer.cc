@@ -41,11 +41,11 @@
 #include "base/clip.h"
 #include "base/flags.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/gfx/rect.h"
 
 PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
                      const int width, const int height) {
@@ -192,7 +192,7 @@ void PixelView::ClearLocked(const engine::gfx::PaletteIndex color) {
   }
 }
 
-void PixelView::CopyToBuffer(const Rect& source,
+void PixelView::CopyToBuffer(const base::Rect& source,
                              const std::span<uint8_t> dest) {
   if (Lock()) {
     CopyToBufferLocked(source, dest);
@@ -200,7 +200,7 @@ void PixelView::CopyToBuffer(const Rect& source,
   }
 }
 
-void PixelView::CopyToBufferLocked(const Rect& source,
+void PixelView::CopyToBufferLocked(const base::Rect& source,
                                    std::span<uint8_t> dest) {
   const int width = source.width;
   int dst_x0 = 0;
@@ -263,7 +263,7 @@ void PixelView::CopyToBufferLocked(const Rect& source,
   } while (--line_count);
 }
 
-void PixelView::CopyFromBuffer(const Rect& dest,
+void PixelView::CopyFromBuffer(const base::Rect& dest,
                                const std::span<const uint8_t> source) {
   if (Lock()) {
     CopyFromBufferLocked(dest, source);
@@ -271,7 +271,7 @@ void PixelView::CopyFromBuffer(const Rect& dest,
   }
 }
 
-void PixelView::CopyFromBufferLocked(const Rect& dest,
+void PixelView::CopyFromBufferLocked(const base::Rect& dest,
                                      std::span<const uint8_t> source) {
   const int width = dest.width;
   int src_x0 = 0;
@@ -334,8 +334,9 @@ void PixelView::CopyFromBufferLocked(const Rect& dest,
   } while (--line_count);
 }
 
-void PixelView::BlitTo(PixelView& dest, const Rect& source, const int dst_x,
-                       const int dst_y, const bool transparent) {
+void PixelView::BlitTo(PixelView& dest, const base::Rect& source,
+                       const int dst_x, const int dst_y,
+                       const bool transparent) {
   if (Lock()) {
     if (dest.Lock()) {
       BlitToLocked(dest, source, dst_x, dst_y, transparent);
@@ -345,7 +346,7 @@ void PixelView::BlitTo(PixelView& dest, const Rect& source, const int dst_x,
   }
 }
 
-void PixelView::BlitToLocked(PixelView& dest, const Rect& source,
+void PixelView::BlitToLocked(PixelView& dest, const base::Rect& source,
                              const int dst_x, const int dst_y,
                              const bool transparent) {
   // Only Tiberian Dawn asks for a transparent blit.
@@ -829,7 +830,7 @@ void PixelView::DrawLine(const int x1, const int y1, const int x2, const int y2,
   }
 }
 
-void PixelView::DrawRect(const Rect& rect,
+void PixelView::DrawRect(const base::Rect& rect,
                          const engine::gfx::PaletteIndex color) {
   if (!rect.IsValid() || !Lock()) {
     return;
@@ -845,7 +846,7 @@ void PixelView::DrawRect(const Rect& rect,
   Unlock();
 }
 
-void PixelView::FillRect(const Rect& rect,
+void PixelView::FillRect(const base::Rect& rect,
                          const engine::gfx::PaletteIndex color) {
   if (Lock()) {
     FillRectLocked(rect, color);
@@ -1004,7 +1005,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
   }
 }
 
-void PixelView::FillRectLocked(const Rect& rect,
+void PixelView::FillRectLocked(const base::Rect& rect,
                                const engine::gfx::PaletteIndex color) {
   const uint8_t pixel = color.byte();
   // Clamp to the view; x2,y2 are the last column and row filled.
@@ -1031,7 +1032,7 @@ void PixelView::FillRectLocked(const Rect& rect,
   } while (--line_count);
 }
 
-void PixelView::Remap(const Rect& rect,
+void PixelView::Remap(const base::Rect& rect,
                       const std::span<const uint8_t> remap_table) {
   if (Lock()) {
     RemapLocked(rect, remap_table);
@@ -1039,7 +1040,7 @@ void PixelView::Remap(const Rect& rect,
   }
 }
 
-void PixelView::RemapLocked(const Rect& rect,
+void PixelView::RemapLocked(const base::Rect& rect,
                             const std::span<const uint8_t> remap_table) {
   if (remap_table.empty()) {
     return;

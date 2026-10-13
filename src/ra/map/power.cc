@@ -55,10 +55,10 @@
 
 #include "base/array.h"
 #include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
+#include "base/rect.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/gadget.h"
@@ -245,12 +245,12 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         // zero tick is the row `bottom` and whose top tick is `kScaleRows`
         // above it. The fill runs from the zero tick to the tick of its
         // height, both included, so it is `power_height + 1` rows.
-        view.FillRect(
-            Rect::FromCorners(490, bottom - power_height, 490 + 1, bottom),
-            color2);
-        view.FillRect(
-            Rect::FromCorners(492, bottom - power_height, 492 + 1, bottom),
-            color1);
+        view.FillRect(base::Rect::FromCorners(490, bottom - power_height,
+                                              490 + 1, bottom),
+                      color2);
+        view.FillRect(base::Rect::FromCorners(492, bottom - power_height,
+                                              492 + 1, bottom),
+                      color1);
       }
 
       /*

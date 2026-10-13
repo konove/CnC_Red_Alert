@@ -56,8 +56,8 @@
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
@@ -140,7 +140,7 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    view.FillRect(Rect{x, y, width, LineHeight}, scheme->Shadow);
+    view.FillRect(base::Rect{x, y, width, LineHeight}, scheme->Shadow);
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;

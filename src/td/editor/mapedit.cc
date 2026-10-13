@@ -75,9 +75,9 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -1423,7 +1423,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   //
   // Erase scrags at top of screen
   //
-  view.FillRect(Rect{0, 0, 640, 16}, game::kBlack);
+  view.FillRect(base::Rect{0, 0, 640, 16}, game::kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.

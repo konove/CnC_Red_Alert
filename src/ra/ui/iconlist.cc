@@ -47,12 +47,12 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -439,7 +439,7 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
     if (bShowSelected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{xText, y, width, LineHeight}, pRemap->Shadow);
+      view.FillRect(base::Rect{xText, y, width, LineHeight}, pRemap->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

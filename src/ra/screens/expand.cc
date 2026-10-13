@@ -50,12 +50,12 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
@@ -354,7 +354,8 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    view.FillRect(Rect{x, y, width, LineHeight}, engine::gfx::PaletteIndex{1});
+    view.FillRect(base::Rect{x, y, width, LineHeight},
+                  engine::gfx::PaletteIndex{1});
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;

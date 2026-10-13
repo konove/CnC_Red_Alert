@@ -3,7 +3,7 @@
 #include <span>
 
 #include "base/array.h"
-#include "engine/gfx/rect.h"
+#include "base/rect.h"
 #include "engine/window/display.h"
 #include "td/assets/screen.h"
 
@@ -51,7 +51,7 @@ void Presentation::DrawTextRects() {
       for (int i = 0; i < text_rect_count_; i++) {
         const auto& [source_x, source_y, dest_x, dest_y, width, height] =
             base::At(std::span(text_rects_), i);
-        source.BlitToLocked(dest, Rect{source_x, source_y, width, height},
+        source.BlitToLocked(dest, base::Rect{source_x, source_y, width, height},
                             dest_x, dest_y, /*transparent=*/false);
       }
       dest.Unlock();

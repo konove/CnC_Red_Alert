@@ -72,6 +72,7 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/random.h"
+#include "base/rect.h"
 #include "base/strings/format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
@@ -81,7 +82,6 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
@@ -600,16 +600,16 @@ void ScoreScaleClass::Update() {
     if (Stage != 5) {
       show_.text_page().view().BlitTo(
           TheScreen().hidden_view(),
-          Rect{base::At(_destx, Stage + 1) * 2, YPos * 2,
-               base::At(_destw, Stage + 1) * 2,
-               base::At(_destw, Stage + 1) * 2},
+          base::Rect{base::At(_destx, Stage + 1) * 2, YPos * 2,
+                     base::At(_destw, Stage + 1) * 2,
+                     base::At(_destw, Stage + 1) * 2},
           base::At(_destx, Stage + 1) * 2, YPos * 2);
       // SysMemPage.Blit(*PseudoSeenBuff, _destx[Stage+1], YPos,
       // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
     }
     if (Stage) {
       const FontStyle font = ScoreFontStyle(Palette);
-      show_.text_page().view().FillRect(Rect{0, 0, 15, 15},
+      show_.text_page().view().FillRect(base::Rect{0, 0, 15, 15},
                                         game::kTransparentBlack);
       show_.text_page().view().Print(
           font, Text(), 0, 0, game::kTransparentBlack, game::kTransparentBlack);
@@ -1267,7 +1267,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
   for (int i = 0; i < 98; i++) {
     TheScreen().sys_mem_page().view().BlitTo(
         TheScreen().sys_mem_page().view(),
-        Rect{BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48}, 0, 0);
+        base::Rect{BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48}, 0, 0);
     int shapenum = 0;  // no damage
     if (i >= 60) {
       shapenum = engine::gfx::CountShapeFrames(factptr) - 2;  // some damage
@@ -1322,9 +1322,9 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
         i + 32, 40, WINDOW_MAIN,
         ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
         ScoreRemapYellow, MouseClass::UnitShadow);
-    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
-                                             Rect{0, 0, 320 - BUILDING_X, 48},
-                                             BUILDING_X, BUILDING_Y);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), base::Rect{0, 0, 320 - BUILDING_X, 48}, BUILDING_X,
+        BUILDING_Y);
 
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
@@ -1395,7 +1395,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   }
 
   // Draw the white-flash shape on the hidpage
-  TheScreen().sys_mem_page().view().FillRect(Rect{0, 0, 125, 10},
+  TheScreen().sys_mem_page().view().FillRect(base::Rect{0, 0, 125, 10},
                                              game::kTransparentBlack);
   CC_Draw_Shape(TheScreen().sys_mem_page().view(), redptr, 120, 0, 0,
                 WINDOW_MAIN, ShapeFlags::kNone, {}, {});
@@ -1411,7 +1411,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
                     ShapeFlags::kNone, {}, {});
     } else {
       TheScreen().sys_mem_page().view().BlitTo(
-          show.page().view(), Rect{0, 0, 3 + gdikilled, 9}, 172, ypos);
+          show.page().view(), base::Rect{0, 0, 3 + gdikilled, 9}, 172, ypos);
     }
 
     Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
@@ -1435,7 +1435,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
                     ShapeFlags::kNone, {}, {});
     } else {
       TheScreen().sys_mem_page().view().BlitTo(
-          show.page().view(), Rect{0, 0, 3 + nodkilled, 9}, 172, ypos + 12);
+          show.page().view(), base::Rect{0, 0, 3 + nodkilled, 9}, 172,
+          ypos + 12);
     }
 
     Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
@@ -1524,9 +1525,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
   ** Draw the infantrymen and pause briefly before running the graph
   */
   Draw_InfantryMen();
-  TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
-                                           Rect{0, 0, 320 - BARGRAPH_X, 34},
-                                           BARGRAPH_X, CASUALTY_Y);
+  TheScreen().sys_mem_page().view().BlitTo(
+      show.page().view(), base::Rect{0, 0, 320 - BARGRAPH_X, 34}, BARGRAPH_X,
+      CASUALTY_Y);
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
@@ -1549,9 +1550,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
       Draw_InfantryMen();
       Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), i, gdikilled,
                       nodkilled, civkilled);
-      TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
-                                               Rect{0, 0, 320 - BARGRAPH_X, 34},
-                                               BARGRAPH_X, CASUALTY_Y);
+      TheScreen().sys_mem_page().view().BlitTo(
+          show.page().view(), base::Rect{0, 0, 320 - BARGRAPH_X, 34},
+          BARGRAPH_X, CASUALTY_Y);
       Count_Up_Print(show, font, "%d", i * GKilled / max, GKilled,
                      SCORETEXT_X + 64, CASUALTY_Y + 2);
       Count_Up_Print(show, font, "%d", i * NKilled / max, NKilled,
@@ -1594,9 +1595,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
     }
     Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), max, gdikilled,
                     nodkilled, civkilled);
-    TheScreen().sys_mem_page().view().BlitTo(show.page().view(),
-                                             Rect{0, 0, 320 - BARGRAPH_X, 34},
-                                             BARGRAPH_X, CASUALTY_Y);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), base::Rect{0, 0, 320 - BARGRAPH_X, 34}, BARGRAPH_X,
+        CASUALTY_Y);
     Call_Back_Delay(show, 1);
   }
 }
@@ -1726,8 +1727,8 @@ void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
       base::FormatRuntime(str, percent <= max ? percent : max);
   const int width = static_cast<int>(text.size()) * 7;
 
-  show.text_page().view().FillRect(Rect{xpos * 2, ypos * 2, width * 2, 7 * 2},
-                                   game::kBlack);
+  show.text_page().view().FillRect(
+      base::Rect{xpos * 2, ypos * 2, width * 2, 7 * 2}, game::kBlack);
   show.text_page().view().Print(font, text.c_str(), xpos * 2, ypos * 2,
                                 game::kWhite, game::kTransparentBlack);
 
@@ -1804,12 +1805,12 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
           const int xposindex6 = xpos + (index * 6);
 
-          show.page().view().FillRect(Rect{xposindex6, ypos, 6, 6},
+          show.page().view().FillRect(base::Rect{xposindex6, ypos, 6, 6},
                                       game::kTransparentBlack);
           TheScreen().sys_mem_page().view().FillRect(
-              Rect{xposindex6, ypos, 6, 6}, game::kTransparentBlack);
+              base::Rect{xposindex6, ypos, 6, 6}, game::kTransparentBlack);
           show.text_page().view().FillRect(
-              Rect{xposindex6 * 2, ypos * 2, 6 * 2, 6 * 2}, game::kBlack);
+              base::Rect{xposindex6 * 2, ypos * 2, 6 * 2, 6 * 2}, game::kBlack);
         }
 
       } else if (key != '\r') {  // else if (key != KN_RETURN &&
@@ -1817,12 +1818,14 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
         ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
-          show.page().view().FillRect(Rect{xpos + (index * 6), ypos, 6, 6},
-                                      game::kTransparentBlack);
+          show.page().view().FillRect(
+              base::Rect{xpos + (index * 6), ypos, 6, 6},
+              game::kTransparentBlack);
           TheScreen().sys_mem_page().view().FillRect(
-              Rect{xpos + (index * 6), ypos, 6, 6}, game::kTransparentBlack);
+              base::Rect{xpos + (index * 6), ypos, 6, 6},
+              game::kTransparentBlack);
           show.text_page().view().FillRect(
-              Rect{2 * (xpos + (index * 6)), ypos * 2, 6 * 2, 6 * 2},
+              base::Rect{2 * (xpos + (index * 6)), ypos * 2, 6 * 2, 6 * 2},
               game::kBlack);
           base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
@@ -1860,7 +1863,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
                                 HALLFAME_X + (_lastpos * 6) + 5, ypos,
                                 game::kTransparentBlack);
     show.text_page().view().FillRect(
-        Rect{2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos, 6 * 2, 2},
+        base::Rect{2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos, 6 * 2, 2},
         game::kBlack);
     _lastpos = pos;
     _state = false;
@@ -1870,7 +1873,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
       HALLFAME_X + (pos * 6), ypos, HALLFAME_X + (pos * 6) + 5, ypos,
       _state ? game::kLightBlue : game::kTransparentBlack);
   show.text_page().view().FillRect(
-      Rect{2 * (HALLFAME_X + (pos * 6)), 2 * ypos, 6 * 2, 2},
+      base::Rect{2 * (HALLFAME_X + (pos * 6)), 2 * ypos, 6 * 2, 2},
       _state ? game::kLightBlue : game::kBlack);
 
   /*
@@ -1906,7 +1909,8 @@ void Draw_InfantryMen() {
   /*
   ** First restore the background
   */
-  view.BlitTo(view, Rect{BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34}, 0, 0);
+  view.BlitTo(view, base::Rect{BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34}, 0,
+              0);
   /*
   ** Then draw all the infantrymen on the clean SysMemPage
   */
@@ -2018,7 +2022,7 @@ void New_Infantry_Anim(int index, int anim) {
 // shadow one pixel down and to the right. `width` is at least 1.
 static void Draw_Bar(PixelView& view, const int y, const int width,
                      const engine::gfx::PaletteIndex color) {
-  view.FillRect(Rect{0, y, width, 2}, color);
+  view.FillRect(base::Rect{0, y, width, 2}, color);
   view.DrawLine(1, y + 2, width, y + 2, game::kTransparentBlack);
   view.PutPixel(width, y + 1, game::kTransparentBlack);
 }

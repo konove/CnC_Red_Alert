@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/gfx/rect.h"
+#include "base/rect.h"
 #include "game/sim/direction.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
@@ -16,7 +16,8 @@ namespace ra {
 // Returns a list of cell offsets that a dirty rectangle overlaps, relative to
 // the cell containing `coord`. The list is kRefreshEol-terminated. If
 // `no_center` is true, the center cell (offset 0) is excluded.
-std::span<const int16_t> Coord_Spillage_List(Coordinate coord, const Rect& rect,
+std::span<const int16_t> Coord_Spillage_List(Coordinate coord,
+                                             const base::Rect& rect,
                                              bool no_center = true);
 
 // Moves `start` by `distance` leptons in the given `facing` direction.

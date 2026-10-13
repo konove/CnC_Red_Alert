@@ -160,11 +160,11 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/keyboard.h"
@@ -1293,9 +1293,9 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       /*
       **	Draw the outline of the bargraph.
       */
-      draw_window.Remap(Rect{xx + 1, yy + 1, width - 1, 3 - 1},
+      draw_window.Remap(base::Rect{xx + 1, yy + 1, width - 1, 3 - 1},
                         MouseClass::FadingShade);
-      draw_window.DrawRect(Rect{xx, yy, width, 4}, game::kBlack);
+      draw_window.DrawRect(base::Rect{xx, yy, width, 4}, game::kBlack);
 
       /*
       **	Determine the width of the interior strength
@@ -1313,7 +1313,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       if (ratio <= TheRules().ConditionRed) {
         color = game::kRed;
       }
-      draw_window.FillRect(Rect{xx + 1, yy + 1, pwidth, 3 - 1}, color);
+      draw_window.FillRect(base::Rect{xx + 1, yy + 1, pwidth, 3 - 1}, color);
     }
 
     /*

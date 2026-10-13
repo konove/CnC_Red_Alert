@@ -124,6 +124,7 @@
 #include "base/clip.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/number_parse.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/ini_file.h"
@@ -132,7 +133,6 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/span_sink.h"
@@ -1732,18 +1732,20 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   CellRedraw.set();
 
   if (view.Lock()) {
-    view.FillRect(Rect{TacPixelX, TacPixelY, Lepton_To_Pixel(TacLeptonWidth),
-                       Lepton_To_Pixel(TacLeptonHeight)},
-                  game::kBlack);
+    view.FillRect(
+        base::Rect{TacPixelX, TacPixelY, Lepton_To_Pixel(TacLeptonWidth),
+                   Lepton_To_Pixel(TacLeptonHeight)},
+        game::kBlack);
     Redraw_Icons(view);
     TheWorld().chronal_vortex().Render(view);
     RenderObjects(view);
     Redraw_Shadow(view);
 
     if (IsRubberBand) {
-      view.DrawRect(Rect::FromCorners(BandX + TacPixelX, BandY + TacPixelY,
-                                      NewX + TacPixelX, NewY + TacPixelY),
-                    game::kWhite);
+      view.DrawRect(
+          base::Rect::FromCorners(BandX + TacPixelX, BandY + TacPixelY,
+                                  NewX + TacPixelX, NewY + TacPixelY),
+          game::kWhite);
     }
     view.Unlock();
   }
@@ -1931,9 +1933,9 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
                 if (ClipRect(xpixel, ypixel, ww, hh,
                              Lepton_To_Pixel(TacLeptonWidth),
                              Lepton_To_Pixel(TacLeptonHeight))) {
-                  view.FillRect(
-                      Rect{TacPixelX + xpixel, TacPixelY + ypixel, ww, hh},
-                      game::kBlack);
+                  view.FillRect(base::Rect{TacPixelX + xpixel,
+                                           TacPixelY + ypixel, ww, hh},
+                                game::kBlack);
                 }
               }
             }

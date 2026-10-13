@@ -46,9 +46,9 @@
 #include "ra/ui/statbtn.h"
 
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/ui/gadget.h"
 #include "game/ui/standard_colors.h"
 #include "ra/core/defines.h"
@@ -195,7 +195,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   if (Background.empty() && Width > 0 && Height > 0) {
     Background.resize(base::ToSize(Width) * base::ToSize(Height));
     if (!Background.empty()) {
-      view.CopyToBuffer(Rect{X, Y, Width, Height}, Background);
+      view.CopyToBuffer(base::Rect{X, Y, Width, Height}, Background);
     }
   }
 
@@ -204,7 +204,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   *now.
   */
   if (!Background.empty()) {
-    view.CopyFromBuffer(Rect{X, Y, Width, Height}, Background);
+    view.CopyFromBuffer(base::Rect{X, Y, Width, Height}, Background);
   }
 }
 

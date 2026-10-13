@@ -37,6 +37,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
@@ -45,7 +46,6 @@
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/sleep.h"
@@ -1121,7 +1121,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           const auto color = static_cast<PlayerColorType>(i);
           DrawColorBox(
-              view, Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
+              view,
+              base::Rect{base::At(cbox_x, i), d_color_y, d_color_w, d_color_h},
               ThePalettes().color_remaps().at(color).Box,
               color == TheSession().ColorIdx);
         }

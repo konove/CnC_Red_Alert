@@ -142,6 +142,7 @@
 #include "base/buffer.h"
 #include "base/cardinal.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
@@ -149,7 +150,6 @@
 #include "engine/crypto/crc.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/random_seed.h"
@@ -1142,9 +1142,9 @@ static int Net_Join_Dialog() {
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
           view.FillRect(
-              Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
-                                base::At(cbox_x, i) + 1 + d_color_w - 2,
-                                d_color_y + 1 + d_color_h - 2),
+              base::Rect::FromCorners(base::At(cbox_x, i) + 1, d_color_y + 1,
+                                      base::At(cbox_x, i) + 1 + d_color_w - 2,
+                                      d_color_y + 1 + d_color_h - 2),
               base::At(TheSession().graphic_colors(), i));
 
           if (i == TheSession().color_index()) {
@@ -1169,8 +1169,8 @@ static int Net_Join_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw(view);
 
-        view.FillRect(Rect{d_dialog_x + 2, d_msg1_y, d_dialog_w - 6,
-                           d_msg5_y + d_txt6_h - d_msg1_y},
+        view.FillRect(base::Rect{d_dialog_x + 2, d_msg1_y, d_dialog_w - 6,
+                                 d_msg5_y + d_txt6_h - d_msg1_y},
                       game::kBlack);
 
         if (joinstate == JOIN_CONFIRMED && parms_received) {
@@ -3183,7 +3183,7 @@ static int Net_New_Dialog() {
       ** Wipe the background behind the unit count then reprint it
       */
       view.FillRect(
-          Rect{d_count_x + d_count_w + (2 * factor), d_count_y, 20, 12},
+          base::Rect{d_count_x + d_count_w + (2 * factor), d_count_y, 20, 12},
           game::kTransparentBlack);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
       label.Print(txt, {d_count_x + d_count_w + (2 * factor), d_count_y});
@@ -3319,8 +3319,8 @@ static int Net_New_Dialog() {
             base::At(TheSession().unit_count_min(), TheSession().bases());
 
         game::TheMouse().Hide();
-        view.FillRect(Rect{d_count_x + d_count_w + (2 * factor), d_count_y,
-                           12 * factor, (6 * factor)},
+        view.FillRect(base::Rect{d_count_x + d_count_w + (2 * factor),
+                                 d_count_y, 12 * factor, (6 * factor)},
                       game::kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
@@ -3338,8 +3338,8 @@ static int Net_New_Dialog() {
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
         game::TheMouse().Hide();
-        view.FillRect(Rect{d_level_x + d_level_w + (2 * factor), d_level_y,
-                           12 * factor, (6 * factor)},
+        view.FillRect(base::Rect{d_level_x + d_level_w + (2 * factor),
+                                 d_level_y, 12 * factor, (6 * factor)},
                       game::kBlack);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -4290,10 +4290,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     const std::string time_allowed =
         base::FormatRuntime(Text_String(TXT_TIME_ALLOWED), timeval + 1);
     const int pixwidth = StringPixelWidth(font, time_allowed.c_str());
-    view.FillRect(
-        Rect{(160 * factor) - (pixwidth / 2) - 12,
-             y + (d_margin * 2) + d_txt6_h + d_margin, pixwidth + 24, d_txt6_h},
-        game::kTransparentBlack);
+    view.FillRect(base::Rect{(160 * factor) - (pixwidth / 2) - 12,
+                             y + (d_margin * 2) + d_txt6_h + d_margin,
+                             pixwidth + 24, d_txt6_h},
+                  game::kTransparentBlack);
     centered.Print(time_allowed.c_str(),
                    {160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin});
 

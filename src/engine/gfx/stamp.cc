@@ -11,10 +11,10 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/types.h"
 #include "base/unaligned.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/tile.h"
 
 namespace {
@@ -102,7 +102,7 @@ static std::optional<IconSetTables> ReadIconSet(
 void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
                           const int cell, const int x, const int y,
                           const std::span<const uint8_t> remap_table,
-                          const Rect& clip) {
+                          const base::Rect& clip) {
   if (Lock()) {
     DrawStampLocked(icon_set, cell, x, y, remap_table, clip.x, clip.y,
                     clip.width, clip.height);

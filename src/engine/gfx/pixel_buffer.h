@@ -42,9 +42,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "base/rect.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/gfx/rect.h"
 
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
@@ -145,29 +145,30 @@ class PixelView {
   // Copies the rectangle `source` of the view out to plain memory, packed
   // with no padding. The rectangle is clipped to the view first, and a
   // rectangle that misses the view entirely copies nothing.
-  void CopyToBuffer(const Rect& source, std::span<uint8_t> dest);
-  void CopyToBufferLocked(const Rect& source, std::span<uint8_t> dest);
+  void CopyToBuffer(const base::Rect& source, std::span<uint8_t> dest);
+  void CopyToBufferLocked(const base::Rect& source, std::span<uint8_t> dest);
 
   // The other direction: copies an image from plain memory into the
   // rectangle `dest` of the view, clipping it to the view. `source` is
   // dest.width x dest.height pixels, packed with no padding.
-  void CopyFromBuffer(const Rect& dest, std::span<const uint8_t> source);
-  void CopyFromBufferLocked(const Rect& dest, std::span<const uint8_t> source);
+  void CopyFromBuffer(const base::Rect& dest, std::span<const uint8_t> source);
+  void CopyFromBufferLocked(const base::Rect& dest,
+                            std::span<const uint8_t> source);
 
   // Copies the rectangle `source` of this view to dst_x,dst_y in `dest`,
   // clipping to both. With `transparent`, pixel 0 is left alone in the
   // destination instead of being copied. Copies nothing if either view cannot
   // be locked.
-  void BlitTo(PixelView& dest, const Rect& source, int dst_x, int dst_y,
+  void BlitTo(PixelView& dest, const base::Rect& source, int dst_x, int dst_y,
               bool transparent = false);
   // Copies the whole view to the top left corner of `dest`.
   void BlitTo(PixelView& dest) {
-    BlitTo(dest, Rect{0, 0, width_, height_}, 0, 0);
+    BlitTo(dest, base::Rect{0, 0, width_, height_}, 0, 0);
   }
   // Both views must be locked. Overlapping source and destination are
   // handled, so this also serves as a scroll within one view.
-  void BlitToLocked(PixelView& dest, const Rect& source, int dst_x, int dst_y,
-                    bool transparent);
+  void BlitToLocked(PixelView& dest, const base::Rect& source, int dst_x,
+                    int dst_y, bool transparent);
 
   // Stretches or shrinks the src_width x src_height rectangle at src_x,src_y
   // in this view onto the dst_width x dst_height rectangle at dst_x,dst_y in
@@ -207,25 +208,26 @@ class PixelView {
   // DrawRect draws the one pixel wide outline of `rect`, along its inside
   // edge; FillRect fills all of it. Both clip to the view and draw nothing
   // for a rectangle with no width or no height. A caller that holds two
-  // inclusive corners passes Rect::FromCorners(x1, y1, x2, y2).
-  void DrawRect(const Rect& rect, engine::gfx::PaletteIndex color);
-  void FillRect(const Rect& rect, engine::gfx::PaletteIndex color);
-  void FillRectLocked(const Rect& rect, engine::gfx::PaletteIndex color);
+  // inclusive corners passes base::Rect::FromCorners(x1, y1, x2, y2).
+  void DrawRect(const base::Rect& rect, engine::gfx::PaletteIndex color);
+  void FillRect(const base::Rect& rect, engine::gfx::PaletteIndex color);
+  void FillRectLocked(const base::Rect& rect, engine::gfx::PaletteIndex color);
 
   // Replaces every pixel in `rect` with remap_table[pixel]. `remap_table` is
   // a 256-entry table; the shorter overload covers the whole view.
-  void Remap(const Rect& rect, std::span<const uint8_t> remap_table);
+  void Remap(const base::Rect& rect, std::span<const uint8_t> remap_table);
   void Remap(const std::span<const uint8_t> remap_table) {
-    Remap(Rect{0, 0, width_, height_}, remap_table);
+    Remap(base::Rect{0, 0, width_, height_}, remap_table);
   }
-  void RemapLocked(const Rect& rect, std::span<const uint8_t> remap_table);
+  void RemapLocked(const base::Rect& rect,
+                   std::span<const uint8_t> remap_table);
 
   // Draws cell `cell` of an icon set (a terrain template) at x,y, clipped to
   // `clip` (in view coordinates) rather than to the view - the map draws its
   // terrain through this. x,y are relative to the clip rectangle's corner.
   // `remap_table` may be empty for no remapping.
   void DrawStamp(std::span<const std::byte> icon_set, int cell, int x, int y,
-                 std::span<const uint8_t> remap_table, const Rect& clip);
+                 std::span<const uint8_t> remap_table, const base::Rect& clip);
   // DrawStamp's work on a locked buffer, the clip rectangle given as its
   // corner and size. The set's map translates `cell` into the tile drawn; an
   // empty cell, a cell or a tile outside the set, damaged set data, or a

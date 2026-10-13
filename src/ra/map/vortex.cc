@@ -76,13 +76,13 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/archive.h"
@@ -770,7 +770,7 @@ void ChronalVortexClass::Coordinate_Remap(
     base::At(output, i) = base::At(base::At(VortexRemapTables, remap_color),
                                    base::At(input, source));
   }
-  inbuffer->CopyFromBufferLocked(Rect{x, y, width, height}, output);
+  inbuffer->CopyFromBufferLocked(base::Rect{x, y, width, height}, output);
   inbuffer->Unlock();
 }
 
@@ -963,7 +963,7 @@ void ChronalVortexClass::Render(PixelView& view) {
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
       RenderBuffer.view().BlitTo(
-          target, Rect{0, 0, RenderBuffer.width(), RenderBuffer.height()},
+          target, base::Rect{0, 0, RenderBuffer.width(), RenderBuffer.height()},
           Lepton_To_Pixel(xoff), Lepton_To_Pixel(yoff));
     }
   }

@@ -53,10 +53,10 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "game/sim/direction.h"
 #include "game/sim/mph.h"
@@ -293,7 +293,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   *object changes shape. Filled lazily while drawing, so it is a cache rather
   *than part of the type's logical state.
   */
-  mutable std::vector<Rect> DimensionData;
+  mutable std::vector<base::Rect> DimensionData;
 
   // This points to the radar imagery for this object.
   std::vector<unsigned char> RadarIcon;

@@ -5,10 +5,10 @@
 #include <cstdint>
 #include <span>
 
+#include "base/rect.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/video/vqa/vqa_player.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
@@ -42,8 +42,8 @@ bool MovieScreen::OnFrame(const VqaFrameView& frame) {
   }
   PixelView& page = TheScreen().sys_mem_page().view();
   page.CopyFromBuffer(
-      Rect{(page.width() - frame.width) / 2, (page.height() - frame.height) / 2,
-           frame.width, frame.height},
+      base::Rect{(page.width() - frame.width) / 2,
+                 (page.height() - frame.height) / 2, frame.width, frame.height},
       frame.pixels);
   return Present();
 }

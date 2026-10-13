@@ -29,10 +29,10 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/types.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/shape_blitter.h"
 #include "engine/gfx/text_window.h"
@@ -195,9 +195,9 @@ int PredatorOffset(const int frame, const int x, const int window_width) {
   return x > window_width / 2 ? -frame : frame;
 }
 
-Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
-                      const int shape_num) {
-  Rect rect;
+base::Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
+                            const int shape_num) {
+  base::Rect rect;
 
   const std::vector<uint8_t> shape =
       engine::gfx::BuildFrame(shapedata, shape_num);

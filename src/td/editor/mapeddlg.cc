@@ -67,6 +67,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -74,7 +75,6 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/cell_size.h"
@@ -1035,8 +1035,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ..................... Draw the map border .......................
         */
         view.Lock();
-        view.DrawRect(Rect::FromCorners(kBordX1, kBordY1, kBordX2, kBordY2),
-                      kCcGreenShadow);
+        view.DrawRect(
+            base::Rect::FromCorners(kBordX1, kBordY1, kBordX2, kBordY2),
+            kCcGreenShadow);
         for (int index = kBordX1; index < kBordX2;
              index += (320 / game::kCellWidthPixels)) {
           view.PutPixel(index, kBordY1 - 1, kCcGreenShadow);
@@ -1124,8 +1125,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .................... Erase the map interior .....................
         */
-        view.FillRect(Rect::FromCorners(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1,
-                                        kBordY2 - 1),
+        view.FillRect(base::Rect::FromCorners(kBordX1 + 1, kBordY1 + 1,
+                                              kBordX2 - 1, kBordY2 - 1),
                       game::kBlack);
 
         /*...............................................................
@@ -1146,7 +1147,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ................. Draw the actual map location ..................
         */
-        view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+        view.DrawRect(base::Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
                       game::kWhite);
         switch (grabbed) {
           case 1:
@@ -1170,8 +1171,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             break;
 
           case 5:
-            view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
-                          game::kBlue);
+            view.DrawRect(
+                base::Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                game::kBlue);
             break;
 
           default:
@@ -1213,9 +1215,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
         // Every row of a glyph: a fill shorter than the font leaves the
         // bottom of the old digits behind.
-        view.FillRect(Rect{kDialogX + 7, txt_y, kDialogW - 14,
-                           FontMaxHeight(TextFontStyle(
-                               FontType::k6PointGradient, kCoordFlags))},
+        view.FillRect(base::Rect{kDialogX + 7, txt_y, kDialogW - 14,
+                                 FontMaxHeight(TextFontStyle(
+                                     FontType::k6PointGradient, kCoordFlags))},
                       game::kBlack);
 
         /*

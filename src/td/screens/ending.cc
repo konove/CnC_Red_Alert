@@ -49,13 +49,13 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/rect.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/cps_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pcx_file.h"  // IWYU pragma: keep (the DEMO build)
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -259,9 +259,9 @@ void Nod_Ending() {
   /* get rid of all the animating objects */
   Clear_Score_Objects();
   // erase the "choose a target" text
-  TheScreen().visible_view().FillRect(Rect{0, 360, 640, 40},
+  TheScreen().visible_view().FillRect(base::Rect{0, 360, 640, 40},
                                       game::kTransparentBlack);
-  show.text_page().view().FillRect(Rect{0, 360, 640, 40},
+  show.text_page().view().FillRect(base::Rect{0, 360, 640, 40},
                                    game::kTransparentBlack);
 
   game::TheMouse().Hide();

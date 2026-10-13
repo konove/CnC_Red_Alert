@@ -25,8 +25,8 @@
 #include <span>
 #include <vector>
 
+#include "base/rect.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
@@ -68,7 +68,8 @@ int PredatorOffset(int frame, int x, int window_width);
 // tighten the map's dirty-rectangle logic.
 //
 // This is brute force and slow -- cache the result rather than recomputing it.
-Rect Shape_Dimensions(std::span<const std::byte> shapedata, int shape_num);
+base::Rect Shape_Dimensions(std::span<const std::byte> shapedata,
+                            int shape_num);
 
 // Renders the radar-map icons for a shape file, at zoomfactor pixels per map
 // cell, and returns the buffer holding them.

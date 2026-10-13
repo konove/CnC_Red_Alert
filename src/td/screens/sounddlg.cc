@@ -48,10 +48,10 @@
 
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
@@ -480,7 +480,7 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      view.FillRect(Rect{x, y, width, LineHeight}, kCcGreenShadow);
+      view.FillRect(base::Rect{x, y, width, LineHeight}, kCcGreenShadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

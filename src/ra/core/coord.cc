@@ -31,8 +31,8 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/trig.h"
-#include "engine/gfx/rect.h"
 #include "game/core/cell_size.h"
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
@@ -44,7 +44,7 @@
 namespace ra {
 
 std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
-                                             const Rect& rect,
+                                             const base::Rect& rect,
                                              const bool no_center) {
   if (!rect.IsValid()) {
     static constexpr int16_t _list[] = {kRefreshEol};

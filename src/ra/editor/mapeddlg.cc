@@ -60,12 +60,12 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -1167,7 +1167,7 @@ int MapEditClass::Load_Scenario() {
           */
           if (view.Lock()) {
             view.DrawRect(
-                Rect::FromCorners(kDBordX1, kDBordY1, kDBordX2, kDBordY2),
+                base::Rect::FromCorners(kDBordX1, kDBordY1, kDBordX2, kDBordY2),
                 scheme->Shadow);
 
             /*
@@ -1267,8 +1267,8 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Erase the map interior
           */
-          view.FillRect(Rect::FromCorners(kDBordX1 + 1, kDBordY1 + 1,
-                                          kDBordX2 - 1, kDBordY2 - 1),
+          view.FillRect(base::Rect::FromCorners(kDBordX1 + 1, kDBordY1 + 1,
+                                                kDBordX2 - 1, kDBordY2 - 1),
                         game::kBlack);
 
           /*
@@ -1287,7 +1287,7 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw the actual map location
           */
-          view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+          view.DrawRect(base::Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
                         game::kWhite);
           switch (grabbed) {
             case 1:
@@ -1311,8 +1311,9 @@ int MapEditClass::Load_Scenario() {
               break;
 
             case 5:
-              view.DrawRect(Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
-                            game::kBlue);
+              view.DrawRect(
+                  base::Rect::FromCorners(map_x1, map_y1, map_x2, map_y2),
+                  game::kBlue);
               break;
 
             default:

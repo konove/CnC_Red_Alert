@@ -65,11 +65,11 @@
 #include "base/flags.h"
 #include "base/numeric.h"
 #include "base/point.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 #include "game/ui/standard_colors.h"
 #include "td/assets/assets.h"
@@ -169,17 +169,18 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
       CC_Texture_Fill(view, MixArchive::RetrieveData("BTEXTURE.SHP"),
                       TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
-      view.FillRect(Rect::FromCorners(x, y, x + w, y + h), style.Filler);
+      view.FillRect(base::Rect::FromCorners(x, y, x + w, y + h), style.Filler);
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      view.DrawRect(Rect::FromCorners(x, y, x + w, y + h), style.Highlight);
+      view.DrawRect(base::Rect::FromCorners(x, y, x + w, y + h),
+                    style.Highlight);
       break;
 
     case BOXSTYLE_GREEN_BORDER:
-      view.DrawRect(Rect::FromCorners(x + 1, y + 1, x + w - 1, y + h - 1),
+      view.DrawRect(base::Rect::FromCorners(x + 1, y + 1, x + w - 1, y + h - 1),
                     style.Highlight);
       break;
 

@@ -30,12 +30,12 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/rect.h"
 #include "base/types.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/stream/byte_stream.h"
 
 namespace engine::gfx {
@@ -312,7 +312,7 @@ bool DrawPcxFile(const std::string_view file_name, PixelView& view,
   if (!picture) {
     return false;
   }
-  view.CopyFromBuffer(Rect{0, 0, picture->width, picture->height},
+  view.CopyFromBuffer(base::Rect{0, 0, picture->width, picture->height},
                       picture->pixels);
   palette = picture->palette;
   return true;

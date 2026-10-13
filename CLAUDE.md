@@ -164,8 +164,9 @@ All source lives under `src/`:
 
 ```
 base/        → Vocabulary types and small value classes, shared by the engine, the games and the
-               tools: types.h (base::ssize), numeric.h, fixed.h, random.h; strings/ holds format,
-               safe_string, tokenizer, number_parse (target `base`) [depends: abseil, magic_enum]
+               tools: types.h (base::ssize), numeric.h, fixed.h, random.h, point.h and rect.h
+               (base::Point, base::Rect); strings/ holds format, safe_string, tokenizer,
+               number_parse (target `base`) [depends: abseil, magic_enum]
 engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDERS_PLAN.md)
   platform/  → OS services: environment, time, sleep, memory, files on disk; win32/ holds the Win32
                API emulation (target `engine_platform`) [depends: base]

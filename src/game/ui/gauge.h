@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_GAME_UI_GAUGE_H_
 #define CNC_RED_ALERT_GAME_UI_GAUGE_H_
 
+#include "base/rect.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 #include "game/ui/input.h"
@@ -80,13 +80,15 @@ class GaugeClass : public ControlClass {
       const engine::gfx::PaletteIndex color = Skin::Gauge_Fill_Color();
       if (IsHorizontal) {
         if (middle >= X + 1) {
-          view.FillRect(Rect::FromCorners(X + 1, Y + 1, middle, Y + Height - 2),
-                        color);
+          view.FillRect(
+              base::Rect::FromCorners(X + 1, Y + 1, middle, Y + Height - 2),
+              color);
         }
       } else {
         if (middle >= Y + 1) {
-          view.FillRect(Rect::FromCorners(X + 1, Y + 1, X + Width - 2, middle),
-                        color);
+          view.FillRect(
+              base::Rect::FromCorners(X + 1, Y + 1, X + Width - 2, middle),
+              color);
         }
       }
     }
@@ -293,39 +295,47 @@ class TriColorGaugeClass : public GaugeClass<Skin> {
 
     if (cur <= RedLimit) {
       if (this->IsHorizontal) {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, middle, y + height - 2),
-                      kPink);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, y + 1, middle, y + height - 2),
+            kPink);
       } else {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, x + width - 2, middle),
-                      kPink);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, y + 1, x + width - 2, middle),
+            kPink);
       }
     } else if (cur > RedLimit && cur <= YellowLimit) {
       if (this->IsHorizontal) {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, red, y + height - 2),
-                      kPink);
-        view.FillRect(Rect::FromCorners(red, y + 1, middle, y + height - 2),
-                      kYellow);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, y + 1, red, y + height - 2), kPink);
+        view.FillRect(
+            base::Rect::FromCorners(red, y + 1, middle, y + height - 2),
+            kYellow);
       } else {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, x + width - 2, red),
+        view.FillRect(base::Rect::FromCorners(x + 1, y + 1, x + width - 2, red),
                       kPink);
-        view.FillRect(Rect::FromCorners(x + 1, red, x + width - 2, middle),
-                      kYellow);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, red, x + width - 2, middle),
+            kYellow);
       }
     } else if (cur > YellowLimit && cur <= this->MaxValue) {
       if (this->IsHorizontal) {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, red, y + height - 2),
-                      kPink);
-        view.FillRect(Rect::FromCorners(red, y + 1, yellow, y + height - 2),
-                      kYellow);
-        view.FillRect(Rect::FromCorners(yellow, y + 1, middle, y + height - 2),
-                      kGreen);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, y + 1, red, y + height - 2), kPink);
+        view.FillRect(
+            base::Rect::FromCorners(red, y + 1, yellow, y + height - 2),
+            kYellow);
+        view.FillRect(
+            base::Rect::FromCorners(yellow, y + 1, middle, y + height - 2),
+            kGreen);
       } else {
-        view.FillRect(Rect::FromCorners(x + 1, y + 1, x + width - 2, red),
+        view.FillRect(base::Rect::FromCorners(x + 1, y + 1, x + width - 2, red),
                       kPink);
-        view.FillRect(Rect::FromCorners(x + 1, red, x + width - 2, yellow),
-                      kYellow);
-        view.FillRect(Rect::FromCorners(x + 1, yellow, x + width - 2, middle),
-                      kGreen);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, red, x + width - 2, yellow),
+            kYellow);
+        view.FillRect(
+            base::Rect::FromCorners(x + 1, yellow, x + width - 2, middle),
+            kGreen);
       }
     }
 

@@ -158,7 +158,7 @@
 #include "td/ui/msglist.h"
 
 #ifdef _WIN32
-#include "engine/gfx/rect.h"
+#include "base/rect.h"
 #include "td/startup/ccdde.h"
 #endif
 
@@ -872,8 +872,8 @@ bool Select_Game(bool fade) {
           ** Make sure top and bottom of screen are clear in 640x480 mode
           */
           if (TheScreen().mode_height() == 480) {
-            TheScreen().visible_view().FillRect(Rect{0, 0, 640, 40}, 0);
-            TheScreen().visible_view().FillRect(Rect{0, 440, 640, 40}, 0);
+            TheScreen().visible_view().FillRect(base::Rect{0, 0, 640, 40}, 0);
+            TheScreen().visible_view().FillRect(base::Rect{0, 440, 640, 40}, 0);
           }
         }
       }

@@ -9,13 +9,13 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/rect.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 
 namespace td {
 
@@ -99,7 +99,7 @@ FadingTable ConquerBuildFadingTable(const engine::gfx::Palette& palette,
 
 void Fat_Put_Pixel(PixelView& view, int x, int y,
                    const engine::gfx::PaletteIndex color, int size) {
-  view.FillRect(Rect{x, y, size, size}, color);
+  view.FillRect(base::Rect{x, y, size, size}, color);
 }
 
 // from RA readline.cpp

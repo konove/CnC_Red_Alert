@@ -69,9 +69,9 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/rect.h"
 #include "engine/gfx/palette_index.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "game/ui/standard_colors.h"
 #include "td/core/defines.h"
 #include "td/data/text.h"
@@ -260,7 +260,7 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      view.DrawRect(Rect{x, y, width - 1, LineHeight - 1}, color);
+      view.DrawRect(base::Rect{x, y, width - 1, LineHeight - 1}, color);
       item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       break;
 
@@ -269,12 +269,12 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_BAR:
       if (TextFont == FontType::k6PointGradient) {
-        view.FillRect(Rect{x, y, width, LineHeight},
+        view.FillRect(base::Rect{x, y, width, LineHeight},
                       SelectColor.value_or(engine::gfx::PaletteIndex{255}));
         item.With(TPF_BRIGHT_COLOR)
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
+        view.FillRect(base::Rect{x, y, width - 1, LineHeight - 1},
                       SelectColor.value_or(engine::gfx::PaletteIndex{255}));
         item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       }
@@ -285,13 +285,14 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_INVERT:
       if (TextFont == FontType::k6PointGradient) {
-        view.FillRect(Rect{x, y, width, LineHeight}, base::At(Colors, index));
+        view.FillRect(base::Rect{x, y, width, LineHeight},
+                      base::At(Colors, index));
         // Black text on the transparent color; the names only look swapped.
         TextPrinter(
             view, {game::kBlack, game::kTransparentBlack, TextFont, TextFlags})
             .PrintClipped(Get_Item(index), {x, y}, width, Tabs);
       } else {
-        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},
+        view.FillRect(base::Rect{x, y, width - 1, LineHeight - 1},
                       base::At(Colors, index));
         TextPrinter(view, {game::kLightGrey, game::kTransparentBlack, TextFont,
                            TextFlags})

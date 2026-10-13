@@ -111,12 +111,12 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "base/rect.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/ini_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
@@ -1526,7 +1526,7 @@ std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
    *infantry *	can be.
    */
 
-  static constexpr Rect rect{-16, -24, 32, 36};
+  static constexpr base::Rect rect{-16, -24, 32, 36};
   return Coord_Spillage_List(Coord, rect, true);
 
   //		return(Coord_Spillage_List(Coord, 24 /*+ ((Doing > DO_WALK ||
