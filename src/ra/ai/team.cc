@@ -681,9 +681,10 @@ void TeamClass::AI() {
   if (IsMoving && !IsReforming && IsNextMission) {
     IsNextMission = false;
     CurrentMission++;
-    if (CurrentMission < Class->mission_count()) {
-      const TeamMission* mission =
-          base::Suffix(Class->missions(), CurrentMission).data();
+    // A jump to a line the script does not have ends the team, as running
+    // off its end does.
+    if (CurrentMission >= 0 && CurrentMission < Class->mission_count()) {
+      const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
 
       TimeOut.Set(mission->value() * (kTicksPerMinute / 10));
       Target = ra::Target{};
@@ -762,8 +763,7 @@ void TeamClass::AI() {
     **	this case. If it has timed out then advance to the next
     **	mission in the list or disband the team.
     */
-    const TeamMission* mission =
-        base::Suffix(Class->missions(), CurrentMission).data();
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
     //		FootClass	* member = Member;
 
     switch (mission->mission()) {
@@ -1714,7 +1714,7 @@ void TeamClass::Coordinate_Attack() {
           tt != TEMPLATE_BRIDGE_3A && tt != TEMPLATE_BRIDGE_3B) {
         FootClass* unit = Member;
         const TeamMission* mission =
-            base::Suffix(Class->missions(), CurrentMission).data();
+            &base::At(Class->missions(), CurrentMission);
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
             mission->mission() != TeamMissionType::kSpy) {
@@ -1729,8 +1729,7 @@ void TeamClass::Coordinate_Attack() {
     IsNextMission = true;
 
   } else {
-    const TeamMission* mission =
-        base::Suffix(Class->missions(), CurrentMission).data();
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
 
     FootClass* unit = Member;
     while (unit != nullptr) {
@@ -1924,6 +1923,14 @@ void TeamClass::Coordinate_Move() {
   bool finished = true;
   bool found = false;
 
+  // The script's next line, if it has one, is another move. CurrentMission
+  // is -1 while the team is still forming.
+  const int next_mission = CurrentMission + 1;
+  const bool next_is_move =
+      next_mission >= 0 && next_mission < Class->mission_count() &&
+      base::At(Class->missions(), next_mission).mission() ==
+          TeamMissionType::kMove;
+
   if (!Target) {
     Target = MissionTarget;
   }
@@ -1978,8 +1985,7 @@ void TeamClass::Coordinate_Move() {
                unit->Height > 0 &&
                Cell::Containing(unit->Center_Coord()) != Target.AsCell() &&
                !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
-               base::At(Class->missions(), CurrentMission + 1).mission() !=
-                   TeamMissionType::kMove)) {
+               !next_is_move)) {
             bool wasform = false;
 
             if (unit->mission_state().current() != MISSION_MOVE) {
@@ -2421,9 +2427,9 @@ bool TeamClass::Is_Leaving_Map() const {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
-  if (IsMoving && CurrentMission >= 0) {
-    const TeamMission* mission =
-        base::Suffix(Class->missions(), CurrentMission).data();
+  if (IsMoving && CurrentMission >= 0 &&
+      CurrentMission < Class->mission_count()) {
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
 
     // A waypoint number outside the table is not a destination at all, so the
     // team is not going anywhere.
@@ -2519,8 +2525,7 @@ void TeamClass::Scan_Limit() {
  *=============================================================================================*/
 int TeamClass::TMission_Formation() {
   FootClass* member = Member;
-  const TeamMission* mission =
-      base::Suffix(Class->missions(), CurrentMission).data();
+  const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
   Formation = mission->formation();
   const int group = ID + 10;
   int xdir = 0;
@@ -2728,8 +2733,7 @@ int TeamClass::TMission_Formation() {
  *=============================================================================================*/
 int TeamClass::TMission_Attack() {
   if (!MissionTarget && Member != nullptr) {
-    const TeamMission* mission =
-        base::Suffix(Class->missions(), CurrentMission).data();
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
 
     /*
     **	Pick a team leader that has a weapon. Only in the case of no
@@ -2891,8 +2895,7 @@ int TeamClass::TMission_Follow() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Loop() {
-  const TeamMission* mission =
-      base::Suffix(Class->missions(), CurrentMission).data();
+  const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
   CurrentMission = mission->value() - 1;
   IsNextMission = true;
   return 1;
@@ -2943,8 +2946,7 @@ int TeamClass::TMission_Invulnerable() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Set_Global() {
-  const TeamMission* mission =
-      base::Suffix(Class->missions(), CurrentMission).data();
+  const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
   TheScenario().Set_Global_To(mission->value(), true);
   IsNextMission = true;
   return 1;
@@ -2974,8 +2976,7 @@ int TeamClass::TMission_Patrol() {
   **	cleared (probably because the object has been destroyed).
   */
   if (!Target) {
-    const TeamMission* mission =
-        base::Suffix(Class->missions(), CurrentMission).data();
+    const TeamMission* mission = &base::At(Class->missions(), CurrentMission);
     if (ScenarioClass::IsWaypoint(mission->value())) {
       Assign_Mission_Target(ra::Target::FromCell(
           base::At(TheScenario().Waypoint, mission->value())));

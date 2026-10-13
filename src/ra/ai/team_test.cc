@@ -70,6 +70,25 @@ TEST_F(TeamTest, ATeamMovingToANegativeWaypointIsNotLeavingTheMap) {
   EXPECT_FALSE(StartTeam({TeamMissionType::kMove, -1})->Is_Leaving_Map());
 }
 
+// The jump leaves the team past the end of its script until its next turn.
+TEST_F(TeamTest, AJumpPastTheEndOfTheScriptEndsTheTeam) {
+  TeamClass* const team = StartTeam({TeamMissionType::kLoop, 5});
+  EXPECT_FALSE(team->Is_Leaving_Map());
+
+  team->AI();
+
+  EXPECT_EQ(TheObjectHeaps().team().Count(), 0);
+}
+
+TEST_F(TeamTest, AJumpToANegativeLineEndsTheTeam) {
+  TeamClass* const team = StartTeam({TeamMissionType::kLoop, -3});
+  EXPECT_FALSE(team->Is_Leaving_Map());
+
+  team->AI();
+
+  EXPECT_EQ(TheObjectHeaps().team().Count(), 0);
+}
+
 // The original game adds the best vehicle so far on every pass of its search,
 // not once after it, so a single round of recruiting takes more than the
 // nearest one.

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "absl/strings/str_cat.h"
+#include "base/array.h"
 #include "base/pooled.h"
 #include "engine/file/ini_file.h"
 #include "engine/gfx/palette_index.h"
@@ -131,17 +132,19 @@ TEST_F(TeamTypeTest, ReadIniEntrySetsEveryField) {
   EXPECT_EQ(team_type_->origin(), 5);
   EXPECT_EQ(team_type_->trigger(), TheObjectHeaps().trigger_type().Slot(1));
   ASSERT_EQ(team_type_->member_count(), 2);
-  EXPECT_EQ(team_type_->members()[0].type,
+  EXPECT_EQ(base::At(team_type_->members(), 0).type,
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
-  EXPECT_EQ(team_type_->members()[0].quantity, 3);
-  EXPECT_EQ(team_type_->members()[1].type,
+  EXPECT_EQ(base::At(team_type_->members(), 0).quantity, 3);
+  EXPECT_EQ(base::At(team_type_->members(), 1).type,
             &UnitTypeClass::As_Reference(UNIT_JEEP));
-  EXPECT_EQ(team_type_->members()[1].quantity, 1);
+  EXPECT_EQ(base::At(team_type_->members(), 1).quantity, 1);
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->missions()[0].value(), 5);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kAttack);
-  EXPECT_EQ(team_type_->missions()[1].quarry(), QuarryType{2});
+  EXPECT_EQ(base::At(team_type_->missions(), 0).mission(),
+            TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).value(), 5);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kAttack);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).quarry(), QuarryType{2});
 }
 
 TEST_F(TeamTypeTest, ACountAboveWhatATeamTypeStoresIsTheMost) {
@@ -176,11 +179,11 @@ TEST_F(TeamTypeTest, AMemberMayBeAnAircraftOrAVessel) {
       absl::StrCat("2,0,7,0,1,-1,-1,2,", Aircraft(), ":2,", Vessel(), ":4,0"));
 
   ASSERT_EQ(team_type_->member_count(), 2);
-  EXPECT_EQ(team_type_->members()[0].type,
+  EXPECT_EQ(base::At(team_type_->members(), 0).type,
             &AircraftTypeClass::As_Reference(AIRCRAFT_HIND));
-  EXPECT_EQ(team_type_->members()[1].type,
+  EXPECT_EQ(base::At(team_type_->members(), 1).type,
             &VesselTypeClass::As_Reference(VESSEL_SS));
-  EXPECT_EQ(team_type_->members()[1].quantity, 4);
+  EXPECT_EQ(base::At(team_type_->members(), 1).quantity, 4);
 }
 
 TEST_F(TeamTypeTest, ReadIniEntrySkipsAnUnknownFirstMember) {
@@ -188,12 +191,13 @@ TEST_F(TeamTypeTest, ReadIniEntrySkipsAnUnknownFirstMember) {
                                                  Infantry(), ":3,1,3:5"));
 
   ASSERT_EQ(team_type_->member_count(), 1);
-  EXPECT_EQ(team_type_->members()[0].type,
+  EXPECT_EQ(base::At(team_type_->members(), 0).type,
             &InfantryTypeClass::As_Reference(INFANTRY_E1));
-  EXPECT_EQ(team_type_->members()[0].quantity, 3);
+  EXPECT_EQ(base::At(team_type_->members(), 0).quantity, 3);
   ASSERT_EQ(team_type_->mission_count(), 1);
-  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->missions()[0].value(), 5);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).mission(),
+            TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).value(), 5);
 }
 
 TEST_F(TeamTypeTest, ReadIniEntryTakesAnOriginThatIsNoWaypointAsNone) {
@@ -497,9 +501,10 @@ TEST_F(TeamTypeTest, AddMissionAndAddMemberAppend) {
       {.quantity = 2, .type = &UnitTypeClass::As_Reference(UNIT_JEEP)});
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kUnload);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kUnload);
   ASSERT_EQ(team_type_->member_count(), 1);
-  EXPECT_EQ(team_type_->members()[0].quantity, 2);
+  EXPECT_EQ(base::At(team_type_->members(), 0).quantity, 2);
 
   team_type_->ClearMembers();
   EXPECT_EQ(team_type_->member_count(), 0);

@@ -1,6 +1,7 @@
 // Tests for the scenario editor's team type dialog, TeamType::Edit(), played
 // by a script on a headless screen.
 
+#include "base/array.h"
 #include "base/pooled.h"
 #include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
@@ -96,7 +97,7 @@ TeamMission TeamTypeDialogTest::CopyOf(const TeamMission& line) {
   EXPECT_TRUE(team_type_->Edit());
 
   EXPECT_EQ(team_type_->mission_count(), 2);
-  return team_type_->missions()[1];
+  return base::At(team_type_->missions(), 1);
 }
 
 TEST_F(TeamTypeDialogTest, OkAcceptsItAndNamesABlankTeamTypeWithDashes) {
@@ -212,8 +213,9 @@ TEST_F(TeamTypeDialogTest, ASingleClickOnALineDoesNotLoadIt) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kAttack);
-  EXPECT_EQ(team_type_->missions()[1].quarry(), QuarryType{0});
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kAttack);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).quarry(), QuarryType{0});
 }
 
 TEST_F(TeamTypeDialogTest, ALineWithoutAnArgumentIsCopiedWithNone) {
@@ -260,7 +262,7 @@ TEST_F(TeamTypeDialogTest, ACellIsTypedInHex) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[1].value(), 0x1AF);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).value(), 0x1AF);
 }
 
 // The field takes letters that are no hex digits.
@@ -285,7 +287,7 @@ TEST_F(TeamTypeDialogTest, ACellWithAStrayCharacterIsZero) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[1].value(), 0);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).value(), 0);
 }
 
 TEST_F(TeamTypeDialogTest, ALineWithAWaypointIsCopiedWithIt) {
@@ -355,10 +357,13 @@ TEST_F(TeamTypeScriptEditTest, InsertPutsTheWorkMissionBeforeTheSelectedLine) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 3);
-  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->missions()[0].value(), 3);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kUnload);
-  EXPECT_EQ(team_type_->missions()[2].mission(), TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).mission(),
+            TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).value(), 3);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kUnload);
+  EXPECT_EQ(base::At(team_type_->missions(), 2).mission(),
+            TeamMissionType::kMove);
 }
 
 TEST_F(TeamTypeScriptEditTest, ReplaceOverwritesTheSelectedLine) {
@@ -367,9 +372,11 @@ TEST_F(TeamTypeScriptEditTest, ReplaceOverwritesTheSelectedLine) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->missions()[0].value(), 3);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).mission(),
+            TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).value(), 3);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kMove);
 }
 
 TEST_F(TeamTypeScriptEditTest, DeleteRemovesTheSelectedLine) {
@@ -378,8 +385,9 @@ TEST_F(TeamTypeScriptEditTest, DeleteRemovesTheSelectedLine) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 1);
-  EXPECT_EQ(team_type_->missions()[0].mission(), TeamMissionType::kMove);
-  EXPECT_EQ(team_type_->missions()[0].value(), 3);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).mission(),
+            TeamMissionType::kMove);
+  EXPECT_EQ(base::At(team_type_->missions(), 0).value(), 3);
 }
 
 // The Members button, below the name field, and in the members dialog, which
@@ -417,9 +425,9 @@ TEST_F(TeamTypeMembersDialogTest, TheMembersDialogEditsThisTeamType) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->member_count(), 1);
-  EXPECT_EQ(team_type_->members()[0].type,
+  EXPECT_EQ(base::At(team_type_->members(), 0).type,
             &InfantryTypeClass::As_Reference(InfantryType{0}));
-  EXPECT_EQ(team_type_->members()[0].quantity, 1);
+  EXPECT_EQ(base::At(team_type_->members(), 0).quantity, 1);
 }
 
 // The members dialog writes to the team type when it closes, before the team
@@ -444,8 +452,8 @@ TEST_F(TeamTypeMembersDialogTest,
   EXPECT_FALSE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->member_count(), 1);
-  EXPECT_EQ(team_type_->members()[0].type, type);
-  EXPECT_EQ(team_type_->members()[0].quantity, 2);
+  EXPECT_EQ(base::At(team_type_->members(), 0).type, type);
+  EXPECT_EQ(base::At(team_type_->members(), 0).quantity, 2);
 }
 
 TEST_F(TeamTypeDialogTest, ReplaceAndDeleteDoNothingToAnEmptyScript) {
@@ -498,8 +506,9 @@ TEST_F(TeamTypeDialogTest, ADoubleClickedAttackLineIsAppendedWithItsQuarry) {
   EXPECT_TRUE(team_type_->Edit());
 
   ASSERT_EQ(team_type_->mission_count(), 2);
-  EXPECT_EQ(team_type_->missions()[1].mission(), TeamMissionType::kAttack);
-  EXPECT_EQ(team_type_->missions()[1].quarry(), QUARRY_BUILDINGS);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).mission(),
+            TeamMissionType::kAttack);
+  EXPECT_EQ(base::At(team_type_->missions(), 1).quarry(), QUARRY_BUILDINGS);
 }
 
 TEST_F(TeamTypeDialogTest, TheDialogReadsTheOriginAsWaypointLetters) {

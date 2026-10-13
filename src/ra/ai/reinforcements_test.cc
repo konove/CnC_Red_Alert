@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "game/sim/direction.h"
@@ -724,9 +725,9 @@ TEST_F(ReinforcementTest, ATeamTypeWithoutMissionsAttacksItsOrigin) {
   EXPECT_TRUE(DeliverReinforcements(&team_type));
 
   ASSERT_EQ(team_type.mission_count(), 1);
-  EXPECT_EQ(team_type.missions()[0].mission(),
+  EXPECT_EQ(base::At(team_type.missions(), 0).mission(),
             TeamMissionType::kAttackWaypoint);
-  EXPECT_EQ(team_type.missions()[0].value(), -1);
+  EXPECT_EQ(base::At(team_type.missions(), 0).value(), -1);
 }
 
 TEST_F(ReinforcementTest, ATeamTypeWithoutMembersDeliversNothing) {

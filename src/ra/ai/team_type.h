@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -152,8 +153,6 @@ class TeamType : public AbstractTypeClass {
   // Both size arrays that are saved.
   static constexpr int kMaxMemberTypes = 5;
   static constexpr int kMaxMissions = 20;
-  using MemberArray = TeamMember[kMaxMemberTypes];
-  using MissionArray = TeamMission[kMaxMissions];
 
   // Takes its ID from the heap slot it is constructed in, so it must be
   // created through operator new.
@@ -276,22 +275,24 @@ class TeamType : public AbstractTypeClass {
   // Takes a `waypoint` the scenario does not have as -1, none.
   void set_origin(WAYPOINT waypoint);
 
-  // The script: the first mission_count() entries of missions(). The rest
-  // are unused.
+  // The script, mission_count() lines long.
   [[nodiscard]] int mission_count() const { return mission_count_; }
-  [[nodiscard]] const MissionArray& missions() const
+  [[nodiscard]] std::span<const TeamMission> missions() const
+      // Clang cannot trace the reference through libstdc++ span operations.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return missions_;
+    return std::span(missions_).first(static_cast<std::size_t>(mission_count_));
   }
   // Appends a line to the script, which must have fewer than kMaxMissions.
   void AddMission(const TeamMission& mission);
 
-  // The members wanted: the first member_count() entries of members(). The
-  // rest are unused.
+  // The members wanted, member_count() kinds of them.
   [[nodiscard]] int member_count() const { return member_count_; }
-  [[nodiscard]] const MemberArray& members() const
+  [[nodiscard]] std::span<const TeamMember> members() const
+      // Clang cannot trace the reference through libstdc++ span operations.
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return members_;
+    return std::span(members_).first(static_cast<std::size_t>(member_count_));
   }
   // Appends a kind of member, of which there must be fewer than
   // kMaxMemberTypes.
@@ -358,11 +359,11 @@ class TeamType : public AbstractTypeClass {
 
   // The script: the first mission_count_ entries of missions_.
   int mission_count_ = 0;
-  MissionArray missions_{};
+  TeamMission missions_[kMaxMissions]{};
 
   // The members wanted: the first member_count_ entries of members_.
   int member_count_ = 0;
-  MemberArray members_;
+  TeamMember members_[kMaxMemberTypes];
 };
 
 // Returns the kind of argument a team mission takes, NEED_NONE for a mission
