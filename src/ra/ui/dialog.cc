@@ -639,7 +639,7 @@ void TextPrinter::Print(const char* text, const base::Point at) const {
   }
   const TextStyle style =
       TextStyleFor(style_.font, style_.flags, scheme(), style_.back);
-  int x = at.x;
+  int x = at.x();
   switch (style.flag & (TPF_CENTER | TPF_RIGHT)) {
     case TPF_CENTER:
       x -= StringPixelWidth(style.font_style, text) / 2;
@@ -661,8 +661,9 @@ void TextPrinter::Print(const char* text, const base::Point at) const {
       break;
   }
 
-  if (x < view_->width() && at.y < view_->height()) {
-    view_->Print(style.font_style, text, x, at.y, style.forecolor, style_.back);
+  if (x < view_->width() && at.y() < view_->height()) {
+    view_->Print(style.font_style, text, x, at.y(), style.forecolor,
+                 style_.back);
   }
 }
 
@@ -692,7 +693,7 @@ void TextPrinter::PrintClipped(const char* text, const base::Point at,
       ++visible;
     }
     base::At(source, visible) = '\0';
-    Print(source.data(), {at.x + offset, at.y});
+    Print(source.data(), {at.x() + offset, at.y()});
     offset += line_width;
     if (visible < count || tab == std::string_view::npos) {
       break;

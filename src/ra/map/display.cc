@@ -633,7 +633,7 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
           .position;
 
   if (reposition) {
-    Set_Tactical_Position(Coordinate::FromLeptons(confined.x, confined.y));
+    Set_Tactical_Position(Coordinate::FromLeptons(confined.x(), confined.y()));
   }
 
   TacPixelX = x;
@@ -1291,7 +1291,7 @@ bool DisplayClass::Scroll_Map(game::Direction facing, int& distance,
       base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),
                  Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});
   const bool shifted = confined.bounded;
-  coord = Coordinate::FromLeptons(confined.position.x, confined.position.y);
+  coord = Coordinate::FromLeptons(confined.position.x(), confined.position.y());
 
   /*
   **	If the desired scroll was bound by the edge of the map, then adjust the
@@ -3566,7 +3566,7 @@ void DisplayClass::Set_Tactical_Position(Coordinate coord) {
                      Cell_To_Lepton(MapCellWidth),
                      Cell_To_Lepton(MapCellHeight)})
           .position;
-  coord = Coordinate::FromLeptons(confined.x, confined.y);
+  coord = Coordinate::FromLeptons(confined.x(), confined.y());
 
   if (TheWorld().scenario_init()) {
     TacticalCoord = coord;

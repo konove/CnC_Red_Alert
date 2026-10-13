@@ -42,8 +42,8 @@ struct ConfinedRect {
 
   // Shows the position and the flag in a failed test expectation.
   friend void PrintTo(const ConfinedRect& confined, std::ostream* os) {
-    *os << "{(" << confined.position.x << ", " << confined.position.y << "), "
-        << (confined.bounded ? "bounded" : "not bounded") << "}";
+    *os << "{(" << confined.position.x() << ", " << confined.position.y()
+        << "), " << (confined.bounded ? "bounded" : "not bounded") << "}";
   }
 
   Point position;        // the rectangle's top left corner
@@ -64,25 +64,27 @@ struct ConfinedRect {
 // hit the edge of the world" and recomputes the distance actually travelled,
 // so that is behaviour rather than an accident.
 constexpr ConfinedRect ConfineRect(const Rect& rect, const Rect& bounds) {
-  ConfinedRect result{.position = {.x = rect.x(), .y = rect.y()}};
+  int x = rect.x();
+  int y = rect.y();
+  bool bounded = false;
 
-  if (rect.x() < bounds.x()) {
-    result.position.x = bounds.x();
-    result.bounded = true;
+  if (x < bounds.x()) {
+    x = bounds.x();
+    bounded = true;
   } else if (rect.right() > bounds.right()) {
-    result.position.x = std::max(bounds.right() - rect.width(), bounds.x());
-    result.bounded = true;
+    x = std::max(bounds.right() - rect.width(), bounds.x());
+    bounded = true;
   }
 
-  if (rect.y() < bounds.y()) {
-    result.position.y = bounds.y();
-    result.bounded = true;
+  if (y < bounds.y()) {
+    y = bounds.y();
+    bounded = true;
   } else if (rect.bottom() > bounds.bottom()) {
-    result.position.y = std::max(bounds.bottom() - rect.height(), bounds.y());
-    result.bounded = true;
+    y = std::max(bounds.bottom() - rect.height(), bounds.y());
+    bounded = true;
   }
 
-  return result;
+  return ConfinedRect{.position = Point{x, y}, .bounded = bounded};
 }
 
 }  // namespace base

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 435,
+  "nextId": 437,
   "items": [
     {
       "id": "T-2",
@@ -10896,7 +10896,7 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-10T01:12:45Z",
+      "updated": "2026-10-13T07:40:30Z",
       "parent": "T-140",
       "source": "7eeaf347..cd29efc1",
       "comments": [
@@ -10911,7 +10911,7 @@
           "path": "src/ra/ui/dialog.h",
           "startLine": 115,
           "endLine": 116,
-          "text": "  void PrintClipped(const char* text, game::Point at, int width,\n                    std::span<const int> tabs = {}) const;",
+          "text": "  void PrintClipped(const char* text, base::Point at, int width,\n                    std::span<const int> tabs = {}) const;",
           "before": [
             "  // Prints `text` cut off `width` pixels right of `at`: a list box's row. A",
             "  // tab in the text moves on to the next of `tabs`, which are pixel offsets",
@@ -10922,7 +10922,7 @@
             " private:",
             "  [[nodiscard]] const RemapControlType* scheme() const"
           ],
-          "lost": true
+          "lost": false
         },
         {
           "path": "src/ra/ai/trigger_action.cc",
@@ -14393,25 +14393,25 @@
       "status": "open",
       "author": "agent",
       "created": "2026-10-12T20:00:45Z",
-      "updated": "2026-10-12T20:00:45Z",
+      "updated": "2026-10-13T07:40:30Z",
       "source": "7648136e",
       "anchors": [
         {
           "path": "src/td/ui/colrlist.cc",
           "startLine": 273,
           "endLine": 278,
-          "text": "                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));\n        item.With(TPF_BRIGHT_COLOR)\n            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);\n      } else {\n        view.FillRect(Rect{x, y, width - 1, LineHeight - 1},\n                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));",
+          "text": "                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));\n        item.With(TPF_BRIGHT_COLOR)\n            .PrintClipped(Get_Item(index), {x, y}, width, Tabs);\n      } else {\n        view.FillRect(base::Rect{x, y, width - 1, LineHeight - 1},\n                      SelectColor.value_or(engine::gfx::PaletteIndex{255}));",
           "before": [
             "    case SELECT_BAR:",
             "      if (TextFont == FontType::k6PointGradient) {",
-            "        view.FillRect(Rect{x, y, width, LineHeight},"
+            "        view.FillRect(base::Rect{x, y, width, LineHeight},"
           ],
           "after": [
             "        item.PrintClipped(Get_Item(index), {x, y}, width, Tabs);",
             "      }",
             "      break;"
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -15025,9 +15025,9 @@
             "// so that is behaviour rather than an accident."
           ],
           "after": [
-            "  ConfinedRect result{.position = {.x = rect.x(), .y = rect.y()}};",
-            "",
-            "  if (rect.x() < bounds.x()) {"
+            "  int x = rect.x();",
+            "  int y = rect.y();",
+            "  bool bounded = false;"
           ],
           "lost": false
         },
@@ -15277,12 +15277,12 @@
             "  int x = 0;",
             "  int y = 0;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/base/clip.h",
-          "startLine": 41,
-          "endLine": 50,
+          "startLine": 39,
+          "endLine": 48,
           "text": "struct ConfinedRect {\n  friend constexpr bool operator==(const ConfinedRect&,\n                                   const ConfinedRect&) = default;\n\n  // Shows the position and the flag in a failed test expectation.\n  friend void PrintTo(const ConfinedRect& confined, std::ostream* os) {\n    *os << \"{(\" << confined.position.x << \", \" << confined.position.y << \"), \"\n        << (confined.bounded ? \"bounded\" : \"not bounded\") << \"}\";\n  }\n",
           "before": [
             "}",
@@ -15294,7 +15294,7 @@
             "  bool bounded = false;  // whether either axis ran into the window's edge",
             "};"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/base/clip_test.cc",
@@ -15374,28 +15374,28 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "fixed",
+      "status": "done",
       "author": "user",
       "created": "2026-10-13T07:22:08Z",
-      "updated": "2026-10-13T07:38:47Z",
+      "updated": "2026-10-13T07:41:06Z",
       "resolution": "`base::Rect` is now a class: `x_`/`y_`/`width_`/`height_` are private behind `x()`, `y()`, `width()`, `height()`, with a four-int constructor and no setters, so a Rect changes only by assigning a new one. The 11 files that read the fields call the accessors; `ra::Shape_Dimensions`, the one place that built a Rect field by field, now scans into locals and constructs the result.",
       "anchors": [
         {
           "path": "src/base/rect.h",
           "startLine": 17,
           "endLine": 17,
-          "text": "struct Rect {",
+          "text": "class Rect {",
           "before": [
             "// Example:",
             "//   view.FillRect(base::Rect{x, y, width, height}, color);",
             "//   view.DrawRect(base::Rect::FromCorners(x1, y1, x2, y2), color);"
           ],
           "after": [
+            " public:",
             "  // The rectangle that spans two opposite corners, both inclusive and in",
-            "  // either order, so it is never empty: equal corners give one pixel.",
-            "  [[nodiscard]] static constexpr Rect FromCorners(const int x1, const int y1,"
+            "  // either order, so it is never empty: equal corners give one pixel."
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -15438,16 +15438,16 @@
       "status": "open",
       "author": "user",
       "created": "2026-10-13T07:22:35Z",
-      "updated": "2026-10-13T07:22:35Z",
+      "updated": "2026-10-13T07:40:30Z",
       "anchors": [
         {
           "path": "src/base/rect.h",
-          "startLine": 34,
-          "endLine": 36,
-          "text": "  // One past the last column and row.\n  [[nodiscard]] constexpr int right() const { return x + width; }\n  [[nodiscard]] constexpr int bottom() const { return y + height; }",
+          "startLine": 48,
+          "endLine": 50,
+          "text": "  // One past the last column and row.\n  [[nodiscard]] constexpr int right() const { return x_ + width_; }\n  [[nodiscard]] constexpr int bottom() const { return y_ + height_; }",
           "before": [
-            "    return width > 0 && height > 0;",
-            "  }",
+            "  [[nodiscard]] constexpr int width() const { return width_; }",
+            "  [[nodiscard]] constexpr int height() const { return height_; }",
             ""
           ],
           "after": [
@@ -15455,7 +15455,7 @@
             "  friend constexpr bool operator==(const Rect&, const Rect&) = default;",
             ""
           ],
-          "lost": true
+          "lost": false
         }
       ]
     },
@@ -15465,20 +15465,21 @@
       "details": "",
       "priority": "p2",
       "tags": [],
-      "status": "open",
+      "status": "fixed",
       "author": "user",
       "created": "2026-10-13T07:22:48Z",
-      "updated": "2026-10-13T07:22:48Z",
+      "updated": "2026-10-13T07:51:43Z",
+      "resolution": "`base::Point` is now a class with private `x_`/`y_`, a constructor and read accessors `x()`/`y()`, and no setters: a Point changes only by assigning a new one. `ConfineRect()` computes the position in locals and builds the Point once; the callers in direction.cc, both games' display/radar/dialog read through the accessors. Added `point_test.cc`.",
       "anchors": [
         {
           "path": "src/base/point.h",
-          "startLine": 10,
-          "endLine": 15,
-          "text": "struct Point {\n  friend constexpr bool operator==(const Point&, const Point&) = default;\n\n  int x = 0;\n  int y = 0;\n};",
+          "startLine": 11,
+          "endLine": 26,
+          "text": "class Point {\n public:\n  // The origin.\n  constexpr Point() = default;\n\n  constexpr Point(const int x, const int y) : x_(x), y_(y) {}\n\n  [[nodiscard]] constexpr int x() const { return x_; }\n  [[nodiscard]] constexpr int y() const { return y_; }\n\n  friend constexpr bool operator==(const Point&, const Point&) = default;\n\n private:\n  int x_ = 0;\n  int y_ = 0;\n};",
           "before": [
-            "",
             "// A position on a plane where (0, 0) is the north-west corner, so y grows",
-            "// southward. The unit is the caller's: pixels, leptons or cells."
+            "// southward. The unit is the caller's: pixels, leptons or cells. A Point is",
+            "// immutable: to change one, assign a new one."
           ],
           "after": [
             "",
@@ -15574,6 +15575,66 @@
             "                                std::span<const uint8_t> remap_table,",
             "                                const int clip_x, const int clip_y,",
             "                                const int clip_width, const int clip_height) {"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-435",
+      "title": "take Point?",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:48:12Z",
+      "updated": "2026-10-13T07:48:12Z",
+      "anchors": [
+        {
+          "path": "src/ra/core/coordinate.h",
+          "startLine": 29,
+          "endLine": 29,
+          "text": "  static constexpr Coordinate FromLeptons(int x, int y) noexcept {",
+          "before": [
+            " public:",
+            "  // Combines X and Y lepton components. Each keeps its low 16 bits, so a",
+            "  // negative component becomes its two's complement word."
+          ],
+          "after": [
+            "    return FromPacked((uint32_t{static_cast<uint16_t>(y)} << 16U) |",
+            "                      static_cast<uint16_t>(x));",
+            "  }"
+          ],
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-436",
+      "title": "casting not needed",
+      "details": "",
+      "priority": "p2",
+      "tags": [],
+      "status": "open",
+      "author": "user",
+      "created": "2026-10-13T07:48:25Z",
+      "updated": "2026-10-13T07:48:25Z",
+      "anchors": [
+        {
+          "path": "src/ra/map/display.cc",
+          "startLine": 1288,
+          "endLine": 1289,
+          "text": "      base::Rect{static_cast<int16_t>(coord.x()),\n                 static_cast<int16_t>(coord.y()), TacLeptonWidth,",
+          "before": [
+            "  // A scroll past the top or left of the world wraps the 16-bit lepton",
+            "  // component around; read as signed it is the negative one that was meant.",
+            "  const base::ConfinedRect confined = base::ConfineRect("
+          ],
+          "after": [
+            "                 TacLeptonHeight},",
+            "      base::Rect{Cell_To_Lepton(MapCellX), Cell_To_Lepton(MapCellY),",
+            "                 Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight)});"
           ],
           "lost": false
         }

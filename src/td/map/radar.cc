@@ -1625,8 +1625,8 @@ void RadarClass::Set_Radar_Position(Cell cell) {
           base::Rect{MapCellX, MapCellY, MapCellWidth, MapCellHeight})
           .position;
 
-  const int newx = confined.x;
-  const int newy = confined.y;
+  const int newx = confined.x();
+  const int newy = confined.y();
   const int newcell = Cell::FromXY(newx, newy).index();
 
   if (RadarCell != newcell) {

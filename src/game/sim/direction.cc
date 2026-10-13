@@ -46,9 +46,9 @@ struct QuadrantOffset {
 
 QuadrantOffset QuadrantOffsetToward(const base::Point from,
                                     const base::Point to) {
-  const int x_offset = to.x - from.x;
+  const int x_offset = to.x() - from.x();
   // (0, 0) is the north-west corner, so north is the negative Y direction.
-  const int y_offset = to.y - from.y;
+  const int y_offset = to.y() - from.y();
   const bool west = x_offset < 0;
   const bool south = y_offset > 0;
   const int x_distance = std::abs(x_offset);
