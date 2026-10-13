@@ -1914,7 +1914,8 @@ bool Main_Loop() {
       const int id = TheObjectHeaps().team_type().SlotIndexOf(
           TheObjectHeaps().team_type().ActiveAt(i));
       LOG(INFO) << "frame " << game::CurrentFrame() << " teamcount " << id
-                << " " << static_cast<int>(base::At(TeamClass::Number, id));
+                << " "
+                << TheObjectHeaps().team_type().ActiveAt(i)->CountTeams();
     }
     if (game::CurrentFrame() >= TheStartupOptions().quit_at_frame) {
       if (TheStartupOptions().save_slot >= 0) {

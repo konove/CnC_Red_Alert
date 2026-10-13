@@ -378,17 +378,6 @@ bool Load_Game(int id) {
     return false;
   }
 
-  // Loading shells must not run the gameplay constructor's count increment.
-  // Rebuild from active teams so recruitment and transient-type cleanup agree.
-  for (auto& count : TeamClass::Number) {
-    count = 0;
-  }
-  for (int j = 0; j < TheObjectHeaps().team().Count(); ++j) {
-    ++base::At(TeamClass::Number,
-               TheObjectHeaps().team_type().SlotIndexOf(
-                   TheObjectHeaps().team().ActiveAt(j)->Class));
-  }
-
   // add triggers
   for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
     TriggerClass* trig = TheObjectHeaps().trigger().ActiveAt(j);

@@ -3,14 +3,20 @@
 
 #include "td/ai/teamtype.h"
 
+#include <cstdint>
 #include <span>
 #include <string>
 #include <string_view>
 
+#include "base/pooled.h"
 #include "engine/file/ini_file.h"
 #include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
+#include "td/ai/team.h"
+#include "td/core/defines.h"
 #include "td/core/object_heaps.h"
+#include "td/map/world.h"
+#include "td/startup/game_state.h"
 #include "td/startup/game_test_util.h"
 
 namespace td {
@@ -101,6 +107,88 @@ TEST_F(TeamTypeTest, TheLongestEntryIsWrittenWhole) {
   TeamType::WriteIni(written, true);
 
   EXPECT_EQ(written.GetString("TeamTypes", "big", ""), entry);
+}
+
+// A team type of GDI's with the most teams allowed set to `max_teams`.
+TeamType& MakeTeamType(const int max_teams) {
+  auto* team_type = base::NewPooled<TeamType>();
+  EXPECT_NE(team_type, nullptr);
+  team_type->House = HOUSE_GOOD;
+  team_type->MaxAllowed = static_cast<uint8_t>(max_teams);
+  return *team_type;
+}
+
+TEST_F(TeamTypeTest, ATeamTypeBelowItsLimitCreatesATeam) {
+  const TeamType& team_type = MakeTeamType(1);
+
+  const TeamClass* const team = team_type.CreateTeam();
+
+  ASSERT_NE(team, nullptr);
+  EXPECT_EQ(team->Class, &team_type);
+  EXPECT_EQ(team_type.CountTeams(), 1);
+}
+
+TEST_F(TeamTypeTest, ATeamTypeAtItsLimitCreatesNoTeam) {
+  const TeamType& team_type = MakeTeamType(1);
+  ASSERT_NE(team_type.CreateTeam(), nullptr);
+
+  EXPECT_EQ(team_type.CreateTeam(), nullptr);
+  EXPECT_EQ(team_type.CountTeams(), 1);
+}
+
+TEST_F(TeamTypeTest, ScenarioSetUpCreatesATeamPastTheLimit) {
+  const TeamType& team_type = MakeTeamType(0);
+  TheWorld().scenario_init()++;
+
+  EXPECT_NE(team_type.CreateTeam(), nullptr);
+
+  TheWorld().scenario_init()--;
+}
+
+// Only its own teams, and only the ones that still exist.
+TEST_F(TeamTypeTest, TheTeamCountFollowsTheTeamsInTheField) {
+  const TeamType& team_type = MakeTeamType(2);
+  const TeamType& other = MakeTeamType(2);
+  const TeamClass* const team = team_type.CreateTeam();
+  ASSERT_NE(team, nullptr);
+  ASSERT_NE(team_type.CreateTeam(), nullptr);
+  ASSERT_NE(other.CreateTeam(), nullptr);
+  EXPECT_EQ(team_type.CountTeams(), 2);
+
+  base::DeletePooled(team);
+
+  EXPECT_EQ(team_type.CountTeams(), 1);
+  EXPECT_EQ(other.CountTeams(), 1);
+}
+
+TEST_F(TeamTypeTest, DestroyTeamsDeletesTheTeamsOfThisTypeOnly) {
+  const TeamType& team_type = MakeTeamType(2);
+  const TeamType& other = MakeTeamType(2);
+  ASSERT_NE(team_type.CreateTeam(), nullptr);
+  ASSERT_NE(other.CreateTeam(), nullptr);
+  ASSERT_NE(team_type.CreateTeam(), nullptr);
+
+  team_type.DestroyTeams();
+
+  EXPECT_EQ(team_type.CountTeams(), 0);
+  EXPECT_EQ(other.CountTeams(), 1);
+}
+
+// A transient team type exists for one special reinforcement.
+TEST_F(TeamTypeTest, ATransientTeamTypeIsDeletedWithItsLastTeam) {
+  TeamType& team_type = MakeTeamType(2);
+  team_type.IsTransient = true;
+  const TeamClass* const first = team_type.CreateTeam();
+  const TeamClass* const second = team_type.CreateTeam();
+  ASSERT_NE(second, nullptr);
+  // A team only cleans up after itself while a game is being played.
+  TheGameState().active() = true;
+
+  base::DeletePooled(first);
+  EXPECT_EQ(TheObjectHeaps().team_type().Count(), 1);
+  base::DeletePooled(second);
+
+  EXPECT_EQ(TheObjectHeaps().team_type().Count(), 0);
 }
 
 }  // namespace

@@ -96,7 +96,6 @@ namespace td {
 /*
 **	This array records the number of teams in existance of each type.
 */
-unsigned char TeamClass::Number[kTeamTypeMax];
 
 /*
 **	This array records the success rating of each of the team types.
@@ -146,7 +145,6 @@ int TeamClass::Validate() const {
  *=============================================================================================*/
 void TeamClass::Init() {
   TheObjectHeaps().team().FreeAll();
-  base::FillBytes(base::ObjectBytes(Number), 0, sizeof(Number));
   base::FillBytes(base::ObjectBytes(Success), 0, sizeof(Success));
 }
 
@@ -167,13 +165,12 @@ void TeamClass::operator delete(void* ptr) {
 
 TeamClass::~TeamClass() {
   if (TheGameState().active() && Class) {
-    base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))--;
     while (Member) {
       Remove(Member);
     }
 
-    if (Class->IsTransient &&
-        !base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))) {
+    // This team is still in the heap: a count of one means it is the last.
+    if (Class->IsTransient && Class->CountTeams() == 1) {
       base::DeletePooled(Class);
     }
   }
@@ -182,7 +179,6 @@ TeamClass::~TeamClass() {
 TeamClass::TeamClass(const TeamType* type, HouseClass* owner) : TeamClass() {
   Class = type;
   House = owner;
-  base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))++;
 }
 
 /***************************************************************************

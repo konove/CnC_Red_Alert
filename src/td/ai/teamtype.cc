@@ -334,10 +334,7 @@ void TeamType::operator delete(void* ptr) {
 }
 
 TeamClass* TeamType::CreateTeam() const {
-  // TeamClass::Number counts the live teams of each team type, by slot.
-  if (TheWorld().scenario_init() ||
-      base::At(TeamClass::Number,
-               TheObjectHeaps().team_type().SlotIndexOf(this)) < MaxAllowed) {
+  if (TheWorld().scenario_init() || CountTeams() < MaxAllowed) {
     return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
@@ -347,6 +344,16 @@ Target TeamType::As_Target() const {
   Validate();
   return Target::Make(KIND_TEAMTYPE,
                       TheObjectHeaps().team_type().SlotIndexOf(this));
+}
+
+int TeamType::CountTeams() const {
+  int count = 0;
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    if (TheObjectHeaps().team().ActiveAt(index)->Class == this) {
+      count++;
+    }
+  }
+  return count;
 }
 
 void TeamType::DestroyTeams() const {
@@ -372,7 +379,7 @@ const TeamType* TeamType::SuggestNewTeam(HouseClass* house, uint64_t unit_types,
     const TeamType* candidate = TheObjectHeaps().team_type().ActiveAt(index);
 
     if (candidate->House == house->Class->House &&
-        base::At(TeamClass::Number, index) <
+        candidate->CountTeams() <
             (alerted || !candidate->IsAutocreate ? candidate->MaxAllowed : 0)) {
       // The unit and infantry types this team type wants, as bit masks.
       // Aircraft do not count.

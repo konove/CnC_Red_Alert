@@ -229,11 +229,6 @@ class TeamClass : public AbstractClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   int Validate() const;
 
-  /*
-  **	This is a record of the current number of active teams of each
-  **	type. It can range from zero to MaxAllowed.
-  */
-  static unsigned char Number[kTeamTypeMax];
 
  private:
   /*

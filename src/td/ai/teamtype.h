@@ -167,6 +167,8 @@ class TeamType : public AbstractTypeClass {
   // The heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* CreateTeam() const;
+  // Returns the number of teams of this type that exist now.
+  [[nodiscard]] int CountTeams() const;
   // Deletes every team of this type; their members go back to being loose
   // units.
   void DestroyTeams() const;
