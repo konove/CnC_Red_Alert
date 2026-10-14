@@ -77,6 +77,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/mph.h"
+#include "game/sim/occupy_flags.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/assets/audio.h"
@@ -1397,12 +1398,12 @@ void DriveClass::Mark_Track(Coordinate headto, MarkType type) {
           if (TrackIndex < cellidx && cellidx != -1) {
             const Coordinate offset =
                 Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, dir);
-            TheMap().at(offset).Flag.Occupy.Vehicle = value;
+            TheMap().at(offset).Flag.Set(game::Occupant::kVehicle, value);
           }
         }
       }
     }
-    TheMap().at(headto).Flag.Occupy.Vehicle = value;
+    TheMap().at(headto).Flag.Set(game::Occupant::kVehicle, value);
   }
 }
 

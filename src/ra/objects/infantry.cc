@@ -124,6 +124,7 @@
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
 #include "game/sim/mph.h"
+#include "game/sim/occupy_flags.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/tevent.h"
@@ -819,7 +820,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       **	If the cell is now full of infantry, tell them all to scatter
       **	in order to make room for more.
       */
-      if ((cellptr->Flag.Composite & 0x01F) == 0x01F) {
+      if (cellptr->Flag.AllSpots()) {
         cellptr->Incoming(Coordinate{}, true, true);
         //				cellptr->Incoming(0, true);
       }
@@ -1459,7 +1460,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
   /*
   ** if a unit has the cell reserved then we just can't go in there.
   */
-  if (retval == game::MOVE_OK && cellptr->Flag.Occupy.Vehicle) {
+  if (retval == game::MOVE_OK && cellptr->Flag.Has(game::Occupant::kVehicle)) {
     return game::MOVE_NO;
   }
 
@@ -1469,7 +1470,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
   */
   if (cellptr->InfType != HOUSE_NONE) {
     if (House->Is_Ally(cellptr->InfType)) {
-      if ((cellptr->Flag.Composite & 0x1F) == 0x1f) {
+      if (cellptr->Flag.AllSpots()) {
         retval = std::max(retval, game::MOVE_MOVING_BLOCK);
       }
     } else {
@@ -1485,7 +1486,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
   **	If it is still ok to move the infantry, then perform the last check
   **	to see if the cell is already full of infantry.
   */
-  if (retval == game::MOVE_OK && (cellptr->Flag.Composite & 0x1F) == 0x1F) {
+  if (retval == game::MOVE_OK && cellptr->Flag.AllSpots()) {
     return game::MOVE_NO;
   }
 
@@ -3096,7 +3097,7 @@ void InfantryClass::Set_Occupy_Bit(Cell cell, int spot_index) {
   /*
   ** Set the occupy position for the spot that we passed in
   */
-  TheMap().at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
+  TheMap().at(cell).Flag.Set(static_cast<game::Occupant>(spot_index), true);
 
   /*
   ** Record the type of infantry that now owns the cell
@@ -3123,14 +3124,13 @@ void InfantryClass::Clear_Occupy_Bit(Cell cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  TheMap().at(cell).Flag.Composite &=
-      static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
+  TheMap().at(cell).Flag.Set(static_cast<game::Occupant>(spot_index), false);
 
   /*
   ** If he was the last infantry recorded in the cell then
   ** remove the infantry ownership flag.
   */
-  if (!(TheMap().at(cell).Flag.Composite & 0x1F)) {
+  if (!TheMap().at(cell).Flag.AnySpot()) {
     TheMap().at(cell).InfType = HOUSE_NONE;
   }
 }

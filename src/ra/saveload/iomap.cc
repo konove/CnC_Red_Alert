@@ -66,7 +66,7 @@ bool CellClass::Should_Save() const {
          Trigger != nullptr || TType != TEMPLATE_NONE || TIcon != 0 ||
          Overlay != OVERLAY_NONE || OverlayData != 0 || Smudge != SMUDGE_NONE ||
          SmudgeData != 0 || Owner != HOUSE_NONE || InfType != HOUSE_NONE ||
-         OccupierPtr != nullptr || Flag.Composite != 0 || Land != LAND_CLEAR;
+         OccupierPtr != nullptr || Flag.any() || Land != LAND_CLEAR;
 }
 
 template <class Archive>
@@ -105,7 +105,7 @@ void CellClass::Serialize(Archive& ar) {
   for (int i = 0; i < count; ++i) {
     ar(ObjectPtr(base::At(Overlappers, i)));
   }
-  ar(Flag.Composite, Land);
+  ar(Flag, Land);
 }
 template void CellClass::Serialize(ArchiveWriter&);
 template void CellClass::Serialize(ArchiveReader&);

@@ -83,6 +83,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/occupy_flags.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
@@ -617,7 +618,7 @@ bool TerrainClass::Limbo() {
 
   if (!IsInLimbo) {
     const Cell cell = Cell::Containing(Coord);
-    TheMap().at(cell).Flag.Occupy.Monolith = false;
+    TheMap().at(cell).Flag.Set(game::Occupant::kMonolith, false);
   }
   return ObjectClass::Limbo();
 }

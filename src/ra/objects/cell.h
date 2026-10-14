@@ -43,10 +43,10 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "base/bit.h"
 #include "base/enum_array.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/occupy_flags.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 #include "ra/objects/foot.h"
@@ -198,28 +198,8 @@ class CellClass {
   static constexpr base::ssize kOverlapperCount = 10;
   ObjectClass* Overlappers[kOverlapperCount]{};
 
-  /*
-  **	This array of bit flags is used to indicate which sub positions
-  **	within the cell are either occupied or are soon going to be
-  **	occupied. For vehicles, the cells that the vehicle is passing over
-  **	will be flagged with the vehicle bit. For infantry, the the sub
-  **	position the infantry is stopped at or headed toward will be marked.
-  **	The sub positions it passes over will NOT be marked.
-  */
-  union {
-    struct {
-      unsigned Center : 1;
-      unsigned NW : 1;
-      unsigned NE : 1;
-      unsigned SW : 1;
-      unsigned SE : 1;
-      unsigned Vehicle : 1;   // Reserved for vehicle occupation.
-      unsigned Monolith : 1;  // Some immovable blockage is in cell.
-      unsigned Building
-          : 1;  // A building of some time (usually blocks movement).
-    } Occupy;
-    unsigned char Composite;
-  } Flag{};
+  // Which sub positions of the cell are occupied or soon will be.
+  game::OccupyFlags Flag;
 
   //----------------------------------------------------------------
   CellClass();
@@ -276,7 +256,7 @@ class CellClass {
                                       bool ignorevehicles, int zone = -1,
                                       MZoneType check = MZONE_NORMAL) const;
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
+    return !Flag.Has(static_cast<game::Occupant>(spot_index));
   }
   [[nodiscard]] engine::gfx::PaletteIndex Cell_Color(
       bool override = false) const;

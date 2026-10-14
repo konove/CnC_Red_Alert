@@ -130,6 +130,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/occupy_flags.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -3370,11 +3371,12 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
   **	as blocked by a moving object.
   */
   if (retval == game::MOVE_OK && !crushable &&
-      (cellptr->Flag.Composite & 0x3F) != 0) {
+      (cellptr->Flag.AnySpot() ||
+       cellptr->Flag.Has(game::Occupant::kVehicle))) {
     /*
     **	If reserved by a vehicle, then consider this blocked terrain.
     */
-    if (cellptr->Flag.Occupy.Vehicle) {
+    if (cellptr->Flag.Has(game::Occupant::kVehicle)) {
       retval = game::MOVE_MOVING_BLOCK;
     } else {
       if (cellptr->InfType != HOUSE_NONE && House->Is_Ally(cellptr->InfType)) {
@@ -3409,7 +3411,8 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
   **	the cell at the same time. In the case of a crushable vehicle in the
   **	cell, then allow entry.
   */
-  if ((retval == game::MOVE_OK && crushable && cellptr->Flag.Occupy.Vehicle) &&
+  if ((retval == game::MOVE_OK && crushable &&
+       cellptr->Flag.Has(game::Occupant::kVehicle)) &&
       (!cellptr->Cell_Unit() || !cellptr->Cell_Unit()->Class->IsCrushable)) {
     return game::MOVE_MOVING_BLOCK;
   }
@@ -3868,9 +3871,9 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     } else {
       const CellClass* cell = &TheMap().at(cellnum);
       if (TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
-          cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
-          cell->Flag.Occupy.Monolith ||
-          (cell->Flag.Composite & 0x01F) == 0x01F) {
+          cell->Flag.Has(game::Occupant::kBuilding) ||
+          cell->Flag.Has(game::Occupant::kVehicle) ||
+          cell->Flag.Has(game::Occupant::kMonolith) || cell->Flag.AllSpots()) {
         value = -128;
       } else {
         if (cell->Cell_Techno() && !House->Is_Ally(cell->Cell_Techno())) {
@@ -4478,7 +4481,7 @@ void UnitClass::Overrun_Square(Cell cell, bool threaten) {
       **	If the cell contains infantry, then they will panic when a
       *vehicle tries *	drive over them. Have the infantry run away instead.
       */
-      if (cellptr->Flag.Composite & 0x1F) {
+      if (cellptr->Flag.AnySpot()) {
         /*
         **	Scattering is controlled by the game difficulty level.
         */

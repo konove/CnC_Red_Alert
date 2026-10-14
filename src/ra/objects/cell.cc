@@ -112,6 +112,7 @@
 #include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
+#include "game/sim/occupy_flags.h"
 #include "game/sim/utracker.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -178,7 +179,7 @@ CellClass::CellClass() : ID(static_cast<int16_t>(TheMap().ID(this))) {
   for (const MZoneType zone : magic_enum::enum_values<MZoneType>()) {
     Zones.at(zone) = 0;
   }
-  Flag.Composite = 0;
+  Flag = {};
   for (int index = 0; index < std::ssize(Overlappers); index++) {
     base::At(Overlappers, index) = nullptr;
   }
@@ -596,17 +597,17 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   */
   switch (object->What_Am_I()) {
     case RTTI_BUILDING:
-      Flag.Occupy.Building = true;
+      Flag.Set(game::Occupant::kBuilding, true);
       break;
 
     case RTTI_VESSEL:
     case RTTI_AIRCRAFT:
     case RTTI_UNIT:
-      Flag.Occupy.Vehicle = true;
+      Flag.Set(game::Occupant::kVehicle, true);
       break;
 
     case RTTI_TERRAIN:
-      Flag.Occupy.Monolith = true;
+      Flag.Set(game::Occupant::kMonolith, true);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -689,17 +690,17 @@ void CellClass::Occupy_Up(ObjectClass* object) {
   */
   switch (object->What_Am_I()) {
     case RTTI_BUILDING:
-      Flag.Occupy.Building = false;
+      Flag.Set(game::Occupant::kBuilding, false);
       break;
 
     case RTTI_VESSEL:
     case RTTI_AIRCRAFT:
     case RTTI_UNIT:
-      Flag.Occupy.Vehicle = false;
+      Flag.Set(game::Occupant::kVehicle, false);
       break;
 
     case RTTI_TERRAIN:
-      Flag.Occupy.Monolith = false;
+      Flag.Set(game::Occupant::kMonolith, false);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -1567,7 +1568,8 @@ Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   /*
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
-  if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
+  if (!any && (Flag.Has(game::Occupant::kVehicle) ||
+               Flag.Has(game::Occupant::kMonolith))) {
     return Coordinate{};
   }
 
@@ -2619,7 +2621,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	Check the occupy bits for passable legality. If ignore infantry is true,
   *then *	don't consider infnatry.
   */
-  uint32_t composite = Flag.Composite;
+  uint32_t composite = Flag.bits();
   if (ignoreinfantry) {
     composite &= 0xE0U;  // Drop the infantry occupation bits.
   }

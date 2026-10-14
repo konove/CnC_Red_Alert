@@ -91,6 +91,7 @@
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/sim/occupy_flags.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/team_type.h"
@@ -343,8 +344,8 @@ game::MoveType VesselClass::Can_Enter_Cell(Cell cell,
   **	If some allied object has reserved the cell, then consider the cell
   **	as blocked by a moving object.
   */
-  if (cellptr->Flag.Composite) {
-    if (cellptr->Flag.Occupy.Building) {
+  if (cellptr->Flag.any()) {
+    if (cellptr->Flag.Has(game::Occupant::kBuilding)) {
       return game::MOVE_NO;
     }
 
@@ -357,7 +358,7 @@ game::MoveType VesselClass::Can_Enter_Cell(Cell cell,
     /*
     **	If reserved by a vehicle, then consider this blocked terrain.
     */
-    if (cellptr->Flag.Occupy.Vehicle) {
+    if (cellptr->Flag.Has(game::Occupant::kVehicle)) {
       retval = game::MOVE_MOVING_BLOCK;
     }
   }
@@ -773,9 +774,10 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
           if (!TheMap().In_Radar(cellnum) ||
               TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) ==
                   0 ||
-              cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
-              cell->Flag.Occupy.Monolith ||
-              (cell->Flag.Composite & 0x01F) == 0x01F) {
+              cell->Flag.Has(game::Occupant::kBuilding) ||
+              cell->Flag.Has(game::Occupant::kVehicle) ||
+              cell->Flag.Has(game::Occupant::kMonolith) ||
+              cell->Flag.AllSpots()) {
           } else {
             found = true;
           }
@@ -1608,9 +1610,9 @@ game::Direction VesselClass::Desired_Load_Dir(ObjectClass* passenger,
     } else {
       const CellClass* cell = &TheMap().at(cellnum);
       if (TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
-          cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
-          cell->Flag.Occupy.Monolith ||
-          (cell->Flag.Composite & 0x01F) == 0x01F) {
+          cell->Flag.Has(game::Occupant::kBuilding) ||
+          cell->Flag.Has(game::Occupant::kVehicle) ||
+          cell->Flag.Has(game::Occupant::kMonolith) || cell->Flag.AllSpots()) {
         value = -128;
       } else {
         if (cell->Cell_Techno() && !House->Is_Ally(cell->Cell_Techno())) {
