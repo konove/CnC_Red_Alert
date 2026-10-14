@@ -1364,16 +1364,13 @@ int TeamClass::Recruit(int typeindex) {
  * INPUT:   target   -- The target object that is going to be removed from the
  *game.           *
  *                                                                                             *
- *          all      -- Is the target going away for good as opposed to just
- *cloaking/hiding?  *
- *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Detach(ra::Target target, bool /*unused*/) {
+void TeamClass::Detach(ra::Target target) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 

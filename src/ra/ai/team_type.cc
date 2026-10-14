@@ -390,7 +390,7 @@ void TeamType::DestroyTeams() const {
   }
 }
 
-void TeamType::Detach(const Target target, bool /*unused*/) {
+void TeamType::Detach(const Target target) {
   if (target.kind() == RTTI_TRIGGERTYPE && trigger_ != nullptr &&
       trigger_ == target.AsTriggerType()) {
     trigger_ = nullptr;

@@ -236,7 +236,7 @@ class TeamClass : public AbstractClass {
     IsUnderStrength = false;
   }
   bool Remove(FootClass* /*obj*/, int typeindex = -1);
-  void Detach(ra::Target target, bool all);
+  void Detach(ra::Target target);
   void AI() override;
   void Took_Damage(FootClass* obj, game::ResultType result,
                    TechnoClass* source);

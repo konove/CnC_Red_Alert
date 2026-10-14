@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "nextId": 452,
+  "nextId": 453,
   "items": [
     {
       "id": "T-2",
@@ -1879,8 +1879,8 @@
       "anchors": [
         {
           "path": "src/ra/ai/team.cc",
-          "startLine": 1369,
-          "endLine": 1369,
+          "startLine": 1376,
+          "endLine": 1376,
           "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
           "before": [
             " *                                                                                             *",
@@ -1892,7 +1892,7 @@
             "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
             ""
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -7200,10 +7200,10 @@
         "ra",
         "base"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-09T05:42:27Z",
-      "updated": "2026-10-14T21:54:58Z",
+      "updated": "2026-10-14T22:11:05Z",
       "resolution": "The block test's `Block()` helper itself converted the negative skip count, so it now pads none; `DifficultyForLevel()` throws for a negative level before converting it; `TeamType::CreateTeam()` returns nullptr for a type with no members (a scenario entry can leave one), and the two trigger-action tests give their team type a member. Whole ctest passes with DCHECKs on (RelWithDebInfo without NDEBUG, and Debug); a CI job for that is T-451.",
       "anchors": [
         {
@@ -10627,17 +10627,18 @@
         "ra",
         "cleanup"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-09T20:38:14Z",
-      "updated": "2026-10-09T20:38:14Z",
+      "updated": "2026-10-14T22:18:44Z",
       "parent": "T-139",
       "source": "7e448b91..57fdf1fc",
+      "resolution": "`TeamClass::Detach()` and `TeamType::Detach()` take only the target now; the tracker calls them without `all`, as it does `TriggerType::Detach()`.",
       "anchors": [
         {
           "path": "src/ra/ai/team_type.cc",
-          "startLine": 401,
-          "endLine": 401,
+          "startLine": 393,
+          "endLine": 393,
           "text": "void TeamType::Detach(const Target target, bool /*unused*/) {",
           "before": [
             "  }",
@@ -10649,12 +10650,12 @@
             "      trigger_ == target.AsTriggerType()) {",
             "    trigger_ = nullptr;"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/ai/team.cc",
-          "startLine": 1369,
-          "endLine": 1369,
+          "startLine": 1376,
+          "endLine": 1376,
           "text": "void TeamClass::Detach(ra::Target target, bool /*unused*/) {",
           "before": [
             " *                                                                                             *",
@@ -10666,7 +10667,7 @@
             "  DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);",
             ""
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/objects/tracker.cc",
@@ -10683,7 +10684,7 @@
             "    for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {",
             "      TheObjectHeaps().unit().ActiveAt(index)->Detach(target, all);"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -16250,15 +16251,67 @@
         "ci",
         "base"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T21:54:47Z",
-      "updated": "2026-10-14T22:04:16Z",
+      "updated": "2026-10-14T22:11:04Z",
       "source": "T-229",
       "resolution": "The lint job runs ctest on the Debug build it already makes, so the tests now run with DCHECKs in. The C++ reference bignum is compiled at -O2 in Debug through `optimize_in_debug()`, which takes the slowest test from 489 s to 36 s; locally the whole Debug ctest at -j4 takes under a minute.",
       "anchors": [
         {
           "path": ".github/workflows/cmake-multi-platform.yml",
+          "lost": false
+        }
+      ]
+    },
+    {
+      "id": "T-452",
+      "title": "Make PkDifferentialTest fast in a Debug build",
+      "details": "With the reference bignum at -O2 (`optimize_in_debug()`), the Debug ctest's slowest tests are still `PkDifferentialTest.ReferenceKeyPairsWorkInRust` (36 s) and `.ArbitraryModuliMatchReferenceOrLongDivision` (15 s), against 8 s and 6 s in an optimized build. Together they are most of the lint job's `Test with DCHECKs` step.\n\nSampled with gdb 2026-10-14: the time goes to header templates that the -O2 files call out of line, which the linker resolves to the -O0 copies other files emit: `base::CopyBytes` → `std::ranges::copy` → `std::cmp_less`, reached from `base::WriteUnaligned` in `DigitCursor<uint32_t>::Reference::operator=` (`digit_cursor_reference_test_util.h:46`) under `XMP_Shift_Left_Bits`, `XMP_Unsigned_Mult` and `XMP_Unsigned_Div`, plus `XMP_Mod_Mult`/`XMP_Hybrid_Mul` in `xmp_exponent_mod`. Compiling `pk_differential_test.cc` at -O2 too changed nothing.\n\nOptions: have `DigitCursor` read and write digits without `WriteUnaligned`/`CopyBytes` (std::memcpy, or `std::bit_cast` over an array), so nothing in the inner loop is a shared template; mark the helpers `always_inline`; or fewer rounds in Debug. Goes away entirely with T-360.",
+      "priority": "p3",
+      "effort": "s",
+      "tags": [
+        "testing",
+        "performance",
+        "engine",
+        "crypto"
+      ],
+      "status": "open",
+      "author": "agent",
+      "created": "2026-10-14T22:08:26Z",
+      "updated": "2026-10-14T22:08:26Z",
+      "source": "ab9340ca2",
+      "anchors": [
+        {
+          "path": "src/engine/crypto/CMakeLists.txt",
+          "startLine": 42,
+          "endLine": 42,
+          "text": "optimize_in_debug(mp_reference_test_util.cc pk_reference_test_util.cc)",
+          "before": [
+            ")",
+            "# The C++ bignum the Rust one replaced is the reference the differential tests",
+            "# check against; at -O0 PkDifferentialTest took eight minutes of a Debug ctest."
+          ],
+          "after": [
+            ""
+          ],
+          "lost": false
+        },
+        {
+          "path": "src/engine/crypto/digit_cursor_reference_test_util.h",
+          "startLine": 46,
+          "endLine": 46,
+          "text": "      base::WriteUnaligned(bytes_, value);",
+          "before": [
+            "      return *this = static_cast<Value>(other);",
+            "    }",
+            "    Reference& operator=(Value value) {"
+          ],
+          "after": [
+            "      return *this;",
+            "    }",
+            "    Reference& operator=(const Reference& other) {"
+          ],
           "lost": false
         }
       ]

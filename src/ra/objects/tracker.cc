@@ -90,10 +90,10 @@ void Detach_This_From_All(Target target, bool all) {
       TheObjectHeaps().house().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      TheObjectHeaps().team().ActiveAt(index)->Detach(target, all);
+      TheObjectHeaps().team().ActiveAt(index)->Detach(target);
     }
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      TheObjectHeaps().team_type().ActiveAt(index)->Detach(target, all);
+      TheObjectHeaps().team_type().ActiveAt(index)->Detach(target);
     }
     for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
       TheObjectHeaps().unit().ActiveAt(index)->Detach(target, all);

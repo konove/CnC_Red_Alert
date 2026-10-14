@@ -217,9 +217,8 @@ class TeamType : public AbstractTypeClass {
   // units.
   void DestroyTeams() const;
   // Drops the reference to `target` if it is this team type's trigger, which
-  // is about to be deleted. `all` is unused; it is there for the signature
-  // Detach_This_From_All() calls on every kind of object.
-  void Detach(Target target, bool all = true);
+  // is about to be deleted.
+  void Detach(Target target);
 
   // Draws Description() as a list box entry in the given rectangle,
   // highlighted when `selected`. `index` is unused. Draws nothing in a build
