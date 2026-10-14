@@ -98,6 +98,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/mph.h"
+#include "game/sim/occupy_flags.h"
 #include "game/ui/input.h"
 #include "game/ui/standard_colors.h"
 #include "td/ai/prebuilt_base.h"
@@ -1629,7 +1630,7 @@ bool Select_Game(bool fade) {
           TheObjectHeaps().unit().ActiveAt(0);
       base::At(TheMap().at(Cell::FromIndex(14)).Overlappers, 2) =
           TheObjectHeaps().unit().ActiveAt(0);
-      TheMap().at(Cell::FromIndex(15)).Flag.Composite = 2;
+      TheMap().at(Cell::FromIndex(15)).Flag = game::OccupyFlags::FromBits(2);
       TheMap().TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
       auto* pending = base::NewPooled<BuildingClass>(STRUCT_POWER,
                                                      ThePlayer()->Class->House);

@@ -44,8 +44,8 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "base/bit.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/occupy_flags.h"
 #include "td/core/defines.h"
 #include "td/objects/building.h"
 #include "td/objects/foot.h"
@@ -165,28 +165,8 @@ class CellClass {
   ObjectClass* OccupierPtr{nullptr};
   ObjectClass* Overlappers[3]{nullptr, nullptr, nullptr};
 
-  /*
-  **	This array of bit flags is used to indicate which sub positions
-  **	within the cell are either occupied or are soon going to be
-  **	occupied. For vehicles, the cells that the vehicle is passing over
-  **	will be flagged with the vehicle bit. For infantry, the the sub
-  **	position the infantry is stopped at or headed toward will be marked.
-  **	The sub positions it passes over will NOT be marked.
-  */
-  union {
-    struct {
-      unsigned Center : 1;
-      unsigned NW : 1;
-      unsigned NE : 1;
-      unsigned SW : 1;
-      unsigned SE : 1;
-      unsigned Vehicle : 1;   // Reserved for vehicle occupation.
-      unsigned Monolith : 1;  // Some immovable blockage is in cell.
-      unsigned Building
-          : 1;  // A building of some time (usually blocks movement).
-    } Occupy;
-    unsigned char Composite;
-  } Flag{};
+  // Which sub positions of the cell are occupied or soon will be.
+  game::OccupyFlags Flag;
 
   //----------------------------------------------------------------
   CellClass();
@@ -213,7 +193,7 @@ class CellClass {
   [[nodiscard]] ObjectClass* Cell_Occupier() const;
   static int Spot_Index(Coordinate coord);
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
-    return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
+    return !Flag.Has(static_cast<game::Occupant>(spot_index));
   }
   [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;

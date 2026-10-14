@@ -103,6 +103,7 @@
 #include "game/core/cell_size.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
+#include "game/sim/occupy_flags.h"
 #include "game/sim/utracker.h"
 #include "game/ui/standard_colors.h"
 #include "magic_enum/magic_enum.hpp"
@@ -443,7 +444,7 @@ bool CellClass::Is_Generally_Clear() const {
   if (TheWorld().scenario_init()) {
     return true;
   }
-  if (Flag.Composite || IsFlagged || Cell_Occupier()) {
+  if (Flag.any() || IsFlagged || Cell_Occupier()) {
     return false;
   }
   if (Smudge != SMUDGE_NONE && SmudgeTypeClass::As_Reference(Smudge).IsBib &&
@@ -602,16 +603,16 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   */
   switch (object->What_Am_I()) {
     case RTTI_BUILDING:
-      Flag.Occupy.Building = true;
+      Flag.Set(game::Occupant::kBuilding, true);
       break;
 
     case RTTI_AIRCRAFT:
     case RTTI_UNIT:
-      Flag.Occupy.Vehicle = true;
+      Flag.Set(game::Occupant::kVehicle, true);
       break;
 
     case RTTI_TERRAIN:
-      Flag.Occupy.Monolith = true;
+      Flag.Set(game::Occupant::kMonolith, true);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -688,12 +689,12 @@ void CellClass::Occupy_Up(ObjectClass* object) {
   */
   switch (object->What_Am_I()) {
     case RTTI_BUILDING:
-      Flag.Occupy.Building = false;
+      Flag.Set(game::Occupant::kBuilding, false);
       break;
 
     case RTTI_AIRCRAFT:
     case RTTI_UNIT:
-      Flag.Occupy.Vehicle = false;
+      Flag.Set(game::Occupant::kVehicle, false);
 #ifdef NEVER
       int x, y;
       if (TheMap().Coord_To_Pixel(Center_Coord(), x, y)) {
@@ -703,7 +704,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
       break;
 
     case RTTI_TERRAIN:
-      Flag.Occupy.Monolith = false;
+      Flag.Set(game::Occupant::kMonolith, false);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -948,11 +949,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                   engine::gfx::PaletteIndex::FromInt(Sim_Random_Pick(1, 254)));
     TextPrinter(view, {game::kWhite, game::kTransparentBlack, FontType::k6Point,
                        TPF_NOSHADOW | TPF_CENTER})
-        .Print(absl::StrFormat("%d\r%2X%c\r%02X.%02X", cell.index(),
-                               Flag.Composite, Cell_Occupier() ? '*' : ' ',
-                               Overlay, OverlayData),
-               {TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
-                TheMap().TacPixelY + y});
+        .Print(
+            absl::StrFormat("%d\r%2X%c\r%02X.%02X", cell.index(), Flag.bits(),
+                            Cell_Occupier() ? '*' : ' ', Overlay, OverlayData),
+            {TheMap().TacPixelX + x + (game::kCellWidthPixels / 2),
+             TheMap().TacPixelY + y});
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
       if constexpr (config::kScenarioEditorEnabled) {
@@ -1744,7 +1745,8 @@ Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   /*
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
-  if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
+  if (!any && (Flag.Has(game::Occupant::kVehicle) ||
+               Flag.Has(game::Occupant::kMonolith))) {
     return {};
   }
 

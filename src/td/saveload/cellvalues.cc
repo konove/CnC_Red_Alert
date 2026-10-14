@@ -5,7 +5,7 @@
 
 namespace td {
 
-CellClass::CellClass() { Flag.Composite = 0; }
+CellClass::CellClass() = default;
 
 void CellClass::Reset() {
   IsPlot = false;
@@ -28,7 +28,7 @@ void CellClass::Reset() {
   base::At(Overlappers, 0) = nullptr;
   base::At(Overlappers, 1) = nullptr;
   base::At(Overlappers, 2) = nullptr;
-  Flag.Composite = 0;
+  Flag = {};
   Land = LAND_CLEAR;
 }
 
@@ -40,7 +40,7 @@ bool CellClass::Should_Save() const {
          InfType != HOUSE_NONE || OccupierPtr != nullptr ||
          base::At(Overlappers, 0) != nullptr ||
          base::At(Overlappers, 1) != nullptr ||
-         base::At(Overlappers, 2) != nullptr || Flag.Composite != 0 ||
+         base::At(Overlappers, 2) != nullptr || Flag.any() ||
          Land != LAND_CLEAR;
 }
 

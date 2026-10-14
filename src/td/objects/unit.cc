@@ -149,6 +149,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/occupy_flags.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
@@ -2837,7 +2838,9 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
       ** Can we just run it over?
       */
       if (techno->Class_Of().IsCrushable &&
-          (cellptr->Flag.Composite & 0xE0) == 0 && Class->IsCrusher) {
+          !cellptr->Flag.Has(game::Occupant::kVehicle) &&
+          !cellptr->Flag.Has(game::Occupant::kMonolith) &&
+          !cellptr->Flag.Has(game::Occupant::kBuilding) && Class->IsCrusher) {
         /*
         ** Now lets run it over.
         */
@@ -3067,11 +3070,11 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
   **	If some allied object has reserved the cell, then consider the cell
   **	as blocked by a moving object.
   */
-  if (retval == game::MOVE_OK && !crushable && cellptr->Flag.Composite) {
+  if (retval == game::MOVE_OK && !crushable && cellptr->Flag.any()) {
     /*
     **	If reserved by a vehicle, then consider this blocked terrain.
     */
-    if (cellptr->Flag.Occupy.Vehicle) {
+    if (cellptr->Flag.Has(game::Occupant::kVehicle)) {
       retval = game::MOVE_MOVING_BLOCK;
     } else {
       if (cellptr->InfType != HOUSE_NONE && House->Is_Ally(cellptr->InfType)) {
@@ -3099,7 +3102,8 @@ game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
   *then
   ** make sure no one else is already moving into the cell to crush something.
   */
-  if (retval == game::MOVE_OK && crushable && cellptr->Flag.Occupy.Vehicle) {
+  if (retval == game::MOVE_OK && crushable &&
+      cellptr->Flag.Has(game::Occupant::kVehicle)) {
 #ifdef ADVANCED
     /*
     **	However, if the cell is occupied by a crushable vehicle, then we can
@@ -3826,9 +3830,9 @@ game::Direction UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     } else {
       const CellClass* cell = &TheMap().at(cellnum);
       if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
-          cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
-          cell->Flag.Occupy.Monolith ||
-          (cell->Flag.Composite & 0x01F) == 0x01F) {
+          cell->Flag.Has(game::Occupant::kBuilding) ||
+          cell->Flag.Has(game::Occupant::kVehicle) ||
+          cell->Flag.Has(game::Occupant::kMonolith) || cell->Flag.AllSpots()) {
         value = -128;
       } else {
         if (cell->Cell_Techno() && !House->Is_Ally(cell->Cell_Techno())) {

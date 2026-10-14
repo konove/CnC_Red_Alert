@@ -86,6 +86,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/heading.h"
+#include "game/sim/occupy_flags.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
@@ -283,7 +284,7 @@ void DriveClass::Overrun_Square(Cell cell, bool threaten) {
       **	If the cell contains infantry, then they will panic when a
       *vehicle tries *	drive over them. Have the infantry run away instead.
       */
-      if ((cellptr->Flag.Composite & 0x1F) &&
+      if (cellptr->Flag.AnySpot() &&
           ((TheSpecialFlags().difficult || TheSpecialFlags().scatter ||
             TheWorld().scenario() > 8) &&
            !TheSpecialFlags().easy))
@@ -1562,12 +1563,16 @@ void DriveClass::Mark_Track(Coordinate headto, MarkType type) {
           if (TrackIndex < cellidx && cellidx != -1) {
             const Coordinate offset =
                 Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, &dir);
-            TheMap().at(Cell::Containing(offset)).Flag.Occupy.Vehicle = value;
+            TheMap()
+                .at(Cell::Containing(offset))
+                .Flag.Set(game::Occupant::kVehicle, value);
           }
         }
       }
     }
-    TheMap().at(Cell::Containing(headto)).Flag.Occupy.Vehicle = value;
+    TheMap()
+        .at(Cell::Containing(headto))
+        .Flag.Set(game::Occupant::kVehicle, value);
   }
 }
 

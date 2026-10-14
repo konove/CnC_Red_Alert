@@ -66,7 +66,7 @@ void CellClass::Serialize(Archive& ar) {
   for (int32_t i = 0; i < overlapper_count; ++i) {
     ar(ObjectPtr(base::At(Overlappers, i)));
   }
-  ar(Flag.Composite, Land);
+  ar(Flag, Land);
   if constexpr (Archive::kIsReading) {
     IsPlot = (flags & 1) != 0;
     IsCursorHere = (flags & 2) != 0;

@@ -18,6 +18,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/object_heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/occupy_flags.h"
 #include "gtest/gtest.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -236,7 +237,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   cell.InfType = HOUSE_BAD;
   cell.OccupierPtr = unit;
   cell.Overlappers[2] = unit;
-  cell.Flag.Composite = 2;
+  cell.Flag = game::OccupyFlags::FromBits(2);
   base::At(TheWorld().cell_triggers(), 100) = trigger;
   const auto bytes = Save(cell);
   cell.Reset();

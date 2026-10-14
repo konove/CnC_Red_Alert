@@ -12,6 +12,7 @@
 #include "game/core/game_clock.h"
 #include "game/sim/door.h"
 #include "game/sim/mph.h"
+#include "game/sim/occupy_flags.h"
 #include "gtest/gtest.h"
 #include "td/ai/team_type.h"
 #include "td/core/defines.h"
@@ -356,7 +357,7 @@ TEST(TdSaveValuesTest, CellDefaultsAndResetNeedNoSparseRecord) {
   EXPECT_FALSE(cell.Should_Save());
   cell.Owner = HOUSE_GOOD;
   cell.IsTrigger = true;
-  cell.Flag.Composite = 255;
+  cell.Flag = game::OccupyFlags::FromBits(255);
   cell.Reset();
   EXPECT_FALSE(cell.Should_Save());
   EXPECT_EQ(cell.Land_Type(), LAND_CLEAR);
