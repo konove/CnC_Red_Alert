@@ -44,14 +44,15 @@
  *   MapEditClass::Change_House -- changes CurrentObject's house           *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdio>
 #include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/algorithm.h"
 #include "base/array.h"
+#include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/core/cell_size.h"
@@ -344,15 +345,10 @@ void MapEditClass::Popup_Controls() {
   const HousesType owner = base::At(TheWorld().current_object(), 0)
                                ->Owner();  // object's current owner
   int mission_index = 0;  // object's current mission
-  // Not std::views::enumerate: Apple's libc++ does not ship it yet.
-  // Distance rather than an iterator variable: std::array's iterator is a
-  // pointer in libstdc++ and libc++ but a class in MSVC's STL.
-  const auto index = std::ranges::distance(
-      MapEditMissions.begin(),
-      std::ranges::find(
+  if (const base::ssize index = base::IndexOf(
           MapEditMissions,
-          base::At(TheWorld().current_object(), 0)->Get_Mission()));
-  if (index < std::ssize(MapEditMissions)) {
+          base::At(TheWorld().current_object(), 0)->Get_Mission());
+      index >= 0) {
     mission_index = static_cast<int>(index);
   }
   const int strength = TheWorld()

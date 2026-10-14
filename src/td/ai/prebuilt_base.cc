@@ -24,6 +24,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
@@ -162,10 +163,7 @@ void PrebuiltBase::RemoveNodeFor(const BuildingClass& building) {
 }
 
 void PrebuiltBase::RemoveFirstNodeOfType(const StructType type) {
-  const auto node = std::ranges::find(nodes_, type, &BaseNode::type);
-  if (node != nodes_.end()) {
-    nodes_.erase(node);
-  }
+  base::EraseFirst(nodes_, type, &BaseNode::type);
 }
 
 const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {

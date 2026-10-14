@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/types.h"
 
@@ -48,9 +49,7 @@ class OwnedVector {
 
   // Returns the index of an object in the list, or -1 if it is not there.
   [[nodiscard]] base::ssize ID(const T* element) const {
-    const auto found = std::ranges::find_if(
-        elements_, [element](const auto& e) { return e.get() == element; });
-    return found == elements_.end() ? -1 : found - elements_.begin();
+    return base::IndexOf(elements_, element, kRawPointer);
   }
 
   // Removes an object and destroys it, keeping the others in order. Returns
@@ -59,12 +58,7 @@ class OwnedVector {
   template <class U>
     requires std::same_as<U, T> || std::same_as<U, const T>
   bool Delete(U* element) {
-    const base::ssize index = ID(element);
-    if (index < 0) {
-      return false;
-    }
-    Delete(index);
-    return true;
+    return base::EraseFirst(elements_, element, kRawPointer);
   }
 
   // Removes the object at index, which must be in range, and destroys it.
@@ -85,6 +79,12 @@ class OwnedVector {
   }
 
  private:
+  // Projects an element to the object it owns, to search by pointer.
+  static constexpr auto kRawPointer =
+      [](const std::unique_ptr<T>& element ABSL_ATTRIBUTE_LIFETIME_BOUND) {
+        return element.get();
+      };
+
   std::vector<std::unique_ptr<T>> elements_;
 };
 

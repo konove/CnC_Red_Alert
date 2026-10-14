@@ -49,6 +49,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/match.h"
+#include "base/algorithm.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -258,10 +259,7 @@ class ListClass : public ControlClass {
     // Items are copies, so a pointer handed out by Get_Item can only be
     // matched by content; the first equal item is the one such a pointer
     // came from.
-    const auto found = std::ranges::find(List, text);
-    if (found != List.end()) {
-      Remove_Item(static_cast<int>(found - List.begin()));
-    }
+    Remove_Item(static_cast<int>(base::IndexOf(List, text)));
   }
   // Removes the item at `index`; out-of-range indices are ignored.
   virtual void Remove_Item(int index) {

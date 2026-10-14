@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "absl/log/check.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -38,13 +39,9 @@ void GadgetList::AddAfter(GadgetClass& gadget, const GadgetClass& predecessor) {
   }
   // Before the search: taking `gadget` out moves what stands behind it.
   Detach(gadget);
-  const auto found = std::ranges::find(gadgets_, &predecessor);
-  DCHECK(found != gadgets_.end()) << "the predecessor is not in this list";
-  if (found == gadgets_.end()) {
-    InsertAt(std::ssize(gadgets_), gadget);
-    return;
-  }
-  InsertAt(std::distance(gadgets_.begin(), found) + 1, gadget);
+  const base::ssize index = base::IndexOf(gadgets_, &predecessor);
+  DCHECK(index >= 0) << "the predecessor is not in this list";
+  InsertAt(index < 0 ? std::ssize(gadgets_) : index + 1, gadget);
 }
 
 void GadgetList::Remove(GadgetClass& gadget) {

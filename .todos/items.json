@@ -15780,7 +15780,7 @@
             "  return true;",
             "}"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/core/owned_vector.h",
@@ -15797,7 +15797,7 @@
             "  // Removes the object at index, which must be in range, and destroys it.",
             "  void Delete(base::ssize index) {"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/td/ai/prebuilt_base.cc",
@@ -15814,7 +15814,7 @@
             "const BaseNode* PrebuiltBase::FirstUnbuiltNode(const StructType type) const {",
             "  for (const BaseNode& node : nodes_) {"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/ra/map/map.cc",
@@ -15848,7 +15848,7 @@
             "                           .current_object()",
             "                           .at(0)"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/ui/list.h",
@@ -15865,7 +15865,7 @@
             "  // Removes the item at `index`; out-of-range indices are ignored.",
             "  virtual void Remove_Item(int index) {"
           ],
-          "lost": false
+          "lost": true
         },
         {
           "path": "src/game/ui/gadget_list.cc",
@@ -15882,7 +15882,7 @@
             "",
             "void GadgetList::Remove(GadgetClass& gadget) {"
           ],
-          "lost": false
+          "lost": true
         }
       ]
     },
@@ -15896,10 +15896,10 @@
         "bugs",
         "ra"
       ],
-      "status": "fixed",
+      "status": "done",
       "author": "agent",
       "created": "2026-10-14T15:39:28Z",
-      "updated": "2026-10-14T15:49:26Z",
+      "updated": "2026-10-14T15:52:49Z",
       "source": "2268c0c21",
       "resolution": "It was a bug: the destructor ran after `Detach_This_From_All()` had removed the trigger, so `IndexOf` was always -1 and the cursor was always stepped back, re-running an earlier trigger when a later one was destroyed. `LogicClass::Detach()`/`MapClass::Detach()` now go through the new `EraseTrigger()`, which steps the cursor back only for a removal at or before it; the destructor no longer touches the cursors. Covered by `TriggerActionGameTest.DestroyTriggerKeepsTheListCursorsInPlace`.",
       "anchors": [
@@ -15932,43 +15932,27 @@
         "bugs",
         "ra"
       ],
-      "status": "open",
+      "status": "fixed",
       "author": "agent",
       "created": "2026-10-14T15:49:26Z",
-      "updated": "2026-10-14T15:49:26Z",
+      "updated": "2026-10-14T15:53:01Z",
       "source": "14e8a70bc",
+      "resolution": "`Clobber_All()` runs during `Read_Scenario_INI()`, before `Fill_In_Data()` fills the logic/map lists, but cell triggers and other references could still dangle; it now calls `Detach_This_From_All()` on each team and trigger type before deleting it (which also detaches and deletes the type's triggers). `TeamClass`'s trigger is a private `NewPooled` instance that never enters a list or cell, so it was left as is. Covered by `TriggerActionGameTest.ClobberingAHouseDetachesItsTriggers`.",
       "anchors": [
         {
           "path": "src/ra/objects/house.cc",
-          "startLine": 2996,
-          "endLine": 3001,
-          "text": "  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {\n    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->house == Class->House) {\n      base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(i));\n      i--;\n    }\n  }",
+          "startLine": 2990,
+          "endLine": 3010,
+          "text": "  // Cells, other houses' objects and the other triggers and team types may\n  // point at this house's team and trigger types, so each is detached before\n  // it goes. Detaching a trigger type also detaches and deletes the triggers\n  // made from it.\n  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {\n    TeamType* team_type = TheObjectHeaps().team_type().ActiveAt(i);\n    if (team_type->house() == Class->House) {\n      Detach_This_From_All(team_type->As_Target());\n      base::DeletePooled(team_type);\n      i--;\n    }\n  }\n  for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {\n    TriggerType* trigger_type = TheObjectHeaps().trigger_type().ActiveAt(i);\n    if (trigger_type->house == Class->House) {\n      Detach_This_From_All(trigger_type->As_Target());\n      base::DeletePooled(trigger_type);\n      i--;\n    }\n  }\n",
           "before": [
             "      i--;",
             "    }",
             "  }"
           ],
           "after": [
-            "  for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {",
-            "    if (TheObjectHeaps().trigger_type().ActiveAt(i)->house == Class->House) {",
-            "      base::DeletePooled(TheObjectHeaps().trigger_type().ActiveAt(i));"
-          ],
-          "lost": true
-        },
-        {
-          "path": "src/ra/ai/team.cc",
-          "startLine": 303,
-          "endLine": 307,
-          "text": "    if (Trigger != nullptr) {\n      if (Trigger->AttachCount == 0) {\n        base::DeletePooled(Trigger);\n      }\n      Trigger = nullptr;",
-          "before": [
-            "    *Only player reinforcement *\tmembers that broke off of the team",
-            "    *earlier will have this occur.",
-            "    */"
-          ],
-          "after": [
-            "    }",
-            "  }",
-            "}"
+            "  delete this;",
+            "}",
+            ""
           ],
           "lost": false
         }
