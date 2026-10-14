@@ -42,6 +42,7 @@
 #include "engine/codec/base64.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <span>
 #include <string_view>
 
@@ -90,28 +91,6 @@ static const unsigned char kDecoder[256] = {
 
 const int PacketChars = 4;
 
-/*
-**	The packet type is used to construct and dissect the Base64 data blocks.
-*The data *	consists of three source data bytes mapped onto four 6 bit
-*Base64 code elements.
-*/
-union PacketType {
-  struct {
-    unsigned char C3;
-    unsigned char C2;
-    unsigned char C1;
-    unsigned char pad;
-  } Char;
-  struct {
-    unsigned O4 : 6;
-    unsigned O3 : 6;
-    unsigned O2 : 6;
-    unsigned O1 : 6;
-    unsigned pad : 8;
-  } SubCode;
-  unsigned int Raw;
-};
-
 /***********************************************************************************************
  * Base64_Encode -- Encode data into Base 64 format. *
  *                                                                                             *
@@ -159,23 +138,21 @@ int Base64_Encode(std::span<const std::byte> source,
   int dlen = static_cast<int>(dest.size());
   while (slen > 0 && dlen >= PacketChars) {
     /*
-    **	Fetch 24 bits of source data.
+    **	Fetch 24 bits of source data, the first byte most significant.
     */
-    PacketType packet{.Raw = 0};
+    uint32_t word = 0;
 
     int pad = 0;
-    packet.Char.C1 = std::to_integer<unsigned char>(base::At(source, input++));
+    word |= std::to_integer<uint32_t>(base::At(source, input++)) << 16;
     slen--;
     if (slen) {
-      packet.Char.C2 =
-          std::to_integer<unsigned char>(base::At(source, input++));
+      word |= std::to_integer<uint32_t>(base::At(source, input++)) << 8;
       slen--;
     } else {
       pad++;
     }
     if (slen) {
-      packet.Char.C3 =
-          std::to_integer<unsigned char>(base::At(source, input++));
+      word |= std::to_integer<uint32_t>(base::At(source, input++));
       slen--;
     } else {
       pad++;
@@ -186,18 +163,18 @@ int Base64_Encode(std::span<const std::byte> source,
     **	characters if there is insufficient source data for a full packet.
     */
     base::At(dest, output++) =
-        static_cast<std::byte>(kEncoder.at(packet.SubCode.O1));
+        static_cast<std::byte>(kEncoder.at((word >> 18) & 0x3F));
     base::At(dest, output++) =
-        static_cast<std::byte>(kEncoder.at(packet.SubCode.O2));
+        static_cast<std::byte>(kEncoder.at((word >> 12) & 0x3F));
     if (pad < 2) {
       base::At(dest, output++) =
-          static_cast<std::byte>(kEncoder.at(packet.SubCode.O3));
+          static_cast<std::byte>(kEncoder.at((word >> 6) & 0x3F));
     } else {
       base::At(dest, output++) = static_cast<std::byte>(kPad);
     }
     if (pad < 1) {
       base::At(dest, output++) =
-          static_cast<std::byte>(kEncoder.at(packet.SubCode.O4));
+          static_cast<std::byte>(kEncoder.at(word & 0x3F));
     } else {
       base::At(dest, output++) = static_cast<std::byte>(kPad);
     }
@@ -261,7 +238,7 @@ int Base64_Decode(std::span<const std::byte> source,
   int slen = static_cast<int>(source.size());
   int dlen = static_cast<int>(dest.size());
   while (slen > 0 && dlen > 0) {
-    PacketType packet{.Raw = 0};
+    uint32_t word = 0;
 
     /*
     **	Process input until a full packet has been accumulated or the
@@ -291,41 +268,27 @@ int Base64_Decode(std::span<const std::byte> source,
       }
 
       /*
-      **	A valid Base64 character was found so add it to the packet
-      **	data.
+      **	A valid Base64 character was found so add its six bits to the
+      **	packet, the first character most significant.
       */
-      switch (pcount) {
-        case 0:
-          packet.SubCode.O1 = code;
-          break;
-        case 1:
-          packet.SubCode.O2 = code;
-          break;
-        case 2:
-          packet.SubCode.O3 = code;
-          break;
-        case 3:
-          packet.SubCode.O4 = code;
-          break;
-        default:
-          break;
-      }
+      const auto shift = static_cast<uint32_t>(18 - (6 * pcount));
+      word |= uint32_t{code} << shift;
       pcount++;
     }
 
     /*
     **	A packet block is ready for output into the destination buffer.
     */
-    base::At(dest, output++) = static_cast<std::byte>(packet.Char.C1);
+    base::At(dest, output++) = static_cast<std::byte>(word >> 16);
     dlen--;
     total++;
     if (dlen > 0 && pcount > 2) {
-      base::At(dest, output++) = static_cast<std::byte>(packet.Char.C2);
+      base::At(dest, output++) = static_cast<std::byte>((word >> 8) & 0xFF);
       dlen--;
       total++;
     }
     if (dlen > 0 && pcount > 3) {
-      base::At(dest, output++) = static_cast<std::byte>(packet.Char.C3);
+      base::At(dest, output++) = static_cast<std::byte>(word & 0xFF);
       dlen--;
       total++;
     }

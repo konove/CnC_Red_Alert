@@ -15,21 +15,32 @@
 
 namespace blowfish_reference {
 
-/*
-**	Byte order controlled long integer. This integer is constructed
-**	so that character 0 (C0) is the most significant byte of the
-**	integer. This is biased toward big endian architecture, but that
-**	just happens to be how the Blowfish algorithm was designed.
-*/
-union Int {
-  uint32_t Long;
-  struct {
-    unsigned char C3;
-    unsigned char C2;
-    unsigned char C1;
-    unsigned char C0;
-  } Char;
-};
+namespace {
+
+// Returns byte `i` of `x`, byte 0 the most significant: Blowfish reads its
+// words big-endian whatever the processor's byte order.
+constexpr std::size_t Byte(uint32_t x, uint32_t i) {
+  return (x >> (24U - (8U * i))) & 0xFFU;
+}
+
+// Reads the big-endian word at `bytes[at]` and advances `at` past it.
+uint32_t ReadBigEndian(std::span<const std::byte> bytes, std::size_t& at) {
+  uint32_t word = 0;
+  for (int i = 0; i < 4; ++i) {
+    word = (word << 8) | std::to_integer<uint32_t>(base::At(bytes, at++));
+  }
+  return word;
+}
+
+// Writes `word` big-endian at `bytes[at]` and advances `at` past it.
+void WriteBigEndian(uint32_t word, std::span<std::byte> bytes,
+                    std::size_t& at) {
+  for (uint32_t i = 0; i < 4; ++i) {
+    base::At(bytes, at++) = static_cast<std::byte>(Byte(word, i));
+  }
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * BlowfishEngine::~BlowfishEngine -- Destructor for the Blowfish engine. *
@@ -283,17 +294,8 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   */
   std::size_t source = 0;
   std::size_t table_index = 0;
-  Int left{};
-  left.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  left.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  left.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  left.Char.C3 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-
-  Int right{};
-  right.Char.C0 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  right.Char.C1 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  right.Char.C2 = std::to_integer<unsigned char>(base::At(plaintext, source++));
-  right.Char.C3 = std::to_integer<unsigned char>(base::At(plaintext, source));
+  uint32_t left = ReadBigEndian(plaintext, source);
+  uint32_t right = ReadBigEndian(plaintext, source);
 
   /*
   **	Perform all Feistal rounds on the block. This is the
@@ -302,16 +304,16 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   *unnecessary exchanging.
   */
   for (int index = 0; index < kRounds / 2; index++) {
-    left.Long ^= base::At(ptable, table_index++);
-    right.Long ^= ((base::At(base::At(bf_S, 0), left.Char.C0) +
-                    base::At(base::At(bf_S, 1), left.Char.C1)) ^
-                   base::At(base::At(bf_S, 2), left.Char.C2)) +
-                  base::At(base::At(bf_S, 3), left.Char.C3);
-    right.Long ^= base::At(ptable, table_index++);
-    left.Long ^= ((base::At(base::At(bf_S, 0), right.Char.C0) +
-                   base::At(base::At(bf_S, 1), right.Char.C1)) ^
-                  base::At(base::At(bf_S, 2), right.Char.C2)) +
-                 base::At(base::At(bf_S, 3), right.Char.C3);
+    left ^= base::At(ptable, table_index++);
+    right ^= ((base::At(base::At(bf_S, 0), Byte(left, 0)) +
+               base::At(base::At(bf_S, 1), Byte(left, 1))) ^
+              base::At(base::At(bf_S, 2), Byte(left, 2))) +
+             base::At(base::At(bf_S, 3), Byte(left, 3));
+    right ^= base::At(ptable, table_index++);
+    left ^= ((base::At(base::At(bf_S, 0), Byte(right, 0)) +
+              base::At(base::At(bf_S, 1), Byte(right, 1))) ^
+             base::At(base::At(bf_S, 2), Byte(right, 2))) +
+            base::At(base::At(bf_S, 3), Byte(right, 3));
   }
 
   /*
@@ -319,8 +321,8 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   *block. *	The left and right halves are still reversed as a side effect of
   *the last *	round.
   */
-  left.Long ^= base::At(ptable, table_index++);
-  right.Long ^= base::At(ptable, table_index);
+  left ^= base::At(ptable, table_index++);
+  right ^= base::At(ptable, table_index);
 
   /*
   **	The final block data is output in endian architecture
@@ -330,15 +332,8 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
   **	encryption rounds.
   */
   std::size_t out = 0;
-  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C0);
-  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C1);
-  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C2);
-  base::At(cyphertext, out++) = static_cast<std::byte>(right.Char.C3);
-
-  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C0);
-  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C1);
-  base::At(cyphertext, out++) = static_cast<std::byte>(left.Char.C2);
-  base::At(cyphertext, out) = static_cast<std::byte>(left.Char.C3);
+  WriteBigEndian(right, cyphertext, out);
+  WriteBigEndian(left, cyphertext, out);
 }
 
 /***********************************************************************************************
@@ -363,24 +358,23 @@ void BlowfishEngine::Process_Block(std::span<const std::byte> plaintext,
  * HISTORY: * 04/19/1996 JLB : Created. *
  *=============================================================================================*/
 void BlowfishEngine::Sub_Key_Encrypt(uint32_t& left, uint32_t& right) {
-  Int l{.Long = left};
-
-  Int r{.Long = right};
+  uint32_t l = left;
+  uint32_t r = right;
 
   for (int index = 0; index < kRounds; index += 2) {
-    l.Long ^= base::At(P_Encrypt, index);
-    r.Long ^= ((base::At(base::At(bf_S, 0), l.Char.C0) +
-                base::At(base::At(bf_S, 1), l.Char.C1)) ^
-               base::At(base::At(bf_S, 2), l.Char.C2)) +
-              base::At(base::At(bf_S, 3), l.Char.C3);
-    r.Long ^= base::At(P_Encrypt, index + 1);
-    l.Long ^= ((base::At(base::At(bf_S, 0), r.Char.C0) +
-                base::At(base::At(bf_S, 1), r.Char.C1)) ^
-               base::At(base::At(bf_S, 2), r.Char.C2)) +
-              base::At(base::At(bf_S, 3), r.Char.C3);
+    l ^= base::At(P_Encrypt, index);
+    r ^= ((base::At(base::At(bf_S, 0), Byte(l, 0)) +
+           base::At(base::At(bf_S, 1), Byte(l, 1))) ^
+          base::At(base::At(bf_S, 2), Byte(l, 2))) +
+         base::At(base::At(bf_S, 3), Byte(l, 3));
+    r ^= base::At(P_Encrypt, index + 1);
+    l ^= ((base::At(base::At(bf_S, 0), Byte(r, 0)) +
+           base::At(base::At(bf_S, 1), Byte(r, 1))) ^
+          base::At(base::At(bf_S, 2), Byte(r, 2))) +
+         base::At(base::At(bf_S, 3), Byte(r, 3));
   }
-  left = r.Long ^ P_Encrypt[kRounds + 1];
-  right = l.Long ^ P_Encrypt[kRounds];
+  left = r ^ P_Encrypt[kRounds + 1];
+  right = l ^ P_Encrypt[kRounds];
 }
 
 /*
